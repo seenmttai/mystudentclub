@@ -41,7 +41,7 @@
 
         .search-container {
             width: 100%;
-            max-width: 600px;
+            max-width: 500px;
             margin: 0 auto 2rem auto;
             padding: 0 1rem;
         }
@@ -77,6 +77,8 @@
             border-radius: 8px;
             background: white;
             cursor: pointer;
+            font-size: 0.9rem;
+            min-width: 120px;
         }
 
         .job-grid {
@@ -305,6 +307,22 @@
         .highlight {
             background-color: yellow;
         }
+
+        @media (max-width: 768px) {
+            .search-container {
+                max-width: 95%;
+            }
+
+            .filter-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .filter-select {
+                width: 80%;
+                text-align: center;
+            }
+        }
     </style>
 </head>
 <body>
@@ -487,7 +505,7 @@
                     if (page === 0) {
                         jobsContainer.textContent = 'No jobs found.';
                     } else {
-                        console.log('No more jobs to load.');
+                        
                     }
                 }
             } catch (fetchError) {
@@ -510,7 +528,7 @@
 
         function handleScroll() {
             const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-            if (scrollTop + clientHeight >= scrollHeight - 100 && !isFetching) {
+            if (scrollTop + clientHeight >= scrollHeight - 5 && !isFetching) {
                 fetchJobs(searchInput.value, locationFilter.value, salaryFilter.value);
             }
         }
