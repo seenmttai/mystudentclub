@@ -276,4 +276,47 @@ window.addEventListener('scroll', handleScroll);
 populateLocationFilter();
 fetchJobs();
 
+export async function checkAuth() {
+  const { data: { session }, error } = await supabaseClient.auth.getSession();
+  return session;
+}
+
+export function updateHeaderAuth(session) {
+  const authButtons = document.querySelector('.auth-buttons');
+  
+  if (session) {
+    authButtons.innerHTML = `
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-gray-600">${session.user.email}</span>
+        <button onclick="handleLogout()" class="auth-btn login-btn">Logout</button>
+      </div>
+    `;
+  } else {
+    authButtons.innerHTML = `
+      <a href="/login" class="auth-btn login-btn">Login</a>
+      <a href="/sign-up" class="auth-btn signup-btn">Sign Up</a>
+      <a href="/login" class="auth-icon-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      </a>
+      <a href="/sign-up" class="auth-icon-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+        </svg>
+      </a>
+    `;
+  }
+}
+
+window.handleLogout = async function() {
+  await supabaseClient.auth.signOut();
+  window.location.reload();
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const session = await checkAuth();
+  updateHeaderAuth(session);
+});
+
 export { showModal, getApplicationLink };
