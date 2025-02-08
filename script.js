@@ -29,13 +29,21 @@ menuButton.addEventListener('click', () => {
 });
 
 let currentSlide = 0;
-const slides = document.querySelectorAll('.carousel-item');
-const totalSlides = slides.length;
+let slides = []; // Initialize slides as an empty array
+let totalSlides = 0; // Initialize totalSlides to 0
 
 function showSlide(index) {
+  if (!slides || slides.length === 0) {
+    console.error("Slides array is not properly initialized or is empty.");
+    return;
+  }
   slides.forEach(slide => slide.classList.remove('active'));
   currentSlide = (index + totalSlides) % totalSlides;
-  slides[currentSlide].classList.add('active');
+  if (slides[currentSlide]) {
+    slides[currentSlide].classList.add('active');
+  } else {
+    console.error("currentSlide index is out of bounds:", currentSlide, "totalSlides:", totalSlides, "slides:", slides);
+  }
 }
 
 prevSlide.addEventListener('click', () => {
@@ -45,10 +53,6 @@ prevSlide.addEventListener('click', () => {
 nextSlide.addEventListener('click', () => {
   showSlide(currentSlide + 1);
 });
-
-showSlide(0);
-
-setInterval(() => showSlide(currentSlide + 1), 5000);
 
 document.addEventListener('click', (event) => {
   if (!expandedMenu.contains(event.target) && !menuButton.contains(event.target)) {
@@ -273,8 +277,60 @@ loadMoreButton.addEventListener('click', () => {
 });
 
 window.addEventListener('scroll', handleScroll);
-populateLocationFilter();
-fetchJobs();
+
+async function loadBanners() {
+  try {
+    const { data: banners, error } = await supabaseClient
+      .from('Banners')
+      .select('Image, Hyperlink');
+
+    if (error) {
+      console.error('Error fetching banners:', error);
+      return;
+    }
+
+    const carousel = document.querySelector('.carousel');
+    // Clear existing items except navigation buttons
+    const navButtons = carousel.querySelectorAll('.carousel-nav');
+    carousel.innerHTML = '';
+    navButtons.forEach(button => carousel.appendChild(button));
+
+    // Add new banner items
+    banners.forEach((banner, index) => {
+      const item = document.createElement('a');
+      item.href = banner.Hyperlink;
+      item.className = `carousel-item ${index === 0 ? 'active' : ''}`;
+      item.target = "_blank"; // Open in new tab
+
+      const img = document.createElement('img');
+      img.src = banner.Image;
+      img.alt = `Banner ${index + 1}`;
+
+      item.appendChild(img);
+      carousel.appendChild(item);
+    });
+
+    // Update carousel functionality
+    slides = document.querySelectorAll('.carousel-item'); // Re-query slides
+    totalSlides = slides.length; // Re-calculate totalSlides
+    currentSlide = 0; // Reset currentSlide
+
+    if (totalSlides > 0) {
+      showSlide(0); // Initial slide display after banners are loaded
+      setInterval(() => showSlide(currentSlide + 1), 5000); // Start interval after banners are loaded and slides are available
+    }
+  } catch (error) {
+    console.error('Error in loadBanners:', error);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const session = await checkAuth();
+  updateHeaderAuth(session);
+  await loadBanners(); // Await loadBanners to complete before initial showSlide was called in the wrong place, call it inside loadBanners now
+  populateLocationFilter();
+  fetchJobs();
+});
 
 export async function checkAuth() {
   const { data: { session }, error } = await supabaseClient.auth.getSession();
@@ -283,7 +339,7 @@ export async function checkAuth() {
 
 export function updateHeaderAuth(session) {
   const authButtons = document.querySelector('.auth-buttons');
-  
+
   if (session) {
     authButtons.innerHTML = `
       <div class="flex items-center gap-4">
@@ -313,10 +369,5 @@ window.handleLogout = async function() {
   await supabaseClient.auth.signOut();
   window.location.reload();
 }
-
-document.addEventListener('DOMContentLoaded', async () => {
-  const session = await checkAuth();
-  updateHeaderAuth(session);
-});
 
 export { showModal, getApplicationLink };
