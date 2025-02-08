@@ -11,6 +11,7 @@ const modalContent = document.getElementById('modal-content');
 const searchInput = document.getElementById('searchInput');
 const locationFilter = document.getElementById('locationFilter');
 const salaryFilter = document.getElementById('salaryFilter');
+const loadMoreButton = document.getElementById('loadMore');
 
 let isFetching = false;
 let page = 0;
@@ -78,7 +79,7 @@ function showModal(job) {
   document.body.style.overflow = 'hidden';
 }
 
-window.closeModal = function(event) {  
+window.closeModal = function(event) {
   if (event.target === modal || event.target.classList.contains('modal-close')) {
     modal.style.display = 'none';
     document.body.style.overflow = 'auto';
@@ -96,13 +97,14 @@ function getApplicationLink(applicationId) {
 }
 
 async function fetchJobs(searchTerm = '', location = '', salary = '') {
-  if (!hasMoreData || isFetching) return;
+  if (isFetching) return;
   isFetching = true;
   loader.style.display = 'block';
+  loadMoreButton.disabled = true;
   try {
     let query = supabaseClient
       .from('Industrial Training Job Portal')
-      .select('*');
+      .select('*', { count: 'exact' });
 
     if (searchTerm) {
       const searchPattern = `%${searchTerm}%`;
@@ -120,12 +122,15 @@ async function fetchJobs(searchTerm = '', location = '', salary = '') {
       }
     }
     query = query.range(page * limit, (page + 1) * limit - 1);
-    const { data, error } = await query;
+
+    const { data, error, count } = await query;
+
     if (error) {
       console.error('Error fetching jobs:', error.message);
       jobsContainer.textContent = 'Failed to load jobs. Please try again later.';
       return;
     }
+
     if (data && data.length > 0) {
       data.forEach(job => {
         const jobCard = document.createElement('article');
@@ -163,8 +168,11 @@ async function fetchJobs(searchTerm = '', location = '', salary = '') {
         jobsContainer.appendChild(jobCard);
       });
       page++;
+      hasMoreData = data.length === limit;
+      loadMoreButton.style.display = hasMoreData ? 'block' : 'none';
     } else {
       hasMoreData = false;
+      loadMoreButton.style.display = 'none';
       if (page === 0) {
         jobsContainer.textContent = 'No jobs found.';
       }
@@ -175,6 +183,7 @@ async function fetchJobs(searchTerm = '', location = '', salary = '') {
   } finally {
     isFetching = false;
     loader.style.display = 'none';
+    loadMoreButton.disabled = false;
   }
 }
 
@@ -201,11 +210,6 @@ function handleScroll() {
     header.classList.remove('header-hidden');
   }
   lastScrollY = currentScrollY;
-
-  const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-  if (scrollTop + clientHeight >= scrollHeight - 5 && !isFetching) {
-    fetchJobs(searchInput.value, locationFilter.value, salaryFilter.value);
-  }
 }
 
 function highlightSearchTerm(text, searchTerm) {
@@ -243,6 +247,7 @@ searchInput.addEventListener('input', (e) => {
     page = 0;
     jobsContainer.innerHTML = '';
     hasMoreData = true;
+    loadMoreButton.style.display = 'none';
     fetchJobs(e.target.value, locationFilter.value, salaryFilter.value);
   }, 300);
 });
@@ -251,6 +256,7 @@ locationFilter.addEventListener('change', () => {
   page = 0;
   jobsContainer.innerHTML = '';
   hasMoreData = true;
+  loadMoreButton.style.display = 'none';
   fetchJobs(searchInput.value, locationFilter.value, salaryFilter.value);
 });
 
@@ -258,6 +264,11 @@ salaryFilter.addEventListener('change', () => {
   page = 0;
   jobsContainer.innerHTML = '';
   hasMoreData = true;
+  loadMoreButton.style.display = 'none';
+  fetchJobs(searchInput.value, locationFilter.value, salaryFilter.value);
+});
+
+loadMoreButton.addEventListener('click', () => {
   fetchJobs(searchInput.value, locationFilter.value, salaryFilter.value);
 });
 
