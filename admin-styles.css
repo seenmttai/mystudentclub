@@ -1,0 +1,224 @@
+.admin-header {
+  background: linear-gradient(135deg, #d00 0%, #900 100%);
+  padding: 1rem;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.admin-badge {
+  background: rgba(255,255,255,0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.admin-controls {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  margin: 1rem 0;
+}
+
+.banner-editor {
+  margin-bottom: 2rem;
+}
+
+.banner-item {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.admin-input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+.admin-btn {
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.save-btn {
+  background: #4f46e5;
+  color: white;
+}
+
+.delete-btn {
+  background: #dc2626;
+  color: white;
+}
+
+.add-btn {
+  background: #059669;
+  color: white;
+}
+
+.admin-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.job-edit-modal {
+  max-width: 800px;
+  width: 95%;
+  margin: 20px;
+  max-height: 90vh;
+}
+
+.modal-inner {
+  padding: 1.5rem;
+}
+
+.job-form {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.description-group {
+  grid-column: 1 / -1;
+}
+
+.form-label {
+  font-weight: 500;
+  color: #4b5563;
+  font-size: 0.95rem;
+}
+
+.form-input, .form-textarea {
+  padding: 0.75rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  width: 100%;
+  background: #f9fafb;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus, .form-textarea:focus {
+  border-color: #4f46e5;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.form-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.access-denied {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.access-denied svg {
+  width: 100px;
+  height: 100px;
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+
+.edit-job-btn {
+  background: #4f46e5;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+}
+
+.job-card {
+  position: relative;
+}
+
+.admin-job-actions {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .banner-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-input {
+    width: 100%;
+  }
+
+  .job-edit-modal {
+    width: 100%;
+    margin: 0;
+    height: 100vh;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .modal-inner {
+    padding: 1rem;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .job-form {
+    grid-template-columns: 1fr;
+  }
+
+  .form-input, .form-textarea {
+    font-size: 16px; 
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .admin-badge {
+    font-size: 0.8rem;
+  }
+
+  .admin-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .admin-job-actions {
+    position: static;
+    margin-top: 0.5rem;
+  }
+}
