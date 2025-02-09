@@ -43,11 +43,13 @@
           Banner Management
         </h2>
         <div class="banner-editor" id="banner-editor"></div>
-        <button class="icon-btn add-icon-btn" onclick="addNewBanner()" title="Add New Banner">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-          </svg>
-        </button>
+        <div class="add-button-container">
+          <button class="icon-btn add-icon-btn" onclick="addNewBanner()" title="Add New Banner">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+          </button>
+        </div>
       </section>
 
       <div class="search-container">
@@ -72,11 +74,13 @@
           </svg>
           Job Management
         </h2>
-        <button class="icon-btn add-icon-btn" onclick="showAddJobModal()" title="Add New Job">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-          </svg>
-        </button>
+        <div class="add-button-container">
+          <button class="icon-btn add-icon-btn" onclick="showAddJobModal()" title="Add New Job">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+          </button>
+        </div>
       </div>
       
       <div id="jobs" class="job-grid"></div>
