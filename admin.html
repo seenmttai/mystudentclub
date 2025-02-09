@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Industrial Training Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-header {
+      background: linear-gradient(135deg, #d00 0%, #900 100%);
+      padding: 1rem;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .admin-badge {
+      background: rgba(255,255,255,0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+    }
+
+    .admin-controls {
+      background: white;
+      padding: 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      margin: 1rem 0;
+    }
+
+    .banner-editor {
+      margin-bottom: 2rem;
+    }
+
+    .banner-item {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding: 1rem;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+
+    .admin-input {
+      flex: 1;
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .admin-btn {
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .save-btn {
+      background: #4f46e5;
+      color: white;
+    }
+
+    .delete-btn {
+      background: #dc2626;
+      color: white;
+    }
+
+    .add-btn {
+      background: #059669;
+      color: white;
+    }
+
+    .admin-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .job-editor {
+      margin: 2rem 0;
+    }
+
+    .job-form {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-label {
+      font-weight: 500;
+      color: #4b5563;
+    }
+
+    .form-input, .form-textarea {
+      padding: 0.75rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      resize: vertical;
+    }
+
+    .form-textarea {
+      min-height: 100px;
+    }
+
+    .access-denied {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .access-denied svg {
+      width: 100px;
+      height: 100px;
+      color: #dc2626;
+      margin-bottom: 1rem;
+    }
+
+    .edit-job-btn {
+      background: #4f46e5;
+      color: white;
+      padding: 0.5rem;
+      border-radius: 4px;
+      margin-left: 0.5rem;
+    }
+
+    .job-card {
+      position: relative;
+    }
+
+    .admin-job-actions {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    @media (max-width: 640px) {
+      .banner-item {
+        flex-direction: column;
+      }
+      
+      .job-form {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="access-denied" class="access-denied" style="display: none;">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+    </svg>
+    <h1 class="text-2xl font-bold mb-2">Access Denied</h1>
+    <p class="text-gray-600">You don't have permission to access this page.</p>
+  </div>
+
+  <div id="admin-content" style="display: none;">
+    <header class="admin-header">
+      <h1 class="text-xl font-bold">Admin Panel</h1>
+      <span class="admin-badge">Super Admin</span>
+    </header>
+
+    <main class="container">
+      <section class="admin-controls">
+        <h2 class="text-xl font-semibold mb-4">Banner Management</h2>
+        <div class="banner-editor" id="banner-editor">
+        </div>
+        <button class="admin-btn add-btn" onclick="addNewBanner()">
+          Add New Banner
+        </button>
+      </section>
+
+      <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search keywords" class="search-input">
+      </div>
+      
+      <div class="filter-container">
+        <input type="text" id="locationSearchInput" placeholder="Search Location" class="filter-input">
+        <select id="salaryFilter" class="filter-select">
+          <option value="">Any Stipend</option>
+          <option value="10000-20000">₹10,000 - ₹20,000</option>
+          <option value="20000-40000">₹20,000 - ₹40,000</option>
+          <option value="40000+">₹40,000+</option>
+        </select>
+      </div>
+
+      <button class="admin-btn add-btn mb-4" onclick="showAddJobModal()">Add New Job</button>
+      
+      <div id="jobs" class="job-grid"></div>
+      <div class="loader" id="loader">
+        <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+      <div class="load-more-container">
+        <button id="loadMore" class="load-more-btn">Load More Jobs</button>
+      </div>
+    </main>
+
+    <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+      <div class="modal">
+        <button class="modal-close" onclick="closeModal(event)">✕</button>
+        <div id="modal-content"></div>
+      </div>
+    </div>
+
+    <div id="job-edit-modal" class="modal-overlay" style="display: none;">
+      <div class="modal">
+        <button class="modal-close" onclick="closeJobEditModal()">✕</button>
+        <div class="p-4">
+          <h2 class="text-xl font-bold mb-4" id="job-edit-title">Add New Job</h2>
+          <form id="job-form" class="job-form">
+            <div class="form-group">
+              <label class="form-label">Company</label>
+              <input type="text" name="Company" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Location</label>
+              <input type="text" name="Location" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Salary</label>
+              <input type="number" name="Salary" class="form-input">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Application ID</label>
+              <input type="text" name="Application ID" class="form-input" required>
+            </div>
+            <div class="form-group" style="grid-column: 1 / -1;">
+              <label class="form-label">Description</label>
+              <textarea name="Description" class="form-textarea" required></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Job Type</label>
+              <select name="table" class="form-input" required>
+                <option value="Industrial Training Job Portal">Industrial Training</option>
+                <option value="Fresher Jobs">Fresher's</option>
+                <option value="Semi Qualified Jobs">Semi Qualified</option>
+                <option value="Articleship Jobs">Articleship</option>
+              </select>
+            </div>
+            <input type="hidden" name="id">
+            <button type="submit" class="admin-btn save-btn" style="grid-column: 1 / -1;">
+              Save Job
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <nav class="footer-nav">
+      <button class="footer-tab active" data-table="Industrial Training Job Portal">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+        </svg>
+        <span>Industrial Training</span>
+      </button>
+      <button class="footer-tab" data-table="Fresher Jobs">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+        </svg>
+        <span>Fresher's</span>
+      </button>
+      <button class="footer-tab" data-table="Semi Qualified Jobs">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+        </svg>
+        <span>Semi Qualified</span>
+      </button>
+      <button class="footer-tab" data-table="Articleship Jobs">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        <span>Articleship</span>
+      </button>
+    </nav>
+  </div>
+
+  <script>
+    const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    let currentUser = null;
+
+    async function checkAdmin() {
+      const { data: { session }, error } = await supabaseClient.auth.getSession();
+      if (error || !session) {
+        showAccessDenied();
+        return false;
+      }
+
+      const { data, error: userError } = await supabaseClient
+        .from('profiles')
+        .select('is_super_admin')
+        .eq('id', session.user.id)
+        .single();
+
+      if (userError || !data?.is_super_admin) {
+        showAccessDenied();
+        return false;
+      }
+
+      currentUser = session.user;
+      document.getElementById('admin-content').style.display = 'block';
+      return true;
+    }
+
+    function showAccessDenied() {
+      document.getElementById('access-denied').style.display = 'flex';
+      document.getElementById('admin-content').style.display = 'none';
+    }
+
+    async function loadBanners() {
+      const { data: banners, error } = await supabaseClient
+        .from('Banners')
+        .select('*');
+
+      if (error) {
+        console.error('Error loading banners:', error);
+        return;
+      }
+
+      const bannerEditor = document.getElementById('banner-editor');
+      bannerEditor.innerHTML = '';
+
+      banners.forEach(banner => {
+        const bannerItem = document.createElement('div');
+        bannerItem.className = 'banner-item';
+        bannerItem.innerHTML = `
+          <input type="text" class="admin-input" value="${banner.Image}" placeholder="Image URL" 
+            onchange="updateBanner(${banner.id}, 'Image', this.value)">
+          <input type="text" class="admin-input" value="${banner.Hyperlink}" placeholder="Hyperlink" 
+            onchange="updateBanner(${banner.id}, 'Hyperlink', this.value)">
+          <button class="admin-btn delete-btn" onclick="deleteBanner(${banner.id})">Delete</button>
+        `;
+        bannerEditor.appendChild(bannerItem);
+      });
+    }
+
+    async function updateBanner(id, field, value) {
+      const { error } = await supabaseClient
+        .from('Banners')
+        .update({ [field]: value })
+        .eq('id', id);
+
+      if (error) {
+        alert('Failed to update banner: ' + error.message);
+      }
+    }
+
+    async function deleteBanner(id) {
+      if (!confirm('Are you sure you want to delete this banner?')) return;
+
+      const { error } = await supabaseClient
+        .from('Banners')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        alert('Failed to delete banner: ' + error.message);
+      } else {
+        loadBanners();
+      }
+    }
+
+    async function addNewBanner() {
+      const { error } = await supabaseClient
+        .from('Banners')
+        .insert([{ 
+          Image: 'https://example.com/placeholder.jpg',
+          Hyperlink: 'https://example.com'
+        }]);
+
+      if (error) {
+        alert('Failed to add banner: ' + error.message);
+      } else {
+        loadBanners();
+      }
+    }
+
+    function showAddJobModal() {
+      const modal = document.getElementById('job-edit-modal');
+      document.getElementById('job-edit-title').textContent = 'Add New Job';
+      document.getElementById('job-form').reset();
+      modal.style.display = 'flex';
+    }
+
+    function closeJobEditModal() {
+      document.getElementById('job-edit-modal').style.display = 'none';
+    }
+
+    function showEditJobModal(job) {
+      const modal = document.getElementById('job-edit-modal');
+      const form = document.getElementById('job-form');
+      document.getElementById('job-edit-title').textContent = 'Edit Job';
+      
+      for (let field in job) {
+        const input = form.elements[field];
+        if (input) input.value = job[field];
+      }
+      
+      modal.style.display = 'flex';
+    }
+
+    document.getElementById('job-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const jobData = Object.fromEntries(formData.entries());
+      const table = jobData.table;
+      delete jobData.table;
+
+      const isEdit = jobData.id;
+      if (isEdit) {
+        const id = jobData.id;
+        delete jobData.id;
+        const { error } = await supabaseClient
+          .from(table)
+          .update(jobData)
+          .eq('id', id);
+
+        if (error) {
+          alert('Failed to update job: ' + error.message);
+          return;
+        }
+      } else {
+        const { error } = await supabaseClient
+          .from(table)
+          .insert([jobData]);
+
+        if (error) {
+          alert('Failed to add job: ' + error.message);
+          return;
+        }
+      }
+
+      closeJobEditModal();
+      location.reload();
+    });
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const isAdmin = await checkAdmin();
+      if (isAdmin) {
+        await loadBanners();
+        await fetchJobs();
+      }
+    });
+
+    let isFetching = false;
+    let page = 0;
+    const limit = 12;
+    let hasMoreData = true;
+    let currentTable = 'Industrial Training Job Portal';
+
+    async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
+      if (isFetching) return;
+      isFetching = true;
+      loader.style.display = 'block';
+      
+      try {
+        let query = supabaseClient
+          .from(currentTable)
+          .select('*', { count: 'exact' });
+
+        if (searchTerm) {
+          const searchPattern = `%${searchTerm}%`;
+          query = query.or(`Company.ilike.${searchPattern},Location.ilike.${searchPattern},Description.ilike.${searchPattern}`);
+        }
+        if (locationSearch) {
+          query = query.ilike('Location', `%${locationSearch}%`);
+        }
+        if (salary) {
+          if (salary === '40000+') {
+            query = query.gte('Salary', 40000);
+          } else {
+            const [min, max] = salary.split('-').map(Number);
+            query = query.gte('Salary', min).lte('Salary', max);
+          }
+        }
+
+        query = query.range(page * limit, (page + 1) * limit - 1);
+        const { data, error, count } = await query;
+
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          data.forEach(job => {
+            const jobCard = document.createElement('article');
+            jobCard.className = 'job-card';
+            jobCard.onclick = (e) => {
+              if (!e.target.closest('.admin-job-actions')) {
+                showModal(job);
+              }
+            };
+
+            jobCard.innerHTML = `
+              <div class="admin-job-actions">
+                <button class="admin-btn edit-job-btn" onclick="showEditJobModal(${JSON.stringify(job)})">
+                  Edit
+                </button>
+                <button class="admin-btn delete-btn" onclick="deleteJob(${job.id}, '${currentTable}')">
+                  Delete
+                </button>
+              </div>
+              <div class="job-info">
+                <h2 class="job-company">${job.Company || 'Company Name N/A'}</h2>
+                <div class="job-meta">
+                  <span class="job-tag location-tag">
+                    <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    ${job.Location || 'Location N/A'}
+                  </span>
+                  ${job.Salary ? `
+                    <span class="job-tag salary-tag">
+                      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                      ₹${job.Salary}
+                    </span>
+                  ` : ''}
+                </div>
+              </div>
+            `;
+            jobsContainer.appendChild(jobCard);
+          });
+
+          page++;
+          hasMoreData = data.length === limit;
+          loadMoreButton.style.display = hasMoreData ? 'block' : 'none';
+        } else {
+          hasMoreData = false;
+          loadMoreButton.style.display = 'none';
+          if (page === 0) {
+            jobsContainer.textContent = 'No jobs found.';
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+        jobsContainer.textContent = 'Failed to load jobs. Please try again later.';
+      } finally {
+        isFetching = false;
+        loader.style.display = 'none';
+      }
+    }
+
+    async function deleteJob(id, table) {
+      if (!confirm('Are you sure you want to delete this job?')) return;
+
+      const { error } = await supabaseClient
+        .from(table)
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        alert('Failed to delete job: ' + error.message);
+      } else {
+        location.reload();
+      }
+    }
+
+    const searchInput = document.getElementById('searchInput');
+    const locationSearchInput = document.getElementById('locationSearchInput');
+    const salaryFilter = document.getElementById('salaryFilter');
+    const loadMoreButton = document.getElementById('loadMore');
+    const jobsContainer = document.getElementById('jobs');
+    const loader = document.getElementById('loader');
+
+    let timeout = null;
+
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        page = 0;
+        jobsContainer.innerHTML = '';
+        hasMoreData = true;
+        loadMoreButton.style.display = 'none';
+        fetchJobs(e.target.value, locationSearchInput.value, salaryFilter.value);
+      }, 300);
+    });
+
+    locationSearchInput.addEventListener('input', (e) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        page = 0;
+        jobsContainer.innerHTML = '';
+        hasMoreData = true;
+        loadMoreButton.style.display = 'none';
+        fetchJobs(searchInput.value, e.target.value, salaryFilter.value);
+      }, 300);
+    });
+
+    salaryFilter.addEventListener('change', () => {
+      page = 0;
+      jobsContainer.innerHTML = '';
+      hasMoreData = true;
+      loadMoreButton.style.display = 'none';
+      fetchJobs(searchInput.value, locationSearchInput.value, salaryFilter.value);
+    });
+
+    loadMoreButton.addEventListener('click', () => {
+      fetchJobs(searchInput.value, locationSearchInput.value, salaryFilter.value);
+    });
+
+    document.querySelectorAll('.footer-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.footer-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentTable = tab.dataset.table;
+        page = 0;
+        jobsContainer.innerHTML = '';
+        hasMoreData = true;
+        loadMoreButton.style.display = 'none';
+        fetchJobs(searchInput.value, locationSearchInput.value, salaryFilter.value);
+      });
+    });
+
+    function showModal(job) {
+      const modalContent = document.getElementById('modal-content');
+      modalContent.innerHTML = `
+        <h2 class="modal-company job-box">${job.Company}</h2>
+        <p class="job-location job-box">${job.Location}</p>
+        ${job.Salary ? `<p class="job-salary job-box">Stipend: ₹${job.Salary}</p>` : ''}
+        <section class="modal-section job-box">
+          <h3>Job Details</h3>
+          <dl class="job-details-list">
+            <li>
+              <dt>Description</dt>
+              <dd class="modal-description-text">${job.Description || 'N/A'}</dd>
+            </li>
+          </dl>
+        </section>
+        <div class="modal-section">
+          <h3>Apply Now</h3>
+          ${job['Application ID'] ? 
+            `<a href="${getApplicationLink(job['Application ID'])}" class="apply-btn" ${isValidUrl(job['Application ID']) ? 'target="_blank"' : ''}>
+              Apply
+            </a>` : 
+            'Contact details are in description'
+          }
+        </div>
+      `;
+      document.getElementById('modal').style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal(event) {
+      if (event.target === document.getElementById('modal') || 
+          event.target.classList.contains('modal-close')) {
+        document.getElementById('modal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+    }
+
+    function getApplicationLink(applicationId) {
+      if (isValidUrl(applicationId)) {
+        return applicationId;
+      } else {
+        const subject = encodeURIComponent("Application for CA Training (Reference- My Student Club)");
+        return `mailto:${applicationId}?subject=${subject}`;
+      }
+    }
+
+    function isValidUrl(string) {
+      try {
+        new URL(string);
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+  </script>
+</body>
+</html>
