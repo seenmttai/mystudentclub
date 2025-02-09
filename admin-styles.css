@@ -276,6 +276,12 @@
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
   }
   
   .job-edit-modal {
@@ -297,11 +303,16 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
   
   .modal-inner {
     padding: 1.5rem;
     overflow-y: auto;
+    flex: 1;
   }
   
   .form-group {
@@ -439,18 +450,18 @@
     }
   
     .job-edit-modal {
-      height: 100vh;
-      max-height: 100vh;
+      height: 100%;
+      max-height: 100%;
       border-radius: 0;
       margin: 0;
-      width: 100%;
+    }
+  
+    .modal-overlay {
+      padding: 0;
     }
   
     .modal-header {
-      position: sticky;
-      top: 0;
-      background: var(--surface);
-      z-index: 10;
+      padding: 1rem;
     }
   
     .modal-inner {
@@ -463,6 +474,10 @@
   
     .form-input, .form-textarea {
       font-size: 16px; 
+    }
+  
+    .job-form {
+      padding-bottom: 1rem;
     }
   }
   

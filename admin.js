@@ -226,7 +226,7 @@ function renderJobCard(job, table) {
     </div>
   `;
 
-  // Attach edit button event listener
+
   const editBtn = jobCard.querySelector('.edit-icon-btn');
   editBtn.addEventListener('click', async (e) => {
     e.stopPropagation();
