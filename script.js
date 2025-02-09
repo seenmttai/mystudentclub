@@ -9,7 +9,7 @@ const loader = document.getElementById('loader');
 const modal = document.getElementById('modal');
 const modalContent = document.getElementById('modal-content');
 const searchInput = document.getElementById('searchInput');
-const locationFilter = document.getElementById('locationFilter');
+const locationSearchInput = document.getElementById('locationSearchInput');
 const salaryFilter = document.getElementById('salaryFilter');
 const loadMoreButton = document.getElementById('loadMore');
 
@@ -28,9 +28,15 @@ menuButton.addEventListener('click', () => {
   expandedMenu.classList.toggle('active');
 });
 
+const menuCloseBtn = document.getElementById('menuCloseBtn');
+
+menuCloseBtn.addEventListener('click', () => {
+  expandedMenu.classList.remove('active');
+});
+
 let currentSlide = 0;
-let slides = []; // Initialize slides as an empty array
-let totalSlides = 0; // Initialize totalSlides to 0
+let slides = []; 
+let totalSlides = 0; 
 
 function showSlide(index) {
   if (!slides || slides.length === 0) {
@@ -55,7 +61,9 @@ nextSlide.addEventListener('click', () => {
 });
 
 document.addEventListener('click', (event) => {
-  if (!expandedMenu.contains(event.target) && !menuButton.contains(event.target)) {
+  if (!expandedMenu.contains(event.target) && 
+      !menuButton.contains(event.target) && 
+      expandedMenu.classList.contains('active')) {
     expandedMenu.classList.remove('active');
   }
 });
@@ -100,7 +108,7 @@ function getApplicationLink(applicationId) {
   }
 }
 
-async function fetchJobs(searchTerm = '', location = '', salary = '') {
+async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
   if (isFetching) return;
   isFetching = true;
   loader.style.display = 'block';
@@ -114,8 +122,9 @@ async function fetchJobs(searchTerm = '', location = '', salary = '') {
       const searchPattern = `%${searchTerm}%`;
       query = query.or(`Company.ilike.${searchPattern},Location.ilike.${searchPattern},Description.ilike.${searchPattern}`);
     }
-    if (location) {
-      query = query.eq('Location', location);
+    if (locationSearch) {
+      const locationPattern = `%${locationSearch}%`;
+      query = query.ilike('Location', locationPattern);
     }
     if (salary) {
       if (salary === '20000+') {
@@ -222,62 +231,6 @@ function highlightSearchTerm(text, searchTerm) {
   return text.replace(regex, '<span class="highlight">$&</span>');
 }
 
-async function populateLocationFilter() {
-  const { data, error } = await supabaseClient
-    .from('Industrial Training Job Portal')
-    .select('Location')
-    .neq('Location', null);
-  if (error) {
-    console.error('Error fetching locations:', error);
-    return;
-  }
-  const uniqueLocations = new Set();
-  data.forEach(job => {
-    if (job.Location) {
-      uniqueLocations.add(job.Location);
-    }
-  });
-  uniqueLocations.forEach(location => {
-    const option = document.createElement('option');
-    option.value = location;
-    option.textContent = location;
-    locationFilter.appendChild(option);
-  });
-}
-
-searchInput.addEventListener('input', (e) => {
-  clearTimeout(timeout);
-  timeout = setTimeout(() => {
-    page = 0;
-    jobsContainer.innerHTML = '';
-    hasMoreData = true;
-    loadMoreButton.style.display = 'none';
-    fetchJobs(e.target.value, locationFilter.value, salaryFilter.value);
-  }, 300);
-});
-
-locationFilter.addEventListener('change', () => {
-  page = 0;
-  jobsContainer.innerHTML = '';
-  hasMoreData = true;
-  loadMoreButton.style.display = 'none';
-  fetchJobs(searchInput.value, locationFilter.value, salaryFilter.value);
-});
-
-salaryFilter.addEventListener('change', () => {
-  page = 0;
-  jobsContainer.innerHTML = '';
-  hasMoreData = true;
-  loadMoreButton.style.display = 'none';
-  fetchJobs(searchInput.value, locationFilter.value, salaryFilter.value);
-});
-
-loadMoreButton.addEventListener('click', () => {
-  fetchJobs(searchInput.value, locationFilter.value, salaryFilter.value);
-});
-
-window.addEventListener('scroll', handleScroll);
-
 async function loadBanners() {
   try {
     const { data: banners, error } = await supabaseClient
@@ -290,7 +243,6 @@ async function loadBanners() {
     }
 
     const carousel = document.querySelector('.carousel');
-    // Clear existing items except navigation buttons
     const navButtons = carousel.querySelectorAll('.carousel-nav');
     carousel.innerHTML = '';
     navButtons.forEach(button => carousel.appendChild(button));
@@ -300,7 +252,7 @@ async function loadBanners() {
       const item = document.createElement('a');
       item.href = banner.Hyperlink;
       item.className = `carousel-item ${index === 0 ? 'active' : ''}`;
-      item.target = "_blank"; // Open in new tab
+      item.target = "_blank"; 
 
       const img = document.createElement('img');
       img.src = banner.Image;
@@ -310,14 +262,13 @@ async function loadBanners() {
       carousel.appendChild(item);
     });
 
-    // Update carousel functionality
-    slides = document.querySelectorAll('.carousel-item'); // Re-query slides
-    totalSlides = slides.length; // Re-calculate totalSlides
-    currentSlide = 0; // Reset currentSlide
+    slides = document.querySelectorAll('.carousel-item'); 
+    totalSlides = slides.length; 
+    currentSlide = 0; 
 
     if (totalSlides > 0) {
-      showSlide(0); // Initial slide display after banners are loaded
-      setInterval(() => showSlide(currentSlide + 1), 5000); // Start interval after banners are loaded and slides are available
+      showSlide(0); 
+      setInterval(() => showSlide(currentSlide + 1), 5000); 
     }
   } catch (error) {
     console.error('Error in loadBanners:', error);
@@ -327,8 +278,7 @@ async function loadBanners() {
 document.addEventListener('DOMContentLoaded', async () => {
   const session = await checkAuth();
   updateHeaderAuth(session);
-  await loadBanners(); // Await loadBanners to complete before initial showSlide was called in the wrong place, call it inside loadBanners now
-  populateLocationFilter();
+  await loadBanners();
   fetchJobs();
 });
 
@@ -341,24 +291,112 @@ export function updateHeaderAuth(session) {
   const authButtons = document.querySelector('.auth-buttons');
 
   if (session) {
+    const userEmail = session.user.email;
+    const userInitial = userEmail.charAt(0).toUpperCase();
+
     authButtons.innerHTML = `
-      <div class="flex items-center gap-4">
-        <span class="text-sm text-gray-600">${session.user.email}</span>
-        <button onclick="handleLogout()" class="auth-btn login-btn">Logout</button>
+      <div class="user-profile-container">
+        <div class="user-icon-wrapper">
+          <div class="user-icon" data-email="${userEmail}">
+            ${userInitial}
+          </div>
+          <div class="user-hover-card">
+            <div class="user-hover-content">
+              <p class="user-email">${userEmail}</p>
+              <button onclick="handleLogout()" class="logout-btn">Logout</button>
+            </div>
+          </div>
+        </div>
       </div>
     `;
+
+    const styleTag = document.createElement('style');
+    styleTag.textContent = `
+      .user-profile-container {
+        position: relative;
+      }
+
+      .user-icon-wrapper {
+        position: relative;
+      }
+
+      .user-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background-color: #4f46e5;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .user-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      }
+
+      .user-hover-card {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        padding: 1rem;
+        width: 250px;
+        margin-top: 10px;
+        z-index: 10;
+        transition: all 0.3s ease;
+        transform: translateY(-10px);
+      }
+
+      .user-icon-wrapper:hover .user-hover-card {
+        visibility: visible;
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .user-hover-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .user-email {
+        font-size: 0.9rem;
+        color: #4a5568;
+        margin-bottom: 0.75rem;
+        text-align: center;
+        word-break: break-all;
+      }
+
+      .logout-btn {
+        background-color: #4f46e5;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+      }
+
+      .logout-btn:hover {
+        background-color: #4338ca;
+      }
+    `;
+    document.head.appendChild(styleTag);
   } else {
     authButtons.innerHTML = `
-      <a href="/login" class="auth-btn login-btn">Login</a>
-      <a href="/sign-up" class="auth-btn signup-btn">Sign Up</a>
       <a href="/login" class="auth-icon-btn">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
-      </a>
-      <a href="/sign-up" class="auth-icon-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
         </svg>
       </a>
     `;
@@ -371,3 +409,39 @@ window.handleLogout = async function() {
 }
 
 export { showModal, getApplicationLink };
+
+searchInput.addEventListener('input', (e) => {
+  clearTimeout(timeout);
+  timeout = setTimeout(() => {
+    page = 0;
+    jobsContainer.innerHTML = '';
+    hasMoreData = true;
+    loadMoreButton.style.display = 'none';
+    fetchJobs(e.target.value, locationSearchInput.value, salaryFilter.value);
+  }, 300);
+});
+
+locationSearchInput.addEventListener('input', (e) => {
+  clearTimeout(timeout);
+  timeout = setTimeout(() => {
+    page = 0;
+    jobsContainer.innerHTML = '';
+    hasMoreData = true;
+    loadMoreButton.style.display = 'none';
+    fetchJobs(searchInput.value, e.target.value, salaryFilter.value);
+  }, 300);
+});
+
+salaryFilter.addEventListener('change', () => {
+  page = 0;
+  jobsContainer.innerHTML = '';
+  hasMoreData = true;
+  loadMoreButton.style.display = 'none';
+  fetchJobs(searchInput.value, locationSearchInput.value, salaryFilter.value);
+});
+
+loadMoreButton.addEventListener('click', () => {
+  fetchJobs(searchInput.value, locationSearchInput.value, salaryFilter.value);
+});
+
+window.addEventListener('scroll', handleScroll);

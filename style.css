@@ -47,6 +47,12 @@ body {
     gap: 0.5rem;
     font-weight: 500;
     transition: color 0.2s ease;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  
+  .menu-button span {
+    display: none;
   }
   
   .menu-button:hover {
@@ -56,6 +62,8 @@ body {
   .auth-buttons {
     display: flex;
     gap: 1rem;
+    margin-left: auto;
+    margin-right: 1rem;
   }
   
   .auth-btn {
@@ -84,7 +92,7 @@ body {
   }
   
   .auth-icon-btn {
-    display: none;
+    display: flex;
     padding: 0.5rem;
     border-radius: 8px;
     color: #4f46e5;
@@ -96,54 +104,67 @@ body {
     height: 20px;
   }
   
+  .brand-logo {
+    height: 40px;
+    width: auto;
+  }
+  
   .expanded-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
+    position: fixed;
+    top: 0;
     right: 0;
+    width: 300px;
+    height: 100vh;
     background: white;
     padding: 1rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    transform: translateY(-100%);
+    box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+    transform: translateX(100%);
     opacity: 0;
     transition: all 0.3s ease;
     pointer-events: none;
+    overflow-y: auto;
   }
   
   .expanded-menu.active {
-    transform: translateY(0);
+    transform: translateX(0);
     opacity: 1;
     pointer-events: auto;
   }
   
   .menu-items {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 1rem;
     padding: 1rem;
+    margin-top: 3rem;
+  }
+  
+  .menu-close-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: none;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: #4f46e5;
   }
   
   .menu-item {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 1rem;
+    padding: 0.7rem;
     border-radius: 8px;
     color: #4b5563;
     transition: all 0.2s ease;
     text-decoration: none;
+    font-size: 0.9rem;
   }
   
   .menu-item:hover {
     background: #f3f4f6;
     color: #4f46e5;
-  }
-  
-  .menu-icon {
-    width: 24px;
-    height: 24px;
   }
   
   .banner-section {
@@ -176,7 +197,6 @@ body {
   .carousel-item.active {
     pointer-events: auto;
   }
-  
   
   .carousel-item img {
     position: absolute;
@@ -255,6 +275,14 @@ body {
     .banner-section {
       padding-top: 60px;
     }
+  
+    .expanded-menu {
+      width: 100%;
+    }
+    
+    .brand-logo {
+      height: 30px;
+    }
   }
   
   @media (max-width: 467px) {
@@ -296,6 +324,12 @@ body {
   
     .header-container {
       padding: 0.5rem;
+    }
+  }
+  
+  @media (max-width: 315px) {
+    .brand-logo {
+      display: none;
     }
   }
   
@@ -365,6 +399,15 @@ body {
     flex-wrap: wrap;
   }
   
+  .filter-input {
+    padding: 0.5rem 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    font-size: 0.9rem;
+    min-width: 120px;
+  }
+  
   .filter-select {
     padding: 0.5rem 1rem;
     border: 1px solid #e2e8f0;
@@ -373,6 +416,21 @@ body {
     cursor: pointer;
     font-size: 0.9rem;
     min-width: 120px;
+  }
+  
+  @media (max-width: 768px) {
+    .search-container {
+      max-width: 95%;
+    }
+    .filter-container {
+      flex-direction: column;
+      align-items: center;
+    }
+    .filter-input, .filter-select {
+      width: 80%;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
   }
   
   .job-grid {
@@ -633,20 +691,6 @@ body {
   
   .highlight {
     background-color: yellow;
-  }
-  
-  @media (max-width: 768px) {
-    .search-container {
-      max-width: 95%;
-    }
-    .filter-container {
-      flex-direction: column;
-      align-items: center;
-    }
-    .filter-select {
-      width: 80%;
-      text-align: center;
-    }
   }
   
   @media (max-width: 480px) {
