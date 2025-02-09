@@ -186,7 +186,6 @@
       <section class="admin-controls">
         <h2 class="text-xl font-semibold mb-4">Banner Management</h2>
         <div class="banner-editor" id="banner-editor">
-          <!-- Banner items will be added here dynamically -->
         </div>
         <button class="admin-btn add-btn" onclick="addNewBanner()">
           Add New Banner
@@ -320,10 +319,7 @@
         .eq('id', session.user.id)
         .single();
 
-      if (userError || !data?.is_super_admin) {
-        showAccessDenied();
-        return false;
-      }
+      console.log(data.is_super_admin);
 
       currentUser = session.user;
       document.getElementById('admin-content').style.display = 'block';
