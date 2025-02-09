@@ -108,6 +108,25 @@ function getApplicationLink(applicationId) {
   }
 }
 
+let currentTable = 'Industrial Training Job Portal';
+
+const footerTabs = document.querySelectorAll('.footer-tab');
+
+footerTabs.forEach(tab => {
+  tab.addEventListener('click', () => {
+    footerTabs.forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+
+    currentTable = tab.dataset.table;
+
+    page = 0;
+    jobsContainer.innerHTML = '';
+    hasMoreData = true;
+    loadMoreButton.style.display = 'none';
+    fetchJobs(searchInput.value, locationSearchInput.value, salaryFilter.value);
+  });
+});
+
 async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
   if (isFetching) return;
   isFetching = true;
@@ -115,7 +134,7 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
   loadMoreButton.disabled = true;
   try {
     let query = supabaseClient
-      .from('Industrial Training Job Portal')
+      .from(currentTable)
       .select('*', { count: 'exact' });
 
     if (searchTerm) {
@@ -127,8 +146,8 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
       query = query.ilike('Location', locationPattern);
     }
     if (salary) {
-      if (salary === '20000+') {
-        query = query.gte('Salary', 20000);
+      if (salary === '40000+') {
+        query = query.gte('Salary', 40000);
       } else {
         const [min, max] = salary.split('-').map(Number);
         query = query.gte('Salary', min).lte('Salary', max);
@@ -247,7 +266,6 @@ async function loadBanners() {
     carousel.innerHTML = '';
     navButtons.forEach(button => carousel.appendChild(button));
 
-    // Add new banner items
     banners.forEach((banner, index) => {
       const item = document.createElement('a');
       item.href = banner.Hyperlink;
