@@ -1,224 +1,398 @@
-.admin-header {
-  background: linear-gradient(135deg, #d00 0%, #900 100%);
-  padding: 1rem;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.admin-badge {
-  background: rgba(255,255,255,0.2);
-  padding: 0.5rem 1rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
-}
-
-.admin-controls {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  margin: 1rem 0;
-}
-
-.banner-editor {
-  margin-bottom: 2rem;
-}
-
-.banner-item {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  margin-bottom: 1rem;
-  padding: 1rem;
-  background: #f8f9fa;
-  border-radius: 8px;
-}
-
-.admin-input {
-  flex: 1;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 0.95rem;
-}
-
-.admin-btn {
-  padding: 0.75rem 1.25rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-weight: 500;
-}
-
-.save-btn {
-  background: #4f46e5;
-  color: white;
-}
-
-.delete-btn {
-  background: #dc2626;
-  color: white;
-}
-
-.add-btn {
-  background: #059669;
-  color: white;
-}
-
-.admin-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.job-edit-modal {
-  max-width: 800px;
-  width: 95%;
-  margin: 20px;
-  max-height: 90vh;
-}
-
-.modal-inner {
-  padding: 1.5rem;
-}
-
-.job-form {
-  display: grid;
-  gap: 1.25rem;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.description-group {
-  grid-column: 1 / -1;
-}
-
-.form-label {
-  font-weight: 500;
-  color: #4b5563;
-  font-size: 0.95rem;
-}
-
-.form-input, .form-textarea {
-  padding: 0.75rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 0.95rem;
-  width: 100%;
-  background: #f9fafb;
-  transition: all 0.2s ease;
-}
-
-.form-input:focus, .form-textarea:focus {
-  border-color: #4f46e5;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-}
-
-.form-textarea {
-  min-height: 120px;
-  resize: vertical;
-}
-
-.access-denied {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-
-.access-denied svg {
-  width: 100px;
-  height: 100px;
-  color: #dc2626;
-  margin-bottom: 1rem;
-}
-
-.edit-job-btn {
-  background: #4f46e5;
-  color: white;
-  padding: 0.5rem;
-  border-radius: 4px;
-  margin-left: 0.5rem;
-}
-
-.job-card {
-  position: relative;
-}
-
-.admin-job-actions {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  display: flex;
-  gap: 0.5rem;
-}
-
-@media (max-width: 768px) {
+:root {
+    --primary: #4f46e5;
+    --primary-hover: #4338ca;
+    --danger: #dc2626;
+    --danger-hover: #b91c1c;
+    --success: #059669;
+    --success-hover: #047857;
+    --background: #f8fafc;
+    --surface: #ffffff;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border: #e2e8f0;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+  }
+  
+  body {
+    background: var(--background);
+    color: var(--text-primary);
+  }
+  
+  .admin-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+  }
+  
+  .admin-header h1 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .admin-badge {
+    background: var(--primary);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+  
+  .admin-controls {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem auto;
+    box-shadow: var(--shadow-sm);
+    max-width: 1200px;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .admin-controls:hover {
+    box-shadow: var(--shadow-md);
+  }
+  
+  .admin-controls h2 {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .banner-editor {
+    display: grid;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
   .banner-item {
-    flex-direction: column;
-    align-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    padding: 1.25rem;
+    background: var(--background);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
   }
-
+  
+  .banner-item:hover {
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary);
+  }
+  
   .admin-input {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    background: var(--surface);
+    color: var(--text-primary);
     width: 100%;
   }
-
-  .job-edit-modal {
-    width: 100%;
-    margin: 0;
-    height: 100vh;
-    max-height: 100vh;
-    border-radius: 0;
+  
+  .admin-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    outline: none;
   }
-
-  .modal-inner {
+  
+  .admin-input::placeholder {
+    color: var(--text-secondary);
+  }
+  
+  .admin-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  
+  .admin-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+  
+  .save-btn {
+    background: var(--primary);
+    color: white;
+  }
+  
+  .save-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .delete-btn {
+    background: var(--danger);
+    color: white;
+  }
+  
+  .delete-btn:hover {
+    background: var(--danger-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .add-btn {
+    background: var(--success);
+    color: white;
+  }
+  
+  .add-btn:hover {
+    background: var(--success-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+  
+  .job-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+    margin: 1.5rem auto;
+    max-width: 1200px;
+    padding: 0 1rem;
+  }
+  
+  .job-card {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    position: relative;
+    transition: all 0.2s ease;
+  }
+  
+  .job-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary);
+  }
+  
+  .modal-overlay {
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
     padding: 1rem;
-    height: 100%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  
+  .job-edit-modal {
+    background: var(--surface);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 800px;
+    margin: auto;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+  }
+  
+  .modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .modal-inner {
+    padding: 1.5rem;
     overflow-y: auto;
   }
-
-  .job-form {
-    grid-template-columns: 1fr;
+  
+  .form-group {
+    margin-bottom: 1.25rem;
   }
-
+  
+  .form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  
   .form-input, .form-textarea {
-    font-size: 16px; 
-  }
-}
-
-@media (max-width: 480px) {
-  .admin-header {
-    flex-direction: column;
-    gap: 0.5rem;
-    text-align: center;
-  }
-
-  .admin-badge {
-    font-size: 0.8rem;
-  }
-
-  .admin-btn {
     width: 100%;
-    text-align: center;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+    background: var(--surface);
   }
-
+  
+  .form-input:focus, .form-textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    outline: none;
+  }
+  
+  .form-textarea {
+    min-height: 120px;
+    resize: vertical;
+  }
+  
+  .modal-close {
+    background: transparent;
+    border: none;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+  }
+  
+  .modal-close:hover {
+    color: var(--text-primary);
+    background: var(--background);
+  }
+  
   .admin-job-actions {
-    position: static;
-    margin-top: 0.5rem;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
   }
-}
+  
+  .job-card:hover .admin-job-actions {
+    opacity: 1;
+  }
+  
+  .access-denied {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--background);
+    gap: 1.5rem;
+    text-align: center;
+    padding: 2rem;
+  }
+  
+  .access-denied svg {
+    width: 80px;
+    height: 80px;
+    color: var(--danger);
+  }
+  
+  .loading-spinner {
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 0.8s linear infinite;
+    margin-right: 0.5rem;
+    display: none;
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  .loading .loading-spinner {
+    display: inline-block;
+  }
+  
+  @media (max-width: 768px) {
+    .admin-header {
+      padding: 1rem;
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: center;
+    }
+  
+    .banner-item {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  
+    .job-edit-modal {
+      height: 100vh;
+      max-height: 100vh;
+      border-radius: 0;
+      margin: 0;
+    }
+  
+    .modal-overlay {
+      padding: 0;
+    }
+  
+    .admin-job-actions {
+      opacity: 1;
+      position: static;
+      margin-top: 1rem;
+    }
+  
+    .job-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .admin-input, .admin-btn {
+      font-size: 16px;
+      padding: 0.875rem 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .admin-header h1 {
+      font-size: 1.125rem;
+    }
+  
+    .admin-controls {
+      padding: 1rem;
+      margin: 1rem;
+    }
+  
+    .banner-item {
+      padding: 1rem;
+    }
+  
+    .modal-inner {
+      padding: 1rem;
+    }
+  }
