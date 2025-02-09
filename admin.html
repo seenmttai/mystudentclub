@@ -313,14 +313,6 @@
         return false;
       }
 
-      const { data, error: userError } = await supabaseClient
-        .from('profiles')
-        .select('is_super_admin')
-        .eq('id', session.user.id)
-        .single();
-
-      console.log(data.is_super_admin);
-
       currentUser = session.user;
       document.getElementById('admin-content').style.display = 'block';
       return true;
