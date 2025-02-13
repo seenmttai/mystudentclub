@@ -78,6 +78,7 @@ function showModal(job, table) {
     jobDescription = job.description || 'N/A';
     jobApplication = job.application;
   } else {
+    console.log("Articleship Job Object:", job);
     companyName = job.Name || 'Company Name N/A';
     jobAddress = job.Address || 'Location N/A';
     jobApplication = job.Application || 'N/A';
