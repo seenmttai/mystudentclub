@@ -85,6 +85,7 @@ window.updateBanner = async function(id, updates) {
 
     if (error) throw error;
     alert('Banner updated successfully');
+    loadBanners();
   } catch (error) {
     console.error('Failed to update banner:', error);
     alert('Failed to update banner: ' + error.message);
@@ -113,7 +114,7 @@ window.addNewBanner = async function() {
     const { error } = await supabaseClient
       .from('Banners')
       .insert([{
-        Image: 'https://example.com/placeholder.jpg',
+        Image: 'https://via.placeholder.com/300',
         Hyperlink: 'https://example.com'
       }]);
 
@@ -129,6 +130,7 @@ window.showAddJobModal = function() {
   const modal = document.getElementById('job-edit-modal');
   document.getElementById('job-edit-title').textContent = 'Add New Job';
   document.getElementById('job-form').reset();
+  document.getElementById('job-form').querySelector('#salary-group').style.display = currentTable === 'Articleship Jobs' ? 'none' : 'block';
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
@@ -141,9 +143,9 @@ window.closeJobEditModal = function() {
 async function showEditJobModal(job) {
   const modal = document.getElementById('job-edit-modal');
   const form = document.getElementById('job-form');
-
   form.reset();
   document.getElementById('job-edit-title').textContent = `Edit ${currentTable.replace(' Jobs', '')} Job`;
+  document.getElementById('job-form').querySelector('#salary-group').style.display = currentTable === 'Articleship Jobs' ? 'none' : 'block';
 
   if (currentTable === 'Articleship Jobs') {
       form.elements['Company'].value = job.Name || '';
@@ -152,13 +154,14 @@ async function showEditJobModal(job) {
       form.elements['Description'].value = job.Description || '';
       form.elements['Salary'].value = null;
   } else {
-      form.elements['Company'].value = job.name || '';
+      form.elements['Company'].value = job.company || '';
       form.elements['Location'].value = job.location || '';
       form.elements['Salary'].value = job.salary || '';
       form.elements['Application ID'].value = job.application || '';
       form.elements['Description'].value = job.description || '';
   }
 
+  form.elements['jobId'].value = job.id;
   const tableSelect = form.elements['table'];
   if (tableSelect) {
     tableSelect.value = currentTable;
@@ -170,9 +173,9 @@ async function showEditJobModal(job) {
 
 function getFieldNameMap(table) {
     if (table === 'Articleship Jobs') {
-        return { 'Company': '_company_name', 'Address': '_job_location', 'Application ID': '_application', 'Description': '_job_description', 'Salary': '_job_salary' };
+        return { 'Company': 'Name', 'Address': 'Address', 'Application ID': 'Application', 'Description': 'Description' };
     }
-    return { 'Company': '_company_name', 'Location': '_job_location', 'Salary': '_job_salary', 'Application ID': '_application', 'Description': '_job_description' };
+    return { 'Company': 'company', 'Location': 'location', 'Salary': 'salary', 'Application ID': 'application', 'Description': 'description' };
 }
 
 async function getJobById(id, table) {
@@ -194,13 +197,17 @@ async function getJobById(id, table) {
 
 function renderJobCard(job, table) {
   const isArticleship = table === 'Articleship Jobs';
-  const companyName = job._company_name || 'Company Name N/A';
-  const jobLocation = job._job_location || 'Location N/A';
+  const companyName = isArticleship ? job.Name || 'Company Name N/A' : job.company || 'Company Name N/A';
+  const jobLocation = isArticleship ? job.Address || 'Location N/A' : job.location || 'Location N/A';
+  const jobSalary = job.salary;
+
   const jobCard = document.createElement('article');
   jobCard.className = 'job-card';
   jobCard.onclick = (e) => {
     if (!e.target.closest('.admin-job-actions')) {
-      showModal(job);
+      // Assuming showModal is defined in the main script and accessible.
+      // If not, you'll need to adapt this part.
+      window.showModal(job, table);
     }
   };
 
@@ -231,19 +238,18 @@ function renderJobCard(job, table) {
           </svg>
           ${jobLocation}
         </span>
-        ${job._job_salary && !isArticleship ? `
+        ${jobSalary && !isArticleship ? `
           <span class="job-tag salary-tag">
             <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
-            ₹${job._job_salary}
+            ₹${jobSalary}
           </span>
         ` : ''}
       </div>
     </div>
   `;
-
 
   const editBtn = jobCard.querySelector('.edit-icon-btn');
   editBtn.addEventListener('click', async (e) => {
@@ -290,25 +296,32 @@ document.getElementById('job-form').addEventListener('submit', async (e) => {
           supabaseJobData[fieldNameMap[formField]] = jobData[formField];
       }
   }
+    if (jobData.Salary) {
+        supabaseJobData.salary = jobData.Salary;
+    }
 
-  if (!jobData.id) {
-    delete jobData.id;
-  }
+
+  const jobId = jobData.jobId;
+  delete jobData.jobId;
+
   try {
-    const isEdit = jobData.id;
+    const isEdit = jobId;
     if (isEdit) {
       const { error } = await supabaseClient
         .from(table)
         .update(supabaseJobData)
-        .eq('id', jobData.id);
+        .eq('id', jobId);
 
       if (error) throw error;
+      alert(`${currentTable.replace(' Jobs', '')} Job updated successfully`);
+
     } else {
       const { error } = await supabaseClient
         .from(table)
         .insert([supabaseJobData]);
 
       if (error) throw error;
+      alert(`${currentTable.replace(' Jobs', '')} Job added successfully`);
     }
 
     closeJobEditModal();
@@ -324,6 +337,7 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
   isFetching = true;
   document.getElementById('loader').style.display = 'block';
   document.getElementById('loadMore').disabled = true;
+  document.getElementById('jobs').innerHTML = '';
 
   try {
     let query = supabaseClient
@@ -332,21 +346,30 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
 
     if (searchTerm) {
       const searchPattern = `%${searchTerm}%`;
-      query = query.or(`_company_name.ilike.${searchPattern},_job_location.ilike.${searchPattern},_job_description.ilike.${searchPattern}`);
+      if (currentTable === 'Articleship Jobs') {
+        query = query.or(`Name.ilike.${searchPattern},Address.ilike.${searchPattern},Description.ilike.${searchPattern}`);
+      } else {
+        query = query.or(`company.ilike.${searchPattern},location.ilike.${searchPattern},description.ilike.${searchPattern}`);
+      }
     }
     if (locationSearch) {
-      query = query.ilike('_job_location', `%${locationSearch}%`);
+      const locationPattern = `%${locationSearch}%`;
+      if (currentTable === 'Articleship Jobs') {
+        query = query.ilike('Address', locationPattern);
+      } else {
+        query = query.ilike('location', locationPattern);
+      }
     }
     if (salary) {
       if (salary === '40000+') {
-        query = query.gte('Salary', 40000);
+        query = query.gte('salary', 40000);
       } else {
         const [min, max] = salary.split('-').map(Number);
-        query = query.gte('Salary', min).lte('Salary', max);
+        query = query.gte('salary', min).lte('salary', max);
       }
     }
 
-    query = query.range(page * limit, (page + 1) * limit - 1);
+    query = query.range(page * limit, (page + 1) * limit - 1).order('id', { ascending: false });
     const { data, error, count } = await query;
 
     if (error) throw error;
@@ -415,6 +438,8 @@ document.querySelectorAll('.footer-tab').forEach(tab => {
     hasMoreData = true;
     loadMoreButton.style.display = 'none';
     fetchJobs(searchInput.value, locationSearchInput.value, salaryFilter.value);
+    document.getElementById('job-form').querySelector('#salary-group').style.display = currentTable === 'Articleship Jobs' ? 'none' : 'block';
+
   });
 });
 
