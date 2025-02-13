@@ -70,6 +70,8 @@ document.addEventListener('click', (event) => {
 
 function showModal(job, table) {
   const isArticleship = table === 'Articleship Jobs';
+  console.log("Is Articleship:", isArticleship);
+  console.log("Job Object:", job);
   let companyName, jobLocation, jobSalary, jobDescription, jobApplication, jobAddress;
   if(!isArticleship){
     companyName = job.company || 'Company Name N/A';
