@@ -12,8 +12,8 @@
 </head>
 <body>
   <div id="access-denied" class="access-denied" style="display: none;">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
     </svg>
     <h1 class="text-2xl font-bold">Access Denied</h1>
@@ -24,8 +24,8 @@
   <div id="admin-content" style="display: none;">
     <header class="admin-header">
       <h1>
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
         </svg>
         Admin Panel
@@ -36,8 +36,8 @@
     <main>
       <section class="admin-controls">
         <h2>
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
           </svg>
           Banner Management
@@ -45,7 +45,7 @@
         <div class="banner-editor" id="banner-editor"></div>
         <div class="add-button-container">
           <button class="icon-btn add-icon-btn" onclick="addNewBanner()" title="Add New Banner">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
           </button>
@@ -55,7 +55,7 @@
       <div class="search-container">
         <input type="text" id="searchInput" placeholder="Search keywords" class="search-input">
       </div>
-      
+
       <div class="filter-container">
         <input type="text" id="locationSearchInput" placeholder="Search Location" class="filter-input">
         <select id="salaryFilter" class="filter-select">
@@ -68,21 +68,21 @@
 
       <div class="admin-controls">
         <h2>
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
           </svg>
           Job Management
         </h2>
         <div class="add-button-container">
           <button class="icon-btn add-icon-btn" onclick="showAddJobModal()" title="Add New Job">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
           </button>
         </div>
       </div>
-      
+
       <div id="jobs" class="job-grid"></div>
       <div class="loader" id="loader">
         <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -112,15 +112,15 @@
           <form id="job-form" class="job-form">
             <div class="form-group">
               <label class="form-label">Company</label>
-              <input type="text" name="Company" class="form-input" required>
+              <input type="text" name="Company" class="form-input" required placeholder="Company Name">
             </div>
             <div class="form-group">
-              <label class="form-label">Location</label>
-              <input type="text" name="Location" class="form-input" required>
+              <label class="form-label">Address</label>
+              <input type="text" name="Address" class="form-input" required placeholder="Company Address">
             </div>
             <div class="form-group">
               <label class="form-label">Salary</label>
-              <input type="number" name="Salary" class="form-input">
+              <input type="number" name="Salary" class="form-input" placeholder="Stipend (Optional)">
             </div>
             <div class="form-group">
               <label class="form-label">Application ID</label>
@@ -128,7 +128,7 @@
             </div>
             <div class="form-group description-group">
               <label class="form-label">Description</label>
-              <textarea name="Description" class="form-textarea" required></textarea>
+              <textarea name="Description" class="form-textarea" required placeholder="Job Description"></textarea>
             </div>
             <div class="form-group">
               <label class="form-label">Job Type</label>
@@ -151,25 +151,25 @@
 
     <nav class="footer-nav">
       <button class="footer-tab active" data-table="Industrial Training Job Portal">
-        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
         </svg>
         <span>Industrial Training</span>
       </button>
       <button class="footer-tab" data-table="Fresher Jobs">
-        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
         </svg>
         <span>Fresher's</span>
       </button>
       <button class="footer-tab" data-table="Semi Qualified Jobs">
-        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
         </svg>
         <span>Semi Qualified</span>
       </button>
       <button class="footer-tab" data-table="Articleship Jobs">
-        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
         </svg>
         <span>Articleship</span>
