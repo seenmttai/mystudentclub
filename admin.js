@@ -150,24 +150,14 @@ async function showEditJobModal(job) {
       form.elements['Address'].value = job.Address || '';
       form.elements['Application ID'].value = job.Application || '';
       form.elements['Description'].value = job.Description || '';
-      form.elements['Salary'].value = job.Stipend || '';
-      document.getElementById('location-field').style.display = 'none';
-      document.getElementById('address-field').style.display = 'block';
-      document.getElementById('salary-label').textContent = 'Stipend (₹):';
-
+      form.elements['Salary'].value = null;
   } else {
-      form.elements['Company'].value = job._company_name || '';
-      form.elements['Location'].value = job._job_location || '';
-      form.elements['Salary'].value = job._job_salary || '';
-      form.elements['Application ID'].value = job._application || '';
-      form.elements['Description'].value = job._job_description || '';
-      document.getElementById('location-field').style.display = 'block';
-      document.getElementById('address-field').style.display = 'none';
-      document.getElementById('salary-label').textContent = 'Salary (₹):';
+      form.elements['Company'].value = job.name || '';
+      form.elements['Location'].value = job.location || '';
+      form.elements['Salary'].value = job.salary || '';
+      form.elements['Application ID'].value = job.application || '';
+      form.elements['Description'].value = job.description || '';
   }
-
-  form.elements['id'].value = job.id || '';
-
 
   const tableSelect = form.elements['table'];
   if (tableSelect) {
@@ -180,9 +170,9 @@ async function showEditJobModal(job) {
 
 function getFieldNameMap(table) {
     if (table === 'Articleship Jobs') {
-        return { 'Company': 'Name', 'Address': 'Address', 'Application ID': 'Application', 'Description': 'Description', 'Salary': 'Stipend', 'id': 'id'};
+        return { 'Company': '_company_name', 'Address': '_job_location', 'Application ID': '_application', 'Description': '_job_description', 'Salary': '_job_salary' };
     }
-    return { 'Company': '_company_name', 'Location': '_job_location', 'Salary': '_job_salary', 'Application ID': '_application', 'Description': '_job_description', 'id': 'id' };
+    return { 'Company': '_company_name', 'Location': '_job_location', 'Salary': '_job_salary', 'Application ID': '_application', 'Description': '_job_description' };
 }
 
 async function getJobById(id, table) {
@@ -204,14 +194,13 @@ async function getJobById(id, table) {
 
 function renderJobCard(job, table) {
   const isArticleship = table === 'Articleship Jobs';
-  const companyName = isArticleship ? job.Name || 'Company Name N/A' : job._company_name || 'Company Name N/A';
-  const jobLocation = isArticleship ? job.Address || 'Location N/A' : job._job_location || 'Location N/A';
-
+  const companyName = job._company_name || 'Company Name N/A';
+  const jobLocation = job._job_location || 'Location N/A';
   const jobCard = document.createElement('article');
   jobCard.className = 'job-card';
   jobCard.onclick = (e) => {
     if (!e.target.closest('.admin-job-actions')) {
-      showModal(job, table);
+      showModal(job);
     }
   };
 
@@ -242,22 +231,13 @@ function renderJobCard(job, table) {
           </svg>
           ${jobLocation}
         </span>
-        ${!isArticleship && job._job_salary ? `
+        ${job._job_salary && !isArticleship ? `
           <span class="job-tag salary-tag">
             <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
             ₹${job._job_salary}
-          </span>
-        ` : ''}
-         ${isArticleship && job.Stipend ? `
-          <span class="job-tag salary-tag">
-            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            ₹${job.Stipend}
           </span>
         ` : ''}
       </div>
@@ -304,64 +284,26 @@ document.getElementById('job-form').addEventListener('submit', async (e) => {
   delete jobData.table;
   const fieldNameMap = getFieldNameMap(table);
   const supabaseJobData = {};
-  supabaseJobData.id = jobData.id;
 
   for (const formField in jobData) {
       if (jobData.hasOwnProperty(formField) && fieldNameMap.hasOwnProperty(formField)) {
           supabaseJobData[fieldNameMap[formField]] = jobData[formField];
       }
   }
-    if(table === 'Articleship Jobs' && supabaseJobData.Salary){
-        supabaseJobData.Stipend = supabaseJobData.Salary;
-        delete supabaseJobData.Salary;
-    } else if (table !== 'Articleship Jobs' && supabaseJobData.Salary){
-        supabaseJobData._job_salary = supabaseJobData.Salary;
-        delete supabaseJobData.Salary;
-    }
-    if(table === 'Articleship Jobs' && supabaseJobData.Company){
-        supabaseJobData.Name = supabaseJobData.Company;
-        delete supabaseJobData.Company;
-    } else if (table !== 'Articleship Jobs' && supabaseJobData.Company){
-        supabaseJobData._company_name = supabaseJobData.Company;
-        delete supabaseJobData.Company;
-    }
 
-    if(table === 'Articleship Jobs' && supabaseJobData.Address){
-        supabaseJobData.Address = supabaseJobData.Address;
-        delete supabaseJobData.Address;
-    } else if (table !== 'Articleship Jobs' && supabaseJobData.Location){
-        supabaseJobData._job_location = supabaseJobData.Location;
-        delete supabaseJobData.Location;
-    }
-
-    if(table === 'Articleship Jobs' && supabaseJobData['Application ID']){
-        supabaseJobData.Application = supabaseJobData['Application ID'];
-        delete supabaseJobData['Application ID'];
-    } else if (table !== 'Articleship Jobs' && supabaseJobData['Application ID']){
-        supabaseJobData._application = supabaseJobData['Application ID'];
-        delete supabaseJobData['Application ID'];
-    }
-
-     if(table === 'Articleship Jobs' && supabaseJobData['Description']){
-        supabaseJobData.Description = supabaseJobData['Description'];
-        delete supabaseJobData['Description'];
-    } else if (table !== 'Articleship Jobs' && supabaseJobData['Description']){
-        supabaseJobData._job_description = supabaseJobData['Description'];
-        delete supabaseJobData['Description'];
-    }
-
-
+  if (!jobData.id) {
+    delete jobData.id;
+  }
   try {
-    const isEdit = supabaseJobData.id;
+    const isEdit = jobData.id;
     if (isEdit) {
       const { error } = await supabaseClient
         .from(table)
         .update(supabaseJobData)
-        .eq('id', supabaseJobData.id);
+        .eq('id', jobData.id);
 
       if (error) throw error;
     } else {
-      delete supabaseJobData.id;
       const { error } = await supabaseClient
         .from(table)
         .insert([supabaseJobData]);
@@ -388,31 +330,19 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
       .from(currentTable)
       .select('*', { count: 'exact' });
 
-    let companyColumn = '_company_name';
-    let locationColumn = '_job_location';
-    let descriptionColumn = '_job_description';
-
-    if (currentTable === 'Articleship Jobs') {
-        companyColumn = 'Name';
-        locationColumn = 'Address';
-        descriptionColumn = 'Description';
-    }
-
-
     if (searchTerm) {
       const searchPattern = `%${searchTerm}%`;
-      query = query.or(`${companyColumn}.ilike.${searchPattern},${locationColumn}.ilike.${searchPattern},${descriptionColumn}.ilike.${searchPattern}`);
+      query = query.or(`_company_name.ilike.${searchPattern},_job_location.ilike.${searchPattern},_job_description.ilike.${searchPattern}`);
     }
     if (locationSearch) {
-      query = query.ilike(locationColumn, `%${locationSearch}%`);
+      query = query.ilike('_job_location', `%${locationSearch}%`);
     }
     if (salary) {
-      const salaryColumn = currentTable === 'Articleship Jobs' ? 'Stipend' : '_job_salary';
       if (salary === '40000+') {
-        query = query.gte(salaryColumn, 40000);
+        query = query.gte('Salary', 40000);
       } else {
         const [min, max] = salary.split('-').map(Number);
-        query = query.gte(salaryColumn, min).lte(salaryColumn, max);
+        query = query.gte('Salary', min).lte('Salary', max);
       }
     }
 
