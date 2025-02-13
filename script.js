@@ -69,18 +69,27 @@ document.addEventListener('click', (event) => {
 });
 
 function showModal(job, table) {
-  console.log(job);
   const isArticleship = table === 'Articleship Jobs';
-  const companyName = job.company || 'Company Name N/A';
-  const jobLocation = job.location || 'Location N/A';
-  const jobSalary = job.salary;
-  const jobDescription = job.description || 'N/A';
-  const jobApplication = job.application;
+  let companyName, jobLocation, jobSalary, jobDescription, jobApplication, jobAddress;
+  if(!isArticleship){
+    companyName = job.company || 'Company Name N/A';
+    jobLocation = job.location || 'Location N/A';
+    jobSalary = job.salary;
+    jobDescription = job.description || 'N/A';
+    jobApplication = job.application;
+  } else {
+    companyName = job.Name || 'Company Name N/A';
+    jobAddress = job.Address || 'Location N/A';
+    jobApplication = job.Application || 'N/A';
+    jobDescription = job.Description || 'N/A';
+    jobSalary = null; 
+  }
 
   modalContent.innerHTML = `
     <h2 class="modal-company job-box">${companyName}</h2>
-    <p class="job-location job-box">${jobLocation}</p>
+    ${jobSalary && !isArticleship ? `<p class="job-location job-box">${jobLocation}</p>` : ''}
     ${jobSalary && !isArticleship ? `<p class="job-salary job-box">Stipend: ₹${jobSalary}</p>` : ''}
+    ${isArticleship ? `<p class="job-location job-box">${jobAddress}</p>` : ''}
     <section class="modal-section job-box">
       <h3>Job Details</h3>
       <dl class="job-details-list">
@@ -92,7 +101,7 @@ function showModal(job, table) {
     </section>
     <div class="modal-section">
       <h3>Apply Now</h3>
-      ${jobApplication ? `<a href="${getApplicationLink(jobApplication)}" class="apply-btn" ${isValidUrl(jobApplication) ? 'target="_blank"' : ''}>Apply</a>` : 'Contact details are in description'}
+      ${jobApplication ? `<a href="${getApplicationLink(jobApplication, isArticleship)}" class="apply-btn" ${isValidUrl(jobApplication) ? 'target="_blank"' : ''}>Apply</a>` : 'Contact details are in description'}
     </div>
   `;
   modal.style.display = 'flex';
@@ -106,13 +115,23 @@ window.closeModal = function(event) {
   }
 }
 
-function getApplicationLink(applicationId) {
-  if (isValidUrl(applicationId)) {
-    return applicationId;
+function getApplicationLink(jobApplication, isArticleship) {
+  if (isValidUrl(jobApplication)) {
+    return jobApplication;
   } else {
-
-    const subject = encodeURIComponent("Application for CA Training (Reference- My Student Club)");
-    return `mailto:${applicationId}?subject=${subject}`;
+    const subject = 'Applying for job, reference- My Student Club';
+    if (isArticleship) {
+      const emailRegex = /[\w.-]+@[\w.-]+\.\w+/;
+      const firstEmailMatch = jobApplication.match(emailRegex);
+      const firstEmail = firstEmailMatch ? firstEmailMatch[0] : null;
+      if (firstEmail) {
+        return `mailto:${firstEmail}?subject=${encodeURIComponent(subject)}`;
+      } else {
+        return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(jobApplication)}`; 
+      }
+    } else {
+      return `mailto:${jobApplication}?subject=${encodeURIComponent(subject)}`;
+    }
   }
 }
 
@@ -155,10 +174,10 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
     }
     if (salary) {
       if (salary === '40000+') {
-        query = query.gte('Salary', 40000);
+        query = query.gte('salary', 40000);
       } else {
         const [min, max] = salary.split('-').map(Number);
-        query = query.gte('Salary', min).lte('Salary', max);
+        query = query.gte('salary', min).lte('salary', max);
       }
     }
     query = query.range(page * limit, (page + 1) * limit - 1);
