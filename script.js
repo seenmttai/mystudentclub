@@ -69,6 +69,7 @@ document.addEventListener('click', (event) => {
 });
 
 function showModal(job, table) {
+  console.log(job);
   const isArticleship = table === 'Articleship Jobs';
   const companyName = job.company || 'Company Name N/A';
   const jobLocation = job.location || 'Location N/A';
@@ -146,11 +147,11 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
 
     if (searchTerm) {
       const searchPattern = `%${searchTerm}%`;
-      query = query.or(`_company_name.ilike.${searchPattern},_job_location.ilike.${searchPattern},_job_description.ilike.${searchPattern}`);
+      query = query.or(`company.ilike.${searchPattern},location.ilike.${searchPattern},description.ilike.${searchPattern}`);
     }
     if (locationSearch) {
       const locationPattern = `%${locationSearch}%`;
-      query = query.ilike('_job_location', locationPattern);
+      query = query.ilike('location', locationPattern);
     }
     if (salary) {
       if (salary === '40000+') {
@@ -177,7 +178,7 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
         jobCard.onclick = () => showModal(job, currentTable);
         let jobCardContent = `
           <div class="job-info">
-            <h2 class="job-company">${highlightSearchTerm(job._company_name, searchTerm) || 'Company Name N/A'}</h2>
+            <h2 class="job-company">${highlightSearchTerm(job.company, searchTerm) || 'Company Name N/A'}</h2>
             <div class="job-meta">
               <span class="job-tag location-tag">
                 <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -186,15 +187,15 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 </svg>
-                ${highlightSearchTerm(job._job_location, searchTerm) || 'Location N/A'}
+                ${highlightSearchTerm(job.location, searchTerm) || 'Location N/A'}
               </span>`
-              + (job._job_salary && currentTable !== 'Articleship Jobs' ? `
+              + (job.salary && currentTable !== 'Articleship Jobs' ? `
                 <span class="job-tag salary-tag">
                   <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                   </svg>
-                  ₹${job._job_salary}
+                  ₹${job.salary}
                 </span>` : '') +
               `
             </div>
