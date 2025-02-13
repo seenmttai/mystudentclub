@@ -70,11 +70,11 @@ document.addEventListener('click', (event) => {
 
 function showModal(job, table) {
   const isArticleship = table === 'Articleship Jobs';
-  const companyName = job._company_name || 'Company Name N/A';
-  const jobLocation = job._job_location || 'Location N/A';
-  const jobSalary = job._job_salary;
-  const jobDescription = job._job_description || 'N/A';
-  const jobApplication = job._application;
+  const companyName = job.company || 'Company Name N/A';
+  const jobLocation = job.location || 'Location N/A';
+  const jobSalary = job.salary;
+  const jobDescription = job.description || 'N/A';
+  const jobApplication = job.application;
 
   modalContent.innerHTML = `
     <h2 class="modal-company job-box">${companyName}</h2>
