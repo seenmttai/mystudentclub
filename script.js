@@ -200,7 +200,7 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
         jobCard.onclick = () => showModal(job, currentTable);
         let jobCardContent = `
           <div class="job-info">
-            <h2 class="job-company">${highlightSearchTerm(job.company, searchTerm) || 'Company Name N/A'}</h2>
+            <h2 class="job-company">${highlightSearchTerm(currentTable === 'Articleship Jobs' ? job.Name : job.company, searchTerm) || 'Company Name N/A'}</h2>
             <div class="job-meta">
               <span class="job-tag location-tag">
                 <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -209,7 +209,7 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 </svg>
-                ${highlightSearchTerm(job.location, searchTerm) || 'Location N/A'}
+                ${highlightSearchTerm(currentTable === 'Articleship Jobs' ? job.Address : job.location, searchTerm) || 'Location N/A'}
               </span>`
               + (job.salary && currentTable !== 'Articleship Jobs' ? `
                 <span class="job-tag salary-tag">
@@ -248,6 +248,7 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
     loadMoreButton.disabled = false;
   }
 }
+
 
 function isValidUrl(string) {
   try {
