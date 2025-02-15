@@ -35,8 +35,8 @@ menuCloseBtn.addEventListener('click', () => {
 });
 
 let currentSlide = 0;
-let slides = [];
-let totalSlides = 0;
+let slides = []; 
+let totalSlides = 0; 
 
 function showSlide(index) {
   if (!slides || slides.length === 0) {
@@ -61,50 +61,30 @@ nextSlide.addEventListener('click', () => {
 });
 
 document.addEventListener('click', (event) => {
-  if (!expandedMenu.contains(event.target) &&
-      !menuButton.contains(event.target) &&
+  if (!expandedMenu.contains(event.target) && 
+      !menuButton.contains(event.target) && 
       expandedMenu.classList.contains('active')) {
     expandedMenu.classList.remove('active');
   }
 });
 
-function showModal(job, table) {
-  const isArticleship = table === 'Articleship Jobs';
-  console.log("Is Articleship:", isArticleship);
-  console.log("Job Object:", job);
-  let companyName, jobLocation, jobSalary, jobDescription, jobApplication, jobAddress;
-  if(!isArticleship){
-    companyName = job.company || 'Company Name N/A';
-    jobLocation = job.location || 'Location N/A';
-    jobSalary = job.salary;
-    jobDescription = job.description || 'N/A';
-    jobApplication = job.application;
-  } else {
-    console.log("Articleship Job Object:", job);
-    companyName = job.Name || 'Company Name N/A';
-    jobAddress = job.Address || 'Location N/A';
-    jobApplication = job.Application || 'N/A';
-    jobDescription = job.Description || 'N/A';
-    jobSalary = null; 
-  }
-
+function showModal(job) {
   modalContent.innerHTML = `
-    <h2 class="modal-company job-box">${companyName}</h2>
-    ${jobSalary && !isArticleship ? `<p class="job-location job-box">${jobLocation}</p>` : ''}
-    ${jobSalary && !isArticleship ? `<p class="job-salary job-box">Stipend: ₹${jobSalary}</p>` : ''}
-    ${isArticleship ? `<p class="job-location job-box">${jobAddress}</p>` : ''}
+    <h2 class="modal-company job-box">${job.Company}</h2>
+    <p class="job-location job-box">${job.Location}</p>
+    ${job.Salary ? `<p class="job-salary job-box">Stipend: ₹${job.Salary}</p>` : ''}
     <section class="modal-section job-box">
       <h3>Job Details</h3>
       <dl class="job-details-list">
         <li>
           <dt>Description</dt>
-          <dd class="modal-description-text">${jobDescription}</dd>
+          <dd class="modal-description-text">${job.Description || 'N/A'}</dd>
         </li>
       </dl>
     </section>
     <div class="modal-section">
       <h3>Apply Now</h3>
-      ${jobApplication ? `<a href="${getApplicationLink(jobApplication, isArticleship)}" class="apply-btn" ${isValidUrl(jobApplication) ? 'target="_blank"' : ''}>Apply</a>` : 'Contact details are in description'}
+      ${job['Application ID'] ? `<a href="${getApplicationLink(job['Application ID'])}" class="apply-btn" ${isValidUrl(job['Application ID']) ? 'target="_blank"' : ''}>Apply</a>` : 'Contact details are in description'}
     </div>
   `;
   modal.style.display = 'flex';
@@ -118,23 +98,13 @@ window.closeModal = function(event) {
   }
 }
 
-function getApplicationLink(jobApplication, isArticleship) {
-  if (isValidUrl(jobApplication)) {
-    return jobApplication;
+function getApplicationLink(applicationId) {
+  if (isValidUrl(applicationId)) {
+    return applicationId;
   } else {
-    const subject = 'Applying for job, reference- My Student Club';
-    if (isArticleship) {
-      const emailRegex = /[\w.-]+@[\w.-]+\.\w+/;
-      const firstEmailMatch = jobApplication.match(emailRegex);
-      const firstEmail = firstEmailMatch ? firstEmailMatch[0] : null;
-      if (firstEmail) {
-        return `mailto:${firstEmail}?subject=${encodeURIComponent(subject)}`;
-      } else {
-        return `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(jobApplication)}`; 
-      }
-    } else {
-      return `mailto:${jobApplication}?subject=${encodeURIComponent(subject)}`;
-    }
+
+    const subject = encodeURIComponent("Application for CA Training (Reference- My Student Club)");
+    return `mailto:${applicationId}?subject=${subject}`;
   }
 }
 
@@ -169,18 +139,18 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
 
     if (searchTerm) {
       const searchPattern = `%${searchTerm}%`;
-      query = query.or(`company.ilike.${searchPattern},location.ilike.${searchPattern},description.ilike.${searchPattern}`);
+      query = query.or(`Company.ilike.${searchPattern},Location.ilike.${searchPattern},Description.ilike.${searchPattern}`);
     }
     if (locationSearch) {
       const locationPattern = `%${locationSearch}%`;
-      query = query.ilike('location', locationPattern);
+      query = query.ilike('Location', locationPattern);
     }
     if (salary) {
       if (salary === '40000+') {
-        query = query.gte('salary', 40000);
+        query = query.gte('Salary', 40000);
       } else {
         const [min, max] = salary.split('-').map(Number);
-        query = query.gte('salary', min).lte('salary', max);
+        query = query.gte('Salary', min).lte('Salary', max);
       }
     }
     query = query.range(page * limit, (page + 1) * limit - 1);
@@ -197,10 +167,10 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
       data.forEach(job => {
         const jobCard = document.createElement('article');
         jobCard.className = 'job-card';
-        jobCard.onclick = () => showModal(job, currentTable);
+        jobCard.onclick = () => showModal(job);
         let jobCardContent = `
           <div class="job-info">
-            <h2 class="job-company">${highlightSearchTerm(currentTable === 'Articleship Jobs' ? job.Name : job.company, searchTerm) || 'Company Name N/A'}</h2>
+            <h2 class="job-company">${highlightSearchTerm(job.Company, searchTerm) || 'Company Name N/A'}</h2>
             <div class="job-meta">
               <span class="job-tag location-tag">
                 <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -209,17 +179,17 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 </svg>
-                ${highlightSearchTerm(currentTable === 'Articleship Jobs' ? job.Address : job.location, searchTerm) || 'Location N/A'}
-              </span>`
-              + (job.salary && currentTable !== 'Articleship Jobs' ? `
+                ${highlightSearchTerm(job.Location, searchTerm) || 'Location N/A'}
+              </span>
+              ${job.Salary ? `
                 <span class="job-tag salary-tag">
                   <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                   </svg>
-                  ₹${job.salary}
-                </span>` : '') +
-              `
+                  ₹${job.Salary}
+                </span>` : ''
+              }
             </div>
           </div>
           <div class="job-actions">
@@ -248,7 +218,6 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
     loadMoreButton.disabled = false;
   }
 }
-
 
 function isValidUrl(string) {
   try {
@@ -301,7 +270,7 @@ async function loadBanners() {
       const item = document.createElement('a');
       item.href = banner.Hyperlink;
       item.className = `carousel-item ${index === 0 ? 'active' : ''}`;
-      item.target = "_blank";
+      item.target = "_blank"; 
 
       const img = document.createElement('img');
       img.src = banner.Image;
@@ -311,13 +280,13 @@ async function loadBanners() {
       carousel.appendChild(item);
     });
 
-    slides = document.querySelectorAll('.carousel-item');
-    totalSlides = slides.length;
-    currentSlide = 0;
+    slides = document.querySelectorAll('.carousel-item'); 
+    totalSlides = slides.length; 
+    currentSlide = 0; 
 
     if (totalSlides > 0) {
-      showSlide(0);
-      setInterval(() => showSlide(currentSlide + 1), 5000);
+      showSlide(0); 
+      setInterval(() => showSlide(currentSlide + 1), 5000); 
     }
   } catch (error) {
     console.error('Error in loadBanners:', error);

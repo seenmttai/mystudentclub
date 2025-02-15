@@ -12,8 +12,8 @@
 </head>
 <body>
   <div id="access-denied" class="access-denied" style="display: none;">
-    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
     </svg>
     <h1 class="text-2xl font-bold">Access Denied</h1>
@@ -25,7 +25,7 @@
     <header class="admin-header">
       <h1>
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
             d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
         </svg>
         Admin Panel
@@ -37,7 +37,7 @@
       <section class="admin-controls">
         <h2>
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
               d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
           </svg>
           Banner Management
@@ -55,7 +55,7 @@
       <div class="search-container">
         <input type="text" id="searchInput" placeholder="Search keywords" class="search-input">
       </div>
-
+      
       <div class="filter-container">
         <input type="text" id="locationSearchInput" placeholder="Search Location" class="filter-input">
         <select id="salaryFilter" class="filter-select">
@@ -69,7 +69,7 @@
       <div class="admin-controls">
         <h2>
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
               d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
           </svg>
           Job Management
@@ -82,7 +82,7 @@
           </button>
         </div>
       </div>
-
+      
       <div id="jobs" class="job-grid"></div>
       <div class="loader" id="loader">
         <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -112,38 +112,34 @@
           <form id="job-form" class="job-form">
             <div class="form-group">
               <label class="form-label">Company</label>
-              <input type="text" name="Company" class="form-input" required placeholder="Company (for Industrial Training or Fresher Jobs)">
+              <input type="text" name="Company" class="form-input" required>
             </div>
             <div class="form-group">
-              <label class="form-label">Location / Address</label>
-              <input type="text" name="LocationOrAddress" class="form-input" required placeholder="Location (Industrial Training & Semi Qualified or Address for Articleship)">
+              <label class="form-label">Location</label>
+              <input type="text" name="Location" class="form-input" required>
             </div>
             <div class="form-group">
               <label class="form-label">Salary</label>
-              <input type="text" name="Salary" class="form-input" placeholder="Salary / Stipend (if applicable)">
+              <input type="number" name="Salary" class="form-input">
             </div>
             <div class="form-group">
-              <label class="form-label">Application</label>
-              <input type="text" name="Application" class="form-input" required placeholder="Application link or email">
+              <label class="form-label">Application ID</label>
+              <input type="text" name="Application ID" class="form-input" required>
             </div>
-            <div class="form-group">
+            <div class="form-group description-group">
               <label class="form-label">Description</label>
-              <textarea name="Description" class="form-textarea" required placeholder="Job Description"></textarea>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Categories / Category</label>
-              <input type="text" name="Category" class="form-input" placeholder="Categories (only for Industrial Training, Fresher & Semi Qualified)"/>
+              <textarea name="Description" class="form-textarea" required></textarea>
             </div>
             <div class="form-group">
               <label class="form-label">Job Type</label>
               <select name="table" class="form-input" required>
                 <option value="Industrial Training Job Portal">Industrial Training</option>
-                <option value="Fresher Jobs">Fresher Jobs</option>
-                <option value="Semi Qualified Jobs">Semi Qualified Jobs</option>
-                <option value="Articleship Jobs">Articleship Jobs</option>
+                <option value="Fresher Jobs">Fresher's</option>
+                <option value="Semi Qualified Jobs">Semi Qualified</option>
+                <option value="Articleship Jobs">Articleship</option>
               </select>
             </div>
-            <input type="hidden" name="jobId">
+            <input type="hidden" name="id">
             <button type="submit" class="admin-btn save-btn w-full">
               <span class="loading-spinner"></span>
               Save Job
@@ -164,21 +160,19 @@
         <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
         </svg>
-        <span>Fresher Jobs</span>
+        <span>Fresher's</span>
       </button>
       <button class="footer-tab" data-table="Semi Qualified Jobs">
         <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-          d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
         </svg>
         <span>Semi Qualified</span>
       </button>
       <button class="footer-tab" data-table="Articleship Jobs">
         <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
         </svg>
-        <span>Articleship Jobs</span>
+        <span>Articleship</span>
       </button>
     </nav>
   </div>

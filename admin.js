@@ -7,89 +7,155 @@ let isFetching = false;
 let page = 0;
 const limit = 12;
 let hasMoreData = true;
-let currentTable = 'Industrial Training Job Portal'; 
+let currentTable = 'Industrial Training Job Portal';
 
-function getFieldNameMap(table) {
-  if (table === 'Articleship Jobs') {
-    return {
-      'Company': 'Name',
-      'LocationOrAddress': 'Address',
-      'Application': 'Application',
-      'Description': 'Description'
-    };
+async function checkAdmin() {
+  const { data: { session }, error } = await supabaseClient.auth.getSession();
+  if (error || !session) {
+    showAccessDenied();
+    return false;
   }
-  if (table === 'Industrial Training Job Portal') {
-    return {
-      'LocationOrAddress': 'location',
-      'Description': 'description',
-      'Application': 'application',
-      'Salary': 'salary',
-      'Company': 'company',
-      'Category': 'categories'
-    };
+
+  currentUser = session.user;
+  document.getElementById('admin-content').style.display = 'block';
+  return true;
+}
+
+function showAccessDenied() {
+  document.getElementById('access-denied').style.display = 'flex';
+  document.getElementById('admin-content').style.display = 'none';
+}
+
+async function loadBanners() {
+  try {
+    const { data: banners, error } = await supabaseClient.from('Banners').select('*');
+    if (error) throw error;
+
+    const bannerEditor = document.getElementById('banner-editor');
+    bannerEditor.innerHTML = '';
+
+    banners.forEach(banner => {
+      const bannerItem = document.createElement('div');
+      bannerItem.className = 'banner-item';
+      bannerItem.innerHTML = `
+        <input type="text" class="admin-input" value="${banner.Image}" placeholder="Image URL">
+        <input type="text" class="admin-input" value="${banner.Hyperlink}" placeholder="Hyperlink">
+        <button class="icon-btn edit-icon-btn" title="Save Banner">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+          </svg>
+        </button>
+        <button class="icon-btn delete-icon-btn" title="Delete Banner">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+          </svg>
+        </button>
+      `;
+
+      // Attach event listeners
+      const editBtn = bannerItem.querySelector('.edit-icon-btn');
+      const deleteBtn = bannerItem.querySelector('.delete-icon-btn');
+      const inputs = bannerItem.querySelectorAll('.admin-input');
+
+      editBtn.addEventListener('click', async () => {
+        const [imageInput, hyperlinkInput] = inputs;
+        await updateBanner(banner.id, {
+          Image: imageInput.value,
+          Hyperlink: hyperlinkInput.value
+        });
+      });
+
+      deleteBtn.addEventListener('click', () => deleteBanner(banner.id));
+
+      bannerEditor.appendChild(bannerItem);
+    });
+  } catch (error) {
+    console.error('Error loading banners:', error);
+    alert('Failed to load banners');
   }
-  if (table === 'Semi Qualified Jobs') {
-    return {
-      'Company': 'company',
-      'Description': 'description',
-      'LocationOrAddress': 'location',
-      'Application': 'application_id',
-      'Salary': 'salary',
-      'Category': 'category'
-    };
+}
+
+window.updateBanner = async function(id, updates) {
+  try {
+    const { error } = await supabaseClient
+      .from('Banners')
+      .update(updates)
+      .eq('id', id);
+
+    if (error) throw error;
+    alert('Banner updated successfully');
+  } catch (error) {
+    console.error('Failed to update banner:', error);
+    alert('Failed to update banner: ' + error.message);
   }
-  if (table === 'Fresher Jobs') {
-    return {
-      'Company': 'Company',
-      'Description': 'Description',
-      'LocationOrAddress': 'Location',
-      'Application': 'Application ID',
-      'Salary': 'Salary',
-      'Category': 'Category'
-    };
+}
+
+window.deleteBanner = async function(id) {
+  if (!confirm('Are you sure you want to delete this banner?')) return;
+
+  try {
+    const { error } = await supabaseClient
+      .from('Banners')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+    await loadBanners();
+  } catch (error) {
+    console.error('Failed to delete banner:', error);
+    alert('Failed to delete banner: ' + error.message);
   }
-  return {};
+}
+
+window.addNewBanner = async function() {
+  try {
+    const { error } = await supabaseClient
+      .from('Banners')
+      .insert([{ 
+        Image: 'https://example.com/placeholder.jpg',
+        Hyperlink: 'https://example.com'
+      }]);
+
+    if (error) throw error;
+    await loadBanners();
+  } catch (error) {
+    console.error('Failed to add banner:', error);
+    alert('Failed to add banner: ' + error.message);
+  }
+}
+
+window.showAddJobModal = function() {
+  const modal = document.getElementById('job-edit-modal');
+  document.getElementById('job-edit-title').textContent = 'Add New Job';
+  document.getElementById('job-form').reset();
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+window.closeJobEditModal = function() {
+  document.getElementById('job-edit-modal').style.display = 'none';
+  document.body.style.overflow = 'auto';
 }
 
 async function showEditJobModal(job) {
   const modal = document.getElementById('job-edit-modal');
   const form = document.getElementById('job-form');
-  form.reset();
-  document.getElementById('job-edit-title').textContent = `Edit ${currentTable.replace(' Jobs', '')} Job`;
   
-  if (currentTable === 'Articleship Jobs') {
-    form.elements['Company'].value = job.Name || '';
-    form.elements['LocationOrAddress'].value = job.Address || '';
-    form.elements['Application'].value = job.Application || '';
-    form.elements['Description'].value = job.Description || '';
-  } else if (currentTable === 'Industrial Training Job Portal') {
-    form.elements['Company'].value = job.company || '';
-    form.elements['LocationOrAddress'].value = job.location || '';
-    form.elements['Application'].value = job.application || '';
-    form.elements['Description'].value = job.description || '';
-    form.elements['Salary'].value = job.salary || '';
-    form.elements['Category'].value = job.categories || '';
-  } else if (currentTable === 'Semi Qualified Jobs') {
-    form.elements['Company'].value = job.company || '';
-    form.elements['LocationOrAddress'].value = job.location || '';
-    form.elements['Application'].value = job.application_id || '';
-    form.elements['Description'].value = job.description || ''; 
-    form.elements['Salary'].value = job.salary || '';
-    form.elements['Category'].value = job.category || '';
-  } else if (currentTable === 'Fresher Jobs') {
-    form.elements['Company'].value = job.Company || '';
-    form.elements['LocationOrAddress'].value = job.Location || '';
-    form.elements['Application'].value = job["Application ID"] || '';
-    form.elements['Description'].value = job.Description || '';
-    form.elements['Salary'].value = job.Salary || '';
-    form.elements['Category'].value = job.Category || '';
-  }
-  form.elements['jobId'].value = job.id || '';
+  form.reset();
+  document.getElementById('job-edit-title').textContent = 'Edit Job';
+  
+  Object.keys(job).forEach(field => {
+    const input = form.elements[field];
+    if (input) input.value = job[field];
+  });
   
   const tableSelect = form.elements['table'];
   if (tableSelect) {
     tableSelect.value = currentTable;
   }
+  
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
@@ -101,6 +167,7 @@ async function getJobById(id, table) {
       .select('*')
       .eq('id', id)
       .single();
+
     if (error) throw error;
     return data;
   } catch (error) {
@@ -111,32 +178,11 @@ async function getJobById(id, table) {
 }
 
 function renderJobCard(job, table) {
-  const isArticleship = table === 'Articleship Jobs';
-  let companyName = '';
-  let jobLocation = '';
-  let jobSalary = '';
-  if (isArticleship) {
-    companyName = job.Name || 'Company Name N/A';
-    jobLocation = job.Address || 'Location N/A';
-  } else if (table === 'Industrial Training Job Portal') {
-    companyName = job.company || 'Company Name N/A';
-    jobLocation = job.location || 'Location N/A';
-    jobSalary = job.salary;
-  } else if (table === 'Semi Qualified Jobs') {
-    companyName = job.company || 'Company Name N/A';
-    jobLocation = job.location || 'Location N/A';
-    jobSalary = job.salary;
-  } else if (table === 'Fresher Jobs') {
-    companyName = job.Company || 'Company Name N/A';
-    jobLocation = job.Location || 'Location N/A';
-    jobSalary = job.Salary;
-  }
-  
   const jobCard = document.createElement('article');
   jobCard.className = 'job-card';
   jobCard.onclick = (e) => {
     if (!e.target.closest('.admin-job-actions')) {
-      window.showModal(job, table);
+      showModal(job);
     }
   };
 
@@ -144,19 +190,19 @@ function renderJobCard(job, table) {
     <div class="admin-job-actions">
       <button class="icon-btn edit-icon-btn" data-job-id="${job.id}" data-job-table="${table}" title="Edit Job">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
         </svg>
       </button>
       <button class="icon-btn delete-icon-btn" onclick="deleteJob(${job.id}, '${table}')" title="Delete Job">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
         </svg>
       </button>
     </div>
     <div class="job-info">
-      <h2 class="job-company">${companyName}</h2>
+      <h2 class="job-company">${job.Company || 'Company Name N/A'}</h2>
       <div class="job-meta">
         <span class="job-tag location-tag">
           <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,38 +211,47 @@ function renderJobCard(job, table) {
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
           </svg>
-          ${jobLocation}
+          ${job.Location || 'Location N/A'}
         </span>
-        ${jobSalary && table !== 'Articleship Jobs' ? `
+        ${job.Salary ? `
           <span class="job-tag salary-tag">
             <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
-            ₹${jobSalary}
-          </span>` : ''}
+            ₹${job.Salary}
+          </span>
+        ` : ''}
       </div>
     </div>
   `;
+
+
   const editBtn = jobCard.querySelector('.edit-icon-btn');
   editBtn.addEventListener('click', async (e) => {
     e.stopPropagation();
     const jobId = editBtn.getAttribute('data-job-id');
     const jobTable = editBtn.getAttribute('data-job-table');
-    const jobRecord = await getJobById(jobId, jobTable);
-    if (jobRecord) {
-      showEditJobModal(jobRecord);
+    const job = await getJobById(jobId, jobTable);
+    if (job) {
+      showEditJobModal(job);
     }
   });
+
   return jobCard;
 }
 
 window.deleteJob = async function(id, table) {
   if (!confirm('Are you sure you want to delete this job?')) return;
+
   try {
-    const { error } = await supabaseClient.from(table).delete().eq('id', id);
+    const { error } = await supabaseClient
+      .from(table)
+      .delete()
+      .eq('id', id);
+
     if (error) throw error;
-    fetchJobs(searchInput.value, locationSearchInput.value, salaryFilter.value);
+    location.reload();
   } catch (error) {
     console.error('Failed to delete job:', error);
     alert('Failed to delete job: ' + error.message);
@@ -206,39 +261,35 @@ window.deleteJob = async function(id, table) {
 document.getElementById('job-form').addEventListener('submit', async (e) => {
   e.preventDefault();
   const formData = new FormData(e.target);
-  const jobDataRaw = Object.fromEntries(formData.entries());
-  const table = jobDataRaw.table;
-  delete jobDataRaw.table;
-  
-  const fieldMap = getFieldNameMap(table);
-  const supabaseJobData = {};
-  for (const field in jobDataRaw) {
-    if (jobDataRaw.hasOwnProperty(field) && fieldMap[field]) {
-      supabaseJobData[fieldMap[field]] = jobDataRaw[field];
-    }
+  const jobData = Object.fromEntries(formData.entries());
+  const table = jobData.table;
+  delete jobData.table;
+
+  if (!jobData.id) {
+    delete jobData.id;
   }
-  
-  if (jobDataRaw.Salary) {
-    supabaseJobData[fieldMap['Salary']] = jobDataRaw.Salary;
-  }
-  
-  const jobId = jobDataRaw.jobId;
-  delete jobDataRaw.jobId;
+
   try {
-    if (jobId) {
-      const { error } = await supabaseClient.from(table)
-        .update(supabaseJobData)
-        .eq('id', jobId);
+    const isEdit = jobData.id;
+    if (isEdit) {
+      const id = jobData.id;
+      delete jobData.id;
+      const { error } = await supabaseClient
+        .from(table)
+        .update(jobData)
+        .eq('id', id);
+
       if (error) throw error;
-      alert(`${table.replace(' Jobs', '')} Job updated successfully`);
     } else {
-      const { error } = await supabaseClient.from(table)
-        .insert([supabaseJobData]);
+      const { error } = await supabaseClient
+        .from(table)
+        .insert([jobData]);
+
       if (error) throw error;
-      alert(`${table.replace(' Jobs', '')} Job added successfully`);
     }
+
     closeJobEditModal();
-    fetchJobs(searchInput.value, locationSearchInput.value, salaryFilter.value);
+    location.reload();
   } catch (error) {
     console.error('Error saving job:', error);
     alert('Failed to save job: ' + error.message);
@@ -248,66 +299,58 @@ document.getElementById('job-form').addEventListener('submit', async (e) => {
 async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
   if (isFetching) return;
   isFetching = true;
-  loader.style.display = 'block';
-  loadMoreButton.disabled = true;
-  document.getElementById('jobs').innerHTML = '';
+  document.getElementById('loader').style.display = 'block';
+  document.getElementById('loadMore').disabled = true;
+  
   try {
-    let query = supabaseClient.from(currentTable).select('*', { count: 'exact' });
+    let query = supabaseClient
+      .from(currentTable)
+      .select('*', { count: 'exact' });
+
     if (searchTerm) {
-      const pattern = `%${searchTerm}%`;
-      if (currentTable === 'Articleship Jobs') {
-        query = query.or(`Name.ilike.${pattern},Address.ilike.${pattern},Description.ilike.${pattern}`);
-      } else if (currentTable === 'Industrial Training Job Portal') {
-        query = query.or(`company.ilike.${pattern},location.ilike.${pattern},description.ilike.${pattern}`);
-      } else if (currentTable === 'Semi Qualified Jobs') {
-        query = query.or(`company.ilike.${pattern},location.ilike.${pattern},description.ilike.${pattern}`);
-      } else if (currentTable === 'Fresher Jobs') {
-        query = query.or(`"Company".ilike.${pattern},"Location".ilike.${pattern},"Description".ilike.${pattern}`);
-      }
+      const searchPattern = `%${searchTerm}%`;
+      query = query.or(`Company.ilike.${searchPattern},Location.ilike.${searchPattern},Description.ilike.${searchPattern}`);
     }
     if (locationSearch) {
-      const locPattern = `%${locationSearch}%`;
-      if (currentTable === 'Articleship Jobs') {
-        query = query.ilike('Address', locPattern);
-      } else if (currentTable === 'Industrial Training Job Portal') {
-        query = query.ilike('location', locPattern);
-      } else if (currentTable === 'Semi Qualified Jobs') {
-        query = query.ilike('location', locPattern);
-      } else if (currentTable === 'Fresher Jobs') {
-        query = query.ilike('Location', locPattern);
-      }
+      query = query.ilike('Location', `%${locationSearch}%`);
     }
     if (salary) {
       if (salary === '40000+') {
-        query = query.gte('salary', 40000);
+        query = query.gte('Salary', 40000);
       } else {
         const [min, max] = salary.split('-').map(Number);
-        query = query.gte('salary', min).lte('salary', max);
+        query = query.gte('Salary', min).lte('Salary', max);
       }
     }
-    query = query.range(page * limit, (page + 1) * limit - 1).order('id', { ascending: false });
-    const { data, error } = await query;
+
+    query = query.range(page * limit, (page + 1) * limit - 1);
+    const { data, error, count } = await query;
+
     if (error) throw error;
+
     if (data && data.length > 0) {
       data.forEach(job => {
-        const card = renderJobCard(job, currentTable);
-        document.getElementById('jobs').appendChild(card);
+        const jobCard = renderJobCard(job, currentTable);
+        document.getElementById('jobs').appendChild(jobCard);
       });
+
       page++;
       hasMoreData = data.length === limit;
-      loadMoreButton.style.display = hasMoreData ? 'block' : 'none';
+      document.getElementById('loadMore').style.display = hasMoreData ? 'block' : 'none';
     } else {
       hasMoreData = false;
-      loadMoreButton.style.display = 'none';
-      if (page === 0) document.getElementById('jobs').textContent = 'No jobs found.';
+      document.getElementById('loadMore').style.display = 'none';
+      if (page === 0) {
+        document.getElementById('jobs').textContent = 'No jobs found.';
+      }
     }
   } catch (error) {
     console.error('Error fetching jobs:', error);
     document.getElementById('jobs').textContent = 'Failed to load jobs. Please try again later.';
   } finally {
     isFetching = false;
-    loader.style.display = 'none';
-    loadMoreButton.disabled = false;
+    document.getElementById('loader').style.display = 'none';
+    document.getElementById('loadMore').disabled = false;
   }
 }
 
@@ -359,98 +402,3 @@ document.addEventListener('DOMContentLoaded', async () => {
     await fetchJobs();
   }
 });
-
-async function checkAdmin() {
-  const { data: { session }, error } = await supabaseClient.auth.getSession();
-  if (error || !session) {
-    showAccessDenied();
-    return false;
-  }
-  currentUser = session.user;
-  document.getElementById('admin-content').style.display = 'block';
-  return true;
-}
-
-function showAccessDenied() {
-  document.getElementById('access-denied').style.display = 'flex';
-  document.getElementById('admin-content').style.display = 'none';
-}
-
-async function loadBanners() {
-  try {
-    const { data: banners, error } = await supabaseClient.from('Banners').select('*');
-    if (error) throw error;
-    const bannerEditor = document.getElementById('banner-editor');
-    bannerEditor.innerHTML = '';
-    banners.forEach(banner => {
-      const bannerItem = document.createElement('div');
-      bannerItem.className = 'banner-item';
-      bannerItem.innerHTML = `
-        <input type="text" class="admin-input" value="${banner.Image}" placeholder="Image URL">
-        <input type="text" class="admin-input" value="${banner.Hyperlink}" placeholder="Hyperlink">
-        <button class="icon-btn edit-icon-btn" title="Save Banner">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-          </svg>
-        </button>
-        <button class="icon-btn delete-icon-btn" title="Delete Banner">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-          </svg>
-        </button>
-      `;
-      const editBtn = bannerItem.querySelector('.edit-icon-btn');
-      const deleteBtn = bannerItem.querySelector('.delete-icon-btn');
-      const inputs = bannerItem.querySelectorAll('.admin-input');
-      editBtn.addEventListener('click', async () => {
-        const [imageInput, hyperlinkInput] = inputs;
-        await updateBanner(banner.id, {
-          Image: imageInput.value,
-          Hyperlink: hyperlinkInput.value
-        });
-      });
-      deleteBtn.addEventListener('click', () => deleteBanner(banner.id));
-      bannerEditor.appendChild(bannerItem);
-    });
-  } catch (error) {
-    console.error('Error loading banners:', error);
-    alert('Failed to load banners');
-  }
-}
-
-window.updateBanner = async function(id, updates) {
-  try {
-    const { error } = await supabaseClient.from('Banners').update(updates).eq('id', id);
-    if (error) throw error;
-    alert('Banner updated successfully');
-    loadBanners();
-  } catch (error) {
-    console.error('Failed to update banner:', error);
-    alert('Failed to update banner: ' + error.message);
-  }
-}
-
-window.deleteBanner = async function(id) {
-  if (!confirm('Are you sure you want to delete this banner?')) return;
-  try {
-    const { error } = await supabaseClient.from('Banners').delete().eq('id', id);
-    if (error) throw error;
-    await loadBanners();
-  } catch (error) {
-    console.error('Failed to delete banner:', error);
-    alert('Failed to delete banner: ' + error.message);
-  }
-}
-
-window.addNewBanner = async function() {
-  try {
-    const { error } = await supabaseClient.from('Banners').insert([{ Image: 'https://via.placeholder.com/300', Hyperlink: 'https://example.com' }]);
-    if (error) throw error;
-    await loadBanners();
-  } catch (error) {
-    console.error('Failed to add banner:', error);
-    alert('Failed to add banner: ' + error.message);
-  }
-}
