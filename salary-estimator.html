@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coming Soon - My Student Club</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #f8f9fa;
+      color: #2d3436;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .gradient-bg {
+      background: linear-gradient(135deg, rgba(79,70,229,0.1) 0%, rgba(147,51,234,0.1) 100%);
+    }
+    .coming-soon-container {
+      min-height: calc(100vh - 80px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .hero-text {
+      font-size: 4rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #4f46e5, #9333ea);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: slideIn 1s ease-out;
+    }
+    .sub-text {
+      font-size: 1.25rem;
+      color: #4b5563;
+      margin-top: 1.5rem;
+      animation: fadeIn 1s ease-out 0.5s both;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    .feature-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      transform: translateY(20px);
+      opacity: 0;
+      animation: slideUp 0.6s ease-out forwards;
+    }
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 1rem;
+      color: #4f46e5;
+    }
+    .feature-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+    }
+    .feature-description {
+      color: #6b7280;
+      line-height: 1.6;
+    }
+    .notification-form {
+      margin-top: 3rem;
+      animation: fadeIn 1s ease-out 1s both;
+    }
+    .email-input {
+      width: 100%;
+      max-width: 400px;
+      padding: 1rem 1.5rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 0.75rem;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+    .email-input:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    .notify-btn {
+      background: #4f46e5;
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 0.75rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-left: 1rem;
+    }
+    .notify-btn:hover {
+      background: #4338ca;
+      transform: translateY(-2px);
+    }
+    @keyframes slideIn {
+      from {
+        transform: translateX(-100px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes slideUp {
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    .feature-card:nth-child(1) { animation-delay: 0.2s; }
+    .feature-card:nth-child(2) { animation-delay: 0.4s; }
+    .feature-card:nth-child(3) { animation-delay: 0.6s; }
+    @media (max-width: 768px) {
+      .hero-text {
+        font-size: 2.5rem;
+      }
+      .sub-text {
+        font-size: 1.1rem;
+      }
+      .notification-form {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .notify-btn {
+        margin: 1rem 0 0 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="gradient-bg">
+    <div class="coming-soon-container">
+      <div class="content-wrapper">
+        <h1 class="hero-text">Salary Estimator<br>is Coming Soon</h1>
+        <p class="sub-text">We're working hard to bring you something extraordinary. Stay tuned!</p>
+        
+        <div class="feature-grid">
+          <div class="feature-card">
+            <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+            </svg>
+            <h3 class="feature-title">Lightning Fast</h3>
+          </div>
+          
+          <div class="feature-card">
+            <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v2m0-2h2m-2 0H8m10-8a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+            <h3 class="feature-title">Smart Features</h3>
+          </div>
+          
+          <div class="feature-card">
+            <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+            </svg>
+            <h3 class="feature-title">Community Driven</h3>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</body>
+</html>
