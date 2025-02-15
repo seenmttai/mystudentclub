@@ -35,8 +35,8 @@ menuCloseBtn.addEventListener('click', () => {
 });
 
 let currentSlide = 0;
-let slides = []; 
-let totalSlides = 0; 
+let slides = [];
+let totalSlides = 0;
 
 function showSlide(index) {
   if (!slides || slides.length === 0) {
@@ -61,8 +61,8 @@ nextSlide.addEventListener('click', () => {
 });
 
 document.addEventListener('click', (event) => {
-  if (!expandedMenu.contains(event.target) && 
-      !menuButton.contains(event.target) && 
+  if (!expandedMenu.contains(event.target) &&
+      !menuButton.contains(event.target) &&
       expandedMenu.classList.contains('active')) {
     expandedMenu.classList.remove('active');
   }
