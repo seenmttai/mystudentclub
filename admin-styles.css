@@ -1,511 +1,511 @@
 :root {
-    --primary: #4f46e5;
-    --primary-hover: #4338ca;
-    --danger: #dc2626;
-    --danger-hover: #b91c1c;
-    --success: #059669;
-    --success-hover: #047857;
-    --background: #f8fafc;
-    --surface: #ffffff;
-    --text-primary: #1e293b;
-    --text-secondary: #64748b;
-    --border: #e2e8f0;
-    --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
-  }
-  
-  body {
-    background: var(--background);
-    color: var(--text-primary);
-  }
-  
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --danger: #dc2626;
+  --danger-hover: #b91c1c;
+  --success: #059669;
+  --success-hover: #047857;
+  --background: #f8fafc;
+  --surface: #ffffff;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --border: #e2e8f0;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+}
+
+body {
+  background: var(--background);
+  color: var(--text-primary);
+}
+
+.admin-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-header h1 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-badge {
+  background: var(--primary);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.admin-controls {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1.5rem auto;
+  box-shadow: var(--shadow-sm);
+  max-width: 1200px;
+  transition: box-shadow 0.3s ease;
+  position: relative;
+  padding-bottom: 4rem;
+}
+
+.admin-controls:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.admin-controls h2 {
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.banner-editor {
+  display: grid;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.banner-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 1rem;
+  background: var(--background);
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s ease;
+}
+
+.banner-item:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
+}
+
+.admin-input {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  background: var(--surface);
+  color: var(--text-primary);
+  width: 100%;
+}
+
+.admin-input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  outline: none;
+}
+
+.admin-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.admin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.admin-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.save-btn {
+  background: var(--primary);
+  color: white;
+}
+
+.save-btn:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.delete-btn {
+  background: var(--danger);
+  color: white;
+}
+
+.delete-btn:hover {
+  background: var(--danger-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.add-btn {
+  background: var(--success);
+  color: white;
+}
+
+.add-btn:hover {
+  background: var(--success-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+.icon-btn svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.add-button-container {
+  display: flex;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+
+.add-icon-btn {
+  color: var(--success);
+  padding: 1rem;
+  background: rgba(5, 150, 105, 0.1);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.add-icon-btn:hover {
+  background: rgba(5, 150, 105, 0.2);
+  transform: scale(1.1);
+}
+
+.add-icon-btn svg {
+  width: 2rem;
+  height: 2rem;
+}
+
+.edit-icon-btn {
+  color: var(--primary);
+}
+
+.edit-icon-btn:hover {
+  background: rgba(79, 70, 229, 0.1);
+}
+
+.delete-icon-btn {
+  color: var(--danger);
+}
+
+.delete-icon-btn:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.admin-controls .add-icon-btn {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.job-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem auto;
+  max-width: 1200px;
+  padding: 0 1rem;
+}
+
+.job-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.job-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--primary);
+}
+
+.admin-job-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.modal-overlay {
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  padding: 1rem;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.job-edit-modal {
+  background: var(--surface);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+.modal-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.modal-inner {
+  padding: 1.5rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.form-input, .form-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  background: var(--surface);
+}
+
+.form-input:focus, .form-textarea:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+  outline: none;
+}
+
+.form-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: color 0.2s ease;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.modal-close:hover {
+  color: var(--text-primary);
+  background: var(--background);
+}
+
+.access-denied {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--background);
+  gap: 1.5rem;
+  text-align: center;
+  padding: 2rem;
+}
+
+.access-denied svg {
+  width: 80px;
+  height: 80px;
+  color: var(--danger);
+}
+
+.loading-spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+  margin-right: 0.5rem;
+  display: none;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading .loading-spinner {
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
   .admin-header {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 1rem 2rem;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: var(--shadow-sm);
-  }
-  
-  .admin-header h1 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .admin-badge {
-    background: var(--primary);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-  }
-  
-  .admin-controls {
-    background: var(--surface);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin: 1.5rem auto;
-    box-shadow: var(--shadow-sm);
-    max-width: 1200px;
-    transition: box-shadow 0.3s ease;
-    position: relative;
-    padding-bottom: 4rem;
-  }
-  
-  .admin-controls:hover {
-    box-shadow: var(--shadow-md);
-  }
-  
-  .admin-controls h2 {
-    color: var(--text-primary);
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .banner-editor {
-    display: grid;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .banner-item {
-    display: grid;
-    grid-template-columns: 1fr 1fr auto auto;
-    gap: 0.75rem;
-    align-items: center;
     padding: 1rem;
-    background: var(--background);
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    transition: all 0.2s ease;
-  }
-  
-  .banner-item:hover {
-    box-shadow: var(--shadow-md);
-    border-color: var(--primary);
-  }
-  
-  .admin-input {
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 0.875rem;
-    transition: all 0.2s ease;
-    background: var(--surface);
-    color: var(--text-primary);
-    width: 100%;
-  }
-  
-  .admin-input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-    outline: none;
-  }
-  
-  .admin-input::placeholder {
-    color: var(--text-secondary);
-  }
-  
-  .admin-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
     gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
-    border-radius: 8px;
-    font-weight: 500;
-    font-size: 0.875rem;
-    transition: all 0.2s ease;
-    border: none;
-    cursor: pointer;
-    white-space: nowrap;
+    text-align: center;
   }
-  
-  .admin-btn svg {
+
+  .icon-btn {
+    padding: 0.5rem;
+  }
+
+  .icon-btn svg {
     width: 1.25rem;
     height: 1.25rem;
   }
-  
-  .save-btn {
-    background: var(--primary);
-    color: white;
-  }
-  
-  .save-btn:hover {
-    background: var(--primary-hover);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-  }
-  
-  .delete-btn {
-    background: var(--danger);
-    color: white;
-  }
-  
-  .delete-btn:hover {
-    background: var(--danger-hover);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-  }
-  
-  .add-btn {
-    background: var(--success);
-    color: white;
-  }
-  
-  .add-btn:hover {
-    background: var(--success-hover);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
-  }
-  
-  .icon-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0.75rem;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    background: transparent;
-  }
-  
-  .icon-btn svg {
-    width: 1.5rem;
-    height: 1.5rem;
-  }
-  
-  .add-button-container {
-    display: flex;
-    justify-content: center;
-    margin: 1.5rem 0;
-  }
-  
+
   .add-icon-btn {
-    color: var(--success);
-    padding: 1rem;
-    background: rgba(5, 150, 105, 0.1);
-    border-radius: 12px;
-    transition: all 0.3s ease;
+    padding: 0.75rem;
   }
-  
-  .add-icon-btn:hover {
-    background: rgba(5, 150, 105, 0.2);
-    transform: scale(1.1);
-  }
-  
+
   .add-icon-btn svg {
-    width: 2rem;
-    height: 2rem;
+    width: 1.75rem;
+    height: 1.75rem;
   }
-  
-  .edit-icon-btn {
-    color: var(--primary);
+
+  .banner-item {
+    grid-template-columns: 1fr auto auto;
+    gap: 0.5rem;
+    padding: 0.75rem;
   }
-  
-  .edit-icon-btn:hover {
-    background: rgba(79, 70, 229, 0.1);
+
+  .banner-item input:nth-child(2) {
+    grid-column: 1 / -1;
   }
-  
-  .delete-icon-btn {
-    color: var(--danger);
-  }
-  
-  .delete-icon-btn:hover {
-    background: rgba(220, 38, 38, 0.1);
-  }
-  
-  .admin-controls .add-icon-btn {
-    position: absolute;
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  
-  .job-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.5rem;
-    margin: 1.5rem auto;
-    max-width: 1200px;
-    padding: 0 1rem;
-  }
-  
-  .job-card {
-    background: var(--surface);
-    border-radius: 12px;
-    padding: 1.5rem;
-    border: 1px solid var(--border);
-    position: relative;
-    transition: all 0.2s ease;
-  }
-  
-  .job-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
-    border-color: var(--primary);
-  }
-  
+
   .admin-job-actions {
-    display: flex;
-    gap: 0.25rem;
+    position: static;
+    opacity: 1;
+    margin-top: 0.5rem;
+    justify-content: flex-end;
   }
-  
-  .modal-overlay {
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(4px);
-    padding: 1rem;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1000;
-  }
-  
+
   .job-edit-modal {
-    background: var(--surface);
-    border-radius: 16px;
-    width: 100%;
-    max-width: 800px;
-    margin: auto;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    max-height: 90vh;
+    height: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    margin: 0;
   }
-  
+
+  .modal-overlay {
+    padding: 0;
+  }
+
   .modal-header {
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--surface);
-    position: sticky;
-    top: 0;
-    z-index: 10;
+    padding: 1rem;
   }
-  
+
   .modal-inner {
-    padding: 1.5rem;
-    overflow-y: auto;
-    flex: 1;
+    padding: 1rem;
   }
-  
+
   .form-group {
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
   }
-  
-  .form-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-primary);
-  }
-  
+
   .form-input, .form-textarea {
-    width: 100%;
-    padding: 0.75rem 1rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 0.875rem;
-    transition: all 0.2s ease;
-    background: var(--surface);
+    font-size: 16px; 
   }
-  
-  .form-input:focus, .form-textarea:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-    outline: none;
+
+  .job-form {
+    padding-bottom: 1rem;
   }
-  
-  .form-textarea {
-    min-height: 120px;
-    resize: vertical;
+}
+
+@media (max-width: 480px) {
+  .admin-header h1 {
+    font-size: 1.125rem;
   }
-  
-  .modal-close {
-    background: transparent;
-    border: none;
-    padding: 0.5rem;
-    cursor: pointer;
-    color: var(--text-secondary);
-    transition: color 0.2s ease;
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
+
+  .admin-controls {
+    padding: 1rem;
+    margin: 1rem;
   }
-  
-  .modal-close:hover {
-    color: var(--text-primary);
-    background: var(--background);
+
+  .banner-item {
+    grid-template-columns: 1fr auto auto;
+    padding: 0.75rem;
   }
-  
-  .access-denied {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: var(--background);
-    gap: 1.5rem;
-    text-align: center;
-    padding: 2rem;
+
+  .icon-btn {
+    padding: 0.375rem;
   }
-  
-  .access-denied svg {
-    width: 80px;
-    height: 80px;
-    color: var(--danger);
+
+  .icon-btn svg {
+    width: 1rem;
+    height: 1rem;
   }
-  
-  .loading-spinner {
-    width: 1.5rem;
-    height: 1.5rem;
-    border: 2px solid rgba(255,255,255,0.3);
-    border-radius: 50%;
-    border-top-color: white;
-    animation: spin 0.8s linear infinite;
-    margin-right: 0.5rem;
-    display: none;
+
+  .modal-inner {
+    padding: 1rem;
   }
-  
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-  
-  .loading .loading-spinner {
-    display: inline-block;
-  }
-  
-  @media (max-width: 768px) {
-    .admin-header {
-      padding: 1rem;
-      flex-direction: column;
-      gap: 0.5rem;
-      text-align: center;
-    }
-  
-    .icon-btn {
-      padding: 0.5rem;
-    }
-  
-    .icon-btn svg {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-  
-    .add-icon-btn {
-      padding: 0.75rem;
-    }
-  
-    .add-icon-btn svg {
-      width: 1.75rem;
-      height: 1.75rem;
-    }
-  
-    .banner-item {
-      grid-template-columns: 1fr auto auto;
-      gap: 0.5rem;
-      padding: 0.75rem;
-    }
-  
-    .banner-item input:nth-child(2) {
-      grid-column: 1 / -1;
-    }
-  
-    .admin-job-actions {
-      position: static;
-      opacity: 1;
-      margin-top: 0.5rem;
-      justify-content: flex-end;
-    }
-  
-    .job-edit-modal {
-      height: 100%;
-      max-height: 100%;
-      border-radius: 0;
-      margin: 0;
-    }
-  
-    .modal-overlay {
-      padding: 0;
-    }
-  
-    .modal-header {
-      padding: 1rem;
-    }
-  
-    .modal-inner {
-      padding: 1rem;
-    }
-  
-    .form-group {
-      margin-bottom: 1rem;
-    }
-  
-    .form-input, .form-textarea {
-      font-size: 16px; 
-    }
-  
-    .job-form {
-      padding-bottom: 1rem;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .admin-header h1 {
-      font-size: 1.125rem;
-    }
-  
-    .admin-controls {
-      padding: 1rem;
-      margin: 1rem;
-    }
-  
-    .banner-item {
-      grid-template-columns: 1fr auto auto;
-      padding: 0.75rem;
-    }
-  
-    .icon-btn {
-      padding: 0.375rem;
-    }
-  
-    .icon-btn svg {
-      width: 1rem;
-      height: 1rem;
-    }
-  
-    .modal-inner {
-      padding: 1rem;
-    }
-  }
+}
