@@ -130,7 +130,7 @@ window.showAddJobModal = function() {
   const modal = document.getElementById('job-edit-modal');
   document.getElementById('job-edit-title').textContent = 'Add New Job';
   document.getElementById('job-form').reset();
-  document.getElementById('job-form').querySelector('#salary-group').style.display = currentTable === 'Articleship Jobs' ? 'none' : 'block';
+  document.getElementById('job-form').querySelector('[name="Salary"]').parentElement.style.display = currentTable === 'Articleship Jobs' ? 'none' : 'block';
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
@@ -145,20 +145,37 @@ async function showEditJobModal(job) {
   const form = document.getElementById('job-form');
   form.reset();
   document.getElementById('job-edit-title').textContent = `Edit ${currentTable.replace(' Jobs', '')} Job`;
-  document.getElementById('job-form').querySelector('#salary-group').style.display = currentTable === 'Articleship Jobs' ? 'none' : 'block';
+  document.getElementById('job-form').querySelector('[name="Salary"]').parentElement.style.display = currentTable === 'Articleship Jobs' ? 'none' : 'block';
 
-  if (currentTable === 'Articleship Jobs') {
+  switch (currentTable) {
+    case 'Articleship Jobs':
       form.elements['Company'].value = job.Name || '';
       form.elements['Address'].value = job.Address || '';
       form.elements['Application ID'].value = job.Application || '';
       form.elements['Description'].value = job.Description || '';
-      form.elements['Salary'].value = null;
-  } else {
+      form.elements['Salary'].value = '';
+      break;
+    case 'Industrial Training Job Portal':
       form.elements['Company'].value = job.company || '';
-      form.elements['Location'].value = job.location || '';
+      form.elements['Address'].value = job.location || '';
       form.elements['Salary'].value = job.salary || '';
       form.elements['Application ID'].value = job.application || '';
       form.elements['Description'].value = job.description || '';
+      break;
+    case 'Semi Qualified Jobs':
+      form.elements['Company'].value = job.company || '';
+      form.elements['Address'].value = job.location || '';
+      form.elements['Salary'].value = job.salary || '';
+      form.elements['Application ID'].value = job.application_id || '';
+      form.elements['Description'].value = job.description || '';
+      break;
+    case 'Fresher Jobs':
+      form.elements['Company'].value = job.Company || '';
+      form.elements['Address'].value = job.Location || '';
+      form.elements['Salary'].value = job.Salary || '';
+      form.elements['Application ID'].value = job['Application ID'] || '';
+      form.elements['Description'].value = job.Description || '';
+      break;
   }
 
   form.elements['jobId'].value = job.id;
@@ -172,10 +189,41 @@ async function showEditJobModal(job) {
 }
 
 function getFieldNameMap(table) {
-    if (table === 'Articleship Jobs') {
-        return { 'Company': 'Name', 'Address': 'Address', 'Application ID': 'Application', 'Description': 'Description' };
-    }
-    return { 'Company': 'company', 'Location': 'location', 'Salary': 'salary', 'Application ID': 'application', 'Description': 'description' };
+  switch (table) {
+    case 'Articleship Jobs':
+      return {
+        'Company': 'Name',
+        'Address': 'Address',
+        'Application ID': 'Application',
+        'Description': 'Description'
+      };
+    case 'Industrial Training Job Portal':
+      return {
+        'Company': 'company',
+        'Address': 'location',
+        'Salary': 'salary',
+        'Application ID': 'application',
+        'Description': 'description'
+      };
+    case 'Semi Qualified Jobs':
+      return {
+        'Company': 'company',
+        'Address': 'location',
+        'Salary': 'salary',
+        'Application ID': 'application_id',
+        'Description': 'description'
+      };
+    case 'Fresher Jobs':
+      return {
+        'Company': 'Company',
+        'Address': 'Location',
+        'Salary': 'Salary',
+        'Application ID': 'Application ID',
+        'Description': 'Description'
+      };
+    default:
+      return {};
+  }
 }
 
 async function getJobById(id, table) {
@@ -197,16 +245,30 @@ async function getJobById(id, table) {
 
 function renderJobCard(job, table) {
   const isArticleship = table === 'Articleship Jobs';
-  const companyName = isArticleship ? job.Name || 'Company Name N/A' : job.company || 'Company Name N/A';
-  const jobLocation = isArticleship ? job.Address || 'Location N/A' : job.location || 'Location N/A';
-  const jobSalary = job.salary;
+  const isFreshers = table === 'Fresher Jobs';
+  
+  let companyName, jobLocation, jobSalary, jobApplication;
+  
+  if (isArticleship) {
+    companyName = job.Name || 'Company Name N/A';
+    jobLocation = job.Address || 'Location N/A';
+    jobApplication = job.Application;
+  } else if (isFreshers) {
+    companyName = job.Company || 'Company Name N/A';
+    jobLocation = job.Location || 'Location N/A';
+    jobSalary = job.Salary;
+    jobApplication = job['Application ID'];
+  } else {
+    companyName = job.company || 'Company Name N/A';
+    jobLocation = job.location || 'Location N/A';
+    jobSalary = job.salary;
+    jobApplication = table === 'Semi Qualified Jobs' ? job.application_id : job.application;
+  }
 
   const jobCard = document.createElement('article');
   jobCard.className = 'job-card';
   jobCard.onclick = (e) => {
     if (!e.target.closest('.admin-job-actions')) {
-      // Assuming showModal is defined in the main script and accessible.
-      // If not, you'll need to adapt this part.
       window.showModal(job, table);
     }
   };
@@ -300,7 +362,6 @@ document.getElementById('job-form').addEventListener('submit', async (e) => {
         supabaseJobData.salary = jobData.Salary;
     }
 
-
   const jobId = jobData.jobId;
   delete jobData.jobId;
 
@@ -346,21 +407,39 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
 
     if (searchTerm) {
       const searchPattern = `%${searchTerm}%`;
-      if (currentTable === 'Articleship Jobs') {
-        query = query.or(`Name.ilike.${searchPattern},Address.ilike.${searchPattern},Description.ilike.${searchPattern}`);
-      } else {
-        query = query.or(`company.ilike.${searchPattern},location.ilike.${searchPattern},description.ilike.${searchPattern}`);
+      switch (currentTable) {
+        case 'Articleship Jobs':
+          query = query.or(`Name.ilike.${searchPattern},Address.ilike.${searchPattern},Description.ilike.${searchPattern}`);
+          break;
+        case 'Industrial Training Job Portal':
+          query = query.or(`company.ilike.${searchPattern},location.ilike.${searchPattern},description.ilike.${searchPattern}`);
+          break;
+        case 'Semi Qualified Jobs':
+          query = query.or(`company.ilike.${searchPattern},location.ilike.${searchPattern},description.ilike.${searchPattern}`);
+          break;
+        case 'Fresher Jobs':
+          query = query.or(`Company.ilike.${searchPattern},Location.ilike.${searchPattern},Description.ilike.${searchPattern}`);
+          break;
       }
     }
+
     if (locationSearch) {
       const locationPattern = `%${locationSearch}%`;
-      if (currentTable === 'Articleship Jobs') {
-        query = query.ilike('Address', locationPattern);
-      } else {
-        query = query.ilike('location', locationPattern);
+      switch (currentTable) {
+        case 'Articleship Jobs':
+          query = query.ilike('Address', locationPattern);
+          break;
+        case 'Industrial Training Job Portal':
+        case 'Semi Qualified Jobs':
+          query = query.ilike('location', locationPattern);
+          break;
+        case 'Fresher Jobs':
+          query = query.ilike('Location', locationPattern);
+          break;
       }
     }
-    if (salary) {
+
+    if (salary && currentTable !== 'Articleship Jobs') {
       if (salary === '40000+') {
         query = query.gte('salary', 40000);
       } else {
@@ -438,7 +517,7 @@ document.querySelectorAll('.footer-tab').forEach(tab => {
     hasMoreData = true;
     loadMoreButton.style.display = 'none';
     fetchJobs(searchInput.value, locationSearchInput.value, salaryFilter.value);
-    document.getElementById('job-form').querySelector('#salary-group').style.display = currentTable === 'Articleship Jobs' ? 'none' : 'block';
+    document.getElementById('job-form').querySelector('[name="Salary"]').parentElement.style.display = currentTable === 'Articleship Jobs' ? 'none' : 'block';
 
   });
 });
