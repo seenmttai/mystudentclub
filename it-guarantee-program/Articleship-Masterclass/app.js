@@ -1,10 +1,11 @@
 const generateData = () => {
+    const baseURL = "https://mystudentclub.pages.dev/assets/";
     const students = [
       {
         name: "Nandana Krishnadas",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/nandana-krishnadas-120247318/",
-        image: "https://mystudentclub.pages.dev/assets/Nandana.jpg",
+        image: baseURL + "Nandana.jpg",
         company: "Amazon",
         salary: "70000"
       },
@@ -12,7 +13,7 @@ const generateData = () => {
         name: "Abhishek Puranik",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/abhishek-puranik221b/",
-        image: "https://mystudentclub.pages.dev/assets/Abhishek-Puranik.jpg",
+        image: baseURL + "Abhishek-Puranik.jpg",
         company: "BPCL",
         salary: "18000"
       },
@@ -20,7 +21,7 @@ const generateData = () => {
         name: "NSR Varma",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/varmansr/",
-        image: "https://mystudentclub.pages.dev/assets/NSR-Varma.jpg",
+        image: baseURL + "NSR-Varma.jpg",
         company: "Alivira",
         salary: "20000"
       },
@@ -28,7 +29,7 @@ const generateData = () => {
         name: "Harsh Yadav",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/fcaharshyadav/",
-        image: "https://mystudentclub.pages.dev/assets/Harsh-Yadav.jpg",
+        image: baseURL + "Harsh-Yadav.jpg",
         company: "Avery Dennison",
         salary: "30000"
       },
@@ -36,7 +37,7 @@ const generateData = () => {
         name: "Muskan Chawla",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/muskan-chawla-b994152a9/",
-        image: "https://mystudentclub.pages.dev/assets/Muskan-Chawla.jpg",
+        image: baseURL + "Muskan-Chawla.jpg",
         company: "Whitewater Advisory",
         salary: "30000"
       },
@@ -44,7 +45,7 @@ const generateData = () => {
         name: "P Hritish Kumar",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/hritishkumar/",
-        image: "https://mystudentclub.pages.dev/assets/Hritish.jpg",
+        image: baseURL + "Hritish.jpg",
         company: "DLF",
         salary: "25000"
       },
@@ -52,7 +53,7 @@ const generateData = () => {
         name: "Aakanksha Lolge",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/aakankshalolge/",
-        image: "https://mystudentclub.pages.dev/assets/Aakanksha-Lolge.jpg",
+        image: baseURL + "Aakanksha-Lolge.jpg",
         company: "BPCL",
         salary: "18000"
       },
@@ -60,7 +61,7 @@ const generateData = () => {
         name: "Harinee Selvam",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/harinee-selvam-a03416204/",
-        image: "https://mystudentclub.pages.dev/assets/Harinee-Selvam.jpg",
+        image: baseURL + "Harinee-Selvam.jpg",
         company: "Flipkart",
         salary: "40200"
       },
@@ -68,7 +69,7 @@ const generateData = () => {
         name: "Pratik Ulhas Naik",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/naik-pratik/",
-        image: "https://mystudentclub.pages.dev/assets/Pratik-Naik-Protiviti.jpg",
+        image: baseURL + "Pratik-Naik-Protiviti.jpg",
         company: "Protiviti",
         salary: "35000"
       },
@@ -76,7 +77,7 @@ const generateData = () => {
         name: "Stephen DCosta",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/stephensn6/",
-        image: "https://mystudentclub.pages.dev/assets/Stephen.jpg",
+        image: baseURL + "Stephen.jpg",
         company: "UBS",
         salary: "60000"
       },
@@ -84,7 +85,7 @@ const generateData = () => {
         name: "Khushi Tejani",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/khushitejani/",
-        image: "https://mystudentclub.pages.dev/assets/Khushi-Tejani-BPCL.jpg",
+        image: baseURL + "Khushi-Tejani-BPCL.jpg",
         company: "BPCL",
         salary: "18000"
       },
@@ -92,7 +93,7 @@ const generateData = () => {
         name: "Yash Nema",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/yash-nema18/",
-        image: "https://mystudentclub.pages.dev/assets/Yash-Nema.jpg",
+        image: baseURL + "Yash-Nema.jpg",
         company: "Amazon",
         salary: "70000"
       },
@@ -100,7 +101,7 @@ const generateData = () => {
         name: "Prathmesh Randive",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/prathmesh-randive/",
-        image: "https://mystudentclub.pages.dev/assets/Prathmesh-Randive.jpg",
+        image: baseURL + "Prathmesh-Randive.jpg",
         company: "UBS",
         salary: "60000"
       },
@@ -108,7 +109,7 @@ const generateData = () => {
         name: "Vivek Vardan",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/vivek-vardhan-9a05982a1/",
-        image: "https://mystudentclub.pages.dev/assets/Vivek-Vardhan.jpg",
+        image: baseURL + "Vivek-Vardhan.jpg",
         company: "UBS",
         salary: "60000"
       },
@@ -116,7 +117,7 @@ const generateData = () => {
         name: "Vishal Jangid",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/vishall-jangid/",
-        image: "https://mystudentclub.pages.dev/assets/Vishal-Jangid.jpg",
+        image: baseURL + "Vishal-Jangid.jpg",
         company: "UBS",
         salary: "60000"
       },
@@ -124,7 +125,7 @@ const generateData = () => {
         name: "Swayam Atal",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/swayamatal/",
-        image: "https://mystudentclub.pages.dev/assets/Swayam-Atal.jpg",
+        image: baseURL + "Swayam-Atal.jpg",
         company: "Amazon",
         salary: "70000"
       },
@@ -132,7 +133,7 @@ const generateData = () => {
         name: "Siddhant Naithani",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/siddhantnaithani999/",
-        image: "https://mystudentclub.pages.dev/assets/Siddhant-Naithani.jpg",
+        image: baseURL + "Siddhant-Naithani.jpg",
         company: "Signify",
         salary: "30000"
       },
@@ -140,7 +141,7 @@ const generateData = () => {
         name: "Sanjana Sivakali",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/sanjanasivakali/",
-        image: "https://mystudentclub.pages.dev/assets/Sanjana-Sivakali.jpg",
+        image: baseURL + "Sanjana-Sivakali.jpg",
         company: "Ashok Leyland",
         salary: "25000"
       },
@@ -148,7 +149,7 @@ const generateData = () => {
         name: "Shiv Pratap Singh",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/shiv-pratap-singh-52b721222/",
-        image: "https://mystudentclub.pages.dev/assets/Shiv-Pratap-Singh.jpg",
+        image: baseURL + "Shiv-Pratap-Singh.jpg",
         company: "1MG",
         salary: "25000"
       },
@@ -156,7 +157,7 @@ const generateData = () => {
         name: "Aditi Tagalpallewar",
         course: "MSC IT Guarantee Program",
         linkedin: "https://www.linkedin.com/in/aditi-tagalpallewar/",
-        image: "https://mystudentclub.pages.dev/assets/Aditi-Tagalwellakar.jpg",
+        image: baseURL + "Aditi-Tagalwellakar.jpg",
         company: "UBS",
         salary: "60000"
       }
@@ -171,15 +172,16 @@ const generateData = () => {
     const { students } = generateData();
     const carousel = document.getElementById('studentCarousel');
   
-    const getCardWidth = () => {
-      return window.innerWidth < 768 ? 250 : 300;
-    };
+    const getCardWidth = () => (window.innerWidth < 768 ? 250 : 300);
   
     students.forEach(student => {
+      if (!student.image) return;
       const card = document.createElement('div');
       card.className = 'student-card';
       card.innerHTML = `
-        <div class="student-image" style="background-image: url('${student.image}'); background-size: cover; background-position: center;"></div>
+        <div class="student-image">
+          <img src="${student.image}" alt="${student.name}" />
+        </div>
         <h3>${student.name}</h3>
         <p>${student.course}</p>
         <p class="company-info">Placed at: <strong>${student.company}</strong> | Stipend: ₹${student.salary}</p>
@@ -212,17 +214,58 @@ const generateData = () => {
       animationId = requestAnimationFrame(animate);
     }
   
-    carousel.addEventListener('mouseenter', () => {
+    let dragging = false;
+    let startX = 0;
+    let dragDiff = 0;
+  
+    carousel.addEventListener('mousedown', (e) => {
+      dragging = true;
+      startX = e.clientX;
+      dragDiff = 0;
       cancelAnimationFrame(animationId);
     });
   
-    carousel.addEventListener('mouseleave', () => {
+    carousel.addEventListener('mousemove', (e) => {
+      if (!dragging) return;
+      dragDiff = e.clientX - startX;
+      carousel.style.transform = `translateX(${position + dragDiff}px)`;
+    });
+  
+    carousel.addEventListener('mouseup', (e) => {
+      if (!dragging) return;
+      position += dragDiff;
+      dragging = false;
+      dragDiff = 0;
       animate();
     });
   
-    window.addEventListener('resize', () => {
-      position = 0;
-      carousel.style.transform = `translateX(${position}px)`;
+    carousel.addEventListener('mouseleave', (e) => {
+      if (dragging) {
+        position += dragDiff;
+        dragging = false;
+        dragDiff = 0;
+        animate();
+      }
+    });
+    carousel.addEventListener('touchstart', (e) => {
+      dragging = true;
+      startX = e.touches[0].clientX;
+      dragDiff = 0;
+      cancelAnimationFrame(animationId);
+    });
+  
+    carousel.addEventListener('touchmove', (e) => {
+      if (!dragging) return;
+      dragDiff = e.touches[0].clientX - startX;
+      carousel.style.transform = `translateX(${position + dragDiff}px)`;
+    });
+  
+    carousel.addEventListener('touchend', (e) => {
+      if (!dragging) return;
+      position += dragDiff;
+      dragging = false;
+      dragDiff = 0;
+      animate();
     });
   
     animate();
@@ -234,17 +277,14 @@ const generateData = () => {
     function updateTimer() {
       const now = new Date();
       const target = new Date();
-      target.setHours(24, 0, 0, 0); 
-  
+      target.setHours(24, 0, 0, 0);
       if (now > target) {
         target.setDate(target.getDate() + 1);
       }
-  
       const diff = target - now;
       const hours = Math.floor(diff / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-  
       timer.textContent = `${hours}h ${minutes}m ${seconds}s`;
     }
   
@@ -301,14 +341,8 @@ const generateData = () => {
       animate();
     });
   
-    window.addEventListener('resize', () => {
-      position = 0;
-      carousel.style.transform = `translateX(${position}px)`;
-    });
-  
     let touchStart = 0;
     let touchPosition = 0;
-  
     carousel.addEventListener('touchstart', (e) => {
       touchStart = e.touches[0].clientX;
       cancelAnimationFrame(animationId);
@@ -342,5 +376,4 @@ const generateData = () => {
       const width = entry.contentRect.width;
     }
   });
-  
   resizeObserver.observe(document.body);
