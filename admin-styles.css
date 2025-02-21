@@ -86,7 +86,7 @@ body {
 
 .banner-item {
   display: grid;
-  grid-template-columns: 1fr 1fr auto auto;
+  grid-template-columns: 1fr 1fr 200px auto;
   gap: 0.75rem;
   align-items: center;
   padding: 1rem;
@@ -99,6 +99,15 @@ body {
 .banner-item:hover {
   box-shadow: var(--shadow-md);
   border-color: var(--primary);
+}
+
+.type-select {
+  min-width: 140px;
+}
+
+.banner-actions {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .admin-input {
@@ -433,13 +442,12 @@ body {
   }
 
   .banner-item {
-    grid-template-columns: 1fr auto auto;
-    gap: 0.5rem;
-    padding: 0.75rem;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
   }
 
-  .banner-item input:nth-child(2) {
-    grid-column: 1 / -1;
+  .banner-actions {
+    justify-content: flex-end;
   }
 
   .admin-job-actions {

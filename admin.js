@@ -40,30 +40,39 @@ async function loadBanners() {
       bannerItem.innerHTML = `
         <input type="text" class="admin-input" value="${banner.Image}" placeholder="Image URL">
         <input type="text" class="admin-input" value="${banner.Hyperlink}" placeholder="Hyperlink">
-        <button class="icon-btn edit-icon-btn" title="Save Banner">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-          </svg>
-        </button>
-        <button class="icon-btn delete-icon-btn" title="Delete Banner">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-          </svg>
-        </button>
+        <select class="admin-input type-select">
+          <option value="Industrial" ${banner.Type === 'Industrial' ? 'selected' : ''}>Industrial</option>
+          <option value="Freshers" ${banner.Type === 'Freshers' ? 'selected' : ''}>Freshers</option>
+          <option value="Articleship" ${banner.Type === 'Articleship' ? 'selected' : ''}>Articleship</option>
+          <option value="Semi-Qualified" ${banner.Type === 'Semi-Qualified' ? 'selected' : ''}>Semi-Qualified</option>
+          <option value="All" ${banner.Type === 'All' ? 'selected' : ''}>All</option>
+        </select>
+        <div class="banner-actions">
+          <button class="icon-btn edit-icon-btn" title="Save Banner">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </svg>
+          </button>
+          <button class="icon-btn delete-icon-btn" title="Delete Banner">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+          </button>
+        </div>
       `;
 
-      // Attach event listeners
       const editBtn = bannerItem.querySelector('.edit-icon-btn');
       const deleteBtn = bannerItem.querySelector('.delete-icon-btn');
       const inputs = bannerItem.querySelectorAll('.admin-input');
 
       editBtn.addEventListener('click', async () => {
-        const [imageInput, hyperlinkInput] = inputs;
+        const [imageInput, hyperlinkInput, typeSelect] = inputs;
         await updateBanner(banner.id, {
           Image: imageInput.value,
-          Hyperlink: hyperlinkInput.value
+          Hyperlink: hyperlinkInput.value,
+          Type: typeSelect.value
         });
       });
 
@@ -115,7 +124,8 @@ window.addNewBanner = async function() {
       .from('Banners')
       .insert([{ 
         Image: 'https://example.com/placeholder.jpg',
-        Hyperlink: 'https://example.com'
+        Hyperlink: 'https://example.com',
+        Type: 'All'
       }]);
 
     if (error) throw error;
@@ -225,7 +235,6 @@ function renderJobCard(job, table) {
       </div>
     </div>
   `;
-
 
   const editBtn = jobCard.querySelector('.edit-icon-btn');
   editBtn.addEventListener('click', async (e) => {
