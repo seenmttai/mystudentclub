@@ -3,7 +3,7 @@ const generateData = () => {
     name: `Student ${i + 1}`,
     course: "MSC IT Guarantee Program",
     linkedin: "https://linkedin.com/in/example",
-    image: `mystudentclub.pages.dev/assets/studentImage${i + 1}`
+    image: `https://mystudentclub.pages.dev/assets/studentImage${i + 1}.jpg`
   }));
 
   const companies = Array.from({ length: 35 }, (_, i) => ({
