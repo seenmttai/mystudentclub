@@ -277,8 +277,6 @@ const initializeCountdown = () => {
   setInterval(updateTimer, 1000);
 };
 
-const initializeBenefitsCarousel = () => {};
-
 const initializeTestimonials = () => {
   const testimonials = [
     {
@@ -376,9 +374,9 @@ const initializeTestimonials = () => {
   }
 
   startAutoScroll();
-  updateTestimonialsText();
+  updateTestimonialsText(); 
 
-  window.addEventListener('resize', updateTestimonialsText); 
+  window.addEventListener('resize', updateTestimonialsText);
 };
 
 document.addEventListener('DOMContentLoaded', () => {
