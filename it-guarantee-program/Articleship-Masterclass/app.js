@@ -203,7 +203,7 @@ const initializeCarousel = () => {
   });
 
   let position = 0;
-  let speed = 0.5; 
+  let speed = 1.2;
   let animationId;
   let lastTime = 0;
 

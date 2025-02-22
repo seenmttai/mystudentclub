@@ -89,16 +89,33 @@ h1 {
   text-align: center;
   box-sizing: border-box;
   margin: 0 auto;
+  color: #1a1a4b;
+}
+
+.feature.rating {
+  background: white;
+  color: #1a1a4b;
+}
+
+.feature.placement-guarantee {
+  background: white;
+  color: #1a1a4b;
+}
+
+.feature .stars {
+  color: #FFC107;
+  margin-right: 5px;
+}
+
+.feature .checkmark {
+  width: 24px;
+  height: 24px;
+  fill: #4CAF50;
 }
 
 .feature:hover {
   transform: translateY(-5px);
-}
-
-.checkmark {
-  width: 24px;
-  height: 24px;
-  fill: #4CAF50;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .stats {
