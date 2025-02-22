@@ -2,14 +2,6 @@ const generateData = () => {
   const baseURL = "https://mystudentclub.pages.dev/assets/";
   const students = [
     {
-      name: "Nandana Krishnadas",
-      course: "MSC IT Guarantee Program",
-      linkedin: "https://www.linkedin.com/in/nandana-krishnadas-120247318/",
-      image: baseURL + "Nandana.jpg",
-      company: "Amazon",
-      salary: "70000"
-    },
-    {
       name: "Abhishek Puranik",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/abhishek-puranik221b/",
@@ -32,6 +24,14 @@ const generateData = () => {
       image: baseURL + "Harsh-Yadav.jpg",
       company: "Avery Dennison",
       salary: "30000"
+    },
+    {
+      name: "Nandana Krishnadas",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/nandana-krishnadas-120247318/",
+      image: baseURL + "Nandana.jpg",
+      company: "Amazon",
+      salary: "70000"
     },
     {
       name: "Muskan Chawla",
@@ -163,9 +163,7 @@ const generateData = () => {
     }
   ];
 
-  const companies = [];
-
-  return { students, companies };
+  return { students };
 };
 
 const initializeCarousel = () => {
@@ -203,7 +201,7 @@ const initializeCarousel = () => {
   });
 
   let position = 0;
-  let speed = 1.2;
+  let speed = 2; 
   let animationId;
   let lastTime = 0;
 
@@ -281,10 +279,113 @@ const initializeCountdown = () => {
 
 const initializeBenefitsCarousel = () => {};
 
+const initializeTestimonials = () => {
+  const testimonials = [
+    {
+      text: "The MSC IT Program has been a game-changer in my journey to find CA Industrial Training. It made things super convenient by having all vacancies from platforms like Naukri, LinkedIn, and many others in one place. The batch gave students like me special attention, with priority support for IT placements. We had interactive sessions with professionals from different industries, helping me understand how each industry works and choose the best fit for myself. From CV making to mock interviews, everything was covered under one roof with valuable feedback that helped me improve. I'm truly grateful to Padam and the entire MSC team for their incredible work in helping students like us get placed.\n\nI'd highly recommend the MSC IT Program to anyone serious about pursuing Industry Training!",
+      image: "https://mystudentclub.pages.dev/assets/t1.jpg"
+    },
+    {
+      text: "The sessions were very helpful covering even the minute details.\n\nAll the tricks shared by you..as well as guidance session from guest speakers were like a cherry on the cake!!!\n\nTonnes of Thanks for the mock interview & your inputs on the CV & Cover letter!!!!\n\nAlso I really appreciate that you were always available to guide me for the profiles I was offered by various companies.",
+      image: "https://mystudentclub.pages.dev/assets/t2.jpg"
+    },
+    {
+      text: "Hi everyone I'm Pragesh one of the student who enrolled under My student club Industrial Training Guarantee Program and that too in the first batch and i'm happy to share that I've been selected by HDFC bank for IT in the ECG department. Being said that it as a step taken by me without thinking anything because i didn't had much idea about MSC at that time but trust me the kind of lectures that ere conducted by Padam during the 10-12 days period having different people each time sharing different strategies and their story made it all worth it . And the kind of support that was given after the batch by Padam made it clear ho much efforts he is trying to put behind each and every person enrolled under the batch reaching them out on call on regular basis made…",
+      image: "https://mystudentclub.pages.dev/assets/t3.jpg"
+    },
+    {
+      text: "Thanks a lot Padam for your help throughout!😇\nI would like to appreciate the way you were available to us giving guidance even on our silly doubts.\nMy students club team is really doing a great job, helping students from preparing resume, cold mailing, building connections, interview preparation to getting into industrial training!!!🥳\nThank you once again!😊",
+      image: "https://mystudentclub.pages.dev/assets/t4.jpg"
+    },
+    {
+      text: "I would like to add one more thing\nInitially I was very nervous whether i would be able to get industrial training or not\nBut after attending your sessions and talking to you over call, I was confident enough that i would get one!😊",
+      image: "https://mystudentclub.pages.dev/assets/t5.jpg"
+    },
+    {
+      text: "Hey Padam, Thanks a lot for the MSC IT Guarantee program. My resume has been shortlisted at Flipkart, Atomberg, Morris Garages, FTI Consulting and AP Moller Maersk. All the credit goes to the resume review done by you. Coming from a small-size firm in Ranchi, I had nearly zero hopes for landing IT, but after receiving such response, I feel absolutely overwhelmed. Thanks a ton!",
+      image: "https://mystudentclub.pages.dev/assets/t6.jpg"
+    },
+    {
+      text: "The MSC IT Guarantee Program by My Student Club lived upto its name. The resume and cover letter sessions were top-notch, and the one-on-one review of resume provided a personal touch which most masterclasses don't.\n\nThe curated list of hiring companies and mass mailing strategy helped me land three offers before choosing Signify. Plus, interactive sessions with industry experts who have been in the same position as us in the past provided invaluable career insights beyond just industrial training.\n\nHuge thanks to My Student Club for this incredible initiative and special mention to CA Padam Bhansali for his dedication to the CA student community.",
+      image: "https://mystudentclub.pages.dev/assets/t7.jpg"
+    },
+    {
+      text: "Good Noon Padam!\n\nThank you so much for your support and guidance on this journey!\n\nWill share this in LinkedIn and our group once I got my offer letter, the process is going...on yesterday I submitted the AC form.\n\nForever grateful to you and MSC team✨\n\nOne of my Best decisions is joining the MSC IT guarantee program💯",
+      image: "https://mystudentclub.pages.dev/assets/t8.jpg"
+    }
+  ];
+
+  const testimonialsContainer = document.querySelector('.testimonials-container');
+  const testimonialsContent = document.querySelector('.testimonials-content');
+  const prevButton = document.querySelector('.prev-button');
+  const nextButton = document.querySelector('.next-button');
+
+  let currentIndex = 0;
+  const autoScrollInterval = 5000; 
+  let autoScrollTimer;
+
+  function updateTestimonials() {
+    testimonialsContent.style.transform = `translateX(-${currentIndex * 100}%)`;
+  }
+
+  function showNextTestimonial() {
+    currentIndex = (currentIndex + 1) % testimonials.length;
+    updateTestimonials();
+  }
+
+  function showPrevTestimonial() {
+    currentIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
+    updateTestimonials();
+  }
+
+  function updateTestimonialsText() {
+    const testimonialsHeading = document.querySelector('.testimonials h2');
+    if (window.innerWidth < 400) {
+      testimonialsHeading.textContent = 'Testimonials';
+    } else {
+      testimonialsHeading.textContent = 'What Our Students Have To Say';
+    }
+  }
+
+  testimonials.forEach(testimonial => {
+    const testimonialElement = document.createElement('div');
+    testimonialElement.className = 'testimonial';
+    testimonialElement.innerHTML = `
+      <div class="mobile-frame">
+        <div class="mobile-notch"></div>
+        <img src="${testimonial.image}" alt="Testimonial" class="testimonial-image">
+      </div>
+    `;
+    testimonialsContent.appendChild(testimonialElement);
+  });
+
+  prevButton.addEventListener('click', () => {
+    showPrevTestimonial();
+    clearInterval(autoScrollTimer);
+    startAutoScroll();
+  });
+
+  nextButton.addEventListener('click', () => {
+    showNextTestimonial();
+    clearInterval(autoScrollTimer);
+    startAutoScroll();
+  });
+
+  function startAutoScroll() {
+    autoScrollTimer = setInterval(showNextTestimonial, autoScrollInterval);
+  }
+
+  startAutoScroll();
+  updateTestimonialsText();
+
+  window.addEventListener('resize', updateTestimonialsText); 
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   try {
     initializeCarousel();
     initializeCountdown();
+    initializeTestimonials();
   } catch (error) {
     console.error('Initialization error:', error);
   }

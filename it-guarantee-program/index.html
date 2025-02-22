@@ -3,13 +3,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MSC Industrial Training Guarantee Program</title>
-  <link rel="icon" type="image/png" href="https://mystudentclub.pages.dev/assets/logo_favicon_android.png">
+  <link rel="icon" type="image/png" href="https://mystudentclub.pages.dev/assets/icon-70x70.png">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="sections.css">
   <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
 </head>
 <body>
-  <div class="hero">a
+  <div class="hero">
     <div class="badge">Limited Seats Left</div>
     <h1>MSC Industrial Training<br>Guarantee Program</h1>
 
@@ -32,10 +32,14 @@
       </div>
       <div class="feature placement-guarantee">
         <svg class="checkmark" viewBox="0 0 24 24">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/>
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
         </svg>
         100% Placement Rate
       </div>
+    </div>
+
+    <div class="money-back-sticker">
+      <img src="https://mystudentclub.pages.dev/assets/money-back.png" alt="Money Back Guarantee">
     </div>
 
     <div class="stats">
@@ -49,7 +53,7 @@
         <div class="number">500+ Recruiting Organizations</div>
       </div>
       <div class="stat">
-        <div class="number">₹40000+ Average Stipend Offered</div>
+        <div class="number">₹40000 Average Stipend</div>
       </div>
     </div>
 
@@ -129,22 +133,6 @@
     </div>
   </section>
 
-  <section class="countdown">
-    <div class="section-bg">
-      <lottie-player
-        src="https://assets3.lottiefiles.com/packages/lf20_4qiecwbu.json"
-        background="transparent"
-        speed="1"
-        style="width: 100%; height: 100%;"
-        loop
-        autoplay>
-      </lottie-player>
-    </div>
-    <h2>Batch registration closes in</h2>
-    <div id="timer"></div>
-    <p class="success-metric">1000+ Students have already landed their dream opportunity</p>
-  </section>
-
   <section class="curriculum">
     <div class="section-bg">
       <lottie-player
@@ -159,7 +147,7 @@
     <h2>What will you Learn?</h2>
     <div class="days-grid">
       <div class="day-card">
-        <h3>Day 1: Understanding Roles</h3>
+        <h3>Day 1: Roles in IT</h3>
         <ul>
           <li>Understanding what different roles are</li>
           <li>Finding what suits you</li>
@@ -226,6 +214,25 @@
     </div>
   </section>
 
+  <section class="testimonials">
+    <h2>What Our <span class="highlight">Students</span> Have To Say</h2>
+    <div class="testimonials-container">
+      <div class="testimonials-content"></div>
+      <div class="nav-buttons">
+        <button class="prev-button">
+          <svg viewBox="0 0 24 24">
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+          </svg>
+        </button>
+        <button class="next-button">
+          <svg viewBox="0 0 24 24">
+            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
   <section class="mentor">
     <div class="section-bg">
       <lottie-player
@@ -239,31 +246,35 @@
     </div>
     <div class="mentor-profile">
       <div class="mentor-image">
-        <svg viewBox="0 0 100 100" class="mentor-placeholder">
-          <circle cx="50" cy="40" r="25" fill="#4CAF50"/>
-          <circle cx="50" cy="100" r="40" fill="#4CAF50"/>
-        </svg>
+        <img src="https://mystudentclub.pages.dev/assets/mentor_transparent.png" alt="CA Padam Bhansali" class="mentor-img">
       </div>
       <div class="mentor-info">
         <h2>Meet your <span class="highlight">Mentor</span></h2>
         <h3>CA Padam Bhansali</h3>
         <p class="mentor-title">Founder, My Student Club</p>
+        <p class="mentor-description">
+          CA Padam Bhansali, Founder of My Student Club, has helped thousands of CA students secure their dream Industrial Training roles in top companies for stipends upto 1.5L! He did his Industrial Training from Flipkart in Business Finance domain and has conducted 100+ guidance sessions positively impacting 10,000+ students.<br><br>
+          📩 Want to secure your dream role? Join the MSC IT Guarantee Program for priority access to top opportunities!
+        </p>
         <div class="mentor-achievements">
           <div class="achievement">Helped 100+ Companies</div>
           <div class="achievement">Placed 1000+ Students</div>
-          <div class="achievement">10000+ LinkedIn Followers</div>
+          <div class="achievement">10k+ LinkedIn Followers</div>
         </div>
       </div>
     </div>
   </section>
 
   <div class="fixed-cta">
+    <div class="timer-container">
+      <span>Registration Closes In:</span>
+      <span id="timer"></span>
+    </div>
     <div class="price">
       <span class="original">₹4,449</span>
       <span class="discounted">₹1299</span>
     </div>
     <a href="https://forms.gle/4ZR8fs7HQ79TCfTn9" class="register-btn">Enroll Now →</a>
-    <div class="discount-badge">Limited Period Discount 67% off!</div>
   </div>
 
   <script src="app.js" type="module"></script>
