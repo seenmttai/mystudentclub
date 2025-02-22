@@ -5,12 +5,20 @@
 .curriculum,
 .mentor {
   width: 100%;
-  padding: 80px 20px;
+  padding: 60px 20px;
   box-sizing: border-box;
   text-align: center;
   background: white;
   position: relative;
   overflow: hidden;
+}
+
+.pain-points {
+  padding-top: 40px;
+}
+
+.benefits {
+  padding-top: 40px;
 }
 
 .section-bg {
