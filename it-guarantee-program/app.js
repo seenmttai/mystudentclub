@@ -6,160 +6,140 @@ const generateData = () => {
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/abhishek-puranik221b/",
       image: baseURL + "Abhishek-Puranik.jpg",
-      company: "BPCL",
-      salary: "18000"
+      company: "BPCL"
     },
     {
       name: "NSR Varma",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/varmansr/",
       image: baseURL + "NSR-Varma.jpg",
-      company: "Alivira",
-      salary: "20000"
+      company: "Alivira"
     },
     {
       name: "Harsh Yadav",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/fcaharshyadav/",
       image: baseURL + "Harsh-Yadav.jpg",
-      company: "Avery Dennison",
-      salary: "30000"
+      company: "Avery Dennison"
     },
     {
       name: "Nandana Krishnadas",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/nandana-krishnadas-120247318/",
       image: baseURL + "Nandana.jpg",
-      company: "Amazon",
-      salary: "70000"
+      company: "Amazon"
     },
     {
       name: "Muskan Chawla",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/muskan-chawla-b994152a9/",
       image: baseURL + "Muskan-Chawla.jpg",
-      company: "Whitewater Advisory",
-      salary: "30000"
+      company: "Whitewater Advisory"
     },
     {
       name: "P Hritish Kumar",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/hritishkumar/",
       image: baseURL + "Hritish.jpg",
-      company: "DLF",
-      salary: "25000"
+      company: "DLF"
     },
     {
       name: "Aakanksha Lolge",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/aakankshalolge/",
       image: baseURL + "Aakanksha-Lolge.jpg",
-      company: "BPCL",
-      salary: "18000"
+      company: "BPCL"
     },
     {
       name: "Harinee Selvam",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/harinee-selvam-a03416204/",
       image: baseURL + "Harinee-Selvam.jpg",
-      company: "Flipkart",
-      salary: "40200"
+      company: "Flipkart"
     },
     {
       name: "Pratik Ulhas Naik",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/naik-pratik/",
       image: baseURL + "Pratik-Naik-Protiviti.jpg",
-      company: "Protiviti",
-      salary: "35000"
+      company: "Protiviti"
     },
     {
       name: "Stephen DCosta",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/stephensn6/",
       image: baseURL + "Stephen.jpg",
-      company: "UBS",
-      salary: "60000"
+      company: "UBS"
     },
     {
       name: "Khushi Tejani",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/khushitejani/",
       image: baseURL + "Khushi-Tejani-BPCL.jpg",
-      company: "BPCL",
-      salary: "18000"
+      company: "BPCL"
     },
     {
       name: "Yash Nema",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/yash-nema18/",
       image: baseURL + "Yash-Nema.jpg",
-      company: "Amazon",
-      salary: "70000"
+      company: "Amazon"
     },
     {
       name: "Prathmesh Randive",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/prathmesh-randive/",
       image: baseURL + "Prathmesh-Randive.jpg",
-      company: "UBS",
-      salary: "60000"
+      company: "UBS"
     },
     {
       name: "Vivek Vardan",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/vivek-vardhan-9a05982a1/",
       image: baseURL + "Vivek-Vardhan.jpg",
-      company: "UBS",
-      salary: "60000"
+      company: "UBS"
     },
     {
       name: "Vishal Jangid",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/vishall-jangid/",
       image: baseURL + "Vishal-Jangid.jpg",
-      company: "UBS",
-      salary: "60000"
+      company: "UBS"
     },
     {
       name: "Swayam Atal",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/swayamatal/",
       image: baseURL + "Swayam-Atal.jpg",
-      company: "Amazon",
-      salary: "70000"
+      company: "Amazon"
     },
     {
       name: "Siddhant Naithani",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/siddhantnaithani999/",
       image: baseURL + "Siddhant-Naithani.jpg",
-      company: "Signify",
-      salary: "30000"
+      company: "Signify"
     },
     {
       name: "Sanjana Sivakali",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/sanjanasivakali/",
       image: baseURL + "Sanjana-Sivakali.jpg",
-      company: "Ashok Leyland",
-      salary: "25000"
+      company: "Ashok Leyland"
     },
     {
       name: "Shiv Pratap Singh",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/shiv-pratap-singh-52b721222/",
       image: baseURL + "Shiv-Pratap-Singh.jpg",
-      company: "1MG",
-      salary: "25000"
+      company: "1MG"
     },
     {
       name: "Aditi Tagalpallewar",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/aditi-tagalpallewar/",
       image: baseURL + "Aditi-Tagalwellakar.jpg",
-      company: "UBS",
-      salary: "60000"
+      company: "UBS"
     }
   ];
 
@@ -183,7 +163,6 @@ const initializeCarousel = () => {
       <h3>${student.name}</h3>
       <p>${student.course}</p>
       <p class="company-info">Placed at:<br><strong>${student.company}</strong></p>
-      <p class="stipend-info">Stipend:<br><strong>₹${student.salary}</strong></p>
       <a href="${student.linkedin}" class="linkedin-button" target="_blank">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="linkedin-icon">
           <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
