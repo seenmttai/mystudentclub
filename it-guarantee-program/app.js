@@ -376,7 +376,7 @@ const initializeTestimonials = () => {
   startAutoScroll();
   updateTestimonialsText(); 
 
-  window.addEventListener('resize', updateTestimonialsText);
+  window.addEventListener('resize', updateTestimonialsText); 
 };
 
 document.addEventListener('DOMContentLoaded', () => {
