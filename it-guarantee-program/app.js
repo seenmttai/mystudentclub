@@ -312,6 +312,14 @@ const initializeTestimonials = () => {
     {
       text: "Good Noon Padam!\n\nThank you so much for your support and guidance on this journey!\n\nWill share this in LinkedIn and our group once I got my offer letter, the process is going...on yesterday I submitted the AC form.\n\nForever grateful to you and MSC team✨\n\nOne of my Best decisions is joining the MSC IT guarantee program💯",
       image: "https://mystudentclub.pages.dev/assets/t8.jpg"
+    },
+    {
+      text: "A transformative experience with MSC IT Guarantee Program! The comprehensive training, personalized guidance, and strategic approach made my Industrial Training journey seamless. From crafting a standout CV to nailing interviews, MSC supported me at every step. Highly recommended for CA students seeking quality industrial training opportunities!",
+      image: "https://mystudentclub.pages.dev/assets/t9.jpg"
+    },
+    {
+      text: "My journey with MSC IT Guarantee Program was nothing short of amazing. The program's holistic approach, expert mentorship, and extensive network helped me secure an incredible industrial training opportunity. The mock interviews, CV optimization, and industry insights were invaluable. Thank you, MSC, for turning my career aspirations into reality!",
+      image: "https://mystudentclub.pages.dev/assets/t10.jpg"
     }
   ];
 
