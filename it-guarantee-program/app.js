@@ -277,6 +277,8 @@ const initializeCountdown = () => {
   setInterval(updateTimer, 1000);
 };
 
+const initializeBenefitsCarousel = () => {};
+
 const initializeTestimonials = () => {
   const testimonials = [
     {
@@ -310,6 +312,10 @@ const initializeTestimonials = () => {
     {
       text: "Good Noon Padam!\n\nThank you so much for your support and guidance on this journey!\n\nWill share this in LinkedIn and our group once I got my offer letter, the process is going...on yesterday I submitted the AC form.\n\nForever grateful to you and MSC team✨\n\nOne of my Best decisions is joining the MSC IT guarantee program💯",
       image: "https://mystudentclub.pages.dev/assets/t8.jpg"
+    },
+    {
+      text: "The MSC IT Guarantee Program has been a transformative journey for me. From comprehensive CV preparation to strategic interview techniques, every aspect was meticulously designed. The personalized guidance and industry insights were invaluable. I'm now confidently placed in a top organization, all thanks to the dedicated support from Padam and the My Student Club team. Truly a game-changer for aspiring professionals!",
+      image: "https://mystudentclub.pages.dev/assets/t9.jpg"
     }
   ];
 

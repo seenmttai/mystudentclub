@@ -254,7 +254,6 @@ h1 {
   font-size: 22px;
   font-weight: bold;
   white-space: nowrap;
-  color: white;
 }
 
 .fixed-cta .price .original {
@@ -262,11 +261,6 @@ h1 {
   opacity: 0.7;
   margin-right: 8px;
   font-size: 0.9em;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.fixed-cta .price .discounted {
-  color: white;
 }
 
 .fixed-cta .register-btn {
@@ -288,6 +282,12 @@ h1 {
 .fixed-cta .register-btn:hover {
   transform: scale(1.05);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+}
+
+.student-card .company-info {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #555;
 }
 
 .money-back-sticker {
@@ -319,23 +319,6 @@ h1 {
   object-fit: contain;
 }
 
-.mentor-image {
-  width: 300px;
-  height: 300px;
-  overflow: hidden;
-  border-radius: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mentor-img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  display: block;
-}
-
 .mentor-profile {
   display: flex;
   flex-direction: column;
@@ -351,38 +334,57 @@ h1 {
   box-sizing: border-box;
 }
 
-@media (min-width: 992px) {
-  .mentor-profile {
-    flex-direction: row;
-    padding: 60px;
-  }
-
-  .mentor-image {
-    flex: 0 0 300px;
-  }
-
-  .mentor-info {
-    flex: 1;
-    padding-left: 40px;
-  }
-}
-
 @media (max-width: 991px) {
   .mentor-profile {
     padding: 30px;
   }
-
-  .mentor-image {
-    width: 200px;
-    margin: 0 auto;
-  }
 }
 
-@media (max-width: 350px) {
-  .mentor-image {
-    width: 200px;
-    height: 200px;
-  }
+.mentor-info {
+  flex: 1;
+}
+
+.mentor-profile h2 {
+  font-size: 36px;
+  color: #1a1a4b;
+  margin-bottom: 10px;
+}
+
+.mentor-profile h3 {
+  font-size: 24px;
+  color: #4CAF50;
+}
+
+.mentor-profile .mentor-title {
+  font-size: 18px;
+  color: #4a4a8f;
+  margin-bottom: 20px;
+}
+
+.mentor-achievements {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.mentor-achievements .achievement {
+  background: rgba(76, 175, 80, 0.1);
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  color: #1a1a4b;
+  transition: transform 0.3s ease;
+}
+
+.mentor-achievements .achievement:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
+}
+
+.mentor-image,
+.mentor-img {
+  display: none;
 }
 
 @media (max-width: 1200px) {
@@ -394,6 +396,9 @@ h1 {
   h1 {
     font-size: 48px;
   }
+}
+
+@media (max-width: 991px) {
 }
 
 @media (max-width: 768px) {
