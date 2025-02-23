@@ -312,10 +312,6 @@ const initializeTestimonials = () => {
     {
       text: "Good Noon Padam!\n\nThank you so much for your support and guidance on this journey!\n\nWill share this in LinkedIn and our group once I got my offer letter, the process is going...on yesterday I submitted the AC form.\n\nForever grateful to you and MSC team✨\n\nOne of my Best decisions is joining the MSC IT guarantee program💯",
       image: "https://mystudentclub.pages.dev/assets/t8.jpg"
-    },
-    {
-      text: "The MSC IT Guarantee Program has been a transformative journey for me. From comprehensive CV preparation to strategic interview techniques, every aspect was meticulously designed. The personalized guidance and industry insights were invaluable. I'm now confidently placed in a top organization, all thanks to the dedicated support from Padam and the My Student Club team. Truly a game-changer for aspiring professionals!",
-      image: "https://mystudentclub.pages.dev/assets/t9.jpg"
     }
   ];
 
@@ -325,7 +321,7 @@ const initializeTestimonials = () => {
   const nextButton = document.querySelector('.next-button');
 
   let currentIndex = 0;
-  const autoScrollInterval = 5000; 
+  const autoScrollInterval = 5000;
   let autoScrollTimer;
 
   function updateTestimonials() {
@@ -340,15 +336,6 @@ const initializeTestimonials = () => {
   function showPrevTestimonial() {
     currentIndex = (currentIndex - 1 + testimonials.length) % testimonials.length;
     updateTestimonials();
-  }
-
-  function updateTestimonialsText() {
-    const testimonialsHeading = document.querySelector('.testimonials h2');
-    if (window.innerWidth < 400) {
-      testimonialsHeading.textContent = 'Testimonials';
-    } else {
-      testimonialsHeading.textContent = 'What Our Students Have To Say';
-    }
   }
 
   testimonials.forEach(testimonial => {
@@ -380,9 +367,6 @@ const initializeTestimonials = () => {
   }
 
   startAutoScroll();
-  updateTestimonialsText(); 
-
-  window.addEventListener('resize', updateTestimonialsText); 
 };
 
 document.addEventListener('DOMContentLoaded', () => {
