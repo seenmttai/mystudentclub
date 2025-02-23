@@ -256,6 +256,18 @@ h1 {
   white-space: nowrap;
 }
 
+.fixed-cta .price .discounted {
+  color: white;
+  font-weight: bold;
+}
+
+.fixed-cta .price .original {
+  text-decoration: line-through;
+  opacity: 0.7;
+  margin-right: 15px;
+  color: white;
+}
+
 .fixed-cta .register-btn {
   background: white;
   color: #1a1a4b;
