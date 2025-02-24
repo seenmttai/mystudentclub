@@ -231,6 +231,8 @@ h1 {
   gap: 15px;
   flex-wrap: wrap;
   box-sizing: border-box;
+  max-width: 100vw;
+  max-height: 100vh;
 }
 
 .fixed-cta .timer-container {
@@ -440,16 +442,19 @@ h1 {
 
 @media (max-width: 768px) {
   .fixed-cta {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 8px;
     padding: 8px;
+    gap: 8px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    width: 100%;
+    box-sizing: border-box;
+    align-items: center;
   }
 
   .fixed-cta .timer-container {
     grid-column: 1;
-    grid-row: 1/3;
+    grid-row: 1 / 3;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -458,6 +463,7 @@ h1 {
 
   .fixed-cta #timer {
     font-size: 14px;
+    margin: 0;
   }
 
   .fixed-cta .price {
@@ -465,6 +471,7 @@ h1 {
     grid-row: 1;
     font-size: 16px;
     text-align: right;
+    white-space: nowrap;
   }
 
   .fixed-cta .register-btn {
@@ -472,7 +479,8 @@ h1 {
     grid-row: 2;
     padding: 8px 15px;
     font-size: 14px;
-    justify-self: end;
+    margin: 0;
+    white-space: nowrap;
   }
 }
 
@@ -539,44 +547,6 @@ h1 {
   .fixed-cta .register-btn {
     padding: 6px 12px;
     font-size: 12px;
-  }
-}
-
-@media (max-width: 480px) {
-  .fixed-cta {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
-    gap: 8px;
-    padding: 8px;
-  }
-
-  .fixed-cta .timer-container {
-    grid-column: 1;
-    grid-row: 1/3;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    font-size: 14px;
-  }
-
-  .fixed-cta #timer {
-    font-size: 14px;
-  }
-
-  .fixed-cta .price {
-    grid-column: 2;
-    grid-row: 1;
-    font-size: 16px;
-    text-align: right;
-  }
-
-  .fixed-cta .register-btn {
-    grid-column: 2;
-    grid-row: 2;
-    padding: 8px 15px;
-    font-size: 14px;
-    justify-self: end;
   }
 }
 
