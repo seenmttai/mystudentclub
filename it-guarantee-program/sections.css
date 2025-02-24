@@ -607,3 +607,23 @@
     height: 20px;
   }
 }
+
+@media(min-width:500px){
+  .mobile-testimonial-title{
+    display:none
+  }
+}
+
+@media (max-width: 500px) {
+  .testimonials h2:not(.mobile-testimonial-title) {
+    display: none;
+  }
+
+  .mobile-testimonial-title {
+    display: block;
+    text-align: center;
+    font-size: 28px;
+    color: #1a1a4b;
+    margin-bottom: 20px;
+  }
+}

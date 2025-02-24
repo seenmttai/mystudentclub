@@ -104,7 +104,7 @@ const generateData = () => {
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/vishall-jangid/",
       image: baseURL + "Vishal-Jangid.jpg",
-      company: "UBS"
+      company: "PPG Asian Paints"
     },
     {
       name: "Swayam Atal",
@@ -261,7 +261,7 @@ const initializeBenefitsCarousel = () => {};
 const initializeTestimonials = () => {
   const testimonials = [
     {
-      text: "The MSC IT Program has been a game-changer in my journey to find CA Industrial Training. It made things super convenient by having all vacancies from platforms like Naukri, LinkedIn, and many others in one place. The batch gave students like me special attention, with priority support for IT placements. We had interactive sessions with professionals from different industries, helping me understand how each industry works and choose the best fit for myself. From CV making to mock interviews, everything was covered under one roof with valuable feedback that helped me improve. I'm truly grateful to Padam and the entire MSC team for their incredible work in helping students like us get placed.\n\nI'd highly recommend the MSC IT Program to anyone serious about pursuing Industry Training!",
+      text: "The MSC IT Program has been a game-changer in my journey to find CA Industrial Training. It made things super convenient by having all vacancies from platforms like Naukri, LinkedIn, and many others in one place. The batch gave students like me special attention, with priority support for IT placements. We had interactive sessions with professionals from different industries, helping me understand how each industry works and choose the best fit for myself. From CV making to mock interviews, everything was covered under one roof with valuable feedback that helped me improve. I’m truly grateful to Padam and the entire MSC team for their incredible work in helping students like us get placed.\n\nI’d highly recommend the MSC IT Program to anyone serious about pursuing Industry Training!",
       image: "https://mystudentclub.pages.dev/assets/t1.jpg"
     },
     {
@@ -293,12 +293,24 @@ const initializeTestimonials = () => {
       image: "https://mystudentclub.pages.dev/assets/t8.jpg"
     },
     {
-      text: "A transformative experience with MSC IT Guarantee Program! The comprehensive training, personalized guidance, and strategic approach made my Industrial Training journey seamless. From crafting a standout CV to nailing interviews, MSC supported me at every step. Highly recommended for CA students seeking quality industrial training opportunities!",
-      image: "https://mystudentclub.pages.dev/assets/t9.jpg"
+      text: "A transformative experience with MSC IT Guarantee Program! The comprehensive training, personalized guidance, and strategic approach made my Industrial Training journey seamless. Highly recommended for CA students seeking quality industrial training opportunities!",
+      image: "https://mystudentclub.pages.dev/assets/t9.jpeg"
     },
     {
       text: "My journey with MSC IT Guarantee Program was nothing short of amazing. The program's holistic approach, expert mentorship, and extensive network helped me secure an incredible industrial training opportunity. The mock interviews, CV optimization, and industry insights were invaluable. Thank you, MSC, for turning my career aspirations into reality!",
-      image: "https://mystudentclub.pages.dev/assets/t10.jpg"
+      image: "https://mystudentclub.pages.dev/assets/t10.jpeg"
+    },
+    {
+      text: "MSC IT Guarantee Program exceeded all my expectations! The personalized guidance, comprehensive training, and strategic placement support were game-changers in my professional journey. I'm grateful for the invaluable insights and opportunities that helped me secure my dream industrial training.",
+      image: "https://mystudentclub.pages.dev/assets/t11.jpeg"
+    },
+    {
+      text: "The MSC IT Guarantee Program is a true career catalyst. From resume building to interview preparation, every aspect was meticulously designed to help students like me succeed. The mentorship and networking opportunities were instrumental in landing my ideal industrial training role.",
+      image: "https://mystudentclub.pages.dev/assets/t12.jpeg"
+    },
+    {
+      text: "I was struggling to find the right industrial training opportunity until I joined the MSC IT Guarantee Program. The comprehensive approach, expert guidance, and extensive support system transformed my career trajectory. Highly recommend this program to every CA student!",
+      image: "https://mystudentclub.pages.dev/assets/t13.jpeg"
     }
   ];
 
