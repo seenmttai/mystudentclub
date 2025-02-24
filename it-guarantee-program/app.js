@@ -311,6 +311,14 @@ const initializeTestimonials = () => {
     {
       text: "I was struggling to find the right industrial training opportunity until I joined the MSC IT Guarantee Program. The comprehensive approach, expert guidance, and extensive support system transformed my career trajectory. Highly recommend this program to every CA student!",
       image: "https://mystudentclub.pages.dev/assets/t13.jpeg"
+    },
+    {
+      text: "I was blown away by the level of personalized attention and the real-world insights provided through the program. Highly recommended!",
+      image: "https://mystudentclub.pages.dev/assets/t14.jpeg"
+    },
+    {
+      text: "The program not only prepared me for interviews but also helped me build a strong professional network. Truly transformative experience.",
+      image: "https://mystudentclub.pages.dev/assets/t15.jpeg"
     }
   ];
 
@@ -368,11 +376,53 @@ const initializeTestimonials = () => {
   startAutoScroll();
 };
 
+const initializeCertificate = () => {
+  const certificate = document.querySelector('.certificate-frame');
+  const container = document.querySelector('.certificate-container');
+
+  if (certificate && container) {
+    container.addEventListener('mousemove', e => {
+      if (certificate.classList.contains('rotated')) {
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+
+        const factorX = 20;
+        const factorY = 30;
+
+        const baseRotateY = -30;
+        const baseRotateX = 5;
+        const baseRotateZ = -2;
+
+        certificate.style.transform = `
+          rotateY(${baseRotateY + (x / factorX)}deg)
+          rotateX(${baseRotateX + (-y / factorY)}deg)
+          rotateZ(${baseRotateZ}deg)
+          translateZ(10px)
+        `;
+      }
+    });
+
+    container.addEventListener('mouseleave', () => {
+      if (certificate.classList.contains('rotated')) {
+        certificate.style.transform = 'rotateY(-30deg) rotateX(5deg) rotateZ(-2deg)';
+      }
+    });
+  }
+
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   try {
     initializeCarousel();
     initializeCountdown();
     initializeTestimonials();
+    initializeCertificate();
+    
+    AOS.init({
+      duration: 1000,
+      once: true
+    });
   } catch (error) {
     console.error('Initialization error:', error);
   }
