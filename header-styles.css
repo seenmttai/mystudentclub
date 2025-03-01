@@ -262,3 +262,32 @@ body {
   opacity: 1;
   transform: translateY(0);
 }
+
+.notification-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(79,70,229,0.1);
+  color: #4f46e5;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: 1rem;
+}
+
+.notification-btn:hover {
+  background: rgba(79,70,229,0.2);
+}
+
+.notification-btn.subscribed {
+  background: rgba(5,150,105,0.1);
+  color: #059669;
+}
+
+.notification-btn.subscribed:hover {
+  background: rgba(5,150,105,0.2);
+}

@@ -152,20 +152,20 @@ window.closeJobEditModal = function() {
 async function showEditJobModal(job) {
   const modal = document.getElementById('job-edit-modal');
   const form = document.getElementById('job-form');
-  
+
   form.reset();
   document.getElementById('job-edit-title').textContent = 'Edit Job';
-  
+
   Object.keys(job).forEach(field => {
     const input = form.elements[field];
     if (input) input.value = job[field];
   });
-  
+
   const tableSelect = form.elements['table'];
   if (tableSelect) {
     tableSelect.value = currentTable;
   }
-  
+
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
@@ -290,11 +290,17 @@ document.getElementById('job-form').addEventListener('submit', async (e) => {
 
       if (error) throw error;
     } else {
-      const { error } = await supabaseClient
+      const { data, error } = await supabaseClient
         .from(table)
-        .insert([jobData]);
+        .insert([jobData])
+        .select();
 
       if (error) throw error;
+
+      if (data && data.length > 0) {
+        const newJob = data[0];
+        sendNewJobNotification(newJob, table);
+      }
     }
 
     closeJobEditModal();
@@ -305,12 +311,34 @@ document.getElementById('job-form').addEventListener('submit', async (e) => {
   }
 });
 
+async function sendNewJobNotification(job, portalName) {
+  try {
+    const response = await fetch('https://msc-notify.deno.dev/notifyNewJob', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: job.id,
+        title: `New Job at ${job.Company}`,
+        portalName: portalName,
+        description: `Location: ${job.Location}, Salary: ₹${job.Salary || 'Not specified'}`
+      })
+    });
+
+    const result = await response.json();
+    console.log('Notification sent:', result);
+  } catch (error) {
+    console.error('Error sending notification:', error);
+  }
+}
+
 async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
   if (isFetching) return;
   isFetching = true;
   document.getElementById('loader').style.display = 'block';
   document.getElementById('loadMore').disabled = true;
-  
+
   try {
     let query = supabaseClient
       .from(currentTable)
@@ -318,7 +346,7 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
 
     if (searchTerm) {
       const searchPattern = `%${searchTerm}%`;
-      query = query.or(`Company.ilike.${searchPattern},Location.ilike.${searchPattern},Description.ilike.${searchPattern}`);
+      query = query.or(`Company.ilike.${searchPattern},Location.ilike.${searchPattern},Description ایlike.${searchPattern}`);
     }
     if (locationSearch) {
       query = query.ilike('Location', `%${locationSearch}%`);

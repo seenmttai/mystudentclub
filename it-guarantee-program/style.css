@@ -233,6 +233,10 @@ h1 {
   box-sizing: border-box;
   max-width: 100vw;
   max-height: 100vh;
+  transform: translateZ(0); 
+  will-change: transform; 
+  -webkit-backface-visibility: hidden; 
+  backface-visibility: hidden;
 }
 
 .fixed-cta .timer-container {

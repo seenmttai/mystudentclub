@@ -56,7 +56,95 @@ function getApplicationLink(id) { if (isValidUrl(id)) return id; let emails = id
 let currentTable = 'Industrial Training Job Portal';
 const footerTabs = document.querySelectorAll('.footer-tab');
 const opportunitiesText = document.getElementById('opportunitiesText');
-function updateOpportunitiesTextDisplay(table) { if (table === "Industrial Training Job Portal" || table === "Articleship Jobs") { opportunitiesText.style.display = 'block' } else { opportunitiesText.style.display = 'none' } }
+let fcmToken = null;
+
+function initNotifications() {
+  if ('serviceWorker' in navigator && 'PushManager' in window) {
+    navigator.serviceWorker.register('/firebase-messaging-sw.js')
+      .then(registration => {
+        console.log('Service Worker registered with scope:', registration.scope);
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyDWwcmZCb0_IjanZ1XcRTPsbg08bKei1G4",
+          authDomain: "mystudentclub.firebaseapp.com",
+          projectId: "mystudentclub",
+          storageBucket: "mystudentclub.firebasestorage.app",
+          messagingSenderId: "606394251878",
+          appId: "1:606394251878:web:27b5d66b4bb00ea6d14ba7",
+          measurementId: "G-22V6NK4GXT"
+        };
+
+        const app = firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging(app);
+
+        const subscribeButton = document.getElementById('subscribeButton');
+
+        if (localStorage.getItem('fcmToken')) {
+          subscribeButton.classList.add('subscribed');
+          subscribeButton.querySelector('span').textContent = 'Subscribed';
+        }
+
+        subscribeButton.addEventListener('click', () => {
+          subscribeToNotifications(messaging);
+        });
+      })
+      .catch(error => {
+        console.error('Service Worker registration failed:', error);
+      });
+  } else {
+    console.log('Push notifications not supported in this browser');
+  }
+}
+
+function subscribeToNotifications(messaging) {
+  Notification.requestPermission().then(permission => {
+    if (permission === 'granted') {
+      messaging.getToken({ vapidKey: 'BPYpYtKYmyJLXF1ZjrG3iEb0qTZ_3HkdvRLVSsD9L_PvfJyFoRYdNpB5JD7-kVesoGJM1SmFMqtI6HHW9rcSH8Y' })
+        .then(token => {
+          if (token) {
+            console.log('FCM Token:', token);
+            fcmToken = token;
+            localStorage.setItem('fcmToken', token);
+            registerTokenWithServer(token);
+
+            const subscribeButton = document.getElementById('subscribeButton');
+            subscribeButton.classList.add('subscribed');
+            subscribeButton.querySelector('span').textContent = 'Subscribed';
+          } else {
+            console.log('No registration token available');
+          }
+        })
+        .catch(err => console.error('Error getting token', err));
+    } else {
+      console.log('Permission not granted for notifications');
+    }
+  });
+}
+
+function registerTokenWithServer(token) {
+  fetch('https://msc-notify.deno.dev/registerToken', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token })
+  }).catch(err => console.error('Error registering token:', err));
+}
+
+function checkExistingToken() {
+  const token = localStorage.getItem('fcmToken');
+  if (token) {
+    fcmToken = token;
+    registerTokenWithServer(token);
+  }
+}
+
+function updateOpportunitiesTextDisplay(table) { 
+  if (table === "Industrial Training Job Portal" || table === "Articleship Jobs") { 
+    opportunitiesText.style.display = 'block' 
+  } else { 
+    opportunitiesText.style.display = 'none' 
+  } 
+}
+
 footerTabs.forEach(tab => {
   tab.addEventListener('click', () => {
     footerTabs.forEach(t => t.classList.remove('active'));
@@ -72,6 +160,7 @@ footerTabs.forEach(tab => {
     loadBanners(); 
   });
 });
+
 function populateSalaryFilter(table) {
   salaryFilter.innerHTML = '';
   let options = [];
@@ -93,6 +182,7 @@ function populateSalaryFilter(table) {
     salaryFilter.appendChild(o);
   });
 }
+
 async function fetchJobs(search = '', loc = '', salary = '', category = '') {
   if (isFetching) return; isFetching = true; loader.style.display = 'block'; loadMoreButton.disabled = true;
   try {
@@ -144,24 +234,28 @@ async function fetchJobs(search = '', loc = '', salary = '', category = '') {
   } catch (e) { jobsContainer.textContent = 'Failed to load jobs. Please check your connection.' }
   finally { isFetching = false; loader.style.display = 'none'; loadMoreButton.disabled = false }
 }
+
 function isValidUrl(s) { try { new URL(s); return true } catch (_) { return false } }
+
 let lastScrollY = 0;
 const header = document.querySelector('.floating-header');
 function handleScroll() { let cur = window.scrollY; if (cur > lastScrollY && cur > 100) header.classList.add('header-hidden'); else header.classList.remove('header-hidden'); lastScrollY = cur }
+
 function highlightSearchTerm(txt, term) { if (!term || !txt) return txt; let regex = new RegExp(`(${term.split(/\s+/).join('|')})`, 'gi'); return txt.replace(regex, '<span class="highlight">$&</span>') }
+
 async function loadBanners() {
   try {
     const { data: banners, error } = await supabaseClient.from('Banners').select('Image, Hyperlink, Type');
     if (error) return;
-    
+
     const carousel = document.querySelector('.carousel');
     carousel.innerHTML = '';
-    
+
     const relevantBanners = banners.filter(banner => {
       let currentType = currentTable === "Semi Qualified Jobs" ? "Semi-Qualified" :
                        currentTable === "Fresher Jobs" ? "Freshers" :
                        currentTable.split(' ')[0]; 
-      
+
       return banner.Type === 'All' || banner.Type === currentType;
     });
 
@@ -176,7 +270,7 @@ async function loadBanners() {
       a.appendChild(img); 
       carousel.appendChild(a);
     });
-    
+
     slides = document.querySelectorAll('.carousel-item');
     totalSlides = slides.length;
     currentSlide = 0;
@@ -186,9 +280,19 @@ async function loadBanners() {
     }
   } catch (e) { }
 }
+
 document.addEventListener('DOMContentLoaded', async () => {
-  const session = await checkAuth(); updateHeaderAuth(session); await loadBanners(); populateSalaryFilter(currentTable); fetchJobs(); fetchCategories(); updateOpportunitiesTextDisplay(currentTable)
+  const session = await checkAuth(); 
+  updateHeaderAuth(session); 
+  await loadBanners(); 
+  populateSalaryFilter(currentTable); 
+  fetchJobs(); 
+  fetchCategories(); 
+  updateOpportunitiesTextDisplay(currentTable);
+  initNotifications();
+  checkExistingToken();
 });
+
 export async function checkAuth() { const { data: { session } } = await supabaseClient.auth.getSession(); return session }
 export function updateHeaderAuth(session) {
   const authButtons = document.querySelector('.auth-buttons');
@@ -215,12 +319,14 @@ export function updateHeaderAuth(session) {
 }
 window.handleLogout = async () => { await supabaseClient.auth.signOut(); window.location.reload() }
 export { showModal, getApplicationLink };
+
 searchInput.addEventListener('input', (e) => { clearTimeout(timeout); timeout = setTimeout(() => { page = 0; jobsContainer.innerHTML = ''; hasMoreData = true; loadMoreButton.style.display = 'none'; fetchJobs(e.target.value, locationSearchInput.value, salaryFilter.value, categoryFilter.value) }, 300) });
 locationSearchInput.addEventListener('input', (e) => { clearTimeout(timeout); timeout = setTimeout(() => { page = 0; jobsContainer.innerHTML = ''; hasMoreData = true; loadMoreButton.style.display = 'none'; fetchJobs(searchInput.value, e.target.value, salaryFilter.value, categoryFilter.value) }, 300) });
 salaryFilter.addEventListener('change', () => { page = 0; jobsContainer.innerHTML = ''; hasMoreData = true; loadMoreButton.style.display = 'none'; fetchJobs(searchInput.value, locationSearchInput.value, salaryFilter.value, categoryFilter.value) });
 categoryFilter.addEventListener('change', () => { page = 0; jobsContainer.innerHTML = ''; hasMoreData = true; loadMoreButton.style.display = 'none'; fetchJobs(searchInput.value, locationSearchInput.value, salaryFilter.value, categoryFilter.value) });
 loadMoreButton.addEventListener('click', () => { fetchJobs(searchInput.value, locationSearchInput.value, salaryFilter.value, categoryFilter.value) });
 window.addEventListener('scroll', handleScroll);
+
 async function fetchCategories() {
   try {
     categoryFilter.innerHTML = `
