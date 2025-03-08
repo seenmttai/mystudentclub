@@ -165,6 +165,14 @@ async function loadBanners() {
       return banner.Type === 'All' || banner.Type === currentType;
     });
 
+    const bannerSection = document.querySelector('.banner-section');
+    if (relevantBanners.length === 0) {
+      bannerSection.style.display = 'none';
+      return;
+    } else {
+      bannerSection.style.display = 'block';
+    }
+
     relevantBanners.forEach((banner, i) => {
       const a = document.createElement('a');
       a.href = banner.Hyperlink;
