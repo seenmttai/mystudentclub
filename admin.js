@@ -254,12 +254,10 @@ window.deleteJob = async function(id, table) {
   if (!confirm('Are you sure you want to delete this job?')) return;
 
   try {
-    const jobId = table === 'Fresher Jobs' ? parseInt(id) : id;
-    
     const { error } = await supabaseClient
       .from(table)
       .delete()
-      .eq('id', jobId);
+      .eq('id', table === "Fresher Jobs" ? Number(id) : id.toString());
 
     if (error) throw error;
     location.reload();
