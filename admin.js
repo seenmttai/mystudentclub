@@ -274,12 +274,13 @@ document.getElementById('job-form').addEventListener('submit', async (e) => {
   const table = jobData.table;
   delete jobData.table;
 
-  if (!jobData.id) {
+  const isEdit = jobData.id && jobData.id.trim() !== '';
+  
+  if (!isEdit) {
     delete jobData.id;
   }
 
   try {
-    const isEdit = jobData.id;
     if (isEdit) {
       const id = jobData.id;
       delete jobData.id;
@@ -296,7 +297,6 @@ document.getElementById('job-form').addEventListener('submit', async (e) => {
 
       if (error) throw error;
     }
-
     closeJobEditModal();
     location.reload();
   } catch (error) {
