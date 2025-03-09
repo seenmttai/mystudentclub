@@ -149,6 +149,13 @@ window.closeJobEditModal = function() {
   document.body.style.overflow = 'auto';
 }
 
+window.closeModal = function(event) {
+  if (event && (event.target === modal || event.target.classList.contains('modal-close'))) {
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+  }
+}
+
 async function showEditJobModal(job) {
   const modal = document.getElementById('job-edit-modal');
   const form = document.getElementById('job-form');
@@ -196,6 +203,17 @@ function renderJobCard(job, table) {
     }
   };
 
+  let postedInfo = '';
+  if (job.Created_At) {
+    const daysAgo = getDaysAgo(job.Created_At);
+    postedInfo = `<span class="job-tag time-tag">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      Posted ${daysAgo}
+    </span>`;
+  }
+
   jobCard.innerHTML = `
     <div class="admin-job-actions">
       <button class="icon-btn edit-icon-btn" data-job-id="${job.id}" data-job-table="${table}" title="Edit Job">
@@ -232,6 +250,7 @@ function renderJobCard(job, table) {
             ₹${job.Salary}
           </span>
         ` : ''}
+        ${postedInfo}
       </div>
     </div>
   `;
@@ -248,6 +267,23 @@ function renderJobCard(job, table) {
   });
 
   return jobCard;
+}
+
+function getDaysAgo(timestampStr) {
+  const timestamp = new Date(timestampStr);
+  const now = new Date();
+  
+  const diffMs = now - timestamp;
+  
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  
+  if (diffDays === 0) {
+    return 'today';
+  } else if (diffDays === 1) {
+    return 'yesterday';
+  } else {
+    return `${diffDays} days ago`;
+  }
 }
 
 window.deleteJob = async function(id, table) {

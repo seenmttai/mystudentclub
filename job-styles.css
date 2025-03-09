@@ -108,6 +108,10 @@
   background: #f0fdf4;
   color: #15803d;
 }
+.time-tag {
+  background: #f0f7ff;
+  color: #1e40af;
+}
 .job-actions {
   display: flex;
   gap: 1rem;
@@ -355,6 +359,19 @@
 .footer-tab:hover {
   color: #4f46e5;
   background: rgba(79,70,229,0.05);
+}
+.job-posted {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #4b5563;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+}
+.job-posted svg {
+  width: 18px;
+  height: 18px;
+  color: #1e40af;
 }
 @media (max-width: 768px) {
   .search-container { max-width: 95%; }
