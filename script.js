@@ -168,9 +168,11 @@ async function loadBanners() {
     const bannerSection = document.querySelector('.banner-section');
     if (relevantBanners.length === 0) {
       bannerSection.style.display = 'none';
+      document.querySelector('main.container').classList.add('no-banner');
       return;
     } else {
       bannerSection.style.display = 'block';
+      document.querySelector('main.container').classList.remove('no-banner');
     }
 
     relevantBanners.forEach((banner, i) => {
