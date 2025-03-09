@@ -6,14 +6,14 @@
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://www.mystudentclub.com/style.css">
+  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="cv-reviewer-styles.css">
 </head>
 <body>
   <div class="floating-header">
     <div class="header-container">
       <a href="/" class="brand-link">
-        <img src="https://mystudentclub.pages.dev/assets/logo.png" alt="My Student Club" class="brand-logo">
+        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
       </a>
       <div class="auth-buttons">
         <a href="/login" class="auth-icon-btn">
@@ -41,19 +41,19 @@
           </svg>
           Home
         </a>
-        <a href="www.mystudentclub.com/ai-interview" class="menu-item">
+        <a href="/ai-interview" class="menu-item">
           <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
           </svg>
           AI Interview Bot
         </a>
-        <a href="www.mystudentclub.com/articleship-scorer" class="menu-item">
+        <a href="/articleship-scorer" class="menu-item">
           <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v11a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v11a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6 4l4 4m0 0l4-4"/>
           </svg>
           Articleship Scorer
         </a>
-        <a href="www.mystudentclub.com/salary-estimator" class="menu-item">
+        <a href="/salary-estimator" class="menu-item">
           <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
@@ -64,7 +64,31 @@
   </div>
 
   <main class="cv-reviewer-container">
-    <div class="upload-section" id="uploadSection">
+    <div class="contact-form-container" id="contactFormContainer">
+      <div class="contact-form-section">
+        <h2>Contact Information</h2>
+        <p>Please provide your details before analyzing your CV</p>
+        <form id="contactForm" action="https://formsubmit.co/bhansalipadam000@gmail.com" method="POST">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone Number</label>
+            <input type="tel" id="phone" name="phone" required>
+          </div>
+          <input type="hidden" name="_next" value="window.location.href">
+          <input type="hidden" name="_captcha" value="false">
+          <button type="submit" class="submit-btn">Continue to CV Analysis</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="upload-section" id="uploadSection" style="display: none;">
       <div class="upload-area" id="dropArea">
         <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
@@ -266,7 +290,7 @@
       <div class="action-buttons">
         <button class="primary-btn" id="downloadReportBtn">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
           </svg>
           Download Report
         </button>

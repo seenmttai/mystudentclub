@@ -32,6 +32,81 @@ body {
   padding: 8rem 1.5rem 4rem;
 }
 
+.contact-form-container {
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  padding: 2rem;
+  margin-bottom: 3rem;
+  border: 1px solid var(--border);
+}
+
+.contact-form-section {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.contact-form-section h2 {
+  color: var(--primary);
+  font-size: 1.8rem;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.contact-form-section p {
+  color: var(--text-secondary);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background-color: #f9fafb;
+  color: var(--text-primary);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+}
+
+.submit-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.875rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow-sm);
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.submit-btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
 .hero-section {
   text-align: center;
   margin-bottom: 3rem;
@@ -717,6 +792,14 @@ body {
     padding: 1.25rem;
     margin: 0 auto;
   }
+  
+  .contact-form-container {
+    padding: 1.5rem;
+  }
+  
+  .contact-form-section h2 {
+    font-size: 1.8rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -780,5 +863,17 @@ body {
   
   .tip-card p {
     font-size: 0.85rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1rem;
+  }
+  
+  .form-group input {
+    padding: 0.6rem 0.8rem;
+  }
+  
+  .submit-btn {
+    padding: 0.75rem 1rem;
   }
 }

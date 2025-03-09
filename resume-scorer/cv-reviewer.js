@@ -1,5 +1,7 @@
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.worker.min.js';
 
+const contactFormContainer = document.getElementById('contactFormContainer');
+const contactForm = document.getElementById('contactForm');
 const dropArea = document.getElementById('dropArea');
 const fileInput = document.getElementById('fileInput');
 const browseButton = document.getElementById('browseButton');
@@ -205,6 +207,14 @@ async function convertPdfToImages() {
     alert('Error processing PDF. Please try another file.');
   }
 }
+
+contactForm.addEventListener('submit', function(e) {
+
+  setTimeout(() => {
+    contactFormContainer.style.display = 'none';
+    uploadSection.style.display = 'block';
+  }, 1000);
+});
 
 removeFileBtn.addEventListener('click', resetUpload);
 
