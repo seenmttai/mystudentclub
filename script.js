@@ -23,20 +23,26 @@ menuCloseBtn.addEventListener('click', () => { expandedMenu.classList.remove('ac
 let currentSlide = 0, slides = [], totalSlides = 0;
 function showSlide(i) { if (!slides || slides.length === 0) return; slides.forEach(s => s.classList.remove('active')); currentSlide = (i + totalSlides) % totalSlides; slides[currentSlide].classList.add('active') }
 document.addEventListener('click', (e) => { if (!expandedMenu.contains(e.target) && !menuButton.contains(e.target) && expandedMenu.classList.contains('active')) expandedMenu.classList.remove('active') });
+
 function getDaysAgo(timestampStr) {
   const timestamp = new Date(timestampStr);
   const now = new Date();
   
   const diffMs = now - timestamp;
-  
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
   
   if (diffDays === 0) {
     return 'today';
   } else if (diffDays === 1) {
     return 'yesterday';
-  } else {
+  } else if (diffDays <= 10) {
     return `${diffDays} days ago`;
+  } else if (diffDays <= 30) {
+    const weeks = Math.floor(diffDays / 7);
+    return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
+  } else {
+    const months = Math.floor(diffDays / 30);
+    return `${months} ${months === 1 ? 'month' : 'months'} ago`;
   }
 }
 
@@ -218,6 +224,9 @@ async function fetchJobs() {
   
   try {
     let query = supabaseClient.from(currentTable).select('*', { count: 'exact' });
+    
+    query = query.order('Created_At', { ascending: false });
+    
     query = query.range(page * limit, (page + 1) * limit - 1);
     const { data, error } = await query;
     
