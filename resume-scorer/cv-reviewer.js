@@ -45,6 +45,14 @@ let pdfDocument = null;
 let pdfImages = [];
 let analysisResult = null;
 
+function checkFormSubmissionToken() {
+  const token = localStorage.getItem('contactFormSubmitted');
+  if (token) {
+    contactFormContainer.style.display = 'none';
+    uploadSection.style.display = 'block';
+  }
+}
+
 menuButton.addEventListener('click', () => {
   expandedMenu.classList.toggle('active');
 });
@@ -209,11 +217,32 @@ async function convertPdfToImages() {
 }
 
 contactForm.addEventListener('submit', function(e) {
+  e.preventDefault();
 
-  setTimeout(() => {
-    contactFormContainer.style.display = 'none';
-    uploadSection.style.display = 'block';
-  }, 1000);
+  const token = `cv_reviewer_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+  localStorage.setItem('contactFormSubmitted', token);
+
+  const formData = new FormData(contactForm);
+  fetch(contactForm.action, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'Accept': 'application/json'
+    }
+  })
+  .then(response => {
+    if (response.ok) {
+      contactFormContainer.style.display = 'none';
+      uploadSection.style.display = 'block';
+    } else {
+      throw new Error('Form submission failed');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('There was an issue submitting the form. Please try again.');
+  });
 });
 
 removeFileBtn.addEventListener('click', resetUpload);
@@ -461,6 +490,13 @@ downloadReportBtn.addEventListener('click', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+  checkFormSubmissionToken();
+
+  window.resetContactForm = () => {
+    localStorage.removeItem('contactFormSubmitted');
+    contactFormContainer.style.display = 'block';
+    uploadSection.style.display = 'none';
+  };
 
   const svg = document.querySelector('.score-chart');
   const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
