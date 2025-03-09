@@ -367,6 +367,12 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
     if (salary) {
       if (salary === '40000+') {
         query = query.gte('Salary', 40000);
+      } else if (salary === '18+') {
+        query = query.gte('Salary', 18);
+      } else if (salary === '15000+') {
+        query = query.gte('Salary', 15000);
+      } else if (salary === '50000+') {
+        query = query.gte('Salary', 50000);
       } else {
         const [min, max] = salary.split('-').map(Number);
         query = query.gte('Salary', min).lte('Salary', max);

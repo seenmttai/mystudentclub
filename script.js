@@ -225,6 +225,33 @@ async function fetchJobs() {
   try {
     let query = supabaseClient.from(currentTable).select('*', { count: 'exact' });
     
+    const searchTerm = searchInput.value.trim();
+    if (searchTerm) {
+      const searchPattern = `%${searchTerm}%`;
+      query = query.or(`Company.ilike.${searchPattern},Location.ilike.${searchPattern},Description.ilike.${searchPattern}`);
+    }
+    
+    const locationSearch = locationSearchInput.value.trim();
+    if (locationSearch) {
+      query = query.ilike('Location', `%${locationSearch}%`);
+    }
+    
+    const salary = salaryFilter.value;
+    if (salary) {
+      if (salary.endsWith('+')) {
+        const minValue = parseInt(salary.replace('+', ''));
+        query = query.gte('Salary', minValue);
+      } else if (salary.includes('-')) {
+        const [min, max] = salary.split('-').map(Number);
+        query = query.gte('Salary', min).lte('Salary', max);
+      }
+    }
+    
+    const category = categoryFilter.value;
+    if (category) {
+      query = query.ilike('Description', `%${category}%`);
+    }
+    
     query = query.order('Created_At', { ascending: false });
     
     query = query.range(page * limit, (page + 1) * limit - 1);
