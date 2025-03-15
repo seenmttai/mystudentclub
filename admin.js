@@ -159,20 +159,31 @@ window.closeModal = function(event) {
 async function showEditJobModal(job) {
   const modal = document.getElementById('job-edit-modal');
   const form = document.getElementById('job-form');
-  
+
   form.reset();
   document.getElementById('job-edit-title').textContent = 'Edit Job';
-  
+
   Object.keys(job).forEach(field => {
     const input = form.elements[field];
-    if (input) input.value = job[field];
+    if (input) {
+      if (field === 'Created_At' && job[field]) {
+
+        const date = new Date(job[field]);
+        const localDatetime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000))
+          .toISOString()
+          .slice(0, 16);
+        input.value = localDatetime;
+      } else {
+        input.value = job[field];
+      }
+    }
   });
-  
+
   const tableSelect = form.elements['table'];
   if (tableSelect) {
     tableSelect.value = currentTable;
   }
-  
+
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
@@ -272,10 +283,10 @@ function renderJobCard(job, table) {
 function getDaysAgo(timestampStr) {
   const timestamp = new Date(timestampStr);
   const now = new Date();
-  
+
   const diffMs = now - timestamp;
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  
+
   if (diffDays === 0) {
     return 'today';
   } else if (diffDays === 1) {
@@ -315,8 +326,12 @@ document.getElementById('job-form').addEventListener('submit', async (e) => {
   const table = jobData.table;
   delete jobData.table;
 
+  if (!jobData.Created_At) {
+    jobData.Created_At = new Date().toISOString();
+  }
+
   const isEdit = jobData.id && jobData.id.trim() !== '';
-  
+
   if (!isEdit) {
     delete jobData.id;
   }
@@ -351,7 +366,7 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
   isFetching = true;
   document.getElementById('loader').style.display = 'block';
   document.getElementById('loadMore').disabled = true;
-  
+
   try {
     let query = supabaseClient
       .from(currentTable)

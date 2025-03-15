@@ -396,6 +396,21 @@ window.handleLogout = async () => {
 
 export { showModal, getApplicationLink };
 
+window.showAddJobModal = function() {
+  const modal = document.getElementById('job-edit-modal');
+  document.getElementById('job-edit-title').textContent = 'Add New Job';
+  document.getElementById('job-form').reset();
+  
+  const now = new Date();
+  const localDatetime = new Date(now.getTime() - (now.getTimezoneOffset() * 60000))
+    .toISOString()
+    .slice(0, 16);
+  document.querySelector('input[name="Created_At"]').value = localDatetime;
+  
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
 searchInput.addEventListener('input', (e) => { 
   clearTimeout(timeout); 
   timeout = setTimeout(() => { 
