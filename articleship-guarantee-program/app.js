@@ -3,143 +3,178 @@ const generateData = () => {
   const students = [
     {
       name: "Abhishek Puranik",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/abhishek-puranik221b/",
       image: baseURL + "Abhishek-Puranik.jpg",
       company: "BPCL"
     },
     {
       name: "NSR Varma",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/varmansr/",
       image: baseURL + "NSR-Varma.jpg",
       company: "Alivira"
     },
     {
       name: "Harsh Yadav",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/fcaharshyadav/",
       image: baseURL + "Harsh-Yadav.jpg",
       company: "Avery Dennison"
     },
     {
       name: "Nandana Krishnadas",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/nandana-krishnadas-120247318/",
       image: baseURL + "Nandana.jpg",
       company: "Amazon"
     },
     {
       name: "Muskan Chawla",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/muskan-chawla-b994152a9/",
       image: baseURL + "Muskan-Chawla.jpg",
       company: "Whitewater Advisory"
     },
     {
       name: "P Hritish Kumar",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/hritishkumar/",
       image: baseURL + "Hritish.jpg",
       company: "DLF"
     },
     {
       name: "Aakanksha Lolge",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/aakankshalolge/",
       image: baseURL + "Aakanksha-Lolge.jpg",
       company: "BPCL"
     },
     {
       name: "Harinee Selvam",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/harinee-selvam-a03416204/",
       image: baseURL + "Harinee-Selvam.jpg",
       company: "Flipkart"
     },
     {
       name: "Pratik Ulhas Naik",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/naik-pratik/",
       image: baseURL + "Pratik-Naik-Protiviti.jpg",
       company: "Protiviti"
     },
     {
       name: "Stephen DCosta",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/stephensn6/",
       image: baseURL + "Stephen.jpg",
       company: "UBS"
     },
     {
       name: "Khushi Tejani",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/khushitejani/",
       image: baseURL + "Khushi-Tejani-BPCL.jpg",
       company: "BPCL"
     },
     {
       name: "Yash Nema",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/yash-nema18/",
       image: baseURL + "Yash-Nema.jpg",
       company: "Amazon"
     },
     {
       name: "Prathmesh Randive",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/prathmesh-randive/",
       image: baseURL + "Prathmesh-Randive.jpg",
       company: "UBS"
     },
     {
       name: "Vivek Vardan",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/vivek-vardhan-9a05982a1/",
       image: baseURL + "Vivek-Vardhan.jpg",
       company: "UBS"
     },
     {
       name: "Vishal Jangid",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/vishall-jangid/",
       image: baseURL + "Vishal-Jangid.jpg",
       company: "PPG Asian Paints"
     },
     {
       name: "Swayam Atal",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/swayamatal/",
       image: baseURL + "Swayam-Atal.jpg",
       company: "Amazon"
     },
     {
       name: "Siddhant Naithani",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/siddhantnaithani999/",
       image: baseURL + "Siddhant-Naithani.jpg",
       company: "Signify"
     },
     {
       name: "Sanjana Sivakali",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/sanjanasivakali/",
       image: baseURL + "Sanjana-Sivakali.jpg",
       company: "Ashok Leyland"
     },
     {
       name: "Shiv Pratap Singh",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/shiv-pratap-singh-52b721222/",
       image: baseURL + "Shiv-Pratap-Singh.jpg",
       company: "1MG"
     },
     {
       name: "Aditi Tagalpallewar",
-      course: "MSC Articleship Guarantee Program",
+      course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/aditi-tagalpallewar/",
       image: baseURL + "Aditi-Tagalwellakar.jpg",
       company: "UBS"
+    },
+    {
+      name: "Nandita Rastogi",
+      course: "MSC Articleship Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/nanditarastogi/",
+      image: baseURL + "nandita.jpeg",
+      company: "EY"
+    },
+    {
+      name: "Parth Khandelwal",
+      course: "MSC Articleship Guarantee Program", 
+      linkedin: "https://www.linkedin.com/in/parthkhandelwal21/",
+      image: baseURL + "parth.jpeg",
+      company: "BDO"
+    },
+    {
+      name: "Shubham Jain",
+      course: "MSC Articleship Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/shubhamjain02104/",
+      image: baseURL + "shubham.jpeg", 
+      company: "Lodha & Co"
+    },
+    {
+      name: "Tulsi Bisen",
+      course: "MSC Articleship Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/tulsi-bisen/",
+      image: baseURL + "tulsi.jpeg",
+      company: "Arc Advisory"
+    },
+    {
+      name: "Tanya Arora",
+      course: "MSC Articleship Guarantee Program", 
+      linkedin: "https://www.linkedin.com/in/tanya-arora-3990bb206/",
+      image: baseURL + "tanya.jpeg", 
+      company: "BDO"
     }
   ];
 
@@ -187,7 +222,7 @@ const initializeCarousel = () => {
   function animate(currentTime) {
     if (!lastTime) lastTime = currentTime;
     const delta = currentTime - lastTime;
-    
+
     if (true) {
       position -= speed * (delta / 16); 
       if (position <= -(getCardWidth() * cards.length)) {
@@ -195,7 +230,7 @@ const initializeCarousel = () => {
       }
       carousel.style.transform = `translateX(${position}px)`;
     }
-    
+
     lastTime = currentTime;
     animationId = requestAnimationFrame(animate);
   }
@@ -418,7 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initializeCountdown();
     initializeTestimonials();
     initializeCertificate();
-    
+
     AOS.init({
       duration: 1000,
       once: true
