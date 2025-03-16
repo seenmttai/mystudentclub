@@ -2,6 +2,41 @@ const generateData = () => {
   const baseURL = "https://mystudentclub.pages.dev/assets/";
   const students = [
     {
+      name: "Nandita Rastogi",
+      course: "MSC Articleship Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/nanditarastogi/",
+      image: baseURL + "nandita.jpeg",
+      company: "EY"
+    },
+    {
+      name: "Parth Khandelwal",
+      course: "MSC Articleship Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/parthkhandelwal21/",
+      image: baseURL + "parth.jpeg",
+      company: "BDO"
+    },
+    {
+      name: "Shubham Jain",
+      course: "MSC Articleship Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/shubhamjain02104/",
+      image: baseURL + "shubham.jpeg",
+      company: "Lodha & Co"
+    },
+    {
+      name: "Tulsi Bisen",
+      course: "MSC Articleship Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/tulsi-bisen/",
+      image: baseURL + "tulsi.jpeg",
+      company: "Arc Advisory"
+    },
+    {
+      name: "Tanya Arora",
+      course: "MSC Articleship Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/tanya-arora-3990bb206/",
+      image: baseURL + "tanya.jpeg",
+      company: "BDO"
+    },
+    {
       name: "Abhishek Puranik",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/abhishek-puranik221b/",
@@ -141,44 +176,13 @@ const generateData = () => {
       image: baseURL + "Aditi-Tagalwellakar.jpg",
       company: "UBS"
     },
-    {
-      name: "Nandita Rastogi",
-      course: "MSC Articleship Guarantee Program",
-      linkedin: "https://www.linkedin.com/in/nanditarastogi/",
-      image: baseURL + "nandita.jpeg",
-      company: "EY"
-    },
-    {
-      name: "Parth Khandelwal",
-      course: "MSC Articleship Guarantee Program", 
-      linkedin: "https://www.linkedin.com/in/parthkhandelwal21/",
-      image: baseURL + "parth.jpeg",
-      company: "BDO"
-    },
-    {
-      name: "Shubham Jain",
-      course: "MSC Articleship Guarantee Program",
-      linkedin: "https://www.linkedin.com/in/shubhamjain02104/",
-      image: baseURL + "shubham.jpeg", 
-      company: "Lodha & Co"
-    },
-    {
-      name: "Tulsi Bisen",
-      course: "MSC Articleship Guarantee Program",
-      linkedin: "https://www.linkedin.com/in/tulsi-bisen/",
-      image: baseURL + "tulsi.jpeg",
-      company: "Arc Advisory"
-    },
-    {
-      name: "Tanya Arora",
-      course: "MSC Articleship Guarantee Program", 
-      linkedin: "https://www.linkedin.com/in/tanya-arora-3990bb206/",
-      image: baseURL + "tanya.jpeg", 
-      company: "BDO"
-    }
   ];
 
-  return { students };
+  const articleshipStudents = students.filter(student => student.course === "MSC Articleship Guarantee Program");
+  const itStudents = students.filter(student => student.course === "MSC IT Guarantee Program");
+  const orderedStudents = [...articleshipStudents, ...itStudents];
+
+  return { students: orderedStudents };
 };
 
 const initializeCarousel = () => {
