@@ -197,7 +197,7 @@ const initializeCarousel = () => {
     card.className = 'student-card';
     card.innerHTML = `
       <div class="student-image">
-        <img src="${student.image}" alt="${student.name}" />
+        <img src="${student.image}" alt="${student.name}" loading="lazy" />
       </div>
       <h3>${student.name}</h3>
       <p>${student.course}</p>
