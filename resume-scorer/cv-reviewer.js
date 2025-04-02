@@ -46,6 +46,7 @@ const menuCloseBtn = document.getElementById('menuCloseBtn');
 let selectedFile = null;
 let pdfDocument = null;
 let pdfImages = [];
+let extractedPdfText = null;
 let analysisResultText = null;
 let currentProgressInterval = null;
 
@@ -64,11 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const svg = document.querySelector('.score-chart');
   if (svg && !document.getElementById('scoreGradient')) {
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    defs.innerHTML = `
-      <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-         <stop offset="0%" stop-color="#818cf8" />
-         <stop offset="100%" stop-color="#4f46e5" />
-      </linearGradient>`;
+    defs.innerHTML = `<linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#818cf8" /><stop offset="100%" stop-color="#4f46e5" /></linearGradient>`;
     svg.insertBefore(defs, svg.firstChild);
   }
 });
@@ -86,6 +83,7 @@ document.addEventListener('click', (e) => {
     expandedMenu.classList.remove('active');
   }
 });
+
 
 function checkFormSubmissionToken() {
   const token = localStorage.getItem('contactFormSubmitted');
@@ -120,11 +118,7 @@ contactForm.addEventListener('submit', function(e) {
        uploadSection.style.display = 'block';
        uploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
      } else {
-       response.json().then(data => {
-         throw new Error(data.error || 'Form submission failed');
-       }).catch(() => {
-         throw new Error('Form submission failed');
-       })
+       response.json().then(data => { throw new Error(data.error || 'Form submission failed'); }).catch(() => { throw new Error('Form submission failed'); })
      }
    })
    .catch(error => {
@@ -160,6 +154,9 @@ function handleFileSelect(e) {
 
 async function handleFile(file) {
   selectedFile = file;
+  pdfDocument = null;
+  pdfImages = [];
+  extractedPdfText = null;
   fileName.textContent = file.name;
   fileSize.textContent = formatFileSize(file.size);
   dropArea.style.display = 'none';
@@ -168,20 +165,84 @@ async function handleFile(file) {
 
   proceedToDomainBtn.disabled = true;
   proceedToDomainBtn.classList.add('opacity-50', 'cursor-not-allowed');
-  removeFileBtn.disabled = true; 
+  removeFileBtn.disabled = true;
 
   try {
-    await generatePdfPreview(file);
+    previewThumbnail.innerHTML = '<div class="text-center p-4 text-text-secondary">Generating preview & extracting text...</div>';
+    const arrayBuffer = await file.arrayBuffer();
+    pdfDocument = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+    await generatePdfPreviewCanvas(pdfDocument);
+    await convertPdfToImages(pdfDocument);
+    extractedPdfText = await extractPdfText(pdfDocument);
+
     proceedToDomainBtn.disabled = false;
     proceedToDomainBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+     console.log("PDF processed successfully. Text extracted:", !!extractedPdfText);
+
   } catch (error) {
      console.error("Error handling file:", error);
-     alert(`Error processing PDF: ${error.message}. Please try another file.`);
+     alert(`Error processing PDF: ${error.message}. Please try another file or check if it's image-based.`);
      resetUpload();
   } finally {
-      removeFileBtn.disabled = false; 
+      removeFileBtn.disabled = false;
   }
 }
+
+async function generatePdfPreviewCanvas(pdfDoc) {
+    const page = await pdfDoc.getPage(1);
+    const viewport = page.getViewport({ scale: 0.5 });
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+    await page.render({ canvasContext: context, viewport: viewport }).promise;
+    previewThumbnail.innerHTML = '';
+    previewThumbnail.appendChild(canvas);
+}
+
+async function convertPdfToImages(pdfDoc) {
+  pdfImages = [];
+  console.log(`Converting ${pdfDoc.numPages} pages to images...`);
+  try {
+    const scale = 1.5;
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+      const page = await pdfDoc.getPage(i);
+      const viewport = page.getViewport({ scale: scale });
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
+      await page.render({ canvasContext: context, viewport: viewport }).promise;
+      const imageDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      pdfImages.push(imageDataUrl.split(',')[1]);
+    }
+    console.log("PDF to image conversion complete.");
+  } catch (error) {
+    console.error('Error converting PDF to images:', error);
+    pdfImages = [];
+    throw new Error("Failed to convert PDF pages to images.");
+  }
+}
+
+async function extractPdfText(pdfDoc) {
+    console.log(`Extracting text from ${pdfDoc.numPages} pages...`);
+    let fullText = '';
+    try {
+        for (let i = 1; i <= pdfDoc.numPages; i++) {
+            const page = await pdfDoc.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            fullText += pageText + '\n\n';
+        }
+        console.log("Text extraction successful.");
+        return fullText.trim();
+    } catch (error) {
+        console.warn('Could not extract text from PDF:', error);
+        return null;
+    }
+}
+
 
 function formatFileSize(bytes) {
   if (bytes === 0) return '0 Bytes';
@@ -191,74 +252,20 @@ function formatFileSize(bytes) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
 
-async function generatePdfPreview(file) {
-  previewThumbnail.innerHTML = '<div class="text-center p-4 text-text-secondary">Generating preview...</div>';
-  pdfImages = [];
-
-  try {
-    const arrayBuffer = await file.arrayBuffer();
-    pdfDocument = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-
-    const page = await pdfDocument.getPage(1);
-    const viewport = page.getViewport({ scale: 0.5 });
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-    await page.render({ canvasContext: context, viewport: viewport }).promise;
-
-    previewThumbnail.innerHTML = '';
-    previewThumbnail.appendChild(canvas);
-
-    await convertPdfToImages();
-
-  } catch (error) {
-    console.error('Error generating PDF preview:', error);
-    previewThumbnail.innerHTML = '<div class="text-center p-4 text-red-600">Error loading preview.</div>';
-    throw error;
-  }
-}
-
-async function convertPdfToImages() {
-  pdfImages = [];
-  if (!pdfDocument) return;
-
-  console.log(`Converting ${pdfDocument.numPages} pages to images...`);
-  try {
-    const scale = 1.5;
-    for (let i = 1; i <= pdfDocument.numPages; i++) {
-      const page = await pdfDocument.getPage(i);
-      const viewport = page.getViewport({ scale: scale });
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-
-      await page.render({ canvasContext: context, viewport: viewport }).promise;
-      const imageDataUrl = canvas.toDataURL('image/jpeg', 0.9);
-      pdfImages.push(imageDataUrl.split(',')[1]);
-    }
-    console.log("PDF to image conversion complete.");
-  } catch (error) {
-    console.error('Error converting PDF to images:', error);
-    pdfImages = [];
-    throw error;
-  }
-}
-
 removeFileBtn.addEventListener('click', resetUpload);
 
 function resetUpload() {
   selectedFile = null;
   pdfDocument = null;
   pdfImages = [];
+  extractedPdfText = null;
   fileInput.value = '';
   previewArea.style.display = 'none';
   dropArea.style.display = 'block';
   fileName.textContent = 'document.pdf';
   fileSize.textContent = '0 KB';
   previewThumbnail.innerHTML = '';
-  proceedToDomainBtn.disabled = true; 
+  proceedToDomainBtn.disabled = true;
   proceedToDomainBtn.classList.add('opacity-50', 'cursor-not-allowed');
 }
 
@@ -325,10 +332,23 @@ async function analyzeCv() {
   loadingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
   startLoadingAnimation();
-  clearResultsContent(); 
+  clearResultsContent();
+
+  const payload = {
+      images: pdfImages,
+      // domain: selectedDomain, // Optionally send in body too
+      // specialization: selectedSpecialization
+  };
+
+  if (extractedPdfText && extractedPdfText.trim().length > 0) {
+      payload.pdf_text = extractedPdfText;
+      console.log("Sending extracted PDF text to worker.");
+  } else {
+       console.log("No extractable PDF text found or text is empty. Sending images only.");
+  }
 
   try {
-    const response = await fetch('https://cv-reviewer.bhansalimanan55.workers.dev/', { 
+    const response = await fetch('https://cv-reviewer.bhansalimanan55.workers.dev/', { // Replace if needed
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -336,7 +356,7 @@ async function analyzeCv() {
         'X-Specialization': selectedSpecialization,
         'Origin': window.location.origin
       },
-      body: JSON.stringify({ images: pdfImages })
+      body: JSON.stringify(payload)
     });
 
     stopLoadingAnimation();
@@ -403,6 +423,7 @@ function stopLoadingAnimation() {
      loadingProgressText.textContent = "Processing complete!";
 }
 
+
 function extractSectionContent(text, startMarker, endMarker) {
     if (!text) return null;
     const startIndex = text.indexOf(startMarker);
@@ -427,29 +448,17 @@ function parseAndDisplayOverallScore(text) {
 
     if (scoreSection) {
         const scoreMatch = scoreSection.match(/Score:\s*(\d+)\/100/i);
-        const justMatch = scoreSection.match(/Justification:\s*(.*)/is);
+        const justMatch = scoreSection.match(/Justification:\s*([\s\S]*)/i);
 
-        if (scoreMatch) {
-            overallScore = parseInt(scoreMatch[1], 10);
-        } else {
-             console.warn("Could not parse score from OVERALL_SCORE section.");
-        }
-        if (justMatch) {
-            justification = justMatch[1].trim();
-        } else {
-             console.warn("Could not parse justification from OVERALL_SCORE section.");
-        }
+        if (scoreMatch) { overallScore = parseInt(scoreMatch[1], 10); }
+        else { console.warn("Could not parse score from OVERALL_SCORE section."); }
+        if (justMatch) { justification = justMatch[1].trim(); }
+        else { console.warn("Could not parse justification from OVERALL_SCORE section.");}
     } else {
          console.warn("Could not find <<<OVERALL_SCORE>>> section.");
-
          const fallbackScoreMatch = text.match(/<score>(\d+)<\/score>/i) || text.match(/Overall Score:\s*(\d+)\/100/i);
-         if (fallbackScoreMatch) {
-            overallScore = parseInt(fallbackScoreMatch[1], 10);
-            justification = "Score extracted via fallback method.";
-            console.log("Used fallback score:", overallScore);
-         } else {
-            console.error("Could not find score via primary or fallback methods.");
-         }
+         if (fallbackScoreMatch) { overallScore = parseInt(fallbackScoreMatch[1], 10); justification = "Score extracted via fallback method."; console.log("Used fallback score:", overallScore); }
+         else { console.error("Could not find score via primary or fallback methods."); }
     }
 
     animateScore(overallScore);
@@ -464,10 +473,7 @@ function parseAndDisplayRecruiterTips(text) {
 
 function parseAndDisplayMeasurableResults(text) {
     const content = extractSectionContent(text, '<<<MEASURABLE_RESULTS>>>', '<<<END_MEASURABLE_RESULTS>>>');
-    if (!content) {
-        measurableResultsContent.innerHTML = '<p class="text-text-secondary">No measurable results analysis available.</p>';
-        return;
-    }
+    if (!content) { measurableResultsContent.innerHTML = '<p class="text-text-secondary">No measurable results analysis available.</p>'; return; }
 
     const points = content.split('---');
     let html = '';
@@ -478,28 +484,17 @@ function parseAndDisplayMeasurableResults(text) {
             const suggestionsBlockMatch = point.match(/(Rewrite Suggestions.*?):\s*([\s\S]*)/i);
 
             html += `<div class="feedback-point border-b border-border pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0">`;
-            if (originalMatch && originalMatch[1]) {
-                 html += `<p class="mb-1 text-sm"><strong>Original:</strong> <code class="text-xs">${originalMatch[1].trim()}</code></p>`;
-            }
-            if (critiqueMatch && critiqueMatch[1]) {
-                 html += `<p class="mb-2 text-sm"><strong>Critique:</strong> ${formatFeedbackText(critiqueMatch[1].trim())}</p>`;
-            }
-             if (suggestionsBlockMatch && suggestionsBlockMatch[2]) {
+            if (originalMatch && originalMatch[1]) { html += `<p class="mb-1 text-sm"><strong>Original:</strong> <code class="text-xs">${originalMatch[1].trim()}</code></p>`; }
+            if (critiqueMatch && critiqueMatch[1]) { html += `<p class="mb-2 text-sm"><strong>Critique:</strong> ${formatFeedbackText(critiqueMatch[1].trim())}</p>`; }
+            if (suggestionsBlockMatch && suggestionsBlockMatch[2]) {
                  html += `<div class="mt-2 text-sm"><strong>Rewrite Suggestions:</strong>`;
                  const suggestionsText = suggestionsBlockMatch[2].trim();
                  const suggestions = suggestionsText.split(/\* Suggestion \d+:|\n\s*-\s*|\n\s*\*\s*/i).filter(s => s.trim());
                  if (suggestions.length > 0) {
-                    html += `<ul class="list-none ml-0 mt-1 space-y-1">`; 
-                    suggestions.forEach(sugg => {
-                        const trimmedSugg = sugg.trim().replace(/^"|"$/g, '');
-                        if(trimmedSugg) {
-                            html += `<li class="rewrite-suggestion">${simpleMarkdownToHtml(trimmedSugg)}</li>`;
-                        }
-                    });
+                    html += `<ul class="list-none ml-0 mt-1 space-y-1">`;
+                    suggestions.forEach(sugg => { const trimmedSugg = sugg.trim().replace(/^"|"$/g, ''); if(trimmedSugg) { html += `<li class="rewrite-suggestion">${simpleMarkdownToHtml(trimmedSugg)}</li>`; } });
                     html += `</ul>`;
-                 } else {
-                    html += `<p class="text-xs text-text-secondary ml-2 italic">No specific suggestions parsed.</p>`;
-                 }
+                 } else { html += `<p class="text-xs text-text-secondary ml-2 italic">No specific suggestions parsed.</p>`; }
                  html += `</div>`;
             }
             html += `</div>`;
@@ -510,10 +505,7 @@ function parseAndDisplayMeasurableResults(text) {
 
 function parseAndDisplayPhrasesSuggestions(text) {
      const content = extractSectionContent(text, '<<<PHRASES_SUGGESTIONS>>>', '<<<END_PHRASES_SUGGESTIONS>>>');
-     if (!content) {
-         phrasesSuggestionsContent.innerHTML = '<p class="text-text-secondary">No phrase suggestions available.</p>';
-         return;
-     }
+     if (!content) { phrasesSuggestionsContent.innerHTML = '<p class="text-text-secondary">No phrase suggestions available.</p>'; return; }
      const points = content.split('---');
      let html = '';
      points.forEach((point) => {
@@ -523,28 +515,17 @@ function parseAndDisplayPhrasesSuggestions(text) {
             const suggestionsBlockMatch = point.match(/(Rewrite Suggestions.*?):\s*([\s\S]*)/i);
 
             html += `<div class="feedback-point border-b border-border pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0">`;
-            if (originalMatch && originalMatch[1]) {
-                html += `<p class="mb-1 text-sm"><strong>Original:</strong> <code class="text-xs">${originalMatch[1].trim()}</code></p>`;
-            }
-            if (critiqueMatch && critiqueMatch[1]) {
-                html += `<p class="mb-2 text-sm"><strong>Critique:</strong> ${formatFeedbackText(critiqueMatch[1].trim())}</p>`;
-            }
+            if (originalMatch && originalMatch[1]) { html += `<p class="mb-1 text-sm"><strong>Original:</strong> <code class="text-xs">${originalMatch[1].trim()}</code></p>`; }
+            if (critiqueMatch && critiqueMatch[1]) { html += `<p class="mb-2 text-sm"><strong>Critique:</strong> ${formatFeedbackText(critiqueMatch[1].trim())}</p>`; }
             if (suggestionsBlockMatch && suggestionsBlockMatch[2]) {
                 html += `<div class="mt-2 text-sm"><strong>Rewrite Suggestions:</strong>`;
                 const suggestionsText = suggestionsBlockMatch[2].trim();
                 const suggestions = suggestionsText.split(/\* Suggestion \d+:|\n\s*-\s*|\n\s*\*\s*/i).filter(s => s.trim());
                  if (suggestions.length > 0) {
                     html += `<ul class="list-none ml-0 mt-1 space-y-1">`;
-                    suggestions.forEach(sugg => {
-                       const trimmedSugg = sugg.trim().replace(/^"|"$/g, '');
-                        if(trimmedSugg) {
-                            html += `<li class="rewrite-suggestion">${simpleMarkdownToHtml(trimmedSugg)}</li>`;
-                        }
-                    });
+                    suggestions.forEach(sugg => { const trimmedSugg = sugg.trim().replace(/^"|"$/g, ''); if(trimmedSugg) { html += `<li class="rewrite-suggestion">${simpleMarkdownToHtml(trimmedSugg)}</li>`; } });
                     html += `</ul>`;
-                 } else {
-                    html += `<p class="text-xs text-text-secondary ml-2 italic">No specific suggestions parsed.</p>`;
-                 }
+                 } else { html += `<p class="text-xs text-text-secondary ml-2 italic">No specific suggestions parsed.</p>`; }
                 html += `</div>`;
             }
             html += `</div>`;
@@ -570,19 +551,14 @@ function parseAndDisplayActionVerbs(text) {
 
 function parseAndDisplayGrammarCheck(text) {
     const content = extractSectionContent(text, '<<<GRAMMAR_CHECK>>>', '<<<END_GRAMMAR_CHECK>>>');
-    if (!content) {
-        grammarCheckContent.innerHTML = '<p class="text-text-secondary">No grammar check results available.</p>';
-        return;
-    }
+    if (!content) { grammarCheckContent.innerHTML = '<p class="text-text-secondary">No grammar check results available.</p>'; return; }
 
     let html = formatFeedbackText(content);
-
     html = html.replace(/Original:\s*"([^"]+?)"\s*->\s*Corrected:\s*"([^"]+?)"(\s*<span class="highlight-issue.*?<\/span>)?/gi, (match, original, corrected, issueMarker) => {
          const issueHtml = issueMarker || '';
          return `<div class="grammar-correction mb-2"><span class="original-text">${original}</span> <span class="text-lg mx-1 text-gray-400">→</span> <span class="corrected-text">${corrected}</span> ${issueHtml}</div>`;
      });
-
-      grammarCheckContent.innerHTML = html;
+    grammarCheckContent.innerHTML = html;
 }
 
 function parseAndDisplayFormatting(text) {
@@ -604,9 +580,7 @@ function parseAndDisplayFinalRecommendations(text) {
 
 function processStructuredResults(resultsText) {
     clearResultsContent();
-
     const overallScore = parseAndDisplayOverallScore(resultsText);
-
     parseAndDisplayRecruiterTips(resultsText);
     parseAndDisplayMeasurableResults(resultsText);
     parseAndDisplayPhrasesSuggestions(resultsText);
@@ -618,104 +592,57 @@ function processStructuredResults(resultsText) {
     parseAndDisplayEducation(resultsText);
     parseAndDisplayArticleship(resultsText);
     parseAndDisplayFinalRecommendations(resultsText);
-
     updateScoreBreakdown(overallScore, resultsText);
 }
 
 function clearResultsContent() {
-    const contentAreas = [
-        recruiterTipsContent, measurableResultsContent, phrasesSuggestionsContent,
-        hardSkillsContent, softSkillsContent, actionVerbsContent, grammarCheckContent,
-        formattingContent, educationContent, articleshipContent, finalRecommendationsContent,
-        scoreJustification
-    ];
+    const contentAreas = [ recruiterTipsContent, measurableResultsContent, phrasesSuggestionsContent, hardSkillsContent, softSkillsContent, actionVerbsContent, grammarCheckContent, formattingContent, educationContent, articleshipContent, finalRecommendationsContent, scoreJustification ];
     contentAreas.forEach(area => { if(area) area.innerHTML = '<p class="text-sm text-text-secondary italic">Loading...</p>'; });
     scoreText.textContent = '0';
     scoreProgress.setAttribute('stroke-dasharray', `0, 100`);
-     categoryItems.forEach(item => {
+    categoryItems.forEach(item => {
         const pointsEl = item.querySelector('.points');
         const fillBar = item.querySelector('.category-fill');
-        const maxPoints = pointsEl.textContent.split('/')[1] || '0'; 
-        pointsEl.textContent = `0/${maxPoints}`;
+        const maxPointsMatch = pointsEl ? pointsEl.textContent.match(/\/(\d+)/) : null;
+        const maxPoints = maxPointsMatch ? maxPointsMatch[1] : '0';
+        if(pointsEl) pointsEl.textContent = `0/${maxPoints} pts`;
         if(fillBar) fillBar.style.width = `0%`;
     });
 }
 
 function simpleMarkdownToHtml(md) {
     if (!md) return '';
-    let html = md
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-
+    let html = md.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"').replace(/'/g, ''');
     return html
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded text-sm">$1</code>')
-        .replace(/^#{1,6}\s+(.*$)/gm, (match, content) => {
-            const level = match.indexOf(' ');
-            return `<h${level+1} class="font-semibold mt-4 mb-2 text-lg">${content}</h${level+1}>`; 
-        })
-        .replace(/^\s*[\-\*]\s+(.*$)/gm, '<li>$1</li>')
-        .replace(/^\s*\d+\.\s+(.*$)/gm, '<li>$1</li>')
-        .replace(/<\/li>\s*<li>/g, '</li><li>')
-        .replace(/(<li>.*?<\/li>)/gs, (match, content) => {
-
-             if (match.includes('<ul>') || match.includes('<ol>')) return match;
-
-             const listType = /^\s*[\-\*]/.test(md) ? 'ul' : 'ol';
-             return `<${listType}>${content}</${listType}>`;
-        })
-        .replace(/<\/(ul|ol)>\s*<\1>/g, '') 
-        .replace(/(\r\n|\n|\r)/g, '<br>') 
-        .replace(/<br>\s*<br>/g, '</p><p>') 
-        .replace(/^<p>|<\/p>$/g, '') 
-        .replace(/^(.+?)$/gm, (match) => { 
-            if (match.trim().startsWith('<') || match.trim().startsWith('&lt;') || /^\s*(<li>|<ul>|<ol>)/.test(match)) {
-                 return match;
-            }
-            return `<p>${match}</p>`;
-        })
-         .replace(/<p>\s*<\/p>/g, ''); 
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>').replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded text-sm">$1</code>')
+        .replace(/^#{1,6}\s+(.*$)/gm, (m, c) => `<h${m.indexOf(' ')+1} class="font-semibold mt-4 mb-2 text-lg">${c}</h${m.indexOf(' ')+1}>`)
+        .replace(/^\s*[\-\*]\s+(.*$)/gm, '<li>$1</li>').replace(/^\s*\d+\.\s+(.*$)/gm, '<li>$1</li>')
+        .replace(/<\/li>\s*<li>/g, '</li><li>').replace(/(<li>.*?<\/li>)/gs, (m, c) => !m.includes('<ul>')&&!m.includes('<ol>')?(/^\s*[\-\*]/.test(md)?'<ul>':'<ol>')+c+(/^\s*[\-\*]/.test(md)?'</ul>':'</ol>'):m)
+        .replace(/<\/(ul|ol)>\s*<\1>/g, '').replace(/(\r\n|\n|\r)/g, '<br>').replace(/<br>\s*<br>/g, '</p><p>').replace(/^<p>|<\/p>$/g, '')
+        .replace(/^(.+?)$/gm, m => m.trim().startsWith('<')||m.trim().startsWith('<')||/^\s*(<li>|<ul>|<ol>)/.test(m)?m:`<p>${m}</p>`).replace(/<p>\s*<\/p>/g, '');
 }
 
 function formatFeedbackText(text) {
     if (!text) return '<p class="text-sm text-text-secondary italic">No details available.</p>';
     let html = simpleMarkdownToHtml(text);
-
-    html = html.replace(/\[GOOD\]/g, '<span class="highlight-good" title="Good point">✓</span>'); 
-    html = html.replace(/\[ISSUE\]/g, '<span class="highlight-issue" title="Area for improvement">✗</span>'); 
-
+    html = html.replace(/\[GOOD\]/g, '<span class="highlight-good" title="Good point">✓</span>');
+    html = html.replace(/\[ISSUE\]/g, '<span class="highlight-issue" title="Area for improvement">✗</span>');
     html = html.replace(/<br>\s*\*   \*\*(.*?):\*\*/g, '<br><strong class="block mt-3 mb-1 text-base text-primary">$1:</strong>');
-    html = html.replace(/^   \*\*(.*?):\*\*/g, '<strong class="block mt-3 mb-1 text-base text-primary">$1:</strong>');
-
-     html = html.replace(/<br>\s*[\-\*]\s+/g, '<br><li>'); 
-     html = html.replace(/<\/li><br>/g, '</li>'); 
-
-     html = html.replace(/(<li>.*?<\/li>)/gs, (match) => {
-         if (match.includes('<ul>') || match.includes('<ol>')) return match; 
-         return `<ul>${match}</ul>`;
-     });
-     html = html.replace(/<\/ul>\s*<ul>/g, ''); 
-
+    html = html.replace(/^\s*\*   \*\*(.*?):\*\*/g, '<strong class="block mt-3 mb-1 text-base text-primary">$1:</strong>'); // Handle start of string case
+    html = html.replace(/<br>\s*[\-\*]\s+/g, '<br><li>');
+    html = html.replace(/<\/li><br>/g, '</li>');
+    html = html.replace(/(<li>.*?<\/li>)/gs, m => !m.includes('<ul>')&&!m.includes('<ol>')?`<ul>${m}</ul>`:m);
+    html = html.replace(/<\/ul>\s*<ul>/g, '');
     return html;
 }
 
 function animateScore(score) {
     let currentScore = 0;
-    const duration = 1500;
-    const stepTime = 20;
-    const steps = duration / stepTime;
+    const duration = 1500; const stepTime = 20; const steps = duration / stepTime;
     const increment = score / steps;
-
     const scoreInterval = setInterval(() => {
         currentScore += increment;
-        if (currentScore >= score) {
-            currentScore = score;
-            clearInterval(scoreInterval);
-        }
+        if (currentScore >= score) { currentScore = score; clearInterval(scoreInterval); }
         const roundedScore = Math.round(currentScore);
         scoreText.textContent = roundedScore;
         scoreProgress.setAttribute('stroke-dasharray', `${roundedScore}, 100`);
@@ -723,50 +650,22 @@ function animateScore(score) {
 }
 
 function updateScoreBreakdown(overallScore, resultsText) {
-
     const categoryScores = {};
-    const scorePatterns = {
-        structure: /Structure.*?Completeness.*?(\d+)\s*\/\s*20/i,
-        impact: /Impact.*?Demonstration.*?(\d+)\s*\/\s*25/i,
-        expertise: /Professional.*?Expertise.*?(\d+)\s*\/\s*25/i,
-        experience: /Experience.*?Description.*?(\d+)\s*\/\s*20/i,
-        presentation: /Overall.*?Presentation.*?(\d+)\s*\/\s*10/i
-    };
-
-     let foundSpecificScores = true;
-    for (const [key, pattern] of Object.entries(scorePatterns)) {
-        const match = resultsText.match(pattern);
-        if (match && match[1]) {
-            categoryScores[key] = parseInt(match[1], 10);
-        } else {
-             console.warn(`Could not parse specific score for category: ${key}`);
-            foundSpecificScores = false;
-
-        }
-    }
+    const scorePatterns = { structure: /Structure.*?Completeness.*?(\d+)\s*\/\s*20/i, impact: /Impact.*?Demonstration.*?(\d+)\s*\/\s*25/i, expertise: /Professional.*?Expertise.*?(\d+)\s*\/\s*25/i, experience: /Experience.*?Description.*?(\d+)\s*\/\s*20/i, presentation: /Overall.*?Presentation.*?(\d+)\s*\/\s*10/i };
+    let foundSpecificScores = true;
+    for (const [key, pattern] of Object.entries(scorePatterns)) { const match = resultsText.match(pattern); if (match && match[1]) { categoryScores[key] = parseInt(match[1], 10); } else { console.warn(`Could not parse specific score for category: ${key}`); foundSpecificScores = false; } }
 
     categoryItems.forEach(item => {
         const categoryKey = item.dataset.category;
         const pointsEl = item.querySelector('.points');
         const fillBar = item.querySelector('.category-fill');
-        const maxPointsText = pointsEl.textContent.split('/')[1];
-        if (!maxPointsText) return; 
-        const maxPoints = parseInt(maxPointsText.match(/\d+/)[0], 10);
-
-        let calculatedPoints = 0;
-        let percentage = 0;
-
-         if (foundSpecificScores && categoryScores[categoryKey] !== undefined) {
-            calculatedPoints = Math.min(categoryScores[categoryKey], maxPoints); 
-            percentage = (calculatedPoints / maxPoints) * 100;
-        } else {
-
-             calculatedPoints = Math.round((overallScore / 100) * maxPoints);
-             percentage = overallScore; 
-             console.log(`Using fallback score for ${categoryKey}`);
-         }
-
-        pointsEl.textContent = `${calculatedPoints}/${maxPoints} pts`;
+        const maxPointsMatch = pointsEl ? pointsEl.textContent.match(/\/(\d+)/) : null;
+        if (!maxPointsMatch) return;
+        const maxPoints = parseInt(maxPointsMatch[1], 10);
+        let calculatedPoints = 0; let percentage = 0;
+        if (foundSpecificScores && categoryScores[categoryKey] !== undefined) { calculatedPoints = Math.min(categoryScores[categoryKey], maxPoints); percentage = (calculatedPoints / maxPoints) * 100; }
+        else { calculatedPoints = Math.round((overallScore / 100) * maxPoints); percentage = overallScore; console.log(`Using fallback score for ${categoryKey}`); }
+        if(pointsEl) pointsEl.textContent = `${calculatedPoints}/${maxPoints} pts`;
         if(fillBar) fillBar.style.width = `${Math.min(percentage, 100)}%`;
     });
 }
@@ -775,109 +674,39 @@ startOverBtn.addEventListener('click', resetToUploadStage);
 
 function resetToUploadStage() {
     resetUpload();
-    resultsSection.style.display = 'none';
-    tipsSection.style.display = 'none';
-    domainSpecializationSection.style.display = 'none';
-    loadingSection.style.display = 'none';
-    checkFormSubmissionToken(); 
+    resultsSection.style.display = 'none'; tipsSection.style.display = 'none'; domainSpecializationSection.style.display = 'none'; loadingSection.style.display = 'none';
+    checkFormSubmissionToken();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 downloadReportBtn.addEventListener('click', () => {
-  if (!analysisResultText) {
-      alert("No analysis report available to download.");
-      return;
-  }
-
-  let reportContent = `My Student Club - CV Analysis Report\n`;
-  reportContent += `=====================================\n\n`;
-  reportContent += `Domain: ${domainSelect.value}\n`;
-  reportContent += `Specialization: ${specializationSelect.value}\n\n`;
-
-  const sections = [
-      { title: "Overall Score", start: '<<<OVERALL_SCORE>>>', end: '<<<END_OVERALL_SCORE>>>' },
-      { title: "Recruiter Tips", start: '<<<RECRUITER_TIPS>>>', end: '<<<END_RECRUITER_TIPS>>>' },
-      { title: "Measurable Results Analysis", start: '<<<MEASURABLE_RESULTS>>>', end: '<<<END_MEASURABLE_RESULTS>>>' },
-      { title: "Phrases Suggestions", start: '<<<PHRASES_SUGGESTIONS>>>', end: '<<<END_PHRASES_SUGGESTIONS>>>' },
-      { title: "Hard Skills Analysis", start: '<<<HARD_SKILLS>>>', end: '<<<END_HARD_SKILLS>>>' },
-      { title: "Soft Skills Analysis", start: '<<<SOFT_SKILLS>>>', end: '<<<END_SOFT_SKILLS>>>' },
-      { title: "Action Verbs Usage", start: '<<<ACTION_VERBS>>>', end: '<<<END_ACTION_VERBS>>>' },
-      { title: "Grammar & Proofreading", start: '<<<GRAMMAR_CHECK>>>', end: '<<<END_GRAMMAR_CHECK>>>' },
-      { title: "Formatting & Readability", start: '<<<FORMATTING_READABILITY>>>', end: '<<<END_FORMATTING_READABILITY>>>' },
-      { title: "Education & Qualification", start: '<<<EDUCATION_QUALIFICATION>>>', end: '<<<END_EDUCATION_QUALIFICATION>>>' },
-      { title: "Articleship Experience", start: '<<<ARTICLESIP_EXPERIENCE>>>', end: '<<<END_ARTICLESIP_EXPERIENCE>>>' },
-      { title: "Final Recommendations", start: '<<<FINAL_RECOMMENDATIONS>>>', end: '<<<END_FINAL_RECOMMENDATIONS>>>' }
-  ];
+  if (!analysisResultText) { alert("No analysis report available to download."); return; }
+  let reportContent = `My Student Club - CV Analysis Report\n=====================================\n\nDomain: ${domainSelect.value}\nSpecialization: ${specializationSelect.value}\n\n`;
+  const sections = [ { title: "Overall Score", start: '<<<OVERALL_SCORE>>>', end: '<<<END_OVERALL_SCORE>>>' }, { title: "Recruiter Tips", start: '<<<RECRUITER_TIPS>>>', end: '<<<END_RECRUITER_TIPS>>>' }, { title: "Measurable Results Analysis", start: '<<<MEASURABLE_RESULTS>>>', end: '<<<END_MEASURABLE_RESULTS>>>' }, { title: "Phrases Suggestions", start: '<<<PHRASES_SUGGESTIONS>>>', end: '<<<END_PHRASES_SUGGESTIONS>>>' }, { title: "Hard Skills Analysis", start: '<<<HARD_SKILLS>>>', end: '<<<END_HARD_SKILLS>>>' }, { title: "Soft Skills Analysis", start: '<<<SOFT_SKILLS>>>', end: '<<<END_SOFT_SKILLS>>>' }, { title: "Action Verbs Usage", start: '<<<ACTION_VERBS>>>', end: '<<<END_ACTION_VERBS>>>' }, { title: "Grammar & Proofreading", start: '<<<GRAMMAR_CHECK>>>', end: '<<<END_GRAMMAR_CHECK>>>' }, { title: "Formatting & Readability", start: '<<<FORMATTING_READABILITY>>>', end: '<<<END_FORMATTING_READABILITY>>>' }, { title: "Education & Qualification", start: '<<<EDUCATION_QUALIFICATION>>>', end: '<<<END_EDUCATION_QUALIFICATION>>>' }, { title: "Articleship Experience", start: '<<<ARTICLESIP_EXPERIENCE>>>', end: '<<<END_ARTICLESIP_EXPERIENCE>>>' }, { title: "Final Recommendations", start: '<<<FINAL_RECOMMENDATIONS>>>', end: '<<<END_FINAL_RECOMMENDATIONS>>>' } ];
 
   sections.forEach(section => {
       const content = extractSectionContent(analysisResultText, section.start, section.end);
+      reportContent += `${section.title}\n${'-'.repeat(section.title.length)}\n`;
       if (content) {
-          reportContent += `${section.title}\n`;
-          reportContent += `${'-'.repeat(section.title.length)}\n`;
-           let cleanedContent = content
-               .replace(/\[GOOD\]/g, '(+)')
-               .replace(/\[ISSUE\]/g, '(-)')
-               .replace(/<br>/g, '\n')
-               .replace(/<p>/g, '\n')
-               .replace(/<\/p>/g, '')
-               .replace(/<strong>(.*?)<\/strong>/g, '*$1*')
-               .replace(/<em>(.*?)<\/em>/g, '_$1_')
-               .replace(/<code>(.*?)<\/code>/g, '`$1`')
-               .replace(/<ul>/g, '')
-               .replace(/<\/ul>/g, '')
-               .replace(/<ol>/g, '')
-               .replace(/<\/ol>/g, '')
-               .replace(/<li>/g, '\n - ')
-               .replace(/<\/li>/g, '')
-               .replace(/<h[1-6].*?>(.*?)<\/h[1-6]>/g, '\n### $1\n') 
-               .replace(/^\s*•\s*/gm, ' - ')
-               .replace(/Original:\s*<code.*?>([\s\S]*?)<\/code>/gi, 'Original: "$1"')
-               .replace(/Critique:\s*/gi, '\nCritique: ')
-               .replace(/Rewrite Suggestions:/gi, '\nRewrite Suggestions:')
-               .replace(/<div class="rewrite-suggestion">([\s\S]*?)<\/div>/gi, '  * Suggestion: $1')
-               .replace(/<div class="grammar-correction.*?"><span class="original-text">(.*?)<\/span>.*?<span class="corrected-text">(.*?)<\/span>.*?<\/div>/gi, '\n Correction: "$1" -> "$2"')
-               .replace(/<span class="highlight-good".*?>✓<\/span>/g,'(+)') 
-               .replace(/<span class="highlight-issue".*?>✗<\/span>/g,'(-)')
-               .replace(/&amp;/g, '&')
-               .replace(/&lt;/g, '<')
-               .replace(/&gt;/g, '>')
-               .replace(/&quot;/g, '"')
-               .replace(/&#039;/g, "'")
-               .replace(/\n\s*\n/g, '\n\n') 
-               .trim();
-
-           reportContent += cleanedContent + '\n\n';
-      } else {
-           reportContent += `${section.title}\n`;
-           reportContent += `${'-'.repeat(section.title.length)}\n`;
-           reportContent += `(No details available for this section)\n\n`;
-      }
+          let cleanedContent = content.replace(/\[GOOD\]/g, '(+)').replace(/\[ISSUE\]/g, '(-)')
+              .replace(/<br>/g, '\n').replace(/<p>/g, '\n').replace(/<\/p>/g, '').replace(/<strong>(.*?)<\/strong>/g, '*$1*').replace(/<em>(.*?)<\/em>/g, '_$1_').replace(/<code>(.*?)<\/code>/g, '`$1`')
+              .replace(/<ul>|<\/ul>|<ol>|<\/ol>/g, '').replace(/<li>/g, '\n - ').replace(/<\/li>/g, '').replace(/<h[1-6].*?>(.*?)<\/h[1-6]>/g, '\n### $1\n').replace(/^\s*•\s*/gm, ' - ')
+              .replace(/Original:\s*<code.*?>([\s\S]*?)<\/code>/gi, 'Original: "$1"').replace(/Critique:\s*/gi, '\nCritique: ').replace(/Rewrite Suggestions:/gi, '\nRewrite Suggestions:')
+              .replace(/<li class="rewrite-suggestion">([\s\S]*?)<\/li>/gi, '  * Suggestion: $1').replace(/<div class="grammar-correction.*?<span class="original-text">(.*?)<\/span>.*?<span class="corrected-text">(.*?)<\/span>.*?<\/div>/gi, '\n Correction: "$1" -> "$2"')
+              .replace(/<span class="highlight-good".*?>✓<\/span>/g,'(+)').replace(/<span class="highlight-issue".*?>✗<\/span>/g,'(-)')
+              .replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"').replace(/'/g, "'").replace(/\n\s*\n/g, '\n\n').trim();
+          reportContent += cleanedContent + '\n\n';
+      } else { reportContent += `(No details available for this section)\n\n`; }
   });
-
-  reportContent += `---------------------------------------------------------------\n`;
-  reportContent += `Generated by My Student Club CV Reviewer\n`;
-
-  const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
+  reportContent += `---------------------------------------------------------------\nGenerated by My Student Club CV Reviewer\n`;
+  const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' }); const url = URL.createObjectURL(blob); const a = document.createElement('a');
   const safeFileName = selectedFile ? selectedFile.name.replace(/[^a-z0-9_.-]/gi, '_').replace('.pdf', '') : 'CV';
-  a.href = url;
-  a.download = `${safeFileName}_Analysis_Report.txt`;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => {
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, 100);
+  a.href = url; a.download = `${safeFileName}_Analysis_Report.txt`; document.body.appendChild(a); a.click();
+  setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
 });
 
 function resetToUploadStageOnError() {
-     loadingSection.style.display = 'none';
-     resultsSection.style.display = 'none';
-     tipsSection.style.display = 'none';
-     domainSpecializationSection.style.display = 'none';
-     resetUpload();
-     uploadSection.style.display = 'block';
-     heroSection.style.display = 'block'; 
+     loadingSection.style.display = 'none'; resultsSection.style.display = 'none'; tipsSection.style.display = 'none'; domainSpecializationSection.style.display = 'none';
+     resetUpload(); uploadSection.style.display = 'block'; heroSection.style.display = 'block';
      uploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
