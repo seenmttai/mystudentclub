@@ -1,13 +1,102 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CV Reviewer - Smart Resume Analysis</title>
+  <title>CV Reviewer - My Student Club</title>
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="cv-reviewer-styles.css">
+  <style>
+    .results-grid {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 2rem;
+    }
+    .results-sidebar {
+        background-color: var(--background-light, #f8fafc);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        align-self: start;
+        position: sticky;
+        top: 100px;
+    }
+    .results-main { }
+    .feedback-section {
+        background: var(--surface);
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+    }
+    .feedback-section h3 {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+    .feedback-point { margin-bottom: 0.75rem; }
+    .feedback-point h4 { font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem; font-size: 1rem; }
+    .feedback-point p, .feedback-point ul { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-left: 0; padding-left: 0;}
+    .feedback-point ul li { margin-bottom: 0.25rem; list-style: disc; margin-left: 1.25rem;}
+    .rewrite-suggestion { margin-left: 1rem; margin-top: 0.5rem; border-left: 3px solid var(--primary-light); padding-left: 0.75rem; font-style: italic; background-color: rgba(79, 70, 229, 0.03); border-radius: 4px; padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .rewrite-btn {
+        background-color: rgba(79, 70, 229, 0.1);
+        color: var(--primary);
+        padding: 0.25rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        font-weight: 500;
+        margin-left: 0.5rem;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        border: none;
+    }
+    .rewrite-btn:hover { background-color: rgba(79, 70, 229, 0.2); }
+    .highlight-good { color: var(--success); font-weight: 500; display: inline-block; margin-left: 4px; }
+    .highlight-issue { color: var(--danger); font-weight: 500; display: inline-block; margin-left: 4px;}
+    .original-text { text-decoration: line-through; color: var(--danger); margin-right: 0.5rem;}
+    .corrected-text { color: var(--success); }
+    .grammar-correction { background-color: rgba(239, 68, 68, 0.05); padding: 0.5rem; border-radius: 4px; border-left: 3px solid var(--danger);}
+    .grammar-correction .corrected-text { font-weight: 500; }
+    .tooltip { position: relative; display: inline-block; cursor: help; border-bottom: 1px dotted var(--text-light); }
+    .tooltip .tooltiptext { visibility: hidden; width: 220px; background-color: #555; color: #fff; text-align: center; border-radius: 6px; padding: 5px 10px; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -110px; opacity: 0; transition: opacity 0.3s; font-size: 0.8rem; font-weight: 400; }
+    .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
+    #domainSpecializationSection { display: none; }
+    .content-area ul { list-style: disc; margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem; }
+    .content-area ol { list-style: decimal; margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem;}
+    .content-area li { margin-bottom: 0.3rem; }
+    .content-area strong { font-weight: 600; color: var(--text-primary); }
+    .content-area em { font-style: italic; }
+    .content-area code { background-color: rgba(100, 116, 139, 0.1); padding: 0.1rem 0.3rem; border-radius: 4px; font-size: 0.85em; color: var(--text-secondary); }
+    .content-area h4 { font-size: 1.05rem; font-weight: 600; color: var(--primary); margin-top: 1rem; margin-bottom: 0.5rem; }
+
+     @media (max-width: 1024px) {
+        .results-grid {
+            grid-template-columns: 1fr;
+        }
+        .results-sidebar {
+             position: static;
+             margin-bottom: 2rem;
+        }
+     }
+     @media (max-width: 768px) {
+        .results-sidebar { padding: 1rem; }
+        .feedback-section { padding: 1rem; }
+        .results-grid { gap: 1.5rem; }
+     }
+     @media (max-width: 480px) {
+        .feedback-section h3 { font-size: 1.1rem; }
+        .feedback-point p, .feedback-point ul { font-size: 0.85rem; }
+        .score-circle { width: 70px; height: 70px; }
+     }
+  </style>
 </head>
 <body>
   <div class="floating-header">
@@ -36,35 +125,16 @@
       </button>
       <div class="menu-items">
         <a href="/" class="menu-item">
-          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
-          </svg>
-          Home
-        </a>
-        <a href="/ai-interview" class="menu-item">
-          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-          </svg>
-          AI Interview Bot
-        </a>
-        <a href="/articleship-scorer" class="menu-item">
-          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v11a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6 4l4 4m0 0l4-4"/>
-          </svg>
-          Articleship Scorer
-        </a>
-        <a href="/salary-estimator" class="menu-item">
-          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          Salary Estimator
-        </a>
+          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Home</a>
+        <a href="/ai-interview" class="menu-item"><svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>AI Interview Bot</a>
+        <a href="/articleship-scorer" class="menu-item"><svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v11a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6 4l4 4m0 0l4-4"/></svg>Articleship Scorer</a>
+        <a href="/salary-estimator" class="menu-item"><svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Salary Estimator</a>
       </div>
     </div>
   </div>
 
   <main class="cv-reviewer-container">
-    <div class="contact-form-container" id="contactFormContainer">
+    <div class="contact-form-container" id="contactFormContainer" style="display: block;">
       <div class="contact-form-section">
         <h2>Contact Information</h2>
         <p>Please provide your details before analyzing your CV</p>
@@ -88,6 +158,11 @@
       </div>
     </div>
 
+    <div class="hero-section" id="heroSection" style="display: none;">
+        <h1 class="main-heading">Evaluate Your Resume with AI Precision</h1>
+        <h2 class="sub-heading">Get instant insights on your resume's strengths and areas for improvement to enhance your job prospects.</h2>
+    </div>
+
     <div class="upload-section" id="uploadSection" style="display: none;">
       <div class="upload-area" id="dropArea">
         <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -98,7 +173,7 @@
         <input type="file" id="fileInput" accept="application/pdf" class="file-input" />
         <button class="upload-btn" id="browseButton">Browse Files</button>
       </div>
-      
+
       <div class="preview-area" id="previewArea" style="display: none;">
         <div class="file-info">
           <svg class="file-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -106,244 +181,165 @@
           </svg>
           <div class="file-details">
             <h4 id="fileName">document.pdf</h4>
-            <p id="fileSize">125 KB</p>
+            <p id="fileSize">0 KB</p>
           </div>
         </div>
         <div class="preview-thumbnail" id="previewThumbnail"></div>
         <div class="preview-actions">
           <button class="action-btn delete-btn" id="removeFileBtn">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-            </svg>
-            Remove
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>Remove
           </button>
-          <button class="action-btn analyze-btn" id="analyzeBtn">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6 4l4 4m0 0l4-4"/>
-            </svg>
-            Analyze CV
+          <button class="action-btn analyze-btn" id="proceedToDomainBtn">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>Next: Select Domain
           </button>
         </div>
       </div>
     </div>
-    
-    <div class="hero-section">
-      <h1 class="main-heading">CV Reviewer</h1>
-      <h2 class="sub-heading">Get expert analysis on your resume for Accounting & Finance roles</h2>
-      
-      <div class="features-container">
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </div>
-          <h3>ATS Optimization</h3>
-          <p>Learn if your resume will pass ATS filters</p>
+
+    <div class="upload-section" id="domainSpecializationSection" style="display: none;">
+        <button id="backToUploadBtn" class="text-sm text-gray-600 hover:text-primary mb-4 inline-flex items-center">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>Back
+        </button>
+        <h3 class="text-xl font-semibold text-primary mb-4 text-center">Domain & Specialization</h3>
+        <p class="text-center text-text-secondary mb-6">Select the domain and specialization most relevant to your resume and target jobs.</p>
+        <div class="max-w-md mx-auto">
+            <div class="form-group">
+                <label for="domainSelect" class="form-group label">Your Domain</label>
+                <select id="domainSelect" name="domain" class="w-full p-3 border border-border rounded-lg bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                    <option value="Finance & Accounting" selected>Finance & Accounting</option>
+                    <option value="Banking">Banking</option>
+                    <option value="Human Resource">Human Resource</option>
+                    <option value="Marketing & Growth">Marketing & Growth</option>
+                    <option value="Sales & Business Development">Sales & Business Development</option>
+                    <option value="Technology">Technology</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="specializationSelect" class="form-group label">Your Specialization</label>
+                <select id="specializationSelect" name="specialization" class="w-full p-3 border border-border rounded-lg bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                    <option value="Accountant" selected>Accountant</option>
+                    <option value="AP/AR Specialist">AP/AR Specialist</option>
+                    <option value="Corporate Income Tax">Corporate Income Tax</option>
+                    <option value="Direct Tax">Direct Tax</option>
+                    <option value="Equity Research">Equity Research</option>
+                    <option value="ESG">ESG</option>
+                </select>
+            </div>
+            <button class="submit-btn w-full" id="analyzeBtn">
+                 <svg class="inline-block mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6 4l4 4m0 0l4-4"/></svg>Scan Resume
+            </button>
         </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
-          </div>
-          <h3>Detailed Scoring</h3>
-          <p>Get scored on 5 critical resume components</p>
-        </div>
-        
-        <div class="feature-card">
-          <div class="feature-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-            </svg>
-          </div>
-          <h3>Expert Feedback</h3>
-          <p>Specific improvement suggestions from industry experts</p>
-        </div>
-      </div>
     </div>
-    
+
     <div class="loading-section" id="loadingSection" style="display: none;">
-      <div class="loading-content">
-        <div class="loading-spinner"></div>
-        <h3>Analyzing Your CV</h3>
-        <p>Our AI expert is reviewing your resume for <br>structure, impact, expertise, and presentation</p>
-        <div class="progress-bar">
-          <div class="progress-fill" id="progressFill"></div>
-        </div>
-        <p class="progress-text" id="progressText">Processing your CV...</p>
-      </div>
-    </div>
-    
+       <div class="loading-content">
+         <div class="loading-spinner"></div>
+         <h3>Evaluating Resume...</h3>
+         <p id="loadingProgressText">Hang tight as we prepare the next steps!</p>
+       </div>
+     </div>
+
     <div class="results-section" id="resultsSection" style="display: none;">
-      <div class="results-header">
-        <h2>Your CV Analysis</h2>
-        <div class="score-card">
-          <div class="score-circle">
-            <svg viewBox="0 0 36 36" class="score-chart">
-              <path class="score-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <path id="scoreProgress" class="score-progress" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-              <text x="18" y="20.35" class="score-text" id="scoreText">0</text>
-            </svg>
-          </div>
-          <div class="score-label">
-            <h3>Your Score</h3>
-            <p>out of 100 points</p>
-          </div>
+        <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+             <h2 class="text-2xl font-semibold text-primary">Resume Analysis Report</h2>
+             <div></div>
         </div>
-      </div>
-      
-      <div class="results-breakdown">
-        <div class="breakdown-categories">
-          <div class="category-item" id="structureCategory">
-            <div class="category-header">
-              <h4>Structure & Completeness</h4>
-              <span class="points">? / 20 pts</span>
+
+        <div class="results-grid">
+            <div class="results-sidebar">
+                <h3 class="text-lg font-semibold mb-4 text-center">Overall Score</h3>
+                <div class="score-card mb-6 justify-center">
+                    <div class="score-circle">
+                      <svg viewBox="0 0 36 36" class="score-chart">
+                        <defs>
+                           <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                             <stop offset="0%" stop-color="#818cf8" />
+                             <stop offset="100%" stop-color="#4f46e5" />
+                           </linearGradient>
+                         </defs>
+                        <path class="score-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path id="scoreProgress" class="score-progress" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <text x="18" y="20.35" class="score-text" id="scoreText">0</text>
+                      </svg>
+                    </div>
+                </div>
+
+                <h3 class="text-lg font-semibold mb-4 text-center">Score Breakdown</h3>
+                <div class="breakdown-categories space-y-3">
+                     <div class="category-item" data-category="structure">
+                       <div class="category-header"><h4>Structure & Completeness</h4><span class="points text-sm font-medium text-primary">0/20 pts</span></div>
+                       <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
+                     </div>
+                     <div class="category-item" data-category="impact">
+                        <div class="category-header"><h4>Impact Demonstration</h4><span class="points text-sm font-medium text-primary">0/25 pts</span></div>
+                        <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
+                      </div>
+                     <div class="category-item" data-category="expertise">
+                       <div class="category-header"><h4>Professional Expertise</h4><span class="points text-sm font-medium text-primary">0/25 pts</span></div>
+                       <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
+                     </div>
+                    <div class="category-item" data-category="experience">
+                        <div class="category-header"><h4>Experience Description</h4><span class="points text-sm font-medium text-primary">0/20 pts</span></div>
+                        <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
+                    </div>
+                    <div class="category-item" data-category="presentation">
+                        <div class="category-header"><h4>Overall Presentation</h4><span class="points text-sm font-medium text-primary">0/10 pts</span></div>
+                        <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
+                    </div>
+                 </div>
+                 <div class="mt-4 pt-4 border-t border-border">
+                     <h4 class="font-semibold text-sm mb-1">Score Justification:</h4>
+                     <p class="text-xs text-text-secondary" id="scoreJustification">Loading...</p>
+                 </div>
             </div>
-            <div class="category-bar">
-              <div class="category-fill" style="width: 0%"></div>
+
+            <div class="results-main">
+                 <div class="feedback-section" id="recruiterTipsSection"><h3>Recruiter Tips</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="measurableResultsSection"><h3>Measurable Results</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="phrasesSuggestionsSection"><h3>Phrases Suggestions</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="hardSkillsSection"><h3>Hard Skills Analysis</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="softSkillsSection"><h3>Soft Skills Analysis</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="actionVerbsSection"><h3>Action Verbs Usage</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="grammarCheckSection"><h3>Grammar & Proofreading</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="formattingSection"><h3>Formatting & Readability</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="educationSection"><h3>Education & Qualification</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="articleshipSection"><h3>Articleship Experience</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="finalRecommendationsSection"><h3>Final Recommendations</h3><div class="content-area">Loading...</div></div>
+
+                 <div class="action-buttons mt-6">
+                   <button class="primary-btn" id="downloadReportBtn">
+                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>Download Report
+                   </button>
+                   <button class="secondary-btn" id="startOverBtn">
+                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>Analyze Another CV
+                   </button>
+                 </div>
             </div>
-          </div>
-          
-          <div class="category-item" id="impactCategory">
-            <div class="category-header">
-              <h4>Impact Demonstration</h4>
-              <span class="points">? / 25 pts</span>
-            </div>
-            <div class="category-bar">
-              <div class="category-fill" style="width: 0%"></div>
-            </div>
-          </div>
-          
-          <div class="category-item" id="expertiseCategory">
-            <div class="category-header">
-              <h4>Professional Expertise</h4>
-              <span class="points">? / 25 pts</span>
-            </div>
-            <div class="category-bar">
-              <div class="category-fill" style="width: 0%"></div>
-            </div>
-          </div>
-          
-          <div class="category-item" id="experienceCategory">
-            <div class="category-header">
-              <h4>Experience Description</h4>
-              <span class="points">? / 20 pts</span>
-            </div>
-            <div class="category-bar">
-              <div class="category-fill" style="width: 0%"></div>
-            </div>
-          </div>
-          
-          <div class="category-item" id="presentationCategory">
-            <div class="category-header">
-              <h4>Overall Presentation</h4>
-              <span class="points">? / 10 pts</span>
-            </div>
-            <div class="category-bar">
-              <div class="category-fill" style="width: 0%"></div>
-            </div>
-          </div>
         </div>
-      </div>
-      
-      <div class="results-tabs">
-        <div class="tab-buttons">
-          <button class="tab-btn active" data-tab="strengths">Strengths</button>
-          <button class="tab-btn" data-tab="improvements">Improvements</button>
-          <button class="tab-btn" data-tab="recommendations">Recommendations</button>
-          <button class="tab-btn" data-tab="evaluation">Evaluation</button>
-        </div>
-        
-        <div class="tab-content">
-          <div class="tab-pane active" id="strengthsTab">
-            <h3>Your CV Strengths</h3>
-            <div class="content-area" id="strengthsContent">
-              Loading strengths...
-            </div>
-          </div>
-          
-          <div class="tab-pane" id="improvementsTab">
-            <h3>Critical Improvements</h3>
-            <div class="content-area" id="improvementsContent">
-              Loading improvement suggestions...
-            </div>
-          </div>
-          
-          <div class="tab-pane" id="recommendationsTab">
-            <h3>Strategic Recommendations</h3>
-            <div class="content-area" id="recommendationsContent">
-              Loading recommendations...
-            </div>
-          </div>
-          
-          <div class="tab-pane" id="evaluationTab">
-            <h3>Final Evaluation</h3>
-            <div class="content-area" id="evaluationContent">
-              Loading final evaluation...
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="action-buttons">
-        <button class="primary-btn" id="downloadReportBtn">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-          </svg>
-          Download Report
-        </button>
-        <button class="secondary-btn" id="startOverBtn">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-          </svg>
-          Start Over
-        </button>
-      </div>
     </div>
-    
-    <div class="tips-section">
+
+    <div class="tips-section" id="tipsSection" style="display: none;">
       <h2>Pro Tips for Accounting & Finance CVs</h2>
       <div class="tips-grid">
         <div class="tip-card">
-          <div class="tip-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </div>
+          <div class="tip-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
           <h3>Quantify Your Impact</h3>
           <p>Use numbers and percentages to show the scale of your work (e.g., "Audited 20+ clients with ₹500Cr+ revenue")</p>
         </div>
-        
         <div class="tip-card">
-          <div class="tip-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </div>
+          <div class="tip-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
           <h3>Technical Terminology</h3>
           <p>Include relevant standards (Ind AS/IFRS), regulations, and software tools to pass ATS screening</p>
         </div>
-        
         <div class="tip-card">
-          <div class="tip-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m-6 8a2 2 0 100-4m0-4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
-            </svg>
-          </div>
+          <div class="tip-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m-6 8a2 2 0 100-4m0-4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg></div>
           <h3>Keep It Concise</h3>
           <p>Limit your resume to one page with focused, relevant experience and achievements</p>
         </div>
-        
         <div class="tip-card">
-          <div class="tip-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-          </div>
+          <div class="tip-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
           <h3>Highlight Certifications</h3>
-          <p>Showcase additional certifications like NISM (₹999), Excel proficiency, or ICAI achievements</p>
+          <p>Showcase additional certifications like NISM, Excel proficiency, or ICAI achievements</p>
         </div>
       </div>
     </div>
