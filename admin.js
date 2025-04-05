@@ -136,24 +136,58 @@ window.addNewBanner = async function() {
   }
 }
 
-window.showAddJobModal = function() {
-  const modal = document.getElementById('job-edit-modal');
-  document.getElementById('job-edit-title').textContent = 'Add New Job';
-  document.getElementById('job-form').reset();
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-}
-
 window.closeJobEditModal = function() {
   document.getElementById('job-edit-modal').style.display = 'none';
   document.body.style.overflow = 'auto';
 }
 
-window.closeModal = function(event) {
-  if (event && (event.target === modal || event.target.classList.contains('modal-close'))) {
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto';
+function updateCategoryOptions(table) {
+  const categorySelect = document.getElementById('categorySelect');
+  categorySelect.innerHTML = '';
+
+  let categories = [];
+
+  if (table === "Industrial Training Job Portal") {
+    categories = ["Accounting", "Auditing", "Costing", "Finance", "Taxation"];
+  } else if (table === "Fresher Jobs") {
+    categories = ["Accounting", "Audit", "Consultancy", "Controllership", "Direct Taxation", 
+                  "Equity Research", "Finance", "Investment Banking", "Private Equity"];
+  } else if (table === "Semi Qualified Jobs") {
+    categories = ["Consultancy", "Controllership", "Direct Taxation", "Finance", 
+                  "Indirect Taxation", "Internal Audit", "Investment Banking", 
+                  "Private Equity", "Statutory Audit"];
+  } else if (table === "Articleship Jobs") {
+    categories = ["Accounting", "Auditing", "Costing", "Finance", "Taxation"];
   }
+
+  categories.forEach(category => {
+    const option = document.createElement('option');
+    option.value = category;
+    option.textContent = category;
+    categorySelect.appendChild(option);
+  });
+}
+
+document.getElementById('tableSelect').addEventListener('change', (e) => {
+  updateCategoryOptions(e.target.value);
+});
+
+window.showAddJobModal = function() {
+  const modal = document.getElementById('job-edit-modal');
+  document.getElementById('job-edit-title').textContent = 'Add New Job';
+  document.getElementById('job-form').reset();
+
+  const now = new Date();
+  const localDatetime = new Date(now.getTime() - (now.getTimezoneOffset() * 60000))
+    .toISOString()
+    .slice(0, 16);
+  document.querySelector('input[name="Created_At"]').value = localDatetime;
+
+  const tableSelect = document.getElementById('tableSelect');
+  updateCategoryOptions(tableSelect.value);
+
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
 }
 
 async function showEditJobModal(job) {
@@ -162,6 +196,10 @@ async function showEditJobModal(job) {
 
   form.reset();
   document.getElementById('job-edit-title').textContent = 'Edit Job';
+
+  const tableSelect = form.elements['table'];
+  tableSelect.value = currentTable;
+  updateCategoryOptions(currentTable);
 
   Object.keys(job).forEach(field => {
     const input = form.elements[field];
@@ -178,11 +216,6 @@ async function showEditJobModal(job) {
       }
     }
   });
-
-  const tableSelect = form.elements['table'];
-  if (tableSelect) {
-    tableSelect.value = currentTable;
-  }
 
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
@@ -213,17 +246,6 @@ function renderJobCard(job, table) {
       showModal(job);
     }
   };
-
-  let postedInfo = '';
-  if (job.Created_At) {
-    const daysAgo = getDaysAgo(job.Created_At);
-    postedInfo = `<span class="job-tag time-tag">
-      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-      </svg>
-      Posted ${daysAgo}
-    </span>`;
-  }
 
   jobCard.innerHTML = `
     <div class="admin-job-actions">
@@ -261,7 +283,6 @@ function renderJobCard(job, table) {
             ₹${job.Salary}
           </span>
         ` : ''}
-        ${postedInfo}
       </div>
     </div>
   `;
@@ -280,28 +301,6 @@ function renderJobCard(job, table) {
   return jobCard;
 }
 
-function getDaysAgo(timestampStr) {
-  const timestamp = new Date(timestampStr);
-  const now = new Date();
-
-  const diffMs = now - timestamp;
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) {
-    return 'today';
-  } else if (diffDays === 1) {
-    return 'yesterday';
-  } else if (diffDays <= 10) {
-    return `${diffDays} days ago`;
-  } else if (diffDays <= 30) {
-    const weeks = Math.floor(diffDays / 7);
-    return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
-  } else {
-    const months = Math.floor(diffDays / 30);
-    return `${months} ${months === 1 ? 'month' : 'months'} ago`;
-  }
-}
-
 window.deleteJob = async function(id, table) {
   if (!confirm('Are you sure you want to delete this job?')) return;
 
@@ -309,7 +308,7 @@ window.deleteJob = async function(id, table) {
     const { error } = await supabaseClient
       .from(table)
       .delete()
-      .eq('id', table === "Fresher Jobs" ? Number(id) : id.toString());
+      .eq('id', id);
 
     if (error) throw error;
     location.reload();
@@ -325,10 +324,6 @@ document.getElementById('job-form').addEventListener('submit', async (e) => {
   const jobData = Object.fromEntries(formData.entries());
   const table = jobData.table;
   delete jobData.table;
-
-  if (!jobData.Created_At) {
-    jobData.Created_At = new Date().toISOString();
-  }
 
   const isEdit = jobData.id && jobData.id.trim() !== '';
 
@@ -382,19 +377,12 @@ async function fetchJobs(searchTerm = '', locationSearch = '', salary = '') {
     if (salary) {
       if (salary === '40000+') {
         query = query.gte('Salary', 40000);
-      } else if (salary === '18+') {
-        query = query.gte('Salary', 18);
-      } else if (salary === '15000+') {
-        query = query.gte('Salary', 15000);
-      } else if (salary === '50000+') {
-        query = query.gte('Salary', 50000);
       } else {
         const [min, max] = salary.split('-').map(Number);
         query = query.gte('Salary', min).lte('Salary', max);
       }
     }
 
-    query = query.order('Created_At', { ascending: false });
     query = query.range(page * limit, (page + 1) * limit - 1);
     const { data, error, count } = await query;
 
@@ -472,5 +460,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (isAdmin) {
     await loadBanners();
     await fetchJobs();
+    updateCategoryOptions(currentTable);
   }
 });

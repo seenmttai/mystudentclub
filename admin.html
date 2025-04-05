@@ -55,7 +55,7 @@
       <div class="search-container">
         <input type="text" id="searchInput" placeholder="Search keywords" class="search-input">
       </div>
-      
+
       <div class="filter-container">
         <input type="text" id="locationSearchInput" placeholder="Search Location" class="filter-input">
         <select id="salaryFilter" class="filter-select">
@@ -82,7 +82,7 @@
           </button>
         </div>
       </div>
-      
+
       <div id="jobs" class="job-grid"></div>
       <div class="loader" id="loader">
         <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -127,16 +127,22 @@
               <input type="text" name="Application ID" class="form-input" required>
             </div>
             <div class="form-group">
-              <label class="form-label">Created At</label>
-              <input type="datetime-local" name="Created_At" class="form-input">
+              <label class="form-label">Category</label>
+              <select name="Category" class="form-input" id="categorySelect" required>
+
+              </select>
             </div>
             <div class="form-group description-group">
               <label class="form-label">Description</label>
               <textarea name="Description" class="form-textarea" required></textarea>
             </div>
             <div class="form-group">
+              <label class="form-label">Created At</label>
+              <input type="datetime-local" name="Created_At" class="form-input">
+            </div>
+            <div class="form-group">
               <label class="form-label">Job Type</label>
-              <select name="table" class="form-input" required>
+              <select name="table" class="form-input" id="tableSelect" required>
                 <option value="Industrial Training Job Portal">Industrial Training</option>
                 <option value="Fresher Jobs">Fresher's</option>
                 <option value="Semi Qualified Jobs">Semi Qualified</option>
