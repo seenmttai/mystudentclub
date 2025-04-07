@@ -1,4 +1,5 @@
 import { getDaysAgo } from './date-utils.js';
+
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, { global: { headers: { 'apikey': supabaseKey } } });
@@ -24,28 +25,6 @@ menuCloseBtn.addEventListener('click', () => { expandedMenu.classList.remove('ac
 let currentSlide = 0, slides = [], totalSlides = 0;
 function showSlide(i) { if (!slides || slides.length === 0) return; slides.forEach(s => s.classList.remove('active')); currentSlide = (i + totalSlides) % totalSlides; slides[currentSlide].classList.add('active') }
 document.addEventListener('click', (e) => { if (!expandedMenu.contains(e.target) && !menuButton.contains(e.target) && expandedMenu.classList.contains('active')) expandedMenu.classList.remove('active') });
-
-function getDaysAgo(timestampStr) {
-  const timestamp = new Date(timestampStr);
-  const now = new Date();
-
-  const diffMs = now - timestamp;
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-
-  if (diffDays === 0) {
-    return 'today';
-  } else if (diffDays === 1) {
-    return 'yesterday';
-  } else if (diffDays <= 10) {
-    return `${diffDays} days ago`;
-  } else if (diffDays <= 30) {
-    const weeks = Math.floor(diffDays / 7);
-    return `${weeks} ${weeks === 1 ? 'week' : 'weeks'} ago`;
-  } else {
-    const months = Math.floor(diffDays / 30);
-    return `${months} ${months === 1 ? 'month' : 'months'} ago`;
-  }
-}
 
 function renderJobCard(job, table) {
   const jobCard = document.createElement('article');
@@ -223,21 +202,21 @@ async function fetchJobs() {
   isFetching = true;
   loader.style.display = 'block';
   loadMoreButton.disabled = true;
-
+  
   try {
     let query = supabaseClient.from(currentTable).select('*', { count: 'exact' });
-
+    
     const searchTerm = searchInput.value.trim();
     if (searchTerm) {
       const searchPattern = `%${searchTerm}%`;
       query = query.or(`Company.ilike.${searchPattern},Location.ilike.${searchPattern},Description.ilike.${searchPattern}`);
     }
-
+    
     const locationSearch = locationSearchInput.value.trim();
     if (locationSearch) {
       query = query.ilike('Location', `%${locationSearch}%`);
     }
-
+    
     const salary = salaryFilter.value;
     if (salary) {
       if (salary.endsWith('+')) {
@@ -248,22 +227,22 @@ async function fetchJobs() {
         query = query.gte('Salary', min).lte('Salary', max);
       }
     }
-
+    
     const category = categoryFilter.value;
     if (category) {
       query = query.ilike('Category', `%${category}%`);
     }
-
+    
     query = query.order('Created_At', { ascending: false });
-
+    
     query = query.range(page * limit, (page + 1) * limit - 1);
     const { data, error } = await query;
-
+    
     if (error) { 
       jobsContainer.textContent = 'Failed to load jobs. Please try again.'; 
       return 
     }
-
+    
     if (data && data.length > 0) {
       data.forEach(job => {
         let card = renderJobCard(job, currentTable);
@@ -356,15 +335,15 @@ async function loadBanners() {
   try {
     const { data: banners, error } = await supabaseClient.from('Banners').select('Image, Hyperlink, Type');
     if (error) return;
-
+    
     const carousel = document.querySelector('.carousel');
     carousel.innerHTML = '';
-
+    
     const relevantBanners = banners.filter(banner => {
       let currentType = currentTable === "Semi Qualified Jobs" ? "Semi-Qualified" :
                        currentTable === "Fresher Jobs" ? "Freshers" :
                        currentTable.split(' ')[0]; 
-
+      
       return banner.Type === 'All' || banner.Type === currentType;
     });
 
@@ -389,7 +368,7 @@ async function loadBanners() {
       a.appendChild(img); 
       carousel.appendChild(a);
     });
-
+    
     slides = document.querySelectorAll('.carousel-item');
     totalSlides = slides.length;
     currentSlide = 0;
@@ -408,17 +387,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   fetchJobs(); 
   fetchCategories(); 
   updateOpportunitiesTextDisplay(currentTable);
-
+  
   const resourcesBtn = document.getElementById('resourcesDropdownBtn');
   const resourcesDropdown = document.getElementById('resourcesDropdown');
   const dropdownIcon = resourcesBtn.querySelector('.dropdown-icon');
-
+  
   resourcesBtn.addEventListener('click', (e) => {
     e.preventDefault();
     resourcesDropdown.classList.toggle('active');
     dropdownIcon.classList.toggle('open');
   });
-
+  
   document.addEventListener('click', (e) => {
     if (!resourcesBtn.contains(e.target) && !resourcesDropdown.contains(e.target)) {
       resourcesDropdown.classList.remove('active');
@@ -467,13 +446,13 @@ window.showAddJobModal = function() {
   const modal = document.getElementById('job-edit-modal');
   document.getElementById('job-edit-title').textContent = 'Add New Job';
   document.getElementById('job-form').reset();
-
+  
   const now = new Date();
   const localDatetime = new Date(now.getTime() - (now.getTimezoneOffset() * 60000))
     .toISOString()
     .slice(0, 16);
   document.querySelector('input[name="Created_At"]').value = localDatetime;
-
+  
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
