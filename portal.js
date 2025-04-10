@@ -23,6 +23,16 @@ menuButton.addEventListener('click', () => { expandedMenu.classList.toggle('acti
 const menuCloseBtn = document.getElementById('menuCloseBtn');
 menuCloseBtn.addEventListener('click', () => { expandedMenu.classList.remove('active') });
 let currentSlide = 0, slides = [], totalSlides = 0;
+
+let currentTable = 'Industrial Training Job Portal';
+if (window.location.pathname.includes('articleship')) {
+  currentTable = 'Articleship Jobs';
+} else if (window.location.pathname.includes('semi-qualified')) {
+  currentTable = 'Semi Qualified Jobs';
+} else if (window.location.pathname.includes('fresher')) {
+  currentTable = 'Fresher Jobs';
+}
+
 function showSlide(i) { if (!slides || slides.length === 0) return; slides.forEach(s => s.classList.remove('active')); currentSlide = (i + totalSlides) % totalSlides; slides[currentSlide].classList.add('active') }
 document.addEventListener('click', (e) => { if (!expandedMenu.contains(e.target) && !menuButton.contains(e.target) && expandedMenu.classList.contains('active')) expandedMenu.classList.remove('active') });
 
@@ -148,8 +158,6 @@ function getApplicationLink(id) {
   return `mailto:${email}?subject=${encodeURIComponent(subject)}` 
 }
 
-let currentTable = 'Industrial Training Job Portal';
-const footerTabs = document.querySelectorAll('.footer-tab');
 const opportunitiesText = document.getElementById('opportunitiesText');
 function updateOpportunitiesTextDisplay(table) { 
   if (table === "Industrial Training Job Portal" || table === "Articleship Jobs") { 
@@ -158,22 +166,6 @@ function updateOpportunitiesTextDisplay(table) {
     opportunitiesText.style.display = 'none' 
   } 
 }
-footerTabs.forEach(tab => {
-  tab.addEventListener('click', () => {
-    footerTabs.forEach(t => t.classList.remove('active'));
-    tab.classList.add('active');
-    currentTable = tab.dataset.table;
-    populateSalaryFilter(currentTable);
-    page = 0;
-    jobsContainer.innerHTML = '';
-    hasMoreData = true;
-    loadMoreButton.style.display = 'none';
-    fetchJobs(); 
-    updateOpportunitiesTextDisplay(currentTable);
-    loadBanners(); 
-    fetchCategories();
-  });
-});
 
 function populateSalaryFilter(table) {
   salaryFilter.innerHTML = '';

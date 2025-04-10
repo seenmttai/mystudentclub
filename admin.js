@@ -452,6 +452,7 @@ document.querySelectorAll('.footer-tab').forEach(tab => {
     hasMoreData = true;
     loadMoreButton.style.display = 'none';
     fetchJobs(searchInput.value, locationSearchInput.value, salaryFilter.value);
+    updateCategoryOptions(currentTable);
   });
 });
 
