@@ -2,152 +2,301 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Student Club</title>
-  <meta name="description" content="Find the best industrial training, articleship, and CA fresher jobs at My Student Club's job portal. Your path to a successful CA career starts here.">
-  <meta name="keywords" content="CA jobs, industrial training, articleship, CA fresher jobs, chartered accountant, CA career">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <title>MSC Industrial Training Guarantee Program</title>
+  <link rel="icon" type="image/png" href="https://mystudentclub.pages.dev/assets/icon-70x70.png">
   <link rel="stylesheet" href="style.css">
-  <link rel="canonical" href="https://www.mystudentclub.com" />
-  <meta name="robots" content="index, follow">
-  <script type="module" src="date-utils.js"></script>
+  <link rel="stylesheet" href="sections.css">
+  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
 </head>
 <body>
-  <div class="floating-header">
-    <div class="header-container">
-      <a href="/" class="brand-link">
-        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
-      </a>
-      <div class="auth-buttons">
-        <a href="/login" class="auth-icon-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-        </a>
-      </div>
-      <button class="menu-button" id="menuButton">
-        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-        </svg>
-      </button>
+  <div class="hero">
+    <div class="money-back-sticker">
+      <img src="https://mystudentclub.pages.dev/assets/money-back.png" alt="Money Back Guarantee">
     </div>
-    <div class="expanded-menu" id="expandedMenu">
-      <button class="menu-close-btn" id="menuCloseBtn">
-        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    <div class="badge">Nov'26, May'27 Students</div>
+    <h1>MSC Industrial Training<br>Guarantee Program</h1>
+
+    <div class="features">
+      <div class="feature">
+        <svg class="checkmark" viewBox="0 0 24 24">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
         </svg>
-      </button>
-      <div class="menu-items">
-        <a href="/industrial-training-ready-program" class="menu-item">
-          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253"/>
+        All-in-one Placement Workshop
+      </div>
+      <div class="feature">
+        <svg class="checkmark" viewBox="0 0 24 24">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+        </svg>
+        Trusted By 1000+ Students
+      </div>
+      <div class="feature rating">
+        <span class="stars">★★★★★</span>
+        4.9 / 5 Rated Workshop
+      </div>
+      <div class="feature placement-guarantee">
+        <svg class="checkmark" viewBox="0 0 24 24">
+          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+        </svg>
+        100% Placement Rate
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="number">1000+ Students Placed</div>
+      </div>
+      <div class="stat">
+        <div class="number">₹1.25L Highest Stipend Offered</div>
+      </div>
+      <div class="stat">
+        <div class="number">500+ Recruiting Organizations</div>
+      </div>
+      <div class="stat">
+        <div class="number">₹40000 Average Stipend</div>
+      </div>
+    </div>
+  </div>
+
+  <section class="success-stories">
+    <div class="section-bg">
+      <lottie-player
+        src="https://assets2.lottiefiles.com/packages/lf20_pwohahvd.json"
+        background="transparent"
+        speed="1"
+        style="width: 100%; height: 100%;"
+        loop
+        autoplay>
+      </lottie-player>
+    </div>
+    <h2>Our Feb'25 Batch <span class="highlight">Students</span> placed in Top Companies</h2>
+    <div class="carousel-container">
+      <div class="carousel" id="studentCarousel"></div>
+    </div>
+  </section>
+
+  <section class="pain-points">
+    <div class="section-bg">
+      <lottie-player
+        src="https://assets5.lottiefiles.com/packages/lf20_kkflmtur.json"
+        background="transparent"
+        speed="1"
+        style="width: 100%; height: 100%;"
+        loop
+        autoplay>
+      </lottie-player>
+    </div>
+    <div class="pain-points-content">
+      <h2>Are you too Struggling?</h2>
+      <div class="struggles">
+        <div class="struggle-item">No Interview Calls for Industrial Training?</div>
+        <div class="struggle-item">Want to Land your dream opportunity?</div>
+        <div class="struggle-item">Want to earn 50K+ Stipend?</div>
+        <div class="struggle-item">Want to add a brand to your CV for post qualification?</div>
+      </div>
+      <p class="solution">That's why we created a program to ensure you land your dream opportunity</p>
+    </div>
+  </section>
+
+  <section class="benefits">
+    <div class="section-bg">
+      <lottie-player
+        src="https://assets9.lottiefiles.com/packages/lf20_47frevky.json"
+        background="transparent"
+        speed="1"
+        style="width: 100%; height: 100%;"
+        loop
+        autoplay>
+      </lottie-player>
+    </div>
+    <div class="benefits-content">
+      <h2>Why Enroll?</h2>
+      <div class="benefits-grid">
+        <div class="benefit-card">Access to 100+ Exclusive Vacancies</div>
+        <div class="benefit-card">Personal CV Evaluation by Founder</div>
+        <div class="benefit-card">8 Day Masterclass on CV Preparation to Placement</div>
+        <div class="benefit-card">Get Referrals in Top Organizations</div>
+        <div class="benefit-card">Multiple Mock Interviews</div>
+        <div class="benefit-card">1000+ HR Mail IDs List</div>
+        <div class="benefit-card">MSC LMS - Videos of Trainees from Top Orgs</div>
+        <div class="benefit-card">Personal Mentor</div>
+        <div class="benefit-card">Regular One-One Call with Founder</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="curriculum">
+    <div class="section-bg">
+      <lottie-player
+        src="https://assets2.lottiefiles.com/packages/lf20_pwohahvd.json"
+        background="transparent"
+        speed="1"
+        style="width: 100%; height: 100%;"
+        loop
+        autoplay>
+      </lottie-player>
+    </div>
+    <h2>What will you Learn?</h2>
+    <div class="days-grid">
+      <div class="day-card">
+        <h3>Day 1: Roles in IT</h3>
+        <ul>
+          <li>Understanding what different roles are</li>
+          <li>Finding what suits you</li>
+          <li>Finding companies hiring for that role</li>
+        </ul>
+      </div>
+      <div class="day-card">
+        <h3>Day 2: Crafting Perfect CV</h3>
+        <ul>
+          <li>Making the Perfect CV</li>
+          <li>Personal CV Review</li>
+          <li>MSC AI CV Reviewer</li>
+        </ul>
+      </div>
+      <div class="day-card">
+        <h3>Day 3: Building LinkedIn</h3>
+        <ul>
+          <li>LinkedIn Profile Optimisation</li>
+          <li>Using Connection Notes</li>
+          <li>Other LinkedIn Hacks</li>
+        </ul>
+      </div>
+      <div class="day-card">
+        <h3>Day 4: Application Hacks</h3>
+        <ul>
+          <li>Right way to Apply</li>
+          <li>Using Job Portals</li>
+          <li>Getting References</li>
+          <li>Following Up</li>
+        </ul>
+      </div>
+      <div class="day-card">
+        <h3>Day 5: Let's Cold Mail</h3>
+        <ul>
+          <li>Getting Access to 1000+ IT HR Mail IDs</li>
+          <li>Cold Mail Tips</li>
+          <li>Personalized Mailing Tools</li>
+        </ul>
+      </div>
+      <div class="day-card">
+        <h3>Day 6: Everything Excel</h3>
+        <ul>
+          <li>Mastering Excel</li>
+          <li>Questions Asked on Excel</li>
+          <li>Other Tools</li>
+        </ul>
+      </div>
+      <div class="day-card">
+        <h3>Day 7: Cracking Interviews</h3>
+        <ul>
+          <li>Interview Guidebook</li>
+          <li>Staying Confident</li>
+          <li>MSC LMS</li>
+        </ul>
+      </div>
+      <div class="day-card">
+        <h3>Day 8: Mock Interviews</h3>
+        <ul>
+          <li>Personal Mock Interviews</li>
+          <li>Finding Improvement Areas</li>
+          <li>Placement Time</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+   <section class="testimonials">
+    <h2>What Our <span class="highlight">Students</span> Have To Say</h2>
+    <h2 class="mobile-testimonial-title">Testimonials</h2>
+    <div class="testimonials-container">
+      <div class="testimonials-content"></div>
+      <div class="nav-buttons">
+        <button class="prev-button">
+          <svg viewBox="0 0 24 24">
+            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
           </svg>
-          Industrial Training Ready Program
-        </a>
-        <a href="/articleship-ready-program" class="menu-item">
-          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </button>
+        <button class="next-button">
+          <svg viewBox="0 0 24 24">
+            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
           </svg>
-          Articleship Ready Program
-        </a>
-        <a href="/cv-reviewer" class="menu-item">
-          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-          </svg>
-          CV Reviewer
-        </a>
-        <a href="/ai-interview" class="menu-item">
-          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-          </svg>
-          AI Interview Bot
-        </a>
-        <div class="menu-item-dropdown">
-          <button class="menu-item" id="resourcesDropdownBtn">
-            <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-            </svg>
-            Resources
-            <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
-          <div class="dropdown-content" id="resourcesDropdown">
-            <a href="/ca-freshers" class="dropdown-item">CA Freshers</a>
-            <a href="/ca-industrial-training" class="dropdown-item">CA Industrial Training</a>
-            <a href="/articleship" class="dropdown-item">Articleship</a>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="get-certified" data-aos="fade-up">
+    <h2 data-aos="zoom-in">Get <span class="highlight">Certified</span></h2>
+    <p data-aos="zoom-in" data-aos-delay="100">Level up your career with MSC's industry recognised certificate.</p>
+    <div class="certificate-container" data-aos="flip-left" data-aos-delay="200">
+      <div class="certificate-frame rotated">
+        <div class="certificate-back"></div>
+        <div class="certificate-frame-border"></div>
+        <div class="certificate-glass">
+          <div class="certificate-content">
+            <img class="certificate-image" src="https://mystudentclub.pages.dev/assets/certificate.jpg" alt="MSC Certificate" />
+            <div class="certificate-overlay"></div>
+            <div class="shine-effect"></div>
           </div>
+          <div class="certificate-corner corner-tl"></div>
+          <div class="certificate-corner corner-tr"></div>
+          <div class="certificate-corner corner-bl"></div>
+          <div class="certificate-corner corner-br"></div>
+          <div class="floating-emblem">
+            <svg class="award-icon" viewBox="0 0 24 24">
+              <path d="M12 2L8 6H3v5l-2 4 2 4v5h5l4 2 4-2h5v-5l2-4-2-4V6h-5L12 2zm0 3l2.5 2.5H15v3l1.5 3-1.5 3v3h-3l-3 1.5L6 17H3v-3L1.5 11 3 8V5h3l3-2.5L12 5z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="certificate-shadow"></div>
+      </div>
+    </div>
+    <a href="https://pmny.in/0IRRGF31dqgW" class="action-btn" data-aos="fade-up" data-aos-delay="400">Get Your Certificate</a>
+  </section>
+
+  <section class="mentor">
+    <div class="section-bg">
+      <lottie-player
+        src="https://assets5.lottiefiles.com/packages/lf20_kkflmtur.json"
+        background="transparent"
+        speed="1"
+        style="width: 100%; height: 100%;"
+        loop
+        autoplay>
+      </lottie-player>
+    </div>
+    <div class="mentor-profile">
+      <div class="mentor-image">
+        <img src="https://mystudentclub.pages.dev/assets/mentor_transparent.png" alt="CA Padam Bhansali" class="mentor-img">
+      </div>
+      <div class="mentor-info">
+        <h2>Meet your <span class="highlight">Mentor</span></h2>
+        <h3>CA Padam Bhansali</h3>
+        <p class="mentor-title">Founder, My Student Club</p>
+        <p class="mentor-description">
+          CA Padam Bhansali, Founder of My Student Club, has helped thousands of CA students secure their dream Industrial Training roles in top companies for stipends upto 1.25L! He did his Industrial Training from Flipkart in Business Finance domain and has conducted 100+ guidance sessions positively impacting 10,000+ students.<br><br>
+          Want to secure your dream role? Join the MSC IT Guarantee Program for priority access to top opportunities!
+        </p>
+        <div class="mentor-achievements">
+          <div class="achievement">Helped 100+ Companies</div>
+          <div class="achievement">Placed 1000+ Students</div>
+          <div class="achievement">10k+ LinkedIn Followers</div>
         </div>
       </div>
     </div>
+  </section>
+
+  <div class="fixed-cta">
+    <div class="timer-container">
+    </div>
+    <div class="price">
+      <span class="original">₹4449</span> <span class="discounted">₹999</span>
+    </div>
+    <b>Enrollment Closed</b>
   </div>
-  <div class="banner-section">
-    <div class="carousel"></div>
-  </div>
-  <main class="container">
-    <div class="search-container">
-      <input type="text" id="searchInput" placeholder="Search job keywords" class="search-input">
-    </div>
-    <div class="filter-container">
-      <input type="text" id="locationSearchInput" placeholder="Search Location" class="filter-input">
-      <select id="salaryFilter" class="filter-select">
-        <option value="">Any</option>
-      </select>
-      <select id="categoryFilter" class="filter-select">
-        <option value="">All Categories</option>
-      </select>
-      <div id="opportunitiesText" class="opportunities-text" style="display:none;">Showing 1000+ Available Opportunities</div>
-    </div>
-    <div id="jobs" class="job-grid"></div>
-    <div class="loader" id="loader">
-      <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-      </svg>
-    </div>
-    <div class="load-more-container">
-      <button id="loadMore" class="load-more-btn">Load More Jobs</button>
-    </div>
-  </main>
-  <div id="modal" class="modal-overlay" onclick="closeModal(event)">
-    <div class="modal">
-      <button class="modal-close" onclick="closeModal(event)">✕</button>
-      <div id="modal-content"></div>
-    </div>
-  </div>
-  <nav class="footer-nav">
-    <a href="/" class="footer-tab active">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253"/>
-      </svg>
-      <span>Industrial Training</span>
-    </a>
-    <a href="/articleship.html" class="footer-tab">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-      </svg>
-      <span>Articleship</span>
-    </a>
-    <a href="/semi-qualified.html" class="footer-tab">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-      </svg>
-      <span>Semi Qualified</span>
-    </a>
-    <a href="/fresher.html" class="footer-tab">
-      <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-      </svg>
-      <span>Freshers</span>
-    </a>
-  </nav>
-  <a href="https://wa.me/917228881182?text=" target="_blank" class="whatsapp-button" aria-label="Contact us on WhatsApp">
-    <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M20.463 3.488C18.217 1.24 15.231 0 12.05 0 5.495 0 0.165 5.33 0.157 11.885c0 2.096.548 4.139 1.595 5.942L0 24l6.335-1.661a11.88 11.88 0 5.683 1.458c6.548 0 11.877-5.33 11.882-11.885.008-3.173-1.231-6.161-3.487-8.422zm-8.413 18.26h-.004a9.88 9.88 0 01-5.042-1.382l-.36-.215-3.735.978.998-3.648-.236-.374a9.883 9.883 0 01-1.518-5.221c.005-5.467 4.458-9.92 9.93-9.92 2.65.004 5.142 1.032 7.018 2.908 1.872 1.88 2.902 4.374 2.9 7.026-.008 5.467-4.457 9.92-9.931 9.92zm5.43-7.424c-.299-.149-1.772-.875-2.048-.974-.277-.099-.478-.148-.678.149-.2.298-.774.975-.95 1.174-.173.199-.347.224-.647.075-.3-.15-1.263-.465-2.408-1.483-.89-.795-1.49-1.777-1.663-2.076-.174-.298-.018-.46.13-.608.135-.133.3-.349.45-.522.15-.174.2-.298.3-.497.099-.199.05-.374-.026-.524-.075-.149-.677-1.631-.927-2.233-.244-.584-.492-.505-.676-.513-.173-.010-.374-.01-.574-.01-.2 0-.523.075-.797.374-.273.298-1.047.974-1.047 2.38 0 1.406 1.022 2.763 1.172 2.962.15.199 2.15 3.284 5.164 4.6.55.24 1.173.5 1.574.639.661.21 1.262.18 1.736.11.53-.08 1.633-.668 1.863-1.314.23-.645.23-1.2.16-1.315-.075-.15-.274-.238-.574-.397z"/>
-    </svg>
-    Contact Us
-  </a>
-  <script type="module" src="portal.js"></script>
+
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script src="app.js" type="module"></script>
 </body>
 </html>
