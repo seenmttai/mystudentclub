@@ -1,0 +1,47 @@
+@import 'header-styles.css';
+@import 'job-styles.css';
+
+.whatsapp-button {
+  position: fixed;
+  bottom: 90px; 
+  right: 20px;
+  width: 180px; 
+  height: 48px; 
+  background-color: #25D366;
+  color: white;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25); 
+  z-index: 999;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.whatsapp-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3); 
+}
+
+.whatsapp-button svg {
+  width: 24px; 
+  height: 24px;
+  margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+  .whatsapp-button {
+    width: 160px; 
+    height: 40px; 
+    bottom: 70px; 
+    right: 15px;
+    font-size: 14px; 
+  }
+
+  .whatsapp-button svg {
+    width: 20px; 
+    height: 20px; 
+  }
+}
