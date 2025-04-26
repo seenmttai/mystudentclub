@@ -1,7 +1,7 @@
 backend:
   name: git-gateway
 
-media_folder: "assets" # Keep if you need uploads
+media_folder: "assets" 
 
 collections:
   - name: "test"
