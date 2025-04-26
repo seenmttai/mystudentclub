@@ -11,7 +11,7 @@ collections:
     create: true
     slug: "{{slug}}"
     extension: "html"
-    format: "html"
+    format: "frontmatter" 
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Publish Date", name: "date", widget: "datetime", optional: true }
