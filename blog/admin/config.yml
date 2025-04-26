@@ -11,17 +11,17 @@ collections:
     create: true
     slug: "{{slug}}"
     extension: "html"
-    format: "frontmatter" 
+    format: "frontmatter"
     fields:
       - { label: "Title", name: "title", widget: "string" }
-      - { label: "Publish Date", name: "date", widget: "datetime", optional: true }
+      - { label: "Publish Date", name: "date", widget: "datetime", required: false }
       - label: "Full HTML Content"
         name: "body"
         widget: "code"
+        default_language: "html"
+        allow_language_selection: false
+        output_code_only: true
         hint: "Enter blog code, preferably inside the content."
-        options:
-          language: "html"
-          allow_language_selection: false
         default: |
           <!DOCTYPE html>
           <html lang="en" class="scroll-smooth">
