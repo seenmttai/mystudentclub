@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Status Check</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f4f9;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 25px;
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        #resultArea {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+            min-height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #e9ecef;
+            color: #495057;
+            border: 1px solid #ced4da;
+        }
+        #resultArea.success {
+            background-color: #d4edda;
+            color: #155724;
+            border-color: #c3e6cb;
+        }
+        #resultArea.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border-color: #f5c6cb;
+        }
+        #resultArea.info {
+            background-color: #cce5ff;
+            color: #004085;
+            border-color: #b8daff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Check Admin Status</h1>
+        <button id="checkAdminBtn">Check My Admin Status</button>
+        <div id="resultArea">Click the button to check your status.</div>
+    </div>
+
+    <script>
+        const checkAdminBtn = document.getElementById('checkAdminBtn');
+        const resultArea = document.getElementById('resultArea');
+        const workerUrl = 'https://auth-check.bhansalimanan55.workers.dev';
+
+        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+
+        if (!supabaseUrl || supabaseUrl === 'YOUR_SUPABASE_URL' || !supabaseAnonKey || supabaseAnonKey === 'YOUR_SUPABASE_ANON_KEY') {
+             resultArea.textContent = 'Supabase URL or Key not configured in the HTML.';
+             resultArea.className = 'error';
+             checkAdminBtn.disabled = true;
+        }
+
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        checkAdminBtn.addEventListener('click', async () => {
+            resultArea.textContent = 'Checking...';
+            resultArea.className = '';
+            checkAdminBtn.disabled = true;
+
+            try {
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+
+                if (sessionError || !session) {
+                    resultArea.textContent = 'Please log in first to check admin status.';
+                    resultArea.className = 'info';
+                    checkAdminBtn.disabled = false;
+                    return;
+                }
+
+                const accessToken = session.access_token;
+
+                const response = await fetch(workerUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${accessToken}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    resultArea.textContent = 'Success! You ARE a super admin.';
+                    resultArea.className = 'success';
+                } else if (response.status === 403) {
+                    resultArea.textContent = 'Access Denied: You are NOT a super admin.';
+                    resultArea.className = 'error';
+                } else {
+                     resultArea.textContent = `Error: ${result.error || response.statusText || 'Unknown error'}`;
+                     resultArea.className = 'error';
+                }
+
+            } catch (error) {
+                console.error('Fetch Error:', error);
+                resultArea.textContent = `Network or script error: ${error.message}`;
+                resultArea.className = 'error';
+            } finally {
+                checkAdminBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
