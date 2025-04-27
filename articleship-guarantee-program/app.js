@@ -2,41 +2,6 @@ const generateData = () => {
   const baseURL = "https://mystudentclub.pages.dev/assets/";
   const students = [
     {
-      name: "Nandita Rastogi",
-      course: "MSC Articleship Guarantee Program",
-      linkedin: "https://www.linkedin.com/in/nanditarastogi/",
-      image: baseURL + "nandita.jpeg",
-      company: "EY"
-    },
-    {
-      name: "Parth Khandelwal",
-      course: "MSC Articleship Guarantee Program",
-      linkedin: "https://www.linkedin.com/in/parthkhandelwal21/",
-      image: baseURL + "parth.jpeg",
-      company: "BDO"
-    },
-    {
-      name: "Shubham Jain",
-      course: "MSC Articleship Guarantee Program",
-      linkedin: "https://www.linkedin.com/in/shubhamjain02104/",
-      image: baseURL + "shubham.jpeg",
-      company: "Lodha & Co"
-    },
-    {
-      name: "Tulsi Bisen",
-      course: "MSC Articleship Guarantee Program",
-      linkedin: "https://www.linkedin.com/in/tulsi-bisen/",
-      image: baseURL + "tulsi.jpeg",
-      company: "Arc Advisory"
-    },
-    {
-      name: "Tanya Arora",
-      course: "MSC Articleship Guarantee Program",
-      linkedin: "https://www.linkedin.com/in/tanya-arora-3990bb206/",
-      image: baseURL + "tanya.jpeg",
-      company: "BDO"
-    },
-    {
       name: "Abhishek Puranik",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/abhishek-puranik221b/",
@@ -175,14 +140,10 @@ const generateData = () => {
       linkedin: "https://www.linkedin.com/in/aditi-tagalpallewar/",
       image: baseURL + "Aditi-Tagalwellakar.jpg",
       company: "UBS"
-    },
+    }
   ];
 
-  const articleshipStudents = students.filter(student => student.course === "MSC Articleship Guarantee Program");
-  const itStudents = students.filter(student => student.course === "MSC IT Guarantee Program");
-  const orderedStudents = [...articleshipStudents, ...itStudents];
-
-  return { students: orderedStudents };
+  return { students };
 };
 
 const initializeCarousel = () => {
@@ -197,7 +158,7 @@ const initializeCarousel = () => {
     card.className = 'student-card';
     card.innerHTML = `
       <div class="student-image">
-        <img src="${student.image}" alt="${student.name}" loading="lazy" />
+        <img src="${student.image}" alt="${student.name}" />
       </div>
       <h3>${student.name}</h3>
       <p>${student.course}</p>
@@ -219,7 +180,7 @@ const initializeCarousel = () => {
   });
 
   let position = 0;
-  let speed = 2; 
+  let speed = 2;
   let animationId;
   let lastTime = 0;
 
@@ -228,7 +189,7 @@ const initializeCarousel = () => {
     const delta = currentTime - lastTime;
 
     if (true) {
-      position -= speed * (delta / 16); 
+      position -= speed * (delta / 16);
       if (position <= -(getCardWidth() * cards.length)) {
         position = 0;
       }
@@ -300,7 +261,7 @@ const initializeBenefitsCarousel = () => {};
 const initializeTestimonials = () => {
   const testimonials = [
     {
-      text: "The MSC Articleship Program has been a game-changer in my journey to find CA Articleship Training. It made things super convenient by having all vacancies from platforms like Naukri, LinkedIn, and many others in one place. The batch gave students like me special attention, with priority support for Articleship placements. We had interactive sessions with professionals from different industries, helping me understand how each industry works and choose the best fit for myself. From CV making to mock interviews, everything was covered under one roof with valuable feedback that helped me improve. I'm truly grateful to Padam and the entire MSC team for their incredible work in helping students like us get placed.\n\nI'd highly recommend the MSC Articleship Program to anyone serious about pursuing Articleship Training!",
+      text: "The MSC IT Program has been a game-changer in my journey to find CA Industrial Training. It made things super convenient by having all vacancies from platforms like Naukri, LinkedIn, and many others in one place. The batch gave students like me special attention, with priority support for IT placements. We had interactive sessions with professionals from different industries, helping me understand how each industry works and choose the best fit for myself. From CV making to mock interviews, everything was covered under one roof with valuable feedback that helped me improve. I’m truly grateful to Padam and the entire MSC team for their incredible work in helping students like us get placed.\n\nI’d highly recommend the MSC IT Program to anyone serious about pursuing Industry Training!",
       image: "https://mystudentclub.pages.dev/assets/t1.jpg"
     },
     {
@@ -324,7 +285,7 @@ const initializeTestimonials = () => {
       image: "https://mystudentclub.pages.dev/assets/t6.jpg"
     },
     {
-      text: "The MSC IT Guarantee Program by My Student Club lived upto its name. The resume and cover letter sessions were top-notch, and the one-on-one review of resume provided a personal touch which most masterclasses don'st.\n\nThe curated list of hiring companies and mass mailing strategy helped me land three offers before choosing Signify. Plus, interactive sessions with industry experts who have been in the same position as us in the past provided invaluable career insights beyond just industrial training.\n\nHuge thanks to My Student Club for this incredible initiative and special mention to CA Padam Bhansali for his dedication to the CA student community.",
+      text: "The MSC IT Guarantee Program by My Student Club lived upto its name. The resume and cover letter sessions were top-notch, and the one-on-one review of resume provided a personal touch which most masterclasses don't.\n\nThe curated list of hiring companies and mass mailing strategy helped me land three offers before choosing Signify. Plus, interactive sessions with industry experts who have been in the same position as us in the past provided invaluable career insights beyond just industrial training.\n\nHuge thanks to My Student Club for this incredible initiative and special mention to CA Padam Bhansali for his dedication to the CA student community.",
       image: "https://mystudentclub.pages.dev/assets/t7.jpg"
     },
     {
@@ -451,20 +412,24 @@ const initializeCertificate = () => {
 
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+function safe(fn, label) {
   try {
-    initializeCarousel();
-    initializeCountdown();
-    initializeTestimonials();
-    initializeCertificate();
-
-    AOS.init({
-      duration: 1000,
-      once: true
-    });
-  } catch (error) {
-    console.error('Initialization error:', error);
+    fn();
+  } catch (e) {
+    console.error(`${label} failed`, e);
   }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  safe(initializeTestimonials, 'testimonials');
+  safe(initializeCarousel, 'carousel');
+  safe(initializeCountdown, 'count-down');
+  safe(initializeCertificate, 'certificate');
+
+  AOS.init({
+    duration: 1000,
+    once: true
+  });
 });
 
 const resizeObserver = new ResizeObserver(entries => {
