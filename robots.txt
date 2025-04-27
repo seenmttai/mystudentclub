@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
-
+Disallow: /admin.html
+Disallow: /blog/admin/
+Disallow: /payment-test.html
 Sitemap: https://www.mystudentclub.com/sitemap.xml
-

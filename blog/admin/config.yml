@@ -21,7 +21,7 @@ collections:
         default_language: "html"
         allow_language_selection: false
         output_code_only: true
-        hint: "Enter blog code, preferably inside the content."
+        hint: "Enter the full HTML content for the blog post below. Use the Title field above for the <title> tag."
         default: |
           <!DOCTYPE html>
           <html lang="en" class="scroll-smooth">
@@ -223,7 +223,7 @@ collections:
                     <span>Published on: {{date | date('MMMM D, YYYY')}}</span>
                   </p>
                 </div>
-                
+
                 <article class="p-8 md:p-12 bg-white relative">
                   <div class="content-decoration relative mb-8">
                     <div class="flex items-center mb-6 text-sm text-slate-500">
@@ -235,10 +235,15 @@ collections:
                         5 min read
                       </span>
                     </div>
-                    
-                    <p class="text-slate-700 leading-relaxed">Start writing your blog post content here...</p>
+
+                    <pre>
+                    Hello, world
+                    this is a test
+                    <img src="https://www.mystudentclub.com/assets/760528e3-3297-400c-8da5-6d4e7b01f154_removalai_preview.png">
+
+                    </pre>
                   </div>
-                  
+
                   <div class="mt-10 pt-8 border-t border-slate-100">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                       <div class="flex items-center space-x-3">
@@ -248,7 +253,7 @@ collections:
                           <p class="text-sm text-slate-600">Admin</p>
                         </div>
                       </div>
-                      
+
                       <div class="flex space-x-2 relative">
                         <button id="shareButton" class="px-4 py-2 border border-slate-200 rounded-lg text-slate-600 hover:bg-slate-50 transition-colors text-sm font-medium flex items-center">
                           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -263,7 +268,7 @@ collections:
                 </article>
               </div>
 
-              
+
             </main>
 
             <a href="https://api.whatsapp.com/send/?phone=919313148303" target="_blank" class="whatsapp-button fixed bottom-24 right-5 z-50 flex items-center space-x-2 text-sm font-medium">
@@ -280,7 +285,7 @@ collections:
                 const scrolled = (winScroll / height) * 100;
                 document.getElementById("reading-progress").style.width = scrolled + "%";
               });
-              
+
               window.addEventListener('scroll', function() {
                 const header = document.querySelector('.floating-header');
                 if (window.scrollY > 10) {
@@ -292,19 +297,19 @@ collections:
 
               document.getElementById('shareButton').addEventListener('click', function() {
                 const currentUrl = window.location.href;
-                
+
                 const tempTextArea = document.createElement('textarea');
                 tempTextArea.value = currentUrl;
                 document.body.appendChild(tempTextArea);
-                
+
                 tempTextArea.select();
                 document.execCommand('copy');
-                
+
                 document.body.removeChild(tempTextArea);
-                
+
                 const tooltip = document.getElementById('copiedTooltip');
                 tooltip.style.opacity = '1';
-                
+
                 setTimeout(() => {
                   tooltip.style.opacity = '0';
                 }, 2000);
@@ -312,3 +317,12 @@ collections:
             </script>
           </body>
           </html>
+
+  - name: "sitemap_files"
+    label: "Sitemaps"
+    files:
+      - label: "Blog Sitemap"
+        name: "blog_sitemap"
+        file: "blog-sitemap.xml"
+        fields:
+          - { label: "Sitemap XML Content", name: "content", widget: "code", default_language: "xml", output_code_only: true, hint: "Manually add <url> blocks for new blog posts here. Be careful with XML syntax." }
