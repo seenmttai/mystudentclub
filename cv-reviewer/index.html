@@ -382,6 +382,24 @@
   </main>
 
   <script type="module" src="cv-reviewer.js"></script>
+  <script>
+const resourcesBtn = document.getElementById('resourcesDropdownBtn');
+const resourcesDropdown = document.getElementById('resourcesDropdown');
+const dropdownIcon = resourcesBtn.querySelector('.dropdown-icon');
+
+resourcesBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    resourcesDropdown.classList.toggle('active');
+    dropdownIcon.classList.toggle('open');
+});
+
+document.addEventListener('click', (e) => {
+    if (!resourcesBtn.contains(e.target) && !resourcesDropdown.contains(e.target)) {
+        resourcesDropdown.classList.remove('active');
+        dropdownIcon.classList.remove('open');
+    }
+});
+  </script>
 </body>
 </html>
 
