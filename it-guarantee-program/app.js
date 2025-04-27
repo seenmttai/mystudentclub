@@ -180,22 +180,22 @@ const initializeCarousel = () => {
   });
 
   let position = 0;
-  let speed = 2; 
+  let speed = 2;
   let animationId;
   let lastTime = 0;
 
   function animate(currentTime) {
     if (!lastTime) lastTime = currentTime;
     const delta = currentTime - lastTime;
-    
+
     if (true) {
-      position -= speed * (delta / 16); 
+      position -= speed * (delta / 16);
       if (position <= -(getCardWidth() * cards.length)) {
         position = 0;
       }
       carousel.style.transform = `translateX(${position}px)`;
     }
-    
+
     lastTime = currentTime;
     animationId = requestAnimationFrame(animate);
   }
@@ -412,20 +412,24 @@ const initializeCertificate = () => {
 
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+function safe(fn, label) {
   try {
-    initializeCarousel();
-    initializeCountdown();
-    initializeTestimonials();
-    initializeCertificate();
-    
-    AOS.init({
-      duration: 1000,
-      once: true
-    });
-  } catch (error) {
-    console.error('Initialization error:', error);
+    fn();
+  } catch (e) {
+    console.error(`${label} failed`, e);
   }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  safe(initializeTestimonials, 'testimonials');
+  safe(initializeCarousel, 'carousel');
+  safe(initializeCountdown, 'count-down');
+  safe(initializeCertificate, 'certificate');
+
+  AOS.init({
+    duration: 1000,
+    once: true
+  });
 });
 
 const resizeObserver = new ResizeObserver(entries => {
