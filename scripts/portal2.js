@@ -371,22 +371,22 @@ async function loadBanners() {
   } catch (e) { }
 }
 
-const MAX_LOCATIONS = 15;
-const JOB_TYPES = ["semi", "industrial", "fresher"];
-const STATUS_MESSAGE_DURATION = 3000;
-const SUBSCRIBED_TOPIC_BG_COLOR = '#e0e7ff';
-
 const firebaseConfig = {
   apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
   authDomain: "msc-notif.firebaseapp.com",
   projectId: "msc-notif",
-  storageBucket: "msc-notif.firebasestorage.app", 
+  storageBucket: "msc-notif.firebasestorage.app",
   messagingSenderId: "228639798414",
   appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
   measurementId: "G-X4M23TB936"
 };
 
 const VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
+
+const MAX_LOCATIONS = 15;
+const JOB_TYPES = ["semi", "industrial", "fresher"];
+const STATUS_MESSAGE_DURATION = 3000;
+const SUBSCRIBED_TOPIC_BG_COLOR = '#e0e7ff';
 
 const locations = ["mumbai", "bangalore", "gurgaon", "pune", "kolkata", "delhi", "noida", "bengaluru", "hyderabad", "ahmedabad", "chennai", "gurugram", "jaipur", "new delhi"].slice(0, MAX_LOCATIONS);
 
@@ -398,6 +398,11 @@ const fcmTokenDisplay = document.getElementById('fcm-token-display');
 
 let messaging; 
 let fcmToken = null;
+
+function generateTopicName(location, jobType) {
+  const formattedLocation = location.toLowerCase().replace(/\s+/g, '-');
+  return `${formattedLocation}-${jobType}`;
+}
 
 async function initializeFCM() {
   try {
