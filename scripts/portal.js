@@ -371,6 +371,253 @@ async function loadBanners() {
   } catch (e) { }
 }
 
+const MAX_LOCATIONS = 15;
+const JOB_TYPES = ["semi", "industrial", "fresher"];
+const STATUS_MESSAGE_DURATION = 3000;
+const SUBSCRIBED_TOPIC_BG_COLOR = '#e0e7ff';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
+  authDomain: "msc-notif.firebaseapp.com",
+  projectId: "msc-notif",
+  storageBucket: "msc-notif.firebasestorage.app",
+  messagingSenderId: "228639798414",
+  appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
+  measurementId: "G-X4M23TB936"
+};
+
+const VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
+
+const locations = ["mumbai", "bangalore", "gurgaon", "pune", "kolkata", "delhi", "noida", "bengaluru", "hyderabad", "ahmedabad", "chennai", "gurugram", "jaipur", "new delhi"].slice(0, MAX_LOCATIONS);
+
+const notificationStatusDiv = document.getElementById('notification-permission-status');
+const enableNotificationsBtn = document.getElementById('enable-notifications-btn');
+const topicSelectionArea = document.getElementById('topic-selection-area');
+const topicCheckboxesDiv = document.getElementById('topic-checkboxes');
+const fcmTokenDisplay = document.getElementById('fcm-token-display');
+
+let messaging; 
+let fcmToken = null; 
+
+function generateTopicName(location, jobType) {
+  const formattedLocation = location.toLowerCase().replace(/\s+/g, '-');
+  return `${formattedLocation}-${jobType}`;
+}
+
+function showStatus(message, type = 'info') {
+  if (!notificationStatusDiv) return;
+  notificationStatusDiv.textContent = message;
+  notificationStatusDiv.style.display = 'block';
+  notificationStatusDiv.style.backgroundColor = type === 'error' ? '#fee2e2' : (type === 'success' ? '#dcfce7' : '#eff6ff');
+  notificationStatusDiv.style.color = type === 'error' ? '#b91c1c' : (type === 'success' ? '#15803d' : '#1e40af');
+  notificationStatusDiv.style.border = `1px solid ${type === 'error' ? '#fecaca' : (type === 'success' ? '#bbf7d0' : '#bfdbfe')}`;
+}
+
+async function initializeFCM() {
+  try {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    messaging = firebase.messaging();
+    handlePermissionStatus(Notification.permission);
+
+    messaging.onMessage((payload) => {
+      const notification = new Notification(payload.notification.title, {
+        body: payload.notification.body,
+        icon: payload.notification.icon || '/assets/icon-70x70.png',
+        data: { click_action: payload.data?.link || payload.fcmOptions?.link || '/' }
+      });
+
+      notification.onclick = (event) => {
+        event.preventDefault();
+        window.open(event.target.data.click_action, '_blank');
+        notification.close();
+      };
+    });
+
+  } catch (err) {
+    console.error("Error initializing Firebase Messaging:", err);
+    showStatus(`Could not initialize notifications: ${err.message}`, 'error');
+  }
+}
+
+function handlePermissionStatus(permission) {
+  if (permission === 'granted') {
+    showStatus('Notifications are enabled.', 'success');
+    enableNotificationsBtn.style.display = 'none';
+    topicSelectionArea.style.display = 'block';
+    generateTopicCheckboxes();
+    requestTokenAndSubscribe(); 
+  } else if (permission === 'denied') {
+    showStatus('Notifications are blocked. Please enable them in your browser settings.', 'error');
+    enableNotificationsBtn.style.display = 'none';
+    topicSelectionArea.style.display = 'none';
+  } else {
+    showStatus('Click the button to enable notifications for job alerts.');
+    enableNotificationsBtn.style.display = 'inline-block';
+    topicSelectionArea.style.display = 'none';
+  }
+}
+
+function generateTopicCheckboxes() {
+  if (!topicCheckboxesDiv) return;
+  topicCheckboxesDiv.innerHTML = ''; 
+
+  locations.forEach(location => {
+    JOB_TYPES.forEach(jobType => {
+      const topicName = generateTopicName(location, jobType);
+      const label = document.createElement('label');
+      label.style.display = 'flex';
+      label.style.alignItems = 'center';
+      label.style.cursor = 'pointer';
+      label.style.padding = '0.5rem';
+      label.style.borderRadius = '6px';
+      label.style.transition = 'background-color 0.2s';
+      label.style.fontSize = '0.9rem';
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.value = topicName;
+      checkbox.id = `topic-${topicName}`;
+      checkbox.style.marginRight = '0.5rem';
+      checkbox.style.cursor = 'pointer';
+
+      const span = document.createElement('span');
+      const displayLocation = location.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      const displayJobType = jobType.charAt(0).toUpperCase() + jobType.slice(1);
+      span.textContent = `${displayLocation} - ${displayJobType}`;
+
+      label.appendChild(checkbox);
+      label.appendChild(span);
+
+      const isSubscribed = localStorage.getItem(topicName) === 'true';
+      checkbox.checked = isSubscribed;
+      if(isSubscribed) label.style.backgroundColor = SUBSCRIBED_TOPIC_BG_COLOR; 
+
+      checkbox.addEventListener('change', handleTopicChange);
+
+      label.addEventListener('mouseover', () => { if(!checkbox.checked) label.style.backgroundColor = '#f1f5f9'; });
+      label.addEventListener('mouseout', () => { if(!checkbox.checked) label.style.backgroundColor = 'transparent'; });
+
+      topicCheckboxesDiv.appendChild(label);
+    });
+  });
+}
+
+async function handleTopicChange(event) {
+  const checkbox = event.target;
+  const topicName = checkbox.value;
+  const label = checkbox.parentElement;
+
+  if (!fcmToken) {
+    showStatus('Cannot change subscription: Notification token not available.', 'error');
+    checkbox.checked = !checkbox.checked; 
+    return;
+  }
+
+  checkbox.disabled = true; 
+  label.style.opacity = '0.7';
+
+  try {
+    if (checkbox.checked) {
+      await messaging.subscribeToTopic(topicName);
+      localStorage.setItem(topicName, 'true');
+      console.log(`Subscribed to ${topicName}`);
+      showStatus(`Subscribed to ${topicName}`, 'success');
+      label.style.backgroundColor = SUBSCRIBED_TOPIC_BG_COLOR;
+    } else {
+      await messaging.unsubscribeFromTopic(topicName);
+      localStorage.removeItem(topicName);
+      console.log(`Unsubscribed from ${topicName}`);
+      showStatus(`Unsubscribed from ${topicName}`, 'info');
+      label.style.backgroundColor = 'transparent';
+    }
+  } catch (err) {
+    console.error(`Failed to update subscription for ${topicName}:`, err);
+    showStatus(`Failed to update subscription for ${topicName}. Please try again.`, 'error');
+    checkbox.checked = !checkbox.checked; 
+    label.style.backgroundColor = checkbox.checked ? SUBSCRIBED_TOPIC_BG_COLOR : 'transparent'; 
+  } finally {
+    checkbox.disabled = false;
+    label.style.opacity = '1';
+    setTimeout(() => { if (notificationStatusDiv.textContent.includes(topicName)) showStatus(''); }, STATUS_MESSAGE_DURATION);
+  }
+}
+
+async function requestTokenAndSubscribe() {
+  if (fcmToken) {
+    console.log("Token already available.");
+    fcmTokenDisplay.textContent = `Debug Token: ${fcmToken.substring(0, 15)}...`;
+    await updateAllSubscriptions(); 
+    return;
+  }
+
+  try {
+    console.log("Requesting FCM token...");
+    const currentToken = await messaging.getToken({ vapidKey: VAPID_KEY });
+    if (currentToken) {
+      console.log('FCM Token:', currentToken);
+      fcmToken = currentToken;
+      fcmTokenDisplay.textContent = `Debug Token: ${fcmToken.substring(0, 15)}...`;
+      await updateAllSubscriptions();
+    } else {
+      console.log('No registration token available. Request permission to generate one.');
+      showStatus('Could not get notification token. Please ensure permissions are granted.', 'error');
+    }
+  } catch (err) {
+    console.error('An error occurred while retrieving token. ', err);
+    showStatus('Error getting notification token: ' + err.message, 'error');
+  }
+}
+
+async function updateAllSubscriptions() {
+  if (!fcmToken) return;
+  console.log("Checking and updating all topic subscriptions...");
+  const checkboxes = topicCheckboxesDiv.querySelectorAll('input[type="checkbox"]');
+  const promises = [];
+
+  checkboxes.forEach(checkbox => {
+    const topicName = checkbox.value;
+    const shouldBeSubscribed = checkbox.checked;
+    const isStoredSubscribed = localStorage.getItem(topicName) === 'true';
+
+    if (shouldBeSubscribed !== isStoredSubscribed) {
+      console.warn(`Mismatch found for ${topicName}. Stored: ${isStoredSubscribed}, UI: ${shouldBeSubscribed}. Syncing...`);
+      promises.push(
+        (async () => {
+          try {
+            if (shouldBeSubscribed) {
+              await messaging.subscribeToTopic(topicName);
+              localStorage.setItem(topicName, 'true');
+              console.log(`Synced: Subscribed to ${topicName}`);
+            } else {
+              await messaging.unsubscribeFromTopic(topicName);
+              localStorage.removeItem(topicName);
+              console.log(`Synced: Unsubscribed from ${topicName}`);
+            }
+          } catch (err) {
+            console.error(`Sync failed for ${topicName}:`, err);
+          }
+        })()
+      );
+    }
+  });
+
+  await Promise.all(promises);
+  console.log("Subscription sync complete.");
+}
+
+enableNotificationsBtn.addEventListener('click', async () => {
+  try {
+    const permission = await Notification.requestPermission();
+    handlePermissionStatus(permission);
+  } catch (err) {
+    console.error("Error requesting notification permission:", err);
+    showStatus('Could not request notification permission.', 'error');
+  }
+});
+
 document.addEventListener('DOMContentLoaded', async () => {
   const session = await checkAuth(); 
   updateHeaderAuth(session); 
@@ -379,6 +626,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   fetchJobs(); 
   fetchCategories(); 
   updateOpportunitiesTextDisplay(currentTable);
+  initializeFCM(); 
 
   const resourcesBtn = document.getElementById('resourcesDropdownBtn');
   const resourcesDropdown = document.getElementById('resourcesDropdown');

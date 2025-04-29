@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Video Link Fetcher</title>
+    <!-- Supabase JS Library CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"] {
+            width: calc(100% - 16px); /* Adjust for padding */
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            word-wrap: break-word; /* Ensure long links wrap */
+        }
+        #result.error {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        #result.success {
+             background-color: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+        .hidden {
+            display: none;
+        }
+        #auth-status {
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Fetch Video Link</h1>
+
+        <div id="auth-status">Checking auth status...</div>
+
+        <!-- Login Form -->
+        <div id="login-form" class="hidden">
+            <h2>Login</h2>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" required>
+            </div>
+            <button id="login-button">Login</button>
+            <p><small>You need to be logged in to fetch video links.</small></p>
+        </div>
+
+        <!-- Logout Button -->
+         <button id="logout-button" class="hidden">Logout</button>
+
+        <!-- Video Fetch Form (shown when logged in) -->
+        <div id="video-fetch-form" class="hidden">
+            <h2>Get Video</h2>
+             <div class="form-group">
+                <label for="course-name">Course Name:</label>
+                <input type="text" id="course-name" required>
+            </div>
+            <div class="form-group">
+                <label for="video-number">Video Number:</label>
+                <input type="number" id="video-number" required min="1">
+            </div>
+            <button id="fetch-button">Fetch Link</button>
+        </div>
+
+        <!-- Result Display Area -->
+        <div id="result">Result will appear here...</div>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+
+        // Use Supabase V2 syntax with CDN
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // DOM Elements
+        const loginForm = document.getElementById('login-form');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const loginButton = document.getElementById('login-button');
+        const logoutButton = document.getElementById('logout-button');
+        const videoFetchForm = document.getElementById('video-fetch-form');
+        const courseNameInput = document.getElementById('course-name');
+        const videoNumberInput = document.getElementById('video-number');
+        const fetchButton = document.getElementById('fetch-button');
+        const resultDiv = document.getElementById('result');
+        const authStatusDiv = document.getElementById('auth-status');
+
+        // --- Authentication ---
+
+        const checkUser = async () => {
+            const { data: { session }, error } = await supabase.auth.getSession();
+
+            if (error) {
+                console.error("Error getting session:", error);
+                authStatusDiv.textContent = 'Error checking auth status.';
+                loginForm.classList.remove('hidden');
+                logoutButton.classList.add('hidden');
+                videoFetchForm.classList.add('hidden');
+                return;
+            }
+
+            if (session && session.user) {
+                // User is logged in
+                authStatusDiv.textContent = `Logged in as: ${session.user.email}`;
+                loginForm.classList.add('hidden');
+                logoutButton.classList.remove('hidden');
+                videoFetchForm.classList.remove('hidden'); // Show fetch form
+                 // Clear password field on successful login/session check
+                if (passwordInput) passwordInput.value = '';
+            } else {
+                // User is not logged in
+                authStatusDiv.textContent = 'You are not logged in.';
+                loginForm.classList.remove('hidden'); // Show login form
+                logoutButton.classList.add('hidden');
+                videoFetchForm.classList.add('hidden');
+            }
+             // Clear previous results on auth change
+            resultDiv.textContent = 'Result will appear here...';
+            resultDiv.className = ''; // Reset result styling
+        };
+
+        loginButton.addEventListener('click', async (e) => {
+            e.preventDefault();
+            resultDiv.textContent = 'Logging in...';
+            resultDiv.className = '';
+
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            if (!email || !password) {
+                 resultDiv.textContent = 'Please enter both email and password.';
+                 resultDiv.className = 'error';
+                 return;
+            }
+
+            const { error } = await supabase.auth.signInWithPassword({
+                email: email,
+                password: password,
+            });
+
+            if (error) {
+                console.error('Login Error:', error);
+                resultDiv.textContent = `Login failed: ${error.message}`;
+                resultDiv.className = 'error';
+            } else {
+                 resultDiv.textContent = 'Login successful!';
+                 resultDiv.className = 'success';
+                 // No need to manually call checkUser here, onAuthStateChange will handle it
+            }
+        });
+
+        logoutButton.addEventListener('click', async () => {
+            resultDiv.textContent = 'Logging out...';
+            resultDiv.className = '';
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                 console.error('Logout Error:', error);
+                 resultDiv.textContent = `Logout failed: ${error.message}`;
+                 resultDiv.className = 'error';
+            } else {
+                // No need to manually call checkUser here, onAuthStateChange will handle it
+                 resultDiv.textContent = 'Logged out successfully.';
+                 resultDiv.className = 'success';
+            }
+        });
+
+        // Listen for auth changes (login, logout, token refresh)
+        supabase.auth.onAuthStateChange((_event, session) => {
+             console.log('Auth state changed:', _event, session);
+             checkUser(); // Update UI based on new auth state
+        });
+
+        // --- RPC Call ---
+
+        fetchButton.addEventListener('click', async () => {
+            const courseName = courseNameInput.value.trim();
+            const videoNumberStr = videoNumberInput.value.trim();
+
+            if (!courseName || !videoNumberStr) {
+                resultDiv.textContent = 'Please enter both Course Name and Video Number.';
+                resultDiv.className = 'error';
+                return;
+            }
+
+            const videoNumber = parseInt(videoNumberStr, 10);
+            if (isNaN(videoNumber) || videoNumber <= 0) {
+                 resultDiv.textContent = 'Please enter a valid positive Video Number.';
+                 resultDiv.className = 'error';
+                 return;
+            }
+
+            resultDiv.textContent = 'Fetching video link...';
+            resultDiv.className = ''; // Reset styling
+
+            try {
+                const { data, error } = await supabase.rpc('get_video_link', {
+                    course_name_param: courseName,
+                    video_number_param: videoNumber
+                });
+
+                if (error) {
+                    console.error('Supabase RPC Error:', error);
+                    // Use the specific error message from the function if available
+                    resultDiv.textContent = `Error: ${error.message}`;
+                    // You could check error.code === 'P0001' or 'P0002' here too
+                    resultDiv.className = 'error';
+                } else if (data) {
+                    // Success! Display the link
+                    resultDiv.textContent = `Video Link Found: `;
+                    const link = document.createElement('a');
+                    link.href = data;
+                    link.textContent = data;
+                    link.target = '_blank'; // Open in new tab
+                    resultDiv.appendChild(link);
+                    resultDiv.className = 'success';
+                } else {
+                     // Should ideally be caught by the RPC error, but as a fallback
+                     resultDiv.textContent = 'No data returned, but no specific error.';
+                     resultDiv.className = 'error';
+                }
+
+            } catch (err) {
+                console.error('Unexpected error calling RPC function:', err);
+                resultDiv.textContent = `An unexpected client-side error occurred: ${err.message}`;
+                resultDiv.className = 'error';
+            }
+        });
+
+        // Initial check when the page loads
+        checkUser();
+
+    </script>
+
+</body>
+</html>
