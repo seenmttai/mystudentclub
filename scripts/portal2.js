@@ -1,6 +1,6 @@
+
 import { getDaysAgo } from './date-utils.js';
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
-import { getMessaging, getToken, onMessage, deleteToken } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging.js';
+
 
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
@@ -116,10 +116,12 @@ async function initializeFCM() {
     return;
   }
   try {
-    const app = initializeApp(firebaseConfig);
-    messaging = getMessaging(app);
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    messaging = firebase.messaging();
 
-    onMessage(messaging, (payload) => {
+    messaging.onMessage((payload) => {
       console.log('Foreground message received. ', payload);
       const notif = payload.notification || {};
       const notification = new Notification(notif.title || "New Job Alert", {
@@ -141,8 +143,8 @@ async function initializeFCM() {
     }
 
     try {
-        await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-        console.log('Service Worker registered successfully.');
+        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        console.log('Service Worker registered successfully:', registration);
     } catch (error) {
         console.error('Service Worker registration failed:', error);
         setPopupStatus(`Service Worker registration failed: ${error.message}`, 'error');
@@ -318,13 +320,7 @@ async function requestNotificationToken() {
 
   try {
     console.log("Requesting FCM token...");
-    const registration = await navigator.serviceWorker.ready;
-    console.log("Service worker ready for getToken:", registration);
-
-    const currentToken = await getToken(messaging, {
-      vapidKey: VAPID_KEY,
-      serviceWorkerRegistration: registration
-    });
+    const currentToken = await messaging.getToken({ vapidKey: VAPID_KEY });
 
     if (currentToken) {
       console.log('FCM Token obtained/refreshed:', currentToken.substring(0, 10) + "...");
@@ -877,5 +873,3 @@ function debounceSearch(fn, delay) {
         timeout = setTimeout(() => fn.apply(this, args), delay);
     }
 }
-
-export { showModal, getApplicationLink };
