@@ -415,12 +415,41 @@ function showStatus(message, type = 'info') {
 
 async function initializeFCM() {
   try {
+    if ('serviceWorker' in navigator) {
+      try {
+        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        console.log('Service Worker registered successfully:', registration);
+      } catch (error) {
+        console.error('Service Worker registration failed:', error);
+        showStatus(`Service Worker registration failed: ${error.message}`, 'error');
+        return;
+      }
+    } else {
+      console.error('Service Worker not supported');
+      showStatus('Service Worker not supported by this browser', 'error');
+      return;
+    }
+
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
 
     messaging = firebase.messaging();
-    handlePermissionStatus(Notification.permission);
+
+    const currentToken = await messaging.getToken({
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: navigator.serviceWorker.ready
+    });
+
+    if (currentToken) {
+      console.log('FCM Token:', currentToken);
+      fcmToken = currentToken;
+      fcmTokenDisplay.textContent = `Debug Token: ${fcmToken.substring(0, 15)}...`;
+      await updateAllSubscriptions();
+    } else {
+      console.log('No registration token available. Request permission to generate one.');
+      showStatus('Could not get notification token. Please ensure permissions are granted.', 'error');
+    }
 
     messaging.onMessage((payload) => {
       const notification = new Notification(payload.notification.title, {
@@ -435,7 +464,6 @@ async function initializeFCM() {
         notification.close();
       };
     });
-
   } catch (err) {
     console.error("Error initializing Firebase Messaging:", err);
     showStatus(`Could not initialize notifications: ${err.message}`, 'error');
@@ -555,7 +583,10 @@ async function requestTokenAndSubscribe() {
 
   try {
     console.log("Requesting FCM token...");
-    const currentToken = await messaging.getToken({ vapidKey: VAPID_KEY });
+    const currentToken = await messaging.getToken({
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: navigator.serviceWorker.ready
+    });
     if (currentToken) {
       console.log('FCM Token:', currentToken);
       fcmToken = currentToken;
