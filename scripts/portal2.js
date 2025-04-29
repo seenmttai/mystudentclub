@@ -5,19 +5,6 @@ import { getMessaging, getToken, onMessage, deleteToken } from 'https://www.gsta
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, { global: { headers: { 'apikey': supabaseKey } } });
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
-  authDomain: "msc-notif.firebaseapp.com",
-  projectId: "msc-notif",
-  storageBucket: "msc-notif.appspot.com",
-  messagingSenderId: "228639798414",
-  appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
-  measurementId: "G-X4M23TB936"
-};
-const VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
-const MANAGE_SUBSCRIPTION_FUNCTION_URL = 'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription'; 
-
 const jobsContainer = document.getElementById('jobs');
 const loader = document.getElementById('loader');
 const modal = document.getElementById('modal');
@@ -36,7 +23,41 @@ const menuButton = document.getElementById('menuButton');
 const expandedMenu = document.getElementById('expandedMenu');
 const menuCloseBtn = document.getElementById('menuCloseBtn');
 let currentSlide = 0, slides = [], totalSlides = 0;
+
 let currentTable = 'Industrial Training Job Portal';
+if (window.location.pathname.includes('articleship')) {
+  currentTable = 'Articleship Jobs';
+} else if (window.location.pathname.includes('semi-qualified')) {
+  currentTable = 'Semi Qualified Jobs';
+} else if (window.location.pathname.includes('fresher')) {
+  currentTable = 'Fresher Jobs';
+}
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
+  authDomain: "msc-notif.firebaseapp.com",
+  projectId: "msc-notif",
+  storageBucket: "msc-notif.appspot.com",
+  messagingSenderId: "228639798414",
+  appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
+  measurementId: "G-X4M23TB936"
+};
+
+const VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
+const MANAGE_SUBSCRIPTION_FUNCTION_URL = 'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription';
+
+const MAX_LOCATIONS = 15;
+const JOB_TYPES = ["semi", "industrial", "fresher"];
+
+function generateTopicName(location, jobType) {
+  const formattedLocation = location.toLowerCase().replace(/\s+/g, '-');
+  return `${formattedLocation}-${jobType}`;
+}
+
+const STATUS_MESSAGE_DURATION = 3000;
+const SUBSCRIBED_TOPIC_BG_COLOR = '#e0e7ff';
+
+const locations = ["mumbai", "bangalore", "gurgaon", "pune", "kolkata", "delhi", "noida", "bengaluru", "hyderabad", "ahmedabad", "chennai", "gurugram", "jaipur", "new delhi"].slice(0, MAX_LOCATIONS);
 
 const notificationPrefsBtn = document.getElementById('notificationPrefsBtn');
 const notificationPopup = document.getElementById('notificationPopup');
@@ -47,97 +68,52 @@ const popupLocationSelect = document.getElementById('popupLocationSelect');
 const popupJobTypeSelect = document.getElementById('popupJobTypeSelect');
 const subscribeTopicBtn = document.getElementById('subscribeTopicBtn');
 
-const MAX_LOCATIONS = 15;
-const JOB_TYPES = ["semi", "industrial", "fresher"];
-const locations = ["mumbai", "bangalore", "gurgaon", "pune", "kolkata", "delhi", "noida", "bengaluru", "hyderabad", "ahmedabad", "chennai", "gurugram", "jaipur", "new delhi"].slice(0, MAX_LOCATIONS);
-
 let messaging;
 let fcmToken = null;
-let subscribedTopicsCache = []; 
+let subscribedTopicsCache = [];
 
 const LAST_SYNC_TIMESTAMP_KEY = 'lastNotificationSyncTimestamp';
 const SUBSCRIBED_TOPICS_KEY = 'subscribedFCMTopics';
 const NOTIFICATION_PERMISSION_KEY = 'notificationPermissionState';
 
-document.addEventListener('DOMContentLoaded', async () => {
+function showStatus(message, type = 'info') {
+  if (!notificationPopupStatus) return;
+  notificationPopupStatus.textContent = message;
+  notificationPopupStatus.style.display = 'block';
+  notificationPopupStatus.style.backgroundColor = type === 'error' ? '#fee2e2' : (type === 'success' ? '#dcfce7' : '#eff6ff');
+  notificationPopupStatus.style.color = type === 'error' ? '#b91c1c' : (type === 'success' ? '#15803d' : '#1e40af');
+  notificationPopupStatus.style.border = `1px solid ${type === 'error' ? '#fecaca' : (type === 'success' ? '#bbf7d0' : '#bfdbfe')}`;
+}
 
-  if (window.location.pathname.includes('articleship')) {
-    currentTable = 'Articleship Jobs';
-  } else if (window.location.pathname.includes('semi-qualified')) {
-    currentTable = 'Semi Qualified Jobs';
-  } else if (window.location.pathname.includes('fresher')) {
-    currentTable = 'Fresher Jobs';
+async function handlePermissionStatus(permission) {
+  if (!messaging) {
+    console.error("Messaging service not initialized when handling permission status.");
+    showStatus("Error initializing notifications system.", "error");
+    return;
   }
 
-  const session = await checkAuth();
-  updateHeaderAuth(session);
-  await loadBanners();
-  populateSalaryFilter(currentTable);
-  fetchJobs();
-  fetchCategories();
-  updateOpportunitiesTextDisplay(currentTable);
-
-  await initializeFCM();
-
-  if (notificationPrefsBtn && notificationPopup && closeNotificationPopupBtn) {
-    notificationPrefsBtn.addEventListener('click', openNotificationPopup);
-    closeNotificationPopupBtn.addEventListener('click', () => closeNotificationPopup());
+  if (permission === 'granted') {
+    showStatus('Notifications are enabled.', 'success');
+    if(enableNotificationsBtn) enableNotificationsBtn.style.display = 'none';
+    if(topicSelectionArea) topicSelectionArea.style.display = 'block';
+    generateTopicCheckboxes();
+    await requestTokenAndSyncSubscriptions();
+  } else if (permission === 'denied') {
+    showStatus('Notifications are blocked. Please enable them in your browser settings.', 'error');
+    if(enableNotificationsBtn) enableNotificationsBtn.style.display = 'none';
+    if(topicSelectionArea) topicSelectionArea.style.display = 'none';
   } else {
-    console.warn("Notification popup elements not found.");
+    showStatus('Click the button to enable notifications for job alerts.');
+    if(enableNotificationsBtn) enableNotificationsBtn.style.display = 'inline-block';
+    if(topicSelectionArea) topicSelectionArea.style.display = 'none';
   }
-
-  if (subscribeTopicBtn) {
-      subscribeTopicBtn.addEventListener('click', handleSubscribeClick);
-  }
-
-  const resourcesBtn = document.getElementById('resourcesDropdownBtn');
-  const resourcesDropdown = document.getElementById('resourcesDropdown');
-  const dropdownIcon = resourcesBtn?.querySelector('.dropdown-icon');
-
-  if (resourcesBtn && resourcesDropdown && dropdownIcon) {
-      resourcesBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          resourcesDropdown.classList.toggle('active');
-          dropdownIcon.classList.toggle('open');
-      });
-
-      document.addEventListener('click', (e) => {
-          if (!resourcesBtn.contains(e.target) && !resourcesDropdown.contains(e.target)) {
-              resourcesDropdown.classList.remove('active');
-              dropdownIcon.classList.remove('open');
-          }
-      });
-  }
-
-  if(menuButton && expandedMenu && menuCloseBtn) {
-      menuButton.addEventListener('click', () => expandedMenu.classList.toggle('active'));
-      menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
-      document.addEventListener('click', (e) => {
-          if (!expandedMenu.contains(e.target) && !menuButton.contains(e.target) && expandedMenu.classList.contains('active')) {
-              expandedMenu.classList.remove('active');
-          }
-      });
-  }
-
-  if (searchInput) {
-      searchInput.addEventListener('input', handleSearch);
-  }
-  if (locationSearchInput) {
-      locationSearchInput.addEventListener('input', handleSearch);
-  }
-  if (salaryFilter) {
-      salaryFilter.addEventListener('change', handleSearch);
-  }
-  if (categoryFilter) {
-      categoryFilter.addEventListener('change', handleSearch);
-  }
-  if (loadMoreButton) {
-      loadMoreButton.addEventListener('click', () => fetchJobs());
-  }
-  window.addEventListener('scroll', handleScroll);
-});
+}
 
 async function initializeFCM() {
+  if (!notificationPrefsBtn) {
+    console.log("Notification button not found. Skipping FCM init.");
+    return;
+  }
   try {
     const app = initializeApp(firebaseConfig);
     messaging = getMessaging(app);
@@ -172,7 +148,7 @@ async function initializeFCM() {
         return;
     }
 
-    loadSubscribedTopicsFromLocal(); 
+    loadSubscribedTopicsFromLocal();
 
   } catch(err) {
      console.error("Error initializing Firebase app or messaging:", err);
@@ -234,8 +210,9 @@ async function openNotificationPopup() {
 
   if (currentPermission === 'denied') {
       setPopupStatus("Notifications blocked by browser. Please enable in settings.", "error", 0);
-      populatePopup(); 
+      populatePopup();
       notificationPopup.classList.remove('hidden');
+      notificationPopup.style.opacity = 1;
       return;
   }
 
@@ -248,14 +225,15 @@ async function openNotificationPopup() {
               setPopupStatus("Permission not granted. Notifications disabled.", "warning", 0);
               populatePopup();
               notificationPopup.classList.remove('hidden');
+              notificationPopup.style.opacity = 1;
               return;
           }
-
       } catch (err) {
           console.error("Error requesting permission:", err);
           setPopupStatus("Error requesting notification permission.", "error", 0);
           populatePopup();
           notificationPopup.classList.remove('hidden');
+          notificationPopup.style.opacity = 1;
           return;
       }
   }
@@ -263,15 +241,13 @@ async function openNotificationPopup() {
   if (Notification.permission === 'granted') {
       setPopupStatus("Getting notification token...", "info", 0);
       try {
-          await requestNotificationToken(); 
-          if (fcmToken) {
+          const tokenObtained = await requestNotificationToken();
+          if (tokenObtained) {
              setPopupStatus("Token ready.", "success");
-             await checkAndPerformDailySync(); 
-          } else {
-
+             await checkAndPerformDailySync();
           }
       } catch (err) {
-
+         console.error("Error during token request or sync:", err);
       }
   }
 
@@ -286,25 +262,23 @@ function closeNotificationPopup(event = null) {
   }
   if (notificationPopup) {
     notificationPopup.style.opacity = 0;
-    notificationPopup.classList.add('hidden');
+    setTimeout(() => notificationPopup.classList.add('hidden'), 300);
   }
 }
 
 function populatePopup() {
-
     if (popupLocationSelect) {
         popupLocationSelect.innerHTML = locations.map(loc => `<option value="${loc}">${loc.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</option>`).join('');
     }
     if (popupJobTypeSelect) {
         popupJobTypeSelect.innerHTML = JOB_TYPES.map(type => `<option value="${type}">${type.charAt(0).toUpperCase() + type.slice(1)}</option>`).join('');
     }
-
     updateSubscribedListUI();
 }
 
 function updateSubscribedListUI() {
     if (!subscribedTopicsList) return;
-    subscribedTopicsList.innerHTML = ''; 
+    subscribedTopicsList.innerHTML = '';
 
     if (subscribedTopicsCache.length === 0) {
         subscribedTopicsList.innerHTML = '<p class="text-sm text-gray-500 italic w-full">No subscriptions active.</p>';
@@ -327,7 +301,7 @@ function updateSubscribedListUI() {
             </button>
         `;
         topicElement.querySelector('button').addEventListener('click', (e) => {
-            e.stopPropagation(); 
+            e.stopPropagation();
             handleUnsubscribeClick(topicName, topicElement);
         });
         subscribedTopicsList.appendChild(topicElement);
@@ -354,7 +328,7 @@ async function requestNotificationToken() {
     if (currentToken) {
       console.log('FCM Token obtained/refreshed:', currentToken.substring(0, 10) + "...");
       fcmToken = currentToken;
-      return true; 
+      return true;
     } else {
       console.log('No registration token available. Request permission again.');
       if (Notification.permission === 'granted') {
@@ -362,20 +336,17 @@ async function requestNotificationToken() {
       } else {
         setPopupStatus('Notification permission needed to get token.', 'info', 0);
       }
-      return false; 
+      return false;
     }
   } catch (err) {
     console.error('Error retrieving token: ', err);
-    if (err.code === 'messaging/permission-blocked') {
+    if (err.code === 'messaging/permission-blocked' || err.code === 'messaging/notifications-blocked') {
         setPopupStatus('Notifications blocked. Please enable in browser settings.', 'error', 0);
-    } else if (err.code === 'messaging/notifications-blocked') {
-         setPopupStatus('Notifications blocked by browser.', 'error', 0);
-    }
-     else {
+    } else {
         setPopupStatus('Error getting notification token: ' + err.message, 'error', 0);
     }
-    fcmToken = null; 
-    return false; 
+    fcmToken = null;
+    return false;
   }
 }
 
@@ -394,15 +365,14 @@ async function checkAndPerformDailySync() {
     if (!isSameDay(lastSyncTimestamp, now)) {
         console.log("Performing daily subscription sync...");
         setPopupStatus("Syncing preferences with server...", "info", 0);
-        await syncAllSubscriptionsWithServer(); 
+        await syncAllSubscriptionsWithServer();
         localStorage.setItem(LAST_SYNC_TIMESTAMP_KEY, now.toString());
         console.log("Daily sync complete.");
          setPopupStatus("Preferences synced.", "success");
     } else {
         console.log("Daily sync already performed today.");
-
         if (notificationPopupStatus?.textContent.includes("Syncing")) {
-             setPopupStatus(""); 
+             setPopupStatus("");
         }
     }
 }
@@ -423,7 +393,7 @@ async function syncAllSubscriptionsWithServer() {
     const promises = allPossibleTopics.map(topicName => {
         const shouldBeSubscribed = isTopicSubscribedInCache(topicName);
         const action = shouldBeSubscribed ? 'subscribe' : 'unsubscribe';
-        return callManageSubscriptionAPI(topicName, action, null, false); 
+        return callManageSubscriptionAPI(topicName, action, null, false);
     });
 
     try {
@@ -455,13 +425,10 @@ async function handleSubscribe(topicName) {
         return;
     }
     setPopupStatus(`Subscribing to ${topicName}...`, 'info', 0);
-    subscribeTopicBtn.disabled = true;
+    if(subscribeTopicBtn) subscribeTopicBtn.disabled = true;
 
     try {
         await callManageSubscriptionAPI(topicName, 'subscribe');
-        addTopicToCache(topicName);
-        updateSubscribedListUI(); 
-        setPopupStatus(`Subscribed to ${topicName}!`, 'success');
     } catch (error) {
         setPopupStatus(`Failed to subscribe: ${error.message}`, 'error');
     } finally {
@@ -475,14 +442,10 @@ async function handleUnsubscribeClick(topicName, topicElement) {
         return;
     }
     setPopupStatus(`Unsubscribing from ${topicName}...`, 'info', 0);
-
      if (topicElement) topicElement.style.opacity = '0.5';
 
     try {
         await callManageSubscriptionAPI(topicName, 'unsubscribe');
-        removeTopicFromCache(topicName);
-        updateSubscribedListUI(); 
-        setPopupStatus(`Unsubscribed from ${topicName}.`, 'success');
     } catch (error) {
         setPopupStatus(`Failed to unsubscribe: ${error.message}`, 'error');
          if (topicElement) topicElement.style.opacity = '1';
@@ -511,8 +474,10 @@ async function callManageSubscriptionAPI(topicName, action, elementToUpdate = nu
     if (updateUICache) {
         if (action === 'subscribe') {
             addTopicToCache(topicName);
+            setPopupStatus(`Subscribed to ${topicName}!`, 'success');
         } else {
             removeTopicFromCache(topicName);
+            setPopupStatus(`Unsubscribed from ${topicName}.`, 'success');
         }
         updateSubscribedListUI();
     }
