@@ -44,7 +44,6 @@ const firebaseConfig = {
 };
 
 const VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
-const MANAGE_SUBSCRIPTION_FUNCTION_URL = 'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription';
 
 const MAX_LOCATIONS = 15;
 const JOB_TYPES = ["semi", "industrial", "fresher"];
@@ -59,30 +58,22 @@ const SUBSCRIBED_TOPIC_BG_COLOR = '#e0e7ff';
 
 const locations = ["mumbai", "bangalore", "gurgaon", "pune", "kolkata", "delhi", "noida", "bengaluru", "hyderabad", "ahmedabad", "chennai", "gurugram", "jaipur", "new delhi"].slice(0, MAX_LOCATIONS);
 
-const notificationPrefsBtn = document.getElementById('notificationPrefsBtn');
-const notificationPopup = document.getElementById('notificationPopup');
-const closeNotificationPopupBtn = document.getElementById('closeNotificationPopupBtn');
-const notificationPopupStatus = document.getElementById('notificationPopupStatus');
-const subscribedTopicsList = document.getElementById('subscribedTopicsList');
-const popupLocationSelect = document.getElementById('popupLocationSelect');
-const popupJobTypeSelect = document.getElementById('popupJobTypeSelect');
-const subscribeTopicBtn = document.getElementById('subscribeTopicBtn');
+const notificationStatusDiv = document.getElementById('notification-permission-status');
+const enableNotificationsBtn = document.getElementById('enable-notifications-btn');
+const topicSelectionArea = document.getElementById('topic-selection-area');
+const topicCheckboxesDiv = document.getElementById('topic-checkboxes');
+const fcmTokenDisplay = document.getElementById('fcm-token-display');
 
 let messaging;
 let fcmToken = null;
-let subscribedTopicsCache = [];
-
-const LAST_SYNC_TIMESTAMP_KEY = 'lastNotificationSyncTimestamp';
-const SUBSCRIBED_TOPICS_KEY = 'subscribedFCMTopics';
-const NOTIFICATION_PERMISSION_KEY = 'notificationPermissionState';
 
 function showStatus(message, type = 'info') {
-  if (!notificationPopupStatus) return;
-  notificationPopupStatus.textContent = message;
-  notificationPopupStatus.style.display = 'block';
-  notificationPopupStatus.style.backgroundColor = type === 'error' ? '#fee2e2' : (type === 'success' ? '#dcfce7' : '#eff6ff');
-  notificationPopupStatus.style.color = type === 'error' ? '#b91c1c' : (type === 'success' ? '#15803d' : '#1e40af');
-  notificationPopupStatus.style.border = `1px solid ${type === 'error' ? '#fecaca' : (type === 'success' ? '#bbf7d0' : '#bfdbfe')}`;
+  if (!notificationStatusDiv) return;
+  notificationStatusDiv.textContent = message;
+  notificationStatusDiv.style.display = 'block';
+  notificationStatusDiv.style.backgroundColor = type === 'error' ? '#fee2e2' : (type === 'success' ? '#dcfce7' : '#eff6ff');
+  notificationStatusDiv.style.color = type === 'error' ? '#b91c1c' : (type === 'success' ? '#15803d' : '#1e40af');
+  notificationStatusDiv.style.border = `1px solid ${type === 'error' ? '#fecaca' : (type === 'success' ? '#bbf7d0' : '#bfdbfe')}`;
 }
 
 async function handlePermissionStatus(permission) {
@@ -110,8 +101,8 @@ async function handlePermissionStatus(permission) {
 }
 
 async function initializeFCM() {
-  if (!notificationPrefsBtn) {
-    console.log("Notification button not found. Skipping FCM init.");
+  if (!notificationStatusDiv || !enableNotificationsBtn || !topicSelectionArea) {
+    console.log("Notification preference elements not found. Skipping FCM init.");
     return;
   }
   try {
@@ -121,8 +112,8 @@ async function initializeFCM() {
     onMessage(messaging, (payload) => {
       console.log('Foreground message received. ', payload);
       const notif = payload.notification || {};
-      const notification = new Notification(notif.title || "New Job Alert", {
-        body: notif.body || "Check out the latest job postings!",
+      const notification = new Notification(notif.title, {
+        body: notif.body,
         icon: notif.icon || '/assets/icon-70x70.png',
         data: { click_action: payload.data?.link || payload.fcmOptions?.link || '/' }
       });
@@ -133,355 +124,29 @@ async function initializeFCM() {
       };
     });
 
-    if (!('serviceWorker' in navigator)) {
-        console.warn('Service workers are not supported.');
-        setPopupStatus('Notifications require Service Worker support.', 'error');
-        return;
-    }
-
-    try {
+    if ('serviceWorker' in navigator) {
+      try {
         await navigator.serviceWorker.register('/firebase-messaging-sw.js');
         console.log('Service Worker registered successfully.');
-    } catch (error) {
+      } catch (error) {
         console.error('Service Worker registration failed:', error);
-        setPopupStatus(`Service Worker registration failed: ${error.message}`, 'error');
+        showStatus(`Service Worker registration failed: ${error.message}`, 'error');
         return;
+      }
+    } else {
+      console.warn('Service workers are not supported in this browser.');
+      showStatus('Notifications require Service Worker support.', 'error');
+      return;
     }
 
-    loadSubscribedTopicsFromLocal();
+    handlePermissionStatus(Notification.permission);
 
   } catch(err) {
      console.error("Error initializing Firebase app or messaging:", err);
-     setPopupStatus("Could not initialize notifications system.", "error");
+     showStatus("Could not initialize notifications system.", "error");
   }
 }
 
-function loadSubscribedTopicsFromLocal() {
-    const storedTopics = localStorage.getItem(SUBSCRIBED_TOPICS_KEY);
-    subscribedTopicsCache = storedTopics ? JSON.parse(storedTopics) : [];
-    console.log("Loaded subscribed topics from cache:", subscribedTopicsCache);
-}
-
-function saveSubscribedTopicsToLocal() {
-    localStorage.setItem(SUBSCRIBED_TOPICS_KEY, JSON.stringify(subscribedTopicsCache));
-    console.log("Saved subscribed topics to cache:", subscribedTopicsCache);
-}
-
-function addTopicToCache(topicName) {
-    if (!subscribedTopicsCache.includes(topicName)) {
-        subscribedTopicsCache.push(topicName);
-        saveSubscribedTopicsToLocal();
-    }
-}
-
-function removeTopicFromCache(topicName) {
-    subscribedTopicsCache = subscribedTopicsCache.filter(t => t !== topicName);
-    saveSubscribedTopicsToLocal();
-}
-
-function isTopicSubscribedInCache(topicName) {
-    return subscribedTopicsCache.includes(topicName);
-}
-
-function setPopupStatus(message, type = 'info', duration = 3000) {
-  if (!notificationPopupStatus) return;
-  notificationPopupStatus.textContent = message;
-  notificationPopupStatus.className = `p-3 text-sm text-center ${
-    type === 'error' ? 'bg-red-100 text-red-700' :
-    type === 'success' ? 'bg-green-100 text-green-700' :
-    'bg-blue-100 text-blue-700'
-  }`;
-  notificationPopupStatus.style.display = 'block';
-  if (duration > 0) {
-    setTimeout(() => {
-      notificationPopupStatus.style.display = 'none';
-      notificationPopupStatus.textContent = '';
-    }, duration);
-  }
-}
-
-async function openNotificationPopup() {
-  if (!notificationPopup) return;
-
-  setPopupStatus("Checking notification status...", "info", 0);
-
-  const currentPermission = Notification.permission;
-  localStorage.setItem(NOTIFICATION_PERMISSION_KEY, currentPermission);
-
-  if (currentPermission === 'denied') {
-      setPopupStatus("Notifications blocked by browser. Please enable in settings.", "error", 0);
-      populatePopup();
-      notificationPopup.classList.remove('hidden');
-      notificationPopup.style.opacity = 1;
-      return;
-  }
-
-  if (currentPermission === 'default') {
-      setPopupStatus("Please grant permission to enable notifications.", "info", 0);
-      try {
-          const permissionRequested = await Notification.requestPermission();
-          localStorage.setItem(NOTIFICATION_PERMISSION_KEY, permissionRequested);
-          if (permissionRequested !== 'granted') {
-              setPopupStatus("Permission not granted. Notifications disabled.", "warning", 0);
-              populatePopup();
-              notificationPopup.classList.remove('hidden');
-              notificationPopup.style.opacity = 1;
-              return;
-          }
-      } catch (err) {
-          console.error("Error requesting permission:", err);
-          setPopupStatus("Error requesting notification permission.", "error", 0);
-          populatePopup();
-          notificationPopup.classList.remove('hidden');
-          notificationPopup.style.opacity = 1;
-          return;
-      }
-  }
-
-  if (Notification.permission === 'granted') {
-      setPopupStatus("Getting notification token...", "info", 0);
-      try {
-          const tokenObtained = await requestNotificationToken();
-          if (tokenObtained) {
-             setPopupStatus("Token ready.", "success");
-             await checkAndPerformDailySync();
-          }
-      } catch (err) {
-         console.error("Error during token request or sync:", err);
-      }
-  }
-
-  populatePopup();
-  notificationPopup.classList.remove('hidden');
-  notificationPopup.style.opacity = 1;
-}
-
-function closeNotificationPopup(event = null) {
-  if (event && event.target !== notificationPopup && event.target !== closeNotificationPopupBtn && !closeNotificationPopupBtn?.contains(event.target)) {
-     return;
-  }
-  if (notificationPopup) {
-    notificationPopup.style.opacity = 0;
-    setTimeout(() => notificationPopup.classList.add('hidden'), 300);
-  }
-}
-
-function populatePopup() {
-    if (popupLocationSelect) {
-        popupLocationSelect.innerHTML = locations.map(loc => `<option value="${loc}">${loc.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}</option>`).join('');
-    }
-    if (popupJobTypeSelect) {
-        popupJobTypeSelect.innerHTML = JOB_TYPES.map(type => `<option value="${type}">${type.charAt(0).toUpperCase() + type.slice(1)}</option>`).join('');
-    }
-    updateSubscribedListUI();
-}
-
-function updateSubscribedListUI() {
-    if (!subscribedTopicsList) return;
-    subscribedTopicsList.innerHTML = '';
-
-    if (subscribedTopicsCache.length === 0) {
-        subscribedTopicsList.innerHTML = '<p class="text-sm text-gray-500 italic w-full">No subscriptions active.</p>';
-        return;
-    }
-
-    subscribedTopicsCache.forEach(topicName => {
-        const parts = topicName.split('-');
-        const jobType = parts.pop();
-        const location = parts.join('-');
-        const displayLocation = location.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-        const displayJobType = jobType.charAt(0).toUpperCase() + jobType.slice(1);
-
-        const topicElement = document.createElement('div');
-        topicElement.className = 'bg-green-100 text-green-800 text-xs font-medium px-3 py-1.5 rounded-full flex items-center gap-2';
-        topicElement.innerHTML = `
-            <span>${displayLocation} - ${displayJobType}</span>
-            <button class="text-green-600 hover:text-green-900 transition-colors" data-topic="${topicName}" title="Unsubscribe">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
-        `;
-        topicElement.querySelector('button').addEventListener('click', (e) => {
-            e.stopPropagation();
-            handleUnsubscribeClick(topicName, topicElement);
-        });
-        subscribedTopicsList.appendChild(topicElement);
-    });
-}
-
-async function requestNotificationToken() {
-  if (!messaging) {
-    console.error("Cannot request token: Messaging service not initialized.");
-    setPopupStatus("Error initializing notifications.", "error", 0);
-    return false;
-  }
-
-  try {
-    console.log("Requesting FCM token...");
-    const registration = await navigator.serviceWorker.ready;
-    console.log("Service worker ready for getToken:", registration);
-
-    const currentToken = await getToken(messaging, {
-      vapidKey: VAPID_KEY,
-      serviceWorkerRegistration: registration
-    });
-
-    if (currentToken) {
-      console.log('FCM Token obtained/refreshed:', currentToken.substring(0, 10) + "...");
-      fcmToken = currentToken;
-      return true;
-    } else {
-      console.log('No registration token available. Request permission again.');
-      if (Notification.permission === 'granted') {
-        setPopupStatus('Could not get token. Service worker issue?', 'error', 0);
-      } else {
-        setPopupStatus('Notification permission needed to get token.', 'info', 0);
-      }
-      return false;
-    }
-  } catch (err) {
-    console.error('Error retrieving token: ', err);
-    if (err.code === 'messaging/permission-blocked' || err.code === 'messaging/notifications-blocked') {
-        setPopupStatus('Notifications blocked. Please enable in browser settings.', 'error', 0);
-    } else {
-        setPopupStatus('Error getting notification token: ' + err.message, 'error', 0);
-    }
-    fcmToken = null;
-    return false;
-  }
-}
-
-function isSameDay(timestamp1, timestamp2) {
-    const date1 = new Date(timestamp1);
-    const date2 = new Date(timestamp2);
-    return date1.getFullYear() === date2.getFullYear() &&
-           date1.getMonth() === date2.getMonth() &&
-           date1.getDate() === date2.getDate();
-}
-
-async function checkAndPerformDailySync() {
-    const lastSyncTimestamp = parseInt(localStorage.getItem(LAST_SYNC_TIMESTAMP_KEY) || '0', 10);
-    const now = Date.now();
-
-    if (!isSameDay(lastSyncTimestamp, now)) {
-        console.log("Performing daily subscription sync...");
-        setPopupStatus("Syncing preferences with server...", "info", 0);
-        await syncAllSubscriptionsWithServer();
-        localStorage.setItem(LAST_SYNC_TIMESTAMP_KEY, now.toString());
-        console.log("Daily sync complete.");
-         setPopupStatus("Preferences synced.", "success");
-    } else {
-        console.log("Daily sync already performed today.");
-        if (notificationPopupStatus?.textContent.includes("Syncing")) {
-             setPopupStatus("");
-        }
-    }
-}
-
-async function syncAllSubscriptionsWithServer() {
-    if (!fcmToken) {
-        console.warn("Cannot sync, FCM token not available.");
-        return;
-    }
-    console.log("Syncing based on local cache state:", subscribedTopicsCache);
-    const allPossibleTopics = [];
-    locations.forEach(loc => {
-        JOB_TYPES.forEach(type => {
-            allPossibleTopics.push(generateTopicName(loc, type));
-        });
-    });
-
-    const promises = allPossibleTopics.map(topicName => {
-        const shouldBeSubscribed = isTopicSubscribedInCache(topicName);
-        const action = shouldBeSubscribed ? 'subscribe' : 'unsubscribe';
-        return callManageSubscriptionAPI(topicName, action, null, false);
-    });
-
-    try {
-        await Promise.all(promises);
-        console.log("Server sync based on local cache complete.");
-    } catch (error) {
-        console.error("Error during server sync:", error);
-        setPopupStatus("Error syncing preferences with server.", "error");
-    }
-}
-
-async function handleSubscribeClick() {
-  if (!popupLocationSelect || !popupJobTypeSelect) return;
-  const location = popupLocationSelect.value;
-  const jobType = popupJobTypeSelect.value;
-  const topicName = generateTopicName(location, jobType);
-
-  if (isTopicSubscribedInCache(topicName)) {
-      setPopupStatus(`${topicName} is already subscribed.`, 'info');
-      return;
-  }
-
-  handleSubscribe(topicName);
-}
-
-async function handleSubscribe(topicName) {
-    if (!fcmToken) {
-        setPopupStatus("Cannot subscribe: Enable notifications first.", "warning");
-        return;
-    }
-    setPopupStatus(`Subscribing to ${topicName}...`, 'info', 0);
-    if(subscribeTopicBtn) subscribeTopicBtn.disabled = true;
-
-    try {
-        await callManageSubscriptionAPI(topicName, 'subscribe');
-    } catch (error) {
-        setPopupStatus(`Failed to subscribe: ${error.message}`, 'error');
-    } finally {
-         if(subscribeTopicBtn) subscribeTopicBtn.disabled = false;
-    }
-}
-
-async function handleUnsubscribeClick(topicName, topicElement) {
-    if (!fcmToken) {
-        setPopupStatus("Cannot unsubscribe: Enable notifications first.", "warning");
-        return;
-    }
-    setPopupStatus(`Unsubscribing from ${topicName}...`, 'info', 0);
-     if (topicElement) topicElement.style.opacity = '0.5';
-
-    try {
-        await callManageSubscriptionAPI(topicName, 'unsubscribe');
-    } catch (error) {
-        setPopupStatus(`Failed to unsubscribe: ${error.message}`, 'error');
-         if (topicElement) topicElement.style.opacity = '1';
-    }
-}
-
-async function callManageSubscriptionAPI(topicName, action, elementToUpdate = null, updateUICache = true) {
-    console.log(`Calling API to ${action} topic: ${topicName}`);
-    const functionUrl = MANAGE_SUBSCRIPTION_FUNCTION_URL;
-
-    const response = await fetch(functionUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: fcmToken, topic: topicName, action: action })
-    });
-
-    const result = await response.json();
-
-    if (!response.ok || !result.success) {
-        console.error(`API Error (${action}ing ${topicName}):`, result.error || response.statusText);
-        throw new Error(result.error || `Server responded with status ${response.status}`);
-    }
-
-    console.log(`API Success: ${action}d ${topicName}`);
-
-    if (updateUICache) {
-        if (action === 'subscribe') {
-            addTopicToCache(topicName);
-            setPopupStatus(`Subscribed to ${topicName}!`, 'success');
-        } else {
-            removeTopicFromCache(topicName);
-            setPopupStatus(`Unsubscribed from ${topicName}.`, 'success');
-        }
-        updateSubscribedListUI();
-    }
-}
 
 function showSlide(i) { if (!slides || slides.length === 0) return; slides.forEach(s => s.classList.remove('active')); currentSlide = (i + totalSlides) % totalSlides; slides[currentSlide].classList.add('active') }
 
@@ -618,6 +283,7 @@ window.closeModal = function(event) {
   }
 }
 
+const opportunitiesText = document.getElementById('opportunitiesText');
 function updateOpportunitiesTextDisplay(table) {
     if (!opportunitiesText) return;
     if (table === "Industrial Training Job Portal" || table === "Articleship Jobs") {
@@ -687,12 +353,13 @@ async function fetchJobs() {
     }
 
     query = query.order('Created_At', { ascending: false });
+
     query = query.range(page * limit, (page + 1) * limit - 1);
     const { data, error } = await query;
 
     if (error) {
       jobsContainer.textContent = 'Failed to load jobs. Please try again.';
-      return;
+      return
     }
 
     if (data && data.length > 0) {
@@ -706,14 +373,14 @@ async function fetchJobs() {
     } else {
       hasMoreData = false;
       if (loadMoreButton) loadMoreButton.style.display = 'none';
-      if (page === 0) jobsContainer.textContent = 'No jobs found.';
+      if (page === 0) jobsContainer.textContent = 'No jobs found.'
     }
   } catch (e) {
-    if (jobsContainer) jobsContainer.textContent = 'Failed to load jobs. Please check your connection.';
+    if (jobsContainer) jobsContainer.textContent = 'Failed to load jobs. Please check your connection.'
   } finally {
     isFetching = false;
     if (loader) loader.style.display = 'none';
-    if (loadMoreButton) loadMoreButton.disabled = false;
+    if (loadMoreButton) loadMoreButton.disabled = false
   }
 }
 
@@ -750,7 +417,7 @@ function handleScroll() {
   let cur = window.scrollY;
   if (cur > lastScrollY && cur > 100) header.classList.add('header-hidden');
   else header.classList.remove('header-hidden');
-  lastScrollY = cur;
+  lastScrollY = cur
 }
 
 async function loadBanners() {
@@ -802,6 +469,267 @@ async function loadBanners() {
     }
   } catch (e) { console.error("Error loading banners", e); }
 }
+
+function generateTopicCheckboxes() {
+  if (!topicCheckboxesDiv) return;
+  topicCheckboxesDiv.innerHTML = '';
+
+  locations.forEach(location => {
+    JOB_TYPES.forEach(jobType => {
+      const topicName = generateTopicName(location, jobType);
+      const label = document.createElement('label');
+      label.style.display = 'flex';
+      label.style.alignItems = 'center';
+      label.style.cursor = 'pointer';
+      label.style.padding = '0.5rem';
+      label.style.borderRadius = '6px';
+      label.style.transition = 'background-color 0.2s';
+      label.style.fontSize = '0.9rem';
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.value = topicName;
+      checkbox.id = `topic-${topicName}`;
+      checkbox.style.marginRight = '0.5rem';
+      checkbox.style.cursor = 'pointer';
+
+      const span = document.createElement('span');
+      const displayLocation = location.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      const displayJobType = jobType.charAt(0).toUpperCase() + jobType.slice(1);
+      span.textContent = `${displayLocation} - ${displayJobType}`;
+
+      label.appendChild(checkbox);
+      label.appendChild(span);
+
+      const isSubscribed = localStorage.getItem(topicName) === 'true';
+      checkbox.checked = isSubscribed;
+      if(isSubscribed) label.style.backgroundColor = SUBSCRIBED_TOPIC_BG_COLOR;
+
+      checkbox.addEventListener('change', handleTopicChange);
+
+      label.addEventListener('mouseover', () => { if(!checkbox.checked) label.style.backgroundColor = '#f1f5f9'; });
+      label.addEventListener('mouseout', () => { if(!checkbox.checked) label.style.backgroundColor = 'transparent'; });
+
+      topicCheckboxesDiv.appendChild(label);
+    });
+  });
+}
+
+async function handleTopicChange(event) {
+  const checkbox = event.target;
+  const topicName = checkbox.value;
+  const label = checkbox.parentElement;
+
+  if (!fcmToken) {
+      showStatus('Cannot change subscription: Notification token not available. Try enabling notifications again.', 'error');
+      checkbox.checked = !checkbox.checked;
+      return;
+  }
+
+  const action = checkbox.checked ? 'subscribe' : 'unsubscribe';
+  const functionUrl = 'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription';
+
+  checkbox.disabled = true;
+  label.style.opacity = '0.7';
+  showStatus(`Attempting to ${action} topic ${topicName}...`, 'info');
+
+  try {
+      const response = await fetch(functionUrl, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              token: fcmToken,
+              topic: topicName,
+              action: action
+          })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+           throw new Error(result.error || `Server responded with status ${response.status}`);
+      }
+
+      if (checkbox.checked) {
+          localStorage.setItem(topicName, 'true');
+          console.log(`Successfully ${action}d ${topicName} via function.`);
+          showStatus(`Subscribed to ${topicName}`, 'success');
+          label.style.backgroundColor = SUBSCRIBED_TOPIC_BG_COLOR;
+      } else {
+          localStorage.removeItem(topicName);
+          console.log(`Successfully ${action}d ${topicName} via function.`);
+          showStatus(`Unsubscribed from ${topicName}`, 'info');
+          label.style.backgroundColor = 'transparent';
+      }
+
+  } catch (err) {
+      console.error(`Failed to ${action} topic ${topicName} via function:`, err);
+      showStatus(`Failed to ${action} topic ${topicName}: ${err.message}`, 'error');
+      checkbox.checked = !checkbox.checked;
+      label.style.backgroundColor = checkbox.checked ? SUBSCRIBED_TOPIC_BG_COLOR : 'transparent';
+  } finally {
+      checkbox.disabled = false;
+      label.style.opacity = '1';
+      setTimeout(() => { if (notificationStatusDiv?.textContent.includes(topicName)) showStatus(''); }, STATUS_MESSAGE_DURATION);
+  }
+}
+
+async function requestTokenAndSyncSubscriptions() {
+  if (!messaging) {
+    console.error("Cannot request token: Messaging service not initialized.");
+    showStatus("Error initializing notifications.", "error");
+    return;
+  }
+
+  if (fcmToken) {
+    console.log("Token already available.");
+    if (fcmTokenDisplay) fcmTokenDisplay.textContent = `Debug Token: ${fcmToken.substring(0, 15)}...`;
+    await syncAllSubscriptionsWithServer();
+    return;
+  }
+
+  try {
+    console.log("Requesting FCM token...");
+    const registration = await navigator.serviceWorker.ready;
+    console.log("Service worker ready for getToken:", registration);
+
+    const currentToken = await getToken(messaging, {
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: registration
+    });
+
+    if (currentToken) {
+      console.log('FCM Token obtained:', currentToken);
+      fcmToken = currentToken;
+      if (fcmTokenDisplay) fcmTokenDisplay.textContent = `Debug Token: ${fcmToken.substring(0, 15)}...`;
+      await syncAllSubscriptionsWithServer();
+      showStatus("Notification token obtained.", "success");
+      setTimeout(() => showStatus(''), STATUS_MESSAGE_DURATION);
+
+    } else {
+      console.log('No registration token available. Request permission to generate one.');
+      if (Notification.permission === 'granted') {
+        showStatus('Could not get notification token. Ensure service worker is active and VAPID key is correct.', 'error');
+      } else {
+        showStatus('Notification permission needed to get token.', 'info');
+      }
+    }
+  } catch (err) {
+    console.error('An error occurred while retrieving token. ', err);
+    if (err.code === 'messaging/permission-blocked') {
+        showStatus('Notification permission was blocked. Please enable it in browser settings.', 'error');
+    } else {
+        showStatus('Error getting notification token: ' + err.message, 'error');
+    }
+    if(fcmTokenDisplay) fcmTokenDisplay.textContent = '';
+  }
+}
+
+async function syncAllSubscriptionsWithServer() {
+    if (!fcmToken || !topicCheckboxesDiv) return;
+    console.log("Syncing all topic subscriptions with server state...");
+    const checkboxes = topicCheckboxesDiv.querySelectorAll('input[type="checkbox"]');
+    const functionUrl = 'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription';
+    const promises = [];
+
+    checkboxes.forEach(checkbox => {
+        const topicName = checkbox.value;
+        const shouldBeSubscribed = checkbox.checked;
+        const action = shouldBeSubscribed ? 'subscribe' : 'unsubscribe';
+        const label = checkbox.parentElement;
+
+        promises.push(
+            (async () => {
+                checkbox.disabled = true;
+                label.style.opacity = '0.7';
+                try {
+                    const response = await fetch(functionUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token: fcmToken, topic: topicName, action: action })
+                    });
+                    const result = await response.json();
+                    if (!response.ok || !result.success) {
+                        throw new Error(result.error || `Sync failed for ${topicName}`);
+                    }
+                    console.log(`Synced ${topicName}: ${action} successful.`);
+                    localStorage.setItem(topicName, shouldBeSubscribed ? 'true' : 'false');
+                     label.style.backgroundColor = shouldBeSubscribed ? SUBSCRIBED_TOPIC_BG_COLOR : 'transparent';
+                } catch (err) {
+                    console.error(`Sync failed for ${topicName}:`, err);
+                    const storedState = localStorage.getItem(topicName) === 'true';
+                    checkbox.checked = storedState;
+                    label.style.backgroundColor = storedState ? SUBSCRIBED_TOPIC_BG_COLOR : 'transparent';
+                    showStatus(`Failed to sync ${topicName}. Please try toggling it again.`, 'error');
+                } finally {
+                    checkbox.disabled = false;
+                     label.style.opacity = '1';
+                }
+            })()
+        );
+    });
+
+    await Promise.all(promises);
+    console.log("Subscription sync process complete.");
+     showStatus("Preferences synced.", "success");
+     setTimeout(() => showStatus(''), STATUS_MESSAGE_DURATION);
+}
+
+
+document.addEventListener('DOMContentLoaded', async () => {
+  const session = await checkAuth();
+  updateHeaderAuth(session);
+  await loadBanners();
+  populateSalaryFilter(currentTable);
+  fetchJobs();
+  fetchCategories();
+  updateOpportunitiesTextDisplay(currentTable);
+  await initializeFCM();
+
+  const resourcesBtn = document.getElementById('resourcesDropdownBtn');
+  const resourcesDropdown = document.getElementById('resourcesDropdown');
+  const dropdownIcon = resourcesBtn?.querySelector('.dropdown-icon');
+
+  if (resourcesBtn && resourcesDropdown && dropdownIcon) {
+      resourcesBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          resourcesDropdown.classList.toggle('active');
+          dropdownIcon.classList.toggle('open');
+      });
+
+      document.addEventListener('click', (e) => {
+          if (!resourcesBtn.contains(e.target) && !resourcesDropdown.contains(e.target)) {
+              resourcesDropdown.classList.remove('active');
+              dropdownIcon.classList.remove('open');
+          }
+      });
+  }
+
+  if(menuButton && expandedMenu && menuCloseBtn) {
+      menuButton.addEventListener('click', () => expandedMenu.classList.toggle('active'));
+      menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+      document.addEventListener('click', (e) => {
+          if (!expandedMenu.contains(e.target) && !menuButton.contains(e.target) && expandedMenu.classList.contains('active')) {
+              expandedMenu.classList.remove('active');
+          }
+      });
+  }
+
+   if (enableNotificationsBtn) {
+      enableNotificationsBtn.addEventListener('click', async () => {
+        try {
+          const permission = await Notification.requestPermission();
+          handlePermissionStatus(permission);
+        } catch (err) {
+          console.error("Error requesting notification permission:", err);
+          showStatus('Could not request notification permission: ' + err.message, 'error');
+        }
+      });
+   }
+});
+
 
 async function checkAuth() {
   const { data: { session } } = await supabaseClient.auth.getSession();
@@ -862,19 +790,58 @@ window.showAddJobModal = function() {
   document.body.style.overflow = 'hidden';
 }
 
-const handleSearch = debounceSearch(() => {
-    page = 0;
-    if (jobsContainer) jobsContainer.innerHTML = '';
-    hasMoreData = true;
-    if (loadMoreButton) loadMoreButton.style.display = 'none';
-    fetchJobs()
-}, 300);
-
-function debounceSearch(fn, delay) {
-    return function (...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => fn.apply(this, args), delay);
-    }
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        page = 0;
+        if (jobsContainer) jobsContainer.innerHTML = '';
+        hasMoreData = true;
+        if (loadMoreButton) loadMoreButton.style.display = 'none';
+        fetchJobs()
+      }, 300)
+    });
 }
+
+if (locationSearchInput) {
+    locationSearchInput.addEventListener('input', (e) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        page = 0;
+        if (jobsContainer) jobsContainer.innerHTML = '';
+        hasMoreData = true;
+        if (loadMoreButton) loadMoreButton.style.display = 'none';
+        fetchJobs()
+      }, 300)
+    });
+}
+
+if (salaryFilter) {
+    salaryFilter.addEventListener('change', () => {
+      page = 0;
+      if (jobsContainer) jobsContainer.innerHTML = '';
+      hasMoreData = true;
+      if (loadMoreButton) loadMoreButton.style.display = 'none';
+      fetchJobs()
+    });
+}
+
+if (categoryFilter) {
+    categoryFilter.addEventListener('change', () => {
+      page = 0;
+      if (jobsContainer) jobsContainer.innerHTML = '';
+      hasMoreData = true;
+      if (loadMoreButton) loadMoreButton.style.display = 'none';
+      fetchJobs()
+    });
+}
+
+if (loadMoreButton) {
+    loadMoreButton.addEventListener('click', () => {
+      fetchJobs()
+    });
+}
+
+window.addEventListener('scroll', handleScroll);
 
 export { showModal, getApplicationLink };
