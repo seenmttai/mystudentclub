@@ -120,7 +120,7 @@
     <div class="loader" id="loader">
       <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
       </svg>
     </div>
     <div class="load-more-container">
@@ -130,7 +130,8 @@
   <section id="notification-preferences" style="margin: 2rem auto; padding: 1.5rem; background: white; border-radius: 12px; max-width: 800px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
     <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.75rem;">Notification Preferences</h2>
 
-    <div id="notification-permission-status" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 8px; font-size: 0.9rem; display: none;">
+    <div id="notification-permission-status" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 8px; font-size: 0.9rem;">
+        <!-- Status message will be injected here -->
     </div>
 
     <button id="enable-notifications-btn" style="display: none; padding: 0.75rem 1.5rem; background-color: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: background-color 0.2s;">
@@ -139,9 +140,10 @@
 
     <div id="topic-selection-area" style="display: none;">
         <p style="margin-bottom: 1rem; color: #4b5563;">Select the job types and locations you want to receive notifications for:</p>
-        <div id="topic-checkboxes" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+        <div id="topic-checkboxes" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <!-- Checkboxes will be generated here -->
         </div>
-        <p id="fcm-token-display" style="font-size: 0.7rem; color: #64748b; margin-top: 1rem; word-break: break-all;"></p>
+         <p id="fcm-token-display" style="font-size: 0.7rem; color: #64748b; margin-top: 1rem; word-break: break-all;"></p>
     </div>
   </section>
   <div id="modal" class="modal-overlay" onclick="closeModal(event)">
