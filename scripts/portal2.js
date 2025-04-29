@@ -483,6 +483,141 @@ async function callManageSubscriptionAPI(topicName, action, elementToUpdate = nu
     }
 }
 
+function showSlide(i) { if (!slides || slides.length === 0) return; slides.forEach(s => s.classList.remove('active')); currentSlide = (i + totalSlides) % totalSlides; slides[currentSlide].classList.add('active') }
+
+function renderJobCard(job, table) {
+  const jobCard = document.createElement('article');
+  jobCard.className = 'job-card';
+  jobCard.onclick = (e) => {
+    if (!e.target.closest('.admin-job-actions')) {
+      showModal(job);
+    }
+  };
+
+  let postedInfo = '';
+  if (job.Created_At) {
+    const daysAgo = getDaysAgo(job.Created_At);
+    postedInfo = `<span class="job-tag time-tag">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      Posted ${daysAgo}
+    </span>`;
+  }
+
+  jobCard.innerHTML = `
+    <div class="admin-job-actions">
+      <button class="icon-btn edit-icon-btn" data-job-id="${job.id}" data-job-table="${table}" title="Edit Job">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+        </svg>
+      </button>
+      <button class="icon-btn delete-icon-btn" onclick="deleteJob(${job.id}, '${table}')" title="Delete Job">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+        </svg>
+      </button>
+    </div>
+    <div class="job-info">
+      <h2 class="job-company">${job.Company || 'Company Name N/A'}</h2>
+      <div class="job-meta">
+        <span class="job-tag location-tag">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          ${job.Location || 'Location N/A'}
+        </span>
+        ${job.Salary ? `
+          <span class="job-tag salary-tag">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            ₹${job.Salary}
+          </span>
+        ` : ''}
+        ${postedInfo}
+      </div>
+    </div>
+  `;
+
+  return jobCard;
+}
+
+function isValidUrl(s) {
+  try {
+    new URL(s);
+    return true
+  } catch (_) {
+    return false
+  }
+}
+
+function getApplicationLink(id) {
+  if (!id) return '#';
+  if (isValidUrl(id)) return id;
+  let emails = id.split(/,|\s/).filter(e => e && e.includes('@'));
+  if (emails.length === 0) return '#';
+  let email = emails[0];
+  let subject = "";
+  if (currentTable === "Industrial Training Job Portal") subject = "Application for CA Industrial Training (Ref - My Student Club)";
+  else if (currentTable === "Articleship Jobs") subject = "Application for Articleship (Ref - My Student Club)";
+  else if (currentTable === "Fresher Jobs") subject = "Application for Role of CA Fresher in your Organization (Ref - My Student Club)";
+  else if (currentTable === "Semi Qualified Jobs") subject = "Application for Semi Qualified Roles in your Organization (Ref - My Student Club)";
+  return `mailto:${email}?subject=${encodeURIComponent(subject)}`
+}
+
+function showModal(job) {
+  let postedInfo = '';
+  if (job.Created_At) {
+    const daysAgo = getDaysAgo(job.Created_At);
+    postedInfo = `<p class="job-posted"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>Posted ${daysAgo}</p>`;
+  }
+
+  modalContent.innerHTML = `
+    <h2 class="modal-company" style="color:#003399;">${job.Company}</h2>
+    <p class="job-location"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+    </svg>${job.Location}</p>
+    ${job.Salary ? `<p class="job-salary"><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+    </svg>₹${job.Salary}</p>` : ''}
+    ${postedInfo}
+    <section class="modal-section">
+      <h3><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>Job Details</h3>
+      <dl class="job-details-list">
+        <li><dd class="modal-description-text">${job.Description || 'N/A'}</dd></li>
+      </dl>
+    </section>
+    <section class="modal-section">
+      <h3><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5"/>
+      </svg>Apply Now</h3>
+      ${job['Application ID'] ? `<a href="${getApplicationLink(job['Application ID'])}" class="apply-btn" ${isValidUrl(job['Application ID']) ? 'target="_blank"' : ''}>
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+        </svg>Apply</a>` : 'Contact details are in description'}
+    </section>
+  `; modal.style.display = 'flex'; document.body.style.overflow = 'hidden';
+}
+
+window.closeModal = function(event) {
+  if (event && (event.target === modal || event.target.classList.contains('modal-close'))) {
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+  }
+}
+
 function updateOpportunitiesTextDisplay(table) {
     if (!opportunitiesText) return;
     if (table === "Industrial Training Job Portal" || table === "Articleship Jobs") {
@@ -490,6 +625,29 @@ function updateOpportunitiesTextDisplay(table) {
     } else {
         opportunitiesText.style.display = 'none'
     }
+}
+
+function populateSalaryFilter(table) {
+  if (!salaryFilter) return;
+  salaryFilter.innerHTML = '';
+  let options = [];
+  if (table === "Articleship Jobs") {
+    options = [{ value: '', text: 'Any Stipend' }, { value: '0-5000', text: 'Below ₹5,000' }, { value: '5000-10000', text: '₹5,000 - ₹10,000' }, { value: '10000-15000', text: '₹10,000 - ₹15,000' }, { value: '15000+', text: '₹15,000+' }];
+  }
+  else if (table === "Industrial Training Job Portal") {
+    options = [{ value: '', text: 'Any Stipend' }, { value: '10000-20000', text: '₹10,000 - ₹20,000' }, { value: '20000-40000', text: '₹20,000 - ₹40,000' }, { value: '40000+', text: '₹40,000+' }];
+  }
+  else if (table === "Semi Qualified Jobs") {
+    options = [{ value: '', text: 'Any Salary' }, { value: '0-25000', text: 'Below ₹25,000' }, { value: '25000-35000', text: '₹25,000 - ₹35,000' }, { value: '35000-50000', text: '₹35,000 - ₹50,000' }, { value: '50000+', text: 'Above ₹50,000' }];
+  }
+  else if (table === "Fresher Jobs") {
+    options = [{ value: '', text: 'Any Salary' }, { value: '0-12', text: 'Less than 12 LPA' }, { value: '12-18', text: '12-18 LPA' }, { value: '18+', text: 'More than 18 LPA' }];
+  }
+  options.forEach(opt => {
+    let o = document.createElement('option');
+    o.value = opt.value; o.text = opt.text;
+    salaryFilter.appendChild(o);
+  });
 }
 
 async function fetchJobs() {
