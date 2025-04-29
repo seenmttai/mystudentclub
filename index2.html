@@ -8,7 +8,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="scripts/style.css">
   <link rel="canonical" href="https://www.mystudentclub.com" />
   <meta name="robots" content="index, follow">
@@ -17,191 +16,6 @@
 
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
-
-  <style>
-    .notification-icon-btn {
-      display: flex;
-      padding: 0.5rem;
-      border-radius: 8px;
-      color: #4f46e5;
-      background: rgba(79,70,229,0.1);
-      border: none;
-      cursor: pointer;
-      position: relative;
-      margin-right: 0.5rem; 
-    }
-    .notification-icon-btn:hover {
-        background: rgba(79,70,229,0.15);
-    }
-    .notification-icon-btn svg {
-      width: 20px;
-      height: 20px;
-    }
-    .notification-badge {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      height: 14px;
-      width: 14px;
-      border-radius: 50%;
-      background-color: #ef4444; 
-      color: white;
-      font-size: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      visibility: hidden; 
-    }
-    .notification-popup {
-      position: fixed;
-      top: 70px; 
-      right: 20px;
-      width: 350px;
-      max-width: 90vw;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-      z-index: 1100;
-      padding: 1rem;
-      display: none; 
-      flex-direction: column;
-      gap: 1rem;
-      max-height: 80vh;
-      overflow-y: auto;
-      border: 1px solid #e5e7eb;
-    }
-    .notification-popup-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .notification-popup-header h3 {
-      margin: 0;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #1f2937;
-    }
-    .close-btn {
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      color: #6b7280;
-      cursor: pointer;
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-    }
-    .close-btn:hover {
-      background: #f3f4f6;
-      color: #1f2937;
-    }
-    .notification-status {
-      padding: 0.75rem;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      display: none; 
-      margin-bottom: 0.5rem;
-      border: 1px solid transparent;
-    }
-    .subscribed-topics h4, .subscription-form h4 {
-      margin: 0 0 0.5rem 0;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #374151;
-    }
-    .subscribed-topics-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 1rem; 
-      min-height: 20px; 
-    }
-    .topic-tag {
-      display: flex;
-      align-items: center;
-      background-color: #dcfce7; 
-      color: #15803d; 
-      padding: 0.4rem 0.6rem;
-      border-radius: 30px;
-      font-size: 0.85rem;
-      gap: 0.3rem;
-    }
-    .topic-remove {
-      background: none;
-      border: none;
-      padding: 0;
-      width: 18px;
-      height: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #15803d;
-      cursor: pointer;
-      border-radius: 50%;
-      margin-left: 4px;
-    }
-    .topic-remove:hover {
-      background-color: rgba(21, 128, 61, 0.1);
-    }
-    .subscription-form {
-      border-top: 1px solid #e5e7eb;
-      padding-top: 1rem;
-    }
-    .subscription-selectors {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .subscription-select {
-      flex: 1;
-      min-width: 120px;
-      padding: 0.5rem;
-      border-radius: 6px;
-      border: 1px solid #d1d5db;
-      font-size: 0.9rem;
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 0.5rem center;
-      background-size: 1.2em;
-      padding-right: 2rem;
-    }
-    .subscribe-btn {
-      padding: 0.5rem 1rem;
-      background-color: #4f46e5;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-    .subscribe-btn:hover {
-      background-color: #4338ca;
-    }
-    .subscribe-btn:disabled {
-      background-color: #9ca3af;
-      cursor: not-allowed;
-    }
-    .no-subscriptions {
-      font-size: 0.9rem;
-      color: #6b7280;
-      padding: 0.5rem 0;
-      font-style: italic;
-    }
-    @media (max-width: 768px) {
-      .notification-popup {
-        top: 60px; 
-        right: 10px;
-        width: 320px;
-      }
-      .subscription-selectors {
-        flex-direction: column;
-      }
-    }
-  </style>
 </head>
 <body>
   <div class="floating-header">
@@ -209,17 +23,19 @@
       <a href="/" class="brand-link">
         <img src="assets/logo.png" alt="My Student Club" class="brand-logo">
       </a>
-
-      <div class="auth-buttons flex items-center">
-
-        <button id="notificationsBtn" class="notification-icon-btn" aria-label="Manage Notifications">
+      <div class="auth-buttons">
+        <a href="/login" class="auth-icon-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </a>
+      </div>
+              <button id="notificationsBtn" class="notification-icon-btn" aria-label="Manage Notifications">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
           </svg>
           <span class="notification-badge" id="notificationBadge"></span>
         </button>
-
-      </div>
       <button class="menu-button" id="menuButton">
         <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -227,7 +43,6 @@
       </button>
     </div>
     <div class="expanded-menu" id="expandedMenu">
-
       <button class="menu-close-btn" id="menuCloseBtn">
         <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -277,18 +92,15 @@
       </div>
     </div>
   </div>
-
   <div id="notificationPopup" class="notification-popup">
     <div class="notification-popup-header">
       <h3>Notification Preferences</h3>
-      <button id="closeNotificationPopup" class="close-btn" aria-label="Close Notifications">×</button>
+      <button id="closeNotificationPopup" class="close-btn">×</button>
     </div>
     <div class="notification-status" id="notificationStatus"></div>
     <div id="subscribedTopics" class="subscribed-topics">
       <h4>Your Subscriptions</h4>
-      <div id="subscribedTopicsList" class="subscribed-topics-list">
-
-      </div>
+      <div id="subscribedTopicsList" class="subscribed-topics-list"></div>
     </div>
     <div class="subscription-form">
       <h4>Add New Subscription</h4>
@@ -299,13 +111,27 @@
         </select>
         <select id="jobTypeSelect" class="subscription-select">
           <option value="" disabled selected>Select Job Type</option>
-
+          <option value="industrial">Industrial Training</option>
+          <option value="semi">Semi Qualified</option>
+          <option value="fresher">Fresher</option>
         </select>
         <button id="subscribeBtn" class="subscribe-btn" disabled>Subscribe</button>
       </div>
     </div>
   </div>
-
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/firebase-messaging-sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+  </script>
   <div class="banner-section">
     <div class="carousel"></div>
   </div>
@@ -366,7 +192,6 @@
     </svg>
     Contact Us
   </a>
-
   <script type="module" src="scripts/portal2.js"></script>
 </body>
 </html>
