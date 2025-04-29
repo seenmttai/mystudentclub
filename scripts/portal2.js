@@ -79,10 +79,18 @@ const NOTIFICATION_PERMISSION_KEY = 'notificationPermissionState';
 function showStatus(message, type = 'info') {
   if (!notificationPopupStatus) return;
   notificationPopupStatus.textContent = message;
+  notificationPopupStatus.className = `p-3 text-sm text-center ${
+    type === 'error' ? 'bg-red-100 text-red-700' :
+    type === 'success' ? 'bg-green-100 text-green-700' :
+    'bg-blue-100 text-blue-700'
+  }`;
   notificationPopupStatus.style.display = 'block';
-  notificationPopupStatus.style.backgroundColor = type === 'error' ? '#fee2e2' : (type === 'success' ? '#dcfce7' : '#eff6ff');
-  notificationPopupStatus.style.color = type === 'error' ? '#b91c1c' : (type === 'success' ? '#15803d' : '#1e40af');
-  notificationPopupStatus.style.border = `1px solid ${type === 'error' ? '#fecaca' : (type === 'success' ? '#bbf7d0' : '#bfdbfe')}`;
+  if (duration > 0) {
+    setTimeout(() => {
+      notificationPopupStatus.style.display = 'none';
+      notificationPopupStatus.textContent = '';
+    }, duration);
+  }
 }
 
 async function handlePermissionStatus(permission) {
@@ -94,18 +102,11 @@ async function handlePermissionStatus(permission) {
 
   if (permission === 'granted') {
     showStatus('Notifications are enabled.', 'success');
-    if(enableNotificationsBtn) enableNotificationsBtn.style.display = 'none';
-    if(topicSelectionArea) topicSelectionArea.style.display = 'block';
-    generateTopicCheckboxes();
     await requestTokenAndSyncSubscriptions();
   } else if (permission === 'denied') {
     showStatus('Notifications are blocked. Please enable them in your browser settings.', 'error');
-    if(enableNotificationsBtn) enableNotificationsBtn.style.display = 'none';
-    if(topicSelectionArea) topicSelectionArea.style.display = 'none';
   } else {
     showStatus('Click the button to enable notifications for job alerts.');
-    if(enableNotificationsBtn) enableNotificationsBtn.style.display = 'inline-block';
-    if(topicSelectionArea) topicSelectionArea.style.display = 'none';
   }
 }
 
