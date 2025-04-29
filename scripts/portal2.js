@@ -67,6 +67,87 @@ const fcmTokenDisplay = document.getElementById('fcm-token-display');
 let messaging;
 let fcmToken = null;
 
+function showStatus(message, type = 'info') {
+  if (!notificationStatusDiv) return;
+  notificationStatusDiv.textContent = message;
+  notificationStatusDiv.style.display = 'block';
+  notificationStatusDiv.style.backgroundColor = type === 'error' ? '#fee2e2' : (type === 'success' ? '#dcfce7' : '#eff6ff');
+  notificationStatusDiv.style.color = type === 'error' ? '#b91c1c' : (type === 'success' ? '#15803d' : '#1e40af');
+  notificationStatusDiv.style.border = `1px solid ${type === 'error' ? '#fecaca' : (type === 'success' ? '#bbf7d0' : '#bfdbfe')}`;
+}
+
+async function handlePermissionStatus(permission) {
+  if (!messaging) {
+    console.error("Messaging service not initialized when handling permission status.");
+    showStatus("Error initializing notifications system.", "error");
+    return;
+  }
+
+  if (permission === 'granted') {
+    showStatus('Notifications are enabled.', 'success');
+    if(enableNotificationsBtn) enableNotificationsBtn.style.display = 'none';
+    if(topicSelectionArea) topicSelectionArea.style.display = 'block';
+    generateTopicCheckboxes();
+    await requestTokenAndSyncSubscriptions();
+  } else if (permission === 'denied') {
+    showStatus('Notifications are blocked. Please enable them in your browser settings.', 'error');
+    if(enableNotificationsBtn) enableNotificationsBtn.style.display = 'none';
+    if(topicSelectionArea) topicSelectionArea.style.display = 'none';
+  } else {
+    showStatus('Click the button to enable notifications for job alerts.');
+    if(enableNotificationsBtn) enableNotificationsBtn.style.display = 'inline-block';
+    if(topicSelectionArea) topicSelectionArea.style.display = 'none';
+  }
+}
+
+async function initializeFCM() {
+  if (!notificationStatusDiv || !enableNotificationsBtn || !topicSelectionArea) {
+    console.log("Notification preference elements not found. Skipping FCM init.");
+    return;
+  }
+  try {
+    const app = initializeApp(firebaseConfig);
+    messaging = getMessaging(app);
+
+    onMessage(messaging, (payload) => {
+      console.log('Foreground message received. ', payload);
+      const notif = payload.notification || {};
+      const notification = new Notification(notif.title, {
+        body: notif.body,
+        icon: notif.icon || '/assets/icon-70x70.png',
+        data: { click_action: payload.data?.link || payload.fcmOptions?.link || '/' }
+      });
+      notification.onclick = (event) => {
+        event.preventDefault();
+        window.open(notification.data.click_action, '_blank');
+        notification.close();
+      };
+    });
+
+    if ('serviceWorker' in navigator) {
+      try {
+        await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        console.log('Service Worker registered successfully.');
+      } catch (error) {
+        console.error('Service Worker registration failed:', error);
+        showStatus(`Service Worker registration failed: ${error.message}`, 'error');
+        return;
+      }
+    } else {
+      console.warn('Service workers are not supported in this browser.');
+      showStatus('Notifications require Service Worker support.', 'error');
+      return;
+    }
+
+    handlePermissionStatus(Notification.permission);
+
+  } catch(err) {
+     console.error("Error initializing Firebase app or messaging:", err);
+     showStatus("Could not initialize notifications system.", "error");
+  }
+}
+
+
 function showSlide(i) { if (!slides || slides.length === 0) return; slides.forEach(s => s.classList.remove('active')); currentSlide = (i + totalSlides) % totalSlides; slides[currentSlide].classList.add('active') }
 
 function renderJobCard(job, table) {
@@ -389,50 +470,109 @@ async function loadBanners() {
   } catch (e) { console.error("Error loading banners", e); }
 }
 
-async function initializeFCM() {
-  if (!notificationStatusDiv || !enableNotificationsBtn || !topicSelectionArea) {
-    console.log("Notification preference elements not found. Skipping FCM init.");
-    return;
-  }
-  try {
-    const app = initializeApp(firebaseConfig);
-    messaging = getMessaging(app);
+function generateTopicCheckboxes() {
+  if (!topicCheckboxesDiv) return;
+  topicCheckboxesDiv.innerHTML = '';
 
-    onMessage(messaging, (payload) => {
-      console.log('Foreground message received. ', payload);
-      const notif = payload.notification || {};
-      const notification = new Notification(notif.title, {
-        body: notif.body,
-        icon: notif.icon || '/assets/icon-70x70.png',
-        data: { click_action: payload.data?.link || payload.fcmOptions?.link || '/' }
-      });
-      notification.onclick = (event) => {
-        event.preventDefault();
-        window.open(notification.data.click_action, '_blank');
-        notification.close();
-      };
+  locations.forEach(location => {
+    JOB_TYPES.forEach(jobType => {
+      const topicName = generateTopicName(location, jobType);
+      const label = document.createElement('label');
+      label.style.display = 'flex';
+      label.style.alignItems = 'center';
+      label.style.cursor = 'pointer';
+      label.style.padding = '0.5rem';
+      label.style.borderRadius = '6px';
+      label.style.transition = 'background-color 0.2s';
+      label.style.fontSize = '0.9rem';
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.value = topicName;
+      checkbox.id = `topic-${topicName}`;
+      checkbox.style.marginRight = '0.5rem';
+      checkbox.style.cursor = 'pointer';
+
+      const span = document.createElement('span');
+      const displayLocation = location.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      const displayJobType = jobType.charAt(0).toUpperCase() + jobType.slice(1);
+      span.textContent = `${displayLocation} - ${displayJobType}`;
+
+      label.appendChild(checkbox);
+      label.appendChild(span);
+
+      const isSubscribed = localStorage.getItem(topicName) === 'true';
+      checkbox.checked = isSubscribed;
+      if(isSubscribed) label.style.backgroundColor = SUBSCRIBED_TOPIC_BG_COLOR;
+
+      checkbox.addEventListener('change', handleTopicChange);
+
+      label.addEventListener('mouseover', () => { if(!checkbox.checked) label.style.backgroundColor = '#f1f5f9'; });
+      label.addEventListener('mouseout', () => { if(!checkbox.checked) label.style.backgroundColor = 'transparent'; });
+
+      topicCheckboxesDiv.appendChild(label);
     });
+  });
+}
 
-    if ('serviceWorker' in navigator) {
-      try {
-        await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-        console.log('Service Worker registered successfully.');
-      } catch (error) {
-        console.error('Service Worker registration failed:', error);
-        showStatus(`Service Worker registration failed: ${error.message}`, 'error');
-        return;
-      }
-    } else {
-      console.warn('Service workers are not supported in this browser.');
-      showStatus('Notifications require Service Worker support.', 'error');
+async function handleTopicChange(event) {
+  const checkbox = event.target;
+  const topicName = checkbox.value;
+  const label = checkbox.parentElement;
+
+  if (!fcmToken) {
+      showStatus('Cannot change subscription: Notification token not available. Try enabling notifications again.', 'error');
+      checkbox.checked = !checkbox.checked;
       return;
-    }
+  }
 
-    handlePermissionStatus(Notification.permission);
+  const action = checkbox.checked ? 'subscribe' : 'unsubscribe';
+  const functionUrl = 'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription';
 
-  } catch(err) {
-     console.error("Error initializing Firebase app or messaging:", err);
-     showStatus("Could not initialize notifications system.", "error");
+  checkbox.disabled = true;
+  label.style.opacity = '0.7';
+  showStatus(`Attempting to ${action} topic ${topicName}...`, 'info');
+
+  try {
+      const response = await fetch(functionUrl, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              token: fcmToken,
+              topic: topicName,
+              action: action
+          })
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+           throw new Error(result.error || `Server responded with status ${response.status}`);
+      }
+
+      if (checkbox.checked) {
+          localStorage.setItem(topicName, 'true');
+          console.log(`Successfully ${action}d ${topicName} via function.`);
+          showStatus(`Subscribed to ${topicName}`, 'success');
+          label.style.backgroundColor = SUBSCRIBED_TOPIC_BG_COLOR;
+      } else {
+          localStorage.removeItem(topicName);
+          console.log(`Successfully ${action}d ${topicName} via function.`);
+          showStatus(`Unsubscribed from ${topicName}`, 'info');
+          label.style.backgroundColor = 'transparent';
+      }
+
+  } catch (err) {
+      console.error(`Failed to ${action} topic ${topicName} via function:`, err);
+      showStatus(`Failed to ${action} topic ${topicName}: ${err.message}`, 'error');
+      checkbox.checked = !checkbox.checked;
+      label.style.backgroundColor = checkbox.checked ? SUBSCRIBED_TOPIC_BG_COLOR : 'transparent';
+  } finally {
+      checkbox.disabled = false;
+      label.style.opacity = '1';
+      setTimeout(() => { if (notificationStatusDiv?.textContent.includes(topicName)) showStatus(''); }, STATUS_MESSAGE_DURATION);
   }
 }
 
@@ -516,7 +656,7 @@ async function syncAllSubscriptionsWithServer() {
                     }
                     console.log(`Synced ${topicName}: ${action} successful.`);
                     localStorage.setItem(topicName, shouldBeSubscribed ? 'true' : 'false');
-                    label.style.backgroundColor = shouldBeSubscribed ? SUBSCRIBED_TOPIC_BG_COLOR : 'transparent';
+                     label.style.backgroundColor = shouldBeSubscribed ? SUBSCRIBED_TOPIC_BG_COLOR : 'transparent';
                 } catch (err) {
                     console.error(`Sync failed for ${topicName}:`, err);
                     const storedState = localStorage.getItem(topicName) === 'true';
@@ -525,7 +665,7 @@ async function syncAllSubscriptionsWithServer() {
                     showStatus(`Failed to sync ${topicName}. Please try toggling it again.`, 'error');
                 } finally {
                     checkbox.disabled = false;
-                    label.style.opacity = '1';
+                     label.style.opacity = '1';
                 }
             })()
         );
@@ -533,9 +673,10 @@ async function syncAllSubscriptionsWithServer() {
 
     await Promise.all(promises);
     console.log("Subscription sync process complete.");
-    showStatus("Preferences synced.", "success");
-    setTimeout(() => showStatus(''), STATUS_MESSAGE_DURATION);
+     showStatus("Preferences synced.", "success");
+     setTimeout(() => showStatus(''), STATUS_MESSAGE_DURATION);
 }
+
 
 document.addEventListener('DOMContentLoaded', async () => {
   const session = await checkAuth();
