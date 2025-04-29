@@ -1,12 +1,10 @@
 import { getDaysAgo } from './date-utils.js';
-
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
 import { getMessaging, getToken, onMessage, deleteToken } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging.js';
 
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, { global: { headers: { 'apikey': supabaseKey } } });
-
 const jobsContainer = document.getElementById('jobs');
 const loader = document.getElementById('loader');
 const modal = document.getElementById('modal');
@@ -16,29 +14,15 @@ const locationSearchInput = document.getElementById('locationSearchInput');
 const salaryFilter = document.getElementById('salaryFilter');
 const categoryFilter = document.getElementById('categoryFilter');
 const loadMoreButton = document.getElementById('loadMore');
+let isFetching = false;
+let page = 0;
+const limit = 12;
+let timeout = null;
+let hasMoreData = true;
 const menuButton = document.getElementById('menuButton');
 const expandedMenu = document.getElementById('expandedMenu');
 const menuCloseBtn = document.getElementById('menuCloseBtn');
-const header = document.querySelector('.floating-header'); 
-const opportunitiesText = document.getElementById('opportunitiesText'); 
-
-const notificationsBtn = document.getElementById('notificationsBtn');
-const notificationPopup = document.getElementById('notificationPopup');
-const closeNotificationPopup = document.getElementById('closeNotificationPopup');
-const notificationStatus = document.getElementById('notificationStatus');
-const subscribedTopicsList = document.getElementById('subscribedTopicsList');
-const locationSelect = document.getElementById('locationSelect');
-const jobTypeSelect = document.getElementById('jobTypeSelect');
-const subscribeBtn = document.getElementById('subscribeBtn');
-const notificationBadge = document.getElementById('notificationBadge');
-
-let isFetching = false; 
-let page = 0; 
-const limit = 12; 
-let timeout = null; 
-let hasMoreData = true; 
-let currentSlide = 0, slides = [], totalSlides = 0; 
-let lastScrollY = 0; 
+let currentSlide = 0, slides = [], totalSlides = 0;
 
 let currentTable = 'Industrial Training Job Portal';
 if (window.location.pathname.includes('articleship')) {
@@ -61,23 +45,32 @@ const firebaseConfig = {
 
 const VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
 
-const MAX_LOCATIONS = 15; 
+const MAX_LOCATIONS = 15;
 const JOB_TYPES = [
   { value: "industrial", label: "Industrial Training" },
   { value: "semi", label: "Semi Qualified" },
   { value: "fresher", label: "Fresher" }
 ];
 const LOCATIONS = [
-  "mumbai", "bangalore", "gurgaon", "pune", "kolkata",
-  "delhi", "noida", "bengaluru", "hyderabad", "ahmedabad",
+  "mumbai", "bangalore", "gurgaon", "pune", "kolkata", 
+  "delhi", "noida", "bengaluru", "hyderabad", "ahmedabad", 
   "chennai", "gurugram", "jaipur", "new delhi"
-].slice(0, MAX_LOCATIONS); 
+];
 
-const SYNC_TIMESTAMP_KEY = 'notificationSyncTimestamp'; 
-const SUBSCRIBED_TOPICS_KEY = 'subscribedTopics'; 
+const SYNC_TIMESTAMP_KEY = 'notificationSyncTimestamp';
+const SUBSCRIBED_TOPICS_KEY = 'subscribedTopics';
 
-let messaging; 
-let fcmToken = null; 
+const notificationsBtn = document.getElementById('notificationsBtn');
+const notificationPopup = document.getElementById('notificationPopup');
+const closeNotificationPopup = document.getElementById('closeNotificationPopup');
+const notificationStatus = document.getElementById('notificationStatus');
+const subscribedTopicsList = document.getElementById('subscribedTopicsList');
+const locationSelect = document.getElementById('locationSelect');
+const jobTypeSelect = document.getElementById('jobTypeSelect');
+const subscribeBtn = document.getElementById('subscribeBtn');
+const notificationBadge = document.getElementById('notificationBadge');
+
+const opportunitiesText = document.getElementById('opportunitiesText');
 
 function generateTopicName(location, jobType) {
   const formattedLocation = location.toLowerCase().replace(/\s+/g, '-');
@@ -85,12 +78,7 @@ function generateTopicName(location, jobType) {
 }
 
 function formatTopicForDisplay(topicName) {
-  const parts = topicName.split('-');
-  if (parts.length < 2) return { location: topicName, jobType: '' }; 
-
-  const jobType = parts.pop(); 
-  const location = parts.join('-'); 
-
+  const [location, jobType] = topicName.split('-');
   const displayLocation = location.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
   let displayJobType = '';
@@ -98,7 +86,6 @@ function formatTopicForDisplay(topicName) {
   if (jobTypeObj) {
     displayJobType = jobTypeObj.label;
   } else {
-
     displayJobType = jobType.charAt(0).toUpperCase() + jobType.slice(1);
   }
 
@@ -112,61 +99,49 @@ function showStatus(message, type = 'info') {
   notificationStatus.style.display = 'block';
 
   if (type === 'error') {
-    notificationStatus.style.backgroundColor = '#fee2e2'; 
-    notificationStatus.style.color = '#b91c1c'; 
+    notificationStatus.style.backgroundColor = '#fee2e2';
+    notificationStatus.style.color = '#b91c1c';
   } else if (type === 'success') {
-    notificationStatus.style.backgroundColor = '#dcfce7'; 
-    notificationStatus.style.color = '#15803d'; 
-  } else { 
-    notificationStatus.style.backgroundColor = '#eff6ff'; 
-    notificationStatus.style.color = '#1e40af'; 
+    notificationStatus.style.backgroundColor = '#dcfce7';
+    notificationStatus.style.color = '#15803d';
+  } else {
+    notificationStatus.style.backgroundColor = '#eff6ff';
+    notificationStatus.style.color = '#1e40af';
   }
 
   if (type !== 'error') {
     setTimeout(() => {
-
-      if (notificationStatus.textContent === message) {
-        notificationStatus.style.display = 'none';
-      }
-    }, 3000); 
+      notificationStatus.style.display = 'none';
+    }, 3000);
   }
 }
 
 function getSubscribedTopics() {
   const topicsJson = localStorage.getItem(SUBSCRIBED_TOPICS_KEY);
-  try {
-    return topicsJson ? JSON.parse(topicsJson) : [];
-  } catch (e) {
-    console.error("Error parsing subscribed topics from localStorage:", e);
-    return []; 
-  }
+  return topicsJson ? JSON.parse(topicsJson) : [];
 }
 
 function saveSubscribedTopics(topics) {
-
-  if (Array.isArray(topics)) {
-    localStorage.setItem(SUBSCRIBED_TOPICS_KEY, JSON.stringify(topics));
-    updateNotificationBadge(); 
-  } else {
-    console.error("Attempted to save non-array as subscribed topics:", topics);
-  }
+  localStorage.setItem(SUBSCRIBED_TOPICS_KEY, JSON.stringify(topics));
+  updateNotificationBadge();
 }
 
 function updateNotificationBadge() {
-  if (!notificationBadge) return;
   const topics = getSubscribedTopics();
-
-  notificationBadge.style.visibility = topics.length > 0 ? 'visible' : 'hidden';
+  if (topics.length > 0) {
+    notificationBadge.style.visibility = 'visible';
+  } else {
+    notificationBadge.style.visibility = 'hidden';
+  }
 }
 
 function renderSubscribedTopics() {
   if (!subscribedTopicsList) return;
 
-  subscribedTopicsList.innerHTML = ''; 
+  subscribedTopicsList.innerHTML = '';
   const topics = getSubscribedTopics();
 
   if (topics.length === 0) {
-
     const noSubscriptions = document.createElement('p');
     noSubscriptions.className = 'no-subscriptions';
     noSubscriptions.textContent = 'No active subscriptions. Subscribe below to receive job alerts.';
@@ -175,13 +150,13 @@ function renderSubscribedTopics() {
   }
 
   topics.forEach(topic => {
-    const { location, jobType } = formatTopicForDisplay(topic); 
+    const { location, jobType } = formatTopicForDisplay(topic);
 
     const topicTag = document.createElement('div');
-    topicTag.className = 'topic-tag'; 
+    topicTag.className = 'topic-tag';
     topicTag.innerHTML = `
       <span>${location} - ${jobType}</span>
-      <button class="topic-remove" data-topic="${topic}" aria-label="Unsubscribe from ${location} - ${jobType}">×</button>
+      <button class="topic-remove" data-topic="${topic}">×</button>
     `;
 
     subscribedTopicsList.appendChild(topicTag);
@@ -190,11 +165,9 @@ function renderSubscribedTopics() {
   const removeButtons = subscribedTopicsList.querySelectorAll('.topic-remove');
   removeButtons.forEach(button => {
     button.addEventListener('click', async (e) => {
-      e.stopPropagation(); 
+      e.stopPropagation();
       const topic = button.dataset.topic;
-      button.disabled = true; 
       await unsubscribeFromTopic(topic);
-      button.disabled = false;
     });
   });
 }
@@ -205,10 +178,10 @@ async function subscribeToTopic(topic) {
     return false;
   }
 
-  const functionUrl = 'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription';
-  showStatus(`Subscribing to ${topic}...`, 'info');
-
   try {
+    showStatus(`Subscribing to ${topic}...`, 'info');
+
+    const functionUrl = 'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription';
     const response = await fetch(functionUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -232,7 +205,7 @@ async function subscribeToTopic(topic) {
     }
 
     showStatus(`Successfully subscribed to ${topic}`, 'success');
-    renderSubscribedTopics(); 
+    renderSubscribedTopics();
     return true;
 
   } catch (err) {
@@ -248,10 +221,10 @@ async function unsubscribeFromTopic(topic) {
     return false;
   }
 
-  const functionUrl = 'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription';
-  showStatus(`Unsubscribing from ${topic}...`, 'info');
-
   try {
+    showStatus(`Unsubscribing from ${topic}...`, 'info');
+
+    const functionUrl = 'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription';
     const response = await fetch(functionUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -265,12 +238,7 @@ async function unsubscribeFromTopic(topic) {
     const result = await response.json();
 
     if (!response.ok || !result.success) {
-
-      if (result.fcmError?.code !== 'messaging/registration-token-not-registered') {
-         throw new Error(result.error || `Failed to unsubscribe from ${topic}`);
-      } else {
-         console.warn(`Token not registered for topic ${topic}, proceeding with local removal.`);
-      }
+      throw new Error(result.error || `Failed to unsubscribe from ${topic}`);
     }
 
     let topics = getSubscribedTopics();
@@ -278,7 +246,7 @@ async function unsubscribeFromTopic(topic) {
     saveSubscribedTopics(topics);
 
     showStatus(`Successfully unsubscribed from ${topic}`, 'success');
-    renderSubscribedTopics(); 
+    renderSubscribedTopics();
     return true;
 
   } catch (err) {
@@ -290,7 +258,7 @@ async function unsubscribeFromTopic(topic) {
 
 function shouldSyncNotifications() {
   const lastSync = localStorage.getItem(SYNC_TIMESTAMP_KEY);
-  if (!lastSync) return true; 
+  if (!lastSync) return true;
 
   const lastSyncDate = new Date(parseInt(lastSync));
   const today = new Date();
@@ -310,7 +278,7 @@ async function syncNotificationTopics() {
 
   if (!shouldSyncNotifications()) {
     console.log("Skipping notification sync - already synced today");
-    return; 
+    return;
   }
 
   try {
@@ -320,53 +288,42 @@ async function syncNotificationTopics() {
     const savedTopics = getSubscribedTopics();
     let syncPromises = [];
 
-    const allPossibleTopics = [];
-    LOCATIONS.forEach(loc => {
-        JOB_TYPES.forEach(type => {
-            allPossibleTopics.push(generateTopicName(loc, type.value));
-        });
-    });
-
-    allPossibleTopics.forEach(topic => {
-        const shouldBeSubscribed = savedTopics.includes(topic);
-        const action = shouldBeSubscribed ? 'subscribe' : 'unsubscribe';
-
-        syncPromises.push(
-            fetch('https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    token: fcmToken,
-                    topic: topic,
-                    action: action
-                })
-            }).then(response => response.json())
-              .then(result => {
-                  if (!result.success) {
-
-                      console.warn(`Failed to sync topic ${topic} (${action}): ${result.error}`);
-                  }
-                  return { topic, success: result.success };
-              })
-              .catch(err => {
-                  console.error(`Error syncing topic ${topic} (${action}):`, err);
-                  return { topic, success: false }; 
-              })
-        );
-    });
+    for (const topic of savedTopics) {
+      syncPromises.push(
+        fetch('https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            token: fcmToken,
+            topic: topic,
+            action: 'subscribe'
+          })
+        }).then(response => response.json())
+          .then(result => {
+            if (!result.success) {
+              console.warn(`Failed to sync topic ${topic}: ${result.error}`);
+            }
+            return { topic, success: result.success };
+          })
+          .catch(err => {
+            console.error(`Error syncing topic ${topic}:`, err);
+            return { topic, success: false };
+          })
+      );
+    }
 
     const results = await Promise.all(syncPromises);
-    const failedSyncs = results.filter(r => !r.success).length;
+    const failedTopics = results.filter(r => !r.success).map(r => r.topic);
 
-    if (failedSyncs > 0) {
-      console.warn(`Sync completed with ${failedSyncs} errors.`);
-      showStatus(`Sync completed with ${failedSyncs} errors`, "error");
+    if (failedTopics.length > 0) {
+      console.warn("Failed to sync some topics:", failedTopics);
+      showStatus(`Sync completed with ${failedTopics.length} errors`, "error");
     } else {
       console.log("Notification sync completed successfully");
       showStatus("Notification preferences synced successfully", "success");
     }
 
-    markSyncComplete(); 
+    markSyncComplete();
 
   } catch (err) {
     console.error("Error during notification sync:", err);
@@ -375,92 +332,91 @@ async function syncNotificationTopics() {
 }
 
 function setupNotificationPopup() {
+  if (!notificationsBtn || !notificationPopup || !closeNotificationPopup) return;
 
-  if (!notificationsBtn || !notificationPopup || !closeNotificationPopup || !locationSelect || !jobTypeSelect || !subscribeBtn) {
-      console.warn("Notification popup elements not found, skipping setup.");
-      return;
+  if (locationSelect) {
+    LOCATIONS.forEach(location => {
+      const option = document.createElement('option');
+      option.value = location;
+      option.textContent = location.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      locationSelect.appendChild(option);
+    });
   }
 
-  LOCATIONS.forEach(location => {
-    const option = document.createElement('option');
-    option.value = location;
+  if (jobTypeSelect) {
+    JOB_TYPES.forEach(type => {
+      const option = document.createElement('option');
+      option.value = type.value;
+      option.textContent = type.label;
+      jobTypeSelect.appendChild(option);
+    });
+  }
 
-    option.textContent = location.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-    locationSelect.appendChild(option);
-  });
+  if (locationSelect && jobTypeSelect && subscribeBtn) {
+    const updateSubscribeButton = () => {
+      const locationValue = locationSelect.value;
+      const jobTypeValue = jobTypeSelect.value;
+      subscribeBtn.disabled = !(locationValue && jobTypeValue);
+    };
 
-  JOB_TYPES.forEach(type => {
-    const option = document.createElement('option');
-    option.value = type.value;
-    option.textContent = type.label;
-    jobTypeSelect.appendChild(option);
-  });
+    locationSelect.addEventListener('change', updateSubscribeButton);
+    jobTypeSelect.addEventListener('change', updateSubscribeButton);
+  }
 
-  const updateSubscribeButtonState = () => {
-    const locationValue = locationSelect.value;
-    const jobTypeValue = jobTypeSelect.value;
-    subscribeBtn.disabled = !(locationValue && jobTypeValue);
-  };
+  if (subscribeBtn) {
+    subscribeBtn.addEventListener('click', async () => {
+      const location = locationSelect.value;
+      const jobType = jobTypeSelect.value;
 
-  locationSelect.addEventListener('change', updateSubscribeButtonState);
-  jobTypeSelect.addEventListener('change', updateSubscribeButtonState);
+      if (!location || !jobType) {
+        showStatus("Please select both location and job type", "error");
+        return;
+      }
 
-  subscribeBtn.addEventListener('click', async () => {
-    const location = locationSelect.value;
-    const jobType = jobTypeSelect.value;
+      const topicName = generateTopicName(location, jobType);
+      const topics = getSubscribedTopics();
 
-    if (!location || !jobType) {
-      showStatus("Please select both location and job type", "error");
-      return;
-    }
+      if (topics.includes(topicName)) {
+        showStatus("You are already subscribed to this topic", "info");
+        return;
+      }
 
-    const topicName = generateTopicName(location, jobType);
-    const topics = getSubscribedTopics();
+      const success = await subscribeToTopic(topicName);
+      if (success) {
 
-    if (topics.includes(topicName)) {
-      showStatus("You are already subscribed to this topic", "info");
-      return;
-    }
-
-    subscribeBtn.disabled = true; 
-    const success = await subscribeToTopic(topicName);
-    if (success) {
-
-      locationSelect.selectedIndex = 0;
-      jobTypeSelect.selectedIndex = 0;
-    }
-
-    updateSubscribeButtonState();
-  });
+        locationSelect.selectedIndex = 0;
+        jobTypeSelect.selectedIndex = 0;
+        subscribeBtn.disabled = true;
+      }
+    });
+  }
 
   notificationsBtn.addEventListener('click', async () => {
     const isVisible = notificationPopup.style.display === 'flex';
 
     if (!isVisible) {
 
-      if (Notification.permission !== 'granted') {
-         showStatus("Please enable notifications in your browser first.", "error");
-         notificationPopup.style.display = 'flex'; 
-         return; 
-      }
-
-      if (!messaging || !fcmToken) {
-         showStatus("Initializing notifications...", "info");
-         const initializedMessaging = await initializeFCM(); 
-         if (!initializedMessaging || !fcmToken) {
-            showStatus("Could not get notification token. Please refresh or check browser settings.", "error");
-            notificationPopup.style.display = 'flex'; 
-            return; 
-         }
-      }
-
       renderSubscribedTopics();
+
       notificationPopup.style.display = 'flex';
+
+      if (Notification.permission !== 'granted') {
+        showStatus("Notifications are not enabled. Please enable them to receive alerts.", "error");
+        return;
+      }
+
+      if (!messaging) {
+        try {
+          await initializeFCM();
+        } catch (err) {
+          console.error("Failed to initialize FCM:", err);
+          showStatus("Could not initialize notifications system.", "error");
+        }
+      }
 
       await syncNotificationTopics();
 
     } else {
-
       notificationPopup.style.display = 'none';
     }
   });
@@ -471,7 +427,7 @@ function setupNotificationPopup() {
 
   document.addEventListener('click', (e) => {
     if (notificationPopup.style.display === 'flex' &&
-        !notificationPopup.contains(e.target) &&
+        !notificationPopup.contains(e.target) && 
         !notificationsBtn.contains(e.target)) {
       notificationPopup.style.display = 'none';
     }
@@ -501,6 +457,20 @@ function renderJobCard(job, table) {
   }
 
   jobCard.innerHTML = `
+    <div class="admin-job-actions">
+      <button class="icon-btn edit-icon-btn" data-job-id="${job.id}" data-job-table="${table}" title="Edit Job">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+        </svg>
+      </button>
+      <button class="icon-btn delete-icon-btn" onclick="deleteJob(${job.id}, '${table}')" title="Delete Job">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+        </svg>
+      </button>
+    </div>
     <div class="job-info">
       <h2 class="job-company">${job.Company || 'Company Name N/A'}</h2>
       <div class="job-meta">
@@ -530,8 +500,30 @@ function renderJobCard(job, table) {
   return jobCard;
 }
 
+function isValidUrl(s) {
+  try {
+    new URL(s);
+    return true
+  } catch (_) {
+    return false
+  }
+}
+
+function getApplicationLink(id) {
+  if (!id) return '#';
+  if (isValidUrl(id)) return id;
+  let emails = id.split(/,|\s/).filter(e => e && e.includes('@'));
+  if (emails.length === 0) return '#';
+  let email = emails[0];
+  let subject = "";
+  if (currentTable === "Industrial Training Job Portal") subject = "Application for CA Industrial Training (Ref - My Student Club)";
+  else if (currentTable === "Articleship Jobs") subject = "Application for Articleship (Ref - My Student Club)";
+  else if (currentTable === "Fresher Jobs") subject = "Application for Role of CA Fresher in your Organization (Ref - My Student Club)";
+  else if (currentTable === "Semi Qualified Jobs") subject = "Application for Semi Qualified Roles in your Organization (Ref - My Student Club)";
+  return `mailto:${email}?subject=${encodeURIComponent(subject)}`
+}
+
 function showModal(job) {
-  if (!modal || !modalContent) return;
   let postedInfo = '';
   if (job.Created_At) {
     const daysAgo = getDaysAgo(job.Created_At);
@@ -571,7 +563,7 @@ function showModal(job) {
 }
 
 window.closeModal = function(event) {
-  if (event && modal && modalContent && (event.target === modal || event.target.classList.contains('modal-close'))) {
+  if (event && (event.target === modal || event.target.classList.contains('modal-close'))) {
     modal.style.display = 'none';
     document.body.style.overflow = 'auto';
   }
@@ -702,6 +694,8 @@ async function fetchCategories() {
     } catch (e) { console.error("Error fetching categories:", e); }
 }
 
+let lastScrollY = 0;
+const header = document.querySelector('.floating-header');
 function handleScroll() {
   if (!header) return;
   let cur = window.scrollY;
@@ -760,112 +754,101 @@ async function loadBanners() {
   } catch (e) { console.error("Error loading banners", e); }
 }
 
-async function checkAuth() {
-  const { data: { session } } = await supabaseClient.auth.getSession();
-  return session;
-}
+let messaging;
+let fcmToken = null;
 
-function updateHeaderAuth(session) {
-  const authButtonsContainer = document.querySelector('.auth-buttons');
-  if (!authButtonsContainer) return;
+async function initializeFCM() {
+  try {
+    const app = initializeApp(firebaseConfig);
+    messaging = getMessaging(app);
 
-  const notificationButton = authButtonsContainer.querySelector('#notificationsBtn');
+    onMessage(messaging, (payload) => {
+      console.log('Foreground message received. ', payload);
+      const notif = payload.notification || {};
+      const notification = new Notification(notif.title, {
+        body: notif.body,
+        icon: notif.icon || '/assets/icon-70x70.png',
+        data: { click_action: payload.data?.link || payload.fcmOptions?.link || '/' }
+      });
+      notification.onclick = (event) => {
+        event.preventDefault();
+        window.open(notification.data.click_action, '_blank');
+        notification.close();
+      };
+    });
 
-  let authElement = authButtonsContainer.querySelector('a[href="/login.html"], .user-profile-container');
-  if (authElement) {
-      authButtonsContainer.removeChild(authElement);
-  }
-
-  if (session) {
-
-    let email = session.user.email || 'User';
-    let initial = email.charAt(0).toUpperCase();
-    const profileDiv = document.createElement('div');
-    profileDiv.className = 'user-profile-container'; 
-    profileDiv.innerHTML = `
-      <div class="user-icon-wrapper">
-        <div class="user-icon" data-email="${email}">${initial}</div>
-        <div class="user-hover-card">
-          <div class="user-hover-content">
-            <p class="user-email">${email}</p>
-            <button onclick="handleLogout()" class="logout-btn">Logout</button>
-          </div>
-        </div>
-      </div>`;
-
-    if (notificationButton) {
-        notificationButton.insertAdjacentElement('afterend', profileDiv);
+    if ('serviceWorker' in navigator) {
+      try {
+        await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        console.log('Service Worker registered successfully.');
+      } catch (error) {
+        console.error('Service Worker registration failed:', error);
+        return null;
+      }
     } else {
-        authButtonsContainer.appendChild(profileDiv); 
+      console.warn('Service workers are not supported in this browser.');
+      return null;
     }
-  } else {
 
-    const loginLink = document.createElement('a');
-    loginLink.href = "/login.html";
-    loginLink.className = "auth-icon-btn";
-    loginLink.innerHTML = `
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a9 9 0 00-7 7h14a9 9 0 00-7-7z"/>
-      </svg>`;
+    if (Notification.permission === 'granted') {
+      await requestTokenAndSyncSubscriptions();
+    }
 
-    if (notificationButton) {
-        notificationButton.insertAdjacentElement('afterend', loginLink);
+    return messaging;
+
+  } catch(err) {
+     console.error("Error initializing Firebase app or messaging:", err);
+     return null;
+  }
+}
+
+async function requestTokenAndSyncSubscriptions() {
+  if (!messaging) {
+    console.error("Cannot request token: Messaging service not initialized.");
+    return;
+  }
+
+  try {
+    console.log("Requesting FCM token...");
+    const registration = await navigator.serviceWorker.ready;
+    console.log("Service worker ready for getToken:", registration);
+
+    const currentToken = await getToken(messaging, {
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: registration
+    });
+
+    if (currentToken) {
+      console.log('FCM Token obtained:', currentToken);
+      fcmToken = currentToken;
+      return currentToken;
     } else {
-        authButtonsContainer.appendChild(loginLink); 
+      console.log('No registration token available.');
+      return null;
     }
+  } catch (err) {
+    console.error('An error occurred while retrieving token. ', err);
+    return null;
   }
-}
-
-window.handleLogout = async () => {
-
-  await supabaseClient.auth.signOut();
-  window.location.reload();
-}
-
-window.showAddJobModal = function() {
-  const modal = document.getElementById('job-edit-modal');
-  if (!modal) return;
-  const form = document.getElementById('job-form');
-  if (!form) return;
-
-  document.getElementById('job-edit-title').textContent = 'Add New Job';
-  form.reset();
-
-  const createdAtInput = form.querySelector('input[name="Created_At"]');
-  if (createdAtInput) {
-      const now = new Date();
-      const localDatetime = new Date(now.getTime() - (now.getTimezoneOffset() * 60000))
-        .toISOString()
-        .slice(0, 16);
-      createdAtInput.value = localDatetime;
-  }
-
-  modal.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-
   const session = await checkAuth();
-  updateHeaderAuth(session); 
+  updateHeaderAuth(session);
   await loadBanners();
   populateSalaryFilter(currentTable);
   fetchJobs();
   fetchCategories();
   updateOpportunitiesTextDisplay(currentTable);
-
   setupNotificationPopup();
 
   if (Notification.permission === 'granted') {
     try {
-      await initializeFCM(); 
+      await initializeFCM();
       updateNotificationBadge();
     } catch (err) {
-      console.error("Error initializing FCM on load:", err);
+      console.error("Error initializing FCM:", err);
     }
-  } else {
-
-    updateNotificationBadge();
   }
 
   const resourcesBtn = document.getElementById('resourcesDropdownBtn');
@@ -952,4 +935,60 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.addEventListener('scroll', handleScroll);
 });
 
-export { showModal, getApplicationLink };
+async function checkAuth() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  return session;
+}
+
+function updateHeaderAuth(session) {
+  const authButtons = document.querySelector('.auth-buttons');
+  if (!authButtons) return;
+  if (session) {
+    let email = session.user.email || 'User';
+    let initial = email.charAt(0).toUpperCase();
+    authButtons.innerHTML = `<div class="user-profile-container">
+      <div class="user-icon-wrapper">
+        <div class="user-icon" data-email="${email}">${initial}</div>
+        <div class="user-hover-card">
+          <div class="user-hover-content">
+            <p class="user-email">${email}</p>
+            <button onclick="handleLogout()" class="logout-btn">Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  } else {
+    authButtons.innerHTML = `<a href="/login.html" class="auth-icon-btn">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a9 9 0 00-7 7h14a9 9 0 00-7-7z"/>
+      </svg>
+    </a>`;
+  }
+}
+
+window.handleLogout = async () => {
+  await supabaseClient.auth.signOut();
+  window.location.reload();
+}
+
+window.showAddJobModal = function() {
+  const modal = document.getElementById('job-edit-modal');
+  if (!modal) return;
+  const form = document.getElementById('job-form');
+  if (!form) return;
+
+  document.getElementById('job-edit-title').textContent = 'Add New Job';
+  form.reset();
+
+  const createdAtInput = form.querySelector('input[name="Created_At"]');
+  if (createdAtInput) {
+      const now = new Date();
+      const localDatetime = new Date(now.getTime() - (now.getTimezoneOffset() * 60000))
+        .toISOString()
+        .slice(0, 16);
+      createdAtInput.value = localDatetime;
+  }
+
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
