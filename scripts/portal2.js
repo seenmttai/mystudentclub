@@ -559,6 +559,7 @@ async function fetchJobs() {
   }
 }
 
+
 async function fetchCategories() {
     if (!categoryFilter) return;
     try {
@@ -679,6 +680,7 @@ window.handleLogout = async () => {
   await supabaseClient.auth.signOut();
   window.location.reload();
 }
+
 
 window.showAddJobModal = function() {
   const modal = document.getElementById('job-edit-modal');
