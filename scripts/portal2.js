@@ -1,4 +1,6 @@
 import { getDaysAgo } from './date-utils.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
+import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging.js';
 
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
@@ -418,20 +420,19 @@ async function initializeFCM() {
     }
   }
 
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-  messaging = firebase.messaging();
+  const app = initializeApp(firebaseConfig);
+  messaging = getMessaging(app);
 
-  messaging.onMessage((payload) => {
-    const notification = new Notification(payload.notification.title, {
-      body: payload.notification.body,
-      icon: payload.notification.icon || '/assets/icon-70x70.png',
+  onMessage(messaging, (payload) => {
+    const notif = payload.notification || {};
+    const notification = new Notification(notif.title, {
+      body: notif.body,
+      icon: notif.icon || '/assets/icon-70x70.png',
       data: { click_action: payload.data?.link || payload.fcmOptions?.link || '/' }
     });
     notification.onclick = (event) => {
       event.preventDefault();
-      window.open(event.target.data.click_action, '_blank');
+      window.open(notification.data.click_action, '_blank');
       notification.close();
     };
   });
@@ -439,7 +440,10 @@ async function initializeFCM() {
   if (Notification.permission === 'granted') {
     try {
       const registration = await navigator.serviceWorker.ready;
-      const currentToken = await messaging.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: registration });
+      const currentToken = await getToken(messaging, {
+        vapidKey: VAPID_KEY,
+        serviceWorkerRegistration: registration
+      });
       if (currentToken) {
         fcmToken = currentToken;
         fcmTokenDisplay.textContent = `Debug Token: ${fcmToken.substring(0, 15)}...`;
@@ -449,7 +453,7 @@ async function initializeFCM() {
         showStatus('No registration token available.', 'error');
       }
     } catch (err) {
-      console.error('Error getting FCM token:', err);
+      console.error('Error getting notification token:', err);
       showStatus(`Error getting notification token: ${err.message}`, 'error');
     }
   }
@@ -577,7 +581,7 @@ async function requestTokenAndSubscribe() {
 
   try {
     console.log("Requesting FCM token...");
-    const currentToken = await messaging.getToken({
+    const currentToken = await getToken(messaging, {
       vapidKey: VAPID_KEY,
       serviceWorkerRegistration: await navigator.serviceWorker.ready
     });
