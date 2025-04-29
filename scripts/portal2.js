@@ -408,22 +408,11 @@ let messaging;
 let fcmToken = null;
 
 async function initializeFCM() {
-
-  handlePermissionStatus(Notification.permission);
-
-  if ('serviceWorker' in navigator) {
-    try {
-      await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-    } catch (error) {
-      console.error('Service Worker registration failed:', error);
-      showStatus(`Service Worker registration failed: ${error.message}`, 'error');
-    }
-  }
-
   const app = initializeApp(firebaseConfig);
   messaging = getMessaging(app);
 
   onMessage(messaging, (payload) => {
+    console.log('Message received. ', payload);
     const notif = payload.notification || {};
     const notification = new Notification(notif.title, {
       body: notif.body,
@@ -437,26 +426,22 @@ async function initializeFCM() {
     };
   });
 
-  if (Notification.permission === 'granted') {
+  if ('serviceWorker' in navigator) {
     try {
-      const registration = await navigator.serviceWorker.ready;
-      const currentToken = await getToken(messaging, {
-        vapidKey: VAPID_KEY,
-        serviceWorkerRegistration: registration
-      });
-      if (currentToken) {
-        fcmToken = currentToken;
-        fcmTokenDisplay.textContent = `Debug Token: ${fcmToken.substring(0, 15)}...`;
-        generateTopicCheckboxes();
-        await updateAllSubscriptions();
-      } else {
-        showStatus('No registration token available.', 'error');
-      }
-    } catch (err) {
-      console.error('Error getting notification token:', err);
-      showStatus(`Error getting notification token: ${err.message}`, 'error');
+      await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+      console.log('Service Worker registered successfully.');
+    } catch (error) {
+      console.error('Service Worker registration failed:', error);
+      showStatus(`Service Worker registration failed: ${error.message}`, 'error');
+      return;
     }
+  } else {
+    console.warn('Service workers are not supported in this browser.');
+    showStatus('Notifications require Service Worker support.', 'error');
+    return;
   }
+
+  handlePermissionStatus(Notification.permission);
 }
 
 function showStatus(message, type = 'info') {
@@ -469,17 +454,23 @@ function showStatus(message, type = 'info') {
 }
 
 async function handlePermissionStatus(permission) {
+  if (!messaging) {
+    console.error("Messaging service not initialized when handling permission status.");
+    showStatus("Error initializing notifications system.", "error");
+    return;
+  }
+
   if (permission === 'granted') {
     showStatus('Notifications are enabled.', 'success');
     enableNotificationsBtn.style.display = 'none';
     topicSelectionArea.style.display = 'block';
-    generateTopicCheckboxes();
-    requestTokenAndSubscribe(); 
+    generateTopicCheckboxes(); 
+    await requestTokenAndSubscribe(); 
   } else if (permission === 'denied') {
     showStatus('Notifications are blocked. Please enable them in your browser settings.', 'error');
     enableNotificationsBtn.style.display = 'none';
     topicSelectionArea.style.display = 'none';
-  } else {
+  } else { 
     showStatus('Click the button to enable notifications for job alerts.');
     enableNotificationsBtn.style.display = 'inline-block';
     topicSelectionArea.style.display = 'none';
@@ -572,31 +563,49 @@ async function handleTopicChange(event) {
 }
 
 async function requestTokenAndSubscribe() {
+  if (!messaging) {
+    console.error("Cannot request token: Messaging service not initialized.");
+    showStatus("Error initializing notifications.", "error");
+    return;
+  }
+
   if (fcmToken) {
-    console.log("Token already available.");
+    console.log("Token already available:", fcmToken.substring(0, 15) + "...");
     fcmTokenDisplay.textContent = `Debug Token: ${fcmToken.substring(0, 15)}...`;
-    await updateAllSubscriptions(); 
+    await updateAllSubscriptions();
     return;
   }
 
   try {
     console.log("Requesting FCM token...");
+    const registration = await navigator.serviceWorker.ready;
+    console.log("Service worker ready for getToken:", registration);
+
     const currentToken = await getToken(messaging, {
       vapidKey: VAPID_KEY,
-      serviceWorkerRegistration: await navigator.serviceWorker.ready
+      serviceWorkerRegistration: registration 
     });
+
     if (currentToken) {
-      console.log('FCM Token:', currentToken);
+      console.log('FCM Token obtained:', currentToken);
       fcmToken = currentToken;
       fcmTokenDisplay.textContent = `Debug Token: ${fcmToken.substring(0, 15)}...`;
       await updateAllSubscriptions();
+      showStatus("Notification token obtained.", "success"); 
+      setTimeout(() => showStatus(''), STATUS_MESSAGE_DURATION);
+
     } else {
       console.log('No registration token available. Request permission to generate one.');
-      showStatus('Could not get notification token. Please ensure permissions are granted.', 'error');
+      if (Notification.permission === 'granted') {
+        showStatus('Could not get notification token. Ensure service worker is active and VAPID key is correct.', 'error');
+      } else {
+        showStatus('Notification permission needed to get token.', 'info');
+      }
     }
   } catch (err) {
     console.error('An error occurred while retrieving token. ', err);
     showStatus('Error getting notification token: ' + err.message, 'error');
+    fcmTokenDisplay.textContent = '';
   }
 }
 
@@ -643,7 +652,7 @@ enableNotificationsBtn.addEventListener('click', async () => {
     handlePermissionStatus(permission);
   } catch (err) {
     console.error("Error requesting notification permission:", err);
-    showStatus('Could not request notification permission.', 'error');
+    showStatus('Could not request notification permission: ' + err.message, 'error');
   }
 });
 
@@ -655,7 +664,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   fetchJobs(); 
   fetchCategories(); 
   updateOpportunitiesTextDisplay(currentTable);
-  initializeFCM(); 
+  await initializeFCM(); 
 
   const resourcesBtn = document.getElementById('resourcesDropdownBtn');
   const resourcesDropdown = document.getElementById('resourcesDropdown');
