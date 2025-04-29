@@ -8,17 +8,20 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://mystudentclub.pages.dev/scripts/style.css">
+  <link rel="stylesheet" href="scripts/style.css">
   <link rel="canonical" href="https://www.mystudentclub.com" />
   <meta name="robots" content="index, follow">
-  <script type="module" src="https://mystudentclub.pages.dev/scripts/date-utils.js"></script>
+  <script type="module" src="scripts/date-utils.js"></script>
   <link rel="icon" type="image/x-icon" href="assets/icon-70x70.png">
+
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
 </head>
 <body>
   <div class="floating-header">
     <div class="header-container">
       <a href="/" class="brand-link">
-        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
+        <img src="assets/logo.png" alt="My Student Club" class="brand-logo">
       </a>
       <div class="auth-buttons">
         <a href="/login" class="auth-icon-btn">
@@ -27,6 +30,12 @@
           </svg>
         </a>
       </div>
+              <button id="notificationsBtn" class="notification-icon-btn" aria-label="Manage Notifications">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          <span class="notification-badge" id="notificationBadge"></span>
+        </button>
       <button class="menu-button" id="menuButton">
         <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -83,6 +92,46 @@
       </div>
     </div>
   </div>
+  <div id="notificationPopup" class="notification-popup">
+    <div class="notification-popup-header">
+      <h3>Notification Preferences</h3>
+      <button id="closeNotificationPopup" class="close-btn">×</button>
+    </div>
+    <div class="notification-status" id="notificationStatus"></div>
+    <div id="subscribedTopics" class="subscribed-topics">
+      <h4>Your Subscriptions</h4>
+      <div id="subscribedTopicsList" class="subscribed-topics-list"></div>
+    </div>
+    <div class="subscription-form">
+      <h4>Add New Subscription</h4>
+      <div class="subscription-selectors">
+        <select id="locationSelect" class="subscription-select">
+          <option value="" disabled selected>Select Location</option>
+
+        </select>
+        <select id="jobTypeSelect" class="subscription-select">
+          <option value="" disabled selected>Select Job Type</option>
+          <option value="industrial">Industrial Training</option>
+          <option value="semi">Semi Qualified</option>
+          <option value="fresher">Fresher</option>
+        </select>
+        <button id="subscribeBtn" class="subscribe-btn" disabled>Subscribe</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/firebase-messaging-sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+  </script>
   <div class="banner-section">
     <div class="carousel"></div>
   </div>
@@ -104,19 +153,13 @@
     <div class="loader" id="loader">
       <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
       </svg>
     </div>
     <div class="load-more-container">
       <button id="loadMore" class="load-more-btn">Load More Jobs</button>
     </div>
   </main>
-  <div id="modal" class="modal-overlay" onclick="closeModal(event)">
-    <div class="modal">
-      <button class="modal-close" onclick="closeModal(event)">✕</button>
-      <div id="modal-content"></div>
-    </div>
-  </div>
   <nav class="footer-nav">
     <a href="/" class="footer-tab active">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -149,6 +192,6 @@
     </svg>
     Contact Us
   </a>
-  <script type="module" src="https://mystudentclub.pages.dev/scripts/portal.js"></script>
+  <script type="module" src="scripts/portal2.js"></script>
 </body>
 </html>
