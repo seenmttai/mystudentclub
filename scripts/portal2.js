@@ -335,6 +335,7 @@ function setupNotificationPopup() {
   if (!notificationsBtn || !notificationPopup || !closeNotificationPopup) return;
 
   if (locationSelect) {
+    locationSelect.innerHTML = '<option value="" disabled selected>Select Location</option>';
     LOCATIONS.forEach(location => {
       const option = document.createElement('option');
       option.value = location;
@@ -344,6 +345,7 @@ function setupNotificationPopup() {
   }
 
   if (jobTypeSelect) {
+    jobTypeSelect.innerHTML = '<option value="" disabled selected>Select Job Type</option>';
     JOB_TYPES.forEach(type => {
       const option = document.createElement('option');
       option.value = type.value;
@@ -383,7 +385,6 @@ function setupNotificationPopup() {
 
       const success = await subscribeToTopic(topicName);
       if (success) {
-
         locationSelect.selectedIndex = 0;
         jobTypeSelect.selectedIndex = 0;
         subscribeBtn.disabled = true;
@@ -391,30 +392,49 @@ function setupNotificationPopup() {
     });
   }
 
-  notificationsBtn.addEventListener('click', async () => {
+  notificationsBtn.addEventListener('click', async (event) => {
+    event.stopPropagation(); 
+
     const isVisible = notificationPopup.style.display === 'flex';
 
     if (!isVisible) {
-
       renderSubscribedTopics();
 
       notificationPopup.style.display = 'flex';
 
       if (Notification.permission !== 'granted') {
         showStatus("Notifications are not enabled. Please enable them to receive alerts.", "error");
-        return;
+        if (Notification.permission === 'default') {
+          Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+              initializeFCM().then(() => {
+                syncNotificationTopics();
+              }).catch(err => {
+                console.error("Failed to re-initialize FCM after grant:", err);
+                showStatus("Could not initialize notifications system.", "error");
+              });
+            } else {
+              console.log('Notification permission denied.');
+              showStatus("Notifications are blocked. Please enable them in browser settings.", "error");
+            }
+          });
+        } else if (Notification.permission === 'denied') {
+          showStatus("Notifications are blocked. Please enable them in browser settings.", "error");
+        }
+        return; 
       }
 
-      if (!messaging) {
+      if (!messaging || !fcmToken) {
         try {
           await initializeFCM();
+          await syncNotificationTopics(); 
         } catch (err) {
-          console.error("Failed to initialize FCM:", err);
-          showStatus("Could not initialize notifications system.", "error");
+          console.error("Failed to initialize FCM or sync:", err);
+          showStatus("Could not initialize notifications system or sync preferences.", "error");
         }
+      } else {
+        await syncNotificationTopics();
       }
-
-      await syncNotificationTopics();
 
     } else {
       notificationPopup.style.display = 'none';
@@ -434,7 +454,12 @@ function setupNotificationPopup() {
   });
 }
 
-function showSlide(i) { if (!slides || slides.length === 0) return; slides.forEach(s => s.classList.remove('active')); currentSlide = (i + totalSlides) % totalSlides; slides[currentSlide].classList.add('active') }
+function showSlide(i) { 
+  if (!slides || slides.length === 0) return; 
+  slides.forEach(s => s.classList.remove('active')); 
+  currentSlide = (i + totalSlides) % totalSlides; 
+  slides[currentSlide].classList.add('active') 
+}
 
 function renderJobCard(job, table) {
   const jobCard = document.createElement('article');
@@ -841,7 +866,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   fetchCategories();
   updateOpportunitiesTextDisplay(currentTable);
   setupNotificationPopup();
-
   if (Notification.permission === 'granted') {
     try {
       await initializeFCM();
