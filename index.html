@@ -8,17 +8,20 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://mystudentclub.pages.dev/scripts/style.css">
+  <link rel="stylesheet" href="scripts/style.css">
   <link rel="canonical" href="https://www.mystudentclub.com" />
   <meta name="robots" content="index, follow">
-  <script type="module" src="https://mystudentclub.pages.dev/scripts/date-utils.js"></script>
+  <script type="module" src="scripts/date-utils.js"></script>
   <link rel="icon" type="image/x-icon" href="assets/icon-70x70.png">
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
 </head>
 <body>
   <div class="floating-header">
     <div class="header-container">
       <a href="/" class="brand-link">
-        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
+        <img src="assets/logo.png" alt="My Student Club" class="brand-logo">
       </a>
       <div class="auth-buttons">
         <a href="/login" class="auth-icon-btn">
@@ -111,6 +114,25 @@
       <button id="loadMore" class="load-more-btn">Load More Jobs</button>
     </div>
   </main>
+  <section id="notification-preferences" style="margin: 2rem auto; padding: 1.5rem; background: white; border-radius: 12px; max-width: 800px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.75rem;">Notification Preferences</h2>
+
+    <div id="notification-permission-status" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 8px; font-size: 0.9rem;">
+        <!-- Status message will be injected here -->
+    </div>
+
+    <button id="enable-notifications-btn" style="display: none; padding: 0.75rem 1.5rem; background-color: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: background-color 0.2s;">
+        Enable Notifications
+    </button>
+
+    <div id="topic-selection-area" style="display: none;">
+        <p style="margin-bottom: 1rem; color: #4b5563;">Select the job types and locations you want to receive notifications for:</p>
+        <div id="topic-checkboxes" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <!-- Checkboxes will be generated here -->
+        </div>
+         <p id="fcm-token-display" style="font-size: 0.7rem; color: #64748b; margin-top: 1rem; word-break: break-all;"></p>
+    </div>
+  </section>
   <div id="modal" class="modal-overlay" onclick="closeModal(event)">
     <div class="modal">
       <button class="modal-close" onclick="closeModal(event)">✕</button>
@@ -149,6 +171,6 @@
     </svg>
     Contact Us
   </a>
-  <script type="module" src="https://mystudentclub.pages.dev/scripts/portal.js"></script>
+  <script type="module" src="scripts/portal.js"></script>
 </body>
 </html>

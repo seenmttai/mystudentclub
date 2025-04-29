@@ -15,6 +15,16 @@ try {
     firebase.initializeApp(firebaseConfig);
     const messaging = firebase.messaging();
 
+    self.addEventListener('install', (event) => {
+        console.log('Service worker installing.');
+        self.skipWaiting();
+    });
+
+    self.addEventListener('activate', (event) => {
+        console.log('Service worker activating.');
+        event.waitUntil(self.clients.claim());
+    });
+
     messaging.onBackgroundMessage((payload) => {
         const notificationTitle = payload.notification?.title || 'New Job Alert';
         const notificationOptions = {
