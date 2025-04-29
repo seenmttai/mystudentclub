@@ -380,7 +380,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
   authDomain: "msc-notif.firebaseapp.com",
   projectId: "msc-notif",
-  storageBucket: "msc-notif.firebasestorage.app",
+  storageBucket: "msc-notif.firebasestorage.app", 
   messagingSenderId: "228639798414",
   appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
   measurementId: "G-X4M23TB936"
@@ -397,21 +397,7 @@ const topicCheckboxesDiv = document.getElementById('topic-checkboxes');
 const fcmTokenDisplay = document.getElementById('fcm-token-display');
 
 let messaging; 
-let fcmToken = null; 
-
-function generateTopicName(location, jobType) {
-  const formattedLocation = location.toLowerCase().replace(/\s+/g, '-');
-  return `${formattedLocation}-${jobType}`;
-}
-
-function showStatus(message, type = 'info') {
-  if (!notificationStatusDiv) return;
-  notificationStatusDiv.textContent = message;
-  notificationStatusDiv.style.display = 'block';
-  notificationStatusDiv.style.backgroundColor = type === 'error' ? '#fee2e2' : (type === 'success' ? '#dcfce7' : '#eff6ff');
-  notificationStatusDiv.style.color = type === 'error' ? '#b91c1c' : (type === 'success' ? '#15803d' : '#1e40af');
-  notificationStatusDiv.style.border = `1px solid ${type === 'error' ? '#fecaca' : (type === 'success' ? '#bbf7d0' : '#bfdbfe')}`;
-}
+let fcmToken = null;
 
 async function initializeFCM() {
   try {
@@ -438,7 +424,7 @@ async function initializeFCM() {
 
     const currentToken = await messaging.getToken({
       vapidKey: VAPID_KEY,
-      serviceWorkerRegistration: navigator.serviceWorker.ready
+      serviceWorkerRegistration: await navigator.serviceWorker.ready
     });
 
     if (currentToken) {
@@ -470,7 +456,16 @@ async function initializeFCM() {
   }
 }
 
-function handlePermissionStatus(permission) {
+function showStatus(message, type = 'info') {
+  if (!notificationStatusDiv) return;
+  notificationStatusDiv.textContent = message;
+  notificationStatusDiv.style.display = 'block';
+  notificationStatusDiv.style.backgroundColor = type === 'error' ? '#fee2e2' : (type === 'success' ? '#dcfce7' : '#eff6ff');
+  notificationStatusDiv.style.color = type === 'error' ? '#b91c1c' : (type === 'success' ? '#15803d' : '#1e40af');
+  notificationStatusDiv.style.border = `1px solid ${type === 'error' ? '#fecaca' : (type === 'success' ? '#bbf7d0' : '#bfdbfe')}`;
+}
+
+async function handlePermissionStatus(permission) {
   if (permission === 'granted') {
     showStatus('Notifications are enabled.', 'success');
     enableNotificationsBtn.style.display = 'none';
