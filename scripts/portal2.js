@@ -373,6 +373,12 @@ async function loadBanners() {
 
 const MAX_LOCATIONS = 15;
 const JOB_TYPES = ["semi", "industrial", "fresher"];
+
+function generateTopicName(location, jobType) {
+  const formattedLocation = location.toLowerCase().replace(/\s+/g, '-');
+  return `${formattedLocation}-${jobType}`;
+}
+
 const STATUS_MESSAGE_DURATION = 3000;
 const SUBSCRIBED_TOPIC_BG_COLOR = '#e0e7ff';
 
