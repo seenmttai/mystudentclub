@@ -13,6 +13,7 @@
   <meta name="robots" content="index, follow">
   <script type="module" src="scripts/date-utils.js"></script>
   <link rel="icon" type="image/x-icon" href="assets/icon-70x70.png">
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
 </head>
@@ -22,11 +23,6 @@
       <a href="/" class="brand-link">
         <img src="assets/logo.png" alt="My Student Club" class="brand-logo">
       </a>
-      <button id="notificationPrefsBtn" class="auth-icon-btn" title="Notification Preferences" style="margin-left: auto; margin-right: 1rem;">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.017 5.454 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-        </svg>
-      </button>
       <div class="auth-buttons">
         <a href="/login" class="auth-icon-btn">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -131,7 +127,25 @@
       <button id="loadMore" class="load-more-btn">Load More Jobs</button>
     </div>
   </main>
+  <section id="notification-preferences" style="margin: 2rem auto; padding: 1.5rem; background: white; border-radius: 12px; max-width: 800px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; color: #1e293b; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.75rem;">Notification Preferences</h2>
 
+    <div id="notification-permission-status" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 8px; font-size: 0.9rem;">
+        <!-- Status message will be injected here -->
+    </div>
+
+    <button id="enable-notifications-btn" style="display: none; padding: 0.75rem 1.5rem; background-color: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: background-color 0.2s;">
+        Enable Notifications
+    </button>
+
+    <div id="topic-selection-area" style="display: none;">
+        <p style="margin-bottom: 1rem; color: #4b5563;">Select the job types and locations you want to receive notifications for:</p>
+        <div id="topic-checkboxes" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            <!-- Checkboxes will be generated here -->
+        </div>
+         <p id="fcm-token-display" style="font-size: 0.7rem; color: #64748b; margin-top: 1rem; word-break: break-all;"></p>
+    </div>
+  </section>
   <div id="modal" class="modal-overlay" onclick="closeModal(event)">
     <div class="modal">
       <button class="modal-close" onclick="closeModal(event)">✕</button>
@@ -170,48 +184,6 @@
     </svg>
     Contact Us
   </a>
-
-  <div id="notificationPopup" class="fixed inset-0 bg-gray-800 bg-opacity-60 backdrop-blur-sm flex items-center justify-center p-4 z-[1200] hidden transition-opacity duration-300" onclick="closeNotificationPopup(event)">
-    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[85vh] overflow-hidden flex flex-col" onclick="event.stopPropagation()">
-      <div class="flex justify-between items-center p-4 border-b border-gray-200">
-        <h2 class="text-lg font-semibold text-gray-800">Notification Preferences</h2>
-        <button id="closeNotificationPopupBtn" class="text-gray-500 hover:text-gray-800 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-        </button>
-      </div>
-      <div id="notificationPopupStatus" class="p-3 text-sm text-center hidden"></div>
-      <div class="p-5 overflow-y-auto space-y-6">
-        <div>
-          <h3 class="text-base font-medium text-gray-700 mb-3">Currently Subscribed:</h3>
-          <div id="subscribedTopicsList" class="flex flex-wrap gap-2">
-            <p class="text-sm text-gray-500 italic">Loading subscriptions...</p>
-          </div>
-        </div>
-        <div class="border-t border-gray-200 pt-5">
-          <h3 class="text-base font-medium text-gray-700 mb-3">Subscribe to New Job Alerts:</h3>
-          <div class="flex flex-col sm:flex-row gap-3 items-end">
-            <div class="flex-1 w-full">
-              <label for="popupLocationSelect" class="block text-xs font-medium text-gray-600 mb-1">Location</label>
-              <select id="popupLocationSelect" class="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500">
-              </select>
-            </div>
-            <div class="flex-1 w-full">
-              <label for="popupJobTypeSelect" class="block text-xs font-medium text-gray-600 mb-1">Job Type</label>
-              <select id="popupJobTypeSelect" class="w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500">
-              </select>
-            </div>
-            <button id="subscribeTopicBtn" class="w-full sm:w-auto bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50">
-              Subscribe
-            </button>
-          </div>
-        </div>
-      </div>
-       <div class="p-3 text-xs text-center text-gray-400 border-t border-gray-100 bg-gray-50">
-         Enable browser notifications to receive alerts. Preferences are saved locally.
-       </div>
-    </div>
-  </div>
-
   <script type="module" src="scripts/portal2.js"></script>
 </body>
 </html>
