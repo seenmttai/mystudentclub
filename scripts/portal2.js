@@ -1,6 +1,6 @@
-
 import { getDaysAgo } from './date-utils.js';
-
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
+import { getMessaging, getToken, onMessage, deleteToken } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging.js';
 
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
@@ -79,18 +79,10 @@ const NOTIFICATION_PERMISSION_KEY = 'notificationPermissionState';
 function showStatus(message, type = 'info') {
   if (!notificationPopupStatus) return;
   notificationPopupStatus.textContent = message;
-  notificationPopupStatus.className = `p-3 text-sm text-center ${
-    type === 'error' ? 'bg-red-100 text-red-700' :
-    type === 'success' ? 'bg-green-100 text-green-700' :
-    'bg-blue-100 text-blue-700'
-  }`;
   notificationPopupStatus.style.display = 'block';
-  if (duration > 0) {
-    setTimeout(() => {
-      notificationPopupStatus.style.display = 'none';
-      notificationPopupStatus.textContent = '';
-    }, duration);
-  }
+  notificationPopupStatus.style.backgroundColor = type === 'error' ? '#fee2e2' : (type === 'success' ? '#dcfce7' : '#eff6ff');
+  notificationPopupStatus.style.color = type === 'error' ? '#b91c1c' : (type === 'success' ? '#15803d' : '#1e40af');
+  notificationPopupStatus.style.border = `1px solid ${type === 'error' ? '#fecaca' : (type === 'success' ? '#bbf7d0' : '#bfdbfe')}`;
 }
 
 async function handlePermissionStatus(permission) {
@@ -102,11 +94,18 @@ async function handlePermissionStatus(permission) {
 
   if (permission === 'granted') {
     showStatus('Notifications are enabled.', 'success');
+    if(enableNotificationsBtn) enableNotificationsBtn.style.display = 'none';
+    if(topicSelectionArea) topicSelectionArea.style.display = 'block';
+    generateTopicCheckboxes();
     await requestTokenAndSyncSubscriptions();
   } else if (permission === 'denied') {
     showStatus('Notifications are blocked. Please enable them in your browser settings.', 'error');
+    if(enableNotificationsBtn) enableNotificationsBtn.style.display = 'none';
+    if(topicSelectionArea) topicSelectionArea.style.display = 'none';
   } else {
     showStatus('Click the button to enable notifications for job alerts.');
+    if(enableNotificationsBtn) enableNotificationsBtn.style.display = 'inline-block';
+    if(topicSelectionArea) topicSelectionArea.style.display = 'none';
   }
 }
 
@@ -116,12 +115,10 @@ async function initializeFCM() {
     return;
   }
   try {
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    messaging = firebase.messaging();
+    const app = initializeApp(firebaseConfig);
+    messaging = getMessaging(app);
 
-    messaging.onMessage((payload) => {
+    onMessage(messaging, (payload) => {
       console.log('Foreground message received. ', payload);
       const notif = payload.notification || {};
       const notification = new Notification(notif.title || "New Job Alert", {
@@ -143,8 +140,8 @@ async function initializeFCM() {
     }
 
     try {
-        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-        console.log('Service Worker registered successfully:', registration);
+        await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        console.log('Service Worker registered successfully.');
     } catch (error) {
         console.error('Service Worker registration failed:', error);
         setPopupStatus(`Service Worker registration failed: ${error.message}`, 'error');
@@ -320,7 +317,13 @@ async function requestNotificationToken() {
 
   try {
     console.log("Requesting FCM token...");
-    const currentToken = await messaging.getToken({ vapidKey: VAPID_KEY });
+    const registration = await navigator.serviceWorker.ready;
+    console.log("Service worker ready for getToken:", registration);
+
+    const currentToken = await getToken(messaging, {
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: registration
+    });
 
     if (currentToken) {
       console.log('FCM Token obtained/refreshed:', currentToken.substring(0, 10) + "...");
@@ -873,3 +876,5 @@ function debounceSearch(fn, delay) {
         timeout = setTimeout(() => fn.apply(this, args), delay);
     }
 }
+
+export { showModal, getApplicationLink };
