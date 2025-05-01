@@ -489,7 +489,6 @@ function setupNotificationPopup() {
              if (fcmToken) {
                  await syncNotificationTopics();
                  renderSubscribedTopics();
-                 if (fcmTokenDisplay) fcmTokenDisplay.textContent = `Debug Token: ${fcmToken.substring(0,10)}...`;
              } else {
                  showStatus("Could not retrieve notification token.", "error");
                  topicSelectionArea.style.display = 'none';
