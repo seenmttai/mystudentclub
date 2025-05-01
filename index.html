@@ -8,7 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="scripts/style2.css">
+  <link rel="stylesheet" href="scripts/style.css">
   <link rel="canonical" href="https://www.mystudentclub.com" />
   <meta name="robots" content="index, follow">
   <script type="module" src="scripts/date-utils.js"></script>
@@ -23,26 +23,24 @@
       <a href="/" class="brand-link">
         <img src="assets/logo.png" alt="My Student Club" class="brand-logo">
       </a>
-      <div class="flex items-center space-x-3 md:space-x-4">
-        <div class="auth-buttons">
-          <a href="/login" class="auth-icon-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-          </a>
-        </div>
-        <button id="notificationsBtn" class="notification-icon-btn" aria-label="Manage Notifications">
+      <div class="auth-buttons">
+        <a href="/login" class="auth-icon-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </a>
+      </div>
+              <button id="notificationsBtn" class="notification-icon-btn" aria-label="Manage Notifications">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
           </svg>
           <span class="notification-badge" id="notificationBadge"></span>
         </button>
-        <button class="menu-button" id="menuButton">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-          </svg>
-        </button>
-      </div>
+      <button class="menu-button" id="menuButton">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+      </button>
     </div>
     <div class="expanded-menu" id="expandedMenu">
       <button class="menu-close-btn" id="menuCloseBtn">
@@ -94,7 +92,6 @@
       </div>
     </div>
   </div>
-
   <div id="notificationPopup" class="notification-popup">
     <div class="notification-popup-header">
       <h3>Notification Preferences</h3>
@@ -104,35 +101,24 @@
     <div id="subscribedTopics" class="subscribed-topics">
       <h4>Your Subscriptions</h4>
       <div id="subscribedTopicsList" class="subscribed-topics-list"></div>
-      <button id="manageAllTopicsBtn" class="manage-all-btn">Manage All</button>
     </div>
     <div class="subscription-form">
       <h4>Add New Subscription</h4>
       <div class="subscription-selectors">
         <select id="locationSelect" class="subscription-select">
           <option value="" disabled selected>Select Location</option>
+
         </select>
         <select id="jobTypeSelect" class="subscription-select">
           <option value="" disabled selected>Select Job Type</option>
           <option value="industrial">Industrial Training</option>
           <option value="semi">Semi Qualified</option>
           <option value="fresher">Fresher</option>
-          <option value="articleship">Articleship</option>
         </select>
         <button id="subscribeBtn" class="subscribe-btn" disabled>Subscribe</button>
       </div>
     </div>
   </div>
-
-  <div id="foreground-notif-popup" class="foreground-notif">
-    <div class="foreground-notif-content">
-      <h4 id="foreground-notif-title"></h4>
-      <p id="foreground-notif-body"></p>
-      <a href="#" id="foreground-notif-link" target="_blank" rel="noopener noreferrer">View Job</a>
-    </div>
-    <button id="foreground-notif-close" class="foreground-notif-close">×</button>
-  </div>
-
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -174,14 +160,6 @@
       <button id="loadMore" class="load-more-btn">Load More Jobs</button>
     </div>
   </main>
-
-  <div id="modal" class="modal-overlay" onclick="closeModal(event)">
-    <div class="modal">
-      <button class="modal-close" onclick="closeModal(event)">✕</button>
-      <div id="modal-content"></div>
-    </div>
-  </div>
-
   <nav class="footer-nav">
     <a href="/" class="footer-tab active">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
