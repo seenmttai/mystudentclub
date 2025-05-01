@@ -49,14 +49,16 @@ const MAX_LOCATIONS = 15;
 const JOB_TYPES = [
   { value: "industrial", label: "Industrial Training" },
   { value: "semi", label: "Semi Qualified" },
-  { value: "fresher", label: "Fresher" }
+  { value: "fresher", label: "Fresher" },
+  { value: "articleship", label: "Articleship" }
 ];
 const LOCATIONS = [
-  "mumbai", "bangalore", "gurgaon", "pune", "kolkata", 
-  "delhi", "noida", "bengaluru", "hyderabad", "ahmedabad", 
+  "mumbai", "bangalore", "gurgaon", "pune", "kolkata",
+  "delhi", "noida", "bengaluru", "hyderabad", "ahmedabad",
   "chennai", "gurugram", "jaipur", "new delhi"
-];
+].slice(0, MAX_LOCATIONS);
 
+const ALL_JOBS_TOPIC = 'all';
 const SYNC_TIMESTAMP_KEY = 'notificationSyncTimestamp';
 const SUBSCRIBED_TOPICS_KEY = 'subscribedTopics';
 
@@ -68,7 +70,9 @@ const subscribedTopicsList = document.getElementById('subscribedTopicsList');
 const locationSelect = document.getElementById('locationSelect');
 const jobTypeSelect = document.getElementById('jobTypeSelect');
 const subscribeBtn = document.getElementById('subscribeBtn');
+const allJobsCheckbox = document.getElementById('allJobsCheckbox');
 const notificationBadge = document.getElementById('notificationBadge');
+const foregroundNotificationArea = document.getElementById('foreground-notification-area');
 
 const opportunitiesText = document.getElementById('opportunitiesText');
 
@@ -78,7 +82,15 @@ function generateTopicName(location, jobType) {
 }
 
 function formatTopicForDisplay(topicName) {
-  const [location, jobType] = topicName.split('-');
+  if (topicName === ALL_JOBS_TOPIC) {
+    return { location: 'All Locations', jobType: 'All Jobs' };
+  }
+  const parts = topicName.split('-');
+  if (parts.length < 2) return { location: topicName, jobType: '' };
+
+  const jobType = parts.pop();
+  const location = parts.join('-');
+
   const displayLocation = location.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
   let displayJobType = '';
@@ -111,7 +123,9 @@ function showStatus(message, type = 'info') {
 
   if (type !== 'error') {
     setTimeout(() => {
-      notificationStatus.style.display = 'none';
+      if (notificationStatus.textContent === message) {
+         notificationStatus.style.display = 'none';
+      }
     }, 3000);
   }
 }
@@ -128,10 +142,8 @@ function saveSubscribedTopics(topics) {
 
 function updateNotificationBadge() {
   const topics = getSubscribedTopics();
-  if (topics.length > 0) {
-    notificationBadge.style.visibility = 'visible';
-  } else {
-    notificationBadge.style.visibility = 'hidden';
+  if (notificationBadge) {
+    notificationBadge.style.visibility = topics.length > 0 ? 'visible' : 'hidden';
   }
 }
 
@@ -146,10 +158,15 @@ function renderSubscribedTopics() {
     noSubscriptions.className = 'no-subscriptions';
     noSubscriptions.textContent = 'No active subscriptions. Subscribe below to receive job alerts.';
     subscribedTopicsList.appendChild(noSubscriptions);
+    if (allJobsCheckbox) allJobsCheckbox.checked = false;
     return;
   }
 
+  let isSubscribedToAll = false;
   topics.forEach(topic => {
+    if (topic === ALL_JOBS_TOPIC) {
+      isSubscribedToAll = true;
+    }
     const { location, jobType } = formatTopicForDisplay(topic);
 
     const topicTag = document.createElement('div');
@@ -161,6 +178,8 @@ function renderSubscribedTopics() {
 
     subscribedTopicsList.appendChild(topicTag);
   });
+
+  if (allJobsCheckbox) allJobsCheckbox.checked = isSubscribedToAll;
 
   const removeButtons = subscribedTopicsList.querySelectorAll('.topic-remove');
   removeButtons.forEach(button => {
@@ -331,6 +350,129 @@ async function syncNotificationTopics() {
   }
 }
 
+function showForegroundNotification(payload) {
+  if (!foregroundNotificationArea) return;
+
+  const notifData = payload.notification || {};
+  const title = notifData.title || 'New Notification';
+  const body = notifData.body || 'Check it out!';
+  const link = payload.data?.link || payload.fcmOptions?.link || '/';
+
+  const notificationDiv = document.createElement('div');
+  notificationDiv.className = 'foreground-notification';
+  notificationDiv.innerHTML = `
+    <h4>${title}</h4>
+    <p>${body}</p>
+  `;
+
+  notificationDiv.onclick = () => {
+    window.open(link, '_blank');
+    notificationDiv.remove();
+  };
+
+  foregroundNotificationArea.appendChild(notificationDiv);
+
+  requestAnimationFrame(() => {
+    notificationDiv.classList.add('show');
+  });
+
+  setTimeout(() => {
+    notificationDiv.classList.remove('show');
+    setTimeout(() => {
+      if (notificationDiv.parentNode === foregroundNotificationArea) {
+        foregroundNotificationArea.removeChild(notificationDiv);
+      }
+    }, 500);
+  }, 7000);
+}
+
+async function initializeFCM() {
+  try {
+    const app = initializeApp(firebaseConfig);
+    messaging = getMessaging(app);
+
+    onMessage(messaging, (payload) => {
+      console.log('Foreground message received. ', payload);
+      showForegroundNotification(payload);
+    });
+
+    if ('serviceWorker' in navigator) {
+      try {
+        await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        console.log('Service Worker registered successfully.');
+      } catch (error) {
+        console.error('Service Worker registration failed:', error);
+        if (notificationStatus) showStatus(`Service Worker registration failed: ${error.message}`, 'error');
+        return null;
+      }
+    } else {
+      console.warn('Service workers are not supported in this browser.');
+      if (notificationStatus) showStatus('Notifications require Service Worker support.', 'error');
+      return null;
+    }
+
+    if (Notification.permission === 'granted') {
+      await requestTokenAndSyncSubscriptions();
+    }
+
+    return messaging;
+
+  } catch(err) {
+     console.error("Error initializing Firebase app or messaging:", err);
+     if (notificationStatus) showStatus("Could not initialize notifications system.", "error");
+     return null;
+  }
+}
+
+async function requestTokenAndSyncSubscriptions() {
+  if (!messaging) {
+    console.error("Cannot request token: Messaging service not initialized.");
+    if (notificationStatus) showStatus("Error initializing notifications.", "error");
+    return;
+  }
+
+  if (fcmToken) {
+    console.log("Token already available.");
+    await syncNotificationTopics();
+    return;
+  }
+
+  try {
+    console.log("Requesting FCM token...");
+    const registration = await navigator.serviceWorker.ready;
+    console.log("Service worker ready for getToken:", registration);
+
+    const currentToken = await getToken(messaging, {
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: registration
+    });
+
+    if (currentToken) {
+      console.log('FCM Token obtained:', currentToken);
+      fcmToken = currentToken;
+      await syncNotificationTopics();
+      if (notificationStatus) showStatus("Notification token obtained.", "success");
+
+    } else {
+      console.log('No registration token available. Request permission to generate one.');
+      if (Notification.permission === 'granted') {
+        if (notificationStatus) showStatus('Could not get notification token. Ensure service worker is active and VAPID key is correct.', 'error');
+      } else {
+        if (notificationStatus) showStatus('Notification permission needed to get token.', 'info');
+      }
+    }
+  } catch (err) {
+    console.error('An error occurred while retrieving token. ', err);
+    if (notificationStatus) {
+        if (err.code === 'messaging/permission-blocked') {
+            showStatus('Notification permission was blocked. Please enable it in browser settings.', 'error');
+        } else {
+            showStatus('Error getting notification token: ' + err.message, 'error');
+        }
+    }
+  }
+}
+
 function setupNotificationPopup() {
   if (!notificationsBtn || !notificationPopup || !closeNotificationPopup) return;
 
@@ -392,48 +534,56 @@ function setupNotificationPopup() {
     });
   }
 
+  if (allJobsCheckbox) {
+    allJobsCheckbox.addEventListener('change', async (e) => {
+        const isChecked = e.target.checked;
+        if (isChecked) {
+            await subscribeToTopic(ALL_JOBS_TOPIC);
+        } else {
+            await unsubscribeFromTopic(ALL_JOBS_TOPIC);
+        }
+    });
+  }
+
   notificationsBtn.addEventListener('click', async (event) => {
-    event.stopPropagation(); 
+    event.stopPropagation();
 
     const isVisible = notificationPopup.style.display === 'flex';
 
     if (!isVisible) {
       renderSubscribedTopics();
-
       notificationPopup.style.display = 'flex';
 
       if (Notification.permission !== 'granted') {
         showStatus("Notifications are not enabled. Please enable them to receive alerts.", "error");
         if (Notification.permission === 'default') {
-          Notification.requestPermission().then(permission => {
+          try {
+            const permission = await Notification.requestPermission();
             if (permission === 'granted') {
-              initializeFCM().then(() => {
-                syncNotificationTopics();
-              }).catch(err => {
-                console.error("Failed to re-initialize FCM after grant:", err);
-                showStatus("Could not initialize notifications system.", "error");
-              });
+              await initializeFCM();
             } else {
               console.log('Notification permission denied.');
               showStatus("Notifications are blocked. Please enable them in browser settings.", "error");
             }
-          });
+          } catch (err) {
+             console.error("Error requesting permission:", err);
+             showStatus("Could not request notification permission.", "error");
+          }
         } else if (Notification.permission === 'denied') {
           showStatus("Notifications are blocked. Please enable them in browser settings.", "error");
         }
-        return; 
+        return;
       }
 
       if (!messaging || !fcmToken) {
         try {
           await initializeFCM();
-          await syncNotificationTopics(); 
         } catch (err) {
           console.error("Failed to initialize FCM or sync:", err);
           showStatus("Could not initialize notifications system or sync preferences.", "error");
         }
       } else {
-        await syncNotificationTopics();
+         await syncNotificationTopics();
       }
 
     } else {
@@ -446,19 +596,19 @@ function setupNotificationPopup() {
   });
 
   document.addEventListener('click', (e) => {
-    if (notificationPopup.style.display === 'flex' &&
-        !notificationPopup.contains(e.target) && 
+    if (notificationPopup?.style.display === 'flex' &&
+        !notificationPopup.contains(e.target) &&
         !notificationsBtn.contains(e.target)) {
       notificationPopup.style.display = 'none';
     }
   });
 }
 
-function showSlide(i) { 
-  if (!slides || slides.length === 0) return; 
-  slides.forEach(s => s.classList.remove('active')); 
-  currentSlide = (i + totalSlides) % totalSlides; 
-  slides[currentSlide].classList.add('active') 
+function showSlide(i) {
+  if (!slides || slides.length === 0) return;
+  slides.forEach(s => s.classList.remove('active'));
+  currentSlide = (i + totalSlides) % totalSlides;
+  slides[currentSlide].classList.add('active')
 }
 
 function renderJobCard(job, table) {
@@ -743,7 +893,8 @@ async function loadBanners() {
     const relevantBanners = banners.filter(banner => {
       let currentType = currentTable === "Semi Qualified Jobs" ? "Semi-Qualified" :
                        currentTable === "Fresher Jobs" ? "Freshers" :
-                       currentTable.split(' ')[0];
+                       currentTable === "Articleship Jobs" ? "Articleship" :
+                       "Industrial";
 
       return banner.Type === 'All' || banner.Type === currentType;
     });
@@ -777,84 +928,6 @@ async function loadBanners() {
       setInterval(() => showSlide(currentSlide + 1), 5000);
     }
   } catch (e) { console.error("Error loading banners", e); }
-}
-
-let messaging;
-let fcmToken = null;
-
-async function initializeFCM() {
-  try {
-    const app = initializeApp(firebaseConfig);
-    messaging = getMessaging(app);
-
-    onMessage(messaging, (payload) => {
-      console.log('Foreground message received. ', payload);
-      const notif = payload.notification || {};
-      const notification = new Notification(notif.title, {
-        body: notif.body,
-        icon: notif.icon || '/assets/icon-70x70.png',
-        data: { click_action: payload.data?.link || payload.fcmOptions?.link || '/' }
-      });
-      notification.onclick = (event) => {
-        event.preventDefault();
-        window.open(notification.data.click_action, '_blank');
-        notification.close();
-      };
-    });
-
-    if ('serviceWorker' in navigator) {
-      try {
-        await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-        console.log('Service Worker registered successfully.');
-      } catch (error) {
-        console.error('Service Worker registration failed:', error);
-        return null;
-      }
-    } else {
-      console.warn('Service workers are not supported in this browser.');
-      return null;
-    }
-
-    if (Notification.permission === 'granted') {
-      await requestTokenAndSyncSubscriptions();
-    }
-
-    return messaging;
-
-  } catch(err) {
-     console.error("Error initializing Firebase app or messaging:", err);
-     return null;
-  }
-}
-
-async function requestTokenAndSyncSubscriptions() {
-  if (!messaging) {
-    console.error("Cannot request token: Messaging service not initialized.");
-    return;
-  }
-
-  try {
-    console.log("Requesting FCM token...");
-    const registration = await navigator.serviceWorker.ready;
-    console.log("Service worker ready for getToken:", registration);
-
-    const currentToken = await getToken(messaging, {
-      vapidKey: VAPID_KEY,
-      serviceWorkerRegistration: registration
-    });
-
-    if (currentToken) {
-      console.log('FCM Token obtained:', currentToken);
-      fcmToken = currentToken;
-      return currentToken;
-    } else {
-      console.log('No registration token available.');
-      return null;
-    }
-  } catch (err) {
-    console.error('An error occurred while retrieving token. ', err);
-    return null;
-  }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -1016,3 +1089,5 @@ window.showAddJobModal = function() {
   modal.style.display = 'flex';
   document.body.style.overflow = 'hidden';
 }
+
+export { showModal, getApplicationLink };
