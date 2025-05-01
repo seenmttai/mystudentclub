@@ -107,7 +107,6 @@
       <div class="subscription-selectors">
         <select id="locationSelect" class="subscription-select">
           <option value="" disabled selected>Select Location</option>
-
         </select>
         <select id="jobTypeSelect" class="subscription-select">
           <option value="" disabled selected>Select Job Type</option>
@@ -160,6 +159,14 @@
       <button id="loadMore" class="load-more-btn">Load More Jobs</button>
     </div>
   </main>
+
+  <div id="modal" class="modal-overlay" onclick="closeModal(event)">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal(event)">✕</button>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
   <nav class="footer-nav">
     <a href="/" class="footer-tab active">
       <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
