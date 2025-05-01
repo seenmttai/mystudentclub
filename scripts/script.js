@@ -4,14 +4,6 @@ const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, { global: { headers: { 'apikey': supabaseKey } } });
 const jobsContainer = document.getElementById('jobs');
-const notificationsPrefs = document.getElementById('notificationPrefs');
-notificationsPrefs.addEventListener('change', async function(event) {
-    const target = event.target;
-    const topic = target.id;
-    const isChecked = target.checked;
-    if(topic === 'all') await (isChecked ? subscribeTopic('all') : unsubscribeTopic('all'));
-    else await (isChecked ? subscribeTopic(topic) : unsubscribeTopic(topic));
-});
 const loader = document.getElementById('loader');
 const modal = document.getElementById('modal');
 const modalContent = document.getElementById('modal-content');
@@ -508,31 +500,3 @@ loadMoreButton.addEventListener('click', () => {
 });
 
 window.addEventListener('scroll', handleScroll);
-
-async function subscribeTopic(topic) {
-  try {
-    const serviceWorker = await navigator.serviceWorker.ready;
-    const subscription = await serviceWorker.pushManager.getSubscription();
-    if (!subscription) return;
-    const endpoint = subscription.endpoint;
-    const response = await fetch(`/subscribe`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ endpoint, topic }),
-    });
-  } catch (error) {}
-}
-
-async function unsubscribeTopic(topic) {
-  try {
-    const serviceWorker = await navigator.serviceWorker.ready;
-    const subscription = await serviceWorker.pushManager.getSubscription();
-    if (!subscription) return;
-    const endpoint = subscription.endpoint;
-    const response = await fetch(`/unsubscribe`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ endpoint, topic }),
-    });
-  } catch (error) {}
-}

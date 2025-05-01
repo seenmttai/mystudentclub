@@ -52,8 +52,8 @@ const JOB_TYPES = [
   { value: "fresher", label: "Fresher" }
 ];
 const LOCATIONS = [
-  "mumbai", "bangalore", "gurgaon", "pune", "kolkata", 
-  "delhi", "noida", "bengaluru", "hyderabad", "ahmedabad", 
+  "mumbai", "bangalore", "gurgaon", "pune", "kolkata",
+  "delhi", "noida", "bengaluru", "hyderabad", "ahmedabad",
   "chennai", "gurugram", "jaipur", "new delhi"
 ];
 
@@ -64,11 +64,14 @@ const notificationsBtn = document.getElementById('notificationsBtn');
 const notificationPopup = document.getElementById('notificationPopup');
 const closeNotificationPopup = document.getElementById('closeNotificationPopup');
 const notificationStatus = document.getElementById('notificationStatus');
-const subscribedTopicsList = document.getElementById('subscribedTopicsList');
-const locationSelect = document.getElementById('locationSelect');
-const jobTypeSelect = document.getElementById('jobTypeSelect');
-const subscribeBtn = document.getElementById('subscribeBtn');
 const notificationBadge = document.getElementById('notificationBadge');
+const topicAllCheckbox = document.getElementById('topic-all');
+const topicCheckboxesContainer = document.getElementById('topic-checkboxes');
+const topicSelectionArea = document.getElementById('topic-selection-area');
+const permissionStatusDiv = document.getElementById('notification-permission-status');
+const enableNotificationsBtn = document.getElementById('enable-notifications-btn');
+const fcmTokenDisplay = document.getElementById('fcm-token-display');
+
 
 const opportunitiesText = document.getElementById('opportunitiesText');
 
@@ -136,40 +139,34 @@ function updateNotificationBadge() {
 }
 
 function renderSubscribedTopics() {
-  if (!subscribedTopicsList) return;
 
-  subscribedTopicsList.innerHTML = '';
-  const topics = getSubscribedTopics();
 
-  if (topics.length === 0) {
-    const noSubscriptions = document.createElement('p');
-    noSubscriptions.className = 'no-subscriptions';
-    noSubscriptions.textContent = 'No active subscriptions. Subscribe below to receive job alerts.';
-    subscribedTopicsList.appendChild(noSubscriptions);
-    return;
+  const subscribedTopics = getSubscribedTopics();
+
+
+  if (topicAllCheckbox) {
+    topicAllCheckbox.checked = subscribedTopics.includes('all');
   }
 
-  topics.forEach(topic => {
-    const { location, jobType } = formatTopicForDisplay(topic);
 
-    const topicTag = document.createElement('div');
-    topicTag.className = 'topic-tag';
-    topicTag.innerHTML = `
-      <span>${location} - ${jobType}</span>
-      <button class="topic-remove" data-topic="${topic}">×</button>
-    `;
+  if (topicCheckboxesContainer) {
+      const checkboxes = topicCheckboxesContainer.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach(checkbox => {
+          checkbox.checked = subscribedTopics.includes(checkbox.value);
+      });
+  }
 
-    subscribedTopicsList.appendChild(topicTag);
-  });
 
-  const removeButtons = subscribedTopicsList.querySelectorAll('.topic-remove');
-  removeButtons.forEach(button => {
-    button.addEventListener('click', async (e) => {
-      e.stopPropagation();
-      const topic = button.dataset.topic;
-      await unsubscribeFromTopic(topic);
-    });
-  });
+  updateSpecificTopicAreaVisibility();
+}
+
+function updateSpecificTopicAreaVisibility() {
+    if (!topicAllCheckbox || !topicCheckboxesContainer) return;
+    if (topicAllCheckbox.checked) {
+        topicCheckboxesContainer.style.display = 'none';
+    } else {
+        topicCheckboxesContainer.style.display = 'grid';
+    }
 }
 
 async function subscribeToTopic(topic) {
@@ -256,6 +253,62 @@ async function unsubscribeFromTopic(topic) {
   }
 }
 
+function generateSpecificTopicCheckboxes() {
+    if (!topicCheckboxesContainer) return;
+    topicCheckboxesContainer.innerHTML = '';
+
+    const availableTopics = [];
+    LOCATIONS.forEach(loc => {
+        JOB_TYPES.forEach(type => {
+            availableTopics.push({
+                value: generateTopicName(loc, type.value),
+                label: `${loc.charAt(0).toUpperCase() + loc.slice(1)} - ${type.label}`
+            });
+        });
+    });
+
+    availableTopics.forEach(topic => {
+        const label = document.createElement('label');
+        label.style.display = 'flex';
+        label.style.alignItems = 'center';
+        label.style.cursor = 'pointer';
+        label.style.padding = '0.5rem';
+        label.style.borderRadius = '6px';
+        label.style.transition = 'background-color 0.2s';
+        label.style.fontSize = '0.9rem';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = topic.value;
+        checkbox.id = `topic-${topic.value}`;
+        checkbox.style.marginRight = '0.5rem';
+        checkbox.style.cursor = 'pointer';
+
+        const span = document.createElement('span');
+        span.textContent = topic.label;
+
+        label.appendChild(checkbox);
+        label.appendChild(span);
+
+        topicCheckboxesContainer.appendChild(label);
+
+        checkbox.addEventListener('change', async (e) => {
+            const topicName = e.target.value;
+            const isChecked = e.target.checked;
+            let success = false;
+            if (isChecked) {
+                success = await subscribeToTopic(topicName);
+            } else {
+                success = await unsubscribeFromTopic(topicName);
+            }
+
+            if (!success) {
+                e.target.checked = !isChecked;
+            }
+        });
+    });
+}
+
 function shouldSyncNotifications() {
   const lastSync = localStorage.getItem(SYNC_TIMESTAMP_KEY);
   if (!lastSync) return true;
@@ -331,115 +384,126 @@ async function syncNotificationTopics() {
   }
 }
 
+function updatePermissionStatusUI() {
+    if (!permissionStatusDiv || !enableNotificationsBtn || !topicSelectionArea) return;
+
+    const permission = Notification.permission;
+
+    if (permission === 'granted') {
+        permissionStatusDiv.textContent = 'Notifications are enabled.';
+        permissionStatusDiv.style.backgroundColor = '#dcfce7';
+        permissionStatusDiv.style.color = '#15803d';
+        enableNotificationsBtn.style.display = 'none';
+        topicSelectionArea.style.display = 'block';
+    } else if (permission === 'denied') {
+        permissionStatusDiv.textContent = 'Notifications are blocked. Please enable them in your browser settings to receive job alerts.';
+        permissionStatusDiv.style.backgroundColor = '#fee2e2';
+        permissionStatusDiv.style.color = '#b91c1c';
+        enableNotificationsBtn.style.display = 'none';
+        topicSelectionArea.style.display = 'none';
+    } else {
+        permissionStatusDiv.textContent = 'Enable notifications to receive job alerts for your preferred locations and job types.';
+        permissionStatusDiv.style.backgroundColor = '#eff6ff';
+        permissionStatusDiv.style.color = '#1e40af';
+        enableNotificationsBtn.style.display = 'block';
+        topicSelectionArea.style.display = 'none';
+    }
+}
+
 function setupNotificationPopup() {
   if (!notificationsBtn || !notificationPopup || !closeNotificationPopup) return;
 
-  if (locationSelect) {
-    locationSelect.innerHTML = '<option value="" disabled selected>Select Location</option>';
-    LOCATIONS.forEach(location => {
-      const option = document.createElement('option');
-      option.value = location;
-      option.textContent = location.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-      locationSelect.appendChild(option);
+  generateSpecificTopicCheckboxes();
+
+  if (enableNotificationsBtn) {
+    enableNotificationsBtn.addEventListener('click', async () => {
+      try {
+        const permission = await Notification.requestPermission();
+        updatePermissionStatusUI();
+        if (permission === 'granted') {
+          showStatus("Notifications enabled successfully!", 'success');
+          await initializeFCM();
+          await syncNotificationTopics();
+          renderSubscribedTopics();
+        } else {
+          showStatus("Notification permission was not granted.", 'info');
+        }
+      } catch (err) {
+        console.error("Error requesting notification permission:", err);
+        showStatus("Error requesting notification permission.", 'error');
+      }
     });
   }
 
-  if (jobTypeSelect) {
-    jobTypeSelect.innerHTML = '<option value="" disabled selected>Select Job Type</option>';
-    JOB_TYPES.forEach(type => {
-      const option = document.createElement('option');
-      option.value = type.value;
-      option.textContent = type.label;
-      jobTypeSelect.appendChild(option);
-    });
-  }
+  if (topicAllCheckbox) {
+    topicAllCheckbox.addEventListener('change', async (e) => {
+      const isChecked = e.target.checked;
+      let success = false;
+      if (isChecked) {
 
-  if (locationSelect && jobTypeSelect && subscribeBtn) {
-    const updateSubscribeButton = () => {
-      const locationValue = locationSelect.value;
-      const jobTypeValue = jobTypeSelect.value;
-      subscribeBtn.disabled = !(locationValue && jobTypeValue);
-    };
+          if (getSubscribedTopics().includes('all')) {
+               console.log("Already subscribed to 'all'");
+               updateSpecificTopicAreaVisibility();
+               return;
+           }
+          success = await subscribeToTopic('all');
+      } else {
 
-    locationSelect.addEventListener('change', updateSubscribeButton);
-    jobTypeSelect.addEventListener('change', updateSubscribeButton);
-  }
-
-  if (subscribeBtn) {
-    subscribeBtn.addEventListener('click', async () => {
-      const location = locationSelect.value;
-      const jobType = jobTypeSelect.value;
-
-      if (!location || !jobType) {
-        showStatus("Please select both location and job type", "error");
-        return;
+          if (!getSubscribedTopics().includes('all')) {
+                console.log("Already unsubscribed from 'all'");
+                updateSpecificTopicAreaVisibility();
+                return;
+            }
+          success = await unsubscribeFromTopic('all');
       }
 
-      const topicName = generateTopicName(location, jobType);
-      const topics = getSubscribedTopics();
-
-      if (topics.includes(topicName)) {
-        showStatus("You are already subscribed to this topic", "info");
-        return;
-      }
-
-      const success = await subscribeToTopic(topicName);
       if (success) {
-        locationSelect.selectedIndex = 0;
-        jobTypeSelect.selectedIndex = 0;
-        subscribeBtn.disabled = true;
+         updateSpecificTopicAreaVisibility();
+      } else {
+         e.target.checked = !isChecked;
       }
     });
-  }
+ }
+
 
   notificationsBtn.addEventListener('click', async (event) => {
-    event.stopPropagation(); 
+    event.stopPropagation();
 
     const isVisible = notificationPopup.style.display === 'flex';
 
     if (!isVisible) {
-      renderSubscribedTopics();
+        notificationPopup.style.display = 'flex';
+        updatePermissionStatusUI();
 
-      notificationPopup.style.display = 'flex';
-
-      if (Notification.permission !== 'granted') {
-        showStatus("Notifications are not enabled. Please enable them to receive alerts.", "error");
-        if (Notification.permission === 'default') {
-          Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-              initializeFCM().then(() => {
-                syncNotificationTopics();
-              }).catch(err => {
-                console.error("Failed to re-initialize FCM after grant:", err);
-                showStatus("Could not initialize notifications system.", "error");
-              });
-            } else {
-              console.log('Notification permission denied.');
-              showStatus("Notifications are blocked. Please enable them in browser settings.", "error");
+        if (Notification.permission === 'granted') {
+            if (!messaging || !fcmToken) {
+                try {
+                    await initializeFCM();
+                } catch (err) {
+                    console.error("Failed to initialize FCM on popup open:", err);
+                    showStatus("Could not connect to notifications system.", "error");
+                    return;
+                }
             }
-          });
-        } else if (Notification.permission === 'denied') {
-          showStatus("Notifications are blocked. Please enable them in browser settings.", "error");
-        }
-        return; 
-      }
 
-      if (!messaging || !fcmToken) {
-        try {
-          await initializeFCM();
-          await syncNotificationTopics(); 
-        } catch (err) {
-          console.error("Failed to initialize FCM or sync:", err);
-          showStatus("Could not initialize notifications system or sync preferences.", "error");
-        }
-      } else {
-        await syncNotificationTopics();
-      }
+             if (fcmToken) {
+                 await syncNotificationTopics();
+                 renderSubscribedTopics();
+                 if (fcmTokenDisplay) fcmTokenDisplay.textContent = `Debug Token: ${fcmToken.substring(0,10)}...`;
+             } else {
+                 showStatus("Could not retrieve notification token.", "error");
+                 topicSelectionArea.style.display = 'none';
+             }
+        } else {
 
+            renderSubscribedTopics();
+            topicSelectionArea.style.display = 'none';
+        }
     } else {
-      notificationPopup.style.display = 'none';
+        notificationPopup.style.display = 'none';
     }
   });
+
 
   closeNotificationPopup.addEventListener('click', () => {
     notificationPopup.style.display = 'none';
@@ -447,18 +511,19 @@ function setupNotificationPopup() {
 
   document.addEventListener('click', (e) => {
     if (notificationPopup.style.display === 'flex' &&
-        !notificationPopup.contains(e.target) && 
+        !notificationPopup.contains(e.target) &&
         !notificationsBtn.contains(e.target)) {
       notificationPopup.style.display = 'none';
     }
   });
 }
 
-function showSlide(i) { 
-  if (!slides || slides.length === 0) return; 
-  slides.forEach(s => s.classList.remove('active')); 
-  currentSlide = (i + totalSlides) % totalSlides; 
-  slides[currentSlide].classList.add('active') 
+
+function showSlide(i) {
+  if (!slides || slides.length === 0) return;
+  slides.forEach(s => s.classList.remove('active'));
+  currentSlide = (i + totalSlides) % totalSlides;
+  slides[currentSlide].classList.add('active')
 }
 
 function renderJobCard(job, table) {
@@ -857,6 +922,7 @@ async function requestTokenAndSyncSubscriptions() {
   }
 }
 
+
 document.addEventListener('DOMContentLoaded', async () => {
   const session = await checkAuth();
   updateHeaderAuth(session);
@@ -868,6 +934,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupNotificationPopup();
   if (Notification.permission === 'granted') {
     try {
+
       await initializeFCM();
       updateNotificationBadge();
     } catch (err) {
@@ -958,6 +1025,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   window.addEventListener('scroll', handleScroll);
 });
+
 
 async function checkAuth() {
   const { data: { session } } = await supabaseClient.auth.getSession();
