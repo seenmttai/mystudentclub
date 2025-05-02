@@ -6,6 +6,7 @@
   <title>CV Reviewer - My Student Club</title>
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://mystudentclub.pages.dev/scripts/style.css">
@@ -97,6 +98,71 @@
         .feedback-point p, .feedback-point ul { font-size: 0.85rem; }
         .score-circle { width: 70px; height: 70px; }
      }
+
+     .login-prompt-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(5px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1200;
+        padding: 1rem;
+     }
+     .login-prompt-modal.active {
+        display: flex;
+     }
+     .login-card {
+        width: 100%;
+        max-width: 420px;
+        background: white;
+        padding: 2.5rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        animation: modalPop 0.3s ease-out;
+     }
+     .login-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: linear-gradient(90deg, #4f46e5, #3730a3);
+     }
+     .login-title {
+        font-size: 1.75rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 2rem;
+        text-align: center;
+     }
+     .form-group { margin-bottom: 1.5rem; }
+     .form-label { display: block; font-size: 0.875rem; font-weight: 500; color: #4b5563; margin-bottom: 0.5rem; }
+     .form-input { width: 100%; padding: 0.75rem 1rem; font-size: 1rem; border: 2px solid #e5e7eb; border-radius: 10px; transition: all 0.3s ease; background: #f9fafb; }
+     .form-input:focus { outline: none; border-color: #4f46e5; background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+     .login-btn { width: 100%; padding: 0.875rem; background: #4f46e5; color: white; border: none; border-radius: 10px; font-weight: 500; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; position: relative; overflow: hidden; }
+     .login-btn:hover { background: #4338ca; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2); }
+     .login-btn.loading { background: #6366f1; pointer-events: none; }
+     .google-btn { width: 100%; padding: 0.75rem; background: white; color: #333; border: 1px solid #ccc; border-radius: 10px; font-weight: 500; font-size: 1rem; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin-top: 1rem; }
+     .google-btn:hover { background: #f8f8f8; border-color: #aaa; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+     .google-btn svg { width: 20px; height: 20px; }
+     .divider { text-align: center; margin: 1.5rem 0; color: #aaa; font-size: 0.875rem; display: flex; align-items: center; }
+     .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #eee; }
+     .divider::before { margin-right: .5em; }
+     .divider::after { margin-left: .5em; }
+     .error-message { background: #fee2e2; border: 1px solid #fecaca; border-radius: 8px; padding: 0.75rem 1rem; color: #dc2626; font-size: 0.875rem; margin-bottom: 1.5rem; display: none; }
+     .error-message.show { display: block; animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
+     .loading-spinner { display: none; width: 20px; height: 20px; border: 2px solid #ffffff; border-radius: 50%; border-top-color: transparent; animation: spin 0.8s linear infinite; position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); }
+     .login-btn.loading .loading-spinner { display: block; }
+     @keyframes shake { 10%, 90% { transform: translateX(-1px); } 20%, 80% { transform: translateX(2px); } 30%, 50%, 70% { transform: translateX(-4px); } 40%, 60% { transform: translateX(4px); } }
+     @keyframes spin { 100% { transform: translateY(-50%) rotate(360deg); } }
   </style>
 </head>
 <body>
@@ -169,31 +235,42 @@
     </div>
   </div>
 
-  <main class="cv-reviewer-container">
-    <div class="contact-form-container" id="contactFormContainer" style="display: block;">
-      <div class="contact-form-section">
-        <h2>Contact Information</h2>
-        <p>Please provide your details before analyzing your CV</p>
-        <form id="contactForm" action="https://formsubmit.co/bhansalipadam000@gmail.com" method="POST">
+  <div class="login-prompt-modal" id="loginPromptModal">
+      <div class="login-card">
+        <h1 class="login-title">Login Required</h1>
+        <p class="text-center text-text-secondary mb-6">Please log in to use the CV Reviewer.</p>
+        <div id="login-error-message" class="error-message"></div>
+        <form id="login-form">
           <div class="form-group">
-            <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" required>
+            <label for="login-email" class="form-label">Email Address</label>
+            <input type="email" id="login-email" class="form-input" required>
           </div>
           <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" required>
+            <label for="login-password" class="form-label">Password</label>
+            <input type="password" id="login-password" class="form-input" required>
           </div>
-          <div class="form-group">
-            <label for="phone">Phone Number</label>
-            <input type="tel" id="phone" name="phone" required>
-          </div>
-          <input type="hidden" name="_next" value="https://www.mystudentclub.com/cv-reviewer">
-          <input type="hidden" name="_captcha" value="false">
-          <button type="submit" class="submit-btn">Continue to CV Analysis</button>
+          <button type="submit" class="login-btn">
+            Sign In
+            <div class="loading-spinner"></div>
+          </button>
         </form>
-      </div>
-    </div>
 
+        <div class="divider">OR</div>
+
+        <button type="button" id="google-signin-btn" class="google-btn">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: block;">
+                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
+                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
+                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
+                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
+                <path fill="none" d="M0 0h48v48H0z"></path>
+            </svg>
+            Continue with Google
+        </button>
+      </div>
+  </div>
+
+  <main class="cv-reviewer-container">
     <div class="hero-section" id="heroSection" style="display: none;">
         <h1 class="main-heading">Evaluate Your Resume with AI Precision</h1>
         <h2 class="sub-heading">Get instant insights on your resume's strengths and areas for improvement to enhance your job prospects.</h2>
@@ -402,4 +479,3 @@ document.addEventListener('click', (e) => {
   </script>
 </body>
 </html>
-
