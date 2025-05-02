@@ -101,7 +101,6 @@
     <div class="notification-status" id="notificationStatus"></div>
 
     <div id="notification-permission-status" style="margin-bottom: 1.5rem; padding: 1rem; border-radius: 8px; font-size: 0.9rem;">
-
     </div>
 
     <button id="enable-notifications-btn" style="display: none; padding: 0.75rem 1.5rem; background-color: #4f46e5; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: background-color 0.2s; margin-bottom: 1rem;">
@@ -109,21 +108,34 @@
     </button>
 
     <div id="topic-selection-area" style="display: none;">
-        <div class="all-topic-section" style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0;">
-            <label style="display: flex; align-items: center; cursor: pointer; padding: 0.5rem; border-radius: 6px; transition: background-color 0.2s; font-size: 0.9rem;">
-                <input type="checkbox" value="all" id="topic-all" style="margin-right: 0.5rem; cursor: pointer;">
-                <span>Receive All Job Notifications</span>
-            </label>
-        </div>
+      <div class="all-topic-section" style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0;">
+          <label style="display: flex; align-items: center; cursor: pointer; padding: 0.5rem; border-radius: 6px; transition: background-color 0.2s; font-size: 0.9rem;">
+              <input type="checkbox" value="all" id="topic-all" style="margin-right: 0.5rem; cursor: pointer;">
+              <span>Receive All Job Notifications</span>
+          </label>
+      </div>
 
-        <p style="margin-bottom: 1rem; color: #4b5563; font-size: 0.9rem;">Or select specific job types and locations:</p>
-        <div id="topic-checkboxes" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
-
+      <div id="subscribedTopics" class="subscribed-topics">
+        <h4>Your Current Subscriptions:</h4>
+        <div id="subscribedTopicsList" class="subscribed-topics-list">
         </div>
-        <p id="fcm-token-display" style="font-size: 0.7rem; color: #64748b; margin-top: 1rem; word-break: break-all;"></p>
+      </div>
+
+      <div class="subscription-form" id="specific-subscription-form">
+        <h4>Add Specific Subscription:</h4>
+        <div class="subscription-selectors">
+          <select id="locationSelect" class="subscription-select">
+            <option value="" disabled selected>Select Location</option>
+          </select>
+          <select id="jobTypeSelect" class="subscription-select">
+            <option value="" disabled selected>Select Job Type</option>
+          </select>
+          <button id="subscribeBtn" class="subscribe-btn" disabled>Subscribe</button>
+        </div>
+      </div>
+
+      <p id="fcm-token-display" style="font-size: 0.7rem; color: #64748b; margin-top: 1rem; word-break: break-all;"></p>
     </div>
-
-
   </div>
 
   <script>

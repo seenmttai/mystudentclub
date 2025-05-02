@@ -66,11 +66,15 @@ const closeNotificationPopup = document.getElementById('closeNotificationPopup')
 const notificationStatus = document.getElementById('notificationStatus');
 const notificationBadge = document.getElementById('notificationBadge');
 const topicAllCheckbox = document.getElementById('topic-all');
-const topicCheckboxesContainer = document.getElementById('topic-checkboxes');
 const topicSelectionArea = document.getElementById('topic-selection-area');
 const permissionStatusDiv = document.getElementById('notification-permission-status');
 const enableNotificationsBtn = document.getElementById('enable-notifications-btn');
 const fcmTokenDisplay = document.getElementById('fcm-token-display');
+const subscribedTopicsList = document.getElementById('subscribedTopicsList');
+const locationSelect = document.getElementById('locationSelect');
+const jobTypeSelect = document.getElementById('jobTypeSelect');
+const subscribeBtn = document.getElementById('subscribeBtn');
+const specificSubscriptionForm = document.getElementById('specific-subscription-form');
 
 
 const opportunitiesText = document.getElementById('opportunitiesText');
@@ -81,7 +85,16 @@ function generateTopicName(location, jobType) {
 }
 
 function formatTopicForDisplay(topicName) {
-  const [location, jobType] = topicName.split('-');
+    if (topicName === 'all') {
+        return { location: 'All', jobType: 'Notifications' };
+    }
+  const parts = topicName.split('-');
+  if (parts.length < 2) {
+      return { location: topicName, jobType: '' };
+  }
+  const jobType = parts.pop();
+  const location = parts.join('-');
+
   const displayLocation = location.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
   let displayJobType = '';
@@ -139,33 +152,59 @@ function updateNotificationBadge() {
 }
 
 function renderSubscribedTopics() {
+  if (!subscribedTopicsList) return;
 
+  subscribedTopicsList.innerHTML = '';
+  const topics = getSubscribedTopics();
 
-  const subscribedTopics = getSubscribedTopics();
+  if (topics.length === 0) {
+    const noSubscriptions = document.createElement('p');
+    noSubscriptions.className = 'no-subscriptions';
+    noSubscriptions.textContent = 'No active subscriptions.';
+    subscribedTopicsList.appendChild(noSubscriptions);
+  } else {
+    topics.forEach(topic => {
+      const { location, jobType } = formatTopicForDisplay(topic);
 
+      const topicTag = document.createElement('div');
+      topicTag.className = 'topic-tag';
+      topicTag.innerHTML = `
+        <span>${location}${jobType ? ` - ${jobType}`: ''}</span>
+        <button class="topic-remove" data-topic="${topic}">×</button>
+      `;
+
+      subscribedTopicsList.appendChild(topicTag);
+    });
+
+    const removeButtons = subscribedTopicsList.querySelectorAll('.topic-remove');
+    removeButtons.forEach(button => {
+      button.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const topic = button.dataset.topic;
+        const success = await unsubscribeFromTopic(topic);
+        if (success) {
+            if (topic === 'all' && topicAllCheckbox) {
+                topicAllCheckbox.checked = false;
+                updateSpecificTopicAreaVisibility();
+            }
+        }
+      });
+    });
+  }
 
   if (topicAllCheckbox) {
-    topicAllCheckbox.checked = subscribedTopics.includes('all');
+    topicAllCheckbox.checked = topics.includes('all');
   }
-
-
-  if (topicCheckboxesContainer) {
-      const checkboxes = topicCheckboxesContainer.querySelectorAll('input[type="checkbox"]');
-      checkboxes.forEach(checkbox => {
-          checkbox.checked = subscribedTopics.includes(checkbox.value);
-      });
-  }
-
-
   updateSpecificTopicAreaVisibility();
 }
 
+
 function updateSpecificTopicAreaVisibility() {
-    if (!topicAllCheckbox || !topicCheckboxesContainer) return;
+    if (!topicAllCheckbox || !specificSubscriptionForm) return;
     if (topicAllCheckbox.checked) {
-        topicCheckboxesContainer.style.display = 'none';
+        specificSubscriptionForm.style.display = 'none';
     } else {
-        topicCheckboxesContainer.style.display = 'grid';
+        specificSubscriptionForm.style.display = 'block';
     }
 }
 
@@ -251,62 +290,6 @@ async function unsubscribeFromTopic(topic) {
     showStatus(`Failed to unsubscribe: ${err.message}`, 'error');
     return false;
   }
-}
-
-function generateSpecificTopicCheckboxes() {
-    if (!topicCheckboxesContainer) return;
-    topicCheckboxesContainer.innerHTML = '';
-
-    const availableTopics = [];
-    LOCATIONS.forEach(loc => {
-        JOB_TYPES.forEach(type => {
-            availableTopics.push({
-                value: generateTopicName(loc, type.value),
-                label: `${loc.charAt(0).toUpperCase() + loc.slice(1)} - ${type.label}`
-            });
-        });
-    });
-
-    availableTopics.forEach(topic => {
-        const label = document.createElement('label');
-        label.style.display = 'flex';
-        label.style.alignItems = 'center';
-        label.style.cursor = 'pointer';
-        label.style.padding = '0.5rem';
-        label.style.borderRadius = '6px';
-        label.style.transition = 'background-color 0.2s';
-        label.style.fontSize = '0.9rem';
-
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.value = topic.value;
-        checkbox.id = `topic-${topic.value}`;
-        checkbox.style.marginRight = '0.5rem';
-        checkbox.style.cursor = 'pointer';
-
-        const span = document.createElement('span');
-        span.textContent = topic.label;
-
-        label.appendChild(checkbox);
-        label.appendChild(span);
-
-        topicCheckboxesContainer.appendChild(label);
-
-        checkbox.addEventListener('change', async (e) => {
-            const topicName = e.target.value;
-            const isChecked = e.target.checked;
-            let success = false;
-            if (isChecked) {
-                success = await subscribeToTopic(topicName);
-            } else {
-                success = await unsubscribeFromTopic(topicName);
-            }
-
-            if (!success) {
-                e.target.checked = !isChecked;
-            }
-        });
-    });
 }
 
 function shouldSyncNotifications() {
@@ -410,10 +393,34 @@ function updatePermissionStatusUI() {
     }
 }
 
+function populateLocationDropdown() {
+     if (!locationSelect) return;
+     locationSelect.innerHTML = '<option value="" disabled selected>Select Location</option>';
+     LOCATIONS.forEach(location => {
+       const option = document.createElement('option');
+       option.value = location;
+       option.textContent = location.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+       locationSelect.appendChild(option);
+     });
+}
+
+function populateJobTypeDropdown() {
+     if (!jobTypeSelect) return;
+     jobTypeSelect.innerHTML = '<option value="" disabled selected>Select Job Type</option>';
+     JOB_TYPES.forEach(type => {
+       const option = document.createElement('option');
+       option.value = type.value;
+       option.textContent = type.label;
+       jobTypeSelect.appendChild(option);
+     });
+}
+
 function setupNotificationPopup() {
   if (!notificationsBtn || !notificationPopup || !closeNotificationPopup) return;
 
-  generateSpecificTopicCheckboxes();
+  populateLocationDropdown();
+  populateJobTypeDropdown();
+
 
   if (enableNotificationsBtn) {
     enableNotificationsBtn.addEventListener('click', async () => {
@@ -440,31 +447,60 @@ function setupNotificationPopup() {
       const isChecked = e.target.checked;
       let success = false;
       if (isChecked) {
-
           if (getSubscribedTopics().includes('all')) {
-               console.log("Already subscribed to 'all'");
                updateSpecificTopicAreaVisibility();
                return;
            }
           success = await subscribeToTopic('all');
       } else {
-
           if (!getSubscribedTopics().includes('all')) {
-                console.log("Already unsubscribed from 'all'");
                 updateSpecificTopicAreaVisibility();
                 return;
             }
           success = await unsubscribeFromTopic('all');
       }
 
-      if (success) {
-         updateSpecificTopicAreaVisibility();
-      } else {
+      if (!success) {
          e.target.checked = !isChecked;
       }
     });
  }
 
+ if (locationSelect && jobTypeSelect && subscribeBtn) {
+    const updateSubscribeButtonState = () => {
+      const locationValue = locationSelect.value;
+      const jobTypeValue = jobTypeSelect.value;
+      subscribeBtn.disabled = !(locationValue && jobTypeValue);
+    };
+    locationSelect.addEventListener('change', updateSubscribeButtonState);
+    jobTypeSelect.addEventListener('change', updateSubscribeButtonState);
+    updateSubscribeButtonState();
+
+    subscribeBtn.addEventListener('click', async () => {
+        const location = locationSelect.value;
+        const jobType = jobTypeSelect.value;
+
+        if (!location || !jobType) {
+            showStatus("Please select both location and job type", "error");
+            return;
+        }
+
+        const topicName = generateTopicName(location, jobType);
+        const topics = getSubscribedTopics();
+
+        if (topics.includes(topicName)) {
+            showStatus("You are already subscribed to this topic", "info");
+            return;
+        }
+
+        const success = await subscribeToTopic(topicName);
+        if (success) {
+            locationSelect.selectedIndex = 0;
+            jobTypeSelect.selectedIndex = 0;
+            subscribeBtn.disabled = true;
+        }
+    });
+  }
 
   notificationsBtn.addEventListener('click', async (event) => {
     event.stopPropagation();
@@ -489,12 +525,12 @@ function setupNotificationPopup() {
              if (fcmToken) {
                  await syncNotificationTopics();
                  renderSubscribedTopics();
+                 if (fcmTokenDisplay) fcmTokenDisplay.textContent = `Debug Token: ${fcmToken.substring(0,10)}...`;
              } else {
                  showStatus("Could not retrieve notification token.", "error");
                  topicSelectionArea.style.display = 'none';
              }
         } else {
-
             renderSubscribedTopics();
             topicSelectionArea.style.display = 'none';
         }
