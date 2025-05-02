@@ -55,7 +55,7 @@
   border: none;
   cursor: pointer;
   position: relative;
-  margin-right: 0.5rem;
+  margin-left: 0.75rem;
 }
 
 .notification-icon-btn svg {
@@ -95,6 +95,7 @@
   gap: 1rem;
   max-height: 80vh;
   overflow-y: auto;
+  border: 1px solid #e5e7eb;
 }
 
 .notification-popup-header {
@@ -132,6 +133,12 @@
   border-radius: 8px;
   font-size: 0.9rem;
   display: none;
+}
+
+.subscribed-topics {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 1rem;
 }
 
 .subscribed-topics h4, .subscription-form h4 {
@@ -225,27 +232,252 @@
   font-style: italic;
 }
 
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+}
+
+.brand-link {
+  flex-shrink: 0;
+}
+
+.brand-logo {
+  height: 36px;
+  width: auto;
+  display: block;
+}
+
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}
+
+.menu-button {
+  margin-left: 0.5rem;
+}
+
 @media (max-width: 768px) {
   .notification-popup {
     top: 60px;
     right: 10px;
     width: 320px;
   }
-  
+
   .subscription-selectors {
     flex-direction: column;
   }
-  
+
   .whatsapp-button {
-    width: 160px; 
-    height: 40px; 
-    bottom: 70px; 
+    width: 160px;
+    height: 40px;
+    bottom: 70px;
     right: 15px;
-    font-size: 14px; 
+    font-size: 14px;
   }
 
   .whatsapp-button svg {
-    width: 20px; 
-    height: 20px; 
+    width: 20px;
+    height: 20px;
   }
+
+  .header-container {
+    padding: 0.5rem 1rem;
+  }
+  .brand-logo {
+    height: 32px;
+  }
+  .auth-icon-btn, .notification-icon-btn, .menu-button {
+     padding: 0.4rem;
+  }
+   .notification-icon-btn {
+      margin-left: 0.4rem;
+    }
+    .menu-button {
+      margin-left: 0.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+  .brand-logo {
+    height: 28px;
+    margin-right: 1rem;
+  }
+  .header-container {
+    padding: 0.5rem 0.75rem;
+  }
+   .auth-buttons {
+     margin-left: auto;
+   }
+   .auth-icon-btn, .notification-icon-btn, .menu-button {
+      padding: 0.4rem;
+   }
+   .notification-icon-btn {
+      margin-left: 0.4rem;
+    }
+    .menu-button {
+      margin-left: 0.2rem;
+    }
+}
+
+#inAppNotification {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-150%);
+  background-color: rgba(79, 70, 229, 0.9);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  z-index: 1500;
+  opacity: 0;
+  transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+  font-size: 0.9rem;
+  max-width: 90%;
+  text-align: center;
+  cursor: pointer;
+}
+
+#inAppNotification.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+#inAppNotification strong {
+  font-weight: 600;
+}
+
+.all-jobs-subscription {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  margin-bottom: 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.all-jobs-subscription:hover {
+  background-color: #f3f4f6;
+}
+.all-jobs-subscription input[type="checkbox"] {
+  cursor: pointer;
+}
+.all-jobs-subscription label {
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.job-card {
+  position: relative;
+  z-index: 1;
+}
+.admin-job-actions {
+   display: none;
+}
+
+.foreground-notif {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #ffffff;
+  color: #333;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  z-index: 1050;
+  max-width: 350px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.foreground-notif.show {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.foreground-notif-content h4 {
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1f2937;
+}
+
+.foreground-notif-content p {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: #4b5563;
+  line-height: 1.4;
+}
+
+.foreground-notif-content a {
+  color: #4f46e5;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+.foreground-notif-content a:hover {
+  text-decoration: underline;
+}
+
+.foreground-notif-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #9ca3af;
+  cursor: pointer;
+  padding: 0.2rem;
+  line-height: 1;
+}
+.foreground-notif-close:hover {
+  color: #374151;
+}
+
+.manage-all-btn {
+  display: block;
+  width: 100%;
+  margin-top: 0.75rem;
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+  text-align: center;
+}
+
+.manage-all-btn.unsubscribe-all {
+  background-color: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+.manage-all-btn.unsubscribe-all:hover {
+  background-color: #fecaca;
+}
+
+.manage-all-btn:not(.unsubscribe-all) {
+  background-color: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+.manage-all-btn:not(.unsubscribe-all):hover {
+  background-color: #bbf7d0;
+}
+
+.manage-all-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
