@@ -689,6 +689,7 @@ function clearResultsContent() {
 
 function simpleMarkdownToHtml(md) {
     if (!md) return '';
+
     let html = md
         .replace(/&/g, '&')
         .replace(/</g, '<')
@@ -696,36 +697,82 @@ function simpleMarkdownToHtml(md) {
         .replace(/"/g, '"')
         .replace(/'/g, ''');
 
-    return html
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded text-sm">$1</code>')
-        .replace(/^#{1,6}\s+(.*$)/gm, (match, content) => {
-            const level = match.indexOf(' ');
-            return `<h${level+1} class="font-semibold mt-4 mb-2 text-lg">${content}</h${level+1}>`;
-        })
-        .replace(/^\s*[\-\*]\s+(.*$)/gm, '<li>$1</li>')
-        .replace(/^\s*\d+\.\s+(.*$)/gm, '<li>$1</li>')
-        .replace(/<\/li>\s*<li>/g, '</li><li>')
-        .replace(/(<li>.*?<\/li>)/gs, (match, content) => {
+    const blocks = html.split(/(\n{2,})/);
+    let inList = false;
+    let listType = '';
 
-             if (match.includes('<ul>') || match.includes('<ol>')) return match;
+    html = blocks.map(block => {
+        if (block.match(/^\s*$/)) return block;
 
-             const listType = /^\s*[\-\*]/.test(md) ? 'ul' : 'ol';
-             return `<${listType}>${content}</${listType}>`;
-        })
-        .replace(/<\/(ul|ol)>\s*<\1>/g, '')
-        .replace(/(\r\n|\n|\r)/g, '<br>')
-        .replace(/<br>\s*<br>/g, '</p><p>')
-        .replace(/^<p>|<\/p>$/g, '')
-        .replace(/^(.+?)$/gm, (match) => {
-            if (match.trim().startsWith('<') || match.trim().startsWith('<') || /^\s*(<li>|<ul>|<ol>)/.test(match)) {
-                 return match;
+        if (block.match(/^#{1,6}\s+/)) {
+            inList = false;
+            return block.replace(/^#{1,6}\s+(.*$)/gm, (match, content) => {
+                 const level = match.indexOf(' ');
+                 return `<h${level + 1} class="font-semibold mt-4 mb-2 text-lg">${content.trim()}</h${level + 1}>`;
+            });
+        }
+
+        const lines = block.split('\n');
+        let listHtml = '';
+        let currentListItems = '';
+
+        lines.forEach(line => {
+            const ulMatch = line.match(/^\s*([-\*\+])\s+(.*)/);
+            const olMatch = line.match(/^\s*(\d+)\.\s+(.*)/);
+
+            if (ulMatch || olMatch) {
+                const itemContent = ulMatch ? ulMatch[2] : olMatch[2];
+                const currentItemType = ulMatch ? 'ul' : 'ol';
+
+                if (!inList) {
+                    inList = true;
+                    listType = currentItemType;
+                    currentListItems += `<${listType} class="list-${listType === 'ul' ? 'disc' : 'decimal'} ml-5 mb-4">`;
+                } else if (listType !== currentItemType) {
+                    currentListItems += `</${listType}>`;
+                    listType = currentItemType;
+                    currentListItems += `<${listType} class="list-${listType === 'ul' ? 'disc' : 'decimal'} ml-5 mb-4">`;
+                }
+
+                 let inlineHtml = itemContent
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded text-sm">$1</code>');
+                currentListItems += `<li>${inlineHtml}</li>`;
+
+            } else {
+                if (inList) {
+                    currentListItems += `</${listType}>`;
+                    listHtml += currentListItems;
+                    currentListItems = '';
+                    inList = false;
+                }
+                let inlineHtml = line
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded text-sm">$1</code>');
+
+                if (inlineHtml.trim()) {
+                   listHtml += `<p>${inlineHtml}</p>`;
+                }
             }
-            return `<p>${match}</p>`;
-        })
-         .replace(/<p>\s*<\/p>/g, '');
+        });
+
+        if (inList) {
+            currentListItems += `</${listType}>`;
+            listHtml += currentListItems;
+        }
+
+        return listHtml;
+
+    }).join('');
+
+    html = html.replace(/<p>\s*<\/p>/g, '');
+    html = html.replace(/(\n{2,})/g, '\n');
+
+    return html;
 }
+
 
 function formatFeedbackText(text) {
     if (!text) return '<p class="text-sm text-text-secondary italic">No details available.</p>';
