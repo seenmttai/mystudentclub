@@ -1,14 +1,7 @@
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.worker.min.js';
 
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
-const loginPromptModal = document.getElementById('loginPromptModal');
-const loginForm = document.getElementById('login-form');
-const loginErrorMessage = document.getElementById('login-error-message');
-const googleSignInButton = document.getElementById('google-signin-btn');
-
+const contactFormContainer = document.getElementById('contactFormContainer');
+const contactForm = document.getElementById('contactForm');
 const heroSection = document.getElementById('heroSection');
 const uploadSection = document.getElementById('uploadSection');
 const dropArea = document.getElementById('dropArea');
@@ -66,7 +59,7 @@ const specializationOptions = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  checkAuth();
+  checkFormSubmissionToken();
   populateSpecializations();
   const svg = document.querySelector('.score-chart');
   if (svg && !document.getElementById('scoreGradient')) {
@@ -94,91 +87,52 @@ document.addEventListener('click', (e) => {
   }
 });
 
-async function checkAuth() {
-    const { data: { session }, error } = await supabaseClient.auth.getSession();
-    if (error) {
-        console.error("Error getting session:", error);
-        showLoginPrompt();
-        return;
-    }
-
-    if (session) {
-        showCvReviewer();
-    } else {
-        showLoginPrompt();
-    }
-}
-
-function showLoginPrompt() {
-    loginPromptModal.classList.add('active');
-    heroSection.style.display = 'none';
-    uploadSection.style.display = 'none';
-    resultsSection.style.display = 'none';
-    tipsSection.style.display = 'none';
-    domainSpecializationSection.style.display = 'none';
-    loadingSection.style.display = 'none';
-}
-
-function showCvReviewer() {
-    loginPromptModal.classList.remove('active');
+function checkFormSubmissionToken() {
+  const token = localStorage.getItem('contactFormSubmitted');
+  if (token) {
+    contactFormContainer.style.display = 'none';
     heroSection.style.display = 'block';
     uploadSection.style.display = 'block';
+  } else {
+    contactFormContainer.style.display = 'block';
+    heroSection.style.display = 'none';
+    uploadSection.style.display = 'none';
+  }
 }
 
-loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const email = document.getElementById('login-email').value;
-    const password = document.getElementById('login-password').value;
-    const loginButton = loginForm.querySelector('.login-btn');
+contactForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+   const submitBtn = contactForm.querySelector('.submit-btn');
+   submitBtn.disabled = true;
+   submitBtn.innerHTML = `<svg class="animate-spin inline-block mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Submitting...`;
 
-    loginButton.classList.add('loading');
-    loginButton.disabled = true;
-    loginErrorMessage.classList.remove('show');
-
-    try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-            email: email,
-            password: password
-        });
-
-        if (error) throw error;
-
-        showCvReviewer();
-
-    } catch (error) {
-        loginErrorMessage.textContent = error.message;
-        loginErrorMessage.classList.add('show');
-    } finally {
-        loginButton.classList.remove('loading');
-        loginButton.disabled = false;
-    }
-});
-
-googleSignInButton.addEventListener('click', async () => {
-    loginErrorMessage.classList.remove('show');
-    googleSignInButton.disabled = true;
-    try {
-        const { data, error } = await supabaseClient.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: window.location.href
-            }
-        });
-        if (error) throw error;
-    } catch (error) {
-        console.error('Google Sign-In Error:', error);
-        loginErrorMessage.textContent = error.message || 'Failed to sign in with Google. Please try again.';
-        loginErrorMessage.classList.add('show');
-        googleSignInButton.disabled = false;
-    }
-});
-
-supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (event === 'SIGNED_IN') {
-        showCvReviewer();
-    } else if (event === 'SIGNED_OUT') {
-        showLoginPrompt();
-    }
+   const formData = new FormData(contactForm);
+   fetch(contactForm.action, {
+     method: 'POST',
+     body: formData,
+     headers: { 'Accept': 'application/json' }
+   })
+   .then(response => {
+     if (response.ok) {
+       localStorage.setItem('contactFormSubmitted', `cv_reviewer_${Date.now()}`);
+       contactFormContainer.style.display = 'none';
+       heroSection.style.display = 'block';
+       uploadSection.style.display = 'block';
+       uploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+     } else {
+       response.json().then(data => {
+         throw new Error(data.error || 'Form submission failed');
+       }).catch(() => {
+         throw new Error('Form submission failed');
+       })
+     }
+   })
+   .catch(error => {
+     console.error('Error:', error);
+     alert('There was an issue submitting the form. Please try again.');
+     submitBtn.disabled = false;
+     submitBtn.innerHTML = 'Continue to CV Analysis';
+   });
 });
 
 browseButton.addEventListener('click', () => fileInput.click());
@@ -214,7 +168,7 @@ async function handleFile(file) {
 
   proceedToDomainBtn.disabled = true;
   proceedToDomainBtn.classList.add('opacity-50', 'cursor-not-allowed');
-  removeFileBtn.disabled = true;
+  removeFileBtn.disabled = true; 
 
   try {
     await generatePdfPreview(file);
@@ -225,7 +179,7 @@ async function handleFile(file) {
      alert(`Error processing PDF: ${error.message}. Please try another file.`);
      resetUpload();
   } finally {
-      removeFileBtn.disabled = false;
+      removeFileBtn.disabled = false; 
   }
 }
 
@@ -304,7 +258,7 @@ function resetUpload() {
   fileName.textContent = 'document.pdf';
   fileSize.textContent = '0 KB';
   previewThumbnail.innerHTML = '';
-  proceedToDomainBtn.disabled = true;
+  proceedToDomainBtn.disabled = true; 
   proceedToDomainBtn.classList.add('opacity-50', 'cursor-not-allowed');
 }
 
@@ -371,10 +325,10 @@ async function analyzeCv() {
   loadingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
   startLoadingAnimation();
-  clearResultsContent();
+  clearResultsContent(); 
 
   try {
-    const response = await fetch('https://cv-reviewer.bhansalimanan55.workers.dev/', {
+    const response = await fetch('https://cv-reviewer.bhansalimanan55.workers.dev/', { 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -535,7 +489,7 @@ function parseAndDisplayMeasurableResults(text) {
                  const suggestionsText = suggestionsBlockMatch[2].trim();
                  const suggestions = suggestionsText.split(/\* Suggestion \d+:|\n\s*-\s*|\n\s*\*\s*/i).filter(s => s.trim());
                  if (suggestions.length > 0) {
-                    html += `<ul class="list-none ml-0 mt-1 space-y-1">`;
+                    html += `<ul class="list-none ml-0 mt-1 space-y-1">`; 
                     suggestions.forEach(sugg => {
                         const trimmedSugg = sugg.trim().replace(/^"|"$/g, '');
                         if(trimmedSugg) {
@@ -681,7 +635,7 @@ function clearResultsContent() {
      categoryItems.forEach(item => {
         const pointsEl = item.querySelector('.points');
         const fillBar = item.querySelector('.category-fill');
-        const maxPoints = pointsEl.textContent.split('/')[1] || '0';
+        const maxPoints = pointsEl.textContent.split('/')[1] || '0'; 
         pointsEl.textContent = `0/${maxPoints}`;
         if(fillBar) fillBar.style.width = `0%`;
     });
@@ -689,109 +643,62 @@ function clearResultsContent() {
 
 function simpleMarkdownToHtml(md) {
     if (!md) return '';
-
     let html = md
-        .replace(/&/g, '&')
-        .replace(/</g, '<')
-        .replace(/>/g, '>')
-        .replace(/"/g, '"')
-        .replace(/'/g, ''');
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
 
-    const blocks = html.split(/(\n{2,})/);
-    let inList = false;
-    let listType = '';
+    return html
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded text-sm">$1</code>')
+        .replace(/^#{1,6}\s+(.*$)/gm, (match, content) => {
+            const level = match.indexOf(' ');
+            return `<h${level+1} class="font-semibold mt-4 mb-2 text-lg">${content}</h${level+1}>`; 
+        })
+        .replace(/^\s*[\-\*]\s+(.*$)/gm, '<li>$1</li>')
+        .replace(/^\s*\d+\.\s+(.*$)/gm, '<li>$1</li>')
+        .replace(/<\/li>\s*<li>/g, '</li><li>')
+        .replace(/(<li>.*?<\/li>)/gs, (match, content) => {
 
-    html = blocks.map(block => {
-        if (block.match(/^\s*$/)) return block;
+             if (match.includes('<ul>') || match.includes('<ol>')) return match;
 
-        if (block.match(/^#{1,6}\s+/)) {
-            inList = false;
-            return block.replace(/^#{1,6}\s+(.*$)/gm, (match, content) => {
-                 const level = match.indexOf(' ');
-                 return `<h${level + 1} class="font-semibold mt-4 mb-2 text-lg">${content.trim()}</h${level + 1}>`;
-            });
-        }
-
-        const lines = block.split('\n');
-        let listHtml = '';
-        let currentListItems = '';
-
-        lines.forEach(line => {
-            const ulMatch = line.match(/^\s*([-\*\+])\s+(.*)/);
-            const olMatch = line.match(/^\s*(\d+)\.\s+(.*)/);
-
-            if (ulMatch || olMatch) {
-                const itemContent = ulMatch ? ulMatch[2] : olMatch[2];
-                const currentItemType = ulMatch ? 'ul' : 'ol';
-
-                if (!inList) {
-                    inList = true;
-                    listType = currentItemType;
-                    currentListItems += `<${listType} class="list-${listType === 'ul' ? 'disc' : 'decimal'} ml-5 mb-4">`;
-                } else if (listType !== currentItemType) {
-                    currentListItems += `</${listType}>`;
-                    listType = currentItemType;
-                    currentListItems += `<${listType} class="list-${listType === 'ul' ? 'disc' : 'decimal'} ml-5 mb-4">`;
-                }
-
-                 let inlineHtml = itemContent
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                    .replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded text-sm">$1</code>');
-                currentListItems += `<li>${inlineHtml}</li>`;
-
-            } else {
-                if (inList) {
-                    currentListItems += `</${listType}>`;
-                    listHtml += currentListItems;
-                    currentListItems = '';
-                    inList = false;
-                }
-                let inlineHtml = line
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                    .replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded text-sm">$1</code>');
-
-                if (inlineHtml.trim()) {
-                   listHtml += `<p>${inlineHtml}</p>`;
-                }
+             const listType = /^\s*[\-\*]/.test(md) ? 'ul' : 'ol';
+             return `<${listType}>${content}</${listType}>`;
+        })
+        .replace(/<\/(ul|ol)>\s*<\1>/g, '') 
+        .replace(/(\r\n|\n|\r)/g, '<br>') 
+        .replace(/<br>\s*<br>/g, '</p><p>') 
+        .replace(/^<p>|<\/p>$/g, '') 
+        .replace(/^(.+?)$/gm, (match) => { 
+            if (match.trim().startsWith('<') || match.trim().startsWith('&lt;') || /^\s*(<li>|<ul>|<ol>)/.test(match)) {
+                 return match;
             }
-        });
-
-        if (inList) {
-            currentListItems += `</${listType}>`;
-            listHtml += currentListItems;
-        }
-
-        return listHtml;
-
-    }).join('');
-
-    html = html.replace(/<p>\s*<\/p>/g, '');
-    html = html.replace(/(\n{2,})/g, '\n');
-
-    return html;
+            return `<p>${match}</p>`;
+        })
+         .replace(/<p>\s*<\/p>/g, ''); 
 }
-
 
 function formatFeedbackText(text) {
     if (!text) return '<p class="text-sm text-text-secondary italic">No details available.</p>';
     let html = simpleMarkdownToHtml(text);
 
-    html = html.replace(/\[GOOD\]/g, '<span class="highlight-good" title="Good point">✓</span>');
-    html = html.replace(/\[ISSUE\]/g, '<span class="highlight-issue" title="Area for improvement">✗</span>');
+    html = html.replace(/\[GOOD\]/g, '<span class="highlight-good" title="Good point">✓</span>'); 
+    html = html.replace(/\[ISSUE\]/g, '<span class="highlight-issue" title="Area for improvement">✗</span>'); 
 
     html = html.replace(/<br>\s*\*   \*\*(.*?):\*\*/g, '<br><strong class="block mt-3 mb-1 text-base text-primary">$1:</strong>');
     html = html.replace(/^   \*\*(.*?):\*\*/g, '<strong class="block mt-3 mb-1 text-base text-primary">$1:</strong>');
 
-     html = html.replace(/<br>\s*[\-\*]\s+/g, '<br><li>');
-     html = html.replace(/<\/li><br>/g, '</li>');
+     html = html.replace(/<br>\s*[\-\*]\s+/g, '<br><li>'); 
+     html = html.replace(/<\/li><br>/g, '</li>'); 
 
      html = html.replace(/(<li>.*?<\/li>)/gs, (match) => {
-         if (match.includes('<ul>') || match.includes('<ol>')) return match;
+         if (match.includes('<ul>') || match.includes('<ol>')) return match; 
          return `<ul>${match}</ul>`;
      });
-     html = html.replace(/<\/ul>\s*<ul>/g, '');
+     html = html.replace(/<\/ul>\s*<ul>/g, ''); 
 
     return html;
 }
@@ -843,19 +750,19 @@ function updateScoreBreakdown(overallScore, resultsText) {
         const pointsEl = item.querySelector('.points');
         const fillBar = item.querySelector('.category-fill');
         const maxPointsText = pointsEl.textContent.split('/')[1];
-        if (!maxPointsText) return;
+        if (!maxPointsText) return; 
         const maxPoints = parseInt(maxPointsText.match(/\d+/)[0], 10);
 
         let calculatedPoints = 0;
         let percentage = 0;
 
          if (foundSpecificScores && categoryScores[categoryKey] !== undefined) {
-            calculatedPoints = Math.min(categoryScores[categoryKey], maxPoints);
+            calculatedPoints = Math.min(categoryScores[categoryKey], maxPoints); 
             percentage = (calculatedPoints / maxPoints) * 100;
         } else {
 
              calculatedPoints = Math.round((overallScore / 100) * maxPoints);
-             percentage = overallScore;
+             percentage = overallScore; 
              console.log(`Using fallback score for ${categoryKey}`);
          }
 
@@ -872,7 +779,7 @@ function resetToUploadStage() {
     tipsSection.style.display = 'none';
     domainSpecializationSection.style.display = 'none';
     loadingSection.style.display = 'none';
-    checkAuth();
+    checkFormSubmissionToken(); 
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -922,21 +829,21 @@ downloadReportBtn.addEventListener('click', () => {
                .replace(/<\/ol>/g, '')
                .replace(/<li>/g, '\n - ')
                .replace(/<\/li>/g, '')
-               .replace(/<h[1-6].*?>(.*?)<\/h[1-6]>/g, '\n### $1\n')
+               .replace(/<h[1-6].*?>(.*?)<\/h[1-6]>/g, '\n### $1\n') 
                .replace(/^\s*•\s*/gm, ' - ')
                .replace(/Original:\s*<code.*?>([\s\S]*?)<\/code>/gi, 'Original: "$1"')
                .replace(/Critique:\s*/gi, '\nCritique: ')
                .replace(/Rewrite Suggestions:/gi, '\nRewrite Suggestions:')
                .replace(/<div class="rewrite-suggestion">([\s\S]*?)<\/div>/gi, '  * Suggestion: $1')
                .replace(/<div class="grammar-correction.*?"><span class="original-text">(.*?)<\/span>.*?<span class="corrected-text">(.*?)<\/span>.*?<\/div>/gi, '\n Correction: "$1" -> "$2"')
-               .replace(/<span class="highlight-good".*?>✓<\/span>/g,'(+)')
+               .replace(/<span class="highlight-good".*?>✓<\/span>/g,'(+)') 
                .replace(/<span class="highlight-issue".*?>✗<\/span>/g,'(-)')
-               .replace(/&/g, '&')
-               .replace(/</g, '<')
-               .replace(/>/g, '>')
-               .replace(/"/g, '"')
-               .replace(/'/g, "'")
-               .replace(/\n\s*\n/g, '\n\n')
+               .replace(/&amp;/g, '&')
+               .replace(/&lt;/g, '<')
+               .replace(/&gt;/g, '>')
+               .replace(/&quot;/g, '"')
+               .replace(/&#039;/g, "'")
+               .replace(/\n\s*\n/g, '\n\n') 
                .trim();
 
            reportContent += cleanedContent + '\n\n';
@@ -971,6 +878,7 @@ function resetToUploadStageOnError() {
      domainSpecializationSection.style.display = 'none';
      resetUpload();
      uploadSection.style.display = 'block';
-     heroSection.style.display = 'block';
+     heroSection.style.display = 'block'; 
      uploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
+
