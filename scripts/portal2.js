@@ -757,7 +757,7 @@ async function fetchJobs() {
     }
 
     const experience = experienceFilter?.value;
-    if (experience && currentTable === "Fresher Jobs") {
+    if (experience && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
       query = query.eq('Experience', experience);
     }
 
@@ -962,7 +962,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadBanners();
   populateSalaryFilter(currentTable);
   
-  if (currentTable === "Fresher Jobs") {
+  // Check URL for Experience parameter
+  if (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs") {
     const urlParams = new URLSearchParams(window.location.search);
     const experienceParam = urlParams.get('Experience');
     if (experienceParam && ['Freshers', 'Experienced'].includes(experienceParam)) {
@@ -1062,7 +1063,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  if (experienceFilter && currentTable === "Fresher Jobs") {
+  if (experienceFilter && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
     experienceFilter.addEventListener('change', () => {
       page = 0;
       if (jobsContainer) jobsContainer.innerHTML = '';
