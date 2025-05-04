@@ -14,6 +14,7 @@ const locationSearchInput = document.getElementById('locationSearchInput');
 const salaryFilter = document.getElementById('salaryFilter');
 const categoryFilter = document.getElementById('categoryFilter');
 const loadMoreButton = document.getElementById('loadMore');
+const experienceFilter = document.getElementById('experienceFilter');
 let isFetching = false;
 let page = 0;
 const limit = 12;
@@ -75,7 +76,6 @@ const locationSelect = document.getElementById('locationSelect');
 const jobTypeSelect = document.getElementById('jobTypeSelect');
 const subscribeBtn = document.getElementById('subscribeBtn');
 const specificSubscriptionForm = document.getElementById('specific-subscription-form');
-
 
 const opportunitiesText = document.getElementById('opportunitiesText');
 
@@ -197,7 +197,6 @@ function renderSubscribedTopics() {
   }
   updateSpecificTopicAreaVisibility();
 }
-
 
 function updateSpecificTopicAreaVisibility() {
     if (!topicAllCheckbox || !specificSubscriptionForm) return;
@@ -421,7 +420,6 @@ function setupNotificationPopup() {
   populateLocationDropdown();
   populateJobTypeDropdown();
 
-
   if (enableNotificationsBtn) {
     enableNotificationsBtn.addEventListener('click', async () => {
       try {
@@ -538,7 +536,6 @@ function setupNotificationPopup() {
     }
   });
 
-
   closeNotificationPopup.addEventListener('click', () => {
     notificationPopup.style.display = 'none';
   });
@@ -551,7 +548,6 @@ function setupNotificationPopup() {
     }
   });
 }
-
 
 function showSlide(i) {
   if (!slides || slides.length === 0) return;
@@ -610,8 +606,7 @@ function renderJobCard(job, table) {
         ${job.Salary ? `
           <span class="job-tag salary-tag">
             <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             ₹${job.Salary}
           </span>
@@ -759,6 +754,11 @@ async function fetchJobs() {
     const category = categoryFilter?.value;
     if (category) {
       query = query.ilike('Category', `%${category}%`);
+    }
+
+    const experience = experienceFilter?.value;
+    if (experience && currentTable === "Fresher Jobs") {
+      query = query.eq('Experience', experience);
     }
 
     query = query.order('Created_At', { ascending: false });
@@ -956,12 +956,23 @@ async function requestTokenAndSyncSubscriptions() {
   }
 }
 
-
 document.addEventListener('DOMContentLoaded', async () => {
   const session = await checkAuth();
   updateHeaderAuth(session);
   await loadBanners();
   populateSalaryFilter(currentTable);
+  
+  if (currentTable === "Fresher Jobs") {
+    const urlParams = new URLSearchParams(window.location.search);
+    const experienceParam = urlParams.get('Experience');
+    if (experienceParam && ['Freshers', 'Experienced'].includes(experienceParam)) {
+      const experienceFilter = document.getElementById('experienceFilter');
+      if (experienceFilter) {
+        experienceFilter.value = experienceParam;
+      }
+    }
+  }
+  
   fetchJobs();
   fetchCategories();
   updateOpportunitiesTextDisplay(currentTable);
@@ -1051,6 +1062,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
+  if (experienceFilter && currentTable === "Fresher Jobs") {
+    experienceFilter.addEventListener('change', () => {
+      page = 0;
+      if (jobsContainer) jobsContainer.innerHTML = '';
+      hasMoreData = true;
+      if (loadMoreButton) loadMoreButton.style.display = 'none';
+      fetchJobs()
+    });
+  }
+
   if (loadMoreButton) {
     loadMoreButton.addEventListener('click', () => {
       fetchJobs()
@@ -1059,7 +1080,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   window.addEventListener('scroll', handleScroll);
 });
-
 
 async function checkAuth() {
   const { data: { session } } = await supabaseClient.auth.getSession();
