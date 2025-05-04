@@ -1,6 +1,163 @@
 const generateData = () => {
-  const baseURL = "https://mystudentclub.pages.dev/assets/";
-  const students = [
+  const baseURL = "https://www.mystudentclub.com/assets/";
+  const newStudents = [
+    {
+      name: "Anisha Mehta",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/anisha-mehta1/",
+      image: baseURL + "anisha_mehta.jpeg",
+      company: "Adani"
+    },
+    {
+      name: "Aarushi Agarwal",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/aarushi-agarwal003/",
+      image: baseURL + "Aarushi.jpeg",
+      company: "Mizuho Bank"
+    },
+    {
+      name: "Vindhya Gupta",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/vindhya-gupta/",
+      image: baseURL + "vindhya.jpeg",
+      company: "Hindustan Times"
+    },
+    {
+      name: "Vishal Sharma",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/vishal-sharma057/",
+      image: baseURL + "vishal.jpeg",
+      company: "Bajaj Finance"
+    },
+    {
+      name: "Chery Lunia",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/cheryluniya/",
+      image: baseURL + "Chery.jpeg",
+      company: "Goldman Sachs"
+    },
+    {
+      name: "Prabhjyot Singh",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/prabhjyotsinghca/",
+      image: baseURL + "prabhjyot.jpeg",
+      company: "Unilever"
+    },
+    {
+      name: "Chandini Meher",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/chandini-meher/",
+      image: baseURL + "Chandini.jpeg",
+      company: "HDFC Bank"
+    },
+    {
+      name: "Kirti Yadav",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/kirtiyadav07/",
+      image: baseURL + "Kirti.jpeg",
+      company: "DLF"
+    },
+    {
+      name: "Raunaq Verma",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/raunaqverma17662/",
+      image: baseURL + "Raunaq.jpeg",
+      company: "HDFC Bank"
+    },
+    {
+      name: "Kavin S",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/s-kavin/",
+      image: baseURL + "Kavin.jpeg",
+      company: "Ashok Leyland"
+    },
+    {
+      name: "Aishwarya Lakshmi",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/aishwary0406/",
+      image: baseURL + "aishwarye.jpeg",
+      company: "Flipkart"
+    },
+    {
+      name: "Shreya Jain",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/shreya-jain03/",
+      image: baseURL + "Shreya.jpeg",
+      company: "ONGC"
+    },
+    {
+      name: "Sakshi Suryavanshi",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/sakshiasuryavanshi/",
+      image: baseURL + "sakshi.jpeg",
+      company: "ZF"
+    },
+    {
+      name: "Deepanshu Jain",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/deepanshu-jain-23078822a/",
+      image: baseURL + "deepanshu.jpeg",
+      company: "Henkel"
+    },
+    {
+      name: "Chandra Lekha",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/chandralekhauckoo",
+      image: baseURL + "Chandra.jpeg",
+      company: "ITC"
+    },
+    {
+      name: "Sakshi Sipholya",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/sakshisipolya/",
+      image: baseURL + "sipholya.jpeg",
+      company: "Deutsche Bank"
+    },
+    {
+      name: "Rahul Koli",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/rahulkoli15/",
+      image: baseURL + "koli.jpeg",
+      company: "Morgan Stanley"
+    },
+    {
+      name: "Anisha Shah",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/anisha-shah25/",
+      image: baseURL + "Anisha.jpeg",
+      company: "UBS"
+    },
+    {
+      name: "Arbaz Jakate",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/arbaz-jakate/",
+      image: baseURL + "Arbaz.jpeg",
+      company: "Mondelez"
+    },
+    {
+      name: "Monisha Agrawala",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/monisha-agrawala-/",
+      image: baseURL + "monisha.jpeg",
+      company: "Goldman Sachs"
+    },
+    {
+      name: "Hari Karnati",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/hari-karnati",
+      image: baseURL + "karnati.jpeg",
+      company: "Amazon"
+    },
+    {
+      name: "Devang Sinsinwar",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/devang-sinsinwar/",
+      image: baseURL + "devang.jpeg",
+      company: "Intel"
+    }
+  ];
+
+  const existingStudents = [
     {
       name: "Abhishek Puranik",
       course: "MSC IT Guarantee Program",
@@ -143,6 +300,8 @@ const generateData = () => {
     }
   ];
 
+  const students = [...newStudents, ...existingStudents];
+
   return { students };
 };
 
@@ -158,7 +317,7 @@ const initializeCarousel = () => {
     card.className = 'student-card';
     card.innerHTML = `
       <div class="student-image">
-        <img src="${student.image}" alt="${student.name}" />
+        <img src="${student.image}" alt="${student.name}" loading="lazy" />
       </div>
       <h3>${student.name}</h3>
       <p>${student.course}</p>
@@ -234,29 +393,6 @@ const initializeCarousel = () => {
 
   animate(performance.now());
 };
-
-const initializeCountdown = () => {
-  const timer = document.getElementById('timer');
-
-  function updateTimer() {
-    const now = new Date();
-    const target = new Date();
-    target.setHours(24, 0, 0, 0);
-    if (now > target) {
-      target.setDate(target.getDate() + 1);
-    }
-    const diff = target - now;
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-    timer.textContent = `${hours}h ${minutes}m ${seconds}s`;
-  }
-
-  updateTimer();
-  setInterval(updateTimer, 1000);
-};
-
-const initializeBenefitsCarousel = () => {};
 
 const initializeTestimonials = () => {
   const testimonials = [
@@ -409,8 +545,25 @@ const initializeCertificate = () => {
       }
     });
   }
-
 };
+
+function adjustDaysGrid() {
+
+}
+
+function initializeCurriculumCenter() {
+
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  safe(initializeTestimonials, 'testimonials');
+  safe(initializeCarousel, 'carousel');
+  safe(initializeCertificate, 'certificate');
+  AOS.init({
+    duration: 1000,
+    once: true
+  });
+});
 
 function safe(fn, label) {
   try {
@@ -420,21 +573,13 @@ function safe(fn, label) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  safe(initializeTestimonials, 'testimonials');
-  safe(initializeCarousel, 'carousel');
-  safe(initializeCountdown, 'count-down');
-  safe(initializeCertificate, 'certificate');
-
-  AOS.init({
-    duration: 1000,
-    once: true
-  });
-});
-
 const resizeObserver = new ResizeObserver(entries => {
   for (let entry of entries) {
     const width = entry.contentRect.width;
+    const carousel = document.getElementById('studentCarousel');
+    if (carousel) {
+      console.log('idk what i am supposed to do here');
+    }
   }
 });
 resizeObserver.observe(document.body);

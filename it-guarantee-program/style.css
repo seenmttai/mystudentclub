@@ -7,6 +7,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-x: hidden; 
 }
 
 .hero {
@@ -49,11 +50,18 @@ body {
 
 h1 {
   font-size: 56px;
-  margin: 0 0 30px;
+  margin: 0 0 15px; 
   line-height: 1.2;
   background: linear-gradient(135deg, #1a1a4b 0%, #4a4a8f 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.batch-info { 
+  font-size: 20px;
+  color: #4a4a8f;
+  margin-top: 0;
+  margin-bottom: 30px; 
 }
 
 .subtitle {
@@ -220,7 +228,9 @@ h1 {
   bottom: 0;
   left: 0;
   width: 100%;
-  background: #1a1a4b;
+  background: rgba(26, 26, 75, 0.95);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
   padding: 10px 20px;
   display: flex;
@@ -576,11 +586,90 @@ h1 {
   }
 }
 
+.testimonial-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 30px;
+}
+
+.nav-buttons {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20px;
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+.prev-button,
+.next-button {
+  background: white;
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.prev-button:hover,
+.next-button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.prev-button svg,
+.next-button svg {
+  width: 24px;
+  height: 24px;
+  fill: #1a1a4b;
+}
+
+@media (max-width: 768px) {
+  .mobile-frame {
+    width: 240px;
+    height: 480px;
+  }
+
+  .testimonials h2 {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-frame {
+    width: 200px;
+    height: 400px;
+  }
+
+  .prev-button,
+  .next-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .prev-button svg,
+  .next-button svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
 .get-certified {
+  width: 100%;
   padding: 60px 20px;
   background: white;
   position: relative;
   overflow: hidden;
+  text-align: center;
 }
 
 .get-certified h2 {
@@ -799,6 +888,123 @@ h1 {
 @keyframes shine {
   0% { background-position: -300% center; }
   100% { background-position: 300% center; }
+}
+
+.pulse-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease !important;
+  background: linear-gradient(45deg, #4CAF50, #45a049) !important;
+}
+
+.pulse-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateX(-100%);
+  animation: shine 2s infinite;
+}
+
+.pulse-btn:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3) !important;
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  20% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.btn-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lightning-icon {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+.lock-icon, .arrow-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.glowing {
+  animation: glow 2s infinite;
+  background: linear-gradient(45deg, #3a6ea5, #2980b9) !important;
+}
+
+@keyframes glow {
+  0% {
+    box-shadow: 0 0 5px rgba(41, 128, 185, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(41, 128, 185, 0.8);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(41, 128, 185, 0.5);
+  }
+}
+
+.hurry-text {
+  font-weight: 600;
+  color: #ff4d4d;
+  animation: pulse 2s infinite;
+}
+
+@media (max-width: 768px) {
+  .fixed-cta {
+    padding: 12px;
+  }
+  
+  .fixed-cta .register-btn {
+    font-size: 14px;
+    padding: 8px 16px;
+  }
+  
+  .lightning-icon, .lock-icon, .arrow-icon {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .hurry-text {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .fixed-cta {
+    padding: 8px;
+  }
+  
+  .fixed-cta .register-btn {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+  
+  .lightning-icon, .lock-icon, .arrow-icon {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .hurry-text {
+    font-size: 12px;
+  }
 }
 
 .action-btn {
