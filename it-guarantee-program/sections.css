@@ -1,6 +1,3 @@
-
-
-
 .success-stories,
 .pain-points,
 .benefits,
@@ -14,6 +11,19 @@
   background: white;
   position: relative;
   overflow: hidden;
+}
+
+.success-stories,
+.pain-points,
+.benefits,
+.curriculum,
+.mentor,
+.testimonials,
+.get-certified {
+  width: 100%;
+  max-width: 100vw;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .pain-points {
@@ -59,6 +69,7 @@
   position: relative;
   box-sizing: border-box;
   cursor: grab;
+  overflow: hidden;
 }
 
 .carousel {
@@ -256,7 +267,7 @@
   align-items: center;
   gap: 30px;
   width: calc(100% - 40px);
-  max-width: 1200px;
+  max-width: calc(100% - 40px);
   margin: 0 auto;
   background: white;
   padding: 40px;
@@ -289,6 +300,12 @@
   .mentor-image {
     width: 200px;
     margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .mentor-profile {
+    max-width: calc(100% - 20px);
   }
 }
 
