@@ -29,7 +29,7 @@ try {
         const notificationTitle = payload.notification?.title || 'New Job Alert';
         const notificationOptions = {
             body: payload.notification?.body || 'A new job matching your preferences was posted.',
-            icon: payload.notification?.icon || '/assets/icon-70x70.png',
+            icon: payload.notification?.icon || 'https://www.mystudentclub.com/assets/icon-70x70.png',
             data: {
                 click_action: payload.data?.link || payload.fcmOptions?.link || '/'
             }
