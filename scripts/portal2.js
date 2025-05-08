@@ -678,6 +678,10 @@ function showModal(job) {
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
         </svg>Apply</a>` : 'Contact details are in description'}
     </section>
+    <section class="modal-section">
+      <h3><svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>Application Details</h3>
+      <p class="modal-description-text">${job['Application ID'] ? `Application ID/Link: ${job['Application ID']}` : 'No specific application ID provided. Check description or use Apply button.'}</p>
+    </section>
   `; modal.style.display = 'flex'; document.body.style.overflow = 'hidden';
 }
 
@@ -961,8 +965,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   updateHeaderAuth(session);
   await loadBanners();
   populateSalaryFilter(currentTable);
-  
-  // Check URL for Experience parameter
+
   if (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs") {
     const urlParams = new URLSearchParams(window.location.search);
     const experienceParam = urlParams.get('Experience');
@@ -973,7 +976,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     }
   }
-  
+
   fetchJobs();
   fetchCategories();
   updateOpportunitiesTextDisplay(currentTable);

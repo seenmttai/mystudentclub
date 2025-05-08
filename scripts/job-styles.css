@@ -26,24 +26,36 @@
   box-shadow: 0 2px 15px rgba(79, 70, 229, 0.1);
 }
 .filter-container {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1rem;
-  margin-bottom: 1rem;
-  justify-content: center;
+  margin: 1.5rem auto 2rem auto;
   flex-wrap: wrap;
   flex-direction: column;
   align-items: center;
+  max-width: 1000px;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;
 }
 .filter-input {
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1rem;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   background: white;
-  font-size: 0.9rem;
-  min-width: 120px;
+  font-size: 1rem;
+  width: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.filter-input:focus, .filter-select:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.1);
 }
 .filter-select {
-  padding: 0.5rem 1rem;
+  padding: 0.75rem 1rem;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   background: white;
@@ -376,20 +388,17 @@
 @media (max-width: 768px) {
   .search-container { max-width: 95%; }
   .filter-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    width: 100%;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    padding: 1rem;
   }
-  .filter-input, .filter-select { width: 100%; max-width: 400px; text-align: center; margin-bottom: 0.5rem; padding: 0.75rem; box-sizing: border-box; }
+  .filter-input, .filter-select { width: 100%; text-align: center; margin-bottom: 0; padding: 0.75rem; box-sizing: border-box; }
   .opportunities-text { text-align: center; }
 }
 @media (max-width: 480px) {
   .container { width: 95%; padding: 0 0.5rem; }
   .search-container { margin-top: 1rem; }
   .search-input { padding: 0.75rem 1rem; font-size: 1rem; }
-  .filter-container { padding: 0 1rem; }
+  .filter-container { padding: 1rem; grid-template-columns: 1fr; }
   .filter-input, .filter-select { width: 100%; max-width: none; }
   .modal {
     padding: 1.5rem;
