@@ -57,7 +57,7 @@
         </header>
 
         <main>
-            <div v-if="!isEnrolled && !loadingEnrollment" class="enrollment-modal">
+            <div v-if="!isEnrolled" class="enrollment-modal">
                 <div class="enrollment-content">
                     <div class="enrollment-icon">
                         <i class="fas fa-lock"></i>
@@ -83,7 +83,7 @@
             </div>
 
             <template v-else>
-                <div class="course-header" :style="{ 'background-image': `linear-gradient(rgba(44, 62, 80, 0.85), rgba(44, 62, 80, 0.85)), url(${course.thumbnail})` }">
+                <div class="course-header" style="background-image: url('{{ course.thumbnail }}'); opacity: 0.8;">
                     <div class="course-header-content">
                         <h1>{{ course.title }}</h1>
                         <p>{{ course.description }}</p>
@@ -123,7 +123,26 @@
                             </div>
                             <div v-else-if="courseSections.length === 0" class="empty-content">
                                 <i class="fas fa-video-slash"></i>
+
                                 <p>You are not enrolled in this course.</p>
+                                <div class="enrollment-modal">
+                <div class="enrollment-content" style="text-align: center; padding: 20px;">
+                    <div class="enrollment-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h2>You Are Not Enrolled</h2>
+                    <p>You need to be enrolled in this course to access the content.</p>
+                    <div class="course-preview">
+                        <img :src="course.thumbnail" :alt="course.title">
+                        <h3>{{ course.title }}</h3>
+                    </div>
+                    <a href="https://www.mystudentclub.com/learning-management-system"><button class="enroll-btn">
+                        <i class="fas fa-graduation-cap"></i>
+                        Back to Courses
+                    </button></a>
+                </div>
+            </div>
+                                
                             </div>
                             <div v-else v-for="(module, moduleIndex) in courseSections" :key="moduleIndex" class="course-module">
                                 <div class="module-header" @click="toggleModule(moduleIndex)">
@@ -300,18 +319,7 @@
                 },
                 videoUrl() {
                     if (!this.currentVideo || !this.isEnrolled) return '';
-                    
-                    // Use the RPC function to get the actual video URL
-                    return supabase.rpc('get_video_link', {
-                        course_name_param: this.courseSlug,
-                        video_number_param: this.currentVideoId
-                    }).then(({ data, error }) => {
-                        if (error) {
-                            console.error('Error fetching video URL:', error);
-                            return '';
-                        }
-                        return data || '';
-                    });
+                    return `https://advertisement.bhansalimanan55.workers.dev/stream/Screen%20Recording%202025-02-04%20233839.mp4?secret=YOUR_SECRET_VALUE`;
                 },
                 hasPreviousVideo() {
                     return this.getAdjacentVideo('previous') !== null;

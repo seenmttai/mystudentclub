@@ -20,15 +20,18 @@
             margin: 0 auto;
             padding: var(--space-8) var(--space-6);
         }
+        
         .cv-header {
             text-align: center;
             margin-bottom: 3rem;
         }
+        
         .cv-header h1 {
             font-size: 2.5rem;
             color: var(--primary-700);
             margin-bottom: 1rem;
         }
+        
         .cv-header p {
             font-size: 1.1rem;
             color: var(--text-secondary);
@@ -36,22 +39,26 @@
             max-width: 700px;
             margin: 0 auto;
         }
+        
         .cv-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 3rem;
             align-items: center;
         }
+        
         .cv-illustration {
             display: flex;
             justify-content: center;
             align-items: center;
         }
+        
         .cv-illustration svg {
             max-width: 100%;
             height: auto;
             display: block;
         }
+        
         .cv-form {
             background-color: var(--surface-elevated);
             padding: 2rem;
@@ -59,20 +66,24 @@
             box-shadow: var(--shadow-lg);
             border: 1px solid var(--border);
         }
+        
         .form-title {
             margin-bottom: 1.5rem;
             color: var(--text-primary);
             font-size: 1.5rem;
         }
+        
         .form-group {
             margin-bottom: 1.5rem;
         }
+        
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
             color: var(--text-primary);
             font-weight: 600;
         }
+        
         .form-control {
             width: 100%;
             padding: 0.8rem 1rem;
@@ -83,15 +94,18 @@
             background-color: var(--background);
             transition: var(--transition-base);
         }
+        
         .form-control:focus {
             outline: none;
             border-color: var(--secondary-500);
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
         }
+        
         .form-control.textarea {
             resize: vertical;
             min-height: 120px;
         }
+        
         .file-upload {
             position: relative;
             display: flex;
@@ -104,10 +118,12 @@
             cursor: pointer;
             transition: var(--transition-base);
         }
+        
         .file-upload:hover {
             border-color: var(--secondary-500);
             background-color: rgba(59, 130, 246, 0.05);
         }
+        
         .file-upload input {
             position: absolute;
             width: 100%;
@@ -117,34 +133,41 @@
             opacity: 0;
             cursor: pointer;
         }
+        
         .upload-content {
             display: flex;
             flex-direction: column;
             align-items: center;
         }
+        
         .upload-icon {
             font-size: 2.5rem;
             color: var(--secondary-500);
             margin-bottom: 1rem;
         }
+        
         .upload-text h4 {
             margin-bottom: 0.5rem;
             color: var(--text-primary);
         }
+        
         .upload-text p {
             color: var(--text-secondary);
             opacity: 0.7;
             font-size: 0.9rem;
         }
+        
         .file-info {
             margin-top: 1rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
+        
         .file-info i {
             color: var(--success-500);
         }
+        
         .submit-btn {
             display: block;
             width: 100%;
@@ -158,6 +181,7 @@
             cursor: pointer;
             transition: var(--transition-base);
         }
+        
         .submit-btn:hover:not(:disabled) {
             background-color: var(--secondary-600);
         }
@@ -165,20 +189,24 @@
             background-color: var(--gray-300);
             cursor: not-allowed;
         }
+        
         .features-list {
             margin-top: 3rem;
         }
+        
         .features-list h3 {
             margin-bottom: 1rem;
             color: var(--text-primary);
             font-size: 1.3rem;
             text-align: center;
         }
+        
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 1.5rem;
         }
+        
         .feature-item {
             background-color: var(--surface-elevated);
             padding: 1.5rem;
@@ -188,25 +216,30 @@
             transition: var(--transition-base);
             border: 1px solid var(--border);
         }
+        
         .feature-item:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-lg);
         }
+        
         .feature-icon {
             font-size: 2rem;
             color: var(--secondary-500);
             margin-bottom: 1rem;
         }
+        
         .feature-item h4 {
             margin-bottom: 0.5rem;
             color: var(--text-primary);
             font-size: 1.1rem;
         }
+        
         .feature-item p {
             color: var(--text-secondary);
             font-size: 0.9rem;
             opacity: 0.8;
         }
+        
         .success-message {
             display: flex;
             flex-direction: column;
@@ -214,20 +247,24 @@
             text-align: center;
             padding: 2rem;
         }
+        
         .success-icon {
             font-size: 4rem;
             color: var(--success-500);
             margin-bottom: 1.5rem;
         }
+        
         .success-message h3 {
             margin-bottom: 1rem;
             color: var(--text-primary);
             font-size: 1.5rem;
         }
+        
         .success-message p {
             color: var(--text-secondary);
             margin-bottom: 1.5rem;
         }
+        
         .timer {
             display: inline-flex;
             align-items: center;
@@ -239,14 +276,17 @@
             font-weight: 600;
             margin-top: 1rem;
         }
+        
         .timer i {
             margin-right: 0.5rem;
         }
+        
         @media (max-width: 992px) {
             .cv-content {
                 grid-template-columns: 1fr;
                 gap: 2rem;
             }
+            
             .cv-illustration {
                 order: -1;
                 margin-bottom: 2rem;
@@ -255,19 +295,23 @@
                 padding-top: calc(var(--space-8) + 70px);
             }
         }
+        
         @media (max-width: 768px) {
             .cv-header h1 {
                 font-size: 2rem;
             }
+            
             .cv-form {
                 padding: 1.5rem;
             }
         }
+        
         @media (max-width: 576px) {
             .cv-container {
                 padding: 1rem;
                 padding-top: calc(var(--space-4) + 70px);
             }
+            
             .features {
                 grid-template-columns: 1fr;
             }
@@ -275,6 +319,7 @@
         main {
             padding-top: 80px;
         }
+        
         .loading-screen {
             display: flex;
             flex-direction: column;
@@ -282,10 +327,12 @@
             justify-content: center;
             padding: 2rem;
         }
+        
         .loading-spinner {
             font-size: 2rem;
             margin-bottom: 1rem;
         }
+        
         .enrollment-modal {
             display: flex;
             flex-direction: column;
@@ -297,17 +344,20 @@
             box-shadow: var(--shadow-md);
             border: 1px solid var(--border);
         }
+        
         .enrollment-content {
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
         }
+        
         .enrollment-icon {
             font-size: 2rem;
             color: var(--primary-500);
             margin-bottom: 1rem;
         }
+        
         .enroll-btn {
             background-color: var(--secondary-500);
             color: white;
@@ -319,6 +369,7 @@
             transition: var(--transition-base);
             padding: 1rem 2rem;
         }
+        
         .enroll-btn:hover {
             background-color: var(--secondary-600);
         }
@@ -438,18 +489,22 @@
                         <div v-if="!submitted">
                             <div class="cv-form">
                                 <h2 class="form-title">Submit Your CV for Review</h2>
+                                
                                 <div class="form-group">
                                     <label for="name">Full Name</label>
                                     <input type="text" class="form-control" id="name" v-model="form.name" placeholder="Enter your full name">
                                 </div>
+                                
                                 <div class="form-group">
                                     <label for="email">Email Address</label>
                                     <input type="email" class="form-control" id="email" v-model="form.email" placeholder="Enter your email address">
                                 </div>
+                                
                                 <div class="form-group">
                                     <label for="phone">Phone Number</label>
                                     <input type="tel" class="form-control" id="phone" v-model="form.phone" placeholder="Enter your phone number">
                                 </div>
+                                
                                 <div class="form-group">
                                     <label for="experience">Years of Experience</label>
                                     <select class="form-control" id="experience" v-model="form.experience">
@@ -461,10 +516,12 @@
                                         <option value="10+">10+ years</option>
                                     </select>
                                 </div>
+                                
                                 <div class="form-group">
                                     <label for="job-target">Target Job Position</label>
                                     <input type="text" class="form-control" id="job-target" v-model="form.jobTarget" placeholder="E.g., Audit Associate, Tax Consultant, etc.">
                                 </div>
+                                
                                 <div class="form-group">
                                     <label>Upload CV (PDF or DOCX)</label>
                                     <div class="file-upload" :class="{ 'active': form.file }">
@@ -485,10 +542,12 @@
                                         </div>
                                     </div>
                                 </div>
+                                
                                 <div class="form-group">
                                     <label for="notes">Additional Notes (Optional)</label>
                                     <textarea class="form-control textarea" id="notes" v-model="form.notes" placeholder="Any specific areas you would like feedback on?"></textarea>
                                 </div>
+                                
                                 <button class="submit-btn" @click="submitForm" :disabled="!isFormValid || loading">
                                     <span v-if="loading"><i class="fas fa-spinner fa-spin"></i> Submitting...</span>
                                     <span v-else>Submit CV for Review</span>
@@ -523,6 +582,7 @@
                                 <h4>Industry Experts</h4>
                                 <p>Get feedback from professionals who understand the accounting and finance recruitment landscape.</p>
                             </div>
+                            
                             <div class="feature-item">
                                 <div class="feature-icon">
                                     <i class="fas fa-comments"></i>
@@ -530,6 +590,7 @@
                                 <h4>Personalized Feedback</h4>
                                 <p>Receive tailored suggestions specific to your career goals and experience level.</p>
                             </div>
+                            
                             <div class="feature-item">
                                 <div class="feature-icon">
                                     <i class="fas fa-chart-line"></i>
@@ -651,40 +712,19 @@
                     }
                 },
                 checkEnrollment() {
-                    let isEnrolledInAnyCourse = false;
-                    const courseList = [
-                        'industrial-training-mastery',
-                        'articleship-excellence',
-                        'ca-fresher-launchpad',
-                        'power-bi-data-wizard',
-                        'financial-modelling-pro'
-                    ];
-                    for (const courseSlug of courseList) {
-                        const savedVideos = localStorage.getItem(`courseVideos_${courseSlug}`);
-                        if (savedVideos) {
-                            try {
-                                const completedVideos = JSON.parse(savedVideos);
-                                if (Object.values(completedVideos).some(v => v === true)) {
-                                    isEnrolledInAnyCourse = true;
-                                    break;
-                                }
-                            } catch (e) {
-                                console.error(`Error parsing courseVideos_${courseSlug} from localStorage`, e);
-                            }
+                    const progressData = localStorage.getItem('courseProgress');
+                    if (progressData) {
+                        try {
+                            const progress = JSON.parse(progressData);
+                            const hasEnrolledCourse = Object.values(progress).some(p => typeof p === 'number' && p > 0);
+                            this.isEnrolled = hasEnrolledCourse;
+                        } catch (e) {
+                            console.error("Error parsing courseProgress from localStorage", e);
+                            this.isEnrolled = false;
                         }
+                    } else {
+                        this.isEnrolled = false;
                     }
-                    if (!isEnrolledInAnyCourse) {
-                        const progressData = localStorage.getItem('courseProgress');
-                        if (progressData) {
-                            try {
-                                const progress = JSON.parse(progressData);
-                                isEnrolledInAnyCourse = Object.values(progress).some(p => typeof p === 'number' && p > 0);
-                            } catch (e) {
-                                console.error("Error parsing courseProgress from localStorage", e);
-                            }
-                        }
-                    }
-                    this.isEnrolled = isEnrolledInAnyCourse;
                     this.checkingEnrollment = false;
                 },
                 handleFileUpload(event) {
@@ -695,12 +735,14 @@
                             event.target.value = '';
                             return;
                         }
+                        
                         const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
                         if (!validTypes.includes(file.type)) {
                             alert('Invalid file type. Please upload PDF or Word document.');
                             event.target.value = '';
                             return;
                         }
+                        
                         this.form.file = file;
                         this.form.fileName = file.name;
                     }
@@ -710,11 +752,13 @@
                         alert('Form is invalid or user not authenticated.');
                         return;
                     }
+
                     this.loading = true;
                     let fileUrl = '';
+                    
                     try {
                         const fileToUpload = this.form.file;
-                        const filePath = `cv_uploads/${this.user.id}/${Date.now()}-${fileToUpload.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+                        const filePath = `cv_uploads/${this.user.id}/${Date.now()}-${fileToUpload.name}`;
 
                         const { data: uploadData, error: uploadError } = await supabase.storage
                             .from('cv_uploads')
@@ -722,10 +766,16 @@
                                 cacheControl: '3600',
                                 upsert: false
                             });
-                        if (uploadError) throw uploadError;
+
+                        if (uploadError) {
+                            throw uploadError;
+                        }
                         
                         const { data: publicURLData, error: urlError } = supabase.storage.from('cv_uploads').getPublicUrl(filePath);
-                        if (urlError) throw urlError;
+
+                        if (urlError) {
+                            throw urlError;
+                        }
                         fileUrl = publicURLData.publicUrl;
 
                         const submissionData = {
@@ -737,13 +787,17 @@
                             job_target: this.form.jobTarget,
                             file_url: fileUrl,
                             file_name: this.form.fileName,
-                            notes: this.form.notes,
-                            status: 'submitted'
+                            notes: this.form.notes
                         };
+
                         const { error: insertError } = await supabase
                             .from('cv_submissions')
                             .insert([submissionData]);
-                        if (insertError) throw insertError;
+
+                        if (insertError) {
+                            throw insertError;
+                        }
+
                         this.submitted = true;
                     } catch (error) {
                         console.error('Error submitting CV:', error);
