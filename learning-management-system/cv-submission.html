@@ -699,30 +699,36 @@
                         this.user = session.user;
                         this.form.email = this.user.email || '';
                         this.form.name = this.user.user_metadata?.full_name || this.user.user_metadata?.name || '';
-                        this.checkEnrollment();
+                        await this.checkEnrollment();
                     } else {
                         this.user = null;
                         this.checkingEnrollment = false;
                         window.location.href = 'https://www.mystudentclub.com/login';
                     }
                     if (error) {
-                        console.error("Auth error:", error);
                         this.checkingEnrollment = false;
                          window.location.href = 'https://www.mystudentclub.com/login';
                     }
                 },
-                checkEnrollment() {
-                    const progressData = localStorage.getItem('courseProgress');
-                    if (progressData) {
-                        try {
-                            const progress = JSON.parse(progressData);
-                            const hasEnrolledCourse = Object.values(progress).some(p => typeof p === 'number' && p > 0);
-                            this.isEnrolled = hasEnrolledCourse;
-                        } catch (e) {
-                            console.error("Error parsing courseProgress from localStorage", e);
+                async checkEnrollment() {
+                    if (!this.user) {
+                        this.isEnrolled = false;
+                        this.checkingEnrollment = false;
+                        window.location.href = 'https://www.mystudentclub.com/login';
+                        return;
+                    }
+                    try {
+                        const { data, error, count } = await supabase
+                            .from('enrollment')
+                            .select('course', { count: 'exact', head: true })
+                            .eq('uuid', this.user.id);
+
+                        if (error) {
                             this.isEnrolled = false;
+                        } else {
+                            this.isEnrolled = count > 0;
                         }
-                    } else {
+                    } catch (e) {
                         this.isEnrolled = false;
                     }
                     this.checkingEnrollment = false;
@@ -800,7 +806,6 @@
 
                         this.submitted = true;
                     } catch (error) {
-                        console.error('Error submitting CV:', error);
                         alert(`Error submitting CV: ${error.message || 'An unexpected error occurred.'}`);
                     } finally {
                         this.loading = false;
