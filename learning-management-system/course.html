@@ -57,7 +57,7 @@
         </header>
 
         <main>
-            <div v-if="!isEnrolled && !loadingEnrollment" class="enrollment-modal">
+            <div v-if="!isEnrolled" class="enrollment-modal">
                 <div class="enrollment-content">
                     <div class="enrollment-icon">
                         <i class="fas fa-lock"></i>
@@ -83,7 +83,7 @@
             </div>
 
             <template v-else>
-                <div class="course-header">
+                <div class="course-header" style="background-image: url('{{ course.thumbnail }}'); opacity: 0.8;">
                     <div class="course-header-content">
                         <h1>{{ course.title }}</h1>
                         <p>{{ course.description }}</p>
@@ -123,7 +123,26 @@
                             </div>
                             <div v-else-if="courseSections.length === 0" class="empty-content">
                                 <i class="fas fa-video-slash"></i>
+
                                 <p>You are not enrolled in this course.</p>
+                                <div class="enrollment-modal">
+                <div class="enrollment-content">
+                    <div class="enrollment-icon">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <h2>You Are Not Enrolled</h2>
+                    <p>You need to be enrolled in this course to access the content.</p>
+                    <div class="course-preview">
+                        <img :src="course.thumbnail" :alt="course.title">
+                        <h3>{{ course.title }}</h3>
+                    </div>
+                    <button class="enroll-btn" @click="redirectToEnroll">
+                        <i class="fas fa-graduation-cap"></i>
+                        Enroll Now
+                    </button>
+                </div>
+            </div>
+                                
                             </div>
                             <div v-else v-for="(module, moduleIndex) in courseSections" :key="moduleIndex" class="course-module">
                                 <div class="module-header" @click="toggleModule(moduleIndex)">
