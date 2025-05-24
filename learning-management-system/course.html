@@ -83,7 +83,7 @@
             </div>
 
             <template v-else>
-                <div class="course-header" :style="{ backgroundImage: course.thumbnail ? 'url(' + course.thumbnail + ')' : 'none', opacity: 0.8 }">
+                <div class="course-header" :style="{ backgroundImage: 'url(' + course.thumbnail + ')', opacity: 0.8 }">
                     <div class="course-header-content">
                         <h1>{{ course.title }}</h1>
                         <p>{{ course.description }}</p>
@@ -135,7 +135,7 @@
                                             <img :src="course.thumbnail" :alt="course.title">
                                             <h3>{{ course.title }}</h3>
                                         </div>
-                                        <a href="index.html"><button class="enroll-btn">
+                                        <a href="https://www.mystudentclub.com/learning-management-system"><button class="enroll-btn">
                                             <i class="fas fa-graduation-cap"></i>
                                             Back to Courses
                                         </button></a>
@@ -151,8 +151,8 @@
                                     </div>
                                 </div>
                                 <div class="module-content" :class="{ 'expanded': module.expanded }">
-                                    <div v-for="(video, videoIndex) in module.videos" :key="videoIndex"
-                                        class="video-item"
+                                    <div v-for="(video, videoIndex) in module.videos" :key="videoIndex" 
+                                        class="video-item" 
                                         :class="{ 'active': currentVideoId === video.id, 'completed': video.completed }"
                                         @click="selectVideo(video.id)">
                                         <div class="video-status">
@@ -175,16 +175,16 @@
                                 <i class="fas fa-bars"></i> Course Content
                             </button>
                         </div>
-
+                        
                         <div class="video-container" v-if="currentVideo">
                             <h2>Video {{ currentVideo.id }}</h2>
                             <div class="video-player">
-                                <video controls preload="metadata" @ended="markVideoCompleted" controlsList="nodownload" :key="videoUrl">
+                                <video controls preload="metadata" @ended="markVideoCompleted" controlsList="nodownload">
                                     <source :src="videoUrl" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>
                             </div>
-
+                            
                             <div class="video-navigation">
                                 <button class="nav-button prev" @click="playPreviousVideo" :disabled="!hasPreviousVideo">
                                     <i class="fas fa-arrow-left"></i> Previous
@@ -193,8 +193,12 @@
                                     Next <i class="fas fa-arrow-right"></i>
                                 </button>
                             </div>
+                            <div class="video-description" v-if="currentVideo && currentVideo.description">
+                                <h3>Description</h3>
+                                <p>{{ currentVideo.description }}</p>
+                            </div>
                         </div>
-
+                        
                         <div class="no-video-selected" v-else>
                             <div class="empty-state">
                                 <i class="fas fa-play-circle"></i>
@@ -247,11 +251,11 @@
 
     <script type="module">
         import { createApp } from 'vue';
-
+        
         const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
+        
         createApp({
             data() {
                 return {
@@ -271,7 +275,6 @@
                     },
                     courseSections: [],
                     currentVideoId: null,
-                    currentVideoSrc: '',
                     courses: {
                         'industrial-training-mastery': {
                             title: 'Industrial Training Mastery Program',
@@ -314,8 +317,8 @@
                     return null;
                 },
                 videoUrl() {
-                    if (!this.currentVideo || !this.isEnrolled || !this.currentVideoSrc) return '';
-                    return this.currentVideoSrc;
+                    if (!this.currentVideo || !this.isEnrolled || !this.currentVideo.fileName) return '';
+                    return `https://advertisement.bhansalimanan55.workers.dev/stream/${this.currentVideo.fileName}`;
                 },
                 hasPreviousVideo() {
                     return this.getAdjacentVideo('previous') !== null;
@@ -343,7 +346,6 @@
                             await this.loadCourseVideos();
                         }
                     } catch (error) {
-                        console.error('Error checking enrollment:', error);
                         this.isEnrolled = false;
                         this.loadingEnrollment = false;
                     }
@@ -353,7 +355,7 @@
                     let videoCount = 1;
                     const videos = [];
                     try {
-                        while (videoCount <= 100) {
+                        while (videoCount <= 100) { 
                             try {
                                 const { data, error } = await supabase.rpc('get_video_link', {
                                     course_name_param: this.courseSlug,
@@ -365,8 +367,9 @@
                                 if (data) {
                                     videos.push({
                                         id: videoCount,
-                                        title: `Video ${videoCount}`,
-                                        completed: false
+                                        fileName: data,
+                                        completed: false,
+                                        description: `Details for Video ${videoCount}. Watch to learn more.`
                                     });
                                     videoCount++;
                                 } else {
@@ -383,40 +386,11 @@
                                 expanded: true,
                                 videos: videos
                             }];
-                            await this.loadVideoProgress();
+                            this.loadVideoProgress();
                         }
                     } catch (error) {
-                        console.error('Error loading course videos:', error);
                     } finally {
                         this.loadingVideos = false;
-                    }
-                },
-                async fetchVideoUrl(videoId) {
-                    if (!this.isEnrolled || !this.courseSlug) {
-                        this.currentVideoSrc = '';
-                        return;
-                    }
-                    try {
-                        const { data, error } = await supabase.rpc('get_video_link', {
-                            course_name_param: this.courseSlug,
-                            video_number_param: videoId
-                        });
-                        if (error) {
-                            console.error('Error fetching video URL:', error);
-                            this.currentVideoSrc = '';
-                            alert('Failed to load video. Please try again.');
-                            return;
-                        }
-                        if (data) {
-                            this.currentVideoSrc = data;
-                        } else {
-                            this.currentVideoSrc = '';
-                            console.warn('No video URL returned from RPC for video ID:', videoId);
-                        }
-                    } catch (rpcError) {
-                        console.error('RPC call failed:', rpcError);
-                        this.currentVideoSrc = '';
-                        alert('An error occurred while trying to load the video.');
                     }
                 },
                 handleProfileClick() {
@@ -436,9 +410,8 @@
                 toggleModule(moduleIndex) {
                     this.courseSections[moduleIndex].expanded = !this.courseSections[moduleIndex].expanded;
                 },
-                async selectVideo(videoId) {
+                selectVideo(videoId) {
                     this.currentVideoId = videoId;
-                    await this.fetchVideoUrl(videoId);
                     if (window.innerWidth < 768) {
                         this.sidebarActive = false;
                     }
@@ -493,7 +466,7 @@
                     }
                     localStorage.setItem(`courseVideos_${this.courseSlug}`, JSON.stringify(completedVideos));
                 },
-                async loadVideoProgress() {
+                loadVideoProgress() {
                     const savedVideos = localStorage.getItem(`courseVideos_${this.courseSlug}`);
                     if (savedVideos) {
                         const completedVideos = JSON.parse(savedVideos);
@@ -511,9 +484,6 @@
                         this.currentVideoId = parseInt(lastVideoId);
                     } else if (this.courseSections.length > 0 && this.courseSections[0].videos.length > 0) {
                         this.currentVideoId = this.courseSections[0].videos[0].id;
-                    }
-                    if (this.currentVideoId && this.isEnrolled) {
-                        await this.fetchVideoUrl(this.currentVideoId);
                     }
                 },
                 updateCourseProgress() {
@@ -564,10 +534,10 @@
                 document.addEventListener('click', (event) => {
                     const sidebar = document.querySelector('.course-sidebar');
                     const sidebarToggle = document.querySelector('.sidebar-toggle');
-                    if (sidebar && sidebarToggle &&
-                        !sidebar.contains(event.target) &&
+                    if (sidebar && sidebarToggle && 
+                        !sidebar.contains(event.target) && 
                         !sidebarToggle.contains(event.target) &&
-                        this.sidebarActive &&
+                        this.sidebarActive && 
                         window.innerWidth < 768) {
                         this.sidebarActive = false;
                     }
