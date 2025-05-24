@@ -161,7 +161,7 @@
                                             <i v-else class="far fa-circle"></i>
                                         </div>
                                         <div class="video-details">
-                                            <p>Video {{ video.id }}</p>
+                                            <p>{{ video.title }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -177,7 +177,7 @@
                         </div>
                         
                         <div class="video-container" v-if="currentVideo">
-                            <h2>Video {{ currentVideo.id }}</h2>
+                            <h2>{{ currentVideo.title }}</h2>
                             <div class="video-player">
                                 <video :key="videoUrl" controls preload="metadata" @ended="markVideoCompleted" controlsList="nodownload" :src="videoUrl">
                                     Your browser does not support the video tag.
@@ -192,7 +192,7 @@
                                     Next <i class="fas fa-arrow-right"></i>
                                 </button>
                             </div>
-                             <div class="video-description" v-if="currentVideo && currentVideo.description">
+                            <div class="video-description" v-if="currentVideo && currentVideo.description">
                                 <h3>Description</h3>
                                 <p>{{ currentVideo.description }}</p>
                             </div>
@@ -351,33 +351,43 @@
                 },
                 async loadCourseVideos() {
                     this.loadingVideos = true;
-                    let videoCount = 1;
                     const videos = [];
                     try {
-                        while (videoCount <= 100) { 
-                            try {
-                                const { data, error } = await supabase.rpc('get_video_link', {
-                                    course_name_param: this.courseSlug,
-                                    video_number_param: videoCount
-                                });
-                                if (error) {
-                                    break;
-                                }
-                                if (data) {
-                                    videos.push({
-                                        id: videoCount,
-                                        fileName: data,
-                                        completed: false,
-                                        description: `Details for Video ${videoCount}. Watch to learn more.`
+                        const { data: videoMetadata, error: metadataError } = await supabase
+                            .from('videos')
+                            .select('video_number, title, description')
+                            .eq('course', this.courseSlug)
+                            .order('video_number', { ascending: true });
+
+                        if (metadataError) {
+                            throw metadataError;
+                        }
+
+                        if (videoMetadata && videoMetadata.length > 0) {
+                            for (const meta of videoMetadata) {
+                                try {
+                                    const { data: rpcData, error: rpcError } = await supabase.rpc('get_video_link', {
+                                        course_name_param: this.courseSlug,
+                                        video_number_param: meta.video_number
                                     });
-                                    videoCount++;
-                                } else {
-                                    break;
+
+                                    if (rpcError) {
+                                        continue; 
+                                    }
+                                    if (rpcData) {
+                                        videos.push({
+                                            id: meta.video_number,
+                                            fileName: rpcData,
+                                            title: meta.title || `Video ${meta.video_number}`,
+                                            description: meta.description || `Watch this video to learn more.`,
+                                            completed: false
+                                        });
+                                    }
+                                } catch (err) {
                                 }
-                            } catch (err) {
-                                break;
                             }
                         }
+                        
                         this.totalVideos = videos.length;
                         if (videos.length > 0) {
                             this.courseSections = [{
