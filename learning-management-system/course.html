@@ -62,7 +62,7 @@
                     <div class="enrollment-icon">
                         <i class="fas fa-lock"></i>
                     </div>
-                    <h2>Course Access Restricted</h2>
+                    <h2>You Are Not Enrolled</h2>
                     <p>You need to be enrolled in this course to access the content.</p>
                     <div class="course-preview">
                         <img :src="course.thumbnail" :alt="course.title">
@@ -123,7 +123,7 @@
                             </div>
                             <div v-else-if="courseSections.length === 0" class="empty-content">
                                 <i class="fas fa-video-slash"></i>
-                                <p>No content available for this course yet.</p>
+                                <p>You are not enrolled in this course.</p>
                             </div>
                             <div v-else v-for="(module, moduleIndex) in courseSections" :key="moduleIndex" class="course-module">
                                 <div class="module-header" @click="toggleModule(moduleIndex)">
@@ -213,34 +213,7 @@
                                 <li><a href="index.html">All Courses</a></li>
                                 <li><a href="resources.html">Resources</a></li>
                                 <li><a href="#">Certifications</a></li>
-                                <li><a href="#">Study Groups</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-column">
-                            <h5>Support</h5>
-                            <ul>
-                                <li><a href="#">Help Center</a></li>
                                 <li><a href="#">Contact Us</a></li>
-                                <li><a href="#">Community</a></li>
-                                <li><a href="#">Technical Support</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-column">
-                            <h5>Company</h5>
-                            <ul>
-                                <li><a href="#">About Us</a></li>
-                                <li><a href="#">Careers</a></li>
-                                <li><a href="#">Press</a></li>
-                                <li><a href="#">Partnership</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-column">
-                            <h5>Legal</h5>
-                            <ul>
-                                <li><a href="#">Privacy Policy</a></li>
-                                <li><a href="#">Terms of Service</a></li>
-                                <li><a href="#">Cookie Policy</a></li>
-                                <li><a href="#">Accessibility</a></li>
                             </ul>
                         </div>
                     </div>
@@ -249,7 +222,7 @@
                     <p>&copy; 2025 My Student Club LMS. All rights reserved.</p>
                     <div class="footer-badges">
                         <span class="badge"> Top Rated Platform</span>
-                        <span class="badge"> 4.9/5 Student Rating</span>
+                        <span class="badge"> Almost 100% Placement</span>
                     </div>
                 </div>
             </div>

@@ -18,7 +18,7 @@
 </head>
 <body>
     <div id="app">
-        
+
         <header class="glass-header">
             <div class="header-container">
                 <div class="logo-container">
@@ -58,7 +58,7 @@
         </header>
 
         <main>
-            
+
             <section class="hero-enhanced">
                 <div class="hero-background">
                     <div class="floating-elements">
@@ -73,15 +73,18 @@
                         <p class="hero-subtitle">Master the art of Chartered Accountancy with expert-led courses designed for success</p>
                         <div class="hero-stats">
                             <div class="stat-item">
-                                <div class="stat-number">{{ totalCoursesCompleted }}</div>
+                                <div class="stat-number" v-if="totalCoursesCompleted !== undefined">{{ totalCoursesCompleted }}</div>
+                                <div class="stat-number" v-else><i class="fas fa-spinner fa-spin"></i></div>
                                 <div class="stat-label">Completed</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-number">{{ totalCourses }}</div>
+                                <div class="stat-number" v-if="totalCourses !== undefined">{{ totalCourses }}</div>
+                                <div class="stat-number" v-else><i class="fas fa-spinner fa-spin"></i></div>
                                 <div class="stat-label">Courses</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-number">{{ totalHoursLearned }}h</div>
+                                <div class="stat-number" v-if="totalHoursLearned !== undefined">{{ totalHoursLearned }}h</div>
+                                <div class="stat-number" v-else><i class="fas fa-spinner fa-spin"></i></div>
                                 <div class="stat-label">Learning Time</div>
                             </div>
                         </div>
@@ -124,7 +127,6 @@
                 </div>
             </section>
 
-            
             <section class="progress-dashboard" v-if="inProgressCourses.length > 0">
                 <div class="section-container">
                     <div class="section-header-enhanced">
@@ -161,7 +163,6 @@
                 </div>
             </section>
 
-            
             <section class="courses-section-enhanced">
                 <div class="section-container">
                     <div class="section-header-enhanced">
@@ -206,12 +207,6 @@
                                 <img :src="course.thumbnail" :alt="course.title">
                                 <div class="course-overlay">
                                     <div class="course-badges">
-                                        <span v-if="course.badge" class="badge" :class="getBadgeClass(course.badge)">
-                                            {{ course.badge }}
-                                        </span>
-                                        <span class="difficulty" :class="course.difficulty">
-                                            {{ course.difficulty }}
-                                        </span>
                                     </div>
                                     <button class="play-btn">
                                         <i class="fas fa-play"></i>
@@ -237,9 +232,6 @@
                                         <img src="https://mystudentclub.com/assets/mentor_transparent.png" alt="Padam Bhansali">
                                         <span>Padam Bhansali</span>
                                     </div>
-                                    <div class="course-price">
-                                        <span class="price">{{ course.price === 0 ? 'Free' : '₹' + course.price }}</span>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -247,7 +239,6 @@
                 </div>
             </section>
 
-            
             <section class="analytics-section">
                 <div class="section-container">
                     <div class="section-header-enhanced">
@@ -302,7 +293,6 @@
             </section>
         </main>
 
-        
         <footer class="footer-enhanced">
             <div class="footer-content">
                 <div class="footer-main">
@@ -325,34 +315,7 @@
                                 <li><a href="index.html">All Courses</a></li>
                                 <li><a href="resources.html">Resources</a></li>
                                 <li><a href="#">Certifications</a></li>
-                                <li><a href="#">Study Groups</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-column">
-                            <h5>Support</h5>
-                            <ul>
-                                <li><a href="#">Help Center</a></li>
                                 <li><a href="#">Contact Us</a></li>
-                                <li><a href="#">Community</a></li>
-                                <li><a href="#">Technical Support</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-column">
-                            <h5>Company</h5>
-                            <ul>
-                                <li><a href="#">About Us</a></li>
-                                <li><a href="#">Careers</a></li>
-                                <li><a href="#">Press</a></li>
-                                <li><a href="#">Partnership</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-column">
-                            <h5>Legal</h5>
-                            <ul>
-                                <li><a href="#">Privacy Policy</a></li>
-                                <li><a href="#">Terms of Service</a></li>
-                                <li><a href="#">Cookie Policy</a></li>
-                                <li><a href="#">Accessibility</a></li>
                             </ul>
                         </div>
                     </div>
@@ -361,7 +324,7 @@
                     <p>&copy; 2025 My Student Club LMS. All rights reserved.</p>
                     <div class="footer-badges">
                         <span class="badge"> Top Rated Platform</span>
-                        <span class="badge"> 4.9/5 Student Rating</span>
+                        <span class="badge"> Almost 100% Placement</span>
                     </div>
                 </div>
             </div>
@@ -408,10 +371,7 @@
                             description: 'Master industrial training requirements for CA candidates with real-world case studies and expert guidance.',
                             category: 'ca',
                             thumbnail: 'https://mystudentclub.com/assets/industrial-course-main.png',
-                            progress: 0,
-                            badge: 'Bestseller',
-                            difficulty: 'Intermediate',
-                            price: 0
+                            progress: 0
                         },
                         {
                             id: 2,
@@ -420,10 +380,7 @@
                             description: 'Enhance your articleship journey with essential skills, best practices, and professional development.',
                             category: 'ca',
                             thumbnail: 'https://mystudentclub.com/assets/articleship-course-main.png',
-                            progress: 0,
-                            badge: 'New',
-                            difficulty: 'Beginner',
-                            price: 0
+                            progress: 0
                         },
                         {
                             id: 3,
@@ -432,10 +389,7 @@
                             description: 'Transition from student to professional with this comprehensive guide for newly qualified CAs.',
                             category: 'ca',
                             thumbnail: 'https://mystudentclub.com/assets/fresher-course-main.png',
-                            progress: 0,
-                            badge: null,
-                            difficulty: 'Beginner',
-                            price: 0
+                            progress: 0
                         },
                         {
                             id: 4,
@@ -444,10 +398,7 @@
                             description: 'Transform financial data into powerful insights using Microsoft Power BI and advanced analytics.',
                             category: 'data',
                             thumbnail: 'https://mystudentclub.com/assets/powerbi-course-main.png',
-                            progress: 0,
-                            badge: 'Popular',
-                            difficulty: 'Advanced',
-                            price: 0
+                            progress: 0
                         },
                         {
                             id: 5,
@@ -456,10 +407,7 @@
                             description: 'Build sophisticated financial models for business valuation, forecasting, and investment analysis.',
                             category: 'finance',
                             thumbnail: 'https://mystudentclub.com/assets/financialmastery-course-main.png',
-                            progress: 0,
-                            badge: 'Advanced',
-                            difficulty: 'Advanced',
-                            price: 0
+                            progress: 0
                         }
                     ]
                 }

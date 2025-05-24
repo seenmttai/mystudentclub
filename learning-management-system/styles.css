@@ -249,9 +249,9 @@ body {
     padding: var(--space-20) var(--space-4) var(--space-12);
     overflow: hidden;
     background: linear-gradient(135deg, 
-        rgba(30, 64, 175, 0.03) 0%, 
-        rgba(59, 130, 246, 0.05) 50%, 
-        rgba(147, 197, 253, 0.03) 100%);
+        rgba(30, 64, 175, 0.1) 0%, 
+        rgba(59, 130, 246, 0.15) 50%, 
+        rgba(147, 197, 253, 0.1) 100%);
 }
 
 .hero-background {
@@ -687,6 +687,7 @@ body {
     position: relative;
     aspect-ratio: 16/9;
     overflow: hidden;
+    background-color: var(--gray-100);
 }
 
 .course-image img {
