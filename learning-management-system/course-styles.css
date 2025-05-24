@@ -49,7 +49,7 @@
 
 .course-sidebar {
     width: 350px;
-    background-color: #ffffff;
+    background-color: var(--card-bg);
     border-right: 1px solid var(--border-color);
     height: calc(100vh - 200px);
     position: sticky;
@@ -215,7 +215,7 @@
 .sidebar-toggle {
     display: none;
     padding: 0.8rem 1.2rem;
-    background-color: #ffffff;
+    background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 5px;
     font-size: 1rem;
@@ -232,7 +232,7 @@
 }
 
 .video-container {
-    background-color: #ffffff;
+    background-color: var(--card-bg);
     border-radius: 10px;
     box-shadow: var(--shadow);
     overflow: hidden;
@@ -270,7 +270,7 @@
 
 .nav-button {
     padding: 0.8rem 1.5rem;
-    background-color: #ffffff;
+    background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 5px;
     font-weight: 600;
@@ -346,7 +346,7 @@
 }
 
 .no-video-selected {
-    background-color: #ffffff;
+    background-color: var(--card-bg);
     border-radius: 10px;
     box-shadow: var(--shadow);
     min-height: 400px;

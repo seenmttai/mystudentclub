@@ -126,7 +126,7 @@ body {
     left: 0;
     right: 0;
     z-index: 1000;
-    background-color: var(--surface-elevated, white);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
@@ -1137,7 +1137,7 @@ body {
         left: -100%;
         width: 100%;
         height: calc(100vh - 70px);
-        background-color: var(--surface-elevated, white);
+        background: var(--glass-bg);
         backdrop-filter: blur(20px);
         flex-direction: column;
         justify-content: flex-start;
@@ -1334,7 +1334,7 @@ header {
     left: 0;
     right: 0;
     z-index: 1000;
-    background-color: var(--surface-elevated, white);
+    background: var(--glass-bg);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
