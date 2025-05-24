@@ -192,9 +192,9 @@
                                     Next <i class="fas fa-arrow-right"></i>
                                 </button>
                             </div>
-                            <div class="video-description" v-if="currentVideo && currentVideo.description">
+                             <div class="video-description" v-if="currentVideo && currentVideo.description">
                                 <h3>Description</h3>
-                                <p>{{ currentVideo.description }}</p>
+                                <p v-html="formattedDescription"></p>
                             </div>
                         </div>
                         
@@ -324,6 +324,12 @@
                 },
                 hasNextVideo() {
                     return this.getAdjacentVideo('next') !== null;
+                },
+                formattedDescription() {
+                    if (this.currentVideo && this.currentVideo.description) {
+                        return this.currentVideo.description.replace(/\n/g, '<br>');
+                    }
+                    return '';
                 }
             },
             methods: {
