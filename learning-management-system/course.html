@@ -460,17 +460,29 @@
                     }
                 },
                 markVideoCompleted() {
-                    for (const section of this.courseSections) {
-                        for (const video of section.videos) {
-                            if (video.id === this.currentVideoId) {
-                                video.completed = true;
-                                this.saveVideoProgress();
-                                this.updateCourseProgress();
-                                this.updateLearningStreak();
-                                break;
+                    const videoToMark = this.findVideoById(this.currentVideoId);
+                    if (videoToMark && !videoToMark.completed) {
+                        const sectionIndex = this.courseSections.findIndex(s => s.videos.some(v => v.id === this.currentVideoId));
+                        if (sectionIndex !== -1) {
+                            const videoIndex = this.courseSections[sectionIndex].videos.findIndex(v => v.id === this.currentVideoId);
+                            if (videoIndex !== -1) {
+                                this.courseSections[sectionIndex].videos[videoIndex] = { 
+                                    ...this.courseSections[sectionIndex].videos[videoIndex], 
+                                    completed: true 
+                                };
                             }
                         }
+                        this.saveVideoProgress();
+                        this.updateCourseProgress();
+                        this.updateLearningStreak();
                     }
+                },
+                findVideoById(videoId) {
+                    for (const section of this.courseSections) {
+                        const foundVideo = section.videos.find(v => v.id === videoId);
+                        if (foundVideo) return foundVideo;
+                    }
+                    return null;
                 },
                 saveVideoProgress() {
                     const completedVideos = {};
@@ -488,12 +500,12 @@
                         for (const section of this.courseSections) {
                             for (const video of section.videos) {
                                 if (completedVideos[video.id] !== undefined) {
-                                    video.completed = completedVideos[video.id];
+                                     video.completed = completedVideos[video.id];
                                 }
                             }
                         }
-                        this.updateCourseProgress();
                     }
+                    this.updateCourseProgress(); 
                     const lastVideoId = localStorage.getItem(`lastVideoId_${this.courseSlug}`);
                     if (lastVideoId) {
                         this.currentVideoId = parseInt(lastVideoId);
