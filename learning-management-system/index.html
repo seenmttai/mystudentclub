@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Student Club LMS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+        }
+    }
+    </script>
+</head>
+<body>
+    <div id="app">
+        
+        <header class="glass-header">
+            <div class="header-container">
+                <div class="logo-container">
+                    <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo">
+                </div>
+                <nav>
+                    <div class="hamburger-menu" @click="toggleMenu">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                    <ul class="nav-links" :class="{ 'active': menuActive }">
+                        <li><a href="index.html" class="active nav-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Courses</span>
+                        </a></li>
+                        <li><a href="resources.html" class="nav-item">
+                            <i class="fas fa-book-open"></i>
+                            <span>Resources</span>
+                        </a></li>
+                        <li><a href="cv-submission.html" class="nav-item">
+                            <i class="fas fa-file-alt"></i>
+                            <span>CV Review</span>
+                        </a></li>
+                        <li class="profile-link">
+                            <a href="#" class="nav-item profile-nav" @click="handleProfileClick">
+                                <div class="profile-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <span v-if="user">{{ user.email.split('@')[0] }}</span>
+                                <span v-else>Login</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            
+            <section class="hero-enhanced">
+                <div class="hero-background">
+                    <div class="floating-elements">
+                        <div class="float-element" v-for="n in 6" :key="n" :style="getFloatingStyle(n)"></div>
+                    </div>
+                </div>
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="hero-title">
+                            Elevate Your <span class="gradient-text">Professional Journey</span>
+                        </h1>
+                        <p class="hero-subtitle">Master the art of Chartered Accountancy with expert-led courses designed for success</p>
+                        <div class="hero-stats">
+                            <div class="stat-item">
+                                <div class="stat-number">{{ totalCoursesCompleted }}</div>
+                                <div class="stat-label">Completed</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">{{ totalCourses }}</div>
+                                <div class="stat-label">Courses</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">{{ totalHoursLearned }}h</div>
+                                <div class="stat-label">Learning Time</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="search-enhanced">
+                        <div class="search-wrapper">
+                            <i class="fas fa-search search-icon"></i>
+                            <input 
+                                type="text" 
+                                placeholder="Search for courses, topics, or skills..." 
+                                v-model="searchQuery"
+                                @input="handleSearch"
+                                class="search-input"
+                            >
+                            <div class="search-suggestions" v-if="searchSuggestions.length > 0 && searchQuery">
+                                <div 
+                                    v-for="suggestion in searchSuggestions" 
+                                    :key="suggestion.id"
+                                    class="suggestion-item"
+                                    @click="selectSuggestion(suggestion)"
+                                >
+                                    <i :class="suggestion.icon"></i>
+                                    <span>{{ suggestion.text }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="quick-filters">
+                            <button 
+                                v-for="filter in quickFilters" 
+                                :key="filter.id"
+                                class="filter-chip"
+                                :class="{ 'active': currentFilter === filter.id }"
+                                @click="setFilter(filter.id)"
+                            >
+                                <i :class="filter.icon"></i>
+                                {{ filter.name }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            
+            <section class="progress-dashboard" v-if="inProgressCourses.length > 0">
+                <div class="section-container">
+                    <div class="section-header-enhanced">
+                        <h2>Continue Learning</h2>
+                        <p>Pick up where you left off</p>
+                    </div>
+                    <div class="progress-grid">
+                        <div 
+                            v-for="course in inProgressCourses" 
+                            :key="course.id"
+                            class="progress-card-enhanced"
+                            @click="goToCourse(course.slug)"
+                        >
+                            <div class="course-thumbnail-small">
+                                <img :src="course.thumbnail" :alt="course.title">
+                                <div class="play-overlay">
+                                    <i class="fas fa-play"></i>
+                                </div>
+                            </div>
+                            <div class="progress-info">
+                                <h4>{{ course.title }}</h4>
+                                <div class="progress-visual">
+                                    <div class="progress-track">
+                                        <div class="progress-fill" :style="{ width: course.progress + '%' }"></div>
+                                    </div>
+                                    <span class="progress-text">{{ course.progress }}%</span>
+                                </div>
+                                <div class="course-meta-small">
+                                    <span><i class="fas fa-clock"></i> {{ getTimeRemaining(course) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            
+            <section class="courses-section-enhanced">
+                <div class="section-container">
+                    <div class="section-header-enhanced">
+                        <h2>Professional Courses</h2>
+                        <p>Comprehensive learning paths designed by industry experts</p>
+                        <div class="view-controls">
+                            <div class="sort-dropdown">
+                                <select v-model="sortBy" @change="sortCoursesVue">
+                                    <option value="recommended">Recommended</option>
+                                    <option value="newest">Newest First</option>
+                                    <option value="popular">Most Popular</option>
+                                    <option value="progress">By Progress</option>
+                                </select>
+                            </div>
+                            <div class="view-toggle">
+                                <button 
+                                    class="view-btn" 
+                                    :class="{ 'active': viewMode === 'grid' }"
+                                    @click="viewMode = 'grid'"
+                                >
+                                    <i class="fas fa-th-large"></i>
+                                </button>
+                                <button 
+                                    class="view-btn" 
+                                    :class="{ 'active': viewMode === 'list' }"
+                                    @click="viewMode = 'list'"
+                                >
+                                    <i class="fas fa-list"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="courses-container" :class="'view-' + viewMode">
+                        <div 
+                            v-for="course in sortedAndFilteredCourses" 
+                            :key="course.id"
+                            class="course-card-enhanced"
+                            @click="goToCourse(course.slug)"
+                        >
+                            <div class="course-image">
+                                <img :src="course.thumbnail" :alt="course.title">
+                                <div class="course-overlay">
+                                    <div class="course-badges">
+                                        <span v-if="course.badge" class="badge" :class="getBadgeClass(course.badge)">
+                                            {{ course.badge }}
+                                        </span>
+                                        <span class="difficulty" :class="course.difficulty">
+                                            {{ course.difficulty }}
+                                        </span>
+                                    </div>
+                                    <button class="play-btn">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="course-content">
+                                <div class="course-header">
+                                    <h3>{{ course.title }}</h3>
+                                </div>
+                                <p class="course-description">{{ course.description }}</p>
+                                <div class="course-progress-container">
+                                    <div class="progress-info-row">
+                                        <span class="progress-label">Progress</span>
+                                        <span class="progress-percentage">{{ course.progress || 0 }}%</span>
+                                    </div>
+                                    <div class="progress-bar-enhanced">
+                                        <div class="progress-fill" :style="{ width: (course.progress || 0) + '%' }"></div>
+                                    </div>
+                                </div>
+                                <div class="course-footer">
+                                    <div class="instructor">
+                                        <img src="https://mystudentclub.com/assets/mentor_transparent.png" alt="Padam Bhansali">
+                                        <span>Padam Bhansali</span>
+                                    </div>
+                                    <div class="course-price">
+                                        <span class="price">{{ course.price === 0 ? 'Free' : '₹' + course.price }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            
+            <section class="analytics-section">
+                <div class="section-container">
+                    <div class="section-header-enhanced">
+                        <h2>Your Learning Analytics</h2>
+                        <p>Track your progress and achievements</p>
+                    </div>
+                    <div class="analytics-grid">
+                        <div class="analytics-card">
+                            <div class="analytics-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="analytics-content">
+                                <h4>Learning Streak</h4>
+                                <div class="analytics-value">{{ learningStreak }} days</div>
+                                <p>{{ getStreakMessage() }}</p>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-icon">
+                                <i class="fas fa-trophy"></i>
+                            </div>
+                            <div class="analytics-content">
+                                <h4>Videos Completed</h4>
+                                <div class="analytics-value">{{ totalVideosCompleted }}</div>
+                                <p>{{ getNextMilestone() }}</p>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="analytics-content">
+                                <h4>Time Invested</h4>
+                                <div class="analytics-value">{{ totalHoursLearned }}h</div>
+                                <p>This week: {{ weeklyTime }}h</p>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="analytics-content">
+                                <h4>Skill Level</h4>
+                                <div class="analytics-value">{{ skillLevel }}</div>
+                                <div class="skill-progress">
+                                    <div class="skill-bar" :style="{ width: skillProgress + '%' }"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        
+        <footer class="footer-enhanced">
+            <div class="footer-content">
+                <div class="footer-main">
+                    <div class="footer-brand">
+                        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo">
+                        <h4>My Student Club</h4>
+                        <p>Empowering the next generation of Chartered Accountants with world-class education and resources.</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-facebook"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#"><i class="fab fa-instagram"></i></a>
+                            <a href="#"><i class="fab fa-youtube"></i></a>
+                        </div>
+                    </div>
+                    <div class="footer-links">
+                        <div class="footer-column">
+                            <h5>Learning</h5>
+                            <ul>
+                                <li><a href="index.html">All Courses</a></li>
+                                <li><a href="resources.html">Resources</a></li>
+                                <li><a href="#">Certifications</a></li>
+                                <li><a href="#">Study Groups</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-column">
+                            <h5>Support</h5>
+                            <ul>
+                                <li><a href="#">Help Center</a></li>
+                                <li><a href="#">Contact Us</a></li>
+                                <li><a href="#">Community</a></li>
+                                <li><a href="#">Technical Support</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-column">
+                            <h5>Company</h5>
+                            <ul>
+                                <li><a href="#">About Us</a></li>
+                                <li><a href="#">Careers</a></li>
+                                <li><a href="#">Press</a></li>
+                                <li><a href="#">Partnership</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-column">
+                            <h5>Legal</h5>
+                            <ul>
+                                <li><a href="#">Privacy Policy</a></li>
+                                <li><a href="#">Terms of Service</a></li>
+                                <li><a href="#">Cookie Policy</a></li>
+                                <li><a href="#">Accessibility</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2025 My Student Club LMS. All rights reserved.</p>
+                    <div class="footer-badges">
+                        <span class="badge"> Top Rated Platform</span>
+                        <span class="badge"> 4.9/5 Student Rating</span>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { createApp } from 'vue';
+
+        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        createApp({
+            data() {
+                return {
+                    menuActive: false,
+                    searchQuery: '',
+                    currentFilter: 'all',
+                    sortBy: 'recommended',
+                    viewMode: 'grid',
+                    user: null,
+                    totalCoursesCompleted: 0,
+                    totalCourses: 5,
+                    totalHoursLearned: 0,
+                    weeklyTime: 0,
+                    learningStreak: 0,
+                    totalVideosCompleted: 0,
+                    skillLevel: 'Beginner',
+                    skillProgress: 0,
+                    searchSuggestions: [],
+                    quickFilters: [
+                        { id: 'all', name: 'All Courses', icon: 'fas fa-graduation-cap' },
+                        { id: 'ca', name: 'CA Prep', icon: 'fas fa-calculator' },
+                        { id: 'finance', name: 'Finance', icon: 'fas fa-chart-line' },
+                        { id: 'data', name: 'Data Analysis', icon: 'fas fa-database' },
+                        { id: 'audit', name: 'Audit', icon: 'fas fa-search' }
+                    ],
+                    courses: [
+                        {
+                            id: 1,
+                            slug: 'industrial-training-mastery',
+                            title: 'Industrial Training Mastery Program',
+                            description: 'Master industrial training requirements for CA candidates with real-world case studies and expert guidance.',
+                            category: 'ca',
+                            thumbnail: 'https://mystudentclub.com/assets/industrial-course-main.png',
+                            progress: 0,
+                            badge: 'Bestseller',
+                            difficulty: 'Intermediate',
+                            price: 0
+                        },
+                        {
+                            id: 2,
+                            slug: 'articleship-excellence',
+                            title: 'Articleship Excellence Program',
+                            description: 'Enhance your articleship journey with essential skills, best practices, and professional development.',
+                            category: 'ca',
+                            thumbnail: 'https://mystudentclub.com/assets/articleship-course-main.png',
+                            progress: 0,
+                            badge: 'New',
+                            difficulty: 'Beginner',
+                            price: 0
+                        },
+                        {
+                            id: 3,
+                            slug: 'ca-fresher-launchpad',
+                            title: 'CA Fresher Launchpad',
+                            description: 'Transition from student to professional with this comprehensive guide for newly qualified CAs.',
+                            category: 'ca',
+                            thumbnail: 'https://mystudentclub.com/assets/fresher-course-main.png',
+                            progress: 0,
+                            badge: null,
+                            difficulty: 'Beginner',
+                            price: 0
+                        },
+                        {
+                            id: 4,
+                            slug: 'power-bi-data-wizard',
+                            title: 'Power BI Data Wizard Course',
+                            description: 'Transform financial data into powerful insights using Microsoft Power BI and advanced analytics.',
+                            category: 'data',
+                            thumbnail: 'https://mystudentclub.com/assets/powerbi-course-main.png',
+                            progress: 0,
+                            badge: 'Popular',
+                            difficulty: 'Advanced',
+                            price: 0
+                        },
+                        {
+                            id: 5,
+                            slug: 'financial-modelling-pro',
+                            title: 'Financial Modeling Pro Certification',
+                            description: 'Build sophisticated financial models for business valuation, forecasting, and investment analysis.',
+                            category: 'finance',
+                            thumbnail: 'https://mystudentclub.com/assets/financialmastery-course-main.png',
+                            progress: 0,
+                            badge: 'Advanced',
+                            difficulty: 'Advanced',
+                            price: 0
+                        }
+                    ]
+                }
+            },
+            computed: {
+                filteredCourses() {
+                    return this.courses.filter(course => {
+                        const matchesSearch = course.title.toLowerCase().includes(this.searchQuery.toLowerCase()) || 
+                                            course.description.toLowerCase().includes(this.searchQuery.toLowerCase());
+                        const matchesFilter = this.currentFilter === 'all' || course.category === this.currentFilter;
+                        return matchesSearch && matchesFilter;
+                    });
+                },
+                sortedAndFilteredCourses() {
+                    const coursesToSort = [...this.filteredCourses]; 
+                    switch (this.sortBy) {
+                        case 'newest':
+                            return coursesToSort.sort((a, b) => b.id - a.id); 
+                        case 'popular':
+                            return coursesToSort.sort((a, b) => (b.progress || 0) - (a.progress || 0));
+                        case 'progress':
+                            return coursesToSort.sort((a, b) => (b.progress || 0) - (a.progress || 0));
+                        default: 
+                            return coursesToSort;
+                    }
+                },
+                inProgressCourses() {
+                    return this.courses.filter(course => (course.progress || 0) > 0 && (course.progress || 0) < 100)
+                                      .sort((a, b) => b.progress - a.progress)
+                                      .slice(0, 3);
+                }
+            },
+            methods: {
+                async checkAuth() {
+                    const { data: { session }, error } = await supabase.auth.getSession();
+                    if (session && session.user) {
+                        this.user = session.user;
+                    } else {
+                        this.user = null;
+                    }
+                },
+                handleProfileClick() {
+                    if (!this.user) {
+                        window.location.href = 'https://www.mystudentclub.com/login';
+                    }
+                },
+                toggleMenu() {
+                    this.menuActive = !this.menuActive;
+                },
+                goToCourse(courseSlug) {
+                    if (!this.user) {
+                        window.location.href = 'https://www.mystudentclub.com/login';
+                        return;
+                    }
+                    window.location.href = `course.html?course=${courseSlug}`;
+                },
+                setFilter(filterId) {
+                    this.currentFilter = filterId;
+                    this.searchQuery = ''; 
+                },
+                handleSearch() {
+                    if (this.searchQuery.length > 0) {
+                        this.generateSearchSuggestions();
+                    } else {
+                        this.searchSuggestions = [];
+                    }
+                },
+                generateSearchSuggestions() {
+                    const suggestions = [];
+                    const query = this.searchQuery.toLowerCase();
+
+                    this.courses.forEach(course => {
+                        if (course.title.toLowerCase().includes(query)) {
+                            suggestions.push({
+                                id: `course-${course.id}`,
+                                text: course.title,
+                                icon: 'fas fa-play-circle',
+                                type: 'course',
+                                data: course
+                            });
+                        }
+                    });
+
+                    const topics = ['audit', 'taxation', 'financial reporting', 'excel', 'power bi'];
+                    topics.forEach(topic => {
+                        if (topic.includes(query)) {
+                            suggestions.push({
+                                id: `topic-${topic}`,
+                                text: `Learn ${topic}`,
+                                icon: 'fas fa-book',
+                                type: 'topic'
+                            });
+                        }
+                    });
+
+                    this.searchSuggestions = suggestions.slice(0, 5);
+                },
+                selectSuggestion(suggestion) {
+                    if (suggestion.type === 'course') {
+                        this.goToCourse(suggestion.data.slug);
+                    } else {
+                        this.searchQuery = suggestion.text.replace('Learn ', ''); 
+                        this.currentFilter = 'all'; 
+                        this.searchSuggestions = [];
+                    }
+                    this.searchSuggestions = []; 
+                },
+                sortCoursesVue() {
+
+                },
+                getBadgeClass(badge) {
+                    const badgeClasses = {
+                        'Bestseller': 'badge-bestseller',
+                        'New': 'badge-new',
+                        'Popular': 'badge-popular',
+                        'Advanced': 'badge-advanced'
+                    };
+                    return badgeClasses[badge] || 'badge-default';
+                },
+                getTimeRemaining(course) {
+                    if ((course.progress || 0) === 100) return 'Completed';
+                    return 'Continue learning';
+                },
+                getStreakMessage() {
+                    if (this.learningStreak === 0) return 'Start your learning streak today!';
+                    if (this.learningStreak < 7) return 'Keep it up! ';
+                    return 'Amazing streak! ';
+                },
+                getNextMilestone() {
+                    const milestones = [10, 25, 50, 100, 200];
+                    const nextMilestone = milestones.find(m => m > this.totalVideosCompleted);
+                    if (nextMilestone) {
+                        return `${nextMilestone - this.totalVideosCompleted} videos to next milestone`;
+                    }
+                    return 'Milestone master! ';
+                },
+                getFloatingStyle(index) {
+                    const positions = [
+                        { top: '10%', left: '10%', animationDelay: '0s' },
+                        { top: '20%', right: '15%', animationDelay: '2s' },
+                        { top: '50%', left: '5%', animationDelay: '4s' },
+                        { bottom: '30%', right: '10%', animationDelay: '1s' },
+                        { bottom: '20%', left: '20%', animationDelay: '3s' },
+                        { top: '40%', right: '25%', animationDelay: '5s' }
+                    ];
+                    return positions[index - 1];
+                },
+                loadProgressData() {
+
+                    this.courses.forEach(course => {
+                        const courseData = localStorage.getItem(`courseVideos_${course.slug}`);
+                        if (courseData) {
+                            const videos = JSON.parse(courseData);
+                            const totalVideos = Object.keys(videos).length;
+                            const completedVideos = Object.values(videos).filter(v => v).length;
+                            course.progress = totalVideos > 0 ? Math.round((completedVideos / totalVideos) * 100) : 0;
+                        }
+                    });
+
+                    this.calculateAnalytics();
+                },
+                calculateAnalytics() {
+                    let totalCompleted = 0;
+                    let totalTime = 0;
+                    let coursesCompleted = 0;
+
+                    this.courses.forEach(course => {
+                        const courseData = localStorage.getItem(`courseVideos_${course.slug}`);
+                        if (courseData) {
+                            const videos = JSON.parse(courseData);
+                            const completed = Object.values(videos).filter(v => v).length;
+                            totalCompleted += completed;
+
+                            if (course.progress === 100) {
+                                coursesCompleted++;
+                            }
+                        }
+                    });
+
+                    this.totalVideosCompleted = totalCompleted;
+                    this.totalCoursesCompleted = coursesCompleted;
+                    this.totalHoursLearned = Math.round(totalCompleted * 0.5); 
+
+                    if (totalCompleted < 10) {
+                        this.skillLevel = 'Beginner';
+                        this.skillProgress = (totalCompleted / 10) * 100;
+                    } else if (totalCompleted < 50) {
+                        this.skillLevel = 'Intermediate';
+                        this.skillProgress = ((totalCompleted - 10) / 40) * 100;
+                    } else {
+                        this.skillLevel = 'Advanced';
+                        this.skillProgress = Math.min(100, ((totalCompleted - 50) / 50) * 100);
+                    }
+
+                    const lastActivity = localStorage.getItem('lastLearningActivity');
+                    const today = new Date().toDateString();
+                    if (lastActivity === today) {
+                        this.learningStreak = parseInt(localStorage.getItem('learningStreak') || '1');
+                    } else {
+                        this.learningStreak = 0;
+                    }
+
+                    this.weeklyTime = Math.min(this.totalHoursLearned, Math.round(this.totalHoursLearned * 0.3));
+                }
+            },
+            async mounted() {
+                await this.checkAuth();
+                this.loadProgressData();
+
+                supabase.auth.onAuthStateChange((_event, session) => {
+                    if (session && session.user) {
+                        this.user = session.user;
+                    } else {
+                        this.user = null;
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    const searchEnhanced = e.target.closest('.search-enhanced');
+                    if (!searchEnhanced) {
+                        this.searchSuggestions = [];
+                    }
+                });
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

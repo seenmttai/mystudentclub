@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CV Review | My Student Club LMS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script type="importmap">
+    {
+        "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+        }
+    }
+    </script>
+    <style>
+
+        .cv-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: var(--space-8) var(--space-6); 
+        }
+
+        .cv-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .cv-header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-700);
+            margin-bottom: 1rem;
+        }
+
+        .cv-header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            opacity: 0.8;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .cv-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .cv-illustration {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cv-illustration svg { 
+            max-width: 100%;
+            height: auto;
+            display: block; 
+        }
+
+        .cv-form {
+            background-color: var(--surface-elevated);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+        }
+
+        .form-title {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            color: var(--text-primary);
+            background-color: var(--background);
+            transition: var(--transition-base);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary-500);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .form-control.textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .file-upload {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-md);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .file-upload:hover {
+            border-color: var(--secondary-500);
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        .file-upload input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            color: var(--secondary-500);
+            margin-bottom: 1rem;
+        }
+
+        .upload-text h4 {
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .upload-text p {
+            color: var(--text-secondary);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        .file-info {
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .file-info i {
+            color: var(--success-500);
+        }
+
+        .submit-btn {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--secondary-500);
+            color: white;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background-color: var(--secondary-600);
+        }
+        .submit-btn:disabled {
+            background-color: var(--gray-300);
+            cursor: not-allowed;
+        }
+
+        .features-list {
+            margin-top: 3rem;
+        }
+
+        .features-list h3 {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-item {
+            background-color: var(--surface-elevated);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            text-align: center;
+            transition: var(--transition-base);
+            border: 1px solid var(--border);
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--secondary-500);
+            margin-bottom: 1rem;
+        }
+
+        .feature-item h4 {
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .feature-item p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .success-message {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: var(--success-500);
+            margin-bottom: 1.5rem;
+        }
+
+        .success-message h3 {
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+        }
+
+        .success-message p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .timer {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            background-color: var(--primary-600);
+            color: white;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .timer i {
+            margin-right: 0.5rem;
+        }
+
+        @media (max-width: 992px) {
+            .cv-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .cv-illustration {
+                order: -1; 
+                margin-bottom: 2rem;
+            }
+            .cv-container {
+                padding-top: calc(var(--space-8) + 70px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cv-header h1 {
+                font-size: 2rem;
+            }
+
+            .cv-form {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .cv-container {
+                padding: 1rem;
+                padding-top: calc(var(--space-4) + 70px);
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+        main { 
+            padding-top: 80px; 
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header class="glass-header">
+            <div class="header-container">
+                <div class="logo-container">
+                    <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo">
+                </div>
+                <nav>
+                    <div class="hamburger-menu" @click="toggleMenu">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                    <ul class="nav-links" :class="{ 'active': menuActive }">
+                        <li><a href="index.html" class="nav-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Courses</span>
+                        </a></li>
+                        <li><a href="resources.html" class="nav-item">
+                            <i class="fas fa-book-open"></i>
+                            <span>Resources</span>
+                        </a></li>
+                        <li><a href="cv-submission.html" class="active nav-item">
+                            <i class="fas fa-file-alt"></i>
+                            <span>CV Review</span>
+                        </a></li>
+                        <li class="profile-link">
+                            <a href="#" class="nav-item profile-nav">
+                                <div class="profile-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <span>Profile</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <div class="cv-container">
+                <div class="cv-header">
+                    <h1>Professional CV Review Service</h1>
+                    <p>Submit your resume for expert feedback from industry professionals specializing in accounting and finance recruitment.</p>
+                </div>
+
+                <div class="cv-content">
+                    <div class="cv-illustration">
+                        <svg width="400" height="400" viewBox="0 0 600 500" xmlns="http://www.w3.org/2000/svg">
+
+                            <rect x="100" y="50" width="300" height="400" fill="#ffffff" stroke="#3498db" stroke-width="3" rx="10" />
+
+                            <rect x="100" y="50" width="300" height="60" fill="#3498db" rx="10 10 0 0" />
+                            <circle cx="150" cy="80" r="20" fill="#ffffff" />
+                            <rect x="180" y="70" width="150" height="10" fill="#ffffff" rx="5" />
+                            <rect x="180" y="90" width="100" height="8" fill="#ffffff" rx="4" />
+
+                            <rect x="130" y="130" width="240" height="10" fill="#e1e4e8" rx="5" />
+                            <rect x="130" y="150" width="200" height="10" fill="#e1e4e8" rx="5" />
+                            <rect x="130" y="170" width="220" height="10" fill="#e1e4e8" rx="5" />
+                            <rect x="130" y="190" width="180" height="10" fill="#e1e4e8" rx="5" />
+
+                            <rect x="130" y="220" width="100" height="15" fill="#3498db" rx="5" />
+
+                            <rect x="130" y="250" width="240" height="10" fill="#e1e4e8" rx="5" />
+                            <rect x="130" y="270" width="200" height="10" fill="#e1e4e8" rx="5" />
+                            <rect x="130" y="290" width="220" height="10" fill="#e1e4e8" rx="5" />
+
+                            <rect x="130" y="320" width="100" height="15" fill="#3498db" rx="5" />
+
+                            <rect x="130" y="350" width="240" height="10" fill="#e1e4e8" rx="5" />
+                            <rect x="130" y="370" width="200" height="10" fill="#e1e4e8" rx="5" />
+                            <rect x="130" y="390" width="180" height="10" fill="#e1e4e8" rx="5" />
+
+                            <circle cx="450" cy="200" r="70" fill="none" stroke="#2c3e50" stroke-width="10" opacity="0.3" />
+                            <line x1="500" y1="250" x2="550" y2="300" stroke="#2c3e50" stroke-width="12" stroke-linecap="round" />
+
+                            <circle cx="500" cy="100" r="30" fill="#f1c40f" />
+                            <path d="M485 100 L495 110 L515 90" stroke="#ffffff" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+
+                            <circle cx="450" cy="350" r="30" fill="#f1c40f" />
+                            <path d="M435 350 L445 360 L465 340" stroke="#ffffff" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+
+                            <g>
+                                <circle cx="380" cy="150" r="5" fill="#3498db">
+                                    <animate attributeName="cy" values="150;130;150" dur="2s" repeatCount="indefinite" />
+                                    <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite" />
+                                </circle>
+                                <circle cx="400" cy="150" r="5" fill="#3498db">
+                                    <animate attributeName="cy" values="150;130;150" dur="2s" begin="0.3s" repeatCount="indefinite" />
+                                    <animate attributeName="opacity" values="1;0.5;1" dur="2s" begin="0.3s" repeatCount="indefinite" />
+                                </circle>
+                                <circle cx="420" cy="150" r="5" fill="#3498db">
+                                    <animate attributeName="cy" values="150;130;150" dur="2s" begin="0.6s" repeatCount="indefinite" />
+                                    <animate attributeName="opacity" values="1;0.5;1" dur="2s" begin="0.6s" repeatCount="indefinite" />
+                                </circle>
+                            </g>
+                        </svg>
+                    </div>
+
+                    <div v-if="!submitted">
+                        <div class="cv-form">
+                            <h2 class="form-title">Submit Your CV for Review</h2>
+
+                            <div class="form-group">
+                                <label for="name">Full Name</label>
+                                <input type="text" class="form-control" id="name" v-model="form.name" placeholder="Enter your full name">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" class="form-control" id="email" v-model="form.email" placeholder="Enter your email address">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" v-model="form.phone" placeholder="Enter your phone number">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="experience">Years of Experience</label>
+                                <select class="form-control" id="experience" v-model="form.experience">
+                                    <option value="">Select your experience level</option>
+                                    <option value="Student">Student/Fresher</option>
+                                    <option value="0-2">0-2 years</option>
+                                    <option value="3-5">3-5 years</option>
+                                    <option value="5-10">5-10 years</option>
+                                    <option value="10+">10+ years</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="job-target">Target Job Position</label>
+                                <input type="text" class="form-control" id="job-target" v-model="form.jobTarget" placeholder="E.g., Audit Associate, Tax Consultant, etc.">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Upload CV (PDF or DOCX)</label>
+                                <div class="file-upload" :class="{ 'active': form.file }">
+                                    <input type="file" accept=".pdf,.docx,.doc" @change="handleFileUpload">
+                                    <div class="upload-content">
+                                        <div class="upload-icon">
+                                            <i v-if="!form.file" class="fas fa-cloud-upload-alt"></i>
+                                            <i v-else class="fas fa-file-alt"></i>
+                                        </div>
+                                        <div class="upload-text">
+                                            <h4 v-if="!form.file">Drag & Drop your CV</h4>
+                                            <p v-if="!form.file">or click to browse (Max 5MB)</p>
+                                            <div class="file-info" v-if="form.file">
+                                                <i class="fas fa-check-circle"></i>
+                                                <span>{{ form.fileName }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="notes">Additional Notes (Optional)</label>
+                                <textarea class="form-control textarea" id="notes" v-model="form.notes" placeholder="Any specific areas you would like feedback on?"></textarea>
+                            </div>
+
+                            <button class="submit-btn" @click="submitForm" :disabled="!isFormValid">
+                                <span v-if="loading"><i class="fas fa-spinner fa-spin"></i> Submitting...</span>
+                                <span v-else>Submit CV for Review</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div v-else class="cv-form">
+                        <div class="success-message">
+                            <div class="success-icon">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <h3>CV Submitted Successfully!</h3>
+                            <p>Thank you for submitting your CV for review. Our experts will analyze your resume and provide personalized feedback to help you stand out in the competitive accounting job market.</p>
+                            <div class="timer">
+                                <i class="fas fa-clock"></i> Expected response time: 48-72 hours
+                            </div>
+                            <button class="submit-btn" style="margin-top: 1.5rem" @click="resetForm">
+                                Submit Another CV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="features-list">
+                    <h3>Why Choose Our CV Review Service?</h3>
+                    <div class="features">
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <h4>Industry Experts</h4>
+                            <p>Get feedback from professionals who understand the accounting and finance recruitment landscape.</p>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <h4>Personalized Feedback</h4>
+                            <p>Receive tailored suggestions specific to your career goals and experience level.</p>
+                        </div>
+
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <h4>Career Advancement</h4>
+                            <p>Learn how to position yourself effectively for your next career move in the CA profession.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo">
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Explore</h4>
+                        <ul>
+                            <li><a href="index.html">Courses</a></li>
+                            <li><a href="resources.html">Resources</a></li>
+                            <li><a href="cv-submission.html">CV Review</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Support</h4>
+                        <ul>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Help Center</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="#">Terms of Service</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-social">
+                    <h4>Connect With Us</h4>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 My Student Club LMS. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { createApp } from 'vue';
+
+        createApp({
+            data() {
+                return {
+                    menuActive: false,
+                    submitted: false,
+                    loading: false,
+                    form: {
+                        name: '',
+                        email: '',
+                        phone: '',
+                        experience: '',
+                        jobTarget: '',
+                        file: null,
+                        fileName: '',
+                        notes: ''
+                    }
+                }
+            },
+            computed: {
+                isFormValid() {
+                    return this.form.name && 
+                           this.form.email && 
+                           this.form.phone && 
+                           this.form.experience && 
+                           this.form.jobTarget && 
+                           this.form.file;
+                }
+            },
+            methods: {
+                toggleMenu() {
+                    this.menuActive = !this.menuActive;
+                },
+                handleFileUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+
+                        if (file.size > 5 * 1024 * 1024) {
+                            alert('File size exceeds 5MB limit. Please choose a smaller file.');
+                            event.target.value = '';
+                            return;
+                        }
+
+                        const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                        if (!validTypes.includes(file.type)) {
+                            alert('Invalid file type. Please upload PDF or Word document.');
+                            event.target.value = '';
+                            return;
+                        }
+
+                        this.form.file = file;
+                        this.form.fileName = file.name;
+                    }
+                },
+                submitForm() {
+                    if (!this.isFormValid) return;
+
+                    this.loading = true;
+
+                    setTimeout(() => {
+                        this.loading = false;
+                        this.submitted = true;
+
+                        console.log('Form submitted:', {
+                            ...this.form,
+                            file: this.form.fileName 
+                        });
+                    }, 1500);
+                },
+                resetForm() {
+                    this.submitted = false;
+                    this.form = {
+                        name: '',
+                        email: '',
+                        phone: '',
+                        experience: '',
+                        jobTarget: '',
+                        file: null,
+                        fileName: '',
+                        notes: ''
+                    };
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

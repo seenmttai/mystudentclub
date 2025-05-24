@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Player | My Student Club LMS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="course-styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script type="importmap">
+    {
+        "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+        }
+    }
+    </script>
+    <style>
+        .video-fullpage {
+            height: calc(100vh - 80px);
+            display: flex;
+        }
+        
+        .video-sidebar {
+            width: 350px;
+            height: 100%;
+            overflow-y: auto;
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+        
+        .video-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .video-player-large {
+            flex: 1;
+            background-color: #000;
+            position: relative;
+            min-height: 300px;
+        }
+        
+        .video-player-large video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .course-selector {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .course-selector select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .playlist-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .playlist-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+        
+        .video-info-panel {
+            padding: 1.5rem;
+            background-color: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .video-info-panel h2 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+        
+        .video-info-panel .meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+            opacity: 0.8;
+            font-size: 0.9rem;
+        }
+        
+        .video-description {
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 992px) {
+            .video-fullpage {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .video-sidebar {
+                width: 100%;
+                height: 300px;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .video-player-large {
+                height: 50vh;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .video-sidebar {
+                position: fixed;
+                bottom: -100%;
+                left: 0;
+                width: 100%;
+                height: 80vh;
+                z-index: 1000;
+                box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+                transition: bottom 0.3s ease;
+            }
+            
+            .video-sidebar.active {
+                bottom: 0;
+            }
+            
+            .playlist-toggle {
+                display: block;
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                background-color: var(--secondary-color);
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+                z-index: 999;
+            }
+            
+            .playlist-header {
+                position: sticky;
+                top: 0;
+                background-color: var(--card-bg);
+                z-index: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header>
+            <div class="logo-container">
+                <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo">
+            </div>
+            <nav>
+                <div class="hamburger-menu" @click="toggleMenu">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+                <ul class="nav-links" :class="{ 'active': menuActive }">
+                    <li><a href="index.html">Courses</a></li>
+                    <li><a href="resources.html">Resources</a></li>
+                    <li><a href="cv-submission.html">CV Review</a></li>
+                    <li class="profile-link">
+                        <a href="#"><i class="fas fa-user-circle"></i> My Profile</a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        <div class="video-fullpage">
+            <aside class="video-sidebar" :class="{ 'active': sidebarActive }">
+                <div class="course-selector">
+                    <select v-model="selectedCourseId" @change="changeCourse">
+                        <option v-for="course in courses" :key="course.id" :value="course.id">{{ course.title }}</option>
+                    </select>
+                </div>
+                <div class="playlist-header">
+                    <span>Course Content</span>
+                    <button @click="toggleSidebar" class="close-sidebar">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="course-modules">
+                    <div v-for="(module, moduleIndex) in courseSections" :key="moduleIndex" class="course-module">
+                        <div class="module-header" @click="toggleModule(moduleIndex)">
+                            <h4>{{ module.title }}</h4>
+                            <div class="module-info">
+                                <span>{{ module.videos.length }} Videos</span>
+                                <i :class="['fas', module.expanded ? 'fa-chevron-up' : 'fa-chevron-down']"></i>
+                            </div>
+                        </div>
+                        <div class="module-content" :class="{ 'expanded': module.expanded }">
+                            <div v-for="(video, videoIndex) in module.videos" :key="videoIndex" 
+                                class="video-item" 
+                                :class="{ 'active': currentVideoId === video.id, 'completed': video.completed }"
+                                @click="selectVideo(video.id)">
+                                <div class="video-status">
+                                    <i v-if="video.completed" class="fas fa-check-circle"></i>
+                                    <i v-else-if="currentVideoId === video.id" class="fas fa-play-circle"></i>
+                                    <i v-else class="far fa-circle"></i>
+                                </div>
+                                <div class="video-details">
+                                    <p>{{ video.title }}</p>
+                                    <span>{{ video.duration }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <div class="video-main">
+                <div class="video-player-large">
+                    <video controls preload="metadata" @ended="markVideoCompleted" controlsList="nodownload">
+                        <source :src="videoUrl" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                
+                <div class="video-info-panel">
+                    <h2>{{ currentVideo ? currentVideo.title : 'Select a video' }}</h2>
+                    <div class="meta" v-if="currentVideo">
+                        <span><i class="fas fa-clock"></i> {{ currentVideo.duration }}</span>
+                        <span v-if="currentVideo.completed"><i class="fas fa-check-circle"></i> Completed</span>
+                    </div>
+                    <div class="video-description" v-if="currentVideo">
+                        {{ currentVideo.description }}
+                    </div>
+                </div>
+                
+                <button class="playlist-toggle" @click="toggleSidebar">
+                    <i :class="['fas', sidebarActive ? 'fa-times' : 'fa-list']"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { createApp } from 'vue';
+        
+        createApp({
+            data() {
+                return {
+                    menuActive: false,
+                    sidebarActive: window.innerWidth >= 768,
+                    courseId: null,
+                    selectedCourseId: 1,
+                    videoId: null,
+                    currentVideoId: null,
+                    courses: [
+                        {
+                            id: 'industrial-training-mastery',
+                            title: 'Industrial Training Mastery Program',
+                            description: 'Master industrial training requirements for CA candidates with real-world case studies.',
+                            thumbnail: 'https://mystudentclub.com/assets/industrial-course-main.png'
+                        },
+                        {
+                            id: 'articleship-excellence',
+                            title: 'Articleship Excellence Program',
+                            description: 'Enhance your articleship journey with essential skills and best practices.',
+                            thumbnail: 'https://mystudentclub.com/assets/articleship-course-main.png'
+                        },
+                        {
+                            id: 'ca-fresher-launchpad',
+                            title: 'CA Fresher Launchpad',
+                            description: 'Transition from student to professional with this comprehensive guide for new CAs.',
+                            thumbnail: 'https://mystudentclub.com/assets/fresher-course-main.png'
+                        },
+                        {
+                            id: 'power-bi-data-wizard',
+                            title: 'Power BI Data Wizard Course',
+                            description: 'Transform financial data into powerful insights using Power BI.',
+                            thumbnail: 'https://mystudentclub.com/assets/powerbi-course-main.png'
+                        },
+                        {
+                            id: 'financial-modelling-pro',
+                            title: 'Financial Modeling Pro Certification',
+                            description: 'Build sophisticated financial models for business valuation and forecasting.',
+                            thumbnail: 'https://mystudentclub.com/assets/financialmastery-course-main.png'
+                        }
+                    ],
+                    courseSections: []
+                }
+            },
+            computed: {
+                currentVideo() {
+                    if (!this.currentVideoId) return null;
+                    
+                    for (const section of this.courseSections) {
+                        for (const video of section.videos) {
+                            if (video.id === this.currentVideoId) {
+                                return video;
+                            }
+                        }
+                    }
+                    
+                    return null;
+                },
+                videoUrl() {
+                    if (!this.currentVideo) return '';
+                    return `https://advertisement.bhansalimanan55.workers.dev/stream/Screen%20Recording%202025-02-04%20233839.mp4?secret=YOUR_SECRET_VALUE`;
+                }
+            },
+            methods: {
+                toggleMenu() {
+                    this.menuActive = !this.menuActive;
+                },
+                toggleSidebar() {
+                    this.sidebarActive = !this.sidebarActive;
+                },
+                toggleModule(moduleIndex) {
+                    this.courseSections[moduleIndex].expanded = !this.courseSections[moduleIndex].expanded;
+                },
+                selectVideo(videoId) {
+                    this.currentVideoId = videoId;
+                    
+                    const url = new URL(window.location);
+                    url.searchParams.set('video', videoId);
+                    window.history.pushState({}, '', url);
+                    
+                    if (window.innerWidth < 768) {
+                        this.sidebarActive = false;
+                    }
+                    
+                    localStorage.setItem(`lastVideoId_${this.selectedCourseId}`, videoId);
+                },
+                changeCourse() {
+                    this.generateCourseSections();
+                    
+                    const url = new URL(window.location);
+                    url.searchParams.set('course', this.selectedCourseId);
+                    if (this.currentVideoId) {
+                        url.searchParams.set('video', this.currentVideoId);
+                    } else {
+                        url.searchParams.delete('video');
+                    }
+                    window.history.pushState({}, '', url);
+                },
+                markVideoCompleted() {
+                    for (const section of this.courseSections) {
+                        for (const video of section.videos) {
+                            if (video.id === this.currentVideoId) {
+                                video.completed = true;
+                                
+                                this.saveVideoProgress();
+                                break;
+                            }
+                        }
+                    }
+                },
+                saveVideoProgress() {
+                    const completedVideos = {};
+                    let totalVideos = 0;
+                    let completedCount = 0;
+                    
+                    for (const section of this.courseSections) {
+                        for (const video of section.videos) {
+                            completedVideos[video.id] = video.completed;
+                            totalVideos++;
+                            if (video.completed) completedCount++;
+                        }
+                    }
+                    
+                    localStorage.setItem(`courseVideos_${this.selectedCourseId}`, JSON.stringify(completedVideos));
+                    
+                    const progressPercentage = Math.round((completedCount / totalVideos) * 100);
+                    
+                    let progressData = {};
+                    const savedProgress = localStorage.getItem('courseProgress');
+                    if (savedProgress) {
+                        progressData = JSON.parse(savedProgress);
+                    }
+                    
+                    progressData[this.selectedCourseId] = progressPercentage;
+                    
+                    localStorage.setItem('courseProgress', JSON.stringify(progressData));
+                },
+                loadVideoProgress() {
+                    const savedVideos = localStorage.getItem(`courseVideos_${this.selectedCourseId}`);
+                    if (savedVideos) {
+                        const completedVideos = JSON.parse(savedVideos);
+                        
+                        for (const section of this.courseSections) {
+                            for (const video of section.videos) {
+                                if (completedVideos[video.id] !== undefined) {
+                                    video.completed = completedVideos[video.id];
+                                }
+                            }
+                        }
+                    }
+                },
+                generateCourseSections() {
+                    const sectionsData = [];
+                    
+                    if (this.selectedCourseId === 'industrial-training-mastery') {
+                        sectionsData.push(
+                            {
+                                title: "Introduction to Industrial Training",
+                                expanded: true,
+                                videos: [
+                                    { id: 101, title: "Overview of Industrial Training Requirements", duration: "12:30", completed: false, description: "An introduction to the mandatory industrial training requirements for Chartered Accountancy students." },
+                                    { id: 102, title: "Training Objectives and Learning Outcomes", duration: "15:45", completed: false, description: "Understand the key objectives and expected learning outcomes from your industrial training period." },
+                                    { id: 103, title: "Selecting the Right Organization", duration: "18:20", completed: false, description: "Tips and criteria for selecting the ideal organization for your industrial training." }
+                                ]
+                            },
+                            {
+                                title: "Practical Skills Development",
+                                expanded: false,
+                                videos: [
+                                    { id: 104, title: "Financial Reporting in Practice", duration: "22:15", completed: false, description: "Practical approaches to financial reporting in industrial environments." },
+                                    { id: 105, title: "Audit Procedures and Documentation", duration: "25:40", completed: false, description: "Essential audit procedures and proper documentation techniques used in industry." },
+                                    { id: 106, title: "Taxation Compliance in Industrial Setting", duration: "20:30", completed: false, description: "How to manage taxation compliance requirements in various industrial contexts." },
+                                    { id: 107, title: "ERP Systems and Financial Controls", duration: "28:15", completed: false, description: "Working with enterprise resource planning systems and implementing financial controls." }
+                                ]
+                            },
+                            {
+                                title: "Professional Development",
+                                expanded: false,
+                                videos: [
+                                    { id: 108, title: "Communication Skills for Accountants", duration: "16:45", completed: false, description: "Developing effective communication skills specific to accounting professionals." },
+                                    { id: 109, title: "Team Collaboration in Finance Departments", duration: "19:20", completed: false, description: "Strategies for successful collaboration within finance teams and cross-functional departments." },
+                                    { id: 110, title: "Ethics and Professional Conduct", duration: "23:10", completed: false, description: "Understanding and applying ethical principles in industrial accounting contexts." }
+                                ]
+                            }
+                        );
+                    } else if (this.selectedCourseId === 'articleship-excellence') {
+                        sectionsData.push(
+                            {
+                                title: "Articleship Foundations",
+                                expanded: true,
+                                videos: [
+                                    { id: 201, title: "Understanding the Articleship Framework", duration: "14:30", completed: false, description: "An overview of the articleship structure and requirements." },
+                                    { id: 202, title: "Rights and Responsibilities as an Article", duration: "16:15", completed: false, description: "Understanding your legal rights and professional responsibilities during articleship." },
+                                    { id: 203, title: "Building Relationships with Principals", duration: "19:45", completed: false, description: "How to establish and maintain productive relationships with your principals and seniors." }
+                                ]
+                            },
+                            {
+                                title: "Technical Skills Mastery",
+                                expanded: false,
+                                videos: [
+                                    { id: 204, title: "Effective Audit Documentation", duration: "21:20", completed: false, description: "Best practices for creating clear, comprehensive audit documentation." },
+                                    { id: 205, title: "Advanced Excel for Accounting Professionals", duration: "32:15", completed: false, description: "Essential Excel techniques for financial analysis and reporting." },
+                                    { id: 206, title: "Tax Return Preparation", duration: "28:40", completed: false, description: "Step-by-step guidance on preparing various tax returns accurately." },
+                                    { id: 207, title: "Financial Statement Analysis", duration: "25:10", completed: false, description: "Techniques for analyzing and interpreting financial statements." }
+                                ]
+                            },
+                            {
+                                title: "Career Advancement",
+                                expanded: false,
+                                videos: [
+                                    { id: 208, title: "From Articleship to Employment", duration: "18:30", completed: false, description: "Transitioning successfully from articleship to full-time employment." },
+                                    { id: 209, title: "Building Your Professional Network", duration: "15:45", completed: false, description: "Networking strategies specific to accounting professionals." },
+                                    { id: 210, title: "Preparing for Post-Qualification Specializations", duration: "22:30", completed: false, description: "Exploring specialization options after obtaining your CA qualification." }
+                                ]
+                            }
+                        );
+                    } else {
+                        sectionsData.push(
+                            {
+                                title: "Getting Started",
+                                expanded: true,
+                                videos: [
+                                    { id: 301, title: "Course Introduction", duration: "10:15", completed: false, description: "An overview of the course objectives and structure." },
+                                    { id: 302, title: "Setting Up Your Environment", duration: "15:30", completed: false, description: "Preparing your workspace and tools for the course." },
+                                    { id: 303, title: "Key Concepts Overview", duration: "18:45", completed: false, description: "Introduction to the fundamental concepts covered in this course." }
+                                ]
+                            },
+                            {
+                                title: "Core Concepts",
+                                expanded: false,
+                                videos: [
+                                    { id: 304, title: "Fundamental Principles", duration: "22:10", completed: false, description: "Exploring the core principles underlying the subject area." },
+                                    { id: 305, title: "Practical Applications", duration: "25:30", completed: false, description: "How to apply theoretical knowledge in real-world scenarios." },
+                                    { id: 306, title: "Analysis Techniques", duration: "20:45", completed: false, description: "Methods for analyzing and interpreting relevant data and information." },
+                                    { id: 307, title: "Problem-Solving Approaches", duration: "28:20", completed: false, description: "Strategies for addressing complex challenges in the field." }
+                                ]
+                            },
+                            {
+                                title: "Advanced Topics",
+                                expanded: false,
+                                videos: [
+                                    { id: 308, title: "Specialized Techniques", duration: "24:15", completed: false, description: "Advanced methods and approaches for specialized situations." },
+                                    { id: 309, title: "Industry Best Practices", duration: "19:50", completed: false, description: "Current best practices followed by industry leaders." },
+                                    { id: 310, title: "Future Trends and Developments", duration: "21:25", completed: false, description: "Emerging trends and future developments in the field." }
+                                ]
+                            }
+                        );
+                    }
+                    
+                    this.courseSections = sectionsData;
+                    
+                    this.loadVideoProgress();
+                    
+                    if (this.videoId) {
+                        this.currentVideoId = parseInt(this.videoId);
+                    } else {
+                        const lastVideoId = localStorage.getItem(`lastVideoId_${this.selectedCourseId}`);
+                        if (lastVideoId) {
+                            this.currentVideoId = parseInt(lastVideoId);
+                        } else if (this.courseSections.length > 0 && this.courseSections[0].videos.length > 0) {
+                            this.currentVideoId = this.courseSections[0].videos[0].id;
+                        }
+                    }
+                },
+                initFromUrl() {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const courseParam = urlParams.get('course');
+                    const videoParam = urlParams.get('video');
+                    
+                    if (courseParam) {
+                        this.selectedCourseId = courseParam;
+                    }
+                    
+                    if (videoParam) {
+                        this.videoId = parseInt(videoParam);
+                    }
+                    
+                    this.generateCourseSections();
+                }
+            },
+            mounted() {
+                this.initFromUrl();
+                
+                window.addEventListener('popstate', () => {
+                    this.initFromUrl();
+                });
+                
+                window.addEventListener('resize', () => {
+                    if (window.innerWidth >= 768) {
+                        this.sidebarActive = true;
+                    } else {
+                        this.sidebarActive = false;
+                    }
+                });
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
