@@ -179,8 +179,7 @@
                         <div class="video-container" v-if="currentVideo">
                             <h2>Video {{ currentVideo.id }}</h2>
                             <div class="video-player">
-                                <video controls preload="metadata" @ended="markVideoCompleted" controlsList="nodownload">
-                                    <source :src="videoUrl" type="video/mp4">
+                                <video :key="videoUrl" controls preload="metadata" @ended="markVideoCompleted" controlsList="nodownload" :src="videoUrl">
                                     Your browser does not support the video tag.
                                 </video>
                             </div>
@@ -193,7 +192,7 @@
                                     Next <i class="fas fa-arrow-right"></i>
                                 </button>
                             </div>
-                            <div class="video-description" v-if="currentVideo && currentVideo.description">
+                             <div class="video-description" v-if="currentVideo && currentVideo.description">
                                 <h3>Description</h3>
                                 <p>{{ currentVideo.description }}</p>
                             </div>
@@ -318,7 +317,7 @@
                 },
                 videoUrl() {
                     if (!this.currentVideo || !this.isEnrolled || !this.currentVideo.fileName) return '';
-                    return `https://advertisement.bhansalimanan55.workers.dev/stream/${this.currentVideo.fileName}`;
+                    return `https://advertisement.bhansalimanan55.workers.dev/stream/${encodeURIComponent(this.currentVideo.fileName)}`;
                 },
                 hasPreviousVideo() {
                     return this.getAdjacentVideo('previous') !== null;
