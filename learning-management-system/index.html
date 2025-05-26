@@ -18,11 +18,10 @@
 </head>
 <body>
     <div id="app">
-
         <header class="glass-header">
             <div class="header-container">
                 <div class="logo-container">
-                    <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo">
+                    <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo-enhanced">
                 </div>
                 <nav>
                     <div class="hamburger-menu" @click="toggleMenu">
@@ -166,8 +165,8 @@
             <section class="courses-section-enhanced">
                 <div class="section-container">
                     <div class="section-header-enhanced">
-                        <h2>Professional Courses</h2>
-                        <p>Comprehensive learning paths designed by industry experts</p>
+                        <h2>Professional Course</h2>
+                        <p>Comprehensive learning path designed by industry experts</p>
                         <div class="view-controls">
                             <div class="sort-dropdown">
                                 <select v-model="sortBy" @change="sortCoursesVue">
@@ -197,37 +196,36 @@
                     </div>
 
                     <div class="courses-container" :class="'view-' + viewMode">
-                        <div 
-                            v-for="course in sortedAndFilteredCourses" 
-                            :key="course.id"
-                            class="course-card-enhanced"
-                            @click="goToCourse(course.slug)"
-                        >
-                            <div class="course-image">
-                                <img :src="course.thumbnail" :alt="course.title">
-                                <div class="course-overlay">
-                                    <div class="course-badges">
+                        <div class="course-card-enhanced-premium" @click="goToCourse('industrial-training-mastery')">
+                            <div class="course-image-premium">
+                                <img src="https://mystudentclub.com/assets/industrial-course-main.png" alt="Industrial Training Mastery Program">
+                                <div class="course-overlay-premium">
+                                    <div class="premium-badge">
+                                        <i class="fas fa-crown"></i>
+                                        Premium Course
                                     </div>
-                                    <button class="play-btn">
-                                        <i class="fas fa-play"></i>
+                                    <button class="play-btn-premium">
+                                        <div class="play-icon">
+                                            <i class="fas fa-play"></i>
+                                        </div>
                                     </button>
                                 </div>
                             </div>
-                            <div class="course-content">
-                                <div class="course-header">
-                                    <h3>{{ course.title }}</h3>
+                            <div class="course-content-premium">
+                                <div class="course-header-premium">
+                                    <h3>Industrial Training Mastery Program</h3>
                                 </div>
-                                <p class="course-description">{{ course.description }}</p>
-                                <div class="course-progress-container">
+                                <p class="course-description">Master industrial training requirements for CA candidates with real-world case studies and expert guidance.</p>
+                                <div class="course-progress-container-premium">
                                     <div class="progress-info-row">
                                         <span class="progress-label">Progress</span>
-                                        <span class="progress-percentage">{{ course.progress || 0 }}%</span>
+                                        <span class="progress-percentage">{{ getIndustrialCourseProgress() }}%</span>
                                     </div>
-                                    <div class="progress-bar-enhanced">
-                                        <div class="progress-fill" :style="{ width: (course.progress || 0) + '%' }"></div>
+                                    <div class="progress-bar-premium">
+                                        <div class="progress-fill-animated" :style="{ width: getIndustrialCourseProgress() + '%' }"></div>
                                     </div>
                                 </div>
-                                <div class="course-footer">
+                                <div class="course-footer-premium">
                                     <div class="instructor">
                                         <img src="https://mystudentclub.com/assets/mentor_transparent.png" alt="Padam Bhansali">
                                         <span>Padam Bhansali</span>
@@ -371,42 +369,6 @@
                             description: 'Master industrial training requirements for CA candidates with real-world case studies and expert guidance.',
                             category: 'ca',
                             thumbnail: 'https://mystudentclub.com/assets/industrial-course-main.png',
-                            progress: 0
-                        },
-                        {
-                            id: 2,
-                            slug: 'articleship-excellence',
-                            title: 'Articleship Excellence Program',
-                            description: 'Enhance your articleship journey with essential skills, best practices, and professional development.',
-                            category: 'ca',
-                            thumbnail: 'https://mystudentclub.com/assets/articleship-course-main.png',
-                            progress: 0
-                        },
-                        {
-                            id: 3,
-                            slug: 'ca-fresher-launchpad',
-                            title: 'CA Fresher Launchpad',
-                            description: 'Transition from student to professional with this comprehensive guide for newly qualified CAs.',
-                            category: 'ca',
-                            thumbnail: 'https://mystudentclub.com/assets/fresher-course-main.png',
-                            progress: 0
-                        },
-                        {
-                            id: 4,
-                            slug: 'power-bi-data-wizard',
-                            title: 'Power BI Data Wizard Course',
-                            description: 'Transform financial data into powerful insights using Microsoft Power BI and advanced analytics.',
-                            category: 'data',
-                            thumbnail: 'https://mystudentclub.com/assets/powerbi-course-main.png',
-                            progress: 0
-                        },
-                        {
-                            id: 5,
-                            slug: 'financial-modelling-pro',
-                            title: 'Financial Modeling Pro Certification',
-                            description: 'Build sophisticated financial models for business valuation, forecasting, and investment analysis.',
-                            category: 'finance',
-                            thumbnail: 'https://mystudentclub.com/assets/financialmastery-course-main.png',
                             progress: 0
                         }
                     ]
@@ -554,6 +516,16 @@
                         { top: '40%', right: '25%', animationDelay: '5s' }
                     ];
                     return positions[index - 1];
+                },
+                getIndustrialCourseProgress() {
+                    const courseData = localStorage.getItem('courseVideos_industrial-training-mastery');
+                    if (courseData) {
+                        const videos = JSON.parse(courseData);
+                        const totalVideos = Object.keys(videos).length;
+                        const completedVideos = Object.values(videos).filter(v => v).length;
+                        return totalVideos > 0 ? Math.round((completedVideos / totalVideos) * 100) : 0;
+                    }
+                    return 0;
                 },
                 loadProgressData() {
 

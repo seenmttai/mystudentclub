@@ -176,23 +176,41 @@
                             </button>
                         </div>
                         
-                        <div class="video-container" v-if="currentVideo">
+                        <div class="video-container-premium" v-if="currentVideo">
                             <h2>{{ currentVideo.title }}</h2>
-                            <div class="video-player">
-                                <video :key="videoUrl" controls preload="metadata" @ended="markVideoCompleted" controlsList="nodownload" :src="videoUrl">
+                            <div class="video-player-premium">
+                                <video 
+                                    :key="videoUrl" 
+                                    controls 
+                                    preload="metadata" 
+                                    @ended="markVideoCompleted" 
+                                    controlsList="nodownload" 
+                                    :src="videoUrl"
+                                    class="custom-video-player"
+                                >
                                     Your browser does not support the video tag.
                                 </video>
+                                <div class="video-overlay-controls">
+                                    <div class="video-title-overlay">{{ currentVideo.title }}</div>
+                                </div>
                             </div>
                             
-                            <div class="video-navigation">
-                                <button class="nav-button prev" @click="playPreviousVideo" :disabled="!hasPreviousVideo">
-                                    <i class="fas fa-arrow-left"></i> Previous
+                            <div class="video-navigation-premium">
+                                <button class="nav-button-premium prev" @click="playPreviousVideo" :disabled="!hasPreviousVideo">
+                                    <i class="fas fa-arrow-left"></i> 
+                                    <span>Previous</span>
                                 </button>
-                                <button class="nav-button next" @click="playNextVideo" :disabled="!hasNextVideo">
-                                    Next <i class="fas fa-arrow-right"></i>
+                                <div class="video-progress-center">
+                                    <div class="video-counter">
+                                        Video {{ getCurrentVideoIndex() }} of {{ getTotalVideos() }}
+                                    </div>
+                                </div>
+                                <button class="nav-button-premium next" @click="playNextVideo" :disabled="!hasNextVideo">
+                                    <span>Next</span>
+                                    <i class="fas fa-arrow-right"></i>
                                 </button>
                             </div>
-                             <div class="video-description" v-if="currentVideo && currentVideo.description">
+                             <div class="video-description-premium" v-if="currentVideo && currentVideo.description">
                                 <h3>Description</h3>
                                 <p v-html="formattedDescription"></p>
                             </div>
@@ -238,7 +256,7 @@
                     </div>
                 </div>
                 <div class="footer-bottom">
-                    <p>© 2025 My Student Club LMS. All rights reserved.</p>
+                    <p> 2025 My Student Club LMS. All rights reserved.</p>
                     <div class="footer-badges">
                         <span class="badge"> Top Rated Platform</span>
                         <span class="badge"> Almost 100% Placement</span>
@@ -279,26 +297,6 @@
                             title: 'Industrial Training Mastery Program',
                             description: 'Master industrial training requirements for CA candidates with real-world case studies.',
                             thumbnail: 'https://mystudentclub.com/assets/industrial-course-main.png'
-                        },
-                        'articleship-excellence': {
-                            title: 'Articleship Excellence Program',
-                            description: 'Enhance your articleship journey with essential skills and best practices.',
-                            thumbnail: 'https://mystudentclub.com/assets/articleship-course-main.png'
-                        },
-                        'ca-fresher-launchpad': {
-                            title: 'CA Fresher Launchpad',
-                            description: 'Transition from student to professional with this comprehensive guide for new CAs.',
-                            thumbnail: 'https://mystudentclub.com/assets/fresher-course-main.png'
-                        },
-                        'power-bi-data-wizard': {
-                            title: 'Power BI Data Wizard Course',
-                            description: 'Transform financial data into powerful insights using Power BI.',
-                            thumbnail: 'https://mystudentclub.com/assets/powerbi-course-main.png'
-                        },
-                        'financial-modelling-pro': {
-                            title: 'Financial Modeling Pro Certification',
-                            description: 'Build sophisticated financial models for business valuation and forecasting.',
-                            thumbnail: 'https://mystudentclub.com/assets/financialmastery-course-main.png'
                         }
                     }
                 }
@@ -542,6 +540,21 @@
                         return;
                     }
                     this.course = { ...this.courses[this.courseSlug], progress: 0 };
+                },
+                getCurrentVideoIndex() {
+                    if (!this.currentVideoId) return 0;
+                    const allVideos = [];
+                    for (const section of this.courseSections) {
+                        allVideos.push(...section.videos);
+                    }
+                    return allVideos.findIndex(video => video.id === this.currentVideoId) + 1;
+                },
+                getTotalVideos() {
+                    let total = 0;
+                    for (const section of this.courseSections) {
+                        total += section.videos.length;
+                    }
+                    return total;
                 }
             },
             async mounted() {
