@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CA Industrial Training Resources - My Student Club</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .link-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            background-color: #fafafa;
+        }
+        
+        .link-title {
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .pdf-embed {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 15px;
+        }
+        
+        .regular-link {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #4285f4;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+            font-size: 14px;
+        }
+        
+        .regular-link:hover {
+            background-color: #3367d6;
+        }
+        
+        .link-type-indicator {
+            color: #d73502;
+            font-weight: bold;
+            margin-left: 8px;
+            font-size: 0.9em;
+        }
+        
+        .error-message {
+            color: #d32f2f;
+            background-color: #ffcdd2;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CA Industrial Training Resources</h1>
+        
+        <div id="links-container">
+        </div>
+    </div>
+
+    <script>
+        const initialLinks = [
+            {
+                title: "ICAI Guidelines for Industrial Training (PDF)",
+                url: "https://drive.google.com/file/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/view" 
+            },
+            {
+                title: "Sample Industrial Training Report Format (Google Doc)",
+                url: "https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit"
+            },
+            {
+                title: "List of Companies for Industrial Training (Google Sheet)",
+                url: "https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit"
+            },
+            {
+                title: "Presentation on Industrial Training Benefits (PDF)",
+                url: "https://www.example.com/sample-presentation.pdf"
+            },
+            {
+                title: "ICAI Official Page for Industrial Training",
+                url: "https://www.icai.org/students/industrial-training/"
+            },
+            {
+                title: "Another Sample PDF from Google Drive",
+                url: "https://drive.google.com/file/d/1_gqfWU0StjHhBStLpxGk79qdcR9G9g7B/view"
+            }
+        ];
+
+        function isPDFLink(url) {
+            const lowerUrl = url.toLowerCase();
+            if (lowerUrl.includes('drive.google.com/file/d/')) {
+                 return !isGoogleDocLink(url) && !isGoogleSheetLink(url) && !isGoogleSlidesLink(url);
+            }
+            if (lowerUrl.endsWith('.pdf')) return true;
+            if (lowerUrl.includes('docs.google.com') && (lowerUrl.includes('/export?format=pdf') || lowerUrl.includes('/export/pdf'))) return true;
+            return false;
+        }
+
+        function isGoogleDocLink(url) {
+            return url.toLowerCase().includes('docs.google.com/document/d/');
+        }
+
+        function isGoogleSheetLink(url) {
+            return url.toLowerCase().includes('docs.google.com/spreadsheets/d/');
+        }
+
+        function isGoogleSlidesLink(url) {
+            return url.toLowerCase().includes('docs.google.com/presentation/d/');
+        }
+        
+        function getEmbedUrl(url) {
+            const driveFilePattern = /drive\.google\.com\/file\/d\/([a-zA-Z0-9-_]+)/;
+            const match = url.match(driveFilePattern);
+            
+            if (match) {
+                const fileId = match[1];
+                return `https://drive.google.com/file/d/${fileId}/preview`;
+            }
+            return url;
+        }
+
+        function renderLink(linkData, index) {
+            const linkSection = document.createElement('div');
+            linkSection.className = 'link-section';
+            linkSection.id = `link-${index}`;
+            
+            const titleDiv = document.createElement('div');
+            titleDiv.className = 'link-title';
+            titleDiv.textContent = linkData.title;
+            
+            linkSection.appendChild(titleDiv);
+            
+            let linkTypeIndicatorText = '';
+            let isEmbeddablePDF = false;
+
+            if (isGoogleDocLink(linkData.url)) {
+                linkTypeIndicatorText = '[Google Doc]';
+            } else if (isGoogleSheetLink(linkData.url)) {
+                linkTypeIndicatorText = '[Google Sheet]';
+            } else if (isGoogleSlidesLink(linkData.url)) {
+                linkTypeIndicatorText = '[Google Slides]';
+            } else if (isPDFLink(linkData.url)) {
+                linkTypeIndicatorText = '[PDF]';
+                isEmbeddablePDF = true;
+            } else if (linkData.url.includes('drive.google.com/')) {
+                linkTypeIndicatorText = '[Google Drive File]';
+            } else {
+                linkTypeIndicatorText = '[Resource]';
+            }
+
+            const indicatorSpan = document.createElement('span');
+            indicatorSpan.className = 'link-type-indicator';
+            indicatorSpan.textContent = linkTypeIndicatorText;
+            titleDiv.appendChild(indicatorSpan);
+            
+            try {
+                if (isEmbeddablePDF) {
+                    const iframe = document.createElement('iframe');
+                    iframe.className = 'pdf-embed';
+                    iframe.src = getEmbedUrl(linkData.url);
+                    iframe.frameBorder = '0';
+                    iframe.allow = 'autoplay';
+                    linkSection.appendChild(iframe);
+                    
+                    const directLink = document.createElement('a');
+                    directLink.href = linkData.url;
+                    directLink.target = '_blank';
+                    directLink.rel = 'noopener noreferrer';
+                    directLink.className = 'regular-link';
+                    directLink.textContent = 'Open PDF in New Tab';
+                    directLink.style.marginTop = '15px'; 
+                    linkSection.appendChild(directLink);
+                } else {
+                    const link = document.createElement('a');
+                    link.href = linkData.url;
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                    link.className = 'regular-link';
+                    link.textContent = 'Open Link';
+                    linkSection.appendChild(link);
+                }
+            } catch (error) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.textContent = 'Error loading this link. Please check the URL.';
+                linkSection.appendChild(errorDiv);
+            }
+            
+            return linkSection;
+        }
+
+        function renderAllLinks() {
+            const container = document.getElementById('links-container');
+            container.innerHTML = '';
+            
+            initialLinks.forEach((linkData, index) => {
+                const linkElement = renderLink(linkData, index);
+                container.appendChild(linkElement);
+            });
+            
+            if (initialLinks.length === 0) {
+                const emptyMessage = document.createElement('div');
+                emptyMessage.style.textAlign = 'center';
+                emptyMessage.style.color = '#666';
+                emptyMessage.style.padding = '40px';
+                emptyMessage.textContent = 'No resources added yet.';
+                container.appendChild(emptyMessage);
+            }
+        }
+
+        renderAllLinks();
+    </script>
+</body>
+</html>
