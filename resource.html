@@ -6,7 +6,7 @@
     <title>Secure PDF Viewer - My Student Club</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -458,7 +458,7 @@
     </a>
 
     <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js';
 
         const PDF_OBFUSCATION_KEY = "StClb";
         const PDF_OBFUSCATION_OFFSET = 13;
@@ -523,13 +523,20 @@
             pdfNextPageButton.disabled = true;
 
             try {
-                const loadingTask = pdfjsLib.getDocument(pdfUrl);
+
+                const response = await fetch(pdfUrl);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch PDF: ${response.status} ${response.statusText}`);
+                }
+                const pdfData = await response.arrayBuffer();
+
+                const loadingTask = pdfjsLib.getDocument({ data: pdfData });
                 currentPdfDoc = await loadingTask.promise;
                 renderPage(currentPageNum);
             } catch (error) {
                 console.error("Error loading PDF:", error);
                 pdfPageInfo.textContent = 'Error loading PDF.';
-                loadingIndicator.textContent = 'Could not load PDF.';
+                loadingIndicator.innerHTML = `<div class="loading-spinner"></div>Could not load PDF. <br><small>${error.message || 'Please try again.'}</small>`; 
                 pdfCanvas.style.display = 'none';
             }
         }
