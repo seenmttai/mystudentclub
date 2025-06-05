@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Reader</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="pdf-viewer-container">
+        <div id="viewer-controls">
+            <button id="prev-page" title="Previous Page">◄</button>
+            <span class="page-info">Page: <span id="page-num">0</span> / <span id="page-count">0</span></span>
+            <button id="next-page" title="Next Page">►</button>
+        </div>
+
+        <div id="canvas-container">
+            <canvas id="pdf-render"></canvas>
+            <div id="loading-spinner" class="spinner" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
+    <script>
+
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js';
+    </script>
+    <script type="module" src="script.js"></script>
+</body>
+</html>

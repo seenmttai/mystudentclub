@@ -1,0 +1,131 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    margin: 0;
+    padding: 20px;
+    background-color: #f0f2f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #333;
+}
+
+#pdf-viewer-container {
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 800px; 
+    text-align: center;
+    
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+h1 {
+    color: #1a73e8;
+    margin-bottom: 20px;
+    font-size: 2em;
+}
+
+#pdf-upload {
+    margin-bottom: 25px;
+    padding: 12px 18px;
+    border: 2px dashed #007bff;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+    display: block;
+    width: calc(100% - 36px); 
+    box-sizing: border-box;
+}
+
+#pdf-upload:hover {
+    background-color: #e9ecef;
+    border-color: #0056b3;
+}
+
+#viewer-controls {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f9fa;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+#viewer-controls button {
+    padding: 10px 18px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+}
+
+#viewer-controls button:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+#viewer-controls button:disabled {
+    background-color: #ced4da;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.page-info {
+    font-size: 1.1em;
+    color: #495057;
+    font-weight: 500;
+}
+
+#canvas-container {
+    border: 1px solid #dee2e6;
+    overflow: auto; 
+    background-color: #e9ecef;
+    display: flex;
+    justify-content: center; 
+    align-items: flex-start;      
+    min-height: 300px; 
+    position: relative; 
+    border-radius: 8px;
+    width: 100%; 
+    box-sizing: border-box;
+    padding: 10px;               
+}
+
+#canvas-container canvas {
+    pointer-events: none;
+}
+
+#pdf-render {
+    display: block; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    max-width: 100%;  
+    height: auto;     
+}
+
+.spinner {
+    border: 5px solid #f3f3f3; 
+    border-top: 5px solid #007bff; 
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    position: absolute; 
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
