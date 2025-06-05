@@ -6,7 +6,7 @@
     <title>Secure PDF Viewer - My Student Club</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.12/pdfobject.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js"></script>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -214,21 +214,57 @@
         }
         .pdf-viewer-close-button:hover { color: #1e293b; }
 
-        .pdf-embed-container {
+        .pdf-canvas-container {
             flex-grow: 1;
-            overflow: hidden; 
+            overflow: auto;
+            text-align: center;
             background-color: #e9ebee; 
             border: 1px solid #dde1e6; 
             border-radius: 8px;
             margin-bottom: 1rem;
-            position: relative; 
+            position: relative;
             user-select: none; 
             -webkit-user-select: none;
             -ms-user-select: none; 
         }
-        #pdf-embed-target { 
-            width: 100%;
-            height: 100%;
+        #pdf-canvas {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+        .pdf-viewer-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        .pdf-nav-button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #4f46e5;
+            background-color: white;
+            color: #4f46e5;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        .pdf-nav-button:hover:not(:disabled) {
+            background-color: #4f46e5;
+            color: white;
+        }
+        .pdf-nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        #pdf-page-info {
+            font-size: 0.9rem;
+            color: #334155;
         }
 
         .footer-nav {
@@ -382,14 +418,17 @@
                 <h2 id="pdf-viewer-title" class="pdf-viewer-title">PDF Viewer</h2>
                 <button id="pdf-viewer-close-button" class="pdf-viewer-close-button" aria-label="Close PDF Viewer">×</button>
             </div>
-            <div id="pdf-embed-container" class="pdf-embed-container">
+            <div id="pdf-canvas-container" class="pdf-canvas-container">
                 <div id="loading-indicator" class="loading-indicator">
                     <div class="loading-spinner"></div>
                     Loading Document...
                 </div>
-                <div id="pdf-embed-target">
-
-                </div>
+                <canvas id="pdf-canvas"></canvas>
+            </div>
+            <div class="pdf-viewer-controls">
+                <button id="pdf-prev-page" class="pdf-nav-button">Previous</button>
+                <span id="pdf-page-info">Page 1 of 1</span>
+                <button id="pdf-next-page" class="pdf-nav-button">Next</button>
             </div>
         </div>
     </div>
@@ -419,6 +458,8 @@
     </a>
 
     <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js';
+
         const PDF_OBFUSCATION_KEY = "StClb";
         const PDF_OBFUSCATION_OFFSET = 13;
 
@@ -438,12 +479,16 @@
         const pdfResourcesList = document.getElementById('pdf-resources-list');
         const pdfViewerModal = document.getElementById('pdf-viewer-modal');
         const pdfViewerTitle = document.getElementById('pdf-viewer-title');
+        const pdfCanvas = document.getElementById('pdf-canvas');
+        const pdfPrevPageButton = document.getElementById('pdf-prev-page');
+        const pdfNextPageButton = document.getElementById('pdf-next-page');
+        const pdfPageInfo = document.getElementById('pdf-page-info');
         const pdfViewerCloseButton = document.getElementById('pdf-viewer-close-button');
-        const pdfEmbedContainer = document.getElementById('pdf-embed-container');
-        const pdfEmbedTarget = document.getElementById('pdf-embed-target');
+        const pdfCanvasContainer = document.getElementById('pdf-canvas-container');
         const loadingIndicator = document.getElementById('loading-indicator');
 
-        let currentObjectUrl = null;
+        let currentPdfDoc = null;
+        let currentPageNum = 1;
 
         function renderPdfResourceCards() {
             pdfResourcesList.innerHTML = '';
@@ -468,70 +513,89 @@
             pdfViewerModal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
 
-            pdfEmbedTarget.innerHTML = ''; 
             loadingIndicator.style.display = 'block';
+            pdfCanvas.style.display = 'none';
 
-            loadingIndicator.innerHTML = '<div class="loading-spinner"></div>Loading Document...';
-
-            if (currentObjectUrl) { 
-                URL.revokeObjectURL(currentObjectUrl);
-                currentObjectUrl = null;
-            }
+            currentPageNum = 1;
+            currentPdfDoc = null;
+            pdfPageInfo.textContent = 'Loading...';
+            pdfPrevPageButton.disabled = true;
+            pdfNextPageButton.disabled = true;
 
             try {
+
                 const response = await fetch(pdfUrl);
                 if (!response.ok) {
                     throw new Error(`Failed to fetch PDF: ${response.status} ${response.statusText}`);
                 }
                 const pdfData = await response.arrayBuffer();
 
-                const blob = new Blob([pdfData], { type: 'application/pdf' });
-                currentObjectUrl = URL.createObjectURL(blob);
-
-                const options = {
-                    height: "100%", 
-                    width: "100%",
-                    pdfOpenParams: {
-                        navpanes: 0, 
-                        toolbar: 1,  
-                        statusbar: 0,
-                        view: "FitH" 
-                    },
-
-                    fallbackLink: `<p style="text-align:center; padding:20px;">This browser does not support inline PDFs, or the PDF could not be displayed. You can try to <a href='${currentObjectUrl}' download='${title.replace(/[^a-zA-Z0-9]/g, '_')}.pdf'>download the PDF</a>.</p>`
-                };
-
-                const success = PDFObject.embed(currentObjectUrl, "#pdf-embed-target", options);
-
-                if (success) {
-                    loadingIndicator.style.display = 'none'; 
-                } else {
-
-                    pdfEmbedTarget.innerHTML = `<p style="text-align:center; padding:20px;">Could not initiate PDF embedding. Your browser might not support it or there's an issue with the setup.</p>`;
-                    loadingIndicator.style.display = 'none';
-                }
-
+                const loadingTask = pdfjsLib.getDocument({ data: pdfData });
+                currentPdfDoc = await loadingTask.promise;
+                renderPage(currentPageNum);
             } catch (error) {
-                console.error("Error loading or embedding PDF:", error);
-                loadingIndicator.innerHTML = `<div class="loading-spinner"></div>Could not load PDF. <br><small>${error.message || 'Please try again.'}</small>`;
-                pdfEmbedTarget.innerHTML = ''; 
-
+                console.error("Error loading PDF:", error);
+                pdfPageInfo.textContent = 'Error loading PDF.';
+                loadingIndicator.innerHTML = `<div class="loading-spinner"></div>Could not load PDF. <br><small>${error.message || 'Please try again.'}</small>`; 
+                pdfCanvas.style.display = 'none';
             }
         }
+
+        async function renderPage(num) {
+            if (!currentPdfDoc) return;
+
+            loadingIndicator.style.display = 'block'; 
+            pdfCanvas.style.display = 'none';
+
+            try {
+                const page = await currentPdfDoc.getPage(num);
+                const viewport = page.getViewport({ scale: 1.5 });
+                const context = pdfCanvas.getContext('2d');
+                pdfCanvas.height = viewport.height;
+                pdfCanvas.width = viewport.width;
+
+                const renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+                await page.render(renderContext).promise;
+
+                pdfPageInfo.textContent = `Page ${num} of ${currentPdfDoc.numPages}`;
+                pdfPrevPageButton.disabled = num <= 1;
+                pdfNextPageButton.disabled = num >= currentPdfDoc.numPages;
+                pdfCanvasContainer.scrollTop = 0; 
+                loadingIndicator.style.display = 'none';
+                pdfCanvas.style.display = 'block';
+            } catch (error) {
+                console.error(`Error rendering page ${num}:`, error);
+                pdfPageInfo.textContent = `Error rendering page ${num}.`;
+                loadingIndicator.textContent = `Error displaying page ${num}.`;
+                pdfCanvas.style.display = 'none';
+            }
+        }
+
+        pdfPrevPageButton.addEventListener('click', () => {
+            if (currentPageNum <= 1) return;
+            currentPageNum--;
+            renderPage(currentPageNum);
+        });
+
+        pdfNextPageButton.addEventListener('click', () => {
+            if (!currentPdfDoc || currentPageNum >= currentPdfDoc.numPages) return;
+            currentPageNum++;
+            renderPage(currentPageNum);
+        });
 
         pdfViewerCloseButton.addEventListener('click', () => {
             pdfViewerModal.style.display = 'none';
             document.body.style.overflow = 'auto';
-
-            if (currentObjectUrl) {
-                URL.revokeObjectURL(currentObjectUrl);
-                currentObjectUrl = null;
-            }
-            pdfEmbedTarget.innerHTML = ''; 
+            currentPdfDoc = null; 
+            const context = pdfCanvas.getContext('2d');
+            context.clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
             loadingIndicator.style.display = 'none'; 
-
-            if (loadingIndicator.textContent.includes('Could not load') || loadingIndicator.textContent.includes('Error displaying')) {
-                 loadingIndicator.innerHTML = '<div class="loading-spinner"></div>Loading Document...';
+            pdfCanvas.style.display = 'none'; 
+            if (loadingIndicator.textContent.startsWith('Could not load') || loadingIndicator.textContent.startsWith('Error displaying')) {
+                 loadingIndicator.innerHTML = '<div class="loading-spinner"></div>Loading Document...'; 
             }
         });
 
@@ -564,6 +628,7 @@
                 });
             }
 
+            pdfCanvasContainer.addEventListener('contextmenu', e => e.preventDefault());
         });
     </script>
 </body>
