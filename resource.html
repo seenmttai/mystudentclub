@@ -5,28 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure PDF Viewer - My Student Club</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script> 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script> 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f8f9fa;
             color: #334155;
             margin: 0;
-            padding-top: 70px; 
-            padding-bottom: 70px; 
+            padding-top: 80px; 
+            padding-bottom: 80px; 
         }
         .floating-header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: rgba(255,255,255,0.97); 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             z-index: 1000;
-            border-bottom: 1px solid rgba(229,231,235,0.5);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-bottom: 1px solid rgba(229,231,235,0.7); 
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07); 
         }
         .header-container {
             max-width: 1200px;
@@ -106,38 +106,39 @@
             font-weight: 500;
         }
         .menu-item:hover { background: #f3f4f6; color: #4f46e5; }
-        .menu-icon { width: 20px; height: 20px; opacity: 0.7; flex-shrink: 0; }
+        .menu-item:hover .menu-icon { opacity: 1; color: #4f46e5; } 
+        .menu-icon { width: 20px; height: 20px; opacity: 0.7; flex-shrink: 0; transition: opacity 0.2s ease, color 0.2s ease; }
 
         .main-container {
             max-width: 1200px;
-            margin: 2rem auto;
+            margin: 3rem auto; 
             padding: 1.5rem;
         }
         .page-title {
-            font-size: 2.25rem;
-            font-weight: 600;
+            font-size: 2.5rem; 
+            font-weight: 700; 
             color: #1e293b;
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 3rem; 
         }
         .pdf-resources-list {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
+            gap: 2rem; 
         }
         .pdf-resource-card {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06); 
+            border: 1px solid #e5e7eb; 
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         .pdf-resource-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+            transform: translateY(-4px); 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
         }
         .pdf-resource-title {
             font-size: 1.2rem;
@@ -160,7 +161,7 @@
             background-color: #4f46e5;
             color: white;
             cursor: pointer;
-            margin-top: auto; 
+            margin-top: auto;
         }
         .view-pdf-button:hover { background-color: #4338ca; }
 
@@ -170,8 +171,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.75);
-            display: none; 
+            background-color: rgba(0, 0, 0, 0.8); 
+            display: none;
             align-items: center;
             justify-content: center;
             z-index: 2000;
@@ -182,7 +183,7 @@
             background-color: white;
             padding: 1.5rem;
             border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15); 
             width: 90%;
             max-width: 900px;
             height: 90vh;
@@ -215,19 +216,25 @@
 
         .pdf-canvas-container {
             flex-grow: 1;
-            overflow: auto; 
-            text-align: center; 
-            background-color: #f0f0f0; 
-            border: 1px solid #e2e8f0;
+            overflow: auto;
+            text-align: center;
+            background-color: #e9ebee; 
+            border: 1px solid #dde1e6; 
             border-radius: 8px;
             margin-bottom: 1rem;
-            position: relative; 
+            position: relative;
+            user-select: none; 
+            -webkit-user-select: none;
+            -ms-user-select: none; 
         }
         #pdf-canvas {
-            display: block; 
-            margin: 0 auto; 
+            display: block;
+            margin: 0 auto;
             max-width: 100%;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
         }
         .pdf-viewer-controls {
             display: flex;
@@ -319,6 +326,34 @@
         .whatsapp-button:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.3); }
         .whatsapp-button:hover span { display: inline; }
         .whatsapp-button svg { width: 24px; height: 24px; }
+
+        .loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.1rem;
+            color: #4f46e5;
+            padding: 1.5rem 2rem;
+            background: rgba(255,255,255,0.95);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            z-index: 10; 
+            display: none; 
+            text-align: center;
+        }
+        .loading-spinner {
+            border: 4px solid rgba(79,70,229,0.2);
+            border-left-color: #4f46e5;
+            border-radius: 50%;
+            width: 36px; 
+            height: 36px; 
+            animation: spin 1s linear infinite;
+            margin: 0 auto 0.75rem; 
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -364,6 +399,10 @@
                 <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
                 Resources
             </a>
+            <a href="/secure-document-viewer.html" class="menu-item">
+                <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 0v2m0-2h2m-2 0H8m10-8a4 4 0 11-8 0 4 4 0 018 0zM9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Secure Viewer
+            </a>
         </div>
     </div>
 
@@ -380,6 +419,10 @@
                 <button id="pdf-viewer-close-button" class="pdf-viewer-close-button" aria-label="Close PDF Viewer">×</button>
             </div>
             <div id="pdf-canvas-container" class="pdf-canvas-container">
+                <div id="loading-indicator" class="loading-indicator">
+                    <div class="loading-spinner"></div>
+                    Loading Document...
+                </div>
                 <canvas id="pdf-canvas"></canvas>
             </div>
             <div class="pdf-viewer-controls">
@@ -417,9 +460,20 @@
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.worker.min.js';
 
+        const PDF_OBFUSCATION_KEY = "StClb";
+        const PDF_OBFUSCATION_OFFSET = 13;
+
+        function deobfuscatePath(obfuscated, keyString, baseOffset) {
+            return obfuscated.split(',')
+                .map((numStr, i) => String.fromCharCode(parseInt(numStr) - baseOffset - keyString.charCodeAt(i % keyString.length) % 10))
+                .join('');
+        }
+
         const pdfResourcesData = [
-            { title: "Sample Document 1 (Local)", url: "/assets/sample.pdf" }, 
-            { title: "Sample Document 2 (Remote - CORS might be an issue)", url: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf" }
+            { 
+                title: "CA Industrial Training Resources", 
+                obfuscatedPathData: "63,116,135,136,122,132,134,67,118,120,113,119,121,130,126,115,114,129,118,137,117,133,125,118,129,111,119,117,137,118,111,120,130,120,135,137,131,136,122,121,62,133,121,136,132,115,120"
+            }
         ];
 
         const pdfResourcesList = document.getElementById('pdf-resources-list');
@@ -431,6 +485,7 @@
         const pdfPageInfo = document.getElementById('pdf-page-info');
         const pdfViewerCloseButton = document.getElementById('pdf-viewer-close-button');
         const pdfCanvasContainer = document.getElementById('pdf-canvas-container');
+        const loadingIndicator = document.getElementById('loading-indicator');
 
         let currentPdfDoc = null;
         let currentPageNum = 1;
@@ -442,10 +497,12 @@
                 card.className = 'pdf-resource-card';
                 card.innerHTML = `
                     <h3 class="pdf-resource-title">${resource.title}</h3>
-                    <button class="view-pdf-button" data-url="${resource.url}">View PDF</button>
+                    <button class="view-pdf-button" data-obfuscated="${resource.obfuscatedPathData}">View PDF</button>
                 `;
-                card.querySelector('.view-pdf-button').addEventListener('click', () => {
-                    openPdfViewer(resource.url, resource.title);
+                card.querySelector('.view-pdf-button').addEventListener('click', (e) => {
+                    const obfuscatedUrl = e.target.dataset.obfuscated;
+                    const actualUrl = deobfuscatePath(obfuscatedUrl, PDF_OBFUSCATION_KEY, PDF_OBFUSCATION_OFFSET);
+                    openPdfViewer(actualUrl, resource.title);
                 });
                 pdfResourcesList.appendChild(card);
             });
@@ -454,7 +511,10 @@
         async function openPdfViewer(pdfUrl, title) {
             pdfViewerTitle.textContent = title || 'PDF Document';
             pdfViewerModal.style.display = 'flex';
-            document.body.style.overflow = 'hidden'; 
+            document.body.style.overflow = 'hidden';
+
+            loadingIndicator.style.display = 'block';
+            pdfCanvas.style.display = 'none';
 
             currentPageNum = 1;
             currentPdfDoc = null;
@@ -467,16 +527,21 @@
                 currentPdfDoc = await loadingTask.promise;
                 renderPage(currentPageNum);
             } catch (error) {
-                console.error('Error loading PDF:', error);
+                console.error("Error loading PDF:", error);
                 pdfPageInfo.textContent = 'Error loading PDF.';
-                alert('Could not load PDF. Please check the console for errors. CORS issues might prevent loading remote PDFs directly.');
+                loadingIndicator.textContent = 'Could not load PDF.';
+                pdfCanvas.style.display = 'none';
             }
         }
 
         async function renderPage(num) {
             if (!currentPdfDoc) return;
 
-            currentPdfDoc.getPage(num).then(page => {
+            loadingIndicator.style.display = 'block'; 
+            pdfCanvas.style.display = 'none';
+
+            try {
+                const page = await currentPdfDoc.getPage(num);
                 const viewport = page.getViewport({ scale: 1.5 });
                 const context = pdfCanvas.getContext('2d');
                 pdfCanvas.height = viewport.height;
@@ -486,16 +551,20 @@
                     canvasContext: context,
                     viewport: viewport
                 };
-                page.render(renderContext);
+                await page.render(renderContext).promise;
 
                 pdfPageInfo.textContent = `Page ${num} of ${currentPdfDoc.numPages}`;
                 pdfPrevPageButton.disabled = num <= 1;
                 pdfNextPageButton.disabled = num >= currentPdfDoc.numPages;
                 pdfCanvasContainer.scrollTop = 0; 
-            }).catch(error => {
-                console.error('Error rendering page:', error);
+                loadingIndicator.style.display = 'none';
+                pdfCanvas.style.display = 'block';
+            } catch (error) {
+                console.error(`Error rendering page ${num}:`, error);
                 pdfPageInfo.textContent = `Error rendering page ${num}.`;
-            });
+                loadingIndicator.textContent = `Error displaying page ${num}.`;
+                pdfCanvas.style.display = 'none';
+            }
         }
 
         pdfPrevPageButton.addEventListener('click', () => {
@@ -512,14 +581,19 @@
 
         pdfViewerCloseButton.addEventListener('click', () => {
             pdfViewerModal.style.display = 'none';
-            document.body.style.overflow = 'auto'; 
+            document.body.style.overflow = 'auto';
             currentPdfDoc = null; 
             const context = pdfCanvas.getContext('2d');
             context.clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
+            loadingIndicator.style.display = 'none'; 
+            pdfCanvas.style.display = 'none'; 
+            if (loadingIndicator.textContent.startsWith('Could not load') || loadingIndicator.textContent.startsWith('Error displaying')) {
+                 loadingIndicator.innerHTML = '<div class="loading-spinner"></div>Loading Document...'; 
+            }
         });
 
         pdfViewerModal.addEventListener('click', (event) => {
-            if (event.target === pdfViewerModal) { 
+            if (event.target === pdfViewerModal) {
                 pdfViewerCloseButton.click();
             }
         });
