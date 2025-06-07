@@ -10,10 +10,19 @@ const loadingSpinner = document.getElementById('loading-spinner');
 const viewerControls = document.getElementById('viewer-controls');
 const canvasContainer = document.getElementById('canvas-container'); 
 
+const searchInput = document.getElementById('search-input');
+const searchPrevBtn = document.getElementById('search-prev');
+const searchNextBtn = document.getElementById('search-next');
+const searchInfo = document.getElementById('search-info');
+const gotoInput = document.getElementById('goto-input');
+const gotoBtn = document.getElementById('goto-page-btn');
+
 let pdfDoc = null;
 let currentPageNum = 1;
 let pageRendering = false;
 let pageNumPending = null;
+let searchMatches = [];
+let searchIndex = -1;
 
 function showSpinner(show) {
     loadingSpinner.style.display = show ? 'block' : 'none';
@@ -33,7 +42,8 @@ function renderPage(num) {
             dynamicScale = (canvasContainer.clientWidth * DYNAMIC_SCALE_PADDING) / pageWidth;
         }
 
-        const viewport = page.getViewport({ scale: dynamicScale });
+        const scale = dynamicScale * (window.devicePixelRatio || 1);
+        const viewport = page.getViewport({ scale: scale });
         canvas.height = viewport.height;
         canvas.width = viewport.width;
 
@@ -131,79 +141,103 @@ function resetViewer() {
     updateNavButtons();
 }
 
-(function enhanceSecurity() {
-
-    const secureEvents = [
-        ['contextmenu', e => e.preventDefault(), true],
-        ['copy', e => { e.preventDefault(); e.stopPropagation(); }],
-        ['cut', e => { e.preventDefault(); e.stopPropagation(); }],
-        ['paste', e => { e.preventDefault(); e.stopPropagation(); }],
-        ['dragstart', e => { e.preventDefault(); e.stopPropagation(); }],
-        ['selectstart', e => { e.preventDefault(); e.stopPropagation(); }],
-        ['keydown', function(e){
-
-            const forbidden = [
-
-                ['s','S'], ['p','P'], ['n','N'], ['c','C'], ['v','V'], ['a','A'], ['u','U']
-            ];
-            if ((e.ctrlKey || e.metaKey)) {
-                for (let [k1,k2] of forbidden) {
-                    if (e.key === k1 || e.key === k2) {
-                        e.preventDefault();
-                        alert('This action is disabled for security reasons.');
-                        return;
-                    }
-                }
-            }
-
-            if (e.key === 'F12' ||
-                ((e.ctrlKey || e.metaKey) && e.shiftKey && ['I','i','J','j','C','c'].includes(e.key))
-            ) {
-                e.preventDefault();
-                alert('This action is disabled for security reasons.');
-                return;
-            }
-        }, true]
-    ];
-    secureEvents.forEach(([event, handler, capture]) =>
-        document.addEventListener(event, handler, !!capture)
-    );
-
-    window.addEventListener('beforeprint', e => {
-        e.preventDefault();
-        alert('Printing this content is disabled for security reasons.');
-        return false;
-    });
-
-    window.addEventListener('keyup', function(e){
-        if (e.key === "PrintScreen") {
-            document.body.style.filter = "blur(7px)";
-            alert('Screenshots are disabled for security reasons. Release Print Screen to continue.');
-            setTimeout(() => { document.body.style.filter = ''; }, 1200);
-        }
-    });
-
-    window.matchMedia('print').addEventListener('change', e => {
-        if (e.matches) {
-            document.body.innerHTML = '';
-            alert('Printing is not allowed.');
-        } else {
-            location.reload();
-        }
-    });
-
-    if (window.ResizeObserver) {
-
-        let resizeTimeout;
-        new ResizeObserver(() => {
-            clearTimeout(resizeTimeout);
-            canvas.style.filter = "";  
-            resizeTimeout = setTimeout(() => {
-                canvas.style.filter = "";
-            }, 1200);
-        }).observe(document.body);
+function updateSearchControls() {
+    const hasMatches = searchMatches.length > 0;
+    searchPrevBtn.disabled = !hasMatches;
+    searchNextBtn.disabled = !hasMatches;
+    if (!hasMatches) {
+        searchInfo.textContent = '';
     }
-})();
+}
+
+function updateSearchInfo() {
+    if (searchMatches.length > 0 && searchIndex >= 0) {
+        searchInfo.textContent = `${searchIndex + 1}/${searchMatches.length}`;
+    } else {
+        searchInfo.textContent = '';
+    }
+}
+
+async function searchDocument(term) {
+    searchMatches = [];
+    searchIndex = -1;
+    updateSearchControls();
+    if (!pdfDoc || !term) return;
+    const lower = term.toLowerCase();
+
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+        try {
+            const page = await pdfDoc.getPage(i);
+            const txt = await page.getTextContent();
+            const str = txt.items.map(it => it.str).join(' ');
+            if (str.toLowerCase().includes(lower)) {
+                searchMatches.push(i);
+            }
+        } catch (e) {
+            console.error(`Error reading page ${i} text:`, e);
+        }
+    }
+    if (searchMatches.length === 0) {
+        alert(`No matches for "${term}"`);
+        return;
+    }
+
+    searchIndex = 0;
+    const targetPage = searchMatches[0];
+    currentPageNum = targetPage;
+    queueRenderPage(targetPage);
+    updateSearchControls();
+    updateSearchInfo();
+}
+
+function onSearchNext() {
+    if (searchMatches.length === 0) return;
+    searchIndex = (searchIndex + 1) % searchMatches.length;
+    const page = searchMatches[searchIndex];
+    currentPageNum = page;
+    queueRenderPage(page);
+    updateSearchInfo();
+}
+
+function onSearchPrev() {
+    if (searchMatches.length === 0) return;
+    searchIndex = (searchIndex - 1 + searchMatches.length) % searchMatches.length;
+    const page = searchMatches[searchIndex];
+    currentPageNum = page;
+    queueRenderPage(page);
+    updateSearchInfo();
+}
+
+function onGotoPage() {
+    const val = parseInt(gotoInput.value, 10);
+    if (isNaN(val) || val < 1 || !pdfDoc || val > pdfDoc.numPages) {
+        alert('Invalid page number');
+        return;
+    }
+    currentPageNum = val;
+    queueRenderPage(val);
+}
+
+if (typeof pdfjsLib === 'undefined') {
+    console.error("PDF.js library is not loaded. Check script tags.");
+    alert("PDF.js library failed to load. Please check your internet connection or script configuration.");
+    pdfUpload.disabled = true;
+} else {
+    prevButton.addEventListener('click', onPrevPage);
+    nextButton.addEventListener('click', onNextPage);
+    searchInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+            searchDocument(searchInput.value.trim());
+        }
+    });
+    searchNextBtn.addEventListener('click', onSearchNext);
+    searchPrevBtn.addEventListener('click', onSearchPrev);
+    gotoBtn.addEventListener('click', onGotoPage);
+
+    loadPdfFromUrl(PDF_URL);
+
+    updateSearchControls();
+}
 
 function addObscureOverlay(canvasElem) {
 
@@ -212,7 +246,7 @@ function addObscureOverlay(canvasElem) {
         lockOverlay = document.createElement('div');
         lockOverlay.id = 'obscure-overlay';
         lockOverlay.style.position = 'absolute';
-        lockOverlay.style.pointerEvents = 'auto';
+        lockOverlay.style.pointerEvents = 'none'; 
         lockOverlay.style.top = 0;
         lockOverlay.style.left = 0;
         lockOverlay.style.width = '100%';
@@ -243,64 +277,21 @@ canvas.draggable = false;
 canvas.addEventListener('mousedown', e => { e.preventDefault(); }, true);
 canvas.addEventListener('dragstart', e => { e.preventDefault(); }, true);
 
-if (typeof pdfjsLib === 'undefined') {
-    console.error("PDF.js library is not loaded. Check script tags.");
-    alert("PDF.js library failed to load. Please check your internet connection or script configuration.");
-    pdfUpload.disabled = true;
-} else {
-    prevButton.addEventListener('click', onPrevPage);
-    nextButton.addEventListener('click', onNextPage);
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+});
+document.addEventListener('copy', function(e) {
+    e.preventDefault();
+});
+document.addEventListener('cut', function(e) {
+    e.preventDefault();
+});
+document.addEventListener('dragstart', function(e) {
+    e.preventDefault();
+});
 
-    loadPdfFromUrl(PDF_URL);
-
-    canvas.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-    });
-
-    document.addEventListener('keydown', function(e) {
-
-        if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
-            e.preventDefault();
-            alert('Saving this content is disabled for security reasons.');
-        }
-
-        if ((e.ctrlKey || e.metaKey) && (e.key === 'p' || e.key === 'P')) {
-            e.preventDefault();
-            alert('Printing this content is disabled for security reasons.');
-        }
-
-        if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
-            e.preventDefault();
-            alert('Copying this content is disabled for security reasons.');
-        }
-
-        if ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'U')) {
-            e.preventDefault();
-            alert('Viewing source is disabled for security reasons.');
-        }
-
-        if (e.key === 'F12' || ((e.ctrlKey || e.metaKey) && e.shiftKey && ['I','i','J','j','C','c'].includes(e.key))) {
-            e.preventDefault();
-            alert('This action is disabled for security reasons.');
-        }
-    });
-
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-    });
-    document.addEventListener('copy', function(e) {
-        e.preventDefault();
-    });
-    document.addEventListener('cut', function(e) {
-        e.preventDefault();
-    });
-    document.addEventListener('dragstart', function(e) {
-        e.preventDefault();
-    });
-
-    window.addEventListener('beforeprint', (event) => {
-        event.preventDefault();
-        alert('Printing this content is disabled for security reasons.');
-        return false; 
-    });
-}
+window.addEventListener('beforeprint', (event) => {
+    event.preventDefault();
+    alert('Printing this content is disabled for security reasons.');
+    return false; 
+});
