@@ -639,18 +639,24 @@
                         try {
                             const { data, error } = await supabase.storage
                                 .from('industrial-training-mastery-resources')
-                                .createSignedUrl(resource.download_storage_path, 300); 
+                                .createSignedUrl(resource.download_storage_path, 300);
 
                             if (error) throw error;
                             
+                            const response = await fetch(data.signedUrl);
+                            if (!response.ok) throw new Error('Network response was not ok.');
+                            const blob = await response.blob();
+                            
+                            const url = window.URL.createObjectURL(blob);
                             const a = document.createElement('a');
-                            a.href = data.signedUrl;
+                            a.href = url;
                             a.download = resource.download_storage_path.split('/').pop() || 'download';
                             document.body.appendChild(a);
                             a.click();
-                            document.body.removeChild(a);
+                            window.URL.revokeObjectURL(url);
+                            a.remove();
                         } catch (err) {
-                            alert('Could not generate download link. Please try again.');
+                            alert('Could not download the file. Please try again.');
                         }
                     } else {
                         alert('No downloadable file available for this resource.');
@@ -664,12 +670,12 @@
                     try {
                         const { data, error } = await supabase.storage
                             .from('industrial-training-mastery-resources')
-                            .download(resource.view_storage_path);
-                        
+                            .createSignedUrl(resource.view_storage_path, 300);
+
                         if (error) throw error;
                         
-                        const arrayBuffer = await data.arrayBuffer();
-                        this.pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                        const pdfData = await fetch(data.signedUrl).then(res => res.arrayBuffer());
+                        this.pdfDoc = await pdfjsLib.getDocument({ data: pdfData }).promise;
                         this.pdfTotalPages = this.pdfDoc.numPages;
                         this.pdfCurrentPage = 1;
                         await this.renderPdfPage(this.pdfCurrentPage);
