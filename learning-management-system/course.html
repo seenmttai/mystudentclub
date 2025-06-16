@@ -255,8 +255,7 @@
                 <div class="pdf-viewer-controls">
                     <button id="pdf-prev-page" class="pdf-nav-button" @click="goToPrevPage" :disabled="pdfCurrentPage <= 1">Previous</button>
                     <span id="pdf-page-info">Page {{ pdfCurrentPage }} of {{ pdfTotalPages }}</span>
-                    <a v-if="pdfDownloadUrl" :href="pdfDownloadUrl" :download="pdfDownloadFilename" class="pdf-nav-button pdf-viewer-download-btn">Download</a>
-                    <span v-else class="pdf-nav-button pdf-viewer-download-btn disabled">Download</span>
+                    <button @click="downloadResource(currentPdfResource)" class="pdf-nav-button pdf-viewer-download-btn" :disabled="!currentPdfResource || !currentPdfResource.download_storage_path || currentPdfResource.download_storage_path === 'None'">Download</button>
                     <button id="pdf-next-page" class="pdf-nav-button" @click="goToNextPage" :disabled="pdfCurrentPage >= pdfTotalPages">Next</button>
                 </div>
             </div>
@@ -339,8 +338,7 @@
                     pdfDoc: null,
                     pdfCurrentPage: 1,
                     pdfTotalPages: 1,
-                    pdfDownloadUrl: null,
-                    pdfDownloadFilename: ''
+                    currentPdfResource: null
                 }
             },
             computed: {
@@ -438,7 +436,6 @@
                                         completed: false
                                     });
                                 } catch (err) {
-                                     console.error(`Error processing RPC for video ${meta.video_number}:`, err);
                                 }
                             }
                         }
@@ -458,18 +455,9 @@
                         this.totalVideos = videoMetadata ? videoMetadata.length : 0;
                         this.loadVideoProgress();
                     } catch (error) {
-                        console.error("Error loading course videos:", error);
                     } finally {
                         this.loadingVideos = false;
                     }
-                },
-                getStoragePublicUrl(path, isDownload = false) {
-                    if (!path || path === "None") return null;
-                    const bucketName = 'industrial-training-mastery-resources';
-                    const { data } = supabase.storage.from(bucketName).getPublicUrl(path, {
-                        download: isDownload ? true : undefined 
-                    });
-                    return data.publicUrl;
                 },
                 getResourceIcon(type) {
                     const iconMap = {
@@ -646,19 +634,23 @@
                         this.downloadResource(resource);
                     }
                 },
-                downloadResource(resource) {
+                async downloadResource(resource) {
                     if (resource.download_storage_path && resource.download_storage_path !== 'None') {
-                        const url = this.getStoragePublicUrl(resource.download_storage_path, true);
-                        if (url) {
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = resource.download_storage_path.split('/').pop() || 'download';
-                            document.body.appendChild(a);
-                            a.click();
-                            document.body.removeChild(a);
-                        } else {
+                        const { data, error } = await supabase.storage
+                            .from('industrial-training-mastery-resources')
+                            .createSignedUrl(resource.download_storage_path, 60);
+
+                        if (error) {
                             alert('Could not generate download link.');
+                            return;
                         }
+                        
+                        const a = document.createElement('a');
+                        a.href = data.signedUrl;
+                        a.download = resource.download_storage_path.split('/').pop() || 'download';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
                     } else {
                         alert('No downloadable file available for this resource.');
                     }
@@ -666,8 +658,7 @@
                 async openPdfViewer(resource) {
                     this.pdfLoading = true;
                     this.isPdfViewerVisible = true;
-                    this.pdfDownloadUrl = this.getStoragePublicUrl(resource.download_storage_path, true);
-                    this.pdfDownloadFilename = resource.download_storage_path ? resource.download_storage_path.split('/').pop() : 'document.pdf';
+                    this.currentPdfResource = resource;
 
                     try {
                         const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').download(resource.view_storage_path);
@@ -722,6 +713,7 @@
                 closePdfViewer() {
                     this.isPdfViewerVisible = false;
                     this.pdfDoc = null;
+                    this.currentPdfResource = null;
                 },
                 goToPrevPage() {
                     if (this.pdfCurrentPage > 1) {
