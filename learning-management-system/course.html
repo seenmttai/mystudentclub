@@ -624,11 +624,11 @@
                     return day.videos.every(v => v.completed);
                 },
                 async handleResourceClick(resource) {
-                    if (resource.type === 'external_link') {
+                    if (resource.type === 'external_link' && resource.url) {
                         window.open(resource.url, '_blank');
                         return;
                     }
-                    if (resource.type === 'pdf' && resource.view_storage_path && resource.view_storage_path !== 'None') {
+                    if (resource.view_storage_path && resource.view_storage_path !== 'None') {
                         await this.openPdfViewer(resource);
                     } else {
                         this.downloadResource(resource);
@@ -636,21 +636,22 @@
                 },
                 async downloadResource(resource) {
                     if (resource.download_storage_path && resource.download_storage_path !== 'None') {
-                        const { data, error } = await supabase.storage
-                            .from('industrial-training-mastery-resources')
-                            .createSignedUrl(resource.download_storage_path, 60);
+                        try {
+                            const { data, error } = await supabase.storage
+                                .from('industrial-training-mastery-resources')
+                                .createSignedUrl(resource.download_storage_path, 60);
 
-                        if (error) {
-                            alert('Could not generate download link.');
-                            return;
+                            if (error) throw error;
+                            
+                            const a = document.createElement('a');
+                            a.href = data.signedUrl;
+                            a.download = resource.download_storage_path.split('/').pop() || 'download';
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                        } catch (err) {
+                            alert('Could not generate download link. Please try again.');
                         }
-                        
-                        const a = document.createElement('a');
-                        a.href = data.signedUrl;
-                        a.download = resource.download_storage_path.split('/').pop() || 'download';
-                        document.body.appendChild(a);
-                        a.click();
-                        document.body.removeChild(a);
                     } else {
                         alert('No downloadable file available for this resource.');
                     }
