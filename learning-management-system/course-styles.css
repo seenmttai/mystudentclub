@@ -122,15 +122,38 @@
     align-items: center;
     cursor: pointer;
     transition: var(--transition);
+    border-left: 3px solid transparent;
 }
-
 .module-header:hover {
     background-color: var(--hover-color);
 }
+.module-header.active {
+    background-color: rgba(52, 152, 219, 0.1);
+    border-left: 3px solid var(--secondary-color);
+}
+.module-header.completed .module-title-container i {
+    color: var(--success-color);
+}
+.module-header.active .module-title-container i {
+    color: var(--secondary-color);
+}
+
+.module-title-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-grow: 1;
+}
+
+.module-title-container i {
+    color: var(--text-color);
+    opacity: 0.7;
+}
 
 .module-header h4 {
-    color: var(--primary-color);
-    font-size: 1.1rem;
+    color: var(--text-color);
+    font-size: 0.95rem;
+    font-weight: 500;
 }
 
 .module-info {
@@ -138,7 +161,9 @@
     align-items: center;
     gap: 0.5rem;
     color: var(--text-color);
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    margin-left: 1rem;
 }
 
 .module-info i {
@@ -149,57 +174,29 @@
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
+    background-color: #f8fafc;
 }
-
 .module-content.expanded {
-    max-height: 1000px;
+    max-height: 2000px;
+}
+.sidebar-resource-list {
+    padding: 0.5rem 1rem 0.5rem 3.5rem;
+    border-top: 1px dashed var(--border-color);
 }
 
-.video-item {
-    padding: 0.8rem 1.5rem 0.8rem 3rem;
+.resource-item-sidebar {
     display: flex;
-    gap: 1rem;
-    cursor: pointer;
-    transition: var(--transition);
-    border-left: 3px solid transparent;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
 }
 
-.video-item:hover {
-    background-color: var(--hover-color);
-}
-
-.video-item.active {
-    background-color: rgba(52, 152, 219, 0.1);
-    border-left: 3px solid var(--secondary-color);
-}
-
-.video-item.completed .video-status i {
-    color: var(--success-color);
-}
-
-.video-status i {
-    color: var(--text-color);
-    opacity: 0.7;
-}
-
-.video-item.active .video-status i {
-    color: var(--secondary-color);
-}
-
-.video-details {
-    flex: 1;
-}
-
-.video-details p {
-    margin-bottom: 0.3rem;
-    color: var(--text-color);
-    font-size: 0.95rem;
-}
-
-.video-details span {
-    font-size: 0.8rem;
-    color: var(--text-color);
-    opacity: 0.7;
+.resource-icon-sidebar {
+    width: 16px;
+    text-align: center;
+    color: var(--text-tertiary);
 }
 
 .course-content {

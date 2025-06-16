@@ -90,7 +90,7 @@
                         <div class="course-meta-info">
                             <div class="meta-item" v-if="totalVideos > 0">
                                 <i class="fas fa-video"></i>
-                                <span>{{ totalVideos }} Videos</span>
+                                <span>{{ totalVideos }} Sessions</span>
                             </div>
                             <div class="meta-item" v-if="loadingVideos">
                                 <i class="fas fa-spinner fa-spin"></i>
@@ -116,52 +116,35 @@
                         </div>
                         <div class="course-modules">
                             <div v-if="loadingVideos" class="loading-content">
-                                <div class="loading-spinner">
-                                    <i class="fas fa-spinner fa-spin"></i>
-                                </div>
+                                <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
                                 <p>Loading course content...</p>
                             </div>
                             <div v-else-if="courseSections.length === 0" class="empty-content">
                                 <i class="fas fa-video-slash"></i>
-                                <p>You are not enrolled in this course.</p>
-                                <div class="enrollment-modal">
-                                    <div class="enrollment-content" style="text-align: center; padding: 20px;">
-                                        <div class="enrollment-icon">
-                                            <i class="fas fa-lock"></i>
-                                        </div>
-                                        <h2>You Are Not Enrolled</h2>
-                                        <p>You need to be enrolled in this course to access the content.</p>
-                                        <div class="course-preview">
-                                            <img :src="course.thumbnail" :alt="course.title">
-                                            <h3>{{ course.title }}</h3>
-                                        </div>
-                                        <a href="https://www.mystudentclub.com/learning-management-system"><button class="enroll-btn">
-                                            <i class="fas fa-graduation-cap"></i>
-                                            Back to Courses
-                                        </button></a>
-                                    </div>
-                                </div>
+                                <p>No content available for this course yet.</p>
                             </div>
                             <div v-else v-for="(day, dayIndex) in courseSections" :key="day.day_number" class="course-module">
-                                <div class="module-header" @click="toggleModule(dayIndex)">
-                                    <h4>{{ day.title }}</h4>
-                                    <div class="module-info">
-                                        <span>{{ day.videos.length }} Video<span v-if="day.videos.length !== 1">s</span></span>
+                                <div class="module-header" @click="selectDay(day)" :class="{ 'active': isDaySelected(day), 'completed': isDayCompleted(day) }">
+                                    <div class="module-title-container">
+                                        <i :class="['fas', isDayCompleted(day) ? 'fa-check-circle' : 'fa-play-circle']"></i>
+                                        <h4>{{ day.title }}</h4>
+                                    </div>
+                                    <div class="module-info" @click.stop="toggleModule(dayIndex)">
+                                        <span>{{ day.totalResources }} Resource<span v-if="day.totalResources !== 1">s</span></span>
                                         <i :class="['fas', day.expanded ? 'fa-chevron-up' : 'fa-chevron-down']"></i>
                                     </div>
                                 </div>
                                 <div class="module-content" :class="{ 'expanded': day.expanded }">
-                                    <div v-for="(video, videoIndex) in day.videos" :key="video.id" 
-                                        class="video-item" 
-                                        :class="{ 'active': currentVideoId === video.id, 'completed': video.completed }"
-                                        @click="selectVideo(video.id)">
-                                        <div class="video-status">
-                                            <i v-if="video.completed" class="fas fa-check-circle"></i>
-                                            <i v-else-if="currentVideoId === video.id" class="fas fa-play-circle"></i>
-                                            <i v-else class="far fa-play-circle"></i>
+                                    <div v-if="day.mainVideo" class="sidebar-resource-list">
+                                        <div class="resource-item-sidebar" @click="selectVideo(day.mainVideo.id)">
+                                            <span class="resource-icon-sidebar"><i class="fas fa-video"></i></span>
+                                            <span class="resource-title-sidebar">Watch Main Session</span>
                                         </div>
-                                        <div class="video-details">
-                                            <p>{{ video.title }}</p>
+                                    </div>
+                                    <div v-if="day.mainVideo && day.mainVideo.resources.length > 0" class="sidebar-resource-list">
+                                        <div v-for="resource in day.mainVideo.resources" :key="resource.title" class="resource-item-sidebar">
+                                            <span class="resource-icon-sidebar"><i :class="getResourceIcon(resource.type)"></i></span>
+                                            <span class="resource-title-sidebar">{{ resource.title }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -178,7 +161,7 @@
                         
                         <div class="video-container-premium" v-if="currentVideo">
                             <h2>{{ currentVideo.title }}</h2>
-                            <div class="video-player-premium">
+                            <div class="video-player-premium" v-if="videoUrl">
                                 <video 
                                     :key="videoUrl" 
                                     controls 
@@ -194,6 +177,13 @@
                                     <div class="video-title-overlay">{{ currentVideo.title }}</div>
                                 </div>
                             </div>
+                             <div class="no-video-selected" v-else>
+                                <div class="empty-state">
+                                    <i class="fas fa-video-slash"></i>
+                                    <h2>No Video Available</h2>
+                                    <p>There is no primary video for this session. Please check the resources below.</p>
+                                </div>
+                            </div>
                             
                             <div class="video-navigation-premium">
                                 <button class="nav-button-premium prev" @click="playPreviousVideo" :disabled="!hasPreviousVideo">
@@ -202,7 +192,7 @@
                                 </button>
                                 <div class="video-progress-center">
                                     <div class="video-counter">
-                                        Video {{ getCurrentVideoIndex() }} of {{ getTotalVideos() }}
+                                        Day {{ getCurrentDayNumber() }} of {{ courseSections.length }}
                                     </div>
                                 </div>
                                 <button class="nav-button-premium next" @click="playNextVideo" :disabled="!hasNextVideo">
@@ -230,7 +220,7 @@
                                                     <i class="fas fa-eye"></i> View
                                                 </a>
                                                 
-                                                <a v-if="resource.download_storage_path && resource.download_storage_path !== 'None' && resource.type === 'external_link' && resource.download_storage_path.startsWith('http')" :href="resource.download_storage_path" target="_blank" class="resource-btn resource-btn-download">
+                                                <a v-if="resource.download_storage_path && resource.download_storage_path !== 'None' && resource.download_storage_path.startsWith('http')" :href="resource.download_storage_path" target="_blank" class="resource-btn resource-btn-download">
                                                     <i class="fas fa-download"></i> Download
                                                 </a>
                                                 <a v-else-if="resource.download_storage_path && resource.download_storage_path !== 'None' && getStoragePublicUrl(resource.download_storage_path, true)" :href="getStoragePublicUrl(resource.download_storage_path, true)" download class="resource-btn resource-btn-download">
@@ -249,8 +239,8 @@
                         <div class="no-video-selected" v-else>
                             <div class="empty-state">
                                 <i class="fas fa-play-circle"></i>
-                                <h2>Select a video to start learning</h2>
-                                <p>Choose a video from the course outline to begin your learning journey.</p>
+                                <h2>Select a Day to start learning</h2>
+                                <p>Choose a Day from the course outline to begin your learning journey.</p>
                             </div>
                         </div>
                     </div>
@@ -409,45 +399,45 @@
 
                         const videosByDay = {};
                         if (videoMetadata && videoMetadata.length > 0) {
-                            for (const meta of videoMetadata) {
+                             for (const meta of videoMetadata) {
                                 try {
                                     const { data: rpcData, error: rpcError } = await supabase.rpc('get_video_link', {
                                         course_name_param: this.courseSlug,
                                         video_number_param: meta.video_number
                                     });
-                                    if (rpcError) {
-                                        console.warn(`Could not get video link for video_number ${meta.video_number}:`, rpcError.message);
-                                    }
-                                    
+
                                     const day = meta.day_number || 1;
                                     if (!videosByDay[day]) {
                                         videosByDay[day] = [];
                                     }
                                     videosByDay[day].push({
                                         id: meta.video_number,
-                                        fileName: rpcData || null, 
-                                        title: meta.title || `Video ${meta.video_number}`,
-                                        description: meta.description || `Watch this video to learn more.`,
+                                        fileName: rpcData || null,
+                                        title: meta.title || `Content for Day ${day}`,
+                                        description: meta.description || '',
                                         resources: meta.resources || [],
                                         completed: false
                                     });
                                 } catch (err) {
-                                     console.error(`Error processing video metadata for video_number ${meta.video_number}:`, err);
+                                    console.error(`Error processing RPC for video ${meta.video_number}:`, err);
                                 }
                             }
                         }
                         
-                        this.courseSections = Object.keys(videosByDay).map(dayNum => ({
-                            day_number: parseInt(dayNum),
-                            title: `Day ${dayNum}`,
-                            expanded: parseInt(dayNum) === 1,
-                            videos: videosByDay[dayNum]
-                        })).sort((a, b) => a.day_number - b.day_number);
+                        this.courseSections = Object.keys(videosByDay).map(dayNum => {
+                            const dayVideos = videosByDay[dayNum];
+                            const mainVideo = dayVideos[0] || {};
+                            return {
+                                day_number: parseInt(dayNum),
+                                title: mainVideo.title || `Day ${dayNum}`,
+                                expanded: parseInt(dayNum) === 1,
+                                mainVideo: mainVideo, 
+                                totalResources: mainVideo.resources?.length || 0
+                            };
+                        }).sort((a, b) => a.day_number - b.day_number);
                         
                         this.totalVideos = videoMetadata ? videoMetadata.length : 0;
-                        if (this.totalVideos > 0) {
-                            this.loadVideoProgress();
-                        }
+                        this.loadVideoProgress();
                     } catch (error) {
                         console.error("Error loading course videos:", error);
                     } finally {
@@ -494,6 +484,11 @@
                 toggleModule(dayIndex) {
                     this.courseSections[dayIndex].expanded = !this.courseSections[dayIndex].expanded;
                 },
+                selectDay(day) {
+                    if (day.mainVideo) {
+                        this.selectVideo(day.mainVideo.id);
+                    }
+                },
                 selectVideo(videoId) {
                     this.currentVideoId = videoId;
                     if (window.innerWidth < 768) {
@@ -503,9 +498,7 @@
                 },
                 getAdjacentVideo(direction) {
                     if (!this.currentVideoId) return null;
-                    const allVideos = [];
-                    this.courseSections.forEach(section => allVideos.push(...section.videos));
-                    
+                    const allVideos = this.courseSections.map(s => s.mainVideo).filter(Boolean);
                     const currentIndex = allVideos.findIndex(video => video.id === this.currentVideoId);
                     if (currentIndex === -1) return null;
                     if (direction === 'previous' && currentIndex > 0) {
@@ -528,70 +521,56 @@
                     }
                 },
                 markVideoCompleted() {
-                    const videoToMark = this.findVideoById(this.currentVideoId);
-                    if (videoToMark && !videoToMark.completed) {
-                        const sectionIndex = this.courseSections.findIndex(s => s.videos.some(v => v.id === this.currentVideoId));
-                        if (sectionIndex !== -1) {
-                            const videoIndex = this.courseSections[sectionIndex].videos.findIndex(v => v.id === this.currentVideoId);
-                            if (videoIndex !== -1) {
-                                this.courseSections[sectionIndex].videos[videoIndex] = { 
-                                    ...this.courseSections[sectionIndex].videos[videoIndex], 
-                                    completed: true 
-                                };
-                            }
-                        }
-                        this.saveVideoProgress();
-                        this.updateCourseProgress();
-                        this.updateLearningStreak();
-                    }
-                },
-                findVideoById(videoId) {
+                    if (!this.currentVideoId) return;
+                    
                     for (const section of this.courseSections) {
-                        const foundVideo = section.videos.find(v => v.id === videoId);
-                        if (foundVideo) return foundVideo;
+                        const videoToMark = section.mainVideo;
+                        if (videoToMark && videoToMark.id === this.currentVideoId && !videoToMark.completed) {
+                            videoToMark.completed = true;
+                            this.saveVideoProgress();
+                            this.updateCourseProgress();
+                            this.updateLearningStreak();
+                            break;
+                        }
                     }
-                    return null;
                 },
                 saveVideoProgress() {
                     const completedVideos = {};
-                    for (const section of this.courseSections) {
-                        for (const video of section.videos) {
-                            completedVideos[video.id] = video.completed;
+                    this.courseSections.forEach(section => {
+                        if (section.mainVideo) {
+                            completedVideos[section.mainVideo.id] = section.mainVideo.completed;
                         }
-                    }
+                    });
                     localStorage.setItem(`courseVideos_${this.courseSlug}`, JSON.stringify(completedVideos));
                 },
                 loadVideoProgress() {
                     const savedVideos = localStorage.getItem(`courseVideos_${this.courseSlug}`);
                     if (savedVideos) {
                         const completedVideos = JSON.parse(savedVideos);
-                        for (const section of this.courseSections) {
-                            for (const video of section.videos) {
-                                if (completedVideos[video.id] !== undefined) {
-                                     video.completed = completedVideos[video.id];
-                                }
+                        this.courseSections.forEach(section => {
+                            if (section.mainVideo && completedVideos[section.mainVideo.id] !== undefined) {
+                                section.mainVideo.completed = completedVideos[section.mainVideo.id];
                             }
-                        }
+                        });
                     }
                     this.updateCourseProgress(); 
                     const lastVideoId = localStorage.getItem(`lastVideoId_${this.courseSlug}`);
-                    if (lastVideoId) {
+                    if (lastVideoId && this.findVideoById(parseInt(lastVideoId))) {
                         this.currentVideoId = parseInt(lastVideoId);
-                    } else if (this.courseSections.length > 0 && this.courseSections[0].videos.length > 0) {
-                        this.currentVideoId = this.courseSections[0].videos[0].id;
+                    } else if (this.courseSections.length > 0 && this.courseSections[0].mainVideo) {
+                        this.currentVideoId = this.courseSections[0].mainVideo.id;
                     }
                 },
                 updateCourseProgress() {
-                    let totalVideos = 0;
+                    let totalCount = 0;
                     let completedCount = 0;
-                    for (const section of this.courseSections) {
-                        for (const video of section.videos) {
-                            totalVideos++;
-                            if (video.completed) completedCount++;
+                    this.courseSections.forEach(section => {
+                        if(section.mainVideo){
+                            totalCount++;
+                            if (section.mainVideo.completed) completedCount++;
                         }
-                    }
-                    const progressPercentage = totalVideos > 0 ? Math.round((completedCount / totalVideos) * 100) : 0;
-                    this.course.progress = progressPercentage;
+                    });
+                    this.course.progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
                 },
                 updateLearningStreak() {
                     const today = new Date().toDateString();
@@ -611,16 +590,25 @@
                     }
                     this.course = { ...this.courses[this.courseSlug], progress: 0 };
                 },
-                getCurrentVideoIndex() {
+                getCurrentDayNumber() {
                     if (!this.currentVideoId) return 0;
-                    const allVideos = [];
-                    this.courseSections.forEach(section => allVideos.push(...section.videos));
-                    return allVideos.findIndex(video => video.id === this.currentVideoId) + 1;
+                    const section = this.courseSections.find(s => s.mainVideo && s.mainVideo.id === this.currentVideoId);
+                    return section ? section.day_number : 0;
                 },
                 getTotalVideos() {
-                    let total = 0;
-                    this.courseSections.forEach(section => total += section.videos.length);
-                    return total;
+                    return this.courseSections.length;
+                },
+                isDaySelected(day) {
+                    return day.mainVideo && this.currentVideoId === day.mainVideo.id;
+                },
+                isDayCompleted(day) {
+                    return day.mainVideo && day.mainVideo.completed;
+                },
+                findVideoById(videoId) {
+                    for (const section of this.courseSections) {
+                        if(section.mainVideo && section.mainVideo.id === videoId) return section.mainVideo;
+                    }
+                    return null;
                 }
             },
             async mounted() {
