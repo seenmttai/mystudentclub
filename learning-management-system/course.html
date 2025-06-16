@@ -124,27 +124,24 @@
                                 <p>No content available for this course yet.</p>
                             </div>
                             <div v-else v-for="(day, dayIndex) in courseSections" :key="day.day_number" class="course-module">
-                                <div class="module-header" @click="selectDay(day)" :class="{ 'active': isDaySelected(day), 'completed': isDayCompleted(day) }">
+                                <div class="module-header" @click="selectVideo(day.videos[0].id)" :class="{ 'active': isDaySelected(day), 'completed': isDayCompleted(day) }">
                                     <div class="module-title-container">
                                         <i :class="['fas', isDayCompleted(day) ? 'fa-check-circle' : 'fa-play-circle']"></i>
                                         <h4>{{ day.title }}</h4>
                                     </div>
                                     <div class="module-info" @click.stop="toggleModule(dayIndex)">
-                                        <span>{{ day.totalResources }} Resource<span v-if="day.totalResources !== 1">s</span></span>
+                                        <span v-if="day.videos[0] && day.videos[0].resources.length > 0">{{ day.videos[0].resources.length }} Resource<span v-if="day.videos[0].resources.length !== 1">s</span></span>
                                         <i :class="['fas', day.expanded ? 'fa-chevron-up' : 'fa-chevron-down']"></i>
                                     </div>
                                 </div>
                                 <div class="module-content" :class="{ 'expanded': day.expanded }">
-                                    <div v-if="day.mainVideo" class="sidebar-resource-list">
-                                        <div class="resource-item-sidebar" @click="selectVideo(day.mainVideo.id)">
-                                            <span class="resource-icon-sidebar"><i class="fas fa-video"></i></span>
-                                            <span class="resource-title-sidebar">Watch Main Session</span>
-                                        </div>
-                                    </div>
-                                    <div v-if="day.mainVideo && day.mainVideo.resources.length > 0" class="sidebar-resource-list">
-                                        <div v-for="resource in day.mainVideo.resources" :key="resource.title" class="resource-item-sidebar">
-                                            <span class="resource-icon-sidebar"><i :class="getResourceIcon(resource.type)"></i></span>
-                                            <span class="resource-title-sidebar">{{ resource.title }}</span>
+                                    <div v-if="day.videos[0] && day.videos[0].resources.length > 0" class="sidebar-resource-list">
+                                        <div v-for="(resourcesInGroup, groupName) in groupResourcesForSidebar(day.videos[0].resources)" :key="groupName" class="sidebar-resource-group">
+                                            <h5 class="sidebar-resource-group-title" v-if="groupName !== 'General Resources'">{{ groupName }}</h5>
+                                            <div v-for="resource in resourcesInGroup" :key="resource.title" class="resource-item-sidebar">
+                                                <span class="resource-icon-sidebar"><i :class="getResourceIcon(resource.type)"></i></span>
+                                                <span class="resource-title-sidebar">{{ resource.title }}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -325,11 +322,8 @@
                 currentVideo() {
                     if (!this.currentVideoId) return null;
                     for (const section of this.courseSections) {
-                        for (const video of section.videos) {
-                            if (video.id === this.currentVideoId) {
-                                return video;
-                            }
-                        }
+                        const video = section.videos.find(v => v.id === this.currentVideoId);
+                        if (video) return video;
                     }
                     return null;
                 },
@@ -405,7 +399,7 @@
                                         course_name_param: this.courseSlug,
                                         video_number_param: meta.video_number
                                     });
-
+                                    
                                     const day = meta.day_number || 1;
                                     if (!videosByDay[day]) {
                                         videosByDay[day] = [];
@@ -419,7 +413,7 @@
                                         completed: false
                                     });
                                 } catch (err) {
-                                    console.error(`Error processing RPC for video ${meta.video_number}:`, err);
+                                     console.error(`Error processing RPC for video ${meta.video_number}:`, err);
                                 }
                             }
                         }
@@ -431,8 +425,7 @@
                                 day_number: parseInt(dayNum),
                                 title: mainVideo.title || `Day ${dayNum}`,
                                 expanded: parseInt(dayNum) === 1,
-                                mainVideo: mainVideo, 
-                                totalResources: mainVideo.resources?.length || 0
+                                videos: dayVideos
                             };
                         }).sort((a, b) => a.day_number - b.day_number);
                         
@@ -467,6 +460,18 @@
                     };
                     return iconMap[type.toLowerCase()] || 'fas fa-file';
                 },
+                groupResourcesForSidebar(resources) {
+                    if (!resources || resources.length === 0) return {};
+                    const groups = {};
+                    resources.forEach(res => {
+                        const groupKey = res.group || 'General Resources';
+                        if (!groups[groupKey]) {
+                            groups[groupKey] = [];
+                        }
+                        groups[groupKey].push(res);
+                    });
+                    return groups;
+                },
                 handleProfileClick() {
                     if (!this.user) {
                         window.location.href = 'https://www.mystudentclub.com/login';
@@ -484,11 +489,6 @@
                 toggleModule(dayIndex) {
                     this.courseSections[dayIndex].expanded = !this.courseSections[dayIndex].expanded;
                 },
-                selectDay(day) {
-                    if (day.mainVideo) {
-                        this.selectVideo(day.mainVideo.id);
-                    }
-                },
                 selectVideo(videoId) {
                     this.currentVideoId = videoId;
                     if (window.innerWidth < 768) {
@@ -498,7 +498,7 @@
                 },
                 getAdjacentVideo(direction) {
                     if (!this.currentVideoId) return null;
-                    const allVideos = this.courseSections.map(s => s.mainVideo).filter(Boolean);
+                    const allVideos = this.courseSections.flatMap(section => section.videos);
                     const currentIndex = allVideos.findIndex(video => video.id === this.currentVideoId);
                     if (currentIndex === -1) return null;
                     if (direction === 'previous' && currentIndex > 0) {
@@ -522,24 +522,27 @@
                 },
                 markVideoCompleted() {
                     if (!this.currentVideoId) return;
-                    
-                    for (const section of this.courseSections) {
-                        const videoToMark = section.mainVideo;
-                        if (videoToMark && videoToMark.id === this.currentVideoId && !videoToMark.completed) {
-                            videoToMark.completed = true;
-                            this.saveVideoProgress();
-                            this.updateCourseProgress();
-                            this.updateLearningStreak();
-                            break;
-                        }
+                    const videoToMark = this.findVideoById(this.currentVideoId);
+                    if (videoToMark && !videoToMark.completed) {
+                        videoToMark.completed = true;
+                        this.saveVideoProgress();
+                        this.updateCourseProgress();
+                        this.updateLearningStreak();
                     }
+                },
+                findVideoById(videoId) {
+                    for (const section of this.courseSections) {
+                        const foundVideo = section.videos.find(v => v.id === videoId);
+                        if (foundVideo) return foundVideo;
+                    }
+                    return null;
                 },
                 saveVideoProgress() {
                     const completedVideos = {};
                     this.courseSections.forEach(section => {
-                        if (section.mainVideo) {
-                            completedVideos[section.mainVideo.id] = section.mainVideo.completed;
-                        }
+                        section.videos.forEach(video => {
+                            completedVideos[video.id] = video.completed;
+                        });
                     });
                     localStorage.setItem(`courseVideos_${this.courseSlug}`, JSON.stringify(completedVideos));
                 },
@@ -548,27 +551,29 @@
                     if (savedVideos) {
                         const completedVideos = JSON.parse(savedVideos);
                         this.courseSections.forEach(section => {
-                            if (section.mainVideo && completedVideos[section.mainVideo.id] !== undefined) {
-                                section.mainVideo.completed = completedVideos[section.mainVideo.id];
-                            }
+                            section.videos.forEach(video => {
+                                if (completedVideos[video.id] !== undefined) {
+                                     video.completed = completedVideos[video.id];
+                                }
+                            });
                         });
                     }
                     this.updateCourseProgress(); 
                     const lastVideoId = localStorage.getItem(`lastVideoId_${this.courseSlug}`);
                     if (lastVideoId && this.findVideoById(parseInt(lastVideoId))) {
                         this.currentVideoId = parseInt(lastVideoId);
-                    } else if (this.courseSections.length > 0 && this.courseSections[0].mainVideo) {
-                        this.currentVideoId = this.courseSections[0].mainVideo.id;
+                    } else if (this.courseSections.length > 0 && this.courseSections[0].videos.length > 0) {
+                        this.currentVideoId = this.courseSections[0].videos[0].id;
                     }
                 },
                 updateCourseProgress() {
                     let totalCount = 0;
                     let completedCount = 0;
                     this.courseSections.forEach(section => {
-                        if(section.mainVideo){
+                        section.videos.forEach(video => {
                             totalCount++;
-                            if (section.mainVideo.completed) completedCount++;
-                        }
+                            if (video.completed) completedCount++;
+                        });
                     });
                     this.course.progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
                 },
@@ -592,23 +597,17 @@
                 },
                 getCurrentDayNumber() {
                     if (!this.currentVideoId) return 0;
-                    const section = this.courseSections.find(s => s.mainVideo && s.mainVideo.id === this.currentVideoId);
+                    const section = this.courseSections.find(s => s.videos.some(v => v.id === this.currentVideoId));
                     return section ? section.day_number : 0;
                 },
                 getTotalVideos() {
                     return this.courseSections.length;
                 },
                 isDaySelected(day) {
-                    return day.mainVideo && this.currentVideoId === day.mainVideo.id;
+                    return day.videos.some(v => v.id === this.currentVideoId);
                 },
                 isDayCompleted(day) {
-                    return day.mainVideo && day.mainVideo.completed;
-                },
-                findVideoById(videoId) {
-                    for (const section of this.courseSections) {
-                        if(section.mainVideo && section.mainVideo.id === videoId) return section.mainVideo;
-                    }
-                    return null;
+                    return day.videos.every(v => v.completed);
                 }
             },
             async mounted() {
