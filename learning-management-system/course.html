@@ -214,9 +214,9 @@
                                                 <button @click="handleResourceClick(resource)" class="resource-btn resource-btn-view">
                                                     <i class="fas fa-eye"></i> View
                                                 </button>
-                                                <a v-if="resource.download_storage_path && resource.download_storage_path !== 'None'" :href="getStoragePublicUrl(resource.download_storage_path, true)" download class="resource-btn resource-btn-download">
+                                                <button v-if="resource.download_storage_path && resource.download_storage_path !== 'None'" @click.stop="downloadResource(resource)" class="resource-btn resource-btn-download">
                                                     <i class="fas fa-download"></i> Download
-                                                </a>
+                                                </button>
                                                 <span v-else class="resource-btn resource-btn-download disabled">
                                                     <i class="fas fa-download"></i> Download
                                                 </span>
@@ -450,7 +450,8 @@
                                 day_number: parseInt(dayNum),
                                 title: mainVideo.title || `Day ${dayNum}`,
                                 expanded: parseInt(dayNum) === 1,
-                                videos: dayVideos
+                                videos: dayVideos,
+                                mainVideo: mainVideo
                             };
                         }).sort((a, b) => a.day_number - b.day_number);
                         
@@ -639,25 +640,34 @@
                         window.open(resource.url, '_blank');
                         return;
                     }
-                    if (resource.view_storage_path) {
+                    if (resource.type === 'pdf' && resource.view_storage_path && resource.view_storage_path !== 'None') {
                         await this.openPdfViewer(resource);
-                    } else if (resource.download_storage_path && resource.download_storage_path !== 'None') {
+                    } else {
+                        this.downloadResource(resource);
+                    }
+                },
+                downloadResource(resource) {
+                    if (resource.download_storage_path && resource.download_storage_path !== 'None') {
                         const url = this.getStoragePublicUrl(resource.download_storage_path, true);
                         if (url) {
                             const a = document.createElement('a');
                             a.href = url;
-                            a.download = resource.download_storage_path.split('/').pop();
+                            a.download = resource.download_storage_path.split('/').pop() || 'download';
                             document.body.appendChild(a);
                             a.click();
                             document.body.removeChild(a);
+                        } else {
+                            alert('Could not generate download link.');
                         }
+                    } else {
+                        alert('No downloadable file available for this resource.');
                     }
                 },
                 async openPdfViewer(resource) {
                     this.pdfLoading = true;
                     this.isPdfViewerVisible = true;
                     this.pdfDownloadUrl = this.getStoragePublicUrl(resource.download_storage_path, true);
-                    this.pdfDownloadFilename = resource.download_storage_path ? resource.download_storage_path.split('/').pop() : '';
+                    this.pdfDownloadFilename = resource.download_storage_path ? resource.download_storage_path.split('/').pop() : 'document.pdf';
 
                     try {
                         const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').download(resource.view_storage_path);
@@ -669,8 +679,7 @@
                         this.pdfCurrentPage = 1;
                         await this.renderPdfPage(this.pdfCurrentPage);
                     } catch (err) {
-                        console.error("Error loading PDF for viewer:", err);
-                        alert("Could not load the resource for viewing.");
+                        alert("Could not load the resource for viewing. It may not exist or you may not have permission.");
                         this.closePdfViewer();
                     } finally {
                         this.pdfLoading = false;
