@@ -639,7 +639,7 @@
                         try {
                             const { data, error } = await supabase.storage
                                 .from('industrial-training-mastery-resources')
-                                .createSignedUrl(resource.download_storage_path, 60);
+                                .createSignedUrl(resource.download_storage_path, 300); 
 
                             if (error) throw error;
                             
@@ -662,7 +662,10 @@
                     this.currentPdfResource = resource;
 
                     try {
-                        const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').download(resource.view_storage_path);
+                        const { data, error } = await supabase.storage
+                            .from('industrial-training-mastery-resources')
+                            .download(resource.view_storage_path);
+                        
                         if (error) throw error;
                         
                         const arrayBuffer = await data.arrayBuffer();
