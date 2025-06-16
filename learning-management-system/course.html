@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="course-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="importmap">
     {
@@ -124,21 +125,21 @@
                                 <p>No content available for this course yet.</p>
                             </div>
                             <div v-else v-for="(day, dayIndex) in courseSections" :key="day.day_number" class="course-module">
-                                <div class="module-header" @click="selectVideo(day.videos[0].id)" :class="{ 'active': isDaySelected(day), 'completed': isDayCompleted(day) }">
+                                <div class="module-header" @click="selectVideo(day.mainVideo.id)" :class="{ 'active': isDaySelected(day), 'completed': isDayCompleted(day) }">
                                     <div class="module-title-container">
                                         <i :class="['fas', isDayCompleted(day) ? 'fa-check-circle' : 'fa-play-circle']"></i>
                                         <h4>{{ day.title }}</h4>
                                     </div>
                                     <div class="module-info" @click.stop="toggleModule(dayIndex)">
-                                        <span v-if="day.videos[0] && day.videos[0].resources.length > 0">{{ day.videos[0].resources.length }} Resource<span v-if="day.videos[0].resources.length !== 1">s</span></span>
+                                        <span v-if="day.mainVideo && day.mainVideo.resources.length > 0">{{ day.mainVideo.resources.length }} Resource<span v-if="day.mainVideo.resources.length !== 1">s</span></span>
                                         <i :class="['fas', day.expanded ? 'fa-chevron-up' : 'fa-chevron-down']"></i>
                                     </div>
                                 </div>
                                 <div class="module-content" :class="{ 'expanded': day.expanded }">
-                                    <div v-if="day.videos[0] && day.videos[0].resources.length > 0" class="sidebar-resource-list">
-                                        <div v-for="(resourcesInGroup, groupName) in groupResourcesForSidebar(day.videos[0].resources)" :key="groupName" class="sidebar-resource-group">
+                                    <div v-if="day.mainVideo && day.mainVideo.resources.length > 0" class="sidebar-resource-list">
+                                        <div v-for="(resourcesInGroup, groupName) in groupResourcesForSidebar(day.mainVideo.resources)" :key="groupName" class="sidebar-resource-group">
                                             <h5 class="sidebar-resource-group-title" v-if="groupName !== 'General Resources'">{{ groupName }}</h5>
-                                            <div v-for="resource in resourcesInGroup" :key="resource.title" class="resource-item-sidebar">
+                                            <div v-for="resource in resourcesInGroup" :key="resource.title" class="resource-item-sidebar" @click="handleResourceClick(resource)">
                                                 <span class="resource-icon-sidebar"><i :class="getResourceIcon(resource.type)"></i></span>
                                                 <span class="resource-title-sidebar">{{ resource.title }}</span>
                                             </div>
@@ -185,7 +186,7 @@
                             <div class="video-navigation-premium">
                                 <button class="nav-button-premium prev" @click="playPreviousVideo" :disabled="!hasPreviousVideo">
                                     <i class="fas fa-arrow-left"></i> 
-                                    <span>Previous</span>
+                                    <span>Previous Day</span>
                                 </button>
                                 <div class="video-progress-center">
                                     <div class="video-counter">
@@ -193,7 +194,7 @@
                                     </div>
                                 </div>
                                 <button class="nav-button-premium next" @click="playNextVideo" :disabled="!hasNextVideo">
-                                    <span>Next</span>
+                                    <span>Next Day</span>
                                     <i class="fas fa-arrow-right"></i>
                                 </button>
                             </div>
@@ -210,20 +211,13 @@
                                             <span class="resource-icon"><i :class="getResourceIcon(resource.type)"></i></span>
                                             <span class="resource-title">{{ resource.title }}</span>
                                             <div class="resource-actions">
-                                                <a v-if="resource.type === 'external_link' && resource.url" :href="resource.url" target="_blank" class="resource-btn resource-btn-view">
-                                                    <i class="fas fa-external-link-alt"></i> View
-                                                </a>
-                                                <a v-else-if="resource.view_storage_path && getStoragePublicUrl(resource.view_storage_path)" :href="getStoragePublicUrl(resource.view_storage_path)" target="_blank" class="resource-btn resource-btn-view">
+                                                <button @click="handleResourceClick(resource)" class="resource-btn resource-btn-view">
                                                     <i class="fas fa-eye"></i> View
-                                                </a>
-                                                
-                                                <a v-if="resource.download_storage_path && resource.download_storage_path !== 'None' && resource.download_storage_path.startsWith('http')" :href="resource.download_storage_path" target="_blank" class="resource-btn resource-btn-download">
+                                                </button>
+                                                <a v-if="resource.download_storage_path && resource.download_storage_path !== 'None'" :href="getStoragePublicUrl(resource.download_storage_path, true)" download class="resource-btn resource-btn-download">
                                                     <i class="fas fa-download"></i> Download
                                                 </a>
-                                                <a v-else-if="resource.download_storage_path && resource.download_storage_path !== 'None' && getStoragePublicUrl(resource.download_storage_path, true)" :href="getStoragePublicUrl(resource.download_storage_path, true)" download class="resource-btn resource-btn-download">
-                                                    <i class="fas fa-download"></i> Download
-                                                </a>
-                                                <span v-else-if="resource.download_storage_path === 'None'" class="resource-btn resource-btn-download disabled">
+                                                <span v-else class="resource-btn resource-btn-download disabled">
                                                     <i class="fas fa-download"></i> Download
                                                 </span>
                                             </div>
@@ -244,6 +238,29 @@
                 </div>
             </template>
         </main>
+
+        <div id="pdf-viewer-modal" :class="{ 'visible': isPdfViewerVisible }">
+            <div class="pdf-viewer-content">
+                <div class="pdf-viewer-header">
+                    <h2 class="pdf-viewer-title">Resource Preview</h2>
+                    <button class="pdf-viewer-close-button" @click="closePdfViewer">×</button>
+                </div>
+                <div id="pdf-canvas-container" class="pdf-canvas-container">
+                    <div v-if="pdfLoading" class="loading-screen">
+                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
+                        <p>Loading Document...</p>
+                    </div>
+                    <canvas id="pdf-canvas"></canvas>
+                </div>
+                <div class="pdf-viewer-controls">
+                    <button id="pdf-prev-page" class="pdf-nav-button" @click="goToPrevPage" :disabled="pdfCurrentPage <= 1">Previous</button>
+                    <span id="pdf-page-info">Page {{ pdfCurrentPage }} of {{ pdfTotalPages }}</span>
+                    <a v-if="pdfDownloadUrl" :href="pdfDownloadUrl" :download="pdfDownloadFilename" class="pdf-nav-button pdf-viewer-download-btn">Download</a>
+                    <span v-else class="pdf-nav-button pdf-viewer-download-btn disabled">Download</span>
+                    <button id="pdf-next-page" class="pdf-nav-button" @click="goToNextPage" :disabled="pdfCurrentPage >= pdfTotalPages">Next</button>
+                </div>
+            </div>
+        </div>
 
         <footer class="footer-enhanced" v-if="isEnrolled">
             <div class="footer-content">
@@ -289,6 +306,7 @@
         const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
         
         createApp({
             data() {
@@ -315,7 +333,14 @@
                             description: 'Master industrial training requirements for CA candidates with real-world case studies.',
                             thumbnail: 'https://mystudentclub.com/assets/industrial-course-main.png'
                         }
-                    }
+                    },
+                    isPdfViewerVisible: false,
+                    pdfLoading: false,
+                    pdfDoc: null,
+                    pdfCurrentPage: 1,
+                    pdfTotalPages: 1,
+                    pdfDownloadUrl: null,
+                    pdfDownloadFilename: ''
                 }
             },
             computed: {
@@ -498,7 +523,7 @@
                 },
                 getAdjacentVideo(direction) {
                     if (!this.currentVideoId) return null;
-                    const allVideos = this.courseSections.flatMap(section => section.videos);
+                    const allVideos = this.courseSections.map(section => section.videos[0]).filter(Boolean);
                     const currentIndex = allVideos.findIndex(video => video.id === this.currentVideoId);
                     if (currentIndex === -1) return null;
                     if (direction === 'previous' && currentIndex > 0) {
@@ -608,6 +633,98 @@
                 },
                 isDayCompleted(day) {
                     return day.videos.every(v => v.completed);
+                },
+                async handleResourceClick(resource) {
+                    if (resource.type === 'external_link') {
+                        window.open(resource.url, '_blank');
+                        return;
+                    }
+                    if (resource.view_storage_path) {
+                        await this.openPdfViewer(resource);
+                    } else if (resource.download_storage_path && resource.download_storage_path !== 'None') {
+                        const url = this.getStoragePublicUrl(resource.download_storage_path, true);
+                        if (url) {
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = resource.download_storage_path.split('/').pop();
+                            document.body.appendChild(a);
+                            a.click();
+                            document.body.removeChild(a);
+                        }
+                    }
+                },
+                async openPdfViewer(resource) {
+                    this.pdfLoading = true;
+                    this.isPdfViewerVisible = true;
+                    this.pdfDownloadUrl = this.getStoragePublicUrl(resource.download_storage_path, true);
+                    this.pdfDownloadFilename = resource.download_storage_path ? resource.download_storage_path.split('/').pop() : '';
+
+                    try {
+                        const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').download(resource.view_storage_path);
+                        if (error) throw error;
+                        
+                        const arrayBuffer = await data.arrayBuffer();
+                        this.pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                        this.pdfTotalPages = this.pdfDoc.numPages;
+                        this.pdfCurrentPage = 1;
+                        await this.renderPdfPage(this.pdfCurrentPage);
+                    } catch (err) {
+                        console.error("Error loading PDF for viewer:", err);
+                        alert("Could not load the resource for viewing.");
+                        this.closePdfViewer();
+                    } finally {
+                        this.pdfLoading = false;
+                    }
+                },
+                async renderPdfPage(num) {
+                    if (!this.pdfDoc) return;
+                    const page = await this.pdfDoc.getPage(num);
+                    const canvas = document.getElementById('pdf-canvas');
+                    const ctx = canvas.getContext('2d');
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    const renderContext = { canvasContext: ctx, viewport: viewport };
+                    await page.render(renderContext).promise;
+                    this.drawWatermark(canvas, ctx);
+                },
+                drawWatermark(canvas, ctx) {
+                    const watermarkText = this.user ? this.user.email : 'MyStudentClub';
+                    ctx.font = '20px Arial';
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    
+                    const x_step = 250;
+                    const y_step = 150;
+                    
+                    ctx.save();
+                    for (let y = y_step / 2; y < canvas.height; y += y_step) {
+                        for (let x = x_step / 2; x < canvas.width; x += x_step) {
+                            ctx.save();
+                            ctx.translate(x, y);
+                            ctx.rotate(-Math.PI / 4);
+                            ctx.fillText(watermarkText, 0, 0);
+                            ctx.restore();
+                        }
+                    }
+                    ctx.restore();
+                },
+                closePdfViewer() {
+                    this.isPdfViewerVisible = false;
+                    this.pdfDoc = null;
+                },
+                goToPrevPage() {
+                    if (this.pdfCurrentPage > 1) {
+                        this.pdfCurrentPage--;
+                        this.renderPdfPage(this.pdfCurrentPage);
+                    }
+                },
+                goToNextPage() {
+                    if (this.pdfCurrentPage < this.pdfTotalPages) {
+                        this.pdfCurrentPage++;
+                        this.renderPdfPage(this.pdfCurrentPage);
+                    }
                 }
             },
             async mounted() {
