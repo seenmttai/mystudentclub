@@ -677,9 +677,16 @@
                             throw error;
                         }
                         
-                        const workerUrl = 'https://pdf-proxy-viewer.bhansalimanan55.workers.dev'; 
+                        const workerUrl = 'https://pdf-proxy-viewer.bhansalimanan55.workers.dev/';
                         const proxiedUrl = `${workerUrl}?url=${encodeURIComponent(data.signedUrl)}`;
-                        this.pdfDoc = await pdfjsLib.getDocument(proxiedUrl).promise;
+
+                        const response = await fetch(proxiedUrl);
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch PDF from proxy: ${response.status} ${response.statusText}`);
+                        }
+                        const pdfData = await response.arrayBuffer();
+
+                        this.pdfDoc = await pdfjsLib.getDocument(pdfData).promise;
                         
                         this.pdfTotalPages = this.pdfDoc.numPages;
                         this.pdfCurrentPage = 1;
