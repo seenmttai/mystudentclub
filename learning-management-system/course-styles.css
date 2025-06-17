@@ -363,6 +363,8 @@
     padding: 0.75rem 0;
     border-bottom: 1px solid var(--border, #e2e8f0);
     transition: background-color 0.2s ease;
+    flex-wrap: wrap;
+    row-gap: 0.75rem;
 }
 .resource-item:last-child {
     border-bottom: none;
@@ -383,11 +385,13 @@
     flex-grow: 1;
     font-size: 0.95rem;
     color: var(--text-secondary, #475569);
+    padding-right: 1rem;
 }
 
 .resource-actions {
     display: flex;
     gap: 0.5rem;
+    flex-shrink: 0;
 }
 
 .resource-btn {

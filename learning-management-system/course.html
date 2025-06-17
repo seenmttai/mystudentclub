@@ -649,21 +649,27 @@
                 },
                 async handleResourceClick(resource) {
                     const type = resource.type.toLowerCase();
+
                     if (type === 'external_link' && resource.url) {
                         window.open(resource.url, '_blank');
                         return;
                     }
+
                     if (resource.view_storage_path && resource.view_storage_path !== 'None') {
+                        let previewType = null;
                         if (type === 'pdf') {
-                            await this.openResourceViewer(resource, 'pdf');
+                            previewType = 'pdf';
                         } else if (['csv', 'spreadsheet', 'xlsx'].includes(type)) {
-                            await this.openResourceViewer(resource, 'csv');
-                        } else {
-                            this.downloadResource(resource);
+                            previewType = 'csv';
                         }
-                    } else {
-                        this.downloadResource(resource);
+
+                        if (previewType) {
+                            await this.openResourceViewer(resource, previewType);
+                            return;
+                        }
                     }
+                    
+                    this.downloadResource(resource);
                 },
                 async downloadResource(resource) {
                     if (resource.download_storage_path && resource.download_storage_path !== 'None') {
@@ -779,7 +785,7 @@
                 },
                 closeResourceViewer() {
                     if (this.isFullscreen) {
-                        this.toggleFullscreen();
+                        document.exitFullscreen();
                     }
                     this.isViewerVisible = false;
                     this.pdfDoc = null;
