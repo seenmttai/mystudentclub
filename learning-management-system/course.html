@@ -335,7 +335,6 @@
                     },
                     isPdfViewerVisible: false,
                     pdfLoading: false,
-                    // pdfDoc: null, <-- REMOVED FROM REACTIVE DATA
                     pdfCurrentPage: 1,
                     pdfTotalPages: 1,
                     currentPdfResource: null
@@ -752,7 +751,7 @@
                 }
             },
             async mounted() {
-                this.pdfDoc = null; // <-- INITIALIZE NON-REACTIVE PROPERTY
+                this.pdfDoc = null; 
                 this.loadCourseData();
                 await this.checkAuth();
                 supabase.auth.onAuthStateChange(async (_event, session) => {
