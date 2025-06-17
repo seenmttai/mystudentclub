@@ -637,8 +637,9 @@
                 async downloadResource(resource) {
                     if (resource.download_storage_path && resource.download_storage_path !== 'None') {
                         try {
+                            const bucketName = `${this.courseSlug}-resources`;
                             const { data, error } = await supabase.storage
-                                .from('industrial-training-mastery-resources')
+                                .from(bucketName)
                                 .createSignedUrl(resource.download_storage_path, 300);
 
                             if (error) throw error;
@@ -666,20 +667,19 @@
                     this.pdfLoading = true;
                     this.isPdfViewerVisible = true;
                     this.currentPdfResource = resource;
-
+                    const bucketName = `${this.courseSlug}-resources`;
                     try {
-                        const { data, error } = await supabase.storage
-                            .from('industrial-training-mastery-resources')
-                            .createSignedUrl(resource.view_storage_path, 300);
-
+                        const { data: blob, error } = await supabase.storage
+                            .from(bucketName)
+                            .download(resource.view_storage_path);
                         if (error) throw error;
-                        
-                        const pdfData = await fetch(data.signedUrl).then(res => res.arrayBuffer());
+                        const pdfData = await blob.arrayBuffer();
                         this.pdfDoc = await pdfjsLib.getDocument({ data: pdfData }).promise;
                         this.pdfTotalPages = this.pdfDoc.numPages;
                         this.pdfCurrentPage = 1;
                         await this.renderPdfPage(this.pdfCurrentPage);
                     } catch (err) {
+                        console.error(err);
                         alert("Could not load the resource for viewing. It may not exist or you may not have permission.");
                         this.closePdfViewer();
                     } finally {
