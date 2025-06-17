@@ -662,6 +662,15 @@
                     }
                 },
                 async openPdfViewer(resource) {
+                    this.pdfDoc = null;
+                    this.pdfCurrentPage = 1;
+                    this.pdfTotalPages = 1;
+                    const canvas = document.getElementById('pdf-canvas');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    }
+
                     this.pdfLoading = true;
                     this.isPdfViewerVisible = true;
                     this.currentPdfResource = resource;
@@ -736,6 +745,12 @@
                     this.isPdfViewerVisible = false;
                     this.pdfDoc = null;
                     this.currentPdfResource = null;
+                    
+                    const canvas = document.getElementById('pdf-canvas');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    }
                 },
                 goToPrevPage() {
                     if (this.pdfCurrentPage > 1) {
