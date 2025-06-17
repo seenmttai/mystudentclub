@@ -239,24 +239,45 @@
             </template>
         </main>
 
-        <div id="pdf-viewer-modal" :class="{ 'visible': isPdfViewerVisible }">
-            <div class="pdf-viewer-content">
-                <div class="pdf-viewer-header">
-                    <h2 class="pdf-viewer-title">Resource Preview</h2>
-                    <button class="pdf-viewer-close-button" @click="closePdfViewer">×</button>
+        <div id="resource-viewer-modal" :class="{ 'visible': isViewerVisible }">
+            <div class="resource-viewer-content" ref="viewerContent">
+                <div class="resource-viewer-header">
+                    <h2 class="resource-viewer-title">{{ currentResource ? currentResource.title : 'Resource Preview' }}</h2>
+                    <div>
+                        <button class="resource-viewer-fullscreen-button" @click="toggleFullscreen">
+                            <i :class="['fas', isFullscreen ? 'fa-compress' : 'fa-expand']"></i>
+                        </button>
+                        <button class="resource-viewer-close-button" @click="closeResourceViewer">×</button>
+                    </div>
                 </div>
-                <div id="pdf-canvas-container" class="pdf-canvas-container">
-                    <div v-if="pdfLoading" class="loading-screen">
+                <div class="viewer-main-content">
+                    <div v-if="viewerLoading" class="loading-screen">
                         <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
                         <p>Loading Document...</p>
                     </div>
-                    <canvas id="pdf-canvas"></canvas>
+                    <div v-if="previewType === 'pdf'" class="pdf-canvas-container">
+                        <canvas id="pdf-canvas"></canvas>
+                    </div>
+                    <div v-if="previewType === 'csv'" class="csv-preview-container">
+                        <table class="csv-preview-table">
+                            <thead v-if="csvData && csvData.header.length > 0">
+                                <tr>
+                                    <th v-for="(col, index) in csvData.header" :key="index">{{ col }}</th>
+                                </tr>
+                            </thead>
+                            <tbody v-if="csvData && csvData.rows.length > 0">
+                                <tr v-for="(row, rowIndex) in csvData.rows" :key="rowIndex">
+                                    <td v-for="(cell, cellIndex) in row" :key="cellIndex" :title="cell">{{ cell }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div class="pdf-viewer-controls">
-                    <button id="pdf-prev-page" class="pdf-nav-button" @click="goToPrevPage" :disabled="pdfCurrentPage <= 1">Previous</button>
-                    <span id="pdf-page-info">Page {{ pdfCurrentPage }} of {{ pdfTotalPages }}</span>
-                    <button @click="downloadResource(currentPdfResource)" class="pdf-nav-button pdf-viewer-download-btn" :disabled="!currentPdfResource || !currentPdfResource.download_storage_path || currentPdfResource.download_storage_path === 'None'">Download</button>
-                    <button id="pdf-next-page" class="pdf-nav-button" @click="goToNextPage" :disabled="pdfCurrentPage >= pdfTotalPages">Next</button>
+                <div class="resource-viewer-controls">
+                    <button v-if="previewType === 'pdf'" id="pdf-prev-page" class="viewer-nav-button" @click="goToPrevPage" :disabled="pdfCurrentPage <= 1">Previous</button>
+                    <span v-if="previewType === 'pdf'" id="pdf-page-info">Page {{ pdfCurrentPage }} of {{ pdfTotalPages }}</span>
+                    <button @click="downloadResource(currentResource)" class="viewer-nav-button viewer-download-btn" :disabled="!currentResource || !currentResource.download_storage_path || currentResource.download_storage_path === 'None'">Download</button>
+                    <button v-if="previewType === 'pdf'" id="pdf-next-page" class="viewer-nav-button" @click="goToNextPage" :disabled="pdfCurrentPage >= pdfTotalPages">Next</button>
                 </div>
             </div>
         </div>
@@ -333,11 +354,14 @@
                             thumbnail: 'https://mystudentclub.com/assets/industrial-course-main.png'
                         }
                     },
-                    isPdfViewerVisible: false,
-                    pdfLoading: false,
+                    isViewerVisible: false,
+                    viewerLoading: false,
                     pdfCurrentPage: 1,
                     pdfTotalPages: 1,
-                    currentPdfResource: null
+                    currentResource: null,
+                    previewType: null,
+                    csvData: null,
+                    isFullscreen: false
                 }
             },
             computed: {
@@ -469,7 +493,8 @@
                         video: 'fas fa-file-video',
                         archive: 'fas fa-file-archive',
                         spreadsheet: 'fas fa-file-excel',
-                        xlsx: 'fas fa-file-excel'
+                        xlsx: 'fas fa-file-excel',
+                        csv: 'fas fa-file-csv'
                     };
                     return iconMap[type.toLowerCase()] || 'fas fa-file';
                 },
@@ -623,12 +648,19 @@
                     return day.videos.every(v => v.completed);
                 },
                 async handleResourceClick(resource) {
-                    if (resource.type === 'external_link' && resource.url) {
+                    const type = resource.type.toLowerCase();
+                    if (type === 'external_link' && resource.url) {
                         window.open(resource.url, '_blank');
                         return;
                     }
                     if (resource.view_storage_path && resource.view_storage_path !== 'None') {
-                        await this.openPdfViewer(resource);
+                        if (type === 'pdf') {
+                            await this.openResourceViewer(resource, 'pdf');
+                        } else if (['csv', 'spreadsheet', 'xlsx'].includes(type)) {
+                            await this.openResourceViewer(resource, 'csv');
+                        } else {
+                            this.downloadResource(resource);
+                        }
                     } else {
                         this.downloadResource(resource);
                     }
@@ -661,8 +693,9 @@
                         alert('No downloadable file available for this resource.');
                     }
                 },
-                async openPdfViewer(resource) {
+                async openResourceViewer(resource, type) {
                     this.pdfDoc = null;
+                    this.csvData = null;
                     this.pdfCurrentPage = 1;
                     this.pdfTotalPages = 1;
                     const canvas = document.getElementById('pdf-canvas');
@@ -671,44 +704,47 @@
                         ctx.clearRect(0, 0, canvas.width, canvas.height);
                     }
 
-                    this.pdfLoading = true;
-                    this.isPdfViewerVisible = true;
-                    this.currentPdfResource = resource;
+                    this.viewerLoading = true;
+                    this.isViewerVisible = true;
+                    this.currentResource = resource;
+                    this.previewType = type;
 
                     try {
                         const { data, error } = await supabase.storage
                             .from('industrial-training-mastery-resources')
                             .createSignedUrl(resource.view_storage_path, 300);
 
-                        if (error) {
-                            console.error('Error creating signed URL:', error);
-                            throw error;
-                        }
+                        if (error) throw error;
                         
                         const workerUrl = 'https://pdf-proxy-viewer.bhansalimanan55.workers.dev/';
                         const proxiedUrl = `${workerUrl}?url=${encodeURIComponent(data.signedUrl)}`;
 
                         const response = await fetch(proxiedUrl);
-                        if (!response.ok) {
-                            throw new Error(`Failed to fetch PDF from proxy: ${response.status} ${response.statusText}`);
-                        }
-                        const pdfData = await response.arrayBuffer();
+                        if (!response.ok) throw new Error(`Failed to fetch from proxy: ${response.status}`);
 
-                        this.pdfDoc = await pdfjsLib.getDocument(pdfData).promise;
-                        
-                        this.pdfTotalPages = this.pdfDoc.numPages;
-                        this.pdfCurrentPage = 1;
-                        await this.renderPdfPage(this.pdfCurrentPage);
+                        if (type === 'pdf') {
+                            const pdfData = await response.arrayBuffer();
+                            this.pdfDoc = await pdfjsLib.getDocument(pdfData).promise;
+                            this.pdfTotalPages = this.pdfDoc.numPages;
+                            await this.renderPdfPage(1);
+                        } else if (type === 'csv') {
+                            const csvText = await response.text();
+                            const lines = csvText.split('\n').filter(line => line.trim() !== '');
+                            const header = lines.length > 0 ? lines[0].split(',').map(h => h.trim()) : [];
+                            const rows = lines.length > 1 ? lines.slice(1).map(line => line.split(',').map(cell => cell.trim())) : [];
+                            this.csvData = { header, rows };
+                        }
                     } catch (err) {
-                        console.error("PDF viewer error:", err);
-                        alert("Could not load the resource for viewing. It may not exist or you may not have permission.");
-                        this.closePdfViewer();
+                        console.error("Resource viewer error:", err);
+                        alert("Could not load the resource for viewing.");
+                        this.closeResourceViewer();
                     } finally {
-                        this.pdfLoading = false;
+                        this.viewerLoading = false;
                     }
                 },
                 async renderPdfPage(num) {
                     if (!this.pdfDoc) return;
+                    this.pdfCurrentPage = num;
                     const page = await this.pdfDoc.getPage(num);
                     const canvas = document.getElementById('pdf-canvas');
                     const ctx = canvas.getContext('2d');
@@ -741,27 +777,36 @@
                     }
                     ctx.restore();
                 },
-                closePdfViewer() {
-                    this.isPdfViewerVisible = false;
-                    this.pdfDoc = null;
-                    this.currentPdfResource = null;
-                    
-                    const canvas = document.getElementById('pdf-canvas');
-                    if (canvas) {
-                        const ctx = canvas.getContext('2d');
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                closeResourceViewer() {
+                    if (this.isFullscreen) {
+                        this.toggleFullscreen();
                     }
+                    this.isViewerVisible = false;
+                    this.pdfDoc = null;
+                    this.currentResource = null;
+                    this.previewType = null;
+                    this.csvData = null;
                 },
                 goToPrevPage() {
                     if (this.pdfCurrentPage > 1) {
-                        this.pdfCurrentPage--;
-                        this.renderPdfPage(this.pdfCurrentPage);
+                        this.renderPdfPage(this.pdfCurrentPage - 1);
                     }
                 },
                 goToNextPage() {
                     if (this.pdfCurrentPage < this.pdfTotalPages) {
-                        this.pdfCurrentPage++;
-                        this.renderPdfPage(this.pdfCurrentPage);
+                        this.renderPdfPage(this.pdfCurrentPage + 1);
+                    }
+                },
+                toggleFullscreen() {
+                    const elem = this.$refs.viewerContent;
+                    if (!document.fullscreenElement) {
+                        elem.requestFullscreen().catch(err => {
+                            alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                        });
+                        this.isFullscreen = true;
+                    } else {
+                        document.exitFullscreen();
+                        this.isFullscreen = false;
                     }
                 }
             },
@@ -780,16 +825,8 @@
                         window.location.href = 'https://www.mystudentclub.com/login';
                     }
                 });
-                document.addEventListener('click', (event) => {
-                    const sidebar = document.querySelector('.course-sidebar');
-                    const sidebarToggle = document.querySelector('.sidebar-toggle');
-                    if (sidebar && sidebarToggle && 
-                        !sidebar.contains(event.target) && 
-                        !sidebarToggle.contains(event.target) &&
-                        this.sidebarActive && 
-                        window.innerWidth < 768) {
-                        this.sidebarActive = false;
-                    }
+                document.addEventListener('fullscreenchange', () => {
+                    this.isFullscreen = !!document.fullscreenElement;
                 });
             }
         }).mount('#app');
