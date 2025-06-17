@@ -619,6 +619,14 @@
     position: relative;
 }
 
+.resource-viewer-content:fullscreen {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+}
+
 .resource-viewer-header {
     display: flex;
     justify-content: space-between;
@@ -684,36 +692,32 @@
 }
 
 .csv-preview-container {
-    padding: 1rem;
     height: 100%;
     overflow: auto;
 }
 
 .csv-preview-table {
-    width: 100%;
     border-collapse: collapse;
-    table-layout: fixed;
 }
 
 .csv-preview-table th,
 .csv-preview-table td {
     padding: 0.75rem;
     text-align: left;
-    border-bottom: 1px solid #e2e8f0;
+    border: 1px solid #dde1e6;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .csv-preview-table th {
-    background-color: #e2e8f0;
+    background-color: #f1f5f9;
     font-weight: 600;
     position: sticky;
     top: 0;
+    z-index: 1;
 }
 
-.csv-preview-table tbody tr:nth-child(even) {
-    background-color: #f8fafc;
+.csv-preview-table tbody tr:hover {
+    background-color: #e9ebee;
 }
 
 .resource-viewer-controls {
@@ -853,5 +857,15 @@
 
     .resource-viewer-title {
         font-size: 1rem;
+    }
+
+    .resource-item {
+        flex-wrap: wrap;
+        row-gap: 0.75rem;
+    }
+
+    .resource-actions {
+        flex-basis: 100%;
+        justify-content: flex-end;
     }
 }

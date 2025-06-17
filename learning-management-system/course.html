@@ -803,10 +803,8 @@
                         elem.requestFullscreen().catch(err => {
                             alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
                         });
-                        this.isFullscreen = true;
                     } else {
                         document.exitFullscreen();
-                        this.isFullscreen = false;
                     }
                 }
             },
