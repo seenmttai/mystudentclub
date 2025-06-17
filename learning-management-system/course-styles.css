@@ -868,6 +868,11 @@
         row-gap: 0.75rem;
     }
 
+    .resource-title {
+        flex-basis: 100%;
+        padding-right: 0;
+    }
+
     .resource-actions {
         flex-basis: 100%;
         justify-content: flex-end;

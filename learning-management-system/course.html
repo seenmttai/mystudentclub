@@ -648,55 +648,50 @@
                     return day.videos.every(v => v.completed);
                 },
                 async handleResourceClick(resource) {
-                    const type = resource.type.toLowerCase();
-
-                    if (type === 'external_link' && resource.url) {
+                    if (resource.type === 'external_link' && resource.url) {
                         window.open(resource.url, '_blank');
                         return;
                     }
 
                     if (resource.view_storage_path && resource.view_storage_path !== 'None') {
-                        let previewType = null;
-                        if (type === 'pdf') {
-                            previewType = 'pdf';
-                        } else if (['csv', 'spreadsheet', 'xlsx'].includes(type)) {
-                            previewType = 'csv';
+                        const path = resource.view_storage_path.toLowerCase();
+                        if (path.endsWith('.csv')) {
+                            await this.openResourceViewer(resource, 'csv');
+                        } else {
+                            await this.openResourceViewer(resource, 'pdf');
                         }
-
-                        if (previewType) {
-                            await this.openResourceViewer(resource, previewType);
-                            return;
-                        }
+                        return;
                     }
                     
                     this.downloadResource(resource);
                 },
                 async downloadResource(resource) {
-                    if (resource.download_storage_path && resource.download_storage_path !== 'None') {
-                        try {
-                            const { data, error } = await supabase.storage
-                                .from('industrial-training-mastery-resources')
-                                .createSignedUrl(resource.download_storage_path, 300);
-
-                            if (error) throw error;
-                            
-                            const response = await fetch(data.signedUrl);
-                            if (!response.ok) throw new Error('Network response was not ok.');
-                            const blob = await response.blob();
-                            
-                            const url = window.URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = resource.download_storage_path.split('/').pop() || 'download';
-                            document.body.appendChild(a);
-                            a.click();
-                            window.URL.revokeObjectURL(url);
-                            a.remove();
-                        } catch (err) {
-                            alert('Could not download the file. Please try again.');
-                        }
-                    } else {
+                    if (!resource || !resource.download_storage_path || resource.download_storage_path === 'None') {
                         alert('No downloadable file available for this resource.');
+                        return;
+                    }
+
+                    try {
+                        const { data, error } = await supabase.storage
+                            .from('industrial-training-mastery-resources')
+                            .createSignedUrl(resource.download_storage_path, 300);
+
+                        if (error) throw error;
+                        
+                        const response = await fetch(data.signedUrl);
+                        if (!response.ok) throw new Error('Network response was not ok.');
+                        const blob = await response.blob();
+                        
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = resource.download_storage_path.split('/').pop() || 'download';
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        a.remove();
+                    } catch (err) {
+                        alert('Could not download the file. Please try again.');
                     }
                 },
                 async openResourceViewer(resource, type) {
@@ -785,7 +780,7 @@
                 },
                 closeResourceViewer() {
                     if (this.isFullscreen) {
-                        document.exitFullscreen();
+                        this.toggleFullscreen();
                     }
                     this.isViewerVisible = false;
                     this.pdfDoc = null;
