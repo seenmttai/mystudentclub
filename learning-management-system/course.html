@@ -677,7 +677,9 @@
                             throw error;
                         }
                         
-                        this.pdfDoc = await pdfjsLib.getDocument(data.signedUrl).promise;
+                        const proxiedUrl = `https://proxime.bhansalimanan55.workers.dev/${data.signedUrl}`;
+                        this.pdfDoc = await pdfjsLib.getDocument(proxiedUrl).promise;
+                        
                         this.pdfTotalPages = this.pdfDoc.numPages;
                         this.pdfCurrentPage = 1;
                         await this.renderPdfPage(this.pdfCurrentPage);
