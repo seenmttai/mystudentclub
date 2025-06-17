@@ -677,7 +677,8 @@
                             throw error;
                         }
                         
-                        const proxiedUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(data.signedUrl)}`;
+                        const workerUrl = 'https://pdf-proxy-viewer.bhansalimanan55.workers.dev'; 
+                        const proxiedUrl = `${workerUrl}?url=${encodeURIComponent(data.signedUrl)}`;
                         this.pdfDoc = await pdfjsLib.getDocument(proxiedUrl).promise;
                         
                         this.pdfTotalPages = this.pdfDoc.numPages;
