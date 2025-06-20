@@ -84,9 +84,13 @@
             </div>
 
             <template v-else>
-                <div class="course-header" :style="{ backgroundImage: 'url(' + course.thumbnail + ')', opacity: 0.8 }">
-                    <div class="course-header-content">
-                        <h1>{{ course.title }}</h1>
+                <div class="course-header" :style="{
+                    background: `linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('${course.thumbnail}')`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center'
+                }">
+                    <div class="course-header-content" style="color: white; text-shadow: 0px 1px 4px rgba(0,0,0,0.7);">
+                        <h1 style="font-weight: bold;">{{ course.title }}</h1>
                         <p>{{ course.description }}</p>
                         <div class="course-meta-info">
                             <div class="meta-item" v-if="totalVideos > 0">
