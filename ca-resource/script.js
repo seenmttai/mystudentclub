@@ -11,6 +11,7 @@ const viewerControls = document.getElementById('viewer-controls');
 const canvasContainer = document.getElementById('canvas-container'); 
 
 const searchInput = document.getElementById('search-input');
+const searchBtn = document.getElementById('search-btn');
 const searchPrevBtn = document.getElementById('search-prev');
 const searchNextBtn = document.getElementById('search-next');
 const searchInfo = document.getElementById('search-info');
@@ -229,6 +230,9 @@ if (typeof pdfjsLib === 'undefined') {
         if (e.key === 'Enter') {
             searchDocument(searchInput.value.trim());
         }
+    });
+    searchBtn.addEventListener('click', () => {
+        searchDocument(searchInput.value.trim());
     });
     searchNextBtn.addEventListener('click', onSearchNext);
     searchPrevBtn.addEventListener('click', onSearchPrev);
