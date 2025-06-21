@@ -16,7 +16,6 @@ const categoryFilter = document.getElementById('categoryFilter');
 const loadMoreButton = document.getElementById('loadMore');
 const footerNav = document.querySelector('.footer-nav');
 const menuButton = document.getElementById('menuButton');
-const menuCloseBtn = document.getElementById('menuCloseBtn');
 const expandedMenu = document.getElementById('expandedMenu');
 const authButtonsContainer = document.querySelector('.auth-buttons');
 
@@ -58,19 +57,18 @@ function renderJobCard(job) {
     return jobCard;
 }
 
-function getPeerLink(job) {
-    if (job.connect_link && isValidUrl(job.connect_link)) {
-        return job.connect_link;
-    }
-    const companyName = job.Company || '';
-    const keywords = `"Industrial Trainee" AND "${companyName}"`;
-    return `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(keywords)}&origin=FACETED_SEARCH`;
-}
-
 function showModal(job) {
     const companyInitial = job.Company ? job.Company.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     
+    let connectUrl;
+    if (job.connect_link && job.connect_link.trim() !== '') {
+        connectUrl = job.connect_link;
+    } else {
+        const linkedinSearchTerm = `"Industrial Trainee" AND "${job.Company}"`;
+        connectUrl = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(linkedinSearchTerm)}&origin=FACETED_SEARCH`;
+    }
+
     modalBody.innerHTML = `
         <div class="modal-header">
             <div class="modal-logo">${companyInitial}</div>
@@ -90,7 +88,7 @@ function showModal(job) {
         </div>
         <div class="modal-actions">
             <a href="${getApplicationLink(job['Application ID'])}" class="btn btn-primary" ${isValidUrl(job['Application ID']) ? 'target="_blank"' : ''}>Apply Now</a>
-            <a href="${getPeerLink(job)}" class="btn btn-secondary" target="_blank">Connect to Peer</a>
+            <a href="${connectUrl}" class="btn btn-secondary" target="_blank">Connect to Peer</a>
         </div>
     `;
     modalOverlay.style.display = 'flex';
@@ -190,8 +188,7 @@ function setupEventListeners() {
     salaryFilter.addEventListener('change', resetAndFetch);
     categoryFilter.addEventListener('change', resetAndFetch);
     loadMoreButton.addEventListener('click', fetchJobs);
-    menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
-    menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+    menuButton.addEventListener('click', () => expandedMenu.classList.toggle('active'));
     document.addEventListener('click', (e) => {
         if (!expandedMenu.contains(e.target) && !menuButton.contains(e.target)) {
             expandedMenu.classList.remove('active');
@@ -227,15 +224,15 @@ async function fetchCategories() {
 
 function setupFooterNav() {
     const navItems = [
-        { name: 'Industrial Training', table: 'Industrial Training Job Portal', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>' },
-        { name: 'Articleship', table: 'Articleship Jobs', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>' },
-        { name: 'Semi Qualified', table: 'Semi Qualified Jobs', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>' },
-        { name: 'Freshers', table: 'Fresher Jobs', icon: '<path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>' }
+        { name: 'Industrial Training', table: 'Industrial Training Job Portal', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>' },
+        { name: 'Articleship', table: 'Articleship Jobs', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>' },
+        { name: 'Semi Qualified', table: 'Semi Qualified Jobs', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>' },
+        { name: 'Freshers', table: 'Fresher Jobs', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>' }
     ];
 
     footerNav.innerHTML = navItems.map(item => `
         <button class="footer-tab ${item.table === currentTable ? 'active' : ''}" data-table="${item.table}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${item.icon}</svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">${item.icon}</svg>
             <span>${item.name}</span>
         </button>
     `).join('');
@@ -252,17 +249,44 @@ function setupFooterNav() {
     });
 }
 
-async function updateHeaderAuth() {
+async function checkAuth() {
     const { data: { session } } = await supabaseClient.auth.getSession();
+    return session;
+}
+
+function updateHeaderAuth(session) {
+    if (!authButtonsContainer) return;
     if (session) {
-        authButtonsContainer.innerHTML = `<button class="header-icon-btn" id="profileBtn" aria-label="Profile"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"></path></svg></button>`;
+        let email = session.user.email || 'User';
+        let initial = email.charAt(0).toUpperCase();
+        authButtonsContainer.innerHTML = `
+            <div class="user-profile-container">
+                <div class="user-icon-wrapper">
+                    <div class="user-icon" data-email="${email}">${initial}</div>
+                    <div class="user-hover-card">
+                        <p class="user-email">${email}</p>
+                        <button onclick="handleLogout()" class="logout-btn">Logout</button>
+                    </div>
+                </div>
+            </div>`;
     } else {
-        authButtonsContainer.innerHTML = `<a href="/login.html" class="header-icon-btn" aria-label="Login"><svg viewBox="0 0 24 24"><path d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"></path></svg></a>`;
+        authButtonsContainer.innerHTML = `
+            <a href="/login.html" class="header-icon-btn" aria-label="Login">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+            </a>`;
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    updateHeaderAuth();
+window.handleLogout = async () => {
+    await supabaseClient.auth.signOut();
+    window.location.reload();
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const session = await checkAuth();
+    updateHeaderAuth(session);
     populateSalaryFilter(currentTable);
     fetchCategories();
     fetchJobs();
