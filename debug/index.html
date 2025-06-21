@@ -19,22 +19,29 @@
       </a>
       <div class="nav-actions">
         <div class="auth-buttons"></div>
-        <button id="notificationsBtn" class="notification-icon-btn" aria-label="Manage Notifications">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-          </svg>
+        <button id="notificationsBtn" class="header-icon-btn" aria-label="Manage Notifications">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 14.5v-3.5a7 7 0 10-14 0v3.5l-2.5 4.5h19l-2.5-4.5zM12 22a2.5 2.5 0 002.5-2.5h-5A2.5 2.5 0 0012 22z"/></svg>
           <span class="notification-badge" id="notificationBadge"></span>
         </button>
-        <button class="menu-button" id="menuButton">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-          </svg>
+        <button class="header-icon-btn menu-button" id="menuButton" aria-label="Open Menu">
+          <svg width="24" height="24" viewBox="0 0 24 24"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
         </button>
       </div>
     </div>
-    <div class="expanded-menu" id="expandedMenu">
-    </div>
   </header>
+
+  <div class="expanded-menu" id="expandedMenu">
+    <div class="expanded-menu-header">
+      <h3>Menu</h3>
+      <button class="header-icon-btn" id="menuCloseBtn" aria-label="Close Menu">×</button>
+    </div>
+    <div class="expanded-menu-content">
+      <a href="/it-guarantee-program" class="menu-item">Industrial Training Program</a>
+      <a href="/articleship-guarantee-program" class="menu-item">Articleship Program</a>
+      <a href="/cv-reviewer/" class="menu-item">CV Reviewer</a>
+      <a href="/ai-interview" class="menu-item">AI Interview Bot</a>
+    </div>
+  </div>
 
   <main class="main-container">
     <section class="banner-section">
@@ -43,7 +50,8 @@
 
     <section class="controls-section">
       <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="Search by company, role, or keyword..." class="search-input">
+        <svg class="search-bar-icon" viewBox="0 0 20 20"><path d="M12.9 14.32a8 8 0 111.41-1.41l5.35 5.33-1.42 1.42-5.33-5.34zM8 14A6 6 0 108 2a6 6 0 000 12z"></path></svg>
+        <input type="text" id="searchInput" placeholder="Search by Keywords" class="search-input">
       </div>
       <div class="filter-bar">
         <input type="text" id="locationSearchInput" placeholder="Location" class="filter-input">
@@ -70,8 +78,7 @@
     </div>
   </div>
 
-  <nav class="footer-nav">
-  </nav>
+  <nav class="footer-nav"></nav>
 
   <a href="https://api.whatsapp.com/send/?phone=919313148303" target="_blank" class="whatsapp-button" aria-label="Contact us on WhatsApp">
     <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">

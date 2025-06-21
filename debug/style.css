@@ -8,8 +8,8 @@
   --text-secondary: #64748b;
   --border-color: #e2e8f0;
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
   --font-family: 'Poppins', sans-serif;
 }
 
@@ -23,8 +23,8 @@ body {
   font-family: var(--font-family);
   background-color: var(--background-light);
   color: var(--text-primary);
-  padding-top: 80px;
-  padding-bottom: 80px;
+  padding-top: 72px;
+  padding-bottom: 70px;
 }
 
 .site-header {
@@ -51,29 +51,108 @@ body {
 
 .brand-logo {
   height: 36px;
+  display: block;
 }
 
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
-.auth-buttons, .notification-icon-btn, .menu-button {
+.header-icon-btn {
   display: flex;
   align-items: center;
-}
-
-.menu-button {
+  justify-content: center;
+  width: 40px;
+  height: 40px;
   background: none;
   border: none;
+  border-radius: 50%;
   cursor: pointer;
-  padding: 0.5rem;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.header-icon-btn:hover {
+  background-color: var(--background-light);
+  color: var(--primary-color);
+}
+
+.header-icon-btn svg {
+  width: 22px;
+  height: 22px;
+  stroke-width: 2;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  border: 1px solid white;
+  visibility: hidden;
+}
+
+.expanded-menu {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 300px;
+  max-width: 80vw;
+  height: 100%;
+  background-color: var(--surface-color);
+  box-shadow: var(--shadow-lg);
+  z-index: 1100;
+  transition: right 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.expanded-menu.active {
+  right: 0;
+}
+
+.expanded-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.expanded-menu-header h3 {
+  font-weight: 600;
+}
+
+.expanded-menu-content {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.menu-item {
+  display: block;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.menu-item:hover {
+  background-color: var(--background-light);
   color: var(--primary-color);
 }
 
 .main-container {
-  max-width: 1200px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 1.5rem;
 }
@@ -87,12 +166,23 @@ body {
 }
 
 .search-bar {
+  position: relative;
   margin-bottom: 1rem;
+}
+
+.search-bar-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  fill: var(--text-secondary);
 }
 
 .search-input {
   width: 100%;
-  padding: 0.875rem 1.25rem;
+  padding: 0.875rem 1.25rem 0.875rem 3rem;
   font-size: 1rem;
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -117,6 +207,7 @@ body {
   font-size: 0.9rem;
   border: 1px solid var(--border-color);
   border-radius: 8px;
+  background-color: var(--background-light);
 }
 
 .job-grid {
@@ -168,7 +259,6 @@ body {
 .job-card-company {
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--text-primary);
 }
 
 .job-card-posted {
@@ -215,9 +305,7 @@ body {
   margin: 0 auto;
 }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .load-more-container {
   text-align: center;
@@ -264,7 +352,7 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
-  box-shadow: var(--shadow-2xl);
+  box-shadow: var(--shadow-lg);
   animation: modal-fade-in 0.3s ease-out;
 }
 
@@ -378,7 +466,6 @@ body {
   background-color: var(--primary-color);
   color: white;
 }
-
 .btn-primary:hover {
   background-color: var(--primary-hover);
 }
@@ -388,7 +475,6 @@ body {
   color: var(--text-primary);
   border-color: var(--border-color);
 }
-
 .btn-secondary:hover {
   background-color: var(--border-color);
 }
@@ -401,7 +487,7 @@ body {
   background: var(--surface-color);
   display: flex;
   justify-content: space-around;
-  padding: 0.5rem 0;
+  padding: 0.25rem 0;
   box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
   z-index: 1000;
   border-top: 1px solid var(--border-color);
@@ -411,7 +497,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.1rem;
   border: none;
   background: transparent;
   color: var(--text-secondary);
@@ -423,7 +509,7 @@ body {
 }
 
 .footer-tab span {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 500;
 }
 
@@ -438,7 +524,7 @@ body {
 
 .whatsapp-button {
   position: fixed;
-  bottom: 90px;
+  bottom: 80px;
   right: 20px;
   width: auto;
   min-width: 48px;
@@ -451,7 +537,7 @@ body {
   justify-content: center;
   padding: 0 16px;
   box-shadow: var(--shadow-lg);
-  z-index: 999;
+  z-index: 1001;
   transition: all 0.3s ease;
   text-decoration: none;
   font-weight: 500;
@@ -479,7 +565,13 @@ body {
 
 @media (max-width: 768px) {
   body {
-    padding-top: 70px;
+    padding-top: 60px;
+  }
+  .header-container {
+    padding: 0.5rem 1rem;
+  }
+  .brand-logo {
+    height: 32px;
   }
   .whatsapp-button {
     bottom: 70px;
