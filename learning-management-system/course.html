@@ -167,7 +167,7 @@
                                     <video 
                                         ref="videoPlayer"
                                         :key="videoUrl" 
-                                        preload="auto" 
+                                        preload="metadata" 
                                         @play="isPlaying = true"
                                         @pause="isPlaying = false"
                                         @ended="markVideoCompleted" 
@@ -193,7 +193,12 @@
                                     <button @click.stop="togglePlay" class="control-btn">
                                         <i :class="['fas', isPlaying ? 'fa-pause' : 'fa-play']"></i>
                                     </button>
-                                    <input type="range" class="seek-bar" min="0" :max="duration" :value="currentTime" @mousedown="isDraggingSeekBar = true" @input="handleSeekInput" @change="applySeek">
+                                    <div class="seek-bar-container">
+                                        <div class="seek-bar-track">
+                                            <div class="seek-bar-fill" :style="{ width: progressPercentage + '%' }"></div>
+                                        </div>
+                                        <input type="range" class="seek-bar" min="0" :max="duration" :value="currentTime" @mousedown="isDraggingSeekBar = true" @input="handleSeekInput" @change="applySeek">
+                                    </div>
                                     <div class="time-display">{{ formattedCurrentTime }} / {{ formattedDuration }}</div>
                                     <div class="volume-control">
                                         <button @click.stop="toggleMute" class="control-btn">
@@ -482,6 +487,10 @@
                     if (this.isMuted || this.volume === 0) return 'fa-volume-mute';
                     if (this.volume < 0.5) return 'fa-volume-down';
                     return 'fa-volume-up';
+                },
+                progressPercentage() {
+                    if (this.duration === 0) return 0;
+                    return (this.currentTime / this.duration) * 100;
                 }
             },
             methods: {
