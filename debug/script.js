@@ -1,6 +1,4 @@
 import { getDaysAgo } from '../scripts/date-utils.js';
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
-import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging.js';
 
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
@@ -21,19 +19,21 @@ const menuButton = document.getElementById('menuButton');
 const expandedMenu = document.getElementById('expandedMenu');
 const menuCloseBtn = document.getElementById('menuCloseBtn');
 const authButtonsContainer = document.querySelector('.auth-buttons-container');
+
 const notificationsBtn = document.getElementById('notificationsBtn');
 const notificationPopup = document.getElementById('notificationPopup');
 const closeNotificationPopup = document.getElementById('closeNotificationPopup');
-const notificationStatus = document.getElementById('notificationStatus');
+const notificationStatusEl = document.getElementById('notificationStatus');
 const notificationBadge = document.getElementById('notificationBadge');
 const topicAllCheckbox = document.getElementById('topic-all');
 const topicSelectionArea = document.getElementById('topic-selection-area');
 const permissionStatusDiv = document.getElementById('notification-permission-status');
 const enableNotificationsBtn = document.getElementById('enable-notifications-btn');
-const subscribedTopicsList = document.getElementById('subscribedTopicsList');
-const locationSelect = document.getElementById('locationSelect');
-const jobTypeSelect = document.getElementById('jobTypeSelect');
-const subscribeBtn = document.getElementById('subscribeBtn');
+const fcmTokenDisplay = document.getElementById('fcm-token-display');
+const subscribedTopicsListEl = document.getElementById('subscribedTopicsList');
+const locationSelectEl = document.getElementById('locationSelect');
+const jobTypeSelectEl = document.getElementById('jobTypeSelect');
+const subscribeBtnEl = document.getElementById('subscribeBtn');
 const specificSubscriptionForm = document.getElementById('specific-subscription-form');
 
 let isFetching = false;
@@ -43,8 +43,10 @@ let debounceTimeout = null;
 let hasMoreData = true;
 let currentTable = 'Industrial Training Job Portal';
 let currentSession = null;
+let currentFcmToken = null;
+let firebaseMessaging;
 
-const firebaseConfig = {
+const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
   authDomain: "msc-notif.firebaseapp.com",
   projectId: "msc-notif",
@@ -54,28 +56,26 @@ const firebaseConfig = {
   measurementId: "G-X4M23TB936"
 };
 const VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
-const JOB_TYPES = [
+const JOB_TYPES_NOTIF = [
   { value: "industrial", label: "Industrial Training" },
   { value: "semi", label: "Semi Qualified" },
-  { value: "fresher", label: "Fresher" }
+  { value: "fresher", label: "Fresher" },
+  { value: "articleship", label: "Articleship" }
 ];
-const LOCATIONS = [
+const LOCATIONS_NOTIF = [
   "mumbai", "bangalore", "gurgaon", "pune", "kolkata",
   "delhi", "noida", "bengaluru", "hyderabad", "ahmedabad",
   "chennai", "gurugram", "jaipur", "new delhi"
 ];
+const SYNC_TIMESTAMP_KEY = 'notificationSyncTimestamp';
 const SUBSCRIBED_TOPICS_KEY = 'subscribedTopics';
-let messaging;
-let fcmToken = null;
 
 function renderJobCard(job) {
     const jobCard = document.createElement('article');
     jobCard.className = 'job-card';
     jobCard.addEventListener('click', () => showModal(job));
-
     const companyInitial = job.Company ? job.Company.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
-
     jobCard.innerHTML = `
         <div class="job-card-logo">${companyInitial}</div>
         <div class="job-card-details">
@@ -91,15 +91,13 @@ function renderJobCard(job) {
                 ${job.Salary ? `<span class="job-tag"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>₹${job.Salary}</span>` : ''}
                 ${job.Category ? `<span class="job-tag">${job.Category}</span>` : ''}
             </div>
-        </div>
-    `;
+        </div>`;
     return jobCard;
 }
 
 async function showModal(job) {
     const companyInitial = job.Company ? job.Company.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
-
     modalBody.innerHTML = `
         <div class="modal-header">
             <div class="modal-logo">${companyInitial}</div>
@@ -126,8 +124,7 @@ async function showModal(job) {
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 <span>Connect to Peer</span>
             </a>
-        </div>
-    `;
+        </div>`;
     modalOverlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
@@ -136,13 +133,8 @@ async function showModal(job) {
     peerConnectBtn.style.opacity = '0.5';
 
     try {
-        const { data, error } = await supabaseClient
-            .from(currentTable)
-            .select('connect_link')
-            .eq('id', job.id)
-            .single();
-
-        if (error) throw error;
+        const { data, error } = await supabaseClient.from(currentTable).select('connect_link').eq('id', job.id).single();
+        if (error && error.code !== 'PGRST116') throw error;
 
         let peerConnectLink;
         if (data && data.connect_link && isValidUrl(data.connect_link)) {
@@ -188,32 +180,21 @@ async function fetchJobs() {
     loadMoreButton.style.display = 'none';
 
     try {
-        let query = supabaseClient
-            .from(currentTable)
-            .select('id, Company, Location, Salary, Description, Created_At, Category, "Application ID"');
-
+        let query = supabaseClient.from(currentTable).select('id, Company, Location, Salary, Description, Created_At, Category, "Application ID"');
         const searchTerm = searchInput.value.trim();
-        if (searchTerm) {
-            query = query.or(`Company.ilike.%${searchTerm}%,Location.ilike.%${searchTerm}%,Description.ilike.%${searchTerm}%,Category.ilike.%${searchTerm}%`);
-        }
+        if (searchTerm) query = query.or(`Company.ilike.%${searchTerm}%,Location.ilike.%${searchTerm}%,Description.ilike.%${searchTerm}%,Category.ilike.%${searchTerm}%`);
         const locationSearch = locationSearchInput.value.trim();
-        if (locationSearch) {
-            query = query.ilike('Location', `%${locationSearch}%`);
-        }
+        if (locationSearch) query = query.ilike('Location', `%${locationSearch}%`);
         const salary = salaryFilter.value;
         if (salary) {
-            if (salary.endsWith('+')) {
-                query = query.gte('Salary', parseInt(salary));
-            } else if (salary.includes('-')) {
+            if (salary.endsWith('+')) query = query.gte('Salary', parseInt(salary));
+            else if (salary.includes('-')) {
                 const [min, max] = salary.split('-').map(Number);
                 query = query.gte('Salary', min).lte('Salary', max);
             }
         }
         const category = categoryFilter.value;
-        if (category) {
-            query = query.ilike('Category', `%${category}%`);
-        }
-
+        if (category) query = query.ilike('Category', `%${category}%`);
         query = query.order('Created_At', { ascending: false }).range(page * limit, (page + 1) * limit - 1);
         const { data, error } = await query;
 
@@ -250,36 +231,19 @@ function resetAndFetch() {
 function populateSalaryFilter(table) {
     salaryFilter.innerHTML = '';
     let options = [];
-    if (table === "Industrial Training Job Portal") {
-        options = [{ value: '', text: 'Any Stipend' }, { value: '10000-20000', text: '₹10k - ₹20k' }, { value: '20000-40000', text: '₹20k - ₹40k' }, { value: '40000+', text: '₹40k+' }];
-    } else if (table === "Articleship Jobs") {
-        options = [{ value: '', text: 'Any Stipend' }, { value: '0-5000', text: 'Below ₹5k' }, { value: '5000-10000', text: '₹5k - ₹10k' }, { value: '10000-15000', text: '₹10k - ₹15k' }, { value: '15000+', text: '₹15k+' }];
-    } else if (table === "Semi Qualified Jobs") {
-        options = [{ value: '', text: 'Any Salary' }, { value: '0-25000', text: 'Below ₹25k' }, { value: '25000-35000', text: '₹25k - ₹35k' }, { value: '35000-50000', text: '₹35k - ₹50k' }, { value: '50000+', text: 'Above ₹50k' }];
-    } else if (table === "Fresher Jobs") {
-        options = [{ value: '', text: 'Any Salary' }, { value: '0-12', text: '< 12 LPA' }, { value: '12-18', text: '12-18 LPA' }, { value: '18+', text: '> 18 LPA' }];
-    }
-    options.forEach(opt => {
-        let o = document.createElement('option');
-        o.value = opt.value; o.textContent = opt.text;
-        salaryFilter.appendChild(o);
-    });
+    if (table === "Industrial Training Job Portal") options = [{ value: '', text: 'Any Stipend' }, { value: '10000-20000', text: '₹10k - ₹20k' }, { value: '20000-40000', text: '₹20k - ₹40k' }, { value: '40000+', text: '₹40k+' }];
+    else if (table === "Articleship Jobs") options = [{ value: '', text: 'Any Stipend' }, { value: '0-5000', text: 'Below ₹5k' }, { value: '5000-10000', text: '₹5k - ₹10k' }, { value: '10000-15000', text: '₹10k - ₹15k' }, { value: '15000+', text: '₹15k+' }];
+    else if (table === "Semi Qualified Jobs") options = [{ value: '', text: 'Any Salary' }, { value: '0-25000', text: 'Below ₹25k' }, { value: '25000-35000', text: '₹25k - ₹35k' }, { value: '35000-50000', text: '₹35k - ₹50k' }, { value: '50000+', text: 'Above ₹50k' }];
+    else if (table === "Fresher Jobs") options = [{ value: '', text: 'Any Salary' }, { value: '0-12', text: '< 12 LPA' }, { value: '12-18', text: '12-18 LPA' }, { value: '18+', text: '> 18 LPA' }];
+    options.forEach(opt => { let o = document.createElement('option'); o.value = opt.value; o.textContent = opt.text; salaryFilter.appendChild(o); });
 }
 
 async function fetchCategories() {
     categoryFilter.innerHTML = `<option value="">All Categories</option>`;
     let categories = [];
-    if (currentTable === "Industrial Training Job Portal" || currentTable === "Articleship Jobs") {
-        categories = ["Accounting", "Auditing", "Finance", "Taxation", "Costing", "Consultancy"];
-    } else if (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs") {
-        categories = ["Accounting", "Audit", "Consultancy", "Controllership", "Direct Taxation", "Equity Research", "Finance", "Investment Banking", "Private Equity", "Indirect Taxation", "Internal Audit", "Statutory Audit"];
-    }
-    categories.sort().forEach(category => {
-        const option = document.createElement('option');
-        option.value = category;
-        option.textContent = category;
-        categoryFilter.appendChild(option);
-    });
+    if (currentTable === "Industrial Training Job Portal" || currentTable === "Articleship Jobs") categories = ["Accounting", "Auditing", "Finance", "Taxation", "Costing", "Consultancy"];
+    else if (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs") categories = ["Accounting", "Audit", "Consultancy", "Controllership", "Direct Taxation", "Equity Research", "Finance", "Investment Banking", "Private Equity", "Indirect Taxation", "Internal Audit", "Statutory Audit"];
+    categories.sort().forEach(category => { const option = document.createElement('option'); option.value = category; option.textContent = category; categoryFilter.appendChild(option); });
 }
 
 function setupFooterNav() {
@@ -289,14 +253,7 @@ function setupFooterNav() {
         { name: 'Semi Qualified', table: 'Semi Qualified Jobs', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>' },
         { name: 'Freshers', table: 'Fresher Jobs', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>' }
     ];
-
-    siteFooterNav.innerHTML = navItems.map(item => `
-        <button class="footer-tab ${item.table === currentTable ? 'active' : ''}" data-table="${item.table}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">${item.icon}</svg>
-            <span>${item.name}</span>
-        </button>
-    `).join('');
-
+    siteFooterNav.innerHTML = navItems.map(item => `<button class="footer-tab ${item.table === currentTable ? 'active' : ''}" data-table="${item.table}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">${item.icon}</svg><span>${item.name}</span></button>`).join('');
     siteFooterNav.querySelectorAll('.footer-tab').forEach(tab => {
         tab.addEventListener('click', () => {
             currentTable = tab.dataset.table;
@@ -321,30 +278,9 @@ function updateHeaderAuth(session) {
     if (session) {
         let email = session.user.email || 'User';
         let initial = email.charAt(0).toUpperCase();
-        authButtonsContainer.innerHTML = `
-            <div class="user-profile-container">
-                <div class="user-icon-wrapper">
-                    <div class="user-icon" data-email="${email}">${initial}</div>
-                    <div class="user-hover-card">
-                        <div class="user-hover-content">
-                            <p class="user-email">${email}</p>
-                            <button onclick="handleLogout()" class="logout-btn">Logout</button>
-                        </div>
-                    </div>
-                </div>
-            </div>`;
-        const userIconWrapper = authButtonsContainer.querySelector('.user-icon-wrapper');
-        userIconWrapper.addEventListener('click', (e) => {
-            e.stopPropagation();
-            userIconWrapper.querySelector('.user-hover-card').classList.toggle('active');
-        });
+        authButtonsContainer.innerHTML = `<div class="user-profile-container"><div class="user-icon-wrapper"><div class="user-icon" data-email="${email}">${initial}</div><div class="user-hover-card"><div class="user-hover-content"><p class="user-email">${email}</p><button onclick="handleLogout()" class="logout-btn">Logout</button></div></div></div></div>`;
     } else {
-        authButtonsContainer.innerHTML = `
-            <a href="../login.html" class="icon-button" aria-label="Login">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-            </a>`;
+        authButtonsContainer.innerHTML = `<a href="../login.html" class="icon-button" aria-label="Login"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg></a>`;
     }
 }
 
@@ -358,117 +294,254 @@ async function loadBanners() {
     const carousel = document.querySelector('.carousel');
     const bannerSection = document.querySelector('.banner-section');
     if (!carousel || !bannerSection) return;
-
     try {
         const { data: banners, error } = await supabaseClient.from('Banners').select('Image, Hyperlink, Type');
         if (error) throw error;
-
         carousel.innerHTML = '';
-
         const relevantBanners = banners.filter(banner => {
-            let currentType = currentTable === "Semi Qualified Jobs" ? "Semi-Qualified" :
-                              currentTable === "Fresher Jobs" ? "Freshers" :
-                              currentTable.split(' ')[0];
+            let currentType = currentTable === "Semi Qualified Jobs" ? "Semi-Qualified" : currentTable === "Fresher Jobs" ? "Freshers" : currentTable.split(' ')[0];
             return banner.Type === 'All' || banner.Type === currentType;
         });
-
-        if (relevantBanners.length === 0) {
-            bannerSection.style.display = 'none';
-            return;
-        }
-        
+        if (relevantBanners.length === 0) { bannerSection.style.display = 'none'; return; }
         bannerSection.style.display = 'block';
-        relevantBanners.forEach((banner) => {
-            const a = document.createElement('a');
-            a.href = banner.Hyperlink;
-            a.target = "_blank";
-            const img = document.createElement('img');
-            img.src = banner.Image;
-            img.alt = `Banner`;
-            a.appendChild(img);
-            carousel.appendChild(a);
+        relevantBanners.forEach((banner, i) => {
+            const a = document.createElement('a'); a.href = banner.Hyperlink; a.className = `carousel-item ${i === 0 ? 'active' : ''}`; a.target = "_blank";
+            const img = document.createElement('img'); img.src = banner.Image; img.alt = `Banner`; a.appendChild(img); carousel.appendChild(a);
         });
-    } catch (e) { console.error("Error loading banners", e); }
-}
-
-function setupNotificationPopup() {
-    populateLocationDropdown();
-    populateJobTypeDropdown();
-    enableNotificationsBtn.addEventListener('click', async () => {
-        try {
-            const permission = await Notification.requestPermission();
-            updatePermissionStatusUI();
-            if (permission === 'granted') {
-                await initializeFCM();
-            }
-        } catch (err) {
-            console.error("Error requesting notification permission:", err);
+        const slides = document.querySelectorAll('.carousel-item');
+        if (slides.length > 0) {
+            let currentSlide = 0;
+            const showSlide = (idx) => { slides.forEach(s => s.classList.remove('active')); slides[idx].classList.add('active'); };
+            showSlide(currentSlide);
+            setInterval(() => { currentSlide = (currentSlide + 1) % slides.length; showSlide(currentSlide); }, 5000);
         }
-    });
+    } catch (e) { console.error("Error loading banners", e); bannerSection.style.display = 'none'; }
 }
 
-function populateLocationDropdown() {
-     if (!locationSelect) return;
-     locationSelect.innerHTML = '<option value="" disabled selected>Select Location</option>';
-     LOCATIONS.forEach(location => {
-       const option = document.createElement('option');
-       option.value = location;
-       option.textContent = location.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-       locationSelect.appendChild(option);
-     });
+function showNotifStatus(message, type = 'info') {
+    if (!notificationStatusEl) return;
+    notificationStatusEl.textContent = message;
+    notificationStatusEl.className = `notification-status status-${type}`;
+    notificationStatusEl.style.display = 'block';
+    if (type !== 'error') setTimeout(() => { notificationStatusEl.style.display = 'none'; }, 3000);
 }
 
-function populateJobTypeDropdown() {
-     if (!jobTypeSelect) return;
-     jobTypeSelect.innerHTML = '<option value="" disabled selected>Select Job Type</option>';
-     JOB_TYPES.forEach(type => {
-       const option = document.createElement('option');
-       option.value = type.value;
-       option.textContent = type.label;
-       jobTypeSelect.appendChild(option);
-     });
+function getSubscribedTopics() { return JSON.parse(localStorage.getItem(SUBSCRIBED_TOPICS_KEY) || '[]'); }
+function saveSubscribedTopics(topics) { localStorage.setItem(SUBSCRIBED_TOPICS_KEY, JSON.stringify(topics)); updateNotificationBadge(); }
+function updateNotificationBadge() { if (notificationBadge) notificationBadge.style.visibility = getSubscribedTopics().length > 0 ? 'visible' : 'hidden'; }
+
+function formatTopicForDisplay(topicName) {
+    if (topicName === 'all') return { location: 'All', jobType: 'Notifications' };
+    const parts = topicName.split('-');
+    if (parts.length < 2) return { location: topicName, jobType: '' };
+    const jobTypeVal = parts.pop();
+    const location = parts.join('-');
+    const displayLocation = location.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    const jobTypeObj = JOB_TYPES_NOTIF.find(type => type.value === jobTypeVal);
+    const displayJobType = jobTypeObj ? jobTypeObj.label : jobTypeVal.charAt(0).toUpperCase() + jobTypeVal.slice(1);
+    return { location: displayLocation, jobType: displayJobType };
 }
+
+function renderSubscribedTopics() {
+    if (!subscribedTopicsListEl) return;
+    subscribedTopicsListEl.innerHTML = '';
+    const topics = getSubscribedTopics();
+    if (topics.length === 0) {
+        subscribedTopicsListEl.innerHTML = '<p class="no-subscriptions">No active subscriptions.</p>';
+    } else {
+        topics.forEach(topic => {
+            const { location, jobType } = formatTopicForDisplay(topic);
+            const topicTag = document.createElement('div');
+            topicTag.className = 'topic-tag';
+            topicTag.innerHTML = `<span>${location}${jobType ? ` - ${jobType}`: ''}</span><button class="topic-remove" data-topic="${topic}">×</button>`;
+            subscribedTopicsListEl.appendChild(topicTag);
+        });
+        subscribedTopicsListEl.querySelectorAll('.topic-remove').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const topic = button.dataset.topic;
+                if (await unsubscribeFromTopic(topic) && topic === 'all' && topicAllCheckbox) {
+                    topicAllCheckbox.checked = false;
+                    updateSpecificTopicAreaVisibility();
+                }
+            });
+        });
+    }
+    if (topicAllCheckbox) topicAllCheckbox.checked = topics.includes('all');
+    updateSpecificTopicAreaVisibility();
+}
+
+function updateSpecificTopicAreaVisibility() {
+    if (!topicAllCheckbox || !specificSubscriptionForm) return;
+    specificSubscriptionForm.style.display = topicAllCheckbox.checked ? 'none' : 'block';
+}
+
+async function manageTopicSubscription(topic, action) {
+    if (!currentFcmToken) { showNotifStatus('Cannot manage subscription: Notification token not available.', 'error'); return false; }
+    try {
+        showNotifStatus(`${action === 'subscribe' ? 'Subscribing to' : 'Unsubscribing from'} ${topic}...`, 'info');
+        const response = await fetch('https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: currentFcmToken, topic: topic, action: action })
+        });
+        const result = await response.json();
+        if (!response.ok || !result.success) throw new Error(result.error || `Failed to ${action} ${topic}`);
+        
+        let topics = getSubscribedTopics();
+        if (action === 'subscribe' && !topics.includes(topic)) topics.push(topic);
+        else if (action === 'unsubscribe') topics = topics.filter(t => t !== topic);
+        saveSubscribedTopics(topics);
+        
+        showNotifStatus(`Successfully ${action}d ${topic}`, 'success');
+        renderSubscribedTopics();
+        return true;
+    } catch (err) {
+        console.error(`Failed to ${action} topic ${topic}:`, err);
+        showNotifStatus(`Failed to ${action}: ${err.message}`, 'error');
+        return false;
+    }
+}
+async function subscribeToTopic(topic) { return manageTopicSubscription(topic, 'subscribe'); }
+async function unsubscribeFromTopic(topic) { return manageTopicSubscription(topic, 'unsubscribe'); }
 
 function updatePermissionStatusUI() {
     if (!permissionStatusDiv || !enableNotificationsBtn || !topicSelectionArea) return;
     const permission = Notification.permission;
+    enableNotificationsBtn.style.display = permission === 'default' ? 'block' : 'none';
+    topicSelectionArea.style.display = permission === 'granted' ? 'block' : 'none';
     if (permission === 'granted') {
         permissionStatusDiv.textContent = 'Notifications are enabled.';
-        permissionStatusDiv.style.backgroundColor = '#dcfce7';
-        permissionStatusDiv.style.color = '#15803d';
-        enableNotificationsBtn.style.display = 'none';
-        topicSelectionArea.style.display = 'block';
+        permissionStatusDiv.className = 'notification-status status-success';
     } else if (permission === 'denied') {
-        permissionStatusDiv.textContent = 'Notifications are blocked. Please enable them in your browser settings.';
-        permissionStatusDiv.style.backgroundColor = '#fee2e2';
-        permissionStatusDiv.style.color = '#b91c1c';
-        enableNotificationsBtn.style.display = 'none';
-        topicSelectionArea.style.display = 'none';
+        permissionStatusDiv.textContent = 'Notifications are blocked. Please enable them in browser settings.';
+        permissionStatusDiv.className = 'notification-status status-error';
     } else {
-        permissionStatusDiv.textContent = 'Enable notifications to receive job alerts.';
-        permissionStatusDiv.style.backgroundColor = '#eff6ff';
-        permissionStatusDiv.style.color = '#1e40af';
-        enableNotificationsBtn.style.display = 'block';
-        topicSelectionArea.style.display = 'none';
+        permissionStatusDiv.textContent = 'Enable notifications for job alerts.';
+        permissionStatusDiv.className = 'notification-status status-info';
+    }
+    permissionStatusDiv.style.display = 'block';
+}
+
+function populateNotificationDropdowns() {
+    if (locationSelectEl) {
+        locationSelectEl.innerHTML = '<option value="" disabled selected>Select Location</option>';
+        LOCATIONS_NOTIF.forEach(loc => { const opt = document.createElement('option'); opt.value = loc; opt.textContent = loc.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '); locationSelectEl.appendChild(opt); });
+    }
+    if (jobTypeSelectEl) {
+        jobTypeSelectEl.innerHTML = '<option value="" disabled selected>Select Job Type</option>';
+        JOB_TYPES_NOTIF.forEach(type => { const opt = document.createElement('option'); opt.value = type.value; opt.textContent = type.label; jobTypeSelectEl.appendChild(opt); });
     }
 }
 
 async function initializeFCM() {
     try {
-        const app = initializeApp(firebaseConfig);
-        messaging = getMessaging(app);
+        if (typeof firebase === 'undefined' || !firebase.app) {
+            firebase.initializeApp(FIREBASE_CONFIG);
+        }
+        firebaseMessaging = firebase.messaging();
+
+        firebaseMessaging.onMessage((payload) => {
+            console.log('Foreground message received.', payload);
+            const notif = payload.notification || {};
+            new Notification(notif.title, { body: notif.body, icon: notif.icon || '../assets/icon-70x70.png' });
+        });
+
         if ('serviceWorker' in navigator) {
-            await navigator.serviceWorker.register('../firebase-messaging-sw.js');
+            await navigator.serviceWorker.register('/firebase-messaging-sw.js');
         }
-        if (Notification.permission === 'granted') {
-            const currentToken = await getToken(messaging, { vapidKey: VAPID_KEY });
-            if (currentToken) {
-                fcmToken = currentToken;
-            }
-        }
-    } catch(err) {
-        console.error("Error initializing Firebase for notifications:", err);
+        if (Notification.permission === 'granted') await requestTokenAndSyncSubscriptions();
+    } catch(err) { console.error("Error initializing Firebase Messaging:", err); }
+}
+
+async function requestTokenAndSyncSubscriptions() {
+    if (!firebaseMessaging) return;
+    try {
+        const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY });
+        if (token) {
+            currentFcmToken = token;
+            if(fcmTokenDisplay) fcmTokenDisplay.textContent = `Token: ${token.substring(0,20)}...`;
+            await syncNotificationTopics();
+        } else { console.log('No registration token available.'); }
+    } catch (err) { console.error('An error occurred while retrieving token.', err); }
+}
+
+function shouldSyncNotifications() {
+    const lastSync = localStorage.getItem(SYNC_TIMESTAMP_KEY);
+    if (!lastSync) return true;
+    return new Date(parseInt(lastSync)).toDateString() !== new Date().toDateString();
+}
+function markSyncComplete() { localStorage.setItem(SYNC_TIMESTAMP_KEY, Date.now().toString()); }
+
+async function syncNotificationTopics() {
+    if (!currentFcmToken || !shouldSyncNotifications()) return;
+    try {
+        showNotifStatus("Syncing notification preferences...", "info");
+        const savedTopics = getSubscribedTopics();
+        const results = await Promise.all(savedTopics.map(topic => manageTopicSubscription(topic, 'subscribe')));
+        const failedTopics = results.filter(success => !success).length;
+        if (failedTopics > 0) showNotifStatus(`Sync completed with ${failedTopics} errors`, "error");
+        else showNotifStatus("Notification preferences synced", "success");
+        markSyncComplete();
+    } catch (err) { console.error("Error during sync:", err); showNotifStatus("Failed to sync preferences", "error"); }
+}
+
+function setupNotificationPopup() {
+    if (!notificationsBtn || !notificationPopup || !closeNotificationPopup) return;
+    populateNotificationDropdowns();
+
+    if (enableNotificationsBtn) {
+        enableNotificationsBtn.addEventListener('click', async () => {
+            try {
+                const permission = await Notification.requestPermission();
+                updatePermissionStatusUI();
+                if (permission === 'granted') {
+                    showNotifStatus("Notifications enabled!", 'success');
+                    await initializeFCM();
+                    renderSubscribedTopics();
+                } else { showNotifStatus("Permission not granted.", 'info'); }
+            } catch (err) { console.error("Error requesting permission:", err); showNotifStatus("Error enabling notifications.", 'error'); }
+        });
     }
+
+    if (topicAllCheckbox) {
+        topicAllCheckbox.addEventListener('change', async (e) => {
+            const isChecked = e.target.checked;
+            if (!(await (isChecked ? subscribeToTopic('all') : unsubscribeFromTopic('all')))) e.target.checked = !isChecked;
+        });
+    }
+
+    if (locationSelectEl && jobTypeSelectEl && subscribeBtnEl) {
+        const updateSubBtnState = () => { subscribeBtnEl.disabled = !(locationSelectEl.value && jobTypeSelectEl.value); };
+        locationSelectEl.addEventListener('change', updateSubBtnState);
+        jobTypeSelectEl.addEventListener('change', updateSubBtnState);
+        updateSubBtnState();
+        subscribeBtnEl.addEventListener('click', async () => {
+            const location = locationSelectEl.value, jobType = jobTypeSelectEl.value;
+            if (!location || !jobType) { showNotifStatus("Please select location and job type", "error"); return; }
+            const topicName = `${location.toLowerCase().replace(/\s+/g, '-')}-${jobType}`;
+            if (getSubscribedTopics().includes(topicName)) { showNotifStatus("Already subscribed to this topic", "info"); return; }
+            if (await subscribeToTopic(topicName)) { locationSelectEl.selectedIndex = 0; jobTypeSelectEl.selectedIndex = 0; subscribeBtnEl.disabled = true; }
+        });
+    }
+
+    notificationsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isVisible = notificationPopup.style.display === 'flex';
+        notificationPopup.style.display = isVisible ? 'none' : 'flex';
+        if (!isVisible) {
+            updatePermissionStatusUI();
+            if (Notification.permission === 'granted') {
+                if (!firebaseMessaging || !currentFcmToken) initializeFCM().then(() => renderSubscribedTopics());
+                else renderSubscribedTopics();
+            } else { renderSubscribedTopics(); if(topicSelectionArea) topicSelectionArea.style.display = 'none'; }
+        }
+    });
+    closeNotificationPopup.addEventListener('click', () => { notificationPopup.style.display = 'none'; });
+    document.addEventListener('click', (e) => {
+        if (notificationPopup.style.display === 'flex' && !notificationPopup.contains(e.target) && !notificationsBtn.contains(e.target)) {
+            notificationPopup.style.display = 'none';
+        }
+    });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -481,8 +554,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupFooterNav();
     loadBanners();
     setupNotificationPopup();
-    updatePermissionStatusUI();
     if (Notification.permission === 'granted') {
-        await initializeFCM();
+        initializeFCM().then(() => updateNotificationBadge());
+    } else {
+        updateNotificationBadge();
     }
 });
