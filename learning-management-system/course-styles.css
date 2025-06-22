@@ -878,12 +878,14 @@
     height: 5px;
     background: rgba(255, 255, 255, 0.3);
     border-radius: 5px;
+    pointer-events: none;
 }
 
 .seek-bar-fill {
     height: 100%;
     background: var(--secondary-color);
     border-radius: 5px;
+    pointer-events: none;
 }
 
 .seek-bar {
