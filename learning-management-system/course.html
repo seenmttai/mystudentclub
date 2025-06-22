@@ -161,22 +161,43 @@
                             </button>
                         </div>
                         
-                        <div class="video-container-premium" v-if="currentVideo">
-                            <h2>{{ currentVideo.title }}</h2>
+                        <div class="video-container-premium" v-if="currentVideo" @mouseenter="showControls = true" @mouseleave="hideControls">
                             <div class="video-player-premium" v-if="videoUrl">
-                                <video 
-                                    :key="videoUrl" 
-                                    controls 
-                                    preload="metadata" 
-                                    @ended="markVideoCompleted" 
-                                    controlsList="nodownload" 
-                                    :src="videoUrl"
-                                    class="custom-video-player"
-                                >
-                                    Your browser does not support the video tag.
-                                </video>
-                                <div class="video-overlay-controls">
-                                    <div class="video-title-overlay">{{ currentVideo.title }}</div>
+                                <div class="video-player-wrapper" @dblclick="handleDblClick">
+                                    <video 
+                                        ref="videoPlayer"
+                                        :key="videoUrl" 
+                                        preload="metadata" 
+                                        @play="isPlaying = true"
+                                        @pause="isPlaying = false"
+                                        @ended="markVideoCompleted" 
+                                        @timeupdate="handleTimeUpdate"
+                                        @loadedmetadata="handleLoadedMetadata"
+                                        @click="togglePlay"
+                                        :src="videoUrl"
+                                        class="custom-video-player"
+                                    >
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    <div class="seek-indicator" ref="seekIndicator">
+                                        <i></i>
+                                    </div>
+                                </div>
+                                <div class="custom-video-controls" :class="{ visible: showControls || !isPlaying }">
+                                    <button @click.stop="togglePlay" class="control-btn">
+                                        <i :class="['fas', isPlaying ? 'fa-pause' : 'fa-play']"></i>
+                                    </button>
+                                    <input type="range" class="seek-bar" min="0" :max="duration" :value="currentTime" @input="handleSeek">
+                                    <div class="time-display">{{ formattedCurrentTime }} / {{ formattedDuration }}</div>
+                                    <div class="volume-control">
+                                        <button @click.stop="toggleMute" class="control-btn">
+                                            <i :class="['fas', volumeIcon]"></i>
+                                        </button>
+                                        <input type="range" class="volume-slider" min="0" max="1" step="0.1" :value="volume" @input="handleVolumeChange">
+                                    </div>
+                                    <button @click.stop="toggleFullscreenVideo" class="control-btn">
+                                        <i class="fas fa-expand"></i>
+                                    </button>
                                 </div>
                             </div>
                              <div class="no-video-selected" v-else>
@@ -365,7 +386,16 @@
                     currentResource: null,
                     previewType: null,
                     csvData: null,
-                    isFullscreen: false
+                    isFullscreen: false,
+                    isPlaying: false,
+                    currentTime: 0,
+                    duration: 0,
+                    volume: 1,
+                    isMuted: false,
+                    showControls: false,
+                    controlsTimeout: null,
+                    seekDebounceTimeout: null,
+                    seekIndicatorTimeout: null
                 }
             },
             computed: {
@@ -404,6 +434,22 @@
                         groups[groupKey].push(res);
                     });
                     return groups;
+                },
+                formattedCurrentTime() {
+                    const minutes = Math.floor(this.currentTime / 60);
+                    const seconds = Math.floor(this.currentTime % 60).toString().padStart(2, '0');
+                    return `${minutes}:${seconds}`;
+                },
+                formattedDuration() {
+                    if (isNaN(this.duration) || this.duration === 0) return '0:00';
+                    const minutes = Math.floor(this.duration / 60);
+                    const seconds = Math.floor(this.duration % 60).toString().padStart(2, '0');
+                    return `${minutes}:${seconds}`;
+                },
+                volumeIcon() {
+                    if (this.isMuted || this.volume === 0) return 'fa-volume-mute';
+                    if (this.volume < 0.5) return 'fa-volume-down';
+                    return 'fa-volume-up';
                 }
             },
             methods: {
@@ -811,6 +857,122 @@
                     } else {
                         document.exitFullscreen();
                     }
+                },
+                togglePlay() {
+                    const video = this.$refs.videoPlayer;
+                    if (video) {
+                        video.paused ? video.play() : video.pause();
+                    }
+                },
+                handleTimeUpdate() {
+                    const video = this.$refs.videoPlayer;
+                    if (video) {
+                        this.currentTime = video.currentTime;
+                    }
+                },
+                handleLoadedMetadata() {
+                    const video = this.$refs.videoPlayer;
+                    if (video) {
+                        this.duration = video.duration;
+                    }
+                },
+                handleSeek(event) {
+                    if (this.seekDebounceTimeout) {
+                        clearTimeout(this.seekDebounceTimeout);
+                    }
+                    const seekTime = event.target.value;
+                    this.currentTime = seekTime;
+                    this.seekDebounceTimeout = setTimeout(() => {
+                        const video = this.$refs.videoPlayer;
+                        if (video) {
+                            video.currentTime = seekTime;
+                        }
+                    }, 150);
+                },
+                toggleMute() {
+                    const video = this.$refs.videoPlayer;
+                    if (video) {
+                        video.muted = !video.muted;
+                        this.isMuted = video.muted;
+                    }
+                },
+                handleVolumeChange(event) {
+                    const video = this.$refs.videoPlayer;
+                    if (video) {
+                        const newVolume = event.target.value;
+                        video.volume = newVolume;
+                        this.volume = newVolume;
+                        if (newVolume > 0) {
+                            video.muted = false;
+                            this.isMuted = false;
+                        }
+                    }
+                },
+                toggleFullscreenVideo() {
+                    const playerContainer = this.$refs.videoPlayer.parentElement.parentElement;
+                    if (!document.fullscreenElement) {
+                        playerContainer.requestFullscreen().catch(err => {
+                            alert(`Error enabling full-screen mode: ${err.message}`);
+                        });
+                    } else {
+                        document.exitFullscreen();
+                    }
+                },
+                handleDblClick(event) {
+                    const video = this.$refs.videoPlayer;
+                    if (!video) return;
+                    const rect = video.getBoundingClientRect();
+                    const clickX = event.clientX - rect.left;
+                    if (clickX < rect.width * 0.4) {
+                        video.currentTime = Math.max(0, video.currentTime - 10);
+                        this.showSeekIndicator('backward');
+                    } else if (clickX > rect.width * 0.6) {
+                        video.currentTime = Math.min(video.duration, video.currentTime + 10);
+                        this.showSeekIndicator('forward');
+                    }
+                },
+                handleKeydown(event) {
+                    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+                        return;
+                    }
+                    const video = this.$refs.videoPlayer;
+                    if (!video) return;
+                    switch (event.key) {
+                        case 'ArrowLeft':
+                            event.preventDefault();
+                            video.currentTime = Math.max(0, video.currentTime - 10);
+                            this.showSeekIndicator('backward');
+                            break;
+                        case 'ArrowRight':
+                            event.preventDefault();
+                            video.currentTime = Math.min(video.duration, video.currentTime + 10);
+                            this.showSeekIndicator('forward');
+                            break;
+                        case ' ':
+                            event.preventDefault();
+                            this.togglePlay();
+                            break;
+                    }
+                },
+                showSeekIndicator(direction) {
+                    const indicator = this.$refs.seekIndicator;
+                    const icon = indicator.querySelector('i');
+                    if (!indicator || !icon) return;
+                    icon.className = `fas fa-fast-${direction}`;
+                    indicator.classList.add('show');
+                    if (this.seekIndicatorTimeout) {
+                        clearTimeout(this.seekIndicatorTimeout);
+                    }
+                    this.seekIndicatorTimeout = setTimeout(() => {
+                        indicator.classList.remove('show');
+                    }, 500);
+                },
+                hideControls() {
+                    if (this.isPlaying) {
+                        this.controlsTimeout = setTimeout(() => {
+                            this.showControls = false;
+                        }, 2000);
+                    }
                 }
             },
             async mounted() {
@@ -831,6 +993,10 @@
                 document.addEventListener('fullscreenchange', () => {
                     this.isFullscreen = !!document.fullscreenElement;
                 });
+                document.addEventListener('keydown', this.handleKeydown);
+            },
+            beforeUnmount() {
+                document.removeEventListener('keydown', this.handleKeydown);
             }
         }).mount('#app');
     </script>
