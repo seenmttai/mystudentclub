@@ -193,13 +193,23 @@
                                     <button @click.stop="togglePlay" class="control-btn">
                                         <i :class="['fas', isPlaying ? 'fa-pause' : 'fa-play']"></i>
                                     </button>
-                                    <input type="range" class="seek-bar" min="0" :max="duration" :value="currentTime" @input="handleSeek">
+                                    <input type="range" class="seek-bar" min="0" :max="duration" :value="currentTime" @input="handleSeekInput" @change="applySeek">
                                     <div class="time-display">{{ formattedCurrentTime }} / {{ formattedDuration }}</div>
                                     <div class="volume-control">
                                         <button @click.stop="toggleMute" class="control-btn">
                                             <i :class="['fas', volumeIcon]"></i>
                                         </button>
                                         <input type="range" class="volume-slider" min="0" max="1" step="0.1" :value="volume" @input="handleVolumeChange">
+                                    </div>
+                                    <div class="settings-control">
+                                        <button @click.stop="showSpeedMenu = !showSpeedMenu" class="control-btn">
+                                            <i class="fas fa-cog"></i>
+                                        </button>
+                                        <div class="speed-menu" v-if="showSpeedMenu">
+                                            <div v-for="rate in playbackRates" :key="rate" @click="setPlaybackRate(rate)" :class="{ active: currentPlaybackRate === rate }">
+                                                {{ rate }}x
+                                            </div>
+                                        </div>
                                     </div>
                                     <button @click.stop="toggleFullscreenVideo" class="control-btn">
                                         <i class="fas fa-expand"></i>
@@ -400,10 +410,14 @@
                     isMuted: false,
                     showControls: false,
                     controlsTimeout: null,
-                    seekDebounceTimeout: null,
                     seekIndicatorTimeout: null,
                     isLoading: false,
-                    isBuffering: false
+                    isBuffering: false,
+                    playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2],
+                    currentPlaybackRate: 1,
+                    showSpeedMenu: false,
+                    retryCount: 0,
+                    maxRetries: 5
                 }
             },
             computed: {
@@ -446,20 +460,20 @@
                 formattedCurrentTime() {
                     if (isNaN(this.currentTime)) return '0:00';
                     const hours = Math.floor(this.currentTime / 3600);
-                    const minutes = Math.floor((this.currentTime % 3600) / 60);
+                    const minutes = Math.floor((this.currentTime % 3600) / 60).toString().padStart(2, '0');
                     const seconds = Math.floor(this.currentTime % 60).toString().padStart(2, '0');
                     if (hours > 0) {
-                        return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds}`;
+                        return `${hours}:${minutes}:${seconds}`;
                     }
                     return `${minutes}:${seconds}`;
                 },
                 formattedDuration() {
                     if (isNaN(this.duration) || this.duration === 0) return '0:00';
                     const hours = Math.floor(this.duration / 3600);
-                    const minutes = Math.floor((this.duration % 3600) / 60);
+                    const minutes = Math.floor((this.duration % 3600) / 60).toString().padStart(2, '0');
                     const seconds = Math.floor(this.duration % 60).toString().padStart(2, '0');
                     if (hours > 0) {
-                        return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds}`;
+                        return `${hours}:${minutes}:${seconds}`;
                     }
                     return `${minutes}:${seconds}`;
                 },
@@ -595,6 +609,7 @@
                     this.courseSections[dayIndex].expanded = !this.courseSections[dayIndex].expanded;
                 },
                 selectVideo(videoId) {
+                    this.retryCount = 0;
                     this.isLoading = true;
                     this.currentVideoId = videoId;
                     if (window.innerWidth < 768) {
@@ -884,7 +899,7 @@
                 },
                 handleTimeUpdate() {
                     const video = this.$refs.videoPlayer;
-                    if (video) {
+                    if (video && !this.isSeeking) {
                         this.currentTime = video.currentTime;
                     }
                 },
@@ -894,6 +909,7 @@
                         this.duration = video.duration;
                         this.isLoading = false;
                         this.isBuffering = false;
+                        this.retryCount = 0;
                     }
                 },
                 handleWaiting() {
@@ -905,14 +921,33 @@
                 handleVideoError() {
                     this.isLoading = false;
                     this.isBuffering = false;
-                    console.error("Video Error: Failed to load video source.");
+                    this.attemptReload();
                 },
-                handleSeek(event) {
+                attemptReload() {
+                    if (this.retryCount < this.maxRetries) {
+                        this.retryCount++;
+                        const delay = Math.pow(2, this.retryCount) * 1000;
+                        setTimeout(() => {
+                            const video = this.$refs.videoPlayer;
+                            if (video) {
+                                this.isLoading = true;
+                                video.load();
+                            }
+                        }, delay);
+                    } else {
+                        alert("Failed to load the video after multiple attempts. Please check your connection or try again later.");
+                    }
+                },
+                handleSeekInput(event) {
+                    this.currentTime = parseFloat(event.target.value);
+                },
+                applySeek(event) {
                     const video = this.$refs.videoPlayer;
-                    if (!video) return;
-                    const seekTime = event.target.value;
-                    video.currentTime = seekTime;
-                    this.currentTime = seekTime;
+                    if (video) {
+                        const seekTime = parseFloat(event.target.value);
+                        video.currentTime = seekTime;
+                        this.currentTime = seekTime;
+                    }
                 },
                 toggleMute() {
                     const video = this.$refs.videoPlayer;
@@ -984,12 +1019,12 @@
                     const icon = indicator.querySelector('i');
                     if (!indicator || !icon) return;
                     icon.className = `fas fa-fast-${direction}`;
-                    indicator.classList.add('show');
+                    indicator.classList.add('show', direction);
                     if (this.seekIndicatorTimeout) {
                         clearTimeout(this.seekIndicatorTimeout);
                     }
                     this.seekIndicatorTimeout = setTimeout(() => {
-                        indicator.classList.remove('show');
+                        indicator.classList.remove('show', 'forward', 'backward');
                     }, 500);
                 },
                 showControlsOnMove() {
@@ -1001,6 +1036,14 @@
                         this.controlsTimeout = setTimeout(() => {
                             this.showControls = false;
                         }, 3000);
+                    }
+                },
+                setPlaybackRate(rate) {
+                    const video = this.$refs.videoPlayer;
+                    if (video) {
+                        video.playbackRate = rate;
+                        this.currentPlaybackRate = rate;
+                        this.showSpeedMenu = false;
                     }
                 }
             },

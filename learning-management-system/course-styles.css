@@ -788,6 +788,7 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
+    background-color: #000;
 }
 
 .loading-overlay {
@@ -801,11 +802,8 @@
     align-items: center;
     justify-content: center;
     z-index: 22;
-}
-
-.loading-overlay .fas {
-    font-size: 3rem;
     color: white;
+    font-size: 2.5rem;
 }
 
 .seek-indicator {
@@ -832,6 +830,9 @@
     opacity: 1;
     transition: opacity 0.1s ease-in;
 }
+
+.seek-indicator.forward { left: 75%; }
+.seek-indicator.backward { left: 25%; }
 
 .custom-video-controls {
     position: absolute;
@@ -936,6 +937,31 @@
     border: none;
 }
 
+.settings-control {
+    position: relative;
+}
+
+.speed-menu {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 5px;
+    padding: 0.5rem 0;
+    margin-bottom: 0.5rem;
+}
+
+.speed-menu div {
+    padding: 0.5rem 1rem;
+    color: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.speed-menu div:hover, .speed-menu div.active {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
 @media (max-width: 992px) {
     .course-container {
         flex-direction: column;
@@ -1005,14 +1031,21 @@
     .custom-video-controls {
         padding: 0.5rem;
         gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
     }
     .control-btn {
         font-size: 1rem;
         padding: 0.4rem;
     }
+    .seek-bar {
+        order: -1;
+        width: 100%;
+        flex-basis: 100%;
+    }
     .time-display {
         font-size: 0.8rem;
-        min-width: 75px;
+        min-width: auto;
     }
     .volume-control:hover .volume-slider {
         width: 60px;
