@@ -1034,7 +1034,6 @@
                     const icon = indicator.querySelector('i');
                     if (!indicator || !icon) return;
                     icon.className = `fas fa-fast-${direction}`;
-                    indicator.classList.remove('forward', 'backward');
                     indicator.classList.add('show', direction);
                     if (this.seekIndicatorTimeout) {
                         clearTimeout(this.seekIndicatorTimeout);
