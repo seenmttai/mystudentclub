@@ -558,6 +558,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     fetchCategories();
     fetchJobs();
     setupEventListeners();
+    loadBanners();
+    setupNotificationPopup();
     if (Notification.permission === 'granted') {
         initializeFCM().then(() => updateNotificationBadge());
     } else {
