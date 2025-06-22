@@ -161,7 +161,7 @@
                             </button>
                         </div>
                         
-                        <div class="video-container-premium" v-if="currentVideo" @mouseenter="showControls = true" @mouseleave="hideControls">
+                        <div class="video-container-premium" v-if="currentVideo" @mousemove="showControlsOnMove">
                             <div class="video-player-premium" v-if="videoUrl">
                                 <div class="video-player-wrapper" @dblclick="handleDblClick">
                                     <video 
@@ -173,12 +173,18 @@
                                         @ended="markVideoCompleted" 
                                         @timeupdate="handleTimeUpdate"
                                         @loadedmetadata="handleLoadedMetadata"
+                                        @waiting="handleWaiting"
+                                        @playing="handlePlaying"
+                                        @error="handleVideoError"
                                         @click="togglePlay"
                                         :src="videoUrl"
                                         class="custom-video-player"
                                     >
                                         Your browser does not support the video tag.
                                     </video>
+                                    <div class="loading-overlay" v-if="isLoading || isBuffering">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                    </div>
                                     <div class="seek-indicator" ref="seekIndicator">
                                         <i></i>
                                     </div>
@@ -395,7 +401,9 @@
                     showControls: false,
                     controlsTimeout: null,
                     seekDebounceTimeout: null,
-                    seekIndicatorTimeout: null
+                    seekIndicatorTimeout: null,
+                    isLoading: false,
+                    isBuffering: false
                 }
             },
             computed: {
@@ -436,14 +444,23 @@
                     return groups;
                 },
                 formattedCurrentTime() {
-                    const minutes = Math.floor(this.currentTime / 60);
+                    if (isNaN(this.currentTime)) return '0:00';
+                    const hours = Math.floor(this.currentTime / 3600);
+                    const minutes = Math.floor((this.currentTime % 3600) / 60);
                     const seconds = Math.floor(this.currentTime % 60).toString().padStart(2, '0');
+                    if (hours > 0) {
+                        return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds}`;
+                    }
                     return `${minutes}:${seconds}`;
                 },
                 formattedDuration() {
                     if (isNaN(this.duration) || this.duration === 0) return '0:00';
-                    const minutes = Math.floor(this.duration / 60);
+                    const hours = Math.floor(this.duration / 3600);
+                    const minutes = Math.floor((this.duration % 3600) / 60);
                     const seconds = Math.floor(this.duration % 60).toString().padStart(2, '0');
+                    if (hours > 0) {
+                        return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds}`;
+                    }
                     return `${minutes}:${seconds}`;
                 },
                 volumeIcon() {
@@ -578,6 +595,7 @@
                     this.courseSections[dayIndex].expanded = !this.courseSections[dayIndex].expanded;
                 },
                 selectVideo(videoId) {
+                    this.isLoading = true;
                     this.currentVideoId = videoId;
                     if (window.innerWidth < 768) {
                         this.sidebarActive = false;
@@ -874,20 +892,27 @@
                     const video = this.$refs.videoPlayer;
                     if (video) {
                         this.duration = video.duration;
+                        this.isLoading = false;
+                        this.isBuffering = false;
                     }
                 },
+                handleWaiting() {
+                    this.isBuffering = true;
+                },
+                handlePlaying() {
+                    this.isBuffering = false;
+                },
+                handleVideoError() {
+                    this.isLoading = false;
+                    this.isBuffering = false;
+                    console.error("Video Error: Failed to load video source.");
+                },
                 handleSeek(event) {
-                    if (this.seekDebounceTimeout) {
-                        clearTimeout(this.seekDebounceTimeout);
-                    }
+                    const video = this.$refs.videoPlayer;
+                    if (!video) return;
                     const seekTime = event.target.value;
+                    video.currentTime = seekTime;
                     this.currentTime = seekTime;
-                    this.seekDebounceTimeout = setTimeout(() => {
-                        const video = this.$refs.videoPlayer;
-                        if (video) {
-                            video.currentTime = seekTime;
-                        }
-                    }, 150);
                 },
                 toggleMute() {
                     const video = this.$refs.videoPlayer;
@@ -967,11 +992,15 @@
                         indicator.classList.remove('show');
                     }, 500);
                 },
-                hideControls() {
+                showControlsOnMove() {
+                    this.showControls = true;
+                    if (this.controlsTimeout) {
+                        clearTimeout(this.controlsTimeout);
+                    }
                     if (this.isPlaying) {
                         this.controlsTimeout = setTimeout(() => {
                             this.showControls = false;
-                        }, 2000);
+                        }, 3000);
                     }
                 }
             },
