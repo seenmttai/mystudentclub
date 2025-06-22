@@ -167,7 +167,7 @@
                                     <video 
                                         ref="videoPlayer"
                                         :key="videoUrl" 
-                                        preload="metadata" 
+                                        preload="auto" 
                                         @play="isPlaying = true"
                                         @pause="isPlaying = false"
                                         @ended="markVideoCompleted" 
@@ -197,7 +197,7 @@
                                         <div class="seek-bar-track">
                                             <div class="seek-bar-fill" :style="{ width: progressPercentage + '%' }"></div>
                                         </div>
-                                        <input type="range" class="seek-bar" min="0" :max="duration" :value="currentTime" @mousedown="isDraggingSeekBar = true" @input="handleSeekInput" @change="applySeek">
+                                        <input type="range" class="seek-bar" min="0" :max="duration" :value="currentTime" @mousedown="isDraggingSeekBar = true" @input="handleSeekInput" @change="applySeek" @mouseup="isDraggingSeekBar = false">
                                     </div>
                                     <div class="time-display">{{ formattedCurrentTime }} / {{ formattedDuration }}</div>
                                     <div class="volume-control">

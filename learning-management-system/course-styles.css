@@ -866,6 +866,7 @@
     height: 15px;
     display: flex;
     align-items: center;
+    cursor: pointer;
 }
 
 .seek-bar-track {
@@ -895,6 +896,7 @@
     position: absolute;
     margin: 0;
     padding: 0;
+    cursor: pointer;
 }
 
 .seek-bar::-webkit-slider-thumb {
@@ -906,6 +908,10 @@
     cursor: pointer;
     border-radius: 50%;
     border: none;
+    transition: transform 0.2s ease;
+}
+.seek-bar-container:hover .seek-bar::-webkit-slider-thumb {
+    transform: scale(1.2);
 }
 .seek-bar::-moz-range-thumb {
     width: 15px;
