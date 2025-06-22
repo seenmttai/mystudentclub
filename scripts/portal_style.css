@@ -782,8 +782,8 @@ body {
 
 @media (max-width: 480px) {
     .user-hover-card {
-        right: -0.75rem;
-        width: calc(100vw - 3rem);
-        max-width: 280px;
+        right: 0;
+        width: 200px;
+        padding: 0.75rem;
     }
 }
