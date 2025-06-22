@@ -719,6 +719,13 @@ body {
   .whatsapp-fab:hover { width: 150px; }
   .modal-actions { flex-direction: column; }
   .btn { width: 100%; }
+  .notification-popup {
+    top: 70px;
+    left: 1rem;
+    right: 1rem;
+    width: auto;
+    max-width: none;
+  }
 }
 
 .auth-buttons-container .icon-button {
