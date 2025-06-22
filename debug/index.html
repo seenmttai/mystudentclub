@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Student Club - Job Portal (New Design)</title>
+  <title>My Student Club - Job Portal</title>
   <meta name="description" content="Find the best industrial training, articleship, and CA fresher jobs at My Student Club's job portal. Your path to a successful CA career starts here.">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -63,6 +63,33 @@
   </div>
 
   <div id="notificationPopup" class="notification-popup">
+    <div class="notification-popup-header">
+        <h3>Notification Preferences</h3>
+        <button id="closeNotificationPopup" class="icon-button">×</button>
+    </div>
+    <div class="notification-status" id="notificationStatus"></div>
+    <div id="notification-permission-status"></div>
+    <button id="enable-notifications-btn" class="action-button">Enable Notifications</button>
+    <div id="topic-selection-area">
+        <div class="all-topic-section">
+            <label>
+                <input type="checkbox" id="topic-all">
+                <span>Receive All Job Notifications</span>
+            </label>
+        </div>
+        <div class="subscription-form" id="specific-subscription-form">
+            <h4>Add Specific Subscription:</h4>
+            <div class="subscription-selectors">
+                <select id="locationSelect" class="filter-control"></select>
+                <select id="jobTypeSelect" class="filter-control"></select>
+                <button id="subscribeBtn" class="action-button" disabled>Subscribe</button>
+            </div>
+        </div>
+        <div class="subscribed-topics">
+            <h4>Your Subscriptions:</h4>
+            <div id="subscribedTopicsList"></div>
+        </div>
+    </div>
   </div>
 
   <main class="main-content-area">
@@ -84,8 +111,7 @@
       </div>
     </section>
 
-    <div class="job-listing-area" id="jobs">
-    </div>
+    <div class="job-listing-area" id="jobs"></div>
 
     <div class="loader-container" id="loader">
       <div class="loader-spinner"></div>
@@ -103,8 +129,7 @@
     </div>
   </div>
 
-  <nav class="site-footer-nav">
-  </nav>
+  <nav class="site-footer-nav"></nav>
 
   <a href="https://api.whatsapp.com/send/?phone=919313148303" target="_blank" class="whatsapp-fab" aria-label="Contact us on WhatsApp">
     <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">

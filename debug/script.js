@@ -1,4 +1,6 @@
 import { getDaysAgo } from '../scripts/date-utils.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js';
+import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging.js';
 
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
@@ -15,13 +17,13 @@ const salaryFilter = document.getElementById('salaryFilter');
 const categoryFilter = document.getElementById('categoryFilter');
 const loadMoreButton = document.getElementById('loadMore');
 const siteFooterNav = document.querySelector('.site-footer-nav');
-
 const menuButton = document.getElementById('menuButton');
 const expandedMenu = document.getElementById('expandedMenu');
 const menuCloseBtn = document.getElementById('menuCloseBtn');
 const authButtonsContainer = document.querySelector('.auth-buttons-container');
 const notificationPopup = document.getElementById('notificationPopup');
 const notificationsBtn = document.getElementById('notificationsBtn');
+const closeNotificationPopup = document.getElementById('closeNotificationPopup');
 
 let isFetching = false;
 let page = 0;
@@ -51,11 +53,7 @@ function renderJobCard(job) {
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     ${job.Location || 'N/A'}
                 </span>
-                ${job.Salary ? `
-                <span class="job-tag">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    ₹${job.Salary}
-                </span>` : ''}
+                ${job.Salary ? `<span class="job-tag"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>₹${job.Salary}</span>` : ''}
                 ${job.Category ? `<span class="job-tag">${job.Category}</span>` : ''}
             </div>
         </div>
@@ -63,17 +61,9 @@ function renderJobCard(job) {
     return jobCard;
 }
 
-function showModal(job) {
+async function showModal(job) {
     const companyInitial = job.Company ? job.Company.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
-    
-    let peerConnectLink;
-    if (job.connect_link && isValidUrl(job.connect_link)) {
-        peerConnectLink = job.connect_link;
-    } else {
-        const keywords = `"${"Industrial Trainee"}" AND "${job.Company}"`;
-        peerConnectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(keywords)}&origin=FACETED_SEARCH`;
-    }
 
     modalBody.innerHTML = `
         <div class="modal-header">
@@ -97,14 +87,44 @@ function showModal(job) {
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 Apply Now
             </a>
-            <a href="${peerConnectLink}" class="btn btn-secondary" target="_blank">
+            <a id="peerConnectBtn" href="#" class="btn btn-secondary" target="_blank">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                Connect to Peer
+                <span>Connect to Peer</span>
             </a>
         </div>
     `;
     modalOverlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
+
+    const peerConnectBtn = document.getElementById('peerConnectBtn');
+    peerConnectBtn.style.pointerEvents = 'none';
+    peerConnectBtn.style.opacity = '0.5';
+
+    try {
+        const { data, error } = await supabaseClient
+            .from(currentTable)
+            .select('connect_link')
+            .eq('id', job.id)
+            .single();
+
+        if (error) throw error;
+
+        let peerConnectLink;
+        if (data && data.connect_link && isValidUrl(data.connect_link)) {
+            peerConnectLink = data.connect_link;
+        } else {
+            const keywords = `"Industrial Trainee" AND "${job.Company}"`;
+            peerConnectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(keywords)}&origin=FACETED_SEARCH`;
+        }
+        peerConnectBtn.href = peerConnectLink;
+    } catch (error) {
+        console.error("Failed to fetch connect_link:", error);
+        const keywords = `"Industrial Trainee" AND "${job.Company}"`;
+        peerConnectBtn.href = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(keywords)}&origin=FACETED_SEARCH`;
+    } finally {
+        peerConnectBtn.style.pointerEvents = 'auto';
+        peerConnectBtn.style.opacity = '1';
+    }
 }
 
 function closeModal() {
@@ -133,7 +153,9 @@ async function fetchJobs() {
     loadMoreButton.style.display = 'none';
 
     try {
-        let query = supabaseClient.from(currentTable).select('*', { count: 'exact' });
+        let query = supabaseClient
+            .from(currentTable)
+            .select('id, Company, Location, Salary, Description, Created_At, Category, "Application ID"');
 
         const searchTerm = searchInput.value.trim();
         if (searchTerm) {
@@ -204,9 +226,7 @@ function setupEventListeners() {
     menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
     menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
     document.addEventListener('click', (e) => {
-        if (expandedMenu.classList.contains('active') &&
-            !expandedMenu.contains(e.target) &&
-            !menuButton.contains(e.target)) {
+        if (expandedMenu.classList.contains('active') && !expandedMenu.contains(e.target) && !menuButton.contains(e.target)) {
             expandedMenu.classList.remove('active');
         }
     });
@@ -227,6 +247,19 @@ function setupEventListeners() {
             }
         });
     }
+
+    notificationsBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notificationPopup.style.display = notificationPopup.style.display === 'flex' ? 'none' : 'flex';
+    });
+    closeNotificationPopup.addEventListener('click', () => {
+        notificationPopup.style.display = 'none';
+    });
+    document.addEventListener('click', (e) => {
+        if (notificationPopup.style.display === 'flex' && !notificationPopup.contains(e.target) && !notificationsBtn.contains(e.target)) {
+            notificationPopup.style.display = 'none';
+        }
+    });
 }
 
 function populateSalaryFilter(table) {
@@ -287,6 +320,7 @@ function setupFooterNav() {
             populateSalaryFilter(currentTable);
             fetchCategories();
             resetAndFetch();
+            loadBanners();
         });
     });
 }
@@ -328,7 +362,43 @@ window.handleLogout = async () => {
     await supabaseClient.auth.signOut();
     currentSession = null;
     updateHeaderAuth(null);
-    window.location.reload();
+}
+
+async function loadBanners() {
+    const carousel = document.querySelector('.carousel');
+    const bannerSection = document.querySelector('.banner-section');
+    if (!carousel || !bannerSection) return;
+
+    try {
+        const { data: banners, error } = await supabaseClient.from('Banners').select('Image, Hyperlink, Type');
+        if (error) throw error;
+
+        carousel.innerHTML = '';
+
+        const relevantBanners = banners.filter(banner => {
+            let currentType = currentTable === "Semi Qualified Jobs" ? "Semi-Qualified" :
+                              currentTable === "Fresher Jobs" ? "Freshers" :
+                              currentTable.split(' ')[0];
+            return banner.Type === 'All' || banner.Type === currentType;
+        });
+
+        if (relevantBanners.length === 0) {
+            bannerSection.style.display = 'none';
+            return;
+        }
+        
+        bannerSection.style.display = 'block';
+        relevantBanners.forEach((banner) => {
+            const a = document.createElement('a');
+            a.href = banner.Hyperlink;
+            a.target = "_blank";
+            const img = document.createElement('img');
+            img.src = banner.Image;
+            img.alt = `Banner`;
+            a.appendChild(img);
+            carousel.appendChild(a);
+        });
+    } catch (e) { console.error("Error loading banners", e); }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -339,4 +409,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     fetchJobs();
     setupEventListeners();
     setupFooterNav();
+    loadBanners();
 });
