@@ -19,7 +19,6 @@ const menuButton = document.getElementById('menuButton');
 const expandedMenu = document.getElementById('expandedMenu');
 const menuCloseBtn = document.getElementById('menuCloseBtn');
 const authButtonsContainer = document.querySelector('.auth-buttons-container');
-const experienceFilter = document.getElementById('experienceFilter');
 
 const notificationsBtn = document.getElementById('notificationsBtn');
 const notificationPopup = document.getElementById('notificationPopup');
@@ -77,16 +76,6 @@ if (window.location.pathname.includes('articleship')) {
   currentTable = 'Semi Qualified Jobs';
 } else if (window.location.pathname.includes('fresher')) {
   currentTable = 'Fresher Jobs';
-}
-
-function updateFilterVisibility() {
-    if (experienceFilter) {
-        if (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs") {
-            experienceFilter.style.display = 'block';
-        } else {
-            experienceFilter.style.display = 'none';
-        }
-    }
 }
 
 function renderJobCard(job) {
@@ -213,6 +202,7 @@ async function fetchJobs() {
         }
         const category = categoryFilter.value;
         if (category) query = query.ilike('Category', `%${category}%`);
+        const experienceFilter = document.getElementById('experienceFilter');
         if (experienceFilter && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
             const experience = experienceFilter.value;
             if (experience) {
@@ -286,7 +276,6 @@ function setupFooterNav() {
             fetchCategories();
             resetAndFetch();
             loadBanners();
-            updateFilterVisibility();
         });
     });
 }
