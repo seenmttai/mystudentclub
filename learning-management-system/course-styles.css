@@ -809,8 +809,7 @@
 .seek-indicator {
     position: absolute;
     top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translateY(-50%);
     background-color: rgba(0, 0, 0, 0.6);
     color: white;
     border-radius: 50%;
@@ -831,8 +830,8 @@
     transition: opacity 0.1s ease-in;
 }
 
-.seek-indicator.forward { left: 75%; }
-.seek-indicator.backward { left: 25%; }
+.seek-indicator.forward { left: 75%; transform: translate(-50%, -50%); }
+.seek-indicator.backward { left: 25%; transform: translate(-50%, -50%); }
 
 .custom-video-controls {
     position: absolute;

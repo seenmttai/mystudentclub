@@ -167,7 +167,7 @@
                                     <video 
                                         ref="videoPlayer"
                                         :key="videoUrl" 
-                                        preload="metadata" 
+                                        preload="auto" 
                                         @play="isPlaying = true"
                                         @pause="isPlaying = false"
                                         @ended="markVideoCompleted" 
@@ -193,7 +193,7 @@
                                     <button @click.stop="togglePlay" class="control-btn">
                                         <i :class="['fas', isPlaying ? 'fa-pause' : 'fa-play']"></i>
                                     </button>
-                                    <input type="range" class="seek-bar" min="0" :max="duration" :value="currentTime" @input="handleSeekInput" @change="applySeek">
+                                    <input type="range" class="seek-bar" min="0" :max="duration" :value="currentTime" @mousedown="isDraggingSeekBar = true" @input="handleSeekInput" @change="applySeek">
                                     <div class="time-display">{{ formattedCurrentTime }} / {{ formattedDuration }}</div>
                                     <div class="volume-control">
                                         <button @click.stop="toggleMute" class="control-btn">
@@ -413,6 +413,7 @@
                     seekIndicatorTimeout: null,
                     isLoading: false,
                     isBuffering: false,
+                    isDraggingSeekBar: false,
                     playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2],
                     currentPlaybackRate: 1,
                     showSpeedMenu: false,
@@ -899,7 +900,7 @@
                 },
                 handleTimeUpdate() {
                     const video = this.$refs.videoPlayer;
-                    if (video && !this.isSeeking) {
+                    if (video && !this.isDraggingSeekBar) {
                         this.currentTime = video.currentTime;
                     }
                 },
@@ -931,7 +932,11 @@
                             const video = this.$refs.videoPlayer;
                             if (video) {
                                 this.isLoading = true;
+                                const currentTime = video.currentTime;
                                 video.load();
+                                video.play().then(() => {
+                                    video.currentTime = currentTime;
+                                }).catch(() => {});
                             }
                         }, delay);
                     } else {
@@ -939,6 +944,7 @@
                     }
                 },
                 handleSeekInput(event) {
+                    this.isDraggingSeekBar = true;
                     this.currentTime = parseFloat(event.target.value);
                 },
                 applySeek(event) {
@@ -946,8 +952,8 @@
                     if (video) {
                         const seekTime = parseFloat(event.target.value);
                         video.currentTime = seekTime;
-                        this.currentTime = seekTime;
                     }
+                    this.isDraggingSeekBar = false;
                 },
                 toggleMute() {
                     const video = this.$refs.videoPlayer;
