@@ -534,6 +534,7 @@ function setupEventListeners() {
     locationSearchInput.addEventListener('input', resetAndFetch);
     salaryFilter.addEventListener('change', resetAndFetch);
     categoryFilter.addEventListener('change', resetAndFetch);
+    const experienceFilter = document.getElementById('experienceFilter');
     if (experienceFilter) {
         experienceFilter.addEventListener('change', resetAndFetch);
     }
@@ -582,7 +583,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupFooterNav();
     loadBanners();
     setupNotificationPopup();
-    updateFilterVisibility();
     if (Notification.permission === 'granted') {
         initializeFCM().then(() => updateNotificationBadge());
     } else {
