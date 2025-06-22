@@ -433,7 +433,9 @@ function populateNotificationDropdowns() {
 
 async function initializeFCM() {
     try {
-        if (typeof firebase === 'undefined' || !firebase.app) firebase.initializeApp(FIREBASE_CONFIG);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(FIREBASE_CONFIG);
+        }
         firebaseMessaging = firebase.messaging();
         firebaseMessaging.onMessage((payload) => {
             console.log('Foreground message received.', payload);
