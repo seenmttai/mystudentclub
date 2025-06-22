@@ -19,6 +19,7 @@ const menuButton = document.getElementById('menuButton');
 const expandedMenu = document.getElementById('expandedMenu');
 const menuCloseBtn = document.getElementById('menuCloseBtn');
 const authButtonsContainer = document.querySelector('.auth-buttons-container');
+const experienceFilter = document.getElementById('experienceFilter');
 
 const notificationsBtn = document.getElementById('notificationsBtn');
 const notificationPopup = document.getElementById('notificationPopup');
@@ -29,7 +30,6 @@ const topicAllCheckbox = document.getElementById('topic-all');
 const topicSelectionArea = document.getElementById('topic-selection-area');
 const permissionStatusDiv = document.getElementById('notification-permission-status');
 const enableNotificationsBtn = document.getElementById('enable-notifications-btn');
-const fcmTokenDisplay = document.getElementById('fcm-token-display');
 const subscribedTopicsListEl = document.getElementById('subscribedTopicsList');
 const locationSelectEl = document.getElementById('locationSelect');
 const jobTypeSelectEl = document.getElementById('jobTypeSelect');
@@ -259,27 +259,6 @@ async function fetchCategories() {
     categories.sort().forEach(category => { const option = document.createElement('option'); option.value = category; option.textContent = category; categoryFilter.appendChild(option); });
 }
 
-function setupFooterNav() {
-    const navItems = [
-        { name: 'Industrial Training', table: 'Industrial Training Job Portal', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>' },
-        { name: 'Articleship', table: 'Articleship Jobs', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>' },
-        { name: 'Semi Qualified', table: 'Semi Qualified Jobs', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>' },
-        { name: 'Freshers', table: 'Fresher Jobs', icon: '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>' }
-    ];
-    siteFooterNav.innerHTML = navItems.map(item => `<button class="footer-tab ${item.table === currentTable ? 'active' : ''}" data-table="${item.table}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor">${item.icon}</svg><span>${item.name}</span></button>`).join('');
-    siteFooterNav.querySelectorAll('.footer-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-            currentTable = tab.dataset.table;
-            siteFooterNav.querySelectorAll('.footer-tab').forEach(t => t.classList.remove('active'));
-            tab.classList.add('active');
-            populateSalaryFilter(currentTable);
-            fetchCategories();
-            resetAndFetch();
-            loadBanners();
-        });
-    });
-}
-
 async function checkAuth() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     currentSession = session;
@@ -464,7 +443,6 @@ async function requestTokenAndSyncSubscriptions() {
         const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY });
         if (token) {
             currentFcmToken = token;
-            if(fcmTokenDisplay) fcmTokenDisplay.textContent = `Token: ${token.substring(0,20)}...`;
             await syncNotificationTopics();
         }
     } catch (err) { console.error('An error occurred while retrieving token.', err); }
