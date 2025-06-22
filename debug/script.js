@@ -21,9 +21,20 @@ const menuButton = document.getElementById('menuButton');
 const expandedMenu = document.getElementById('expandedMenu');
 const menuCloseBtn = document.getElementById('menuCloseBtn');
 const authButtonsContainer = document.querySelector('.auth-buttons-container');
-const notificationPopup = document.getElementById('notificationPopup');
 const notificationsBtn = document.getElementById('notificationsBtn');
+const notificationPopup = document.getElementById('notificationPopup');
 const closeNotificationPopup = document.getElementById('closeNotificationPopup');
+const notificationStatus = document.getElementById('notificationStatus');
+const notificationBadge = document.getElementById('notificationBadge');
+const topicAllCheckbox = document.getElementById('topic-all');
+const topicSelectionArea = document.getElementById('topic-selection-area');
+const permissionStatusDiv = document.getElementById('notification-permission-status');
+const enableNotificationsBtn = document.getElementById('enable-notifications-btn');
+const subscribedTopicsList = document.getElementById('subscribedTopicsList');
+const locationSelect = document.getElementById('locationSelect');
+const jobTypeSelect = document.getElementById('jobTypeSelect');
+const subscribeBtn = document.getElementById('subscribeBtn');
+const specificSubscriptionForm = document.getElementById('specific-subscription-form');
 
 let isFetching = false;
 let page = 0;
@@ -32,6 +43,30 @@ let debounceTimeout = null;
 let hasMoreData = true;
 let currentTable = 'Industrial Training Job Portal';
 let currentSession = null;
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
+  authDomain: "msc-notif.firebaseapp.com",
+  projectId: "msc-notif",
+  storageBucket: "msc-notif.appspot.com",
+  messagingSenderId: "228639798414",
+  appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
+  measurementId: "G-X4M23TB936"
+};
+const VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
+const JOB_TYPES = [
+  { value: "industrial", label: "Industrial Training" },
+  { value: "semi", label: "Semi Qualified" },
+  { value: "fresher", label: "Fresher" }
+];
+const LOCATIONS = [
+  "mumbai", "bangalore", "gurgaon", "pune", "kolkata",
+  "delhi", "noida", "bengaluru", "hyderabad", "ahmedabad",
+  "chennai", "gurugram", "jaipur", "new delhi"
+];
+const SUBSCRIBED_TOPICS_KEY = 'subscribedTopics';
+let messaging;
+let fcmToken = null;
 
 function renderJobCard(job) {
     const jobCard = document.createElement('article');
@@ -212,56 +247,6 @@ function resetAndFetch() {
     }, 350);
 }
 
-function setupEventListeners() {
-    modalOverlay.addEventListener('click', (e) => {
-        if (e.target === modalOverlay) closeModal();
-    });
-    modalCloseBtn.addEventListener('click', closeModal);
-    searchInput.addEventListener('input', resetAndFetch);
-    locationSearchInput.addEventListener('input', resetAndFetch);
-    salaryFilter.addEventListener('change', resetAndFetch);
-    categoryFilter.addEventListener('change', resetAndFetch);
-    loadMoreButton.addEventListener('click', fetchJobs);
-
-    menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
-    menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
-    document.addEventListener('click', (e) => {
-        if (expandedMenu.classList.contains('active') && !expandedMenu.contains(e.target) && !menuButton.contains(e.target)) {
-            expandedMenu.classList.remove('active');
-        }
-    });
-
-    const resourcesBtn = document.getElementById('resourcesDropdownBtn');
-    const resourcesDropdown = document.getElementById('resourcesDropdown');
-    if (resourcesBtn && resourcesDropdown) {
-        const dropdownIcon = resourcesBtn.querySelector('.dropdown-icon');
-        resourcesBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            resourcesDropdown.classList.toggle('active');
-            if(dropdownIcon) dropdownIcon.classList.toggle('open');
-        });
-        document.addEventListener('click', (e) => {
-            if (!resourcesBtn.contains(e.target) && !resourcesDropdown.contains(e.target)) {
-                resourcesDropdown.classList.remove('active');
-                if(dropdownIcon) dropdownIcon.classList.remove('open');
-            }
-        });
-    }
-
-    notificationsBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        notificationPopup.style.display = notificationPopup.style.display === 'flex' ? 'none' : 'flex';
-    });
-    closeNotificationPopup.addEventListener('click', () => {
-        notificationPopup.style.display = 'none';
-    });
-    document.addEventListener('click', (e) => {
-        if (notificationPopup.style.display === 'flex' && !notificationPopup.contains(e.target) && !notificationsBtn.contains(e.target)) {
-            notificationPopup.style.display = 'none';
-        }
-    });
-}
-
 function populateSalaryFilter(table) {
     salaryFilter.innerHTML = '';
     let options = [];
@@ -348,6 +333,11 @@ function updateHeaderAuth(session) {
                     </div>
                 </div>
             </div>`;
+        const userIconWrapper = authButtonsContainer.querySelector('.user-icon-wrapper');
+        userIconWrapper.addEventListener('click', (e) => {
+            e.stopPropagation();
+            userIconWrapper.querySelector('.user-hover-card').classList.toggle('active');
+        });
     } else {
         authButtonsContainer.innerHTML = `
             <a href="../login.html" class="icon-button" aria-label="Login">
@@ -401,6 +391,86 @@ async function loadBanners() {
     } catch (e) { console.error("Error loading banners", e); }
 }
 
+function setupNotificationPopup() {
+    populateLocationDropdown();
+    populateJobTypeDropdown();
+    enableNotificationsBtn.addEventListener('click', async () => {
+        try {
+            const permission = await Notification.requestPermission();
+            updatePermissionStatusUI();
+            if (permission === 'granted') {
+                await initializeFCM();
+            }
+        } catch (err) {
+            console.error("Error requesting notification permission:", err);
+        }
+    });
+}
+
+function populateLocationDropdown() {
+     if (!locationSelect) return;
+     locationSelect.innerHTML = '<option value="" disabled selected>Select Location</option>';
+     LOCATIONS.forEach(location => {
+       const option = document.createElement('option');
+       option.value = location;
+       option.textContent = location.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+       locationSelect.appendChild(option);
+     });
+}
+
+function populateJobTypeDropdown() {
+     if (!jobTypeSelect) return;
+     jobTypeSelect.innerHTML = '<option value="" disabled selected>Select Job Type</option>';
+     JOB_TYPES.forEach(type => {
+       const option = document.createElement('option');
+       option.value = type.value;
+       option.textContent = type.label;
+       jobTypeSelect.appendChild(option);
+     });
+}
+
+function updatePermissionStatusUI() {
+    if (!permissionStatusDiv || !enableNotificationsBtn || !topicSelectionArea) return;
+    const permission = Notification.permission;
+    if (permission === 'granted') {
+        permissionStatusDiv.textContent = 'Notifications are enabled.';
+        permissionStatusDiv.style.backgroundColor = '#dcfce7';
+        permissionStatusDiv.style.color = '#15803d';
+        enableNotificationsBtn.style.display = 'none';
+        topicSelectionArea.style.display = 'block';
+    } else if (permission === 'denied') {
+        permissionStatusDiv.textContent = 'Notifications are blocked. Please enable them in your browser settings.';
+        permissionStatusDiv.style.backgroundColor = '#fee2e2';
+        permissionStatusDiv.style.color = '#b91c1c';
+        enableNotificationsBtn.style.display = 'none';
+        topicSelectionArea.style.display = 'none';
+    } else {
+        permissionStatusDiv.textContent = 'Enable notifications to receive job alerts.';
+        permissionStatusDiv.style.backgroundColor = '#eff6ff';
+        permissionStatusDiv.style.color = '#1e40af';
+        enableNotificationsBtn.style.display = 'block';
+        topicSelectionArea.style.display = 'none';
+    }
+}
+
+async function initializeFCM() {
+    try {
+        const app = initializeApp(firebaseConfig);
+        messaging = getMessaging(app);
+        if ('serviceWorker' in navigator) {
+            await navigator.serviceWorker.register('../firebase-messaging-sw.js');
+        }
+        if (Notification.permission === 'granted') {
+            const currentToken = await getToken(messaging, { vapidKey: VAPID_KEY });
+            if (currentToken) {
+                fcmToken = currentToken;
+            }
+        }
+    } catch(err) {
+        console.error("Error initializing Firebase for notifications:", err);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     const session = await checkAuth();
     updateHeaderAuth(session);
@@ -410,4 +480,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupEventListeners();
     setupFooterNav();
     loadBanners();
+    setupNotificationPopup();
+    updatePermissionStatusUI();
+    if (Notification.permission === 'granted') {
+        await initializeFCM();
+    }
 });

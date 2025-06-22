@@ -155,6 +155,10 @@ body {
   background-color: rgba(0,0,0,0.05);
   color: var(--primary-brand);
 }
+.menu-item-dropdown {
+  display: flex;
+  flex-direction: column;
+}
 .dropdown-icon {
     width: 16px; height: 16px;
     transition: transform 0.2s var(--transition-fast);
@@ -200,7 +204,7 @@ body {
 .notification-popup-header .icon-button { padding: 0.25rem; }
 .notification-status { padding: 0.75rem; border-radius: var(--radius-md); font-size: 0.9rem; display: none; }
 #notification-permission-status { padding: 0.75rem; border-radius: var(--radius-md); font-size: 0.9rem; }
-#enable-notifications-btn { width: 100%; }
+#enable-notifications-btn { width: 100%; display: none; }
 .all-topic-section label { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; border-radius: var(--radius-md); cursor: pointer; }
 .all-topic-section label:hover { background-color: var(--neutral-bg); }
 .subscription-form h4, .subscribed-topics h4 { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; }
@@ -519,6 +523,7 @@ body {
 }
 .modal-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-top: 2rem;
   border-top: 1px solid var(--border-light);
@@ -536,6 +541,7 @@ body {
   transition: all var(--transition-std);
   border: 1px solid transparent;
   font-size: 0.9rem;
+  flex-grow: 1;
 }
 .btn svg { width: 16px; height: 16px; }
 .btn-primary {
@@ -600,7 +606,6 @@ body {
 }
 .footer-tab.active {
   color: var(--primary-brand);
-  background-color: rgba(59, 130, 246, 0.05);
 }
 .footer-tab:hover {
   color: var(--primary-brand);
@@ -651,49 +656,6 @@ body {
   flex-shrink: 0;
 }
 
-@media (max-width: 768px) {
-  body { padding-top: 60px; padding-bottom: 60px; }
-  .site-header { height: 60px; }
-  .header-container { padding: 0 1rem; }
-  .brand-logo { height: 28px; }
-  .icon-button svg { width: 20px; height: 20px; }
-  .main-content-area { padding: 1rem; }
-  .controls-section { padding: 1rem; margin: 1.5rem 0; }
-  .filter-bar-wrapper { grid-template-columns: 1fr; }
-  .job-card { flex-direction: column; align-items: flex-start; gap: 1rem; }
-  .job-card-logo { width: 48px; height: 48px; font-size: 1.5rem; }
-  .modal-dialog { max-width: calc(100% - 2rem); }
-  #modal-body-content { padding: 1.5rem; }
-  .modal-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
-  .modal-logo { width: 56px; height: 56px; font-size: 2rem; }
-  .modal-title-group h2 { font-size: 1.4rem; }
-  .site-footer-nav { height: 60px; }
-  .footer-tab svg { width: 18px; height: 18px; }
-  .footer-tab span { font-size: 0.6rem; }
-  .whatsapp-fab { bottom: 75px; right: 1rem; height: 50px; width: 50px; }
-  .whatsapp-fab svg { width: 24px; height: 24px; }
-  .whatsapp-fab:hover { width: 160px; }
-}
-
-@media (max-width: 480px) {
-  .brand-logo { height: 26px; }
-  .nav-actions { gap: 0.25rem; }
-  .icon-button { padding: 0.5rem; }
-  .search-input-field { padding: 0.75rem 1rem; padding-right: 2.5rem; font-size: 0.9rem; }
-  .search-button { right: 0.25rem; }
-  .filter-control { padding: 0.6rem 0.75rem; font-size: 0.85rem; }
-  .job-card { padding: 1rem; }
-  .job-card-company { font-size: 1.1rem; }
-  .job-tag { font-size: 0.7rem; padding: 0.2rem 0.6rem; }
-  .modal-title-group h2 { font-size: 1.25rem; }
-  .modal-section h3 { font-size: 1rem; }
-  .modal-description { font-size: 0.9rem; }
-  .btn { padding: 0.6rem 1.2rem; font-size: 0.85rem; }
-  .whatsapp-fab { height: 48px; width: 48px; }
-  .whatsapp-fab svg { width: 22px; height: 22px; }
-  .whatsapp-fab:hover { width: 150px; }
-}
-
 .auth-buttons-container .icon-button {
     background-color: rgba(59, 130, 246, 0.1);
     color: var(--primary-brand);
@@ -717,15 +679,15 @@ body {
     background: var(--surface-bg); border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg); padding: 1rem;
     width: 250px; z-index: 1010;
-    transition: opacity var(--transition-std), transform var(--transition-std);
+    transition: opacity var(--transition-std), transform var(--transition-std), visibility 0s var(--transition-std);
     transform: translateY(-10px);
     pointer-events: none;
 }
-.user-icon-wrapper:hover .user-hover-card,
-.user-hover-card:hover {
+.user-hover-card.active {
     visibility: visible; opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
+    transition: opacity var(--transition-std), transform var(--transition-std), visibility 0s;
 }
 .user-hover-content { display: flex; flex-direction: column; gap: 0.75rem; }
 .user-email {
@@ -740,3 +702,33 @@ body {
     width: 100%; text-align: center;
 }
 .logout-btn:hover { background-color: #FECACA; }
+
+@media (max-width: 768px) {
+  body { padding-top: 60px; padding-bottom: 60px; }
+  .site-header { height: 60px; }
+  .header-container { padding: 0 1rem; }
+  .brand-logo { height: 28px; }
+  .icon-button svg { width: 20px; height: 20px; }
+  .main-content-area { padding: 1rem; }
+  .controls-section { padding: 1rem; margin: 1.5rem 0; }
+  .filter-bar-wrapper { grid-template-columns: 1fr; }
+  .job-card { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .job-card-logo { width: 48px; height: 48px; font-size: 1.5rem; }
+  .modal-dialog { max-width: calc(100% - 2rem); }
+  #modal-body-content { padding: 1.5rem; }
+  .modal-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
+  .modal-logo { width: 56px; height: 56px; font-size: 2rem; }
+  .modal-title-group h2 { font-size: 1.4rem; }
+  .site-footer-nav { height: 60px; }
+  .footer-tab svg { width: 18px; height: 18px; }
+  .footer-tab span { font-size: 0.6rem; }
+  .whatsapp-fab { bottom: 75px; right: 1rem; height: 50px; width: 50px; }
+  .whatsapp-fab svg { width: 24px; height: 24px; }
+  .whatsapp-fab:hover { width: 160px; }
+  .user-hover-card { left: 1rem; right: 1rem; width: auto; }
+}
+
+@media (max-width: 480px) {
+  .modal-actions { flex-direction: column; }
+  .btn { width: 100%; }
+}
