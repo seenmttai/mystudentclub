@@ -417,6 +417,11 @@ body {
   background-color: var(--primary-hover);
   transform: translateY(-2px);
 }
+.action-button:disabled {
+  background-color: var(--text-muted);
+  cursor: not-allowed;
+  transform: none;
+}
 .load-more-action { display: none; }
 
 .modal-overlay-container {
@@ -538,7 +543,7 @@ body {
   margin-top: 2rem;
   border-top: 1px solid var(--border-light);
   padding-top: 1.5rem;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
 }
 .btn {
   padding: 0.7rem 1.4rem;
@@ -552,8 +557,8 @@ body {
   transition: all var(--transition-std);
   border: 1px solid transparent;
   font-size: 0.9rem;
-  flex-grow: 1; 
-  min-width: 150px; 
+  flex-grow: 1;
+  min-width: 150px;
 }
 .btn svg { width: 16px; height: 16px; }
 .btn-primary {
@@ -710,7 +715,7 @@ body {
   .whatsapp-fab { height: 48px; width: 48px; }
   .whatsapp-fab svg { width: 22px; height: 22px; }
   .whatsapp-fab:hover { width: 150px; }
-  .modal-actions { flex-direction: column; } 
+  .modal-actions { flex-direction: column; }
   .btn { width: 100%; }
 }
 
@@ -763,8 +768,8 @@ body {
 
 @media (max-width: 480px) {
     .user-hover-card {
-        right: -0.5rem; 
-        width: calc(100vw - 3rem); 
+        right: -0.5rem;
+        width: calc(100vw - 3rem);
         max-width: 280px;
     }
 }

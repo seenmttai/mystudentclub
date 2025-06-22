@@ -386,12 +386,10 @@ async function manageTopicSubscription(topic, action) {
         });
         const result = await response.json();
         if (!response.ok || !result.success) throw new Error(result.error || `Failed to ${action} ${topic}`);
-        
         let topics = getSubscribedTopics();
         if (action === 'subscribe' && !topics.includes(topic)) topics.push(topic);
         else if (action === 'unsubscribe') topics = topics.filter(t => t !== topic);
         saveSubscribedTopics(topics);
-        
         showNotifStatus(`Successfully ${action}d ${topic}`, 'success');
         renderSubscribedTopics();
         return true;
@@ -435,20 +433,14 @@ function populateNotificationDropdowns() {
 
 async function initializeFCM() {
     try {
-        if (typeof firebase === 'undefined' || !firebase.app) {
-            firebase.initializeApp(FIREBASE_CONFIG);
-        }
+        if (typeof firebase === 'undefined' || !firebase.app) firebase.initializeApp(FIREBASE_CONFIG);
         firebaseMessaging = firebase.messaging();
-
         firebaseMessaging.onMessage((payload) => {
             console.log('Foreground message received.', payload);
             const notif = payload.notification || {};
             new Notification(notif.title, { body: notif.body, icon: notif.icon || '../assets/icon-70x70.png' });
         });
-
-        if ('serviceWorker' in navigator) {
-            await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-        }
+        if ('serviceWorker' in navigator) await navigator.serviceWorker.register('../firebase-messaging-sw.js');
         if (Notification.permission === 'granted') await requestTokenAndSyncSubscriptions();
     } catch(err) { console.error("Error initializing Firebase Messaging:", err); }
 }
@@ -488,7 +480,6 @@ async function syncNotificationTopics() {
 function setupNotificationPopup() {
     if (!notificationsBtn || !notificationPopup || !closeNotificationPopup) return;
     populateNotificationDropdowns();
-
     if (enableNotificationsBtn) {
         enableNotificationsBtn.addEventListener('click', async () => {
             try {
@@ -502,14 +493,12 @@ function setupNotificationPopup() {
             } catch (err) { console.error("Error requesting permission:", err); showNotifStatus("Error enabling notifications.", 'error'); }
         });
     }
-
     if (topicAllCheckbox) {
         topicAllCheckbox.addEventListener('change', async (e) => {
             const isChecked = e.target.checked;
             if (!(await (isChecked ? subscribeToTopic('all') : unsubscribeFromTopic('all')))) e.target.checked = !isChecked;
         });
     }
-
     if (locationSelectEl && jobTypeSelectEl && subscribeBtnEl) {
         const updateSubBtnState = () => { subscribeBtnEl.disabled = !(locationSelectEl.value && jobTypeSelectEl.value); };
         locationSelectEl.addEventListener('change', updateSubBtnState);
@@ -523,12 +512,40 @@ function setupNotificationPopup() {
             if (await subscribeToTopic(topicName)) { locationSelectEl.selectedIndex = 0; jobTypeSelectEl.selectedIndex = 0; subscribeBtnEl.disabled = true; }
         });
     }
+}
 
+function setupEventListeners() {
+    modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+    modalCloseBtn.addEventListener('click', closeModal);
+    searchInput.addEventListener('input', resetAndFetch);
+    locationSearchInput.addEventListener('input', resetAndFetch);
+    salaryFilter.addEventListener('change', resetAndFetch);
+    categoryFilter.addEventListener('change', resetAndFetch);
+    loadMoreButton.addEventListener('click', fetchJobs);
+    menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
+    menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+    document.addEventListener('click', (e) => {
+        if (expandedMenu.classList.contains('active') && !expandedMenu.contains(e.target) && !menuButton.contains(e.target)) {
+            expandedMenu.classList.remove('active');
+        }
+        if (notificationPopup.style.display === 'flex' && !notificationPopup.contains(e.target) && !notificationsBtn.contains(e.target)) {
+            notificationPopup.style.display = 'none';
+        }
+    });
+    const resourcesBtn = document.getElementById('resourcesDropdownBtn');
+    const resourcesDropdown = document.getElementById('resourcesDropdown');
+    if (resourcesBtn && resourcesDropdown) {
+        const dropdownIcon = resourcesBtn.querySelector('.dropdown-icon');
+        resourcesBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            resourcesDropdown.classList.toggle('active');
+            if(dropdownIcon) dropdownIcon.classList.toggle('open');
+        });
+    }
     notificationsBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        const isVisible = notificationPopup.style.display === 'flex';
-        notificationPopup.style.display = isVisible ? 'none' : 'flex';
-        if (!isVisible) {
+        notificationPopup.style.display = notificationPopup.style.display === 'flex' ? 'none' : 'flex';
+        if (notificationPopup.style.display === 'flex') {
             updatePermissionStatusUI();
             if (Notification.permission === 'granted') {
                 if (!firebaseMessaging || !currentFcmToken) initializeFCM().then(() => renderSubscribedTopics());
@@ -537,11 +554,6 @@ function setupNotificationPopup() {
         }
     });
     closeNotificationPopup.addEventListener('click', () => { notificationPopup.style.display = 'none'; });
-    document.addEventListener('click', (e) => {
-        if (notificationPopup.style.display === 'flex' && !notificationPopup.contains(e.target) && !notificationsBtn.contains(e.target)) {
-            notificationPopup.style.display = 'none';
-        }
-    });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
