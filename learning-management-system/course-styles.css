@@ -249,28 +249,28 @@
     margin-right: 0.5rem;
 }
 
-.video-container-premium {
+.video-container {
     background-color: #ffffff;
     border-radius: 10px;
     box-shadow: var(--shadow);
-    overflow: visible;
+    overflow: hidden;
     margin-bottom: 2rem;
 }
 
-.video-container-premium h2 {
+.video-container h2 {
     padding: 1.5rem;
     border-bottom: 1px solid var(--border-color);
     color: var(--primary-color);
     font-size: 1.5rem;
 }
 
-.video-player-premium {
+.video-player {
     position: relative;
     padding-top: 56.25%; 
     background-color: #000;
 }
 
-.video-player-premium video {
+.video-player video {
     position: absolute;
     top: 0;
     left: 0;
@@ -278,7 +278,7 @@
     height: 100%;
 }
 
-.video-navigation-premium {
+.video-navigation {
     display: flex;
     justify-content: space-between;
     padding: 1rem 1.5rem;
@@ -286,7 +286,7 @@
     border-bottom: 1px solid var(--border-color);
 }
 
-.nav-button-premium {
+.nav-button {
     padding: 0.8rem 1.5rem;
     background-color: #ffffff;
     border: 1px solid var(--border-color);
@@ -299,29 +299,29 @@
     gap: 0.5rem;
 }
 
-.nav-button-premium:hover:not(:disabled) {
+.nav-button:hover:not(:disabled) {
     background-color: var(--secondary-color);
     color: white;
     border-color: var(--secondary-color);
 }
 
-.nav-button-premium:disabled {
+.nav-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.video-description-premium {
+.video-description {
     padding: 1.5rem;
     border-bottom: 1px solid var(--border-color);
 }
 
-.video-description-premium h3 {
+.video-description h3 {
     margin-bottom: 1rem;
     color: var(--primary-color);
     font-size: 1.2rem;
 }
 
-.video-description-premium p {
+.video-description p {
     line-height: 1.7;
     color: var(--text-color);
 }
@@ -849,7 +849,6 @@
     gap: 1rem;
     opacity: 0;
     transition: opacity 0.3s ease;
-    z-index: 23;
 }
 
 .custom-video-controls.visible {
@@ -1011,7 +1010,6 @@
     padding-top: 0;
     height: auto;
     width: 100%;
-    min-height: 0;
 }
 
 .video-player-premium:fullscreen .custom-video-player,
@@ -1084,12 +1082,12 @@
         font-size: 1.8rem;
     }
     
-    .video-navigation-premium {
+    .video-navigation {
         flex-wrap: wrap;
         gap: 1rem;
     }
     
-    .nav-button-premium {
+    .nav-button {
         flex: 1;
         justify-content: center;
     }
@@ -1137,7 +1135,7 @@
         padding: 1rem;
     }
     
-    .video-container-premium h2 {
+    .video-container h2 {
         font-size: 1.3rem;
         padding: 1rem;
     }
