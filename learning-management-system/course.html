@@ -336,11 +336,10 @@
                         <h4>My Student Club</h4>
                         <p>Empowering the next generation of Chartered Accountants with world-class education and resources.</p>
                         <div class="social-links">
-                            <a href="#"><i class="fab fa-facebook"></i></a>
-                            <a href="#"><i class="fab fa-twitter"></i></a>
-                            <a href="#"><i class="fab fa-linkedin"></i></a>
-                            <a href="#"><i class="fab fa-instagram"></i></a>
-                            <a href="#"><i class="fab fa-youtube"></i></a>
+                            <a href="https://www.linkedin.com/company/mystudentclub" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+                            <a href="https://www.instagram.com/mystudentclub/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                            <a href="https://www.youtube.com/@MyStudentClub" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>
+                            <a href="https://wa.me/" target="_blank" rel="noopener noreferrer"><i class="fab fa-whatsapp"></i></a>
                         </div>
                     </div>
                     <div class="footer-links">
@@ -370,7 +369,7 @@
         import { createApp } from 'vue';
         
         const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImexCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
         pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
         
@@ -399,6 +398,13 @@
                             description: 'Master industrial training requirements for CA candidates with real-world case studies.',
                             thumbnail: 'https://mystudentclub.com/assets/it-guarantee-thumbnail.svg'
                         }
+                    },
+                    videoStartTimes: {
+                        1: 170, 
+                        2: 119, 
+                        4: 26,  
+                        6: 39,  
+                        7: 52   
                     },
                     isViewerVisible: false,
                     viewerLoading: false,
@@ -829,7 +835,6 @@
                             this.csvData = { header, rows };
                         }
                     } catch (err) {
-                        console.error("Resource viewer error:", err);
                         alert("Could not load the resource for viewing.");
                         this.closeResourceViewer();
                     } finally {
@@ -920,6 +925,10 @@
                         this.isLoading = false;
                         this.isBuffering = false;
                         this.retryCount = 0;
+
+                        if (this.videoStartTimes[this.currentVideoId] !== undefined) {
+                            video.currentTime = this.videoStartTimes[this.currentVideoId];
+                        }
                     }
                 },
                 handleWaiting() {
