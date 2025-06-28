@@ -725,7 +725,7 @@
                 },
                 loadCourseData() {
                     const urlParams = new URLSearchParams(window.location.search);
-                    this.courseSlug = url.searchParams.get('course');
+                    this.courseSlug = urlParams.get('course');
                     if (!this.courseSlug || !this.courses[this.courseSlug]) {
                         window.location.href = 'index.html';
                         return;
