@@ -677,6 +677,22 @@
   margin-right: auto;
 }
 
+.clarification-note {
+  font-size: 16px;
+  color: #4a4a8f;
+  margin-top: -20px;
+  margin-bottom: 30px;
+  background-color: rgba(76, 175, 80, 0.05);
+  padding: 15px;
+  border-radius: 10px;
+  border-left: 4px solid #4CAF50;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  line-height: 1.5;
+}
+
 .certificate-container {
   perspective: 2000px;
   margin: 60px auto;
