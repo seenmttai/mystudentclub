@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration Successful - My Student Club</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+    .success-card {
+      background: white;
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      max-width: 500px;
+      width: 90%;
+      border-top: 5px solid #10b981;
+    }
+    .success-icon {
+      width: 80px;
+      height: 80px;
+      background-color: #d1fae5;
+      color: #10b981;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+    .btn-primary {
+      background-color: #4f46e5;
+      color: white;
+      transition: all 0.3s ease;
+    }
+    .btn-primary:hover {
+      background-color: #4338ca;
+      transform: translateY(-2px);
+    }
+    .btn-secondary {
+        color: #4f46e5;
+        font-weight: 500;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+
+  <div class="success-card">
+    <div class="success-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
+    <h1 class="text-2xl font-bold text-gray-800 mb-2">Registration Successful!</h1>
+    <p class="text-gray-600 mb-6">
+      Thank you for enrolling in the Industrial Training Program. You're all set to start your learning journey.
+    </p>
+    <a href="https://www.mystudentclub.com/learning-management-system/" class="block w-full text-center px-6 py-3 rounded-lg font-semibold text-lg btn-primary mb-4">
+      Go to Learning Portal
+    </a>
+    <a href="/" class="text-sm btn-secondary">Back to Homepage</a>
+  </div>
+
+</body>
+</html>
