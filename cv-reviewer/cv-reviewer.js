@@ -93,7 +93,6 @@ async function checkAuthAndEnrollment() {
     }
 }
 
-
 document.addEventListener('DOMContentLoaded', () => {
   checkAuthAndEnrollment();
   populateSpecializations();
@@ -631,9 +630,7 @@ function simpleMarkdownToHtml(md) {
         .replace(/^\s*\d+\.\s+(.*$)/gm, '<li>$1</li>')
         .replace(/<\/li>\s*<li>/g, '</li><li>')
         .replace(/(<li>.*?<\/li>)/gs, (match, content) => {
-
              if (match.includes('<ul>') || match.includes('<ol>')) return match;
-
              const listType = /^\s*[\-\*]/.test(md) ? 'ul' : 'ol';
              return `<${listType}>${content}</${listType}>`;
         })
@@ -692,7 +689,6 @@ function animateScore(score) {
 }
 
 function updateScoreBreakdown(overallScore, resultsText) {
-
     const categoryScores = {};
     const scorePatterns = {
         structure: /Structure.*?Completeness.*?(\d+)\s*\/\s*20/i,
@@ -702,14 +698,13 @@ function updateScoreBreakdown(overallScore, resultsText) {
         presentation: /Overall.*?Presentation.*?(\d+)\s*\/\s*10/i
     };
 
-     let foundSpecificScores = true;
+    let foundSpecificScores = true;
     for (const [key, pattern] of Object.entries(scorePatterns)) {
         const match = resultsText.match(pattern);
         if (match && match[1]) {
             categoryScores[key] = parseInt(match[1], 10);
         } else {
             foundSpecificScores = false;
-
         }
     }
 
@@ -728,7 +723,6 @@ function updateScoreBreakdown(overallScore, resultsText) {
             calculatedPoints = Math.min(categoryScores[categoryKey], maxPoints); 
             percentage = (calculatedPoints / maxPoints) * 100;
         } else {
-
              calculatedPoints = Math.round((overallScore / 100) * maxPoints);
              percentage = overallScore; 
          }
