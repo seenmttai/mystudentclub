@@ -197,9 +197,9 @@
                                         <div class="seek-bar-track">
                                             <div class="seek-bar-fill" :style="{ width: progressPercentage + '%' }"></div>
                                         </div>
-                                        <input type="range" class="seek-bar" min="0" :max="duration" :value="currentTime" @mousedown="isDraggingSeekBar = true" @input="handleSeekInput" @change="applySeek" @mouseup="isDraggingSeekBar = false">
+                                        <input type="range" class="seek-bar" min="0" :max="displayDuration" :value="displayCurrentTime" @mousedown="isDraggingSeekBar = true" @input="handleSeekInput" @change="applySeek" @mouseup="isDraggingSeekBar = false">
                                     </div>
-                                    <div class="time-display">{{ formattedCurrentTime }} / {{ formattedDuration }}</div>
+                                    <div class="time-display">{{ formattedDisplayCurrentTime }} / {{ formattedDisplayDuration }}</div>
                                     <div class="volume-control">
                                         <button @click.stop="toggleMute" class="control-btn">
                                             <i :class="['fas', volumeIcon]"></i>
@@ -244,10 +244,6 @@
                                     <i class="fas fa-arrow-right"></i>
                                 </button>
                             </div>
-                             <div class="video-description-premium" v-if="currentVideo && currentVideo.description">
-                                <h3>Description</h3>
-                                <p v-html="formattedDescription"></p>
-                            </div>
                             <div class="video-resources-premium" v-if="currentVideo && Object.keys(groupedResources).length > 0">
                                 <h3>Resources</h3>
                                 <div v-for="(resourcesInGroup, groupName) in groupedResources" :key="groupName" class="resource-group">
@@ -270,6 +266,10 @@
                                         </li>
                                     </ul>
                                 </div>
+                            </div>
+                             <div class="video-description-premium" v-if="currentVideo && currentVideo.description">
+                                <h3>Description</h3>
+                                <p v-html="formattedDescription"></p>
                             </div>
                         </div>
                         
@@ -406,6 +406,7 @@
                         6: 39,  
                         7: 52   
                     },
+                    virtualStartTime: 0,
                     isViewerVisible: false,
                     viewerLoading: false,
                     pdfCurrentPage: 1,
@@ -469,21 +470,29 @@
                     });
                     return groups;
                 },
-                formattedCurrentTime() {
-                    if (isNaN(this.currentTime)) return '0:00';
-                    const hours = Math.floor(this.currentTime / 3600);
-                    const minutes = Math.floor((this.currentTime % 3600) / 60).toString().padStart(2, '0');
-                    const seconds = Math.floor(this.currentTime % 60).toString().padStart(2, '0');
+                displayCurrentTime() {
+                    return Math.max(0, this.currentTime - this.virtualStartTime);
+                },
+                displayDuration() {
+                    return Math.max(0, this.duration - this.virtualStartTime);
+                },
+                formattedDisplayCurrentTime() {
+                    const time = this.displayCurrentTime;
+                    if (isNaN(time)) return '0:00';
+                    const hours = Math.floor(time / 3600);
+                    const minutes = Math.floor((time % 3600) / 60).toString().padStart(2, '0');
+                    const seconds = Math.floor(time % 60).toString().padStart(2, '0');
                     if (hours > 0) {
                         return `${hours}:${minutes}:${seconds}`;
                     }
                     return `${minutes}:${seconds}`;
                 },
-                formattedDuration() {
-                    if (isNaN(this.duration) || this.duration === 0) return '0:00';
-                    const hours = Math.floor(this.duration / 3600);
-                    const minutes = Math.floor((this.duration % 3600) / 60).toString().padStart(2, '0');
-                    const seconds = Math.floor(this.duration % 60).toString().padStart(2, '0');
+                formattedDisplayDuration() {
+                    const time = this.displayDuration;
+                    if (isNaN(time) || time <= 0) return '0:00';
+                    const hours = Math.floor(time / 3600);
+                    const minutes = Math.floor((time % 3600) / 60).toString().padStart(2, '0');
+                    const seconds = Math.floor(time % 60).toString().padStart(2, '0');
                     if (hours > 0) {
                         return `${hours}:${minutes}:${seconds}`;
                     }
@@ -495,8 +504,8 @@
                     return 'fa-volume-up';
                 },
                 progressPercentage() {
-                    if (this.duration === 0) return 0;
-                    return (this.currentTime / this.duration) * 100;
+                    if (this.displayDuration <= 0) return 0;
+                    return (this.displayCurrentTime / this.displayDuration) * 100;
                 }
             },
             methods: {
@@ -628,6 +637,7 @@
                     this.retryCount = 0;
                     this.isLoading = true;
                     this.currentVideoId = videoId;
+                    this.virtualStartTime = this.videoStartTimes[videoId] || 0;
                     if (window.innerWidth < 768) {
                         this.sidebarActive = false;
                     }
@@ -698,9 +708,9 @@
                     this.updateCourseProgress(); 
                     const lastVideoId = localStorage.getItem(`lastVideoId_${this.courseSlug}`);
                     if (lastVideoId && this.findVideoById(parseInt(lastVideoId))) {
-                        this.currentVideoId = parseInt(lastVideoId);
+                        this.selectVideo(parseInt(lastVideoId));
                     } else if (this.courseSections.length > 0 && this.courseSections[0].videos.length > 0) {
-                        this.currentVideoId = this.courseSections[0].videos[0].id;
+                        this.selectVideo(this.courseSections[0].videos[0].id);
                     }
                 },
                 updateCourseProgress() {
@@ -926,8 +936,8 @@
                         this.isBuffering = false;
                         this.retryCount = 0;
 
-                        if (this.videoStartTimes[this.currentVideoId] !== undefined) {
-                            video.currentTime = this.videoStartTimes[this.currentVideoId];
+                        if (this.virtualStartTime > 0 && video.currentTime < this.virtualStartTime) {
+                            video.currentTime = this.virtualStartTime;
                         }
                     }
                 },
@@ -963,13 +973,14 @@
                 },
                 handleSeekInput(event) {
                     this.isDraggingSeekBar = true;
-                    this.currentTime = parseFloat(event.target.value);
+                    const displayTime = parseFloat(event.target.value);
+                    this.currentTime = displayTime + this.virtualStartTime;
                 },
                 applySeek(event) {
                     const video = this.$refs.videoPlayer;
                     if (video) {
                         const seekTime = parseFloat(event.target.value);
-                        video.currentTime = seekTime;
+                        video.currentTime = seekTime + this.virtualStartTime;
                     }
                     this.isDraggingSeekBar = false;
                 },
