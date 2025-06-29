@@ -10,11 +10,11 @@
     body { font-family: 'Poppins', sans-serif; }
     .success-card {
       background: white;
-      padding: 3rem;
+      padding: 2rem 3rem 3rem;
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
       text-align: center;
-      max-width: 500px;
+      max-width: 550px;
       width: 90%;
       border-top: 5px solid #10b981;
     }
@@ -38,9 +38,35 @@
       background-color: #4338ca;
       transform: translateY(-2px);
     }
-    .btn-secondary {
-        color: #4f46e5;
+    .credentials-box {
+        display: none;
+        background-color: #fffbeb;
+        border: 1px solid #fef3c7;
+        border-left: 4px solid #f59e0b;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        border-radius: 8px;
+        text-align: left;
+    }
+    .credentials-box h3 {
+        color: #b45309;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    .credentials-box p {
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
+    .credentials-box code {
+        background-color: #fefce8;
+        padding: 0.2rem 0.5rem;
+        border-radius: 4px;
         font-weight: 500;
+    }
+    .warning-text {
+        color: #c2410c;
+        font-weight: 600;
+        margin-top: 1rem;
     }
   </style>
 </head>
@@ -54,13 +80,37 @@
     </div>
     <h1 class="text-2xl font-bold text-gray-800 mb-2">Registration Successful!</h1>
     <p class="text-gray-600 mb-6">
-      Thank you for enrolling in the Industrial Training Program. You're all set to start your learning journey.
+      Thank you for enrolling in the Industrial Training Program. Your account has been created.
     </p>
+
+    <div id="credentials-box" class="credentials-box">
+        <h3>Your Login Credentials</h3>
+        <p><strong>Email:</strong> <code id="user-email"></code></p>
+        <p><strong>Password:</strong> <code id="user-password"></code></p>
+        <p class="warning-text">
+            Please copy and save these details in a safe place. This is the only time your password will be shown.
+        </p>
+    </div>
+
     <a href="https://www.mystudentclub.com/learning-management-system/" class="block w-full text-center px-6 py-3 rounded-lg font-semibold text-lg btn-primary mb-4">
       Go to Learning Portal
     </a>
-    <a href="/" class="text-sm btn-secondary">Back to Homepage</a>
+    <a href="/" class="text-sm text-gray-500 hover:text-gray-700">Back to Homepage</a>
   </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        const email = params.get('email');
+        const password = params.get('password');
+
+        if (email && password) {
+            document.getElementById('user-email').textContent = email;
+            document.getElementById('user-password').textContent = password;
+            document.getElementById('credentials-box').style.display = 'block';
+        }
+    });
+  </script>
 
 </body>
 </html>
