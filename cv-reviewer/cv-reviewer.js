@@ -1,7 +1,11 @@
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.worker.min.js';
 
-const contactFormContainer = document.getElementById('contactFormContainer');
-const contactForm = document.getElementById('contactForm');
+const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+const loadingStateContainer = document.getElementById('loadingStateContainer');
+const enrollmentPromptContainer = document.getElementById('enrollmentPromptContainer');
 const heroSection = document.getElementById('heroSection');
 const uploadSection = document.getElementById('uploadSection');
 const dropArea = document.getElementById('dropArea');
@@ -58,8 +62,40 @@ const specializationOptions = {
     "Technology": ["Software Engineer", "Data Scientist", "Product Manager", "UX/UI Designer", "DevOps Engineer", "Cybersecurity Analyst", "IT Support Specialist"]
 };
 
+async function checkAuthAndEnrollment() {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+    if (sessionError || !session) {
+        window.location.href = '/login.html';
+        return;
+    }
+
+    const user = session.user;
+
+    try {
+        const { error, count } = await supabase
+            .from('enrollment')
+            .select('*', { count: 'exact', head: true })
+            .eq('uuid', user.id);
+
+        if (error) throw error;
+
+        loadingStateContainer.style.display = 'none';
+
+        if (count > 0) {
+            heroSection.style.display = 'block';
+            uploadSection.style.display = 'block';
+        } else {
+            enrollmentPromptContainer.style.display = 'block';
+        }
+    } catch (dbError) {
+        loadingStateContainer.innerHTML = '<p class="text-red-500 font-semibold">Could not verify your course access. Please try again later or contact support.</p>';
+    }
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
-  checkFormSubmissionToken();
+  checkAuthAndEnrollment();
   populateSpecializations();
   const svg = document.querySelector('.score-chart');
   if (svg && !document.getElementById('scoreGradient')) {
@@ -85,54 +121,6 @@ document.addEventListener('click', (e) => {
   if (!expandedMenu.contains(e.target) && !menuButton.contains(e.target) && expandedMenu.classList.contains('active')) {
     expandedMenu.classList.remove('active');
   }
-});
-
-function checkFormSubmissionToken() {
-  const token = localStorage.getItem('contactFormSubmitted');
-  if (token) {
-    contactFormContainer.style.display = 'none';
-    heroSection.style.display = 'block';
-    uploadSection.style.display = 'block';
-  } else {
-    contactFormContainer.style.display = 'block';
-    heroSection.style.display = 'none';
-    uploadSection.style.display = 'none';
-  }
-}
-
-contactForm.addEventListener('submit', function(e) {
-  e.preventDefault();
-   const submitBtn = contactForm.querySelector('.submit-btn');
-   submitBtn.disabled = true;
-   submitBtn.innerHTML = `<svg class="animate-spin inline-block mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Submitting...`;
-
-   const formData = new FormData(contactForm);
-   fetch(contactForm.action, {
-     method: 'POST',
-     body: formData,
-     headers: { 'Accept': 'application/json' }
-   })
-   .then(response => {
-     if (response.ok) {
-       localStorage.setItem('contactFormSubmitted', `cv_reviewer_${Date.now()}`);
-       contactFormContainer.style.display = 'none';
-       heroSection.style.display = 'block';
-       uploadSection.style.display = 'block';
-       uploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-     } else {
-       response.json().then(data => {
-         throw new Error(data.error || 'Form submission failed');
-       }).catch(() => {
-         throw new Error('Form submission failed');
-       })
-     }
-   })
-   .catch(error => {
-     console.error('Error:', error);
-     alert('There was an issue submitting the form. Please try again.');
-     submitBtn.disabled = false;
-     submitBtn.innerHTML = 'Continue to CV Analysis';
-   });
 });
 
 browseButton.addEventListener('click', () => fileInput.click());
@@ -175,7 +163,6 @@ async function handleFile(file) {
     proceedToDomainBtn.disabled = false;
     proceedToDomainBtn.classList.remove('opacity-50', 'cursor-not-allowed');
   } catch (error) {
-     console.error("Error handling file:", error);
      alert(`Error processing PDF: ${error.message}. Please try another file.`);
      resetUpload();
   } finally {
@@ -213,7 +200,6 @@ async function generatePdfPreview(file) {
     await convertPdfToImages();
 
   } catch (error) {
-    console.error('Error generating PDF preview:', error);
     previewThumbnail.innerHTML = '<div class="text-center p-4 text-red-600">Error loading preview.</div>';
     throw error;
   }
@@ -223,7 +209,6 @@ async function convertPdfToImages() {
   pdfImages = [];
   if (!pdfDocument) return;
 
-  console.log(`Converting ${pdfDocument.numPages} pages to images...`);
   try {
     const scale = 1.5;
     for (let i = 1; i <= pdfDocument.numPages; i++) {
@@ -238,9 +223,7 @@ async function convertPdfToImages() {
       const imageDataUrl = canvas.toDataURL('image/jpeg', 0.9);
       pdfImages.push(imageDataUrl.split(',')[1]);
     }
-    console.log("PDF to image conversion complete.");
   } catch (error) {
-    console.error('Error converting PDF to images:', error);
     pdfImages = [];
     throw error;
   }
@@ -343,19 +326,16 @@ async function analyzeCv() {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({ error: 'Failed to parse error response.' }));
-      console.error('API Error Response:', errorData);
       throw new Error(`Analysis failed: ${response.status} - ${errorData.error || response.statusText}`);
     }
 
     const data = await response.json();
 
     if (!data.ok || !data.response) {
-        console.error("API returned ok:false or no response text:", data);
         throw new Error(`Analysis unsuccessful: ${data.error || 'Received invalid data from server.'}`);
     }
 
     analysisResultText = data.response;
-    console.log("Raw AI Response Received.");
 
     processStructuredResults(analysisResultText);
 
@@ -365,7 +345,6 @@ async function analyzeCv() {
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   } catch (error) {
-    console.error('Error analyzing CV:', error);
     stopLoadingAnimation();
     loadingSection.style.display = 'none';
     alert(`Error during analysis: ${error.message}. Please try again later.`);
@@ -412,7 +391,6 @@ function extractSectionContent(text, startMarker, endMarker) {
     const endIndex = text.indexOf(endMarker, contentStartIndex);
 
     if (endIndex === -1) {
-         console.warn(`End marker ${endMarker} not found after ${startMarker}.`);
          const nextMarkerIndex = text.indexOf('<<<', contentStartIndex);
          return nextMarkerIndex !== -1 ? text.substring(contentStartIndex, nextMarkerIndex).trim() : text.substring(contentStartIndex).trim();
     }
@@ -431,24 +409,15 @@ function parseAndDisplayOverallScore(text) {
 
         if (scoreMatch) {
             overallScore = parseInt(scoreMatch[1], 10);
-        } else {
-             console.warn("Could not parse score from OVERALL_SCORE section.");
         }
         if (justMatch) {
             justification = justMatch[1].trim();
-        } else {
-             console.warn("Could not parse justification from OVERALL_SCORE section.");
         }
     } else {
-         console.warn("Could not find <<<OVERALL_SCORE>>> section.");
-
          const fallbackScoreMatch = text.match(/<score>(\d+)<\/score>/i) || text.match(/Overall Score:\s*(\d+)\/100/i);
          if (fallbackScoreMatch) {
             overallScore = parseInt(fallbackScoreMatch[1], 10);
             justification = "Score extracted via fallback method.";
-            console.log("Used fallback score:", overallScore);
-         } else {
-            console.error("Could not find score via primary or fallback methods.");
          }
     }
 
@@ -644,11 +613,11 @@ function clearResultsContent() {
 function simpleMarkdownToHtml(md) {
     if (!md) return '';
     let html = md
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+        .replace(/&/g, '&')
+        .replace(/</g, '<')
+        .replace(/>/g, '>')
+        .replace(/"/g, '"')
+        .replace(/'/g, ''');
 
     return html
         .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -673,7 +642,7 @@ function simpleMarkdownToHtml(md) {
         .replace(/<br>\s*<br>/g, '</p><p>') 
         .replace(/^<p>|<\/p>$/g, '') 
         .replace(/^(.+?)$/gm, (match) => { 
-            if (match.trim().startsWith('<') || match.trim().startsWith('&lt;') || /^\s*(<li>|<ul>|<ol>)/.test(match)) {
+            if (match.trim().startsWith('<') || match.trim().startsWith('<') || /^\s*(<li>|<ul>|<ol>)/.test(match)) {
                  return match;
             }
             return `<p>${match}</p>`;
@@ -739,7 +708,6 @@ function updateScoreBreakdown(overallScore, resultsText) {
         if (match && match[1]) {
             categoryScores[key] = parseInt(match[1], 10);
         } else {
-             console.warn(`Could not parse specific score for category: ${key}`);
             foundSpecificScores = false;
 
         }
@@ -763,7 +731,6 @@ function updateScoreBreakdown(overallScore, resultsText) {
 
              calculatedPoints = Math.round((overallScore / 100) * maxPoints);
              percentage = overallScore; 
-             console.log(`Using fallback score for ${categoryKey}`);
          }
 
         pointsEl.textContent = `${calculatedPoints}/${maxPoints} pts`;
@@ -779,7 +746,8 @@ function resetToUploadStage() {
     tipsSection.style.display = 'none';
     domainSpecializationSection.style.display = 'none';
     loadingSection.style.display = 'none';
-    checkFormSubmissionToken(); 
+    heroSection.style.display = 'block';
+    uploadSection.style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -838,11 +806,11 @@ downloadReportBtn.addEventListener('click', () => {
                .replace(/<div class="grammar-correction.*?"><span class="original-text">(.*?)<\/span>.*?<span class="corrected-text">(.*?)<\/span>.*?<\/div>/gi, '\n Correction: "$1" -> "$2"')
                .replace(/<span class="highlight-good".*?>✓<\/span>/g,'(+)') 
                .replace(/<span class="highlight-issue".*?>✗<\/span>/g,'(-)')
-               .replace(/&amp;/g, '&')
-               .replace(/&lt;/g, '<')
-               .replace(/&gt;/g, '>')
-               .replace(/&quot;/g, '"')
-               .replace(/&#039;/g, "'")
+               .replace(/&/g, '&')
+               .replace(/</g, '<')
+               .replace(/>/g, '>')
+               .replace(/"/g, '"')
+               .replace(/'/g, "'")
                .replace(/\n\s*\n/g, '\n\n') 
                .trim();
 
@@ -881,4 +849,3 @@ function resetToUploadStageOnError() {
      heroSection.style.display = 'block'; 
      uploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
-

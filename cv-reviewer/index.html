@@ -6,6 +6,7 @@
   <title>CV Reviewer - My Student Club</title>
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://mystudentclub.pages.dev/scripts/style.css">
@@ -170,28 +171,22 @@
   </div>
 
   <main class="cv-reviewer-container">
-    <div class="contact-form-container" id="contactFormContainer" style="display: block;">
-      <div class="contact-form-section">
-        <h2>Contact Information</h2>
-        <p>Please provide your details before analyzing your CV</p>
-        <form id="contactForm" action="https://formsubmit.co/bhansalipadam000@gmail.com" method="POST">
-          <div class="form-group">
-            <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" required>
-          </div>
-          <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" required>
-          </div>
-          <div class="form-group">
-            <label for="phone">Phone Number</label>
-            <input type="tel" id="phone" name="phone" required>
-          </div>
-          <input type="hidden" name="_next" value="https://www.mystudentclub.com/cv-reviewer">
-          <input type="hidden" name="_captcha" value="false">
-          <button type="submit" class="submit-btn">Continue to CV Analysis</button>
-        </form>
-      </div>
+    <div id="loadingStateContainer" class="text-center py-16">
+        <div class="loading-spinner" style="width: 50px; height: 50px; border-top-color: var(--primary); margin: 0 auto 1.5rem;"></div>
+        <p class="text-text-secondary">Checking your access...</p>
+    </div>
+
+    <div id="enrollmentPromptContainer" style="display: none;" class="text-center py-16 px-6 bg-white rounded-lg shadow-md">
+        <svg class="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m0 4h.01M4.93 19.07l1.414-1.414M1.5 10.5h2m16.5 0h2M19.07 4.93l-1.414 1.414M12 2a8 8 0 00-8 8c0 4.418 3.582 8 8 8s8-3.582 8-8a8 8 0 00-8-8z" />
+        </svg>
+        <h2 class="mt-4 text-2xl font-bold text-gray-900">Access Restricted</h2>
+        <p class="mt-2 text-base text-gray-600">This CV Reviewer is an exclusive tool for our enrolled students. Please enroll in a course to gain access.</p>
+        <div class="mt-6">
+            <a href="/learning-management-system/" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                Browse Courses
+            </a>
+        </div>
     </div>
 
     <div class="hero-section" id="heroSection" style="display: none;">
@@ -402,4 +397,3 @@ document.addEventListener('click', (e) => {
   </script>
 </body>
 </html>
-
