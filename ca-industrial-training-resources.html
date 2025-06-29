@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CA Industrial Training Resources - My Student Club<title>
+    <title>CA Industrial Training Resources - My Student Club</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
@@ -155,29 +155,9 @@
             color: #1e293b;
             flex-grow: 1;
         }
-        .embed-container {
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-            position: relative;
-            padding-bottom: 75%; 
-            height: 0;
-            overflow: hidden;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-        }
-        .resource-embed {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
         .resource-actions {
-            margin-top: auto;
+            margin-top: 1.5rem;
             display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
         }
         .action-button {
             display: inline-flex;
@@ -197,15 +177,6 @@
         }
         .primary-action:hover { background-color: #4338ca; }
         
-        .error-message {
-            color: #dc2626;
-            background-color: #fee2e2;
-            padding: 0.75rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-            font-size: 0.9rem;
-        }
-
         .footer-nav {
             position: fixed;
             bottom: 0;
@@ -269,7 +240,6 @@
         @media (max-width: 768px) {
             .page-title { font-size: 1.75rem; margin-bottom: 2rem; }
             .resources-list { grid-template-columns: 1fr; }
-            .embed-container { padding-bottom: 100%;  }
             .main-container { padding: 1rem; margin-top: 1rem; }
             .whatsapp-button { bottom: 70px; right: 15px; }
         }
@@ -416,10 +386,8 @@
         function renderResourceCard(resource) {
             const card = document.createElement('div');
             card.className = 'resource-card';
-            
             const fileType = getFileType(resource.url);
-
-            let cardInnerHTML = `
+            card.innerHTML = `
                 <div class="resource-card-header">
                     ${getFileIconSVG(fileType)}
                     <h3 class="resource-title">${resource.title}</h3>
@@ -430,8 +398,6 @@
                         Open Link
                     </a>
                 </div>`;
-            
-            card.innerHTML = cardInnerHTML;
             return card;
         }
 
@@ -442,22 +408,13 @@
             if (resourcesData.length === 0) {
                 const emptyMessage = document.createElement('p');
                 emptyMessage.textContent = 'No resources available at the moment.';
-                emptyMessage.style.textAlign = 'center';
-                emptyMessage.style.color = '#64748b';
                 container.appendChild(emptyMessage);
                 return;
             }
 
             resourcesData.forEach(resource => {
-                try {
-                    const resourceCard = renderResourceCard(resource);
-                    container.appendChild(resourceCard);
-                } catch (error) {
-                    const errorDiv = document.createElement('div');
-                    errorDiv.className = 'error-message resource-card';
-                    errorDiv.textContent = `Could not load resource: ${resource.title}. Please try again later.`;
-                    container.appendChild(errorDiv);
-                }
+                const resourceCard = renderResourceCard(resource);
+                container.appendChild(resourceCard);
             });
         }
 
