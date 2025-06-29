@@ -265,12 +265,38 @@ async function checkAuth() {
     return session;
 }
 
+async function checkUserEnrollment() {
+    if (!currentSession || !currentSession.user) return;
+
+    const lmsNavLink = document.getElementById('lms-nav-link');
+    if (!lmsNavLink) return;
+
+    try {
+        const { error, count } = await supabaseClient
+            .from('enrollment')
+            .select('course', { count: 'exact', head: true })
+            .eq('uuid', currentSession.user.id);
+
+        if (error) throw error;
+
+        if (count > 0) {
+            lmsNavLink.style.display = 'flex';
+        } else {
+            lmsNavLink.style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Error checking user enrollment:', error);
+        lmsNavLink.style.display = 'none';
+    }
+}
+
 function updateHeaderAuth(session) {
     if (!authButtonsContainer) return;
     if (session) {
         let email = session.user.email || 'User';
         let initial = email.charAt(0).toUpperCase();
         authButtonsContainer.innerHTML = `<div class="user-profile-container"><div class="user-icon-wrapper"><div class="user-icon" data-email="${email}">${initial}</div><div class="user-hover-card"><div class="user-hover-content"><p class="user-email">${email}</p><button onclick="handleLogout()" class="logout-btn">Logout</button></div></div></div></div>`;
+        checkUserEnrollment();
     } else {
         authButtonsContainer.innerHTML = `<a href="/login.html" class="icon-button" aria-label="Login"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg></a>`;
     }
@@ -280,6 +306,8 @@ window.handleLogout = async () => {
     await supabaseClient.auth.signOut();
     currentSession = null;
     updateHeaderAuth(null);
+    const lmsNavLink = document.getElementById('lms-nav-link');
+    if (lmsNavLink) lmsNavLink.style.display = 'none';
 }
 
 async function loadBanners() {
