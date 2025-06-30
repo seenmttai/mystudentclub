@@ -394,6 +394,29 @@ const initializeCarousel = () => {
   animate(performance.now());
 };
 
+const initializeCountdown = () => {
+  const timerEl = document.getElementById('timer');
+  if (!timerEl) return;
+
+  function updateTimer() {
+    const now = new Date();
+    const target = new Date(now);
+
+    target.setHours(24, 0, 0, 0);
+
+    const diff = target - now;
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    timerEl.textContent = `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
+  }
+
+  updateTimer();
+  setInterval(updateTimer, 1000);
+};
+
 const initializeTestimonials = () => {
   const testimonials = [
     {
@@ -559,6 +582,7 @@ document.addEventListener('DOMContentLoaded', () => {
   safe(initializeTestimonials, 'testimonials');
   safe(initializeCarousel, 'carousel');
   safe(initializeCertificate, 'certificate');
+  safe(initializeCountdown, 'countdown');
   AOS.init({
     duration: 1000,
     once: true
@@ -577,9 +601,6 @@ const resizeObserver = new ResizeObserver(entries => {
   for (let entry of entries) {
     const width = entry.contentRect.width;
     const carousel = document.getElementById('studentCarousel');
-    if (carousel) {
-      console.log('idk what i am supposed to do here');
-    }
   }
 });
 resizeObserver.observe(document.body);
