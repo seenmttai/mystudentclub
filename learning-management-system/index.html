@@ -15,9 +15,131 @@
         }
     }
     </script>
+    <style>
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            padding: 1rem;
+            transition: opacity 0.3s ease;
+        }
+        .popup-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 550px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: popup-fade-in 0.3s ease-out;
+        }
+        @keyframes popup-fade-in {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .popup-close {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: #f1f5f9;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: 300;
+            line-height: 1;
+            cursor: pointer;
+            color: #64748b;
+            transition: all 0.2s ease;
+        }
+        .popup-close:hover {
+            background: #e2e8f0;
+            transform: rotate(90deg);
+            color: #1e293b;
+        }
+        .popup-content h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .popup-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .popup-content li {
+            background-color: #f8fafc;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid #3b82f6;
+        }
+        .popup-content li p {
+            margin: 0;
+            color: #475569;
+            line-height: 1.5;
+            font-size: 0.95rem;
+        }
+        .popup-content a {
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+        .popup-content a:hover {
+            color: #1d4ed8;
+        }
+
+        @media (max-width: 600px) {
+            .popup-content {
+                padding: 1.5rem;
+            }
+            .popup-content h2 {
+                font-size: 1.25rem;
+            }
+            .popup-content li {
+                padding: 0.75rem;
+            }
+            .popup-content li p {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <div id="app">
+        <div class="popup-overlay" v-if="showWelcomePopup" @click.self="closeWelcomePopup">
+            <div class="popup-content">
+                <button class="popup-close" @click="closeWelcomePopup">×</button>
+                <h2>Important Information</h2>
+                <ul>
+                    <li>
+                        <p>Join this Whatsapp Group for further communication: <a href="https://chat.whatsapp.com/BwtCKOloRiv39I96lQugEP" target="_blank" rel="noopener noreferrer">Click Here to Join</a></p>
+                    </li>
+                    <li>
+                        <p>Fill this form as soon as possible with your details: <a href="https://forms.gle/SfzHWBmRmMSkooRq9" target="_blank" rel="noopener noreferrer">Click Here to Fill Form</a></p>
+                    </li>
+                     <li>
+                        <p>Post watching Day 1 lecture, make a revised CV as per provided resources and checklist and upload it here for my review: <a href="https://forms.gle/2bea7qcsBwUtYQvH8" target="_blank" rel="noopener noreferrer">Click Here to Upload CV</a></p>
+                    </li>
+                    <li>
+                        <p>Also, below each lecture, there are various resources attached. Ensure you refer to them.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
         <header class="glass-header">
             <div class="header-container">
                 <div class="logo-container">
@@ -317,7 +439,7 @@
                     </div>
                 </div>
                 <div class="footer-bottom">
-                    <p>&copy; 2025 My Student Club LMS. All rights reserved.</p>
+                    <p>© 2025 My Student Club LMS. All rights reserved.</p>
                     <div class="footer-badges">
                         <span class="badge"> Top Rated Platform</span>
                         <span class="badge"> 100% Placement</span>
@@ -352,6 +474,7 @@
                     skillLevel: 'Beginner',
                     skillProgress: 0,
                     searchSuggestions: [],
+                    showWelcomePopup: false,
                     quickFilters: [
                         { id: 'all', name: 'All Courses', icon: 'fas fa-graduation-cap' },
                         { id: 'ca', name: 'CA Prep', icon: 'fas fa-calculator' },
@@ -401,6 +524,15 @@
                 }
             },
             methods: {
+                checkWelcomePopup() {
+                    if (!localStorage.getItem('lmsWelcomePopupViewed')) {
+                        this.showWelcomePopup = true;
+                    }
+                },
+                closeWelcomePopup() {
+                    this.showWelcomePopup = false;
+                    localStorage.setItem('lmsWelcomePopupViewed', 'true');
+                },
                 async checkAuth() {
                     const { data: { session }, error } = await supabase.auth.getSession();
                     if (session && session.user) {
@@ -476,7 +608,6 @@
                     this.searchSuggestions = []; 
                 },
                 sortCoursesVue() {
-
                 },
                 getBadgeClass(badge) {
                     const badgeClasses = {
@@ -526,7 +657,6 @@
                     return 0;
                 },
                 loadProgressData() {
-
                     this.courses.forEach(course => {
                         const courseData = localStorage.getItem(`courseVideos_${course.slug}`);
                         if (courseData) {
@@ -586,6 +716,7 @@
             async mounted() {
                 await this.checkAuth();
                 this.loadProgressData();
+                this.checkWelcomePopup();
 
                 supabase.auth.onAuthStateChange((_event, session) => {
                     if (session && session.user) {
