@@ -30,7 +30,13 @@
             justify-content: center;
             z-index: 3000;
             padding: 1rem;
-            transition: opacity 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .popup-overlay.visible {
+            opacity: 1;
+            visibility: visible;
         }
         .popup-content {
             background: white;
@@ -41,6 +47,8 @@
             position: relative;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             animation: popup-fade-in 0.3s ease-out;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         @keyframes popup-fade-in {
             from { opacity: 0; transform: scale(0.95); }
@@ -61,6 +69,7 @@
             cursor: pointer;
             color: #64748b;
             transition: all 0.2s ease;
+            z-index: 10;
         }
         .popup-close:hover {
             background: #e2e8f0;
@@ -71,8 +80,9 @@
             font-size: 1.5rem;
             font-weight: 700;
             color: #1e40af;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             text-align: center;
+            padding-right: 2rem;
         }
         .popup-content ul {
             list-style: none;
@@ -103,7 +113,7 @@
 
         @media (max-width: 600px) {
             .popup-content {
-                padding: 1.5rem;
+                padding: 2rem 1.5rem 1.5rem 1.5rem;
             }
             .popup-content h2 {
                 font-size: 1.25rem;
@@ -119,7 +129,7 @@
 </head>
 <body>
     <div id="app">
-        <div class="popup-overlay" v-if="showWelcomePopup" @click.self="closeWelcomePopup">
+        <div class="popup-overlay" :class="{ 'visible': showWelcomePopup }" @click.self="closeWelcomePopup">
             <div class="popup-content">
                 <button class="popup-close" @click="closeWelcomePopup">×</button>
                 <h2>Important Information</h2>
@@ -130,7 +140,7 @@
                     <li>
                         <p>Fill this form as soon as possible with your details: <a href="https://forms.gle/SfzHWBmRmMSkooRq9" target="_blank" rel="noopener noreferrer">Click Here to Fill Form</a></p>
                     </li>
-                     <li>
+                    <li>
                         <p>Post watching Day 1 lecture, make a revised CV as per provided resources and checklist and upload it here for my review: <a href="https://forms.gle/2bea7qcsBwUtYQvH8" target="_blank" rel="noopener noreferrer">Click Here to Upload CV</a></p>
                     </li>
                     <li>
@@ -139,7 +149,6 @@
                 </ul>
             </div>
         </div>
-
         <header class="glass-header">
             <div class="header-container">
                 <div class="logo-container">
@@ -527,11 +536,13 @@
                 checkWelcomePopup() {
                     if (!localStorage.getItem('lmsWelcomePopupViewed')) {
                         this.showWelcomePopup = true;
+                        document.body.style.overflow = 'hidden'; 
                     }
                 },
                 closeWelcomePopup() {
                     this.showWelcomePopup = false;
                     localStorage.setItem('lmsWelcomePopupViewed', 'true');
+                    document.body.style.overflow = '';
                 },
                 async checkAuth() {
                     const { data: { session }, error } = await supabase.auth.getSession();
