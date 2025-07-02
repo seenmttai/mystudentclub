@@ -144,11 +144,18 @@
             font-weight: 600;
             transition: all var(--transition-base);
             margin-top: auto;
+            justify-content: center;
         }
         .resource-link:hover {
             background-color: var(--secondary-600);
             transform: translateY(-2px);
             box-shadow: var(--shadow-lg);
+        }
+        .loading-state, .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: var(--space-12);
+            color: var(--text-secondary);
         }
     </style>
 </head>
@@ -215,47 +222,56 @@
                 </div>
 
                 <div id="all-resources-grid" class="resources-grid">
+                    <div v-if="loading" class="loading-state">
+                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
+                        <p>Loading all resources...</p>
+                    </div>
+                    <div v-else-if="allResources.length === 0" class="empty-state">
+                        <p>No resources found for your enrolled courses.</p>
+                    </div>
+                    <div v-else v-for="resource in allResources" :key="resource.title" class="resource-card">
+                        <div class="resource-header">
+                            <div class="resource-icon"><i :class="getResourceIcon(resource.type)"></i></div>
+                            <h3 class="resource-title">{{ resource.title }}</h3>
+                        </div>
+                        <p class="resource-description">{{ resource.description || 'Click to view this resource.' }}</p>
+                        <a href="#" @click.prevent="handleResourceClick($event, resource)" class="resource-link" rel="noopener noreferrer">
+                            <i class="fas fa-external-link-alt"></i>
+                            Open Resource
+                        </a>
+                    </div>
                 </div>
             </div>
         </main>
         
-        <footer>
+        <footer class="footer-enhanced">
             <div class="footer-content">
-                <div class="footer-logo">
+                <div class="footer-brand">
                     <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo">
+                    <h4>My Student Club</h4>
+                    <p>Empowering the next generation of Chartered Accountants with world-class education and resources.</p>
+                    <div class="social-links">
+                        <a href="https://www.linkedin.com/company/mystudentclub" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://www.instagram.com/mystudentclub/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/@MyStudentClub" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>
+                    </div>
                 </div>
                 <div class="footer-links">
                     <div class="footer-column">
-                        <h4>Explore</h4>
+                        <h5>Learning</h5>
                         <ul>
-                            <li><a href="index.html">Courses</a></li>
+                            <li><a href="index.html">All Courses</a></li>
                             <li><a href="lms-resources.html">Resources</a></li>
                             <li><a href="cv-submission.html">CV Review</a></li>
                         </ul>
                     </div>
                     <div class="footer-column">
-                        <h4>Support</h4>
+                        <h5>Support</h5>
                         <ul>
                             <li><a href="#">Contact Us</a></li>
                             <li><a href="#">FAQ</a></li>
                             <li><a href="#">Help Center</a></li>
                         </ul>
-                    </div>
-                    <div class="footer-column">
-                        <h4>Legal</h4>
-                        <ul>
-                            <li><a href="#">Terms of Service</a></li>
-                            <li><a href="#">Privacy Policy</a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="footer-social">
-                    <h4>Connect With Us</h4>
-                    <div class="social-icons">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
             </div>
@@ -276,15 +292,8 @@
                 return {
                     menuActive: false,
                     user: null,
-                    allResources: [
-                        { title: "CV Template 1", url: "https://docs.google.com/document/d/1itFc8oE-tcvZoDxm9WCLipemFJ5Ja4Yt/edit?usp=drive_link&ouid=116729218327060367168&rtpof=true&sd=true", description: "A professional and clean CV template to get you started.", icon: "fas fa-file-word" },
-                        { title: "CV Template 2", url: "https://docs.google.com/document/d/1j2vsKs8Gv8fgJrFxMcmZXhNDl-dRkccy/edit?usp=sharing&ouid=116729218327060367168&rtpof=true&sd=true", description: "An alternative CV layout to showcase your skills and experience.", icon: "fas fa-file-word" },
-                        { title: "CV Template 3", url: "https://docs.google.com/document/d/1z0D2REq-pYKo4RaGPRDqUBX8jOw1V5zb/edit?usp=sharing&ouid=116729218327060367168&rtpof=true&sd=true", description: "A modern CV design to help you stand out from the crowd.", icon: "fas fa-file-word" },
-                        { title: "Interview Syllabus", url: "https://drive.google.com/file/d/18QXfN6Y4eu5ThhEA0DiIHPl4thEmKEyq/view?usp=sharing", description: "Key topics and questions to prepare for your finance and accounting interviews.", icon: "fas fa-file-pdf" },
-                        { title: "Industrial Training Hiring Companies List", url: "https://docs.google.com/spreadsheets/d/1yDCBRaadD_qddFyKYRpesyL8h_E91X1dlzA0PfoEdKM/edit?gid=0#gid=0", description: "A comprehensive list of companies known for hiring CA industrial trainees.", icon: "fas fa-file-excel" },
-                        { title: "Finance Interview Questions", url: "https://drive.google.com/file/d/1cp_p17WpSv4QbdHBytQJ1gRGRUi6ZuDG/view?usp=sharing", description: "A collection of common and advanced finance interview questions with tips.", icon: "fas fa-file-pdf" },
-                        { title: "General Document", url: "https://www.mystudentclub.com/assets/doc.pdf", description: "A supplementary PDF document with additional information and resources.", icon: "fas fa-file-pdf" }
-                    ]
+                    allResources: [],
+                    loading: true
                 }
             },
             methods: {
@@ -303,31 +312,90 @@
                         window.location.href = 'https://www.mystudentclub.com/login.html';
                     }
                 },
-                renderResources() {
-                    const grid = document.getElementById('all-resources-grid');
-                    if (!grid) return;
-                    grid.innerHTML = ''; 
-                    this.allResources.forEach(resource => {
-                        const card = document.createElement('div');
-                        card.className = 'resource-card';
-                        card.innerHTML = `
-                            <div class="resource-header">
-                                <div class="resource-icon"><i class="${resource.icon}"></i></div>
-                                <h3 class="resource-title">${resource.title}</h3>
-                            </div>
-                            <p class="resource-description">${resource.description}</p>
-                            <a href="${resource.url}" class="resource-link" target="_blank" rel="noopener noreferrer">
-                                <i class="fas fa-external-link-alt"></i>
-                                Open Resource
-                            </a>
-                        `;
-                        grid.appendChild(card);
-                    });
+                async fetchAllResources() {
+                    this.loading = true;
+                    try {
+                        const { data: videos, error } = await supabase
+                            .from('videos')
+                            .select('resources')
+                            .eq('course', 'industrial-training-mastery');
+
+                        if (error) throw error;
+
+                        const uniqueResources = new Map();
+                        
+                        videos.forEach(video => {
+                            if (video.resources && Array.isArray(video.resources)) {
+                                video.resources.forEach(resource => {
+                                    const uniqueKey = resource.view_storage_path || resource.url || resource.title;
+                                    if (uniqueKey && !uniqueResources.has(uniqueKey)) {
+                                        uniqueResources.set(uniqueKey, resource);
+                                    }
+                                });
+                            }
+                        });
+
+                        this.allResources = Array.from(uniqueResources.values());
+                    } catch (error) {
+                        console.error("Error fetching resources:", error);
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                getResourceIcon(type) {
+                    const iconMap = {
+                        pdf: 'fas fa-file-pdf',
+                        image: 'fas fa-file-image',
+                        doc: 'fas fa-file-word',
+                        docx: 'fas fa-file-word',
+                        txt: 'fas fa-file-alt',
+                        external_link: 'fas fa-external-link-alt',
+                        video: 'fas fa-file-video',
+                        archive: 'fas fa-file-archive',
+                        spreadsheet: 'fas fa-file-excel',
+                        xlsx: 'fas fa-file-excel',
+                        csv: 'fas fa-file-csv'
+                    };
+                    return iconMap[type ? type.toLowerCase() : ''] || 'fas fa-file';
+                },
+                async handleResourceClick(event, resource) {
+                    const link = event.currentTarget;
+                    const originalText = link.innerHTML;
+                    link.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Opening...`;
+                    link.style.pointerEvents = 'none';
+
+                    try {
+                        if (resource.type === 'external_link' && resource.url) {
+                            window.open(resource.url, '_blank');
+                            return;
+                        }
+
+                        const path = resource.view_storage_path || resource.download_storage_path;
+                        if (!path || path === 'None') {
+                            alert('This resource is not available for viewing or download.');
+                            return;
+                        }
+                        
+                        const { data, error } = await supabase.storage
+                            .from('industrial-training-mastery-resources')
+                            .createSignedUrl(path, 300);
+
+                        if (error) throw error;
+                        
+                        window.open(data.signedUrl, '_blank');
+                    } catch (err) {
+                        alert('Could not open the resource. Please try again.');
+                    } finally {
+                        link.innerHTML = originalText;
+                        link.style.pointerEvents = 'auto';
+                    }
                 }
             },
             async mounted() {
                 await this.checkAuth();
-                this.renderResources();
+                if (this.user) {
+                    await this.fetchAllResources();
+                }
             }
         }).mount('#app');
     </script>
