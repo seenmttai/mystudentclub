@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LMS Resources | My Student Club</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+        }
+    }
+    </script>
+    <style>
+        main {
+            padding-top: 100px;
+            padding-bottom: 4rem;
+        }
+        .resources-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--space-6);
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .page-header h1 {
+            font-size: var(--text-4xl);
+            font-weight: 800;
+            color: var(--primary-700);
+            margin-bottom: var(--space-3);
+        }
+        .page-header p {
+            font-size: var(--text-lg);
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .info-box {
+            background-color: var(--surface-elevated);
+            border-radius: var(--radius-xl);
+            padding: var(--space-8);
+            margin-bottom: 3rem;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
+        }
+        .info-box h2 {
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            color: var(--primary-600);
+            margin-bottom: var(--space-6);
+            text-align: center;
+        }
+        .info-box ul {
+            list-style: none;
+            display: grid;
+            gap: var(--space-4);
+        }
+        .info-box li {
+            background: var(--surface);
+            padding: var(--space-4);
+            border-radius: var(--radius-lg);
+            border-left: 4px solid var(--secondary-500);
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+        .info-box li p {
+            margin: 0;
+            color: var(--text-secondary);
+            flex-grow: 1;
+        }
+        .info-box a {
+            color: var(--secondary-500);
+            font-weight: 600;
+            text-decoration: underline;
+        }
+        .info-box a:hover {
+            color: var(--secondary-600);
+        }
+        
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-6);
+        }
+        .resource-card {
+            background-color: var(--surface-elevated);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-md);
+            transition: all var(--transition-base);
+            display: flex;
+            flex-direction: column;
+        }
+        .resource-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--secondary-400);
+        }
+        .resource-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+            margin-bottom: var(--space-3);
+        }
+        .resource-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-500), var(--secondary-500));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--text-xl);
+            flex-shrink: 0;
+        }
+        .resource-title {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        .resource-description {
+            color: var(--text-secondary);
+            font-size: var(--text-sm);
+            margin-bottom: var(--space-4);
+            flex-grow: 1;
+        }
+        .resource-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            padding: var(--space-3) var(--space-4);
+            background-color: var(--secondary-500);
+            color: white;
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            transition: all var(--transition-base);
+            margin-top: auto;
+        }
+        .resource-link:hover {
+            background-color: var(--secondary-600);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <header class="glass-header">
+            <div class="header-container">
+                <div class="logo-container">
+                    <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo">
+                </div>
+                <nav>
+                    <div class="hamburger-menu" @click="toggleMenu">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                    <ul class="nav-links" :class="{ 'active': menuActive }">
+                        <li><a href="index.html" class="nav-item">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Courses</span>
+                        </a></li>
+                        <li><a href="lms-resources.html" class="active nav-item">
+                            <i class="fas fa-book-open"></i>
+                            <span>Resources</span>
+                        </a></li>
+                        <li><a href="cv-submission.html" class="nav-item">
+                            <i class="fas fa-file-alt"></i>
+                            <span>CV Review</span>
+                        </a></li>
+                        <li class="profile-link">
+                            <a href="#" class="nav-item profile-nav" @click.prevent="handleProfileClick">
+                                <div class="profile-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <span v-if="user">{{ user.email.split('@')[0] }}</span>
+                                <span v-else>Login</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </header>
+
+        <main>
+            <div class="resources-container">
+                <div class="page-header">
+                    <h1>LMS Resources Hub</h1>
+                    <p>A centralized place for all important links and materials related to your courses. Bookmark this page for easy access!</p>
+                </div>
+
+                <div class="info-box">
+                    <h2>Important Links</h2>
+                    <ul>
+                        <li><p>Join the WhatsApp Group for updates: <a href="https://chat.whatsapp.com/BwtCKOloRiv39I96lQugEP" target="_blank" rel="noopener noreferrer">Click Here to Join</a></p></li>
+                        <li><p>Fill out your details in this form: <a href="https://forms.gle/SfzHWBmRmMSkooRq9" target="_blank" rel="noopener noreferrer">Click Here to Fill Form</a></p></li>
+                        <li><p>Upload your revised CV for review after Day 1: <a href="https://forms.gle/2bea7qcsBwUtYQvH8" target="_blank" rel="noopener noreferrer">Click Here to Upload CV</a></p></li>
+                        <li><p>Remember to check the resources attached under each lecture in the course player.</p></li>
+                    </ul>
+                </div>
+
+                <div class="page-header" style="margin-top: 4rem;">
+                    <h2>Course Materials</h2>
+                    <p>Here are all the downloadable materials and links from your courses, all in one place.</p>
+                </div>
+
+                <div id="all-resources-grid" class="resources-grid">
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo">
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Explore</h4>
+                        <ul>
+                            <li><a href="index.html">Courses</a></li>
+                            <li><a href="lms-resources.html">Resources</a></li>
+                            <li><a href="cv-submission.html">CV Review</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Support</h4>
+                        <ul>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Help Center</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="#">Terms of Service</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-social">
+                    <h4>Connect With Us</h4>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 My Student Club LMS. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+    <script type="module">
+        import { createApp } from 'vue';
+        
+        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        createApp({
+            data() {
+                return {
+                    menuActive: false,
+                    user: null,
+                    allResources: [
+                        { title: "CV Template 1", url: "https://docs.google.com/document/d/1itFc8oE-tcvZoDxm9WCLipemFJ5Ja4Yt/edit?usp=drive_link&ouid=116729218327060367168&rtpof=true&sd=true", description: "A professional and clean CV template to get you started.", icon: "fas fa-file-word" },
+                        { title: "CV Template 2", url: "https://docs.google.com/document/d/1j2vsKs8Gv8fgJrFxMcmZXhNDl-dRkccy/edit?usp=sharing&ouid=116729218327060367168&rtpof=true&sd=true", description: "An alternative CV layout to showcase your skills and experience.", icon: "fas fa-file-word" },
+                        { title: "CV Template 3", url: "https://docs.google.com/document/d/1z0D2REq-pYKo4RaGPRDqUBX8jOw1V5zb/edit?usp=sharing&ouid=116729218327060367168&rtpof=true&sd=true", description: "A modern CV design to help you stand out from the crowd.", icon: "fas fa-file-word" },
+                        { title: "Interview Syllabus", url: "https://drive.google.com/file/d/18QXfN6Y4eu5ThhEA0DiIHPl4thEmKEyq/view?usp=sharing", description: "Key topics and questions to prepare for your finance and accounting interviews.", icon: "fas fa-file-pdf" },
+                        { title: "Industrial Training Hiring Companies List", url: "https://docs.google.com/spreadsheets/d/1yDCBRaadD_qddFyKYRpesyL8h_E91X1dlzA0PfoEdKM/edit?gid=0#gid=0", description: "A comprehensive list of companies known for hiring CA industrial trainees.", icon: "fas fa-file-excel" },
+                        { title: "Finance Interview Questions", url: "https://drive.google.com/file/d/1cp_p17WpSv4QbdHBytQJ1gRGRUi6ZuDG/view?usp=sharing", description: "A collection of common and advanced finance interview questions with tips.", icon: "fas fa-file-pdf" },
+                        { title: "General Document", url: "https://www.mystudentclub.com/assets/doc.pdf", description: "A supplementary PDF document with additional information and resources.", icon: "fas fa-file-pdf" }
+                    ]
+                }
+            },
+            methods: {
+                toggleMenu() {
+                    this.menuActive = !this.menuActive;
+                },
+                async checkAuth() {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    this.user = session ? session.user : null;
+                    if (!this.user) {
+                        window.location.href = 'https://www.mystudentclub.com/login.html';
+                    }
+                },
+                handleProfileClick() {
+                    if (!this.user) {
+                        window.location.href = 'https://www.mystudentclub.com/login.html';
+                    }
+                },
+                renderResources() {
+                    const grid = document.getElementById('all-resources-grid');
+                    if (!grid) return;
+                    grid.innerHTML = ''; 
+                    this.allResources.forEach(resource => {
+                        const card = document.createElement('div');
+                        card.className = 'resource-card';
+                        card.innerHTML = `
+                            <div class="resource-header">
+                                <div class="resource-icon"><i class="${resource.icon}"></i></div>
+                                <h3 class="resource-title">${resource.title}</h3>
+                            </div>
+                            <p class="resource-description">${resource.description}</p>
+                            <a href="${resource.url}" class="resource-link" target="_blank" rel="noopener noreferrer">
+                                <i class="fas fa-external-link-alt"></i>
+                                Open Resource
+                            </a>
+                        `;
+                        grid.appendChild(card);
+                    });
+                }
+            },
+            async mounted() {
+                await this.checkAuth();
+                this.renderResources();
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
