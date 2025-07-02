@@ -912,120 +912,19 @@ h1 {
   100% { background-position: 300% center; }
 }
 
-.pulse-btn {
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease !important;
-  background: linear-gradient(45deg, #4CAF50, #45a049) !important;
-}
-
-.pulse-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.3);
-  transform: translateX(-100%);
-  animation: shine 2s infinite;
-}
-
-.pulse-btn:hover {
-  transform: translateY(-2px) !important;
-  box-shadow: 0 10px 20px rgba(76, 175, 80, 0.3) !important;
-}
-
-@keyframes shine {
-  0% {
-    transform: translateX(-100%);
-  }
-  20% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-.btn-content {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.lightning-icon {
-  width: 18px;
-  height: 18px;
-  fill: currentColor;
-}
-
-.lock-icon, .arrow-icon {
-  width: 20px;
-  height: 20px;
-  fill: currentColor;
-}
-
-.glowing {
-  animation: glow 2s infinite;
-  background: linear-gradient(45deg, #3a6ea5, #2980b9) !important;
-}
-
-@keyframes glow {
-  0% {
-    box-shadow: 0 0 5px rgba(41, 128, 185, 0.5);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(41, 128, 185, 0.8);
-  }
-  100% {
-    box-shadow: 0 0 5px rgba(41, 128, 185, 0.5);
-  }
-}
-
-.hurry-text {
-  font-weight: 600;
-  color: #ff4d4d;
-  animation: pulse 2s infinite;
-}
-
 @media (max-width: 768px) {
-  .fixed-cta {
-    padding: 12px;
+  .certificate-frame {
+    height: 400px;
   }
   
-  .fixed-cta .register-btn {
-    font-size: 14px;
-    padding: 8px 16px;
+  .floating-emblem {
+    width: 80px;
+    height: 80px;
   }
   
-  .lightning-icon, .lock-icon, .arrow-icon {
-    width: 16px;
-    height: 16px;
-  }
-  
-  .hurry-text {
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  .fixed-cta {
-    padding: 8px;
-  }
-  
-  .fixed-cta .register-btn {
-    font-size: 12px;
-    padding: 6px 12px;
-  }
-  
-  .lightning-icon, .lock-icon, .arrow-icon {
-    width: 14px;
-    height: 14px;
-  }
-  
-  .hurry-text {
-    font-size: 12px;
+  .award-icon {
+    width: 40px;
+    height: 40px;
   }
 }
 
@@ -1049,4 +948,18 @@ h1 {
   transform: translateY(-5px);
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
   background: rgba(41, 128, 185, 0.9);
+}
+
+.disabled-btn {
+    background: #9ca3af !important;
+    color: #e5e7eb !important;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+    pointer-events: none;
+}
+.disabled-btn:hover {
+    background: #9ca3af !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
