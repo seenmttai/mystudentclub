@@ -159,14 +159,6 @@
             justify-content: center;
         }
         .resource-btn-download:hover { background-color: var(--success-600, #047857); }
-        .resource-btn-download.disabled {
-            background-color: var(--gray-300, #cbd5e1);
-            color: var(--gray-500, #64748b);
-            cursor: not-allowed;
-            width: 100%;
-            justify-content: center;
-        }
-        .resource-btn-download.disabled:hover { background-color: var(--gray-300, #cbd5e1); }
         .loading-state, .empty-state {
             grid-column: 1 / -1;
             text-align: center;
@@ -243,7 +235,7 @@
                         <p>Loading all resources...</p>
                     </div>
                     <div v-else-if="allResources.length === 0" class="empty-state">
-                        <p>No resources found for your enrolled courses.</p>
+                        <p>No downloadable resources found for your enrolled courses.</p>
                     </div>
                     <div v-else v-for="resource in allResources" :key="resource.title" class="resource-card">
                         <div class="resource-header">
@@ -252,12 +244,9 @@
                         </div>
                         <p class="resource-description">{{ resource.description || 'Click to download this resource.' }}</p>
                         <div class="resource-actions">
-                            <button v-if="resource.download_storage_path && resource.download_storage_path !== 'None'" @click.stop="downloadResource(resource)" class="resource-btn resource-btn-download">
+                            <button @click.stop="downloadResource(resource)" class="resource-btn resource-btn-download">
                                 <i class="fas fa-download"></i> Download
                             </button>
-                            <span v-else class="resource-btn resource-btn-download disabled">
-                                <i class="fas fa-download"></i> Download
-                            </span>
                         </div>
                     </div>
                 </div>
@@ -331,9 +320,13 @@
                         const uniqueResources = new Map();
                         videos.forEach(video => {
                             if (video.resources && Array.isArray(video.resources)) {
-                                video.resources.forEach(resource => {
-                                    const uniqueKey = resource.view_storage_path || resource.url || resource.title;
-                                    if (uniqueKey && !uniqueResources.has(uniqueKey)) {
+                                const downloadableResources = video.resources.filter(
+                                    resource => resource.download_storage_path && resource.download_storage_path !== 'None'
+                                );
+
+                                downloadableResources.forEach(resource => {
+                                    const uniqueKey = resource.download_storage_path;
+                                    if (!uniqueResources.has(uniqueKey)) {
                                         uniqueResources.set(uniqueKey, resource);
                                     }
                                 });
@@ -370,13 +363,6 @@
                         window.URL.revokeObjectURL(url);
                         a.remove();
                     } catch (err) { alert('Could not download the file. Please try again.'); }
-                },
-                handleViewResource(resource) {
-                    if (resource.type === 'external_link' && resource.url) {
-                        window.open(resource.url, '_blank');
-                    } else {
-                        alert("Please use the download button to access this file.");
-                    }
                 }
             },
             async mounted() {
