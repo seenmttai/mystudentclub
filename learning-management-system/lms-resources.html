@@ -133,25 +133,42 @@
             margin-bottom: var(--space-4);
             flex-grow: 1;
         }
-        .resource-link {
+        .resource-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-shrink: 0;
+            margin-top: auto;
+        }
+        .resource-btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+            border-radius: var(--radius-md, 0.5rem);
+            text-decoration: none;
+            transition: background-color 0.2s ease, color 0.2s ease;
+            border: 1px solid transparent;
+            font-weight: 500;
             display: inline-flex;
             align-items: center;
-            gap: var(--space-2);
-            padding: var(--space-3) var(--space-4);
-            background-color: var(--secondary-500);
+            gap: 0.3rem;
+            cursor: pointer;
+        }
+        .resource-btn i { font-size: 0.9em; }
+        .resource-btn-view {
+            background-color: var(--secondary-500, #2563eb);
             color: white;
-            text-decoration: none;
-            border-radius: var(--radius-md);
-            font-weight: 600;
-            transition: all var(--transition-base);
-            margin-top: auto;
-            justify-content: center;
         }
-        .resource-link:hover {
-            background-color: var(--secondary-600);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+        .resource-btn-view:hover { background-color: var(--secondary-600, #1d4ed8); }
+        .resource-btn-download {
+            background-color: var(--success-500, #059669);
+            color: white;
         }
+        .resource-btn-download:hover { background-color: var(--success-600, #047857); }
+        .resource-btn-download.disabled {
+            background-color: var(--gray-300, #cbd5e1);
+            color: var(--gray-500, #64748b);
+            cursor: not-allowed;
+        }
+        .resource-btn-download.disabled:hover { background-color: var(--gray-300, #cbd5e1); }
         .loading-state, .empty-state {
             grid-column: 1 / -1;
             text-align: center;
@@ -315,11 +332,18 @@
                             <div class="resource-icon"><i :class="getResourceIcon(resource.type)"></i></div>
                             <h3 class="resource-title">{{ resource.title }}</h3>
                         </div>
-                        <p class="resource-description">{{ resource.description || 'Click to view this resource.' }}</p>
-                        <a href="#" @click.prevent="handleResourceClick($event, resource)" class="resource-link" rel="noopener noreferrer">
-                            <i class="fas fa-external-link-alt"></i>
-                            Open Resource
-                        </a>
+                        <p class="resource-description">{{ resource.description || 'Click to view or download this resource.' }}</p>
+                        <div class="resource-actions">
+                            <button @click="handleViewResource(resource)" class="resource-btn resource-btn-view">
+                                <i class="fas fa-eye"></i> View
+                            </button>
+                            <button v-if="resource.download_storage_path && resource.download_storage_path !== 'None'" @click.stop="downloadResource(resource)" class="resource-btn resource-btn-download">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                            <span v-else class="resource-btn resource-btn-download disabled">
+                                <i class="fas fa-download"></i> Download
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -379,7 +403,6 @@
             </div>
         </footer>
     </div>
-
     <script type="module">
         import { createApp } from 'vue';
         
@@ -409,16 +432,22 @@
                 toggleMenu() { this.menuActive = !this.menuActive; },
                 async checkAuth() {
                     const { data: { session } } = await supabase.auth.getSession();
-                    this.user = session ? session.user : null;
-                    if (!this.user) { window.location.href = 'https://www.mystudentclub.com/login.html'; }
+                    if (session && session.user) {
+                        this.user = session.user;
+                        const { data: enrollments, error } = await supabase.from('enrollment').select('course').eq('uuid', this.user.id);
+                        if (error || enrollments.length === 0) {
+                             window.location.href = 'index.html';
+                        }
+                    } else {
+                        window.location.href = 'https://www.mystudentclub.com/login.html';
+                    }
                 },
                 handleProfileClick() { if (!this.user) { window.location.href = 'https://www.mystudentclub.com/login.html'; } },
                 async fetchAllResources() {
                     this.loading = true;
                     try {
                         const { data: enrollments, error: enrollError } = await supabase.from('enrollment').select('course').eq('uuid', this.user.id);
-                        if (enrollError) throw enrollError;
-                        if (enrollments.length === 0) { this.allResources = []; this.loading = false; return; }
+                        if (enrollError || enrollments.length === 0) throw new Error("Not enrolled in any course");
 
                         const courseNames = enrollments.map(e => e.course);
                         const { data: videos, error: videosError } = await supabase.from('videos').select('resources').in('course', courseNames);
@@ -446,25 +475,17 @@
                     const iconMap = { pdf: 'fas fa-file-pdf', image: 'fas fa-file-image', doc: 'fas fa-file-word', docx: 'fas fa-file-word', txt: 'fas fa-file-alt', external_link: 'fas fa-external-link-alt', video: 'fas fa-file-video', archive: 'fas fa-file-archive', spreadsheet: 'fas fa-file-excel', xlsx: 'fas fa-file-excel', csv: 'fas fa-file-csv' };
                     return iconMap[type ? type.toLowerCase() : ''] || 'fas fa-file';
                 },
-                async handleResourceClick(event, resource) {
-                    const link = event.currentTarget;
-                    const originalHTML = link.innerHTML;
-                    link.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Opening...`;
-                    link.style.pointerEvents = 'none';
-
-                    try {
-                        if (resource.type === 'external_link' && resource.url) { window.open(resource.url, '_blank'); return; }
-                        
-                        const path = resource.view_storage_path;
-                        if (path && path !== 'None') {
-                            const pathLower = path.toLowerCase();
-                            if (pathLower.endsWith('.pdf')) await this.openResourceViewer(resource, 'pdf');
-                            else if (pathLower.endsWith('.csv')) await this.openResourceViewer(resource, 'csv');
-                            else this.downloadResource(resource);
-                        } else { this.downloadResource(resource); }
-                    } finally {
-                        link.innerHTML = originalHTML;
-                        link.style.pointerEvents = 'auto';
+                async handleViewResource(resource) {
+                    if (resource.type === 'external_link' && resource.url) { window.open(resource.url, '_blank'); return; }
+                    
+                    const path = resource.view_storage_path;
+                    if (path && path !== 'None') {
+                        const pathLower = path.toLowerCase();
+                        if (pathLower.endsWith('.pdf')) await this.openResourceViewer(resource, 'pdf');
+                        else if (pathLower.endsWith('.csv')) await this.openResourceViewer(resource, 'csv');
+                        else this.downloadResource(resource);
+                    } else {
+                        alert('This resource is not available for viewing. Please try downloading.');
                     }
                 },
                 async downloadResource(resource) {
@@ -473,13 +494,24 @@
                     try {
                         const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(path, 300);
                         if (error) throw error;
-                        window.open(data.signedUrl, '_blank');
-                    } catch (err) { alert('Could not get download link. Please try again.'); }
+                        
+                        const response = await fetch(data.signedUrl);
+                        if (!response.ok) throw new Error('Network response was not ok.');
+                        const blob = await response.blob();
+                        
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = path.split('/').pop() || 'download';
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                        a.remove();
+                    } catch (err) { alert('Could not download the file. Please try again.'); }
                 },
                 async openResourceViewer(resource, type) {
                     this.pdfDoc = null; this.csvData = null; this.pdfCurrentPage = 1; this.pdfTotalPages = 1;
                     this.viewerLoading = true; this.isViewerVisible = true; this.currentResource = resource; this.previewType = type;
-
                     try {
                         const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
                         if (error) throw error;
