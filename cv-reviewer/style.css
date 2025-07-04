@@ -16,10 +16,9 @@ body {
   background: rgba(255,255,255,0.95);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  z-index: 1000;
   border-bottom: 1px solid rgba(229,231,235,0.5);
   box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out, background-color 0.3s ease-out, box-shadow 0.3s ease-out, backdrop-filter 0.3s ease-out;
 }
 
 .floating-header.header-hidden {

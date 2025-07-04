@@ -33,34 +33,6 @@ body {
   padding: 8rem 1.5rem 4rem;
 }
 
-.contact-form-container {
-  background: var(--surface);
-  border-radius: 16px;
-  box-shadow: var(--shadow-md);
-  padding: 2rem;
-  margin-bottom: 3rem;
-  border: 1px solid var(--border);
-}
-
-.contact-form-section {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-.contact-form-section h2 {
-  color: var(--primary);
-  font-size: 1.8rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-  text-align: center;
-}
-
-.contact-form-section p {
-  color: var(--text-secondary);
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
 .form-group {
   margin-bottom: 1.5rem;
 }
@@ -629,7 +601,7 @@ body {
     font-size: 1.1rem;
   }
 
-  .upload-section, .loading-section, .tips-section, .contact-form-container {
+  .upload-section, .loading-section, .tips-section {
     padding: 1.5rem;
   }
 
@@ -652,9 +624,6 @@ body {
     padding: 1.25rem;
   }
 
-  .contact-form-section h2 {
-    font-size: 1.6rem;
-  }
    .preview-actions {
        flex-direction: column;
        gap: 0.75rem;
