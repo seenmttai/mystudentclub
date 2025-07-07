@@ -4,257 +4,178 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Interview Practice - My Student Club</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
   <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background-color: #f0f4f8;
+    :root {
+      --primary-color: #4f46e5; --primary-dark: #4338ca; --primary-light: #eef2ff;
+      --secondary-color: #10b981; --secondary-dark: #059669;
+      --bg-color: #f4f7fc; --surface-color: #ffffff;
+      --text-primary: #1e293b; --text-secondary: #64748b;
+      --border-color: #e2e8f0;
     }
+    html, body { height: 100%; margin: 0; font-family: 'Poppins', sans-serif; background-color: var(--bg-color); }
+    #app-container { display: flex; flex-direction: column; height: 100%; }
+    .main-content { flex-grow: 1; display: flex; justify-content: center; align-items: center; padding: 1rem; }
     #chat-container {
-      display: flex;
-      flex-direction: column;
-      height: calc(100vh - 4rem);
-      max-width: 800px;
-      margin: 2rem auto;
-      background-color: white;
-      border-radius: 16px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-      overflow: hidden;
+      display: flex; flex-direction: column; width: 100%; height: 100%;
+      max-width: 900px; max-height: 95vh; background-color: var(--surface-color);
+      border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden;
     }
-    #chat-window {
-      flex-grow: 1;
-      padding: 1.5rem;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .message {
-      display: flex;
-      gap: 0.75rem;
-      max-width: 85%;
-    }
-    .message.user {
-      align-self: flex-end;
-      flex-direction: row-reverse;
-    }
+    #chat-window { flex-grow: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
+    .message { display: flex; gap: 0.75rem; max-width: 90%; animation: fadeIn 0.3s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .message.user { align-self: flex-end; flex-direction: row-reverse; }
     .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      color: white;
-      flex-shrink: 0;
+      width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-weight: 600; color: white; flex-shrink: 0;
     }
-    .avatar.assistant {
-      background-color: #4f46e5;
+    .avatar.assistant { background-color: var(--primary-color); }
+    .avatar.user { background-color: var(--secondary-color); }
+    .message-bubble { display: flex; flex-direction: column; gap: 0.5rem; }
+    .message-content { padding: 0.75rem 1rem; border-radius: 12px; line-height: 1.6; color: var(--text-primary); }
+    .message.assistant .message-content { background-color: var(--primary-light); border-top-left-radius: 0; }
+    .message.user .message-content { background-color: #dcfce7; border-top-right-radius: 0; }
+    .response-feedback {
+      font-size: 0.8rem; border-left: 3px solid var(--primary-color); padding: 0.5rem 0.75rem;
+      background-color: var(--primary-light); border-radius: 4px; margin-top: 0.5rem;
     }
-    .avatar.user {
-      background-color: #10b981;
-    }
-    .message-content {
-      padding: 0.75rem 1rem;
-      border-radius: 12px;
-      line-height: 1.5;
-    }
-    .message.assistant .message-content {
-      background-color: #eef2ff;
-      color: #1e293b;
-      border-top-left-radius: 0;
-    }
-    .message.user .message-content {
-      background-color: #dcfce7;
-      color: #1e293b;
-      border-top-right-radius: 0;
-    }
-    #message-form {
-      display: flex;
-      padding: 1rem;
-      border-top: 1px solid #e5e7eb;
-      background-color: #f9fafb;
-    }
+    .response-feedback strong { color: var(--primary-dark); }
+    #message-form { display: flex; padding: 1rem; border-top: 1px solid var(--border-color); background-color: #f9fafb; align-items: center; }
     #message-input {
-      flex-grow: 1;
-      padding: 0.75rem 1rem;
-      border: 1px solid #d1d5db;
-      border-radius: 24px;
-      font-size: 1rem;
-      background-color: white;
+      flex-grow: 1; padding: 0.75rem 1rem; border: 1px solid var(--border-color);
+      border-radius: 24px; font-size: 1rem; background-color: white; resize: none;
     }
-    #message-input:focus {
-      outline: none;
-      border-color: #4f46e5;
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    #message-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+    .chat-actions { display: flex; align-items: center; gap: 0.5rem; margin-left: 0.75rem; }
+    .action-btn {
+      background-color: transparent; color: var(--text-secondary); border: none;
+      border-radius: 50%; width: 40px; height: 40px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;
     }
-    #send-button {
-      background-color: #4f46e5;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 48px;
-      height: 48px;
-      margin-left: 0.75rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background-color 0.2s;
-    }
-    #send-button:hover {
-      background-color: #4338ca;
-    }
-    #send-button:disabled {
-      background-color: #a5b4fc;
-      cursor: not-allowed;
-    }
-    .typing-indicator {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .typing-indicator span {
-      width: 8px;
-      height: 8px;
-      background-color: #9ca3af;
-      border-radius: 50%;
-      animation: bounce 1.4s infinite ease-in-out both;
-    }
+    .action-btn:hover { background-color: #e5e7eb; }
+    .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    #send-button { background-color: var(--primary-color); color: white; width: 40px; height: 40px; }
+    #send-button:hover { background-color: var(--primary-dark); }
+    #send-button:disabled { background-color: #a5b4fc; }
+    .typing-indicator { display: flex; align-items: center; gap: 5px; padding: 0.75rem 1rem; }
+    .typing-indicator span { width: 8px; height: 8px; background-color: #9ca3af; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
     .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
     .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
-    @keyframes bounce {
-      0%, 80%, 100% { transform: scale(0); }
-      40% { transform: scale(1.0); }
+    @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+    #setup-screen { padding: 2rem; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%; }
+    .form-group { margin-bottom: 1.5rem; text-align: left; }
+    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+    .form-group select, .form-group input { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; }
+    #start-interview-btn { background-color: var(--secondary-color); color: white; padding: 0.75rem 1.5rem; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; }
+    #feedback-report { padding: 1.5rem; border-top: 1px solid var(--border-color); background-color: #f9fafb; overflow-y: auto; }
+    #feedback-report h2 { font-size: 1.5rem; font-weight: 600; color: var(--primary-color); margin-bottom: 1rem; text-align: center; }
+    #feedback-report h3 { font-size: 1.1rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid var(--border-color); }
+    #feedback-report ul { list-style-type: disc; padding-left: 1.5rem; }
+    #feedback-report li { margin-bottom: 0.5rem; }
+    #restart-btn-container { text-align: center; padding: 1rem; }
+    #restart-btn, #download-transcript-btn { background-color: var(--primary-color); color: white; padding: 0.75rem 1.5rem; border-radius: 8px; border: none; cursor: pointer; margin: 0 0.5rem; }
+    .hidden { display: none !important; }
+    .cv-upload-label {
+        border: 2px dashed var(--border-color); border-radius: 8px; padding: 1rem; text-align: center;
+        cursor: pointer; transition: all 0.2s; color: var(--text-secondary);
     }
-    #setup-screen {
-      padding: 2rem;
-      text-align: center;
-    }
-    .form-group {
-      margin-bottom: 1.5rem;
-      text-align: left;
-    }
-    .form-group label {
-      display: block;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
-    }
-    .form-group select {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-    }
-    #start-interview-btn {
-      background-color: #10b981;
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    #feedback-report {
-      padding: 1.5rem;
-      border-top: 1px solid #e5e7eb;
-      background-color: #f9fafb;
-      overflow-y: auto;
-      max-height: 100%;
-    }
-    #feedback-report h2 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: #4f46e5;
-      margin-bottom: 1rem;
-      text-align: center;
-    }
-    #feedback-report h3 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-top: 1.25rem;
-      margin-bottom: 0.5rem;
-      padding-bottom: 0.25rem;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    #feedback-report ul {
-      list-style-type: disc;
-      padding-left: 1.5rem;
-    }
-    #feedback-report li {
-      margin-bottom: 0.5rem;
-    }
-    #restart-btn-container {
-      text-align: center;
-      padding: 1rem;
-    }
-    #restart-btn {
-      background-color: #4f46e5;
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
+    .cv-upload-label:hover { border-color: var(--primary-color); background-color: var(--primary-light); }
+    #cv-file-name { font-size: 0.8rem; margin-top: 0.5rem; color: var(--secondary-dark); }
+    @media (max-width: 768px) {
+      body { height: auto; min-height: 100vh; }
+      .main-content { padding: 0; }
+      #chat-container { max-height: none; height: 100vh; border-radius: 0; margin: 0; }
+      #chat-window { padding: 1rem; }
+      .message { max-width: 95%; }
     }
   </style>
 </head>
 <body>
+  <div id="app-container">
+    <main class="main-content">
+      <div id="chat-container">
+        <div id="setup-screen">
+          <h1 class="text-2xl font-bold mb-2">AI Interview Practice</h1>
+          <p class="text-gray-600 mb-6">Prepare for your next interview by practicing with our AI interviewer, 'Alex'.</p>
+          <div class="max-w-md mx-auto">
+            <div class="form-group">
+              <label for="specialization">Select Your Target Role:</label>
+              <select id="specialization">
+                <option value="Finance">Finance</option>
+                <option value="Audit">Audit</option>
+                <option value="Taxation">Taxation</option>
+                <option value="FP&A">FP&A / Business Finance</option>
+                <option value="Consulting">Consulting</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="company-persona">Select Interviewer Persona:</label>
+              <select id="company-persona">
+                <option value="a large multinational like Unilever">Large Multinational (e.g., Unilever)</option>
+                <option value="a top investment bank like Goldman Sachs">Investment Bank (e.g., Goldman Sachs)</option>
+                <option value="a Big 4 audit firm">Big 4 Audit Firm</option>
+                <option value="a fast-growing tech startup like Flipkart">Tech Startup (e.g., Flipkart)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="interview-style">Select Interview Style:</label>
+              <select id="interview-style">
+                <option value="Standard">Standard</option>
+                <option value="Technical Deep-Dive">Technical Deep-Dive</option>
+                <option value="Stress Test">Stress Test</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="cv-upload" class="cv-upload-label">
+                <i class="fas fa-file-upload mr-2"></i>
+                (Optional) Upload CV for personalized questions
+                <input type="file" id="cv-upload" class="hidden" accept=".pdf,.txt">
+              </label>
+              <p id="cv-file-name" class="text-center"></p>
+            </div>
+            <button id="start-interview-btn">Start Interview</button>
+          </div>
+        </div>
 
-  <div id="chat-container">
-    <div id="setup-screen">
-      <h1 class="text-2xl font-bold mb-2">AI Interview Practice</h1>
-      <p class="text-gray-600 mb-6">Prepare for your next interview by practicing with our AI interviewer, 'Alex'.</p>
-      <div class="max-w-sm mx-auto">
-        <div class="form-group">
-          <label for="specialization">Select Your Target Role:</label>
-          <select id="specialization">
-            <option value="Finance">Finance</option>
-            <option value="Audit">Audit</option>
-            <option value="Taxation">Taxation</option>
-            <option value="FP&A">FP&A / Business Finance</option>
-            <option value="Consulting">Consulting</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="company-persona">Select Interviewer Persona:</label>
-          <select id="company-persona">
-            <option value="a large multinational like Unilever">Large Multinational (e.g., Unilever)</option>
-            <option value="a top investment bank like Goldman Sachs">Investment Bank (e.g., Goldman Sachs)</option>
-            <option value="a Big 4 audit firm">Big 4 Audit Firm</option>
-            <option value="a fast-growing tech startup like Flipkart">Tech Startup (e.g., Flipkart)</option>
-          </select>
-        </div>
-        <button id="start-interview-btn">Start Interview</button>
+        <div id="chat-window" class="hidden"></div>
+
+        <div id="feedback-report" class="hidden"></div>
+
+        <form id="message-form" class="hidden">
+          <input type="text" id="message-input" placeholder="Type your answer..." autocomplete="off" required>
+          <div class="chat-actions">
+            <button type="button" id="hint-btn" class="action-btn" title="Ask for a hint">
+              <i class="fas fa-lightbulb"></i>
+            </button>
+            <button type="submit" id="send-button" aria-label="Send Message">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </form>
       </div>
-    </div>
-
-    <div id="chat-window" class="hidden"></div>
-
-    <div id="feedback-report" class="hidden"></div>
-
-    <form id="message-form" class="hidden">
-      <input type="text" id="message-input" placeholder="Type your answer..." autocomplete="off" required>
-      <button type="submit" id="send-button" aria-label="Send Message">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-        </svg>
-      </button>
-    </form>
+    </main>
   </div>
 
   <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
+
     const setupScreen = document.getElementById('setup-screen');
     const startInterviewBtn = document.getElementById('start-interview-btn');
     const specializationSelect = document.getElementById('specialization');
     const companyPersonaSelect = document.getElementById('company-persona');
+    const interviewStyleSelect = document.getElementById('interview-style');
+    const cvUploadInput = document.getElementById('cv-upload');
+    const cvFileNameEl = document.getElementById('cv-file-name');
     const chatContainer = document.getElementById('chat-container');
     const chatWindow = document.getElementById('chat-window');
     const messageForm = document.getElementById('message-form');
     const messageInput = document.getElementById('message-input');
     const sendButton = document.getElementById('send-button');
+    const hintButton = document.getElementById('hint-btn');
     const feedbackReport = document.getElementById('feedback-report');
 
     const WORKER_URL = 'https://interviewme.bhansalimanan55.workers.dev/';
@@ -262,16 +183,53 @@
     let messages = [];
     let isLoading = false;
     let interviewEnded = false;
+    let cvText = '';
     let specialization = 'Finance';
-    let companyPersona = 'a large multinational like Unilever';
+    let companyPersona = 'a large multinational';
+    let interviewStyle = 'Standard';
 
     startInterviewBtn.addEventListener('click', () => {
       specialization = specializationSelect.value;
       companyPersona = companyPersonaSelect.value;
+      interviewStyle = interviewStyleSelect.value;
       setupScreen.classList.add('hidden');
       chatWindow.classList.remove('hidden');
       messageForm.classList.remove('hidden');
       startInterview();
+    });
+
+    cvUploadInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        cvFileNameEl.textContent = `Processing ${file.name}...`;
+        try {
+            if (file.type === 'application/pdf') {
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    const typedarray = new Uint8Array(event.target.result);
+                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
+                    let textContent = '';
+                    for (let i = 1; i <= pdf.numPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const text = await page.getTextContent();
+                        textContent += text.items.map(s => s.str).join(' ');
+                    }
+                    cvText = textContent;
+                    cvFileNameEl.textContent = `✅ ${file.name} uploaded.`;
+                };
+                reader.readAsArrayBuffer(file);
+            } else if (file.type === 'text/plain') {
+                cvText = await file.text();
+                cvFileNameEl.textContent = `✅ ${file.name} uploaded.`;
+            } else {
+                alert('Unsupported file type. Please upload PDF or TXT.');
+                cvFileNameEl.textContent = '';
+            }
+        } catch (error) {
+            console.error('Error processing file:', error);
+            cvFileNameEl.textContent = `❌ Error processing file.`;
+            cvText = '';
+        }
     });
 
     messageForm.addEventListener('submit', (e) => {
@@ -284,6 +242,13 @@
       }
     });
 
+    hintButton.addEventListener('click', () => {
+        if (!isLoading) {
+            addMessage('user', 'Can I get a hint?');
+            fetchAIResponse();
+        }
+    });
+
     function startInterview() {
       messages = [];
       interviewEnded = false;
@@ -291,6 +256,14 @@
       feedbackReport.classList.add('hidden');
       messageInput.disabled = false;
       sendButton.disabled = false;
+      hintButton.disabled = false;
+      
+      if (cvText) {
+        const initialPrompt = `(This is my CV content for your reference, please ask me 1-2 questions based on it during the interview: ###\n${cvText}\n###) I'm ready to start the interview.`;
+        addMessage('user', initialPrompt);
+      } else {
+        addMessage('user', "I'm ready to start the interview.");
+      }
       fetchAIResponse();
     }
 
@@ -303,6 +276,10 @@
     function renderMessages() {
       chatWindow.innerHTML = '';
       messages.forEach(msg => {
+        if (msg.role === 'user' && msg.content.startsWith('(This is my CV content')) {
+            return; 
+        }
+
         const messageElement = document.createElement('div');
         messageElement.className = `message ${msg.role}`;
         
@@ -310,12 +287,24 @@
         avatar.className = `avatar ${msg.role}`;
         avatar.textContent = msg.role === 'user' ? 'You' : 'A';
 
+        const messageBubble = document.createElement('div');
+        messageBubble.className = 'message-bubble';
+
         const messageContent = document.createElement('div');
         messageContent.className = 'message-content';
-        messageContent.innerHTML = simpleMarkdownToHtml(msg.content);
+        messageContent.innerHTML = marked.parse(msg.content);
+
+        messageBubble.appendChild(messageContent);
+
+        if (msg.feedback) {
+            const feedbackEl = document.createElement('div');
+            feedbackEl.className = 'response-feedback';
+            feedbackEl.innerHTML = marked.parse(msg.feedback);
+            messageBubble.appendChild(feedbackEl);
+        }
 
         messageElement.appendChild(avatar);
-        messageElement.appendChild(messageContent);
+        messageElement.appendChild(messageBubble);
         chatWindow.appendChild(messageElement);
       });
 
@@ -343,6 +332,7 @@
       isLoading = true;
       renderMessages();
       sendButton.disabled = true;
+      hintButton.disabled = true;
 
       try {
         const response = await fetch(WORKER_URL, {
@@ -350,13 +340,15 @@
           headers: {
             'Content-Type': 'application/json',
             'X-Specialization': specialization,
-            'X-Company-Persona': companyPersona
+            'X-Company-Persona': companyPersona,
+            'X-Interview-Style': interviewStyle
           },
           body: JSON.stringify({ messages })
         });
 
         if (!response.ok) {
-          throw new Error(`API Error: ${response.statusText}`);
+          const errorData = await response.json();
+          throw new Error(errorData.error || `API Error: ${response.statusText}`);
         }
 
         const data = await response.json();
@@ -372,62 +364,95 @@
         isLoading = false;
         if (!interviewEnded) {
           sendButton.disabled = false;
+          hintButton.disabled = false;
         }
         renderMessages();
       }
     }
 
     function handleAIResponse(text) {
-      const feedbackMarker = '<<<INTERVIEW_FEEDBACK>>>';
-      if (text.includes(feedbackMarker)) {
-        interviewEnded = true;
-        const parts = text.split(feedbackMarker);
-        const finalMessage = parts[0].trim();
-        const feedbackContent = parts[1];
+        const finalReportMarker = '<<<FINAL_REPORT>>>';
+        const responseFeedbackMarker = '<<<RESPONSE_FEEDBACK>>>';
+        let mainMessage, responseFeedback, finalReport;
 
-        if (finalMessage) {
-          addMessage('assistant', finalMessage);
+        if (text.includes(finalReportMarker)) {
+            interviewEnded = true;
+            const parts = text.split(finalReportMarker);
+            mainMessage = parts[0].trim();
+            finalReport = parts[1];
+        } else if (text.includes(responseFeedbackMarker)) {
+            const parts = text.split(responseFeedbackMarker);
+            mainMessage = parts[0].trim();
+            responseFeedback = parts[1].split('<<<END_RESPONSE_FEEDBACK>>>')[0].trim();
+        } else {
+            mainMessage = text.trim();
         }
-        renderFeedback(feedbackContent);
-        
-        messageInput.disabled = true;
-        sendButton.disabled = true;
-        messageForm.classList.add('hidden');
-      } else {
-        addMessage('assistant', text);
-      }
+
+        if (mainMessage) {
+            const newAIMessage = { role: 'assistant', content: mainMessage };
+            if (responseFeedback) {
+                newAIMessage.feedback = responseFeedback;
+            }
+            messages.push(newAIMessage);
+        }
+
+        if (finalReport) {
+            renderFinalReport(finalReport);
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+            hintButton.disabled = true;
+            messageForm.classList.add('hidden');
+        }
     }
 
-    function renderFeedback(feedbackText) {
-      const endMarker = '<<<END_INTERVIEW_FEEDBACK>>>';
-      const cleanFeedback = feedbackText.replace(endMarker, '').trim();
-      
-      let html = `<h2>Interview Feedback</h2>`;
-      html += simpleMarkdownToHtml(cleanFeedback);
-      html += `<div id="restart-btn-container"><button id="restart-btn">Start New Interview</button></div>`;
+    function renderFinalReport(reportText) {
+      const cleanReport = reportText.replace('<<<END_FINAL_REPORT>>>', '').trim();
+      let html = `<h2>Interview Complete: Final Report</h2>`;
+      html += marked.parse(cleanReport);
+      html += `<div id="restart-btn-container">
+                 <button id="download-transcript-btn">Download Transcript</button>
+                 <button id="restart-btn">Start New Interview</button>
+               </div>`;
 
       feedbackReport.innerHTML = html;
       feedbackReport.classList.remove('hidden');
-      chatWindow.scrollTop = chatWindow.scrollHeight;
+      chatWindow.classList.add('hidden');
 
       document.getElementById('restart-btn').addEventListener('click', () => {
-        chatWindow.innerHTML = '';
-        feedbackReport.classList.add('hidden');
-        setupScreen.classList.remove('hidden');
+        window.location.reload();
       });
+      document.getElementById('download-transcript-btn').addEventListener('click', downloadTranscript);
     }
 
-    function simpleMarkdownToHtml(text) {
-      return text
-        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.*?)\*/g, '<em>$1</em>')
-        .replace(/^\s*[\-\*]\s+(.*)/gm, '<li>$1</li>')
-        .replace(/(<li>.*<\/li>)/gs, '<ul>$1</ul>')
-        .replace(/<\/ul>\s*<ul>/g, '')
-        .replace(/\n/g, '<br>');
+    function downloadTranscript() {
+        let transcript = `AI Interview Transcript\n`;
+        transcript += `Role: ${specialization}\nPersona: ${companyPersona}\nStyle: ${interviewStyle}\n\n`;
+        transcript += "================================\n\n";
+
+        messages.forEach(msg => {
+            if (msg.role === 'user' && msg.content.startsWith('(This is my CV content')) return;
+            const prefix = msg.role === 'user' ? 'You:' : 'Alex:';
+            transcript += `${prefix}\n${msg.content}\n\n`;
+            if (msg.feedback) {
+                transcript += `--- Feedback on your answer ---\n${msg.feedback.replace(/<br>/g, '\n')}\n-----------------------------\n\n`;
+            }
+        });
+
+        const finalReportText = feedbackReport.innerText;
+        transcript += "\n\n================================\n";
+        transcript += finalReportText.replace('Start New Interview', '').replace('Download Transcript', '').trim();
+
+        const blob = new Blob([transcript], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'AI-Interview-Transcript.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
     }
 
   </script>
-
 </body>
 </html>
