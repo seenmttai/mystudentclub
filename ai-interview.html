@@ -76,8 +76,8 @@
     #feedback-report h3 { font-size: 1.1rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid var(--border-color); }
     #feedback-report ul { list-style-type: disc; padding-left: 1.5rem; }
     #feedback-report li { margin-bottom: 0.5rem; }
-    #restart-btn-container { text-align: center; padding: 1rem; }
-    #restart-btn, #download-transcript-btn { background-color: var(--primary-color); color: white; padding: 0.75rem 1.5rem; border-radius: 8px; border: none; cursor: pointer; margin: 0 0.5rem; }
+    #restart-btn-container { text-align: center; padding: 1rem; display: flex; justify-content: center; gap: 1rem; }
+    #restart-btn, #download-transcript-btn { background-color: var(--primary-color); color: white; padding: 0.75rem 1.5rem; border-radius: 8px; border: none; cursor: pointer; }
     .hidden { display: none !important; }
     .cv-upload-label {
         border: 2px dashed var(--border-color); border-radius: 8px; padding: 1rem; text-align: center;
@@ -258,12 +258,11 @@
       sendButton.disabled = false;
       hintButton.disabled = false;
       
+      let initialPrompt = "I'm ready to start the interview.";
       if (cvText) {
-        const initialPrompt = `(This is my CV content for your reference, please ask me 1-2 questions based on it during the interview: ###\n${cvText}\n###) I'm ready to start the interview.`;
-        addMessage('user', initialPrompt);
-      } else {
-        addMessage('user', "I'm ready to start the interview.");
+        initialPrompt = `(This is my CV content for your reference, please ask me 1-2 questions based on it during the interview: ###\n${cvText}\n###) I'm ready to start the interview.`;
       }
+      addMessage('user', initialPrompt);
       fetchAIResponse();
     }
 
@@ -285,7 +284,7 @@
         
         const avatar = document.createElement('div');
         avatar.className = `avatar ${msg.role}`;
-        avatar.textContent = msg.role === 'user' ? 'You' : 'A';
+        avatar.innerHTML = msg.role === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
 
         const messageBubble = document.createElement('div');
         messageBubble.className = 'message-bubble';
@@ -317,7 +316,7 @@
       const indicatorElement = document.createElement('div');
       indicatorElement.className = 'message assistant';
       indicatorElement.innerHTML = `
-        <div class="avatar assistant">A</div>
+        <div class="avatar assistant"><i class="fas fa-robot"></i></div>
         <div class="message-content">
           <div class="typing-indicator">
             <span></span><span></span><span></span>
@@ -432,9 +431,11 @@
         messages.forEach(msg => {
             if (msg.role === 'user' && msg.content.startsWith('(This is my CV content')) return;
             const prefix = msg.role === 'user' ? 'You:' : 'Alex:';
-            transcript += `${prefix}\n${msg.content}\n\n`;
+            const cleanContent = msg.content.replace(/<[^>]*>/g, '');
+            transcript += `${prefix}\n${cleanContent}\n\n`;
             if (msg.feedback) {
-                transcript += `--- Feedback on your answer ---\n${msg.feedback.replace(/<br>/g, '\n')}\n-----------------------------\n\n`;
+                const cleanFeedback = msg.feedback.replace(/<[^>]*>/g, '');
+                transcript += `--- Feedback on your answer ---\n${cleanFeedback}\n-----------------------------\n\n`;
             }
         });
 
@@ -452,7 +453,6 @@
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     }
-
   </script>
 </body>
 </html>
