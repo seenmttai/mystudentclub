@@ -6,713 +6,1103 @@
   <title>AI Interview Prep by My Student Club</title>
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
   <style>
     :root {
-      --primary-color: #007BFF;
-      --primary-dark: #0056b3;
-      --primary-light: #e6f2ff;
-      --secondary-color: #17A2B8;
-      --secondary-dark: #107586;
-      --bg-color: #f7f9fc;
-      --surface-color: #ffffff;
-      --text-primary: #212529;
-      --text-secondary: #6c757d;
-      --border-color: #dee2e6;
-      --success-color: #28a745;
-      --error-color: #dc3545;
-      --shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.05);
-      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+      --primary: #667eea;
+      --primary-dark: #5a6fd8;
+      --primary-light: #e8ecff;
+      --secondary: #764ba2;
+      --accent: #f093fb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --text-primary: #1f2937;
+      --text-secondary: #6b7280;
+      --text-muted: #9ca3af;
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --glass-bg: rgba(255, 255, 255, 0.1);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      --border-radius: 16px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    html, body {
-      height: 100%;
+
+    * {
       margin: 0;
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-primary);
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+      color: white;
+      min-height: 100vh;
       overflow-x: hidden;
     }
-    #app-container {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      width: 100%;
-    }
-    .app-header {
-      display: flex;
-      align-items: center;
-      padding: 0.75rem 2rem;
-      background-color: var(--surface-color);
-      box-shadow: var(--shadow);
-      z-index: 10;
-    }
-    .app-header .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    .app-header .logo img { height: 40px; }
-    .app-header h1 { font-size: 1.25rem; font-weight: 600; color: var(--text-primary); }
-    .main-content {
-      flex-grow: 1;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      padding: 2rem 1rem;
-      overflow-y: auto;
-    }
-    #chat-container {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-      height: 100%;
-      max-width: 900px;
-      background-color: transparent;
-      border-radius: 0;
-      box-shadow: none;
-      overflow: visible;
-    }
-    .card {
-      background-color: var(--surface-color);
-      border-radius: 16px;
-      box-shadow: var(--shadow-lg);
-      overflow: hidden;
-      animation: slideUpFadeIn 0.5s ease-out forwards;
-      width: 100%;
-    }
-    @keyframes slideUpFadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+
+    
+    ::-webkit-scrollbar {
+      width: 6px;
     }
 
-    #chat-window {
-      flex-grow: 1;
-      padding: 1.5rem;
-      overflow-y: auto;
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, var(--primary-dark), var(--accent));
+    }
+
+    
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--border-radius);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-xl);
+    }
+
+    
+    #app-container {
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
-      gap: 1.25rem;
-      height: calc(85vh - 200px);
+      position: relative;
+      overflow: hidden;
     }
+
+    
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      opacity: 0.6;
+    }
+
+    .bg-animation::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, var(--primary) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .bg-animation::after {
+      content: '';
+      position: absolute;
+      bottom: -50%;
+      right: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, var(--secondary) 0%, transparent 50%);
+      animation: float 25s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(30px, -30px) rotate(120deg); }
+      66% { transform: translate(-20px, 20px) rotate(240deg); }
+    }
+
+    
+    .app-header {
+      padding: 1.5rem 2rem;
+      backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo img {
+      height: 48px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .logo h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-stats {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    
+    .main-content {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+      overflow-y: auto;
+    }
+
+    
+    #setup-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 200px);
+    }
+
+    .setup-card {
+      max-width: 600px;
+      width: 100%;
+      padding: 3rem;
+      text-align: center;
+      animation: slideUp 0.8s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .setup-title {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .setup-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      margin-bottom: 3rem;
+      line-height: 1.6;
+    }
+
+    
+    .form-grid {
+      display: grid;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      color: white;
+      font-size: 1rem;
+      transition: var(--transition);
+      backdrop-filter: blur(10px);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .form-input option {
+      background: var(--bg-secondary);
+      color: white;
+    }
+
+    
+    .file-upload-area {
+      border: 2px dashed rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .file-upload-area:hover {
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .file-upload-area.dragover {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.02);
+    }
+
+    .upload-icon {
+      font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+    }
+
+    .upload-text {
+      color: var(--text-muted);
+    }
+
+    .file-info {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 8px;
+      color: var(--success);
+    }
+
+    
+    .btn {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    
+    #chat-view {
+      display: grid;
+      grid-template-rows: 1fr auto;
+      height: calc(100vh - 140px);
+      gap: 1rem;
+    }
+
+    .chat-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .chat-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .interviewer-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .interviewer-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      box-shadow: var(--shadow);
+      border: 3px solid var(--primary);
+    }
+
+    .interviewer-details h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+    .interviewer-role {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .interview-progress {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .progress-bar {
+      width: 120px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
     .message {
       display: flex;
-      gap: 0.75rem;
-      max-width: 85%;
-      animation: fadeIn 0.3s ease-out;
+      gap: 1rem;
+      animation: messageSlide 0.5s ease-out;
     }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .message.user { align-self: flex-end; flex-direction: row-reverse; }
-    .avatar img {
-      width: 40px; height: 40px; border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+    @keyframes messageSlide {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    .message-bubble { display: flex; flex-direction: column; gap: 0.5rem; width: 100%; }
+
+    .message.user {
+      flex-direction: row-reverse;
+      justify-content: flex-start;
+    }
+
+    .message-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      box-shadow: var(--shadow);
+    }
+
     .message-content {
-      padding: 0.85rem 1.25rem;
+      max-width: 70%;
+      padding: 1.25rem 1.5rem;
       border-radius: 18px;
-      line-height: 1.6;
-      color: var(--text-primary);
-      background-color: var(--primary-light);
-      word-wrap: break-word;
+      position: relative;
     }
+
     .message.assistant .message-content {
-      background-color: #e9ecef;
-      border-top-left-radius: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-bottom-left-radius: 6px;
     }
+
     .message.user .message-content {
-      background-color: var(--primary-color);
-      color: white;
-      border-top-right-radius: 4px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-bottom-right-radius: 6px;
     }
+
     .message-content > *:first-child { margin-top: 0; }
     .message-content > *:last-child { margin-bottom: 0; }
-    .message-content code {
-      background: rgba(0,0,0,0.05);
-      padding: 0.2em 0.4em;
-      border-radius: 3px;
-    }
-    .response-feedback {
-      font-size: 0.85rem;
-      border-left: 3px solid var(--secondary-color);
-      padding: 0.75rem 1rem;
-      background-color: #f8f9fa;
+
+    .message-content pre {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 1rem;
       border-radius: 8px;
-      margin-top: 0.75rem;
-      color: var(--text-secondary);
+      overflow-x: auto;
+      margin: 1rem 0;
     }
-    .response-feedback strong { color: var(--secondary-dark); }
 
-    #message-form {
-      display: flex;
-      padding: 1rem 1.5rem;
-      border-top: 1px solid var(--border-color);
-      background-color: #f8f9fa;
-      align-items: center;
-      border-bottom-left-radius: 16px;
-      border-bottom-right-radius: 16px;
+    .message-content code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
     }
-    #message-input-wrapper {
-        flex-grow: 1;
-        position: relative;
+
+    .message-content pre code {
+      background: none;
+      padding: 0;
     }
-    #message-input {
-      width: 100%;
-      padding: 0.85rem 3rem 0.85rem 1.5rem;
-      border: 1px solid var(--border-color);
-      border-radius: 24px;
-      font-size: 1rem;
-      background-color: white;
-      resize: none;
-      box-sizing: border-box;
-      transition: all 0.2s ease;
+
+    .message-feedback {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(16, 185, 129, 0.1);
+      border-left: 4px solid var(--success);
+      border-radius: 8px;
+      font-size: 0.9rem;
     }
-    #message-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15); }
-    .chat-actions { display: flex; align-items: center; gap: 0.5rem; margin-left: 1rem; }
-    .action-btn {
-      background-color: #e9ecef; color: var(--text-secondary); border: none;
-      border-radius: 50%; width: 44px; height: 44px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+
+    .feedback-score {
+      font-weight: 700;
+      color: var(--success);
     }
-    .action-btn:hover { background-color: #dee2e6; }
-    .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    #send-button {
-      background-color: var(--primary-color); color: white;
-    }
-    #send-button:hover { background-color: var(--primary-dark); }
-    #send-button:disabled { background-color: #a0cfff; }
+
     
-    #typing-indicator {
-        display: flex; align-items: center; gap: 0.75rem; max-width: 85%;
+    .quick-responses {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
     }
-    #typing-indicator .message-content {
-        color: var(--text-secondary); font-style: italic;
-    }
-    .dots span {
-      display: inline-block; width: 6px; height: 6px; background-color: currentColor; border-radius: 50%;
-      animation: bounce 1.4s infinite ease-in-out both;
-    }
-    .dots span:nth-child(1) { animation-delay: -0.32s; }
-    .dots span:nth-child(2) { animation-delay: -0.16s; }
-    @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
 
-    #setup-screen { padding: 2.5rem; text-align: center; }
-    #setup-screen h1 { font-size: 1.8rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; }
-    #setup-screen p { color: var(--text-secondary); margin-bottom: 2rem; }
-    .form-group { margin-bottom: 1.25rem; text-align: left; }
-    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary); }
-    .form-group select, .form-group input {
-      width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color);
-      border-radius: 8px; background-color: #f8f9fa; transition: all 0.2s ease;
-      -webkit-appearance: none; -moz-appearance: none; appearance: none;
-      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
-      background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em;
+    .quick-response {
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: var(--transition);
     }
-    .form-group select:focus, .form-group input:focus {
-        outline: none; border-color: var(--primary-color); background-color: var(--surface-color);
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
-    }
-    #start-interview-btn {
-      background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
-      color: white; padding: 0.85rem 2rem; border-radius: 8px; border: none; cursor: pointer;
-      font-weight: 600; font-size: 1rem; width: 100%; transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
-    }
-    #start-interview-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3); }
 
-    #feedback-report { padding: 2.5rem; background-color: var(--surface-color); overflow-y: auto; }
-    #feedback-report h2 {
-      font-size: 1.8rem; font-weight: 700; color: var(--text-primary);
-      margin-bottom: 2rem; text-align: center;
+    .quick-response:hover {
+      background: var(--primary);
+      transform: translateY(-1px);
     }
-    .report-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
+
+    
+    .chat-input-container {
+      padding: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
-    .report-card {
-      background-color: #f8f9fa; padding: 1.5rem; border-radius: 12px;
-      border: 1px solid var(--border-color);
+
+    .input-wrapper {
+      display: flex;
+      align-items: flex-end;
+      gap: 1rem;
+      position: relative;
     }
-    .report-card h3 {
-      font-size: 1.2rem; font-weight: 600; margin-top: 0; margin-bottom: 1rem;
-      display: flex; align-items: center; gap: 0.5rem;
-      color: var(--primary-dark);
+
+    .input-area {
+      flex: 1;
+      position: relative;
     }
-    .report-card ul { list-style-type: none; padding-left: 0.5rem; }
-    .report-card li { margin-bottom: 0.75rem; position: relative; padding-left: 1.25rem; }
-    .report-card li::before {
-        content: '✓'; color: var(--success-color); position: absolute; left: 0; font-weight: bold;
-    }
-    .report-card.areas-for-development li::before {
-        content: '→'; color: var(--primary-color);
-    }
-    #overall-score-card {
-      text-align: center; background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+
+    .chat-input {
+      width: 100%;
+      min-height: 50px;
+      max-height: 120px;
+      padding: 1rem 7rem 1rem 1.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
       color: white;
+      font-size: 1rem;
+      resize: none;
+      transition: var(--transition);
+      backdrop-filter: blur(10px);
     }
-    #overall-score-card h3 { color: white; }
-    #score-value { font-size: 3rem; font-weight: 700; }
 
-    #restart-btn-container { text-align: center; padding: 2rem 0 0; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;}
-    #restart-btn, #download-transcript-btn {
-      background-color: var(--primary-color); color: white; padding: 0.75rem 1.5rem;
-      border-radius: 8px; border: none; cursor: pointer; font-weight: 500;
-      transition: background-color 0.2s ease;
+    .chat-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
     }
-    #restart-btn:hover, #download-transcript-btn:hover { background-color: var(--primary-dark); }
-    #download-transcript-btn { background-color: var(--text-secondary); }
-    #download-transcript-btn:hover { background-color: var(--text-primary); }
 
-    .hidden { display: none !important; }
-    .cv-upload-label {
-        border: 2px dashed var(--border-color); border-radius: 8px; padding: 1.5rem; text-align: center;
-        cursor: pointer; transition: all 0.2s; color: var(--text-secondary);
-        background-color: #f8f9fa;
+    .chat-input::placeholder {
+      color: var(--text-muted);
     }
-    .cv-upload-label:hover {
-      border-color: var(--primary-color); background-color: var(--primary-light);
-      color: var(--primary-dark);
-    }
-    #cv-file-name { font-size: 0.9rem; margin-top: 0.75rem; font-weight: 500; }
-    #cv-file-name.success { color: var(--success-color); }
-    #cv-file-name.error { color: var(--error-color); }
 
+    .input-actions {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .action-btn {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .action-btn:hover {
+      background: var(--primary);
+      transform: scale(1.1);
+    }
+
+    .send-btn {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: none;
+      border-radius: 50%;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      box-shadow: var(--shadow);
+    }
+
+    .send-btn:hover {
+      transform: scale(1.05);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      background: var(--bg-secondary);
+    }
+
+    
+    .typing-indicator {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin: 0 1.5rem 1.5rem;
+    }
+
+    .typing-indicator .message-content {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 1.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-bottom-left-radius: 6px;
+    }
+
+    .typing-dots {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      padding-left: 5px;
+    }
+
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+      animation: typing 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+    .typing-dot:nth-child(3) { animation-delay: 0s; }
+
+    @keyframes typing {
+      0%, 80%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+      }
+      40% {
+        transform: scale(1.2);
+        opacity: 1;
+      }
+    }
+
+    
+    .analytics-panel {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .analytics-card {
+      padding: 1.5rem;
+      text-align: center;
+      transition: var(--transition);
+    }
+
+    .analytics-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .analytics-value {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .analytics-label {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    
+    .report-container {
+      padding: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      animation: slideUp 0.8s ease-out;
+    }
+
+    .report-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .report-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .report-subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    .report-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .report-card {
+      padding: 2rem;
+      height: fit-content;
+      transition: var(--transition);
+    }
+
+    .report-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    }
+
+    .report-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+    }
+
+    .report-card h3 i {
+      color: var(--primary);
+      width: 20px;
+      text-align: center;
+    }
+
+    .score-display {
+      text-align: center;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border-radius: var(--border-radius);
+    }
+
+    .score-value {
+      font-size: 4rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--success), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    .score-label {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+    }
+
+    
     @media (max-width: 768px) {
-      body { height: auto; min-height: 100vh; }
-      .app-header { padding: 0.75rem 1rem; }
-      .app-header h1 { font-size: 1.1rem; }
-      .main-content { padding: 1rem 0; }
-      #chat-container { border-radius: 0; margin: 0; box-shadow: none; }
-      .card { border-radius: 0; box-shadow: none; }
-      #chat-window { padding: 1rem; height: calc(100vh - 145px); }
-      .message { max-width: 95%; }
-      #message-form { padding: 0.75rem; }
-      #message-input { padding: 0.75rem 2.5rem 0.75rem 1rem; }
-      #setup-screen, #feedback-report { padding: 1.5rem; }
-      .report-grid { grid-template-columns: 1fr; }
+      .app-header {
+        padding: 1rem;
+      }
+
+      .header-stats {
+        display: none;
+      }
+
+      .main-content {
+        padding: 1rem;
+      }
+
+      .setup-card {
+        padding: 2rem;
+      }
+
+      .setup-title {
+        font-size: 2rem;
+      }
+
+      .message-content {
+        max-width: 85%;
+      }
+
+      .input-wrapper {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .chat-input {
+        padding-right: 1.5rem;
+      }
+
+      .input-actions {
+        position: static;
+        transform: none;
+        align-self: flex-end;
+        padding-right: 4.5rem;
+      }
+
+      .report-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .logo h1 {
+        font-size: 1.1rem;
+      }
+
+      .setup-title {
+        font-size: 1.8rem;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .chat-input-container {
+        padding: 1rem;
+      }
+
+      .input-wrapper {
+        align-items: center;
+      }
+
+      .chat-input {
+        padding-right: 1.5rem;
+        padding-left: 1rem;
+        border-radius: 20px;
+      }
+
+      .send-btn {
+        position: absolute;
+        right: 0;
+        bottom: 0;
+      }
+    }
+
+    
+    .hidden {
+      display: none !important;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .slide-up {
+      animation: slideUp 0.5s ease-out;
     }
   </style>
 </head>
 <body>
+  <div class="bg-animation"></div>
+  
   <div id="app-container">
     <header class="app-header">
-      <div class="logo">
-        <img src="/logo.png" alt="Logo">
-        <h1>AI Interview Prep</h1>
-      </div>
-    </header>
-    <main class="main-content">
-      <div id="chat-container">
-        <div id="setup-screen" class="card">
-          <h1>AI Interview Practice</h1>
-          <p>Prepare for your next interview by practicing with our AI interviewer, 'Alex'.</p>
-          <div class="max-w-md mx-auto" style="max-width: 450px;">
-            <div class="form-group">
-              <label for="specialization">Select Your Target Role:</label>
-              <select id="specialization">
-                <option value="Finance">Finance</option>
-                <option value="Audit">Audit</option>
-                <option value="Taxation">Taxation</option>
-                <option value="FP&A">FP&A / Business Finance</option>
-                <option value="Consulting">Consulting</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="company-persona">Select Interviewer Persona:</label>
-              <select id="company-persona">
-                <option value="a large multinational like Unilever">Large Multinational (e.g., Unilever)</option>
-                <option value="a top investment bank like Goldman Sachs">Investment Bank (e.g., Goldman Sachs)</option>
-                <option value="a Big 4 audit firm">Big 4 Audit Firm</option>
-                <option value="a fast-growing tech startup like Flipkart">Tech Startup (e.g., Flipkart)</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="interview-style">Select Interview Style:</label>
-              <select id="interview-style">
-                <option value="Standard">Standard</option>
-                <option value="Technical Deep-Dive">Technical Deep-Dive</option>
-                <option value="Stress Test">Stress Test</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="cv-upload" class="cv-upload-label">
-                <i class="fas fa-file-upload mr-2"></i>
-                <span>(Optional) Upload CV for personalized questions</span>
-                <input type="file" id="cv-upload" class="hidden" accept=".pdf,.txt">
-              </label>
-              <p id="cv-file-name" class="text-center"></p>
-            </div>
-            <button id="start-interview-btn">Start Interview</button>
+      <div class="header-content">
+        <div class="logo">
+          <img src="/logo.png" alt="AI Interview Prep Logo">
+          <h1>AI Interview Prep</h1>
+        </div>
+        <div class="header-stats">
+          <div class="stat-item">
+            <div class="stat-value" id="interviews-completed">0</div>
+            <div class="stat-label">Interviews</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="avg-score">--</div>
+            <div class="stat-label">Avg Score</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="time-practiced">0m</div>
+            <div class="stat-label">Practice Time</div>
           </div>
         </div>
+      </div>
+    </header>
 
-        <div id="chat-view" class="hidden">
-          <div id="chat-window" class="card"></div>
-          <form id="message-form">
-            <div id="message-input-wrapper">
-              <input type="text" id="message-input" placeholder="Type your answer..." autocomplete="off" required>
+    <main class="main-content">
+      
+      <div id="setup-screen">
+        <div class="setup-card glass-card">
+          <h1 class="setup-title">Master Your Next Interview</h1>
+          <p class="setup-subtitle">Practice with Alex, our AI interviewer, and get personalized feedback to improve your performance</p>
+          
+          <div class="analytics-panel">
+            <div class="analytics-card glass">
+              <div class="analytics-value" style="color: var(--success);">95%</div>
+              <div class="analytics-label">Success Rate</div>
             </div>
-            <div class="chat-actions">
-              <button type="button" id="hint-btn" class="action-btn" title="Ask for a hint">
-                <i class="fas fa-lightbulb"></i>
-              </button>
-              <button type="submit" id="send-button" class="action-btn" aria-label="Send Message">
-                <i class="fas fa-paper-plane"></i>
-              </button>
+            <div class="analytics-card glass">
+              <div class="analytics-value" style="color: var(--primary);">10k+</div>
+              <div class="analytics-label">Students Helped</div>
+            </div>
+            <div class="analytics-card glass">
+              <div class="analytics-value" style="color: var(--accent);">15min</div>
+              <div class="analytics-label">Avg Session</div>
+            </div>
+          </div>
+
+          <form id="setup-form" class="form-grid">
+            <div class="form-group">
+              <label for="specialization">Target Role</label>
+              <select id="specialization" class="form-input">
+                <option value="Finance">Finance & Investment Banking</option>
+                <option value="Audit">Audit & Risk Management</option>
+                <option value="Taxation">Taxation & Compliance</option>
+                <option value="FP&A">FP&A & Business Analytics</option>
+                <option value="Consulting">Management Consulting</option>
+                <option value="Technology">Technology & Fintech</option>
+                <option value="Marketing">Marketing & Brand Management</option>
+                <option value="Operations">Operations & Supply Chain</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="company-persona">Company Type</label>
+              <select id="company-persona" class="form-input">
+                <option value="a large multinational like Unilever">Large Multinational (Unilever, P&G)</option>
+                <option value="a top investment bank like Goldman Sachs">Investment Bank (Goldman Sachs, JPMorgan)</option>
+                <option value="a Big 4 audit firm">Big 4 Consulting (McKinsey, BCG, Bain)</option>
+                <option value="a fast-growing tech startup like Flipkart">Tech Unicorn (Flipkart, Paytm, Zomato)</option>
+                <option value="a prestigious consulting firm like McKinsey">Management Consulting</option>
+                <option value="a traditional bank like HDFC">Traditional Banking</option>
+                <option value="a government organization">Government & PSU</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="interview-style">Interview Style</label>
+              <select id="interview-style" class="form-input">
+                <option value="Standard">Standard Interview</option>
+                <option value="Technical Deep-Dive">Technical Deep-Dive</option>
+                <option value="Stress Test">High-Pressure Stress Test</option>
+                <option value="Case Study">Case Study Focus</option>
+                <option value="Behavioral">Behavioral Questions Only</option>
+                <option value="Mock Group Discussion">Group Discussion Simulation</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="difficulty-level">Difficulty Level</label>
+              <select id="difficulty-level" class="form-input">
+                <option value="Beginner">Beginner (Entry Level)</option>
+                <option value="Intermediate">Intermediate (2-5 years)</option>
+                <option value="Advanced">Advanced (5+ years)</option>
+                <option value="Expert">Expert (Leadership Level)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Upload Resume (Optional)</label>
+              <div class="file-upload-area" id="file-upload-area">
+                <input type="file" id="cv-upload" class="hidden" accept=".pdf,.txt,.doc,.docx">
+                <div class="upload-icon">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <div class="upload-text">
+                  <p><strong>Click to upload</strong> or drag and drop</p>
+                  <p>PDF, TXT, DOC up to 10MB</p>
+                </div>
+              </div>
+              <div id="file-info" class="file-info hidden"></div>
             </div>
           </form>
+
+          <button id="start-interview-btn" class="btn btn-primary">
+            <i class="fas fa-play mr-2"></i>
+            Start Interview Session
+          </button>
         </div>
+      </div>
 
-        <div id="feedback-report" class="card hidden"></div>
+      
+      <div id="chat-view" class="hidden">
+        <div class="chat-container glass-card">
+          <div class="chat-header">
+            <div class="interviewer-info">
+              <img src="/assistant_avatar.png" alt="Alex" class="interviewer-avatar">
+              <div class="interviewer-details">
+                <h3>Alex Johnson</h3>
+                <p class="interviewer-role">Senior Hiring Manager</p>
+              </div>
+            </div>
+            <div class="interview-progress">
+              <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+              </div>
+              <span id="progress-text">0/10</span>
+            </div>
+          </div>
 
+          <div class="chat-messages" id="chat-messages">
+            
+          </div>
+
+          <div class="chat-input-container">
+            <div class="quick-responses" id="quick-responses"></div>
+            <form id="message-form">
+              <div class="input-wrapper">
+                <div class="input-area">
+                  <textarea id="message-input" class="chat-input" placeholder="Type your response..." rows="1"></textarea>
+                  <div class="input-actions">
+                    <button type="button" id="voice-btn" class="action-btn" title="Voice Input">
+                      <i class="fas fa-microphone"></i>
+                    </button>
+                    <button type="button" id="hint-btn" class="action-btn" title="Get a hint">
+                      <i class="fas fa-lightbulb"></i>
+                    </button>
+                  </div>
+                </div>
+                <button type="submit" id="send-btn" class="send-btn" aria-label="Send Message">
+                  <i class="fas fa-paper-plane"></i>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      
+      <div id="feedback-report" class="hidden">
+        <div class="report-container">
+          
+        </div>
       </div>
     </main>
   </div>
 
-  <script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
-
-    const setupScreen = document.getElementById('setup-screen');
-    const startInterviewBtn = document.getElementById('start-interview-btn');
-    const specializationSelect = document.getElementById('specialization');
-    const companyPersonaSelect = document.getElementById('company-persona');
-    const interviewStyleSelect = document.getElementById('interview-style');
-    const cvUploadInput = document.getElementById('cv-upload');
-    const cvUploadLabelText = document.querySelector('.cv-upload-label span');
-    const cvFileNameEl = document.getElementById('cv-file-name');
-    
-    const chatView = document.getElementById('chat-view');
-    const chatWindow = document.getElementById('chat-window');
-    const messageForm = document.getElementById('message-form');
-    const messageInput = document.getElementById('message-input');
-    const sendButton = document.getElementById('send-button');
-    const hintButton = document.getElementById('hint-btn');
-    const feedbackReport = document.getElementById('feedback-report');
-
-    const WORKER_URL = 'https://interviewme.bhansalimanan55.workers.dev/';
-
-    let messages = [];
-    let isLoading = false;
-    let interviewEnded = false;
-    let cvText = '';
-    let specialization = 'Finance';
-    let companyPersona = 'a large multinational';
-    let interviewStyle = 'Standard';
-
-    startInterviewBtn.addEventListener('click', () => {
-      specialization = specializationSelect.value;
-      companyPersona = companyPersonaSelect.value;
-      interviewStyle = interviewStyleSelect.value;
-      setupScreen.classList.add('hidden');
-      chatView.classList.remove('hidden');
-      chatView.classList.add('card');
-      startInterview();
-    });
-
-    cvUploadInput.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-        cvFileNameEl.textContent = `Processing ${file.name}...`;
-        cvFileNameEl.className = 'text-center';
-        cvUploadLabelText.textContent = file.name;
-
-        try {
-            if (file.type === 'application/pdf') {
-                const reader = new FileReader();
-                reader.onload = async (event) => {
-                    const typedarray = new Uint8Array(event.target.result);
-                    const pdf = await pdfjsLib.getDocument(typedarray).promise;
-                    let textContent = '';
-                    for (let i = 1; i <= pdf.numPages; i++) {
-                        const page = await pdf.getPage(i);
-                        const text = await page.getTextContent();
-                        textContent += text.items.map(s => s.str).join(' ');
-                    }
-                    cvText = textContent;
-                    cvFileNameEl.textContent = `✅ CV processed successfully!`;
-                    cvFileNameEl.classList.add('success');
-                };
-                reader.readAsArrayBuffer(file);
-            } else if (file.type === 'text/plain') {
-                cvText = await file.text();
-                cvFileNameEl.textContent = `✅ CV processed successfully!`;
-                cvFileNameEl.classList.add('success');
-            } else {
-                alert('Unsupported file type. Please upload PDF or TXT.');
-                cvFileNameEl.textContent = '';
-                cvUploadLabelText.textContent = '(Optional) Upload CV for personalized questions';
-            }
-        } catch (error) {
-            console.error('Error processing file:', error);
-            cvFileNameEl.textContent = `❌ Error processing file.`;
-            cvFileNameEl.classList.add('error');
-            cvUploadLabelText.textContent = '(Optional) Upload CV for personalized questions';
-            cvText = '';
-        }
-    });
-
-    messageForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const userInput = messageInput.value.trim();
-      if (userInput && !isLoading) {
-        addMessage('user', userInput);
-        messageInput.value = '';
-        fetchAIResponse();
-      }
-    });
-
-    hintButton.addEventListener('click', () => {
-        if (!isLoading) {
-            addMessage('user', 'Can I get a hint?');
-            fetchAIResponse();
-        }
-    });
-
-    function startInterview() {
-      messages = [];
-      interviewEnded = false;
-      feedbackReport.innerHTML = '';
-      feedbackReport.classList.add('hidden');
-      chatView.classList.remove('hidden');
-      messageInput.disabled = false;
-      sendButton.disabled = false;
-      hintButton.disabled = false;
-      
-      let initialPrompt = "I'm ready to start the interview.";
-      if (cvText) {
-        initialPrompt = `(This is my CV content for your reference, please ask me 1-2 questions based on it during the interview: ###\n${cvText}\n###) I'm ready to start the interview.`;
-      }
-      addMessage('user', initialPrompt);
-      fetchAIResponse();
-    }
-
-    function addMessage(role, content) {
-      messages.push({ role, content });
-      renderMessages();
-      chatWindow.scrollTop = chatWindow.scrollHeight;
-    }
-
-    function renderMessages() {
-      const existingTypingIndicator = document.getElementById('typing-indicator');
-      if (existingTypingIndicator) {
-          existingTypingIndicator.remove();
-      }
-      
-      chatWindow.innerHTML = '';
-      messages.forEach(msg => {
-        if (msg.role === 'user' && msg.content.startsWith('(This is my CV content')) {
-            return; 
-        }
-
-        const messageElement = document.createElement('div');
-        messageElement.className = `message ${msg.role}`;
-        
-        const avatar = document.createElement('div');
-        avatar.className = `avatar ${msg.role}`;
-        avatar.innerHTML = `<img src="${msg.role === 'user' ? '/user_avatar.png' : '/assistant_avatar.png'}" alt="${msg.role} avatar">`;
-
-        const messageBubble = document.createElement('div');
-        messageBubble.className = 'message-bubble';
-
-        const messageContent = document.createElement('div');
-        messageContent.className = 'message-content';
-        messageContent.innerHTML = marked.parse(msg.content);
-
-        messageBubble.appendChild(messageContent);
-
-        if (msg.feedback) {
-            const feedbackEl = document.createElement('div');
-            feedbackEl.className = 'response-feedback';
-            feedbackEl.innerHTML = marked.parse(msg.feedback);
-            messageBubble.appendChild(feedbackEl);
-        }
-
-        messageElement.appendChild(avatar);
-        messageElement.appendChild(messageBubble);
-        chatWindow.appendChild(messageElement);
-      });
-
-      if (isLoading) {
-        showTypingIndicator();
-      }
-      chatWindow.scrollTop = chatWindow.scrollHeight;
-    }
-
-    function showTypingIndicator() {
-      const indicatorElement = document.createElement('div');
-      indicatorElement.id = 'typing-indicator';
-      indicatorElement.className = 'message assistant';
-      indicatorElement.innerHTML = `
-        <div class="avatar assistant"><img src="/assistant_avatar.png" alt="assistant avatar"></div>
-        <div class="message-content">
-          Alex is typing <span class="dots"><span></span><span></span><span></span></span>
-        </div>
-      `;
-      chatWindow.appendChild(indicatorElement);
-      chatWindow.scrollTop = chatWindow.scrollHeight;
-    }
-
-    async function fetchAIResponse() {
-      isLoading = true;
-      renderMessages();
-      sendButton.disabled = true;
-      hintButton.disabled = true;
-      messageInput.disabled = true;
-
-      try {
-        const response = await fetch(WORKER_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Specialization': specialization,
-            'X-Company-Persona': companyPersona,
-            'X-Interview-Style': interviewStyle
-          },
-          body: JSON.stringify({ messages })
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || `API Error: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-        if (data.ok && data.response) {
-          handleAIResponse(data.response);
-        } else {
-          throw new Error(data.error || 'Invalid response from server.');
-        }
-
-      } catch (error) {
-        addMessage('assistant', `Sorry, I encountered an error: ${error.message}. Please try again.`);
-      } finally {
-        isLoading = false;
-        if (!interviewEnded) {
-          sendButton.disabled = false;
-          hintButton.disabled = false;
-          messageInput.disabled = false;
-        }
-        renderMessages();
-      }
-    }
-
-    function handleAIResponse(text) {
-        const finalReportMarker = '<<<FINAL_REPORT>>>';
-        const responseFeedbackMarker = '<<<RESPONSE_FEEDBACK>>>';
-        let mainMessage, responseFeedback, finalReport;
-
-        if (text.includes(finalReportMarker)) {
-            interviewEnded = true;
-            const parts = text.split(finalReportMarker);
-            mainMessage = parts[0].trim();
-            finalReport = parts[1];
-        } else if (text.includes(responseFeedbackMarker)) {
-            const parts = text.split(responseFeedbackMarker);
-            mainMessage = parts[0].trim();
-            responseFeedback = parts[1].split('<<<END_RESPONSE_FEEDBACK>>>')[0].trim();
-        } else {
-            mainMessage = text.trim();
-        }
-
-        if (mainMessage) {
-            const newAIMessage = { role: 'assistant', content: mainMessage };
-            if (responseFeedback) {
-                newAIMessage.feedback = responseFeedback;
-            }
-            messages.push(newAIMessage);
-        }
-
-        if (finalReport) {
-            renderFinalReport(finalReport);
-            messageInput.disabled = true;
-            sendButton.disabled = true;
-            hintButton.disabled = true;
-            chatView.classList.add('hidden');
-        }
-    }
-
-    function renderFinalReport(reportText) {
-      const cleanReport = reportText.replace('<<<END_FINAL_REPORT>>>', '').trim();
-      const reportHtml = marked.parse(cleanReport);
-      
-      const overallScoreMatch = reportHtml.match(/<strong>Overall Performance Score:<\/strong> (\d+)/);
-      const score = overallScoreMatch ? overallScoreMatch[1] : 'N/A';
-      
-      const strengthsMatch = reportHtml.match(/<strong>Strengths:<\/strong>([\s\S]*?)<strong>Areas for Development:/);
-      const strengths = strengthsMatch ? strengthsMatch[1] : '<p>No specific strengths identified.</p>';
-
-      const areasMatch = reportHtml.match(/<strong>Areas for Development:<\/strong>([\s\S]*?)<strong>Actionable Next Steps:/);
-      const areas = areasMatch ? areasMatch[1] : '<p>No specific areas for development identified.</p>';
-      
-      const stepsMatch = reportHtml.match(/<strong>Actionable Next Steps:<\/strong>([\s\S]*)/);
-      const steps = stepsMatch ? stepsMatch[1] : '<p>No specific next steps provided.</p>';
-
-      let html = `<h2>Interview Complete: Final Report</h2>
-        <div class="report-grid">
-            <div id="overall-score-card" class="report-card">
-                <h3><i class="fas fa-chart-line"></i> Overall Performance</h3>
-                <p id="score-value">${score}<span style="font-size: 1.5rem;">/100</span></p>
-            </div>
-            <div class="report-card strengths">
-                <h3><i class="fas fa-thumbs-up"></i> Strengths</h3>
-                ${strengths}
-            </div>
-            <div class="report-card areas-for-development">
-                <h3><i class="fas fa-wrench"></i> Areas for Development</h3>
-                ${areas}
-            </div>
-            <div class="report-card next-steps">
-                <h3><i class="fas fa-shoe-prints"></i> Actionable Next Steps</h3>
-                ${steps}
-            </div>
-        </div>
-        <div id="restart-btn-container">
-            <button id="download-transcript-btn">Download Transcript</button>
-            <button id="restart-btn">Start New Interview</button>
-        </div>`;
-
-      feedbackReport.innerHTML = html;
-      feedbackReport.classList.remove('hidden');
-      chatView.classList.add('hidden');
-
-      document.getElementById('restart-btn').addEventListener('click', () => {
-        window.location.reload();
-      });
-      document.getElementById('download-transcript-btn').addEventListener('click', downloadTranscript);
-    }
-
-    function downloadTranscript() {
-        let transcript = `AI Interview Transcript\n`;
-        transcript += `Role: ${specialization}\nPersona: ${companyPersona}\nStyle: ${interviewStyle}\n\n`;
-        transcript += "================================\n\n";
-
-        messages.forEach(msg => {
-            if (msg.role === 'user' && msg.content.startsWith('(This is my CV content')) return;
-            const prefix = msg.role === 'user' ? 'You:' : 'Alex:';
-            const cleanContent = msg.content.replace(/<[^>]*>/g, '');
-            transcript += `${prefix}\n${cleanContent}\n\n`;
-            if (msg.feedback) {
-                const cleanFeedback = msg.feedback.replace(/<[^>]*>/g, '');
-                transcript += `--- Feedback on your answer ---\n${cleanFeedback}\n-----------------------------\n\n`;
-            }
-        });
-
-        const finalReportText = feedbackReport.innerText;
-        transcript += "\n\n================================\n";
-        transcript += finalReportText.replace('Start New Interview', '').replace('Download Transcript', '').trim();
-
-        const blob = new Blob([transcript], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'AI-Interview-Transcript.txt';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-  </script>
+  <script type="module" src="index.js"></script>
 </body>
 </html>
