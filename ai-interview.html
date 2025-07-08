@@ -3,105 +3,312 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Interview Practice - My Student Club</title>
+  <title>AI Interview Prep by My Student Club</title>
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
   <style>
     :root {
-      --primary-color: #4f46e5; --primary-dark: #4338ca; --primary-light: #eef2ff;
-      --secondary-color: #10b981; --secondary-dark: #059669;
-      --bg-color: #f4f7fc; --surface-color: #ffffff;
-      --text-primary: #1e293b; --text-secondary: #64748b;
-      --border-color: #e2e8f0;
+      --primary-color: #007BFF;
+      --primary-dark: #0056b3;
+      --primary-light: #e6f2ff;
+      --secondary-color: #17A2B8;
+      --secondary-dark: #107586;
+      --bg-color: #f7f9fc;
+      --surface-color: #ffffff;
+      --text-primary: #212529;
+      --text-secondary: #6c757d;
+      --border-color: #dee2e6;
+      --success-color: #28a745;
+      --error-color: #dc3545;
+      --shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
     }
-    html, body { height: 100%; margin: 0; font-family: 'Poppins', sans-serif; background-color: var(--bg-color); }
-    #app-container { display: flex; flex-direction: column; height: 100%; }
-    .main-content { flex-grow: 1; display: flex; justify-content: center; align-items: center; padding: 1rem; }
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
+    #app-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+    .app-header {
+      display: flex;
+      align-items: center;
+      padding: 0.75rem 2rem;
+      background-color: var(--surface-color);
+      box-shadow: var(--shadow);
+      z-index: 10;
+    }
+    .app-header .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .app-header .logo img { height: 40px; }
+    .app-header h1 { font-size: 1.25rem; font-weight: 600; color: var(--text-primary); }
+    .main-content {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem 1rem;
+      overflow-y: auto;
+    }
     #chat-container {
-      display: flex; flex-direction: column; width: 100%; height: 100%;
-      max-width: 900px; max-height: 95vh; background-color: var(--surface-color);
-      border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+      max-width: 900px;
+      background-color: transparent;
+      border-radius: 0;
+      box-shadow: none;
+      overflow: visible;
     }
-    #chat-window { flex-grow: 1; padding: 1.5rem; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; }
-    .message { display: flex; gap: 0.75rem; max-width: 90%; animation: fadeIn 0.3s ease-out; }
+    .card {
+      background-color: var(--surface-color);
+      border-radius: 16px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      animation: slideUpFadeIn 0.5s ease-out forwards;
+      width: 100%;
+    }
+    @keyframes slideUpFadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    #chat-window {
+      flex-grow: 1;
+      padding: 1.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      height: calc(85vh - 200px);
+    }
+    .message {
+      display: flex;
+      gap: 0.75rem;
+      max-width: 85%;
+      animation: fadeIn 0.3s ease-out;
+    }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .message.user { align-self: flex-end; flex-direction: row-reverse; }
-    .avatar {
-      width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center;
-      justify-content: center; font-weight: 600; color: white; flex-shrink: 0;
+    .avatar img {
+      width: 40px; height: 40px; border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
-    .avatar.assistant { background-color: var(--primary-color); }
-    .avatar.user { background-color: var(--secondary-color); }
-    .message-bubble { display: flex; flex-direction: column; gap: 0.5rem; }
-    .message-content { padding: 0.75rem 1rem; border-radius: 12px; line-height: 1.6; color: var(--text-primary); }
-    .message.assistant .message-content { background-color: var(--primary-light); border-top-left-radius: 0; }
-    .message.user .message-content { background-color: #dcfce7; border-top-right-radius: 0; }
+    .message-bubble { display: flex; flex-direction: column; gap: 0.5rem; width: 100%; }
+    .message-content {
+      padding: 0.85rem 1.25rem;
+      border-radius: 18px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background-color: var(--primary-light);
+      word-wrap: break-word;
+    }
+    .message.assistant .message-content {
+      background-color: #e9ecef;
+      border-top-left-radius: 4px;
+    }
+    .message.user .message-content {
+      background-color: var(--primary-color);
+      color: white;
+      border-top-right-radius: 4px;
+    }
+    .message-content > *:first-child { margin-top: 0; }
+    .message-content > *:last-child { margin-bottom: 0; }
+    .message-content code {
+      background: rgba(0,0,0,0.05);
+      padding: 0.2em 0.4em;
+      border-radius: 3px;
+    }
     .response-feedback {
-      font-size: 0.8rem; border-left: 3px solid var(--primary-color); padding: 0.5rem 0.75rem;
-      background-color: var(--primary-light); border-radius: 4px; margin-top: 0.5rem;
+      font-size: 0.85rem;
+      border-left: 3px solid var(--secondary-color);
+      padding: 0.75rem 1rem;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      margin-top: 0.75rem;
+      color: var(--text-secondary);
     }
-    .response-feedback strong { color: var(--primary-dark); }
-    #message-form { display: flex; padding: 1rem; border-top: 1px solid var(--border-color); background-color: #f9fafb; align-items: center; }
+    .response-feedback strong { color: var(--secondary-dark); }
+
+    #message-form {
+      display: flex;
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border-color);
+      background-color: #f8f9fa;
+      align-items: center;
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+    }
+    #message-input-wrapper {
+        flex-grow: 1;
+        position: relative;
+    }
     #message-input {
-      flex-grow: 1; padding: 0.75rem 1rem; border: 1px solid var(--border-color);
-      border-radius: 24px; font-size: 1rem; background-color: white; resize: none;
+      width: 100%;
+      padding: 0.85rem 3rem 0.85rem 1.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      font-size: 1rem;
+      background-color: white;
+      resize: none;
+      box-sizing: border-box;
+      transition: all 0.2s ease;
     }
-    #message-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
-    .chat-actions { display: flex; align-items: center; gap: 0.5rem; margin-left: 0.75rem; }
+    #message-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15); }
+    .chat-actions { display: flex; align-items: center; gap: 0.5rem; margin-left: 1rem; }
     .action-btn {
-      background-color: transparent; color: var(--text-secondary); border: none;
-      border-radius: 50%; width: 40px; height: 40px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; transition: background-color 0.2s;
+      background-color: #e9ecef; color: var(--text-secondary); border: none;
+      border-radius: 50%; width: 44px; height: 44px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; transition: all 0.2s;
     }
-    .action-btn:hover { background-color: #e5e7eb; }
+    .action-btn:hover { background-color: #dee2e6; }
     .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    #send-button { background-color: var(--primary-color); color: white; width: 40px; height: 40px; }
+    #send-button {
+      background-color: var(--primary-color); color: white;
+    }
     #send-button:hover { background-color: var(--primary-dark); }
-    #send-button:disabled { background-color: #a5b4fc; }
-    .typing-indicator { display: flex; align-items: center; gap: 5px; padding: 0.75rem 1rem; }
-    .typing-indicator span { width: 8px; height: 8px; background-color: #9ca3af; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
-    .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
-    .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+    #send-button:disabled { background-color: #a0cfff; }
+    
+    #typing-indicator {
+        display: flex; align-items: center; gap: 0.75rem; max-width: 85%;
+    }
+    #typing-indicator .message-content {
+        color: var(--text-secondary); font-style: italic;
+    }
+    .dots span {
+      display: inline-block; width: 6px; height: 6px; background-color: currentColor; border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+    .dots span:nth-child(1) { animation-delay: -0.32s; }
+    .dots span:nth-child(2) { animation-delay: -0.16s; }
     @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
-    #setup-screen { padding: 2rem; text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%; }
-    .form-group { margin-bottom: 1.5rem; text-align: left; }
-    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
-    .form-group select, .form-group input { width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 8px; }
-    #start-interview-btn { background-color: var(--secondary-color); color: white; padding: 0.75rem 1.5rem; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; }
-    #feedback-report { padding: 1.5rem; border-top: 1px solid var(--border-color); background-color: #f9fafb; overflow-y: auto; }
-    #feedback-report h2 { font-size: 1.5rem; font-weight: 600; color: var(--primary-color); margin-bottom: 1rem; text-align: center; }
-    #feedback-report h3 { font-size: 1.1rem; font-weight: 600; margin-top: 1.25rem; margin-bottom: 0.5rem; padding-bottom: 0.25rem; border-bottom: 1px solid var(--border-color); }
-    #feedback-report ul { list-style-type: disc; padding-left: 1.5rem; }
-    #feedback-report li { margin-bottom: 0.5rem; }
-    #restart-btn-container { text-align: center; padding: 1rem; display: flex; justify-content: center; gap: 1rem; }
-    #restart-btn, #download-transcript-btn { background-color: var(--primary-color); color: white; padding: 0.75rem 1.5rem; border-radius: 8px; border: none; cursor: pointer; }
+
+    #setup-screen { padding: 2.5rem; text-align: center; }
+    #setup-screen h1 { font-size: 1.8rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.5rem; }
+    #setup-screen p { color: var(--text-secondary); margin-bottom: 2rem; }
+    .form-group { margin-bottom: 1.25rem; text-align: left; }
+    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-primary); }
+    .form-group select, .form-group input {
+      width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color);
+      border-radius: 8px; background-color: #f8f9fa; transition: all 0.2s ease;
+      -webkit-appearance: none; -moz-appearance: none; appearance: none;
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+      background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em;
+    }
+    .form-group select:focus, .form-group input:focus {
+        outline: none; border-color: var(--primary-color); background-color: var(--surface-color);
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+    }
+    #start-interview-btn {
+      background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+      color: white; padding: 0.85rem 2rem; border-radius: 8px; border: none; cursor: pointer;
+      font-weight: 600; font-size: 1rem; width: 100%; transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
+    }
+    #start-interview-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 123, 255, 0.3); }
+
+    #feedback-report { padding: 2.5rem; background-color: var(--surface-color); overflow-y: auto; }
+    #feedback-report h2 {
+      font-size: 1.8rem; font-weight: 700; color: var(--text-primary);
+      margin-bottom: 2rem; text-align: center;
+    }
+    .report-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    .report-card {
+      background-color: #f8f9fa; padding: 1.5rem; border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+    .report-card h3 {
+      font-size: 1.2rem; font-weight: 600; margin-top: 0; margin-bottom: 1rem;
+      display: flex; align-items: center; gap: 0.5rem;
+      color: var(--primary-dark);
+    }
+    .report-card ul { list-style-type: none; padding-left: 0.5rem; }
+    .report-card li { margin-bottom: 0.75rem; position: relative; padding-left: 1.25rem; }
+    .report-card li::before {
+        content: '✓'; color: var(--success-color); position: absolute; left: 0; font-weight: bold;
+    }
+    .report-card.areas-for-development li::before {
+        content: '→'; color: var(--primary-color);
+    }
+    #overall-score-card {
+      text-align: center; background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+      color: white;
+    }
+    #overall-score-card h3 { color: white; }
+    #score-value { font-size: 3rem; font-weight: 700; }
+
+    #restart-btn-container { text-align: center; padding: 2rem 0 0; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;}
+    #restart-btn, #download-transcript-btn {
+      background-color: var(--primary-color); color: white; padding: 0.75rem 1.5rem;
+      border-radius: 8px; border: none; cursor: pointer; font-weight: 500;
+      transition: background-color 0.2s ease;
+    }
+    #restart-btn:hover, #download-transcript-btn:hover { background-color: var(--primary-dark); }
+    #download-transcript-btn { background-color: var(--text-secondary); }
+    #download-transcript-btn:hover { background-color: var(--text-primary); }
+
     .hidden { display: none !important; }
     .cv-upload-label {
-        border: 2px dashed var(--border-color); border-radius: 8px; padding: 1rem; text-align: center;
+        border: 2px dashed var(--border-color); border-radius: 8px; padding: 1.5rem; text-align: center;
         cursor: pointer; transition: all 0.2s; color: var(--text-secondary);
+        background-color: #f8f9fa;
     }
-    .cv-upload-label:hover { border-color: var(--primary-color); background-color: var(--primary-light); }
-    #cv-file-name { font-size: 0.8rem; margin-top: 0.5rem; color: var(--secondary-dark); }
+    .cv-upload-label:hover {
+      border-color: var(--primary-color); background-color: var(--primary-light);
+      color: var(--primary-dark);
+    }
+    #cv-file-name { font-size: 0.9rem; margin-top: 0.75rem; font-weight: 500; }
+    #cv-file-name.success { color: var(--success-color); }
+    #cv-file-name.error { color: var(--error-color); }
+
     @media (max-width: 768px) {
       body { height: auto; min-height: 100vh; }
-      .main-content { padding: 0; }
-      #chat-container { max-height: none; height: 100vh; border-radius: 0; margin: 0; }
-      #chat-window { padding: 1rem; }
+      .app-header { padding: 0.75rem 1rem; }
+      .app-header h1 { font-size: 1.1rem; }
+      .main-content { padding: 1rem 0; }
+      #chat-container { border-radius: 0; margin: 0; box-shadow: none; }
+      .card { border-radius: 0; box-shadow: none; }
+      #chat-window { padding: 1rem; height: calc(100vh - 145px); }
       .message { max-width: 95%; }
+      #message-form { padding: 0.75rem; }
+      #message-input { padding: 0.75rem 2.5rem 0.75rem 1rem; }
+      #setup-screen, #feedback-report { padding: 1.5rem; }
+      .report-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div id="app-container">
+    <header class="app-header">
+      <div class="logo">
+        <img src="/logo.png" alt="Logo">
+        <h1>AI Interview Prep</h1>
+      </div>
+    </header>
     <main class="main-content">
       <div id="chat-container">
-        <div id="setup-screen">
-          <h1 class="text-2xl font-bold mb-2">AI Interview Practice</h1>
-          <p class="text-gray-600 mb-6">Prepare for your next interview by practicing with our AI interviewer, 'Alex'.</p>
-          <div class="max-w-md mx-auto">
+        <div id="setup-screen" class="card">
+          <h1>AI Interview Practice</h1>
+          <p>Prepare for your next interview by practicing with our AI interviewer, 'Alex'.</p>
+          <div class="max-w-md mx-auto" style="max-width: 450px;">
             <div class="form-group">
               <label for="specialization">Select Your Target Role:</label>
               <select id="specialization">
@@ -132,7 +339,7 @@
             <div class="form-group">
               <label for="cv-upload" class="cv-upload-label">
                 <i class="fas fa-file-upload mr-2"></i>
-                (Optional) Upload CV for personalized questions
+                <span>(Optional) Upload CV for personalized questions</span>
                 <input type="file" id="cv-upload" class="hidden" accept=".pdf,.txt">
               </label>
               <p id="cv-file-name" class="text-center"></p>
@@ -141,21 +348,25 @@
           </div>
         </div>
 
-        <div id="chat-window" class="hidden"></div>
+        <div id="chat-view" class="hidden">
+          <div id="chat-window" class="card"></div>
+          <form id="message-form">
+            <div id="message-input-wrapper">
+              <input type="text" id="message-input" placeholder="Type your answer..." autocomplete="off" required>
+            </div>
+            <div class="chat-actions">
+              <button type="button" id="hint-btn" class="action-btn" title="Ask for a hint">
+                <i class="fas fa-lightbulb"></i>
+              </button>
+              <button type="submit" id="send-button" class="action-btn" aria-label="Send Message">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+          </form>
+        </div>
 
-        <div id="feedback-report" class="hidden"></div>
+        <div id="feedback-report" class="card hidden"></div>
 
-        <form id="message-form" class="hidden">
-          <input type="text" id="message-input" placeholder="Type your answer..." autocomplete="off" required>
-          <div class="chat-actions">
-            <button type="button" id="hint-btn" class="action-btn" title="Ask for a hint">
-              <i class="fas fa-lightbulb"></i>
-            </button>
-            <button type="submit" id="send-button" aria-label="Send Message">
-              <i class="fas fa-paper-plane"></i>
-            </button>
-          </div>
-        </form>
       </div>
     </main>
   </div>
@@ -169,8 +380,10 @@
     const companyPersonaSelect = document.getElementById('company-persona');
     const interviewStyleSelect = document.getElementById('interview-style');
     const cvUploadInput = document.getElementById('cv-upload');
+    const cvUploadLabelText = document.querySelector('.cv-upload-label span');
     const cvFileNameEl = document.getElementById('cv-file-name');
-    const chatContainer = document.getElementById('chat-container');
+    
+    const chatView = document.getElementById('chat-view');
     const chatWindow = document.getElementById('chat-window');
     const messageForm = document.getElementById('message-form');
     const messageInput = document.getElementById('message-input');
@@ -193,8 +406,8 @@
       companyPersona = companyPersonaSelect.value;
       interviewStyle = interviewStyleSelect.value;
       setupScreen.classList.add('hidden');
-      chatWindow.classList.remove('hidden');
-      messageForm.classList.remove('hidden');
+      chatView.classList.remove('hidden');
+      chatView.classList.add('card');
       startInterview();
     });
 
@@ -202,6 +415,9 @@
         const file = e.target.files[0];
         if (!file) return;
         cvFileNameEl.textContent = `Processing ${file.name}...`;
+        cvFileNameEl.className = 'text-center';
+        cvUploadLabelText.textContent = file.name;
+
         try {
             if (file.type === 'application/pdf') {
                 const reader = new FileReader();
@@ -215,19 +431,24 @@
                         textContent += text.items.map(s => s.str).join(' ');
                     }
                     cvText = textContent;
-                    cvFileNameEl.textContent = `✅ ${file.name} uploaded.`;
+                    cvFileNameEl.textContent = `✅ CV processed successfully!`;
+                    cvFileNameEl.classList.add('success');
                 };
                 reader.readAsArrayBuffer(file);
             } else if (file.type === 'text/plain') {
                 cvText = await file.text();
-                cvFileNameEl.textContent = `✅ ${file.name} uploaded.`;
+                cvFileNameEl.textContent = `✅ CV processed successfully!`;
+                cvFileNameEl.classList.add('success');
             } else {
                 alert('Unsupported file type. Please upload PDF or TXT.');
                 cvFileNameEl.textContent = '';
+                cvUploadLabelText.textContent = '(Optional) Upload CV for personalized questions';
             }
         } catch (error) {
             console.error('Error processing file:', error);
             cvFileNameEl.textContent = `❌ Error processing file.`;
+            cvFileNameEl.classList.add('error');
+            cvUploadLabelText.textContent = '(Optional) Upload CV for personalized questions';
             cvText = '';
         }
     });
@@ -254,6 +475,7 @@
       interviewEnded = false;
       feedbackReport.innerHTML = '';
       feedbackReport.classList.add('hidden');
+      chatView.classList.remove('hidden');
       messageInput.disabled = false;
       sendButton.disabled = false;
       hintButton.disabled = false;
@@ -273,6 +495,11 @@
     }
 
     function renderMessages() {
+      const existingTypingIndicator = document.getElementById('typing-indicator');
+      if (existingTypingIndicator) {
+          existingTypingIndicator.remove();
+      }
+      
       chatWindow.innerHTML = '';
       messages.forEach(msg => {
         if (msg.role === 'user' && msg.content.startsWith('(This is my CV content')) {
@@ -284,7 +511,7 @@
         
         const avatar = document.createElement('div');
         avatar.className = `avatar ${msg.role}`;
-        avatar.innerHTML = msg.role === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+        avatar.innerHTML = `<img src="${msg.role === 'user' ? '/user_avatar.png' : '/assistant_avatar.png'}" alt="${msg.role} avatar">`;
 
         const messageBubble = document.createElement('div');
         messageBubble.className = 'message-bubble';
@@ -310,17 +537,17 @@
       if (isLoading) {
         showTypingIndicator();
       }
+      chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 
     function showTypingIndicator() {
       const indicatorElement = document.createElement('div');
+      indicatorElement.id = 'typing-indicator';
       indicatorElement.className = 'message assistant';
       indicatorElement.innerHTML = `
-        <div class="avatar assistant"><i class="fas fa-robot"></i></div>
+        <div class="avatar assistant"><img src="/assistant_avatar.png" alt="assistant avatar"></div>
         <div class="message-content">
-          <div class="typing-indicator">
-            <span></span><span></span><span></span>
-          </div>
+          Alex is typing <span class="dots"><span></span><span></span><span></span></span>
         </div>
       `;
       chatWindow.appendChild(indicatorElement);
@@ -332,6 +559,7 @@
       renderMessages();
       sendButton.disabled = true;
       hintButton.disabled = true;
+      messageInput.disabled = true;
 
       try {
         const response = await fetch(WORKER_URL, {
@@ -364,6 +592,7 @@
         if (!interviewEnded) {
           sendButton.disabled = false;
           hintButton.disabled = false;
+          messageInput.disabled = false;
         }
         renderMessages();
       }
@@ -400,22 +629,53 @@
             messageInput.disabled = true;
             sendButton.disabled = true;
             hintButton.disabled = true;
-            messageForm.classList.add('hidden');
+            chatView.classList.add('hidden');
         }
     }
 
     function renderFinalReport(reportText) {
       const cleanReport = reportText.replace('<<<END_FINAL_REPORT>>>', '').trim();
-      let html = `<h2>Interview Complete: Final Report</h2>`;
-      html += marked.parse(cleanReport);
-      html += `<div id="restart-btn-container">
-                 <button id="download-transcript-btn">Download Transcript</button>
-                 <button id="restart-btn">Start New Interview</button>
-               </div>`;
+      const reportHtml = marked.parse(cleanReport);
+      
+      const overallScoreMatch = reportHtml.match(/<strong>Overall Performance Score:<\/strong> (\d+)/);
+      const score = overallScoreMatch ? overallScoreMatch[1] : 'N/A';
+      
+      const strengthsMatch = reportHtml.match(/<strong>Strengths:<\/strong>([\s\S]*?)<strong>Areas for Development:/);
+      const strengths = strengthsMatch ? strengthsMatch[1] : '<p>No specific strengths identified.</p>';
+
+      const areasMatch = reportHtml.match(/<strong>Areas for Development:<\/strong>([\s\S]*?)<strong>Actionable Next Steps:/);
+      const areas = areasMatch ? areasMatch[1] : '<p>No specific areas for development identified.</p>';
+      
+      const stepsMatch = reportHtml.match(/<strong>Actionable Next Steps:<\/strong>([\s\S]*)/);
+      const steps = stepsMatch ? stepsMatch[1] : '<p>No specific next steps provided.</p>';
+
+      let html = `<h2>Interview Complete: Final Report</h2>
+        <div class="report-grid">
+            <div id="overall-score-card" class="report-card">
+                <h3><i class="fas fa-chart-line"></i> Overall Performance</h3>
+                <p id="score-value">${score}<span style="font-size: 1.5rem;">/100</span></p>
+            </div>
+            <div class="report-card strengths">
+                <h3><i class="fas fa-thumbs-up"></i> Strengths</h3>
+                ${strengths}
+            </div>
+            <div class="report-card areas-for-development">
+                <h3><i class="fas fa-wrench"></i> Areas for Development</h3>
+                ${areas}
+            </div>
+            <div class="report-card next-steps">
+                <h3><i class="fas fa-shoe-prints"></i> Actionable Next Steps</h3>
+                ${steps}
+            </div>
+        </div>
+        <div id="restart-btn-container">
+            <button id="download-transcript-btn">Download Transcript</button>
+            <button id="restart-btn">Start New Interview</button>
+        </div>`;
 
       feedbackReport.innerHTML = html;
       feedbackReport.classList.remove('hidden');
-      chatWindow.classList.add('hidden');
+      chatView.classList.add('hidden');
 
       document.getElementById('restart-btn').addEventListener('click', () => {
         window.location.reload();
