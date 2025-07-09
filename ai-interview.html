@@ -334,8 +334,14 @@
       border: 1px solid rgba(16, 185, 129, 0.3);
       border-radius: 8px;
       color: var(--success);
+      font-weight: 500;
     }
-
+    
+    .file-info.error {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: var(--error);
+    }
     
     .btn {
       padding: 1rem 2rem;
@@ -382,7 +388,7 @@
     
     #chat-view {
       display: grid;
-      grid-template-rows: 1fr auto;
+      grid-template-rows: auto 1fr auto; 
       height: calc(100vh - 140px);
       gap: 1rem;
     }
@@ -486,6 +492,7 @@
       border-radius: 50%;
       flex-shrink: 0;
       box-shadow: var(--shadow);
+      align-self: flex-end;
     }
 
     .message-content {
@@ -669,6 +676,10 @@
       align-items: center;
       gap: 1rem;
       padding: 1rem 0;
+    }
+    
+    .typing-indicator .message-avatar {
+        align-self: center;
     }
 
     .typing-dots {
@@ -1088,14 +1099,14 @@
     const interviewStyleSelect = document.getElementById('interview-style');
     const difficultyLevelSelect = document.getElementById('difficulty-level');
     const cvUploadInput = document.getElementById('cv-upload');
-    const cvUploadLabelText = document.querySelector('.cv-upload-label span');
-    const cvFileNameEl = document.getElementById('cv-file-name');
+    const fileUploadArea = document.getElementById('file-upload-area');
+    const fileInfoEl = document.getElementById('file-info');
     
     const chatView = document.getElementById('chat-view');
-    const chatWindow = document.getElementById('chat-window');
+    const chatMessages = document.getElementById('chat-messages');
     const messageForm = document.getElementById('message-form');
     const messageInput = document.getElementById('message-input');
-    const sendButton = document.getElementById('send-button');
+    const sendButton = document.getElementById('send-btn');
     const hintButton = document.getElementById('hint-btn');
     const feedbackReport = document.getElementById('feedback-report');
 
@@ -1117,16 +1128,17 @@
       difficultyLevel = difficultyLevelSelect.value;
       setupScreen.classList.add('hidden');
       chatView.classList.remove('hidden');
-      chatView.classList.add('card');
       startInterview();
     });
+    
+    fileUploadArea.addEventListener('click', () => cvUploadInput.click());
 
     cvUploadInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-        cvFileNameEl.textContent = `Processing ${file.name}...`;
-        cvFileNameEl.className = 'text-center';
-        cvUploadLabelText.textContent = file.name;
+
+        fileInfoEl.textContent = `Processing ${file.name}...`;
+        fileInfoEl.classList.remove('hidden', 'error');
 
         try {
             if (file.type === 'application/pdf') {
@@ -1141,24 +1153,22 @@
                         textContent += text.items.map(s => s.str).join(' ');
                     }
                     cvText = textContent;
-                    cvFileNameEl.textContent = `✅ CV processed successfully!`;
-                    cvFileNameEl.classList.add('success');
+                    fileInfoEl.textContent = `✅ ${file.name} processed successfully!`;
                 };
                 reader.readAsArrayBuffer(file);
             } else if (file.type === 'text/plain') {
                 cvText = await file.text();
-                cvFileNameEl.textContent = `✅ CV processed successfully!`;
-                cvFileNameEl.classList.add('success');
+                fileInfoEl.textContent = `✅ ${file.name} processed successfully!`;
             } else {
                 alert('Unsupported file type. Please upload PDF or TXT.');
-                cvFileNameEl.textContent = '';
-                cvUploadLabelText.textContent = '(Optional) Upload CV for personalized questions';
+                fileInfoEl.textContent = '';
+                fileInfoEl.classList.add('hidden');
+                cvUploadInput.value = '';
             }
         } catch (error) {
             console.error('Error processing file:', error);
-            cvFileNameEl.textContent = `❌ Error processing file.`;
-            cvFileNameEl.classList.add('error');
-            cvUploadLabelText.textContent = '(Optional) Upload CV for personalized questions';
+            fileInfoEl.textContent = `❌ Error processing file. Please try again.`;
+            fileInfoEl.classList.add('error');
             cvText = '';
         }
     });
@@ -1201,7 +1211,7 @@
     function addMessage(role, content) {
       messages.push({ role, content });
       renderMessages();
-      chatWindow.scrollTop = chatWindow.scrollHeight;
+      chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     function renderMessages() {
@@ -1210,7 +1220,7 @@
           existingTypingIndicator.remove();
       }
       
-      chatWindow.innerHTML = '';
+      chatMessages.innerHTML = '';
       messages.forEach(msg => {
         if (msg.role === 'user' && msg.content.startsWith('(This is my CV content')) {
             return; 
@@ -1219,49 +1229,49 @@
         const messageElement = document.createElement('div');
         messageElement.className = `message ${msg.role}`;
         
-        const avatar = document.createElement('div');
-        avatar.className = `avatar ${msg.role}`;
-        avatar.innerHTML = `<img src="${msg.role === 'user' ? '/user_avatar.png' : '/assistant_avatar.png'}" alt="${msg.role} avatar">`;
+        const avatar = document.createElement('img');
+        avatar.className = `message-avatar`;
+        avatar.src = msg.role === 'user' ? '/user_avatar.png' : '/assistant_avatar.png';
+        avatar.alt = `${msg.role} avatar`;
 
-        const messageBubble = document.createElement('div');
-        messageBubble.className = 'message-bubble';
-
-        const messageContent = document.createElement('div');
-        messageContent.className = 'message-content';
-        messageContent.innerHTML = marked.parse(msg.content);
-
-        messageBubble.appendChild(messageContent);
+        const messageContentWrapper = document.createElement('div');
+        messageContentWrapper.className = 'message-content';
+        messageContentWrapper.innerHTML = marked.parse(msg.content);
 
         if (msg.feedback) {
             const feedbackEl = document.createElement('div');
-            feedbackEl.className = 'response-feedback';
+            feedbackEl.className = 'message-feedback';
             feedbackEl.innerHTML = marked.parse(msg.feedback);
-            messageBubble.appendChild(feedbackEl);
+            messageContentWrapper.appendChild(feedbackEl);
         }
 
         messageElement.appendChild(avatar);
-        messageElement.appendChild(messageBubble);
-        chatWindow.appendChild(messageElement);
+        messageElement.appendChild(messageContentWrapper);
+        chatMessages.appendChild(messageElement);
       });
 
       if (isLoading) {
         showTypingIndicator();
       }
-      chatWindow.scrollTop = chatWindow.scrollHeight;
+      chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     function showTypingIndicator() {
       const indicatorElement = document.createElement('div');
       indicatorElement.id = 'typing-indicator';
-      indicatorElement.className = 'message assistant';
+      indicatorElement.className = 'message assistant typing-indicator';
       indicatorElement.innerHTML = `
-        <div class="avatar assistant"><img src="/assistant_avatar.png" alt="assistant avatar"></div>
+        <img src="/assistant_avatar.png" alt="assistant avatar" class="message-avatar">
         <div class="message-content">
-          Alex is typing <span class="dots"><span></span><span></span><span></span></span>
+          <div class="typing-dots">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+          </div>
         </div>
       `;
-      chatWindow.appendChild(indicatorElement);
-      chatWindow.scrollTop = chatWindow.scrollHeight;
+      chatMessages.appendChild(indicatorElement);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     async function fetchAIResponse() {
@@ -1347,7 +1357,7 @@
       const cleanReport = reportText.replace('<<<END_FINAL_REPORT>>>', '').trim();
       const reportHtml = marked.parse(cleanReport);
       
-      const overallScoreMatch = reportHtml.match(/<strong>Overall Performance Score:<\/strong> (\d+)/);
+      const overallScoreMatch = reportHtml.match(/<strong>Overall Performance Score:<\/strong>\s*(\d+)/);
       const score = overallScoreMatch ? overallScoreMatch[1] : 'N/A';
       
       const strengthsMatch = reportHtml.match(/<strong>Strengths:<\/strong>([\s\S]*?)<strong>Areas for Development:/);
@@ -1359,28 +1369,32 @@
       const stepsMatch = reportHtml.match(/<strong>Actionable Next Steps:<\/strong>([\s\S]*)/);
       const steps = stepsMatch ? stepsMatch[1] : '<p>No specific next steps provided.</p>';
 
-      let html = `<h2>Interview Complete: Final Report</h2>
+      let html = `<div class="report-header">
+          <h2 class="report-title">Interview Complete: Final Report</h2>
+        </div>
         <div class="report-grid">
-            <div id="overall-score-card" class="report-card">
+            <div class="report-card glass-card">
                 <h3><i class="fas fa-chart-line"></i> Overall Performance</h3>
-                <p id="score-value">${score}<span style="font-size: 1.5rem;">/100</span></p>
+                <div class="score-display">
+                  <div class="score-value">${score}<span style="font-size: 1.5rem; color: var(--text-muted);">/100</span></div>
+                </div>
             </div>
-            <div class="report-card strengths">
+            <div class="report-card glass-card">
                 <h3><i class="fas fa-thumbs-up"></i> Strengths</h3>
                 ${strengths}
             </div>
-            <div class="report-card areas-for-development">
+            <div class="report-card glass-card">
                 <h3><i class="fas fa-wrench"></i> Areas for Development</h3>
                 ${areas}
             </div>
-            <div class="report-card next-steps">
+            <div class="report-card glass-card">
                 <h3><i class="fas fa-shoe-prints"></i> Actionable Next Steps</h3>
                 ${steps}
             </div>
         </div>
-        <div id="restart-btn-container">
-            <button id="download-transcript-btn">Download Transcript</button>
-            <button id="restart-btn">Start New Interview</button>
+        <div style="text-align: center; margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+            <button id="download-transcript-btn" class="btn">Download Transcript</button>
+            <button id="restart-btn" class="btn btn-primary">Start New Interview</button>
         </div>`;
 
       feedbackReport.innerHTML = html;
