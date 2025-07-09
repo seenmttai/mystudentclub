@@ -7,8 +7,7 @@
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%23667eea' d='M20 80 V 20 H 40 V 40 H 70 V 20 H 90 V 80 H 70 V 60 H 40 V 80 Z' /%3E%3C/svg%3E">
   <style>
     :root {
       --primary: #667eea;
@@ -353,6 +352,10 @@
       transition: var(--transition);
       position: relative;
       overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
     }
 
     .btn-primary {
@@ -493,6 +496,11 @@
       flex-shrink: 0;
       box-shadow: var(--shadow);
       align-self: flex-end;
+      overflow: hidden;
+    }
+    .message-avatar svg {
+        width: 100%;
+        height: 100%;
     }
 
     .message-content {
@@ -637,6 +645,7 @@
       align-items: center;
       justify-content: center;
       transition: var(--transition);
+      font-size: 1.1rem;
     }
 
     .action-btn:hover {
@@ -657,6 +666,7 @@
       justify-content: center;
       transition: var(--transition);
       box-shadow: var(--shadow);
+      font-size: 1.1rem;
     }
 
     .send-btn:hover {
@@ -800,6 +810,9 @@
       font-weight: 700;
       margin-bottom: 1.5rem;
     }
+    .report-card h3 svg {
+      flex-shrink: 0;
+    }
 
     .score-display {
       text-align: center;
@@ -917,7 +930,7 @@
     <header class="app-header">
       <div class="header-content">
         <div class="logo">
-          <img src="/logo.png" alt="AI Interview Prep Logo">
+          <img src="https://mystudentclub.com/assets/logo.png" alt="AI Interview Prep Logo">
           <h1>AI Interview Prep</h1>
         </div>
         <div class="header-stats">
@@ -943,21 +956,6 @@
         <div class="setup-card glass-card">
           <h1 class="setup-title">Master Your Next Interview</h1>
           <p class="setup-subtitle">Practice with Alex, our AI interviewer, and get personalized feedback to improve your performance</p>
-          
-          <div class="analytics-panel">
-            <div class="analytics-card glass">
-              <div class="analytics-value" style="color: var(--success);">95%</div>
-              <div class="analytics-label">Success Rate</div>
-            </div>
-            <div class="analytics-card glass">
-              <div class="analytics-value" style="color: var(--primary);">10k+</div>
-              <div class="analytics-label">Students Helped</div>
-            </div>
-            <div class="analytics-card glass">
-              <div class="analytics-value" style="color: var(--accent);">15min</div>
-              <div class="analytics-label">Avg Session</div>
-            </div>
-          </div>
 
           <form class="form-grid">
             <div class="form-group">
@@ -1014,7 +1012,7 @@
               <div class="file-upload-area" id="file-upload-area">
                 <input type="file" id="cv-upload" class="hidden" accept=".pdf,.txt,.doc,.docx">
                 <div class="upload-icon">
-                  <i class="fas fa-cloud-upload-alt"></i>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="2.5em" height="2.5em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                 </div>
                 <div class="upload-text">
                   <p><strong>Click to upload</strong> or drag and drop</p>
@@ -1026,7 +1024,7 @@
           </form>
 
           <button id="start-interview-btn" class="btn btn-primary">
-            <i class="fas fa-play mr-2"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
             Start Interview Session
           </button>
         </div>
@@ -1037,7 +1035,7 @@
         <div class="chat-container glass-card">
           <div class="chat-header">
             <div class="interviewer-info">
-              <img src="/assistant_avatar.png" alt="Alex" class="interviewer-avatar">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" class="interviewer-avatar"><g><circle cx="30" cy="30" r="28" fill="var(--bg-secondary)"/><circle cx="22" cy="26" r="4" fill="var(--primary)"/><circle cx="38" cy="26" r="4" fill="var(--primary)"/><path d="M22 38 Q 30 42 38 38" stroke="var(--primary)" stroke-width="2.5" fill="none" stroke-linecap="round"/></g></svg>
               <div class="interviewer-details">
                 <h3>Alex Johnson</h3>
                 <p class="interviewer-role">Senior Hiring Manager</p>
@@ -1052,7 +1050,6 @@
           </div>
 
           <div class="chat-messages" id="chat-messages">
-            
           </div>
 
           <div class="chat-input-container">
@@ -1062,15 +1059,15 @@
                   <textarea id="message-input" class="chat-input" placeholder="Type your response..." rows="1"></textarea>
                   <div class="input-actions">
                     <button type="button" id="voice-btn" class="action-btn" title="Voice Input">
-                      <i class="fas fa-microphone"></i>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"/></svg>
                     </button>
                     <button type="button" id="hint-btn" class="action-btn" title="Get a hint">
-                      <i class="fas fa-lightbulb"></i>
+                      <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
                     </button>
                   </div>
                 </div>
                 <button type="submit" id="send-btn" class="send-btn" aria-label="Send Message">
-                  <i class="fas fa-paper-plane"></i>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
               </div>
             </form>
@@ -1083,7 +1080,6 @@
       
       <div id="feedback-report" class="hidden">
         <div class="report-container">
-          
         </div>
       </div>
     </main>
@@ -1111,6 +1107,9 @@
     const feedbackReport = document.getElementById('feedback-report');
 
     const WORKER_URL = 'https://interviewme.bhansalimanan55.workers.dev/';
+
+    const USER_AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="white"><circle cx="12" cy="12" r="12" fill="rgba(255,255,255,0.2)"/><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></g></svg>`;
+    const ASSISTANT_AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60"><g><circle cx="30" cy="30" r="28" fill="var(--bg-secondary)"/><circle cx="22" cy="26" r="4" fill="var(--primary)"/><circle cx="38" cy="26" r="4" fill="var(--primary)"/><path d="M22 38 Q 30 42 38 38" stroke="var(--primary)" stroke-width="2.5" fill="none" stroke-linecap="round"/></g></svg>`;
 
     let messages = [];
     let isLoading = false;
@@ -1229,10 +1228,9 @@
         const messageElement = document.createElement('div');
         messageElement.className = `message ${msg.role}`;
         
-        const avatar = document.createElement('img');
+        const avatar = document.createElement('div');
         avatar.className = `message-avatar`;
-        avatar.src = msg.role === 'user' ? '/user_avatar.png' : '/assistant_avatar.png';
-        avatar.alt = `${msg.role} avatar`;
+        avatar.innerHTML = msg.role === 'user' ? USER_AVATAR_SVG : ASSISTANT_AVATAR_SVG;
 
         const messageContentWrapper = document.createElement('div');
         messageContentWrapper.className = 'message-content';
@@ -1261,7 +1259,7 @@
       indicatorElement.id = 'typing-indicator';
       indicatorElement.className = 'message assistant typing-indicator';
       indicatorElement.innerHTML = `
-        <img src="/assistant_avatar.png" alt="assistant avatar" class="message-avatar">
+        <div class="message-avatar">${ASSISTANT_AVATAR_SVG}</div>
         <div class="message-content">
           <div class="typing-dots">
             <div class="typing-dot"></div>
@@ -1374,21 +1372,21 @@
         </div>
         <div class="report-grid">
             <div class="report-card glass-card">
-                <h3><i class="fas fa-chart-line"></i> Overall Performance</h3>
+                <h3><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg> Overall Performance</h3>
                 <div class="score-display">
                   <div class="score-value">${score}<span style="font-size: 1.5rem; color: var(--text-muted);">/100</span></div>
                 </div>
             </div>
             <div class="report-card glass-card">
-                <h3><i class="fas fa-thumbs-up"></i> Strengths</h3>
+                <h3><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg> Strengths</h3>
                 ${strengths}
             </div>
             <div class="report-card glass-card">
-                <h3><i class="fas fa-wrench"></i> Areas for Development</h3>
+                <h3><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6.3l-6.3-6.3L1.4 1.4 6.3 9 5 10.4l-1.3-1.3c-1.1 2.4-.8 5.5 1.3 7.4 1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l1.4-1.4c.4-.4.4-1 0-1.4z"/></svg> Areas for Development</h3>
                 ${areas}
             </div>
             <div class="report-card glass-card">
-                <h3><i class="fas fa-shoe-prints"></i> Actionable Next Steps</h3>
+                <h3><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor"><path d="M12.25 21.44c-.22 0-.44-.06-.63-.19l-3-1.8c-.48-.29-.63-.91-.35-1.38.29-.48.91-.63 1.38-.35l2.85 1.71 6.88-6.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-7.58 7.58c-.19.19-.44.29-.7.29zm-8.8-3.47c-.29-.48-.14-1.09.35-1.38l8.5-5.1c.22-.13.48-.16.71-.08l2.92 1.03 2.15-2.15c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-2.85 2.85-3.62-1.28-7.9 4.74c-.2.11-.42.16-.63.16-.29 0-.58-.13-.77-.38z"/></svg> Actionable Next Steps</h3>
                 ${steps}
             </div>
         </div>
