@@ -11,6 +11,7 @@
             --primary-text: #2d3748;
             --secondary-text: #718096;
             --accent-color: #005f73;
+            --accent-color-light: #94d2bd;
             --border-color: #e2e8f0;
             --background-light: #f7fafc;
             --background-white: #ffffff;
@@ -86,16 +87,33 @@
             font-size: 1rem;
         }
 
-        .checkbox {
+        .checkbox-input {
+            appearance: none;
+            -webkit-appearance: none;
             flex-shrink: 0;
             margin-right: 1rem;
-            margin-top: 3px;
-            width: 20px;
+            margin-top: 5px;
             height: 20px;
+            width: 20px;
             border: 2px solid var(--border-color);
             border-radius: 4px;
             background-color: var(--background-light);
-            display: inline-block;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        
+        .checkbox-input:checked {
+            background-color: var(--accent-color);
+            border-color: var(--accent-color);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='20 6 9 17 4 12'%3e%3c/polyline%3e%3c/svg%3e");
+            background-size: 70%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        label {
+            cursor: pointer;
         }
         
         strong {
@@ -113,10 +131,10 @@
         }
 
         .example-block {
-            margin: 1rem 0 1rem 2rem;
+            margin: 1rem 0 1rem 2.5rem;
             padding: 1rem;
             background-color: var(--highlight-bg);
-            border-left: 4px solid var(--accent-color);
+            border-left: 4px solid var(--accent-color-light);
             border-radius: 0 6px 6px 0;
         }
 
@@ -152,11 +170,13 @@
             li {
                 font-size: 0.95rem;
             }
-            .checkbox {
+            .checkbox-input {
                 margin-right: 0.75rem;
             }
+            .example-block {
+                margin-left: 1.5rem;
+            }
         }
-
     </style>
 </head>
 <body>
@@ -170,50 +190,110 @@
         <section>
             <h2>Layout & First Impression</h2>
             <ul>
-                <li><span class="checkbox"></span><span><strong>One to Two Pages:</strong> Maximum two pages for experienced CAs. One is ideal for newly qualified.</span></li>
-                <li><span class="checkbox"></span><span><strong>Clean & Modern Font:</strong> Use a single, professional font like Inter, Calibri, or Helvetica (10-12pt).</span></li>
-                <li><span class="checkbox"></span><span><strong>Ample White Space:</strong> Avoid dense blocks of text. Use margins and line spacing for readability.</span></li>
-                <li><span class="checkbox"></span><span><strong>Consistent Formatting:</strong> Uniform dates, titles, and bullet points throughout the document.</span></li>
-                <li><span class="checkbox"></span><span><strong>PDF Format:</strong> Always submit as a PDF named professionally, e.g., <code>FirstName-LastName-CV.pdf</code>.</span></li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check1">
+                    <label for="check1"><strong>One to Two Pages:</strong> Maximum two pages for experienced CAs. One is ideal for newly qualified.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check2">
+                    <label for="check2"><strong>Clean & Modern Font:</strong> Use a single, professional font like Inter, Calibri, or Helvetica (10-12pt).</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check3">
+                    <label for="check3"><strong>Ample White Space:</strong> Avoid dense blocks of text. Use margins and line spacing for readability.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check4">
+                    <label for="check4"><strong>Consistent Formatting:</strong> Uniform dates, titles, and bullet points throughout the document.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check5">
+                    <label for="check5"><strong>PDF Format:</strong> Always submit as a PDF named professionally, e.g., <code>FirstName-LastName-CV.pdf</code>.</label>
+                </li>
             </ul>
         </section>
 
         <section>
             <h2>Header: Your Professional Banner</h2>
             <ul>
-                <li><span class="checkbox"></span><span><strong>Full Name & Post-Nominals:</strong> <code>John Smith, ACA</code> is prominent at the top.</span></li>
-                <li><span class="checkbox"></span><span><strong>Contact Information:</strong> A single line with Phone | Professional Email | LinkedIn URL.</span></li>
-                <li><span class="checkbox"></span><span><strong>Location:</strong> City or region only (e.g., London, UK). No full home address needed.</span></li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check6">
+                    <label for="check6"><strong>Full Name & Post-Nominals:</strong> <code>John Smith, ACA</code> is prominent at the top.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check7">
+                    <label for="check7"><strong>Contact Information:</strong> A single line with Phone | Professional Email | LinkedIn URL.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check8">
+                    <label for="check8"><strong>Location:</strong> City or region only (e.g., London, UK). No full home address needed.</label>
+                </li>
             </ul>
         </section>
 
         <section>
             <h2>Professional Summary: The Executive Overview</h2>
             <ul>
-                <li><span class="checkbox"></span><span><strong>Concise & Powerful:</strong> 3-4 lines maximum, written in the third person or implied first person.</span></li>
-                <li><span class="checkbox"></span><span><strong>Key Credentials:</strong> Immediately state you are a Chartered Accountant with X years of experience.</span></li>
-                <li><span class="checkbox"></span><span><strong>Core Specialisms:</strong> Mention key areas like Financial Reporting, M&A, Audit, or industry focus.</span></li>
-                <li><span class="checkbox"></span><span><strong>Career Ambition:</strong> Briefly state the type of role you are seeking.</span></li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check9">
+                    <label for="check9"><strong>Concise & Powerful:</strong> 3-4 lines maximum, written in the third person or implied first person.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check10">
+                    <label for="check10"><strong>Key Credentials:</strong> Immediately state you are a Chartered Accountant with X years of experience.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check11">
+                    <label for="check11"><strong>Core Specialisms:</strong> Mention key areas like Financial Reporting, M&A, Audit, or industry focus.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check12">
+                    <label for="check12"><strong>Career Ambition:</strong> Briefly state the type of role you are seeking.</label>
+                </li>
             </ul>
         </section>
 
         <section>
             <h2>Core Competencies: A Scannable Snapshot</h2>
             <ul>
-                <li><span class="checkbox"></span><span><strong>Bulleted List or Columns:</strong> Use 2-3 columns for a clean, scannable list of skills.</span></li>
-                <li><span class="checkbox"></span><span><strong>Technical Skills:</strong> Financial Reporting (IFRS/UK GAAP), Financial Modelling, Budgeting & Forecasting, Tax Compliance.</span></li>
-                <li><span class="checkbox"></span><span><strong>Systems Proficiency:</strong> SAP, Oracle, NetSuite, Advanced Excel, Power BI, Tableau.</span></li>
-                <li><span class="checkbox"></span><span><strong>Commercial Skills:</strong> Stakeholder Management, Commercial Acumen, Team Leadership, Process Improvement.</span></li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check13">
+                    <label for="check13"><strong>Bulleted List or Columns:</strong> Use 2-3 columns for a clean, scannable list of skills.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check14">
+                    <label for="check14"><strong>Technical Skills:</strong> Financial Reporting (IFRS/UK GAAP), Financial Modelling, Budgeting & Forecasting, Tax Compliance.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check15">
+                    <label for="check15"><strong>Systems Proficiency:</strong> SAP, Oracle, NetSuite, Advanced Excel, Power BI, Tableau.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check16">
+                    <label for="check16"><strong>Commercial Skills:</strong> Stakeholder Management, Commercial Acumen, Team Leadership, Process Improvement.</label>
+                </li>
             </ul>
         </section>
 
         <section>
             <h2>Professional Experience: The Proof of Performance</h2>
             <ul>
-                <li><span class="checkbox"></span><span><strong>Reverse Chronological Order:</strong> Most recent role first.</span></li>
-                <li><span class="checkbox"></span><span><strong>Clear Structure:</strong> <strong>Job Title</strong> | <strong>Company Name</strong> | <strong>Dates (MM/YYYY - MM/YYYY)</strong>.</span></li>
-                <li><span class="checkbox"></span><span><strong>Achievement-Oriented Bullet Points:</strong> Use 3-5 powerful points per role starting with action verbs.</span></li>
-                <li><span class="checkbox"></span><span><strong>Quantify Everything:</strong> This is critical for demonstrating impact.</span></li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check17">
+                    <label for="check17"><strong>Reverse Chronological Order:</strong> Most recent role first.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check18">
+                    <label for="check18"><strong>Clear Structure:</strong> <strong>Job Title</strong> | <strong>Company Name</strong> | <strong>Dates (MM/YYYY - MM/YYYY)</strong>.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check19">
+                    <label for="check19"><strong>Achievement-Oriented Bullet Points:</strong> Use 3-5 powerful points per role starting with action verbs.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check20">
+                    <label for="check20"><strong>Quantify Everything:</strong> This is critical for demonstrating impact.</label>
+                </li>
             </ul>
             <div class="example-block">
                 <p><em>Instead of:</em> "Managed month-end closing."</p>
@@ -228,20 +308,44 @@
         <section>
             <h2>Qualifications & Education: The Foundation</h2>
             <ul>
-                <li><span class="checkbox"></span><span><strong>Chartered Accountancy:</strong> <strong>ACA/ACCA/CIMA Qualification</strong> | <strong>Institute (e.g., ICAEW)</strong> | <strong>Year Qualified</strong>.</span></li>
-                <li><span class="checkbox"></span><span>Mention first-time passes if applicable.</span></li>
-                <li><span class="checkbox"></span><span><strong>University Degree:</strong> <strong>Degree Title (e.g., BSc Economics, 2:1)</strong> | <strong>University Name</strong> | <strong>Year Graduated</strong>.</span></li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check21">
+                    <label for="check21"><strong>Chartered Accountancy:</strong> <strong>ACA/ACCA/CIMA Qualification</strong> | <strong>Institute (e.g., ICAEW)</strong> | <strong>Year Qualified</strong>.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check22">
+                    <label for="check22">Mention first-time passes if applicable.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check23">
+                    <label for="check23"><strong>University Degree:</strong> <strong>Degree Title (e.g., BSc Economics, 2:1)</strong> | <strong>University Name</strong> | <strong>Year Graduated</strong>.</label>
+                </li>
             </ul>
         </section>
 
         <section>
             <h2>Final Review: The Zero-Error Check</h2>
             <ul>
-                <li><span class="checkbox"></span><span><strong>No Typos or Grammatical Errors:</strong> Proofread meticulously. Use a tool like Grammarly.</span></li>
-                <li><span class="checkbox"></span><span><strong>Read Aloud:</strong> This helps catch awkward phrasing and errors.</span></li>
-                <li><span class="checkbox"></span><span><strong>Check Tense:</strong> Past roles in past tense, current role in present tense.</span></li>
-                <li><span class="checkbox"></span><span><strong>Tailored for the Role:</strong> Keywords from the job description are reflected in your CV.</span></li>
-                <li><span class="checkbox"></span><span><strong>Peer Review:</strong> Ask a trusted colleague or mentor for a final sense check.</span></li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check24">
+                    <label for="check24"><strong>No Typos or Grammatical Errors:</strong> Proofread meticulously. Use a tool like Grammarly.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check25">
+                    <label for="check25"><strong>Read Aloud:</strong> This helps catch awkward phrasing and errors.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check26">
+                    <label for="check26"><strong>Check Tense:</strong> Past roles in past tense, current role in present tense.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check27">
+                    <label for="check27"><strong>Tailored for the Role:</strong> Keywords from the job description are reflected in your CV.</label>
+                </li>
+                <li>
+                    <input type="checkbox" class="checkbox-input" id="check28">
+                    <label for="check28"><strong>Peer Review:</strong> Ask a trusted colleague or mentor for a final sense check.</label>
+                </li>
             </ul>
         </section>
 
