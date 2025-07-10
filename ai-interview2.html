@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aura.AI Interview Coach by My Student Club</title>
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2322d3ee' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.5 14.5L6 12l1.41-1.41L10.5 13.67l6.09-6.09L18 9l-7.5 7.5z'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --primary: #22d3ee; 
+      --primary-dark: #0891b2;
+      --primary-light: #ecfeff;
+      --secondary: #a855f7; 
+      --accent: #ec4899; 
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --bg-primary: #020617; 
+      --bg-secondary: #0f172a; 
+      --bg-tertiary: #1e293b; 
+      --text-primary: #f8fafc; 
+      --text-secondary: #cbd5e1; 
+      --text-muted: #94a3b8; 
+      --border-color: rgba(255, 255, 255, 0.1);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      --border-radius: 16px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: linear-gradient(135deg, var(--primary-dark), var(--accent)); }
+
+    #app-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    
+    .bg-pattern {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.05) 1px, transparent 0);
+        background-size: 20px 20px;
+        z-index: -1;
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .app-header {
+      padding: 1rem 2rem;
+      backdrop-filter: blur(20px);
+      background: rgba(15, 23, 42, 0.5);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-content { display: flex; align-items: center; justify-content: space-between; max-width: 1600px; margin: 0 auto; }
+    .logo { display: flex; align-items: center; gap: 1rem; }
+    .logo img { height: 40px; border-radius: 8px; }
+    .logo h1 { font-size: 1.5rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;}
+    .header-controls { display: flex; align-items: center; gap: 1rem; }
+
+    .main-content { flex: 1; padding: 2rem; max-width: 1800px; margin: 0 auto; width: 100%; overflow-y: auto; }
+
+    .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 10px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: var(--transition); position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; box-shadow: 0 4px 15px -2px rgba(34, 211, 238, 0.4); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px -3px rgba(34, 211, 238, 0.5); }
+    .btn-secondary { background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border-color); }
+    .btn-secondary:hover { background: #334155; color: var(--text-primary); }
+    .btn-icon { padding: 0.75rem; }
+
+    #setup-screen { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 150px); animation: fadeIn 0.8s ease-out; }
+    .setup-card { max-width: 800px; width: 100%; padding: 3rem; text-align: center; }
+    .setup-title { font-size: 3rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;}
+    .setup-subtitle { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 3rem; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto; }
+    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2rem; text-align: left;}
+    .form-group { text-align: left; }
+    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-secondary); font-size: 0.9rem; }
+    .form-input { width: 100%; padding: 0.8rem 1rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 1rem; transition: var(--transition); }
+    .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.2); }
+    .form-input option { background: var(--bg-secondary); color: white; }
+    .form-group.full-width { grid-column: 1 / -1; }
+    .file-upload-area { border: 2px dashed var(--border-color); border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: var(--transition); }
+    .file-upload-area:hover, .file-upload-area.dragover { border-color: var(--primary); background: var(--bg-secondary); }
+    .upload-icon { font-size: 2rem; color: var(--primary); margin-bottom: 1rem; }
+    .file-info { margin-top: 1rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; color: var(--success); font-weight: 500; }
+    .file-info.error { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: var(--error); }
+    
+    #interview-screen { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; height: calc(100vh - 150px); }
+    
+    .chat-panel { display: flex; flex-direction: column; height: 100%; }
+    .chat-header { padding: 1.5rem; display: flex; align-items: center; justify-content: space-between; }
+    .interviewer-info { display: flex; align-items: center; gap: 1rem; }
+    .interviewer-avatar { width: 48px; height: 48px; border-radius: 50%; box-shadow: var(--shadow); border: 2px solid var(--primary); display:flex; align-items:center; justify-content:center; background: var(--bg-tertiary); }
+    .interviewer-details h3 { font-size: 1.2rem; font-weight: 600; }
+    .interviewer-details p { color: var(--text-muted); font-size: 0.9rem; }
+    .interview-stats { display: flex; align-items: center; gap: 1.5rem; font-size: 0.9rem; color: var(--text-muted); }
+    .interview-stats .stat { display: flex; align-items: center; gap: 0.5rem; }
+    .chat-messages { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
+    .message { display: flex; gap: 1rem; max-width: 90%; animation: messageSlide 0.5s ease-out; }
+    @keyframes messageSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .message.user { align-self: flex-end; flex-direction: row-reverse; }
+    .message-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; align-self: flex-end; overflow: hidden; background: var(--bg-tertiary); }
+    .message-avatar svg { width: 100%; height: 100%; padding: 4px; }
+    .message-content { padding: 1rem 1.25rem; border-radius: 18px; line-height: 1.6; }
+    .message.assistant .message-content { background: var(--bg-tertiary); border-bottom-left-radius: 6px; }
+    .message.user .message-content { background: linear-gradient(135deg, var(--primary), var(--secondary)); border-bottom-right-radius: 6px; }
+    .message-content pre { background: rgba(0, 0, 0, 0.3); padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; }
+    .message-content code { font-family: 'JetBrains Mono', monospace; background: rgba(0, 0, 0, 0.2); padding: 0.2rem 0.4rem; border-radius: 4px; font-size: 0.9rem; }
+    .typing-indicator { display: flex; align-items: center; gap: 4px; padding: 1rem 1.25rem; background: var(--bg-tertiary); border-radius: 18px; border-bottom-left-radius: 6px; }
+    .typing-dot { width: 8px; height: 8px; background: var(--primary); border-radius: 50%; animation: typing 1.4s infinite ease-in-out; }
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; } .typing-dot:nth-child(2) { animation-delay: -0.16s; } .typing-dot:nth-child(3) { animation-delay: 0s; }
+    @keyframes typing { 0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; } 40% { transform: scale(1.2); opacity: 1; } }
+    .chat-input-container { padding: 1.5rem; }
+    .input-wrapper { display: flex; gap: 1rem; }
+    .chat-input { flex: 1; min-height: 52px; resize: none; padding: 0.8rem 4.5rem 0.8rem 1.5rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 26px; color: white; font-size: 1rem; }
+    .chat-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.2); }
+    .input-area { position: relative; flex: 1; }
+    .input-actions { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); display: flex; gap: 0.5rem; }
+    .action-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: var(--transition); padding: 0.5rem; border-radius: 50%; }
+    .action-btn:hover { color: var(--primary); background: rgba(34, 211, 238, 0.1); }
+    .action-btn.recording { color: var(--error); animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+    
+    .dashboard-panel { display: flex; flex-direction: column; gap: 1.5rem; overflow-y: auto; }
+    .dashboard-card { padding: 1.5rem; animation: fadeIn 0.5s ease-out; }
+    .dashboard-card-header { display: flex; align-items: center; gap: 0.75rem; font-size: 1.1rem; font-weight: 600; color: var(--primary); margin-bottom: 1rem; }
+    .progress-timeline ul { list-style: none; }
+    .progress-timeline li { display: flex; align-items: center; margin-bottom: 0.75rem; position: relative; }
+    .timeline-marker { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border-color); display: flex; align-items: center; justify-content: center; margin-right: 1rem; z-index: 1; background: var(--bg-secondary); }
+    .timeline-marker.completed { border-color: var(--success); background: var(--success); }
+    .timeline-marker.active { border-color: var(--primary); animation: pulse 1.5s infinite; }
+    .timeline-marker.active svg { display: none; }
+    .timeline-text { color: var(--text-muted); }
+    .timeline-text.completed { color: var(--text-primary); }
+    .timeline-connector { position: absolute; left: 9px; top: 20px; width: 2px; height: calc(100% - 10px); background: var(--border-color); }
+    li:last-child .timeline-connector { display: none; }
+    .feedback-widgets { display: grid; gap: 1rem; }
+    .feedback-widget { display: flex; justify-content: space-between; align-items: center; background: var(--bg-secondary); padding: 1rem; border-radius: 10px; border-left: 4px solid; }
+    .feedback-widget.good { border-color: var(--success); }
+    .feedback-widget.warning { border-color: var(--warning); }
+    .feedback-widget.improvement { border-color: var(--error); }
+    .widget-info { display: flex; align-items: center; gap: 0.75rem; }
+    .widget-value { font-size: 1.25rem; font-weight: 700; }
+    .widget-value.good { color: var(--success); }
+    .widget-value.warning { color: var(--warning); }
+    .widget-value.improvement { color: var(--error); }
+
+    #report-screen { padding: 2rem; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.8s ease-out; }
+    .report-header { text-align: center; margin-bottom: 3rem; }
+    .report-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .report-subtitle { color: var(--text-muted); font-size: 1.1rem; }
+    .report-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 3rem; }
+    .report-card h3 { display: flex; align-items: center; gap: 0.75rem; font-size: 1.3rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--primary); }
+    .report-card ul { list-style-position: inside; padding-left: 0.5rem; }
+    .report-card li { margin-bottom: 0.5rem; line-height: 1.6; }
+    .score-display { text-align: center; padding: 2rem; margin-bottom: 2rem; }
+    .score-value { font-size: 4rem; font-weight: 900; background: linear-gradient(135deg, var(--success), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 0.5rem; }
+    .score-label { color: var(--text-muted); font-size: 1.1rem; }
+    
+    .hidden { display: none !important; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 1024px) {
+      .main-content { padding: 1rem; }
+      #interview-screen { grid-template-columns: 1fr; height: auto; }
+      .dashboard-panel { order: -1; margin-bottom: 2rem; }
+      .chat-panel { height: 70vh; }
+    }
+    @media (max-width: 768px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .setup-title { font-size: 2.2rem; }
+      .header-controls { display: none; }
+      .input-wrapper { flex-direction: column; gap: 0.5rem; align-items: flex-end; }
+      .input-area { width: 100%; }
+      .chat-input { padding-right: 1rem; }
+      .input-actions { position: static; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-pattern"></div>
+  <div id="app-container">
+    <header class="app-header">
+      <div class="header-content">
+        <div class="logo">
+          <img src="https://mystudentclub.com/assets/logo.png" alt="My Student Club Logo">
+          <h1>Aura.AI Interview Coach</h1>
+        </div>
+        <div class="header-controls">
+          <div id="interview-timer" class="interview-stats stat hidden">00:00</div>
+          <button id="end-interview-btn" class="btn btn-secondary btn-icon hidden" title="End Interview">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c5.52 0 10 4.48 10 10s-4.48 10-10 10S2 17.52 2 12 6.48 2 12 2zm0 2c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8zm0 3c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5z"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      
+      <div id="setup-screen">
+        <div class="setup-card glass-card">
+          <h1 class="setup-title">Master Your Next Interview</h1>
+          <p class="setup-subtitle">Practice with Aura, our AI interviewer, and get personalized, real-time feedback to land your dream job.</p>
+          <form class="form-grid">
+            <div class="form-group">
+              <label for="specialization">Target Role</label>
+              <select id="specialization" class="form-input">
+                <option value="Finance">Finance & Investment Banking</option>
+                <option value="Audit">Audit & Risk Management</option>
+                <option value="Technology">Software Engineering</option>
+                <option value="Consulting">Management Consulting</option>
+                <option value="Marketing">Marketing & Brand Management</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="company-persona">Company Type</label>
+              <select id="company-persona" class="form-input">
+                <option value="a top investment bank like Goldman Sachs">Investment Bank (Goldman Sachs)</option>
+                <option value="a fast-growing tech startup like Flipkart">Tech Unicorn (Flipkart, Stripe)</option>
+                <option value="a prestigious consulting firm like McKinsey">Big 3 Consulting (McKinsey, BCG)</option>
+                <option value="a large multinational like Unilever">Large Multinational (Unilever, P&G)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="interview-style">Interview Style</label>
+              <select id="interview-style" class="form-input">
+                <option value="Standard">Standard (Mixed)</option>
+                <option value="Technical Deep-Dive">Technical Deep-Dive</option>
+                <option value="Behavioral">Behavioral (STAR Method)</option>
+                <option value="Stress Test">High-Pressure Stress Test</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="difficulty-level">Difficulty Level</label>
+              <select id="difficulty-level" class="form-input">
+                <option value="Beginner">Beginner (Intern/Graduate)</option>
+                <option value="Intermediate">Intermediate (2-5 years exp)</option>
+                <option value="Advanced">Advanced (Senior/Lead)</option>
+              </select>
+            </div>
+            <div class="form-group full-width">
+              <label>Upload Resume (Optional)</label>
+              <div class="file-upload-area" id="file-upload-area">
+                <input type="file" id="cv-upload" class="hidden" accept=".pdf,.txt">
+                <div class="upload-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                </div>
+                <p><strong>Click to upload</strong> or drag and drop (PDF, TXT)</p>
+              </div>
+              <div id="file-info" class="file-info hidden"></div>
+            </div>
+          </form>
+          <button id="start-interview-btn" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            Start Interview
+          </button>
+        </div>
+      </div>
+
+      <div id="interview-screen" class="hidden">
+        <div class="chat-panel glass-card">
+          <div class="chat-header">
+            <div class="interviewer-info">
+              <div class="interviewer-avatar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="currentColor"><path d="M15.586 2.05c.344.49.133 1.149-.357 1.492-2.857 2-4.229 5.438-3.225 8.468.201.604-.34 1.207-.945.998-3.464-1.192-5.75-4.522-5.05-7.98.14-.693.81-1.15 1.503-.993.694.156 1.15.822.994 1.516-.54 2.652 1.12 5.166 3.497 6.132.61.252 1.26-.205 1.442-.816.82-2.73 2.13-5.26 4.31-6.853.486-.346 1.14-.136 1.49.356zM8.414 21.95c-.344-.49-.133-1.149.357-1.492 2.857-2 4.229-5.438 3.225-8.468-.201-.604.34-1.207.945-.998 3.464 1.192 5.75 4.522 5.05 7.98-.14.693-.81 1.15-1.503-.993-.694-.156-1.15-.822-.994-1.516.54-2.652-1.12-5.166-3.497-6.132-.61-.252-1.26-.205-1.442-.816-.82-2.73-2.13-5.26-4.31-6.853-.486-.346-1.14-.136-1.49-.356z"/></svg>
+              </div>
+              <div class="interviewer-details"><h3>Aura</h3><p>AI Interview Coach</p></div>
+            </div>
+            <div class="interview-stats">
+              <div class="stat"><span id="progress-text">0/10</span></div>
+            </div>
+          </div>
+          <div class="chat-messages" id="chat-messages"></div>
+          <div class="chat-input-container">
+            <form id="message-form">
+              <div class="input-wrapper">
+                <div class="input-area">
+                  <textarea id="message-input" class="chat-input" placeholder="Type your response..." rows="1"></textarea>
+                  <div class="input-actions">
+                    <button type="button" id="voice-btn" class="action-btn" title="Voice Input">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"/></svg>
+                    </button>
+                    <button type="button" id="hint-btn" class="action-btn" title="Get a hint">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="currentColor"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <button type="submit" id="send-btn" class="btn btn-primary btn-icon" aria-label="Send Message">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div id="dashboard-panel" class="dashboard-panel">
+          <div class="dashboard-card glass-card">
+            <h3 class="dashboard-card-header">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5l-3.5-3.5 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z"/></svg>
+              Interview Progress
+            </h3>
+            <div class="progress-timeline">
+              <ul id="progress-list"></ul>
+            </div>
+          </div>
+          <div class="dashboard-card glass-card">
+            <h3 class="dashboard-card-header">
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor"><path d="M16.23 7h2.6c.48 0 .65.62.29.9l-2.07 1.55c-.29.22-.69.22-.99 0l-1.99-1.49c-.39-.29-.16-.9.36-.9M5.17 7h2.6c.52 0 .75.61.36.9l-1.99 1.49c-.29.22-.7.22-.99 0L3.08 7.9c-.36-.28-.12-.9.29-.9m6.83 8.25c.44 0 .8.36.8.8s-.36.8-.8.8-.8-.36-.8-.8.36-.8.8-.8m-3.5 1.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5m7 0c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+              Live Feedback
+            </h3>
+            <div id="feedback-widgets" class="feedback-widgets">
+              <p class="text-muted">Answer the first question to see feedback here.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="report-screen" class="hidden"></div>
+    </main>
+  </div>
+
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
+
+    const WORKER_URL = 'https://interviewme.bhansalimanan55.workers.dev/';
+    
+    const dom = {
+      setupScreen: document.getElementById('setup-screen'),
+      startInterviewBtn: document.getElementById('start-interview-btn'),
+      specializationSelect: document.getElementById('specialization'),
+      companyPersonaSelect: document.getElementById('company-persona'),
+      interviewStyleSelect: document.getElementById('interview-style'),
+      difficultyLevelSelect: document.getElementById('difficulty-level'),
+      cvUploadInput: document.getElementById('cv-upload'),
+      fileUploadArea: document.getElementById('file-upload-area'),
+      fileInfoEl: document.getElementById('file-info'),
+      interviewScreen: document.getElementById('interview-screen'),
+      chatMessages: document.getElementById('chat-messages'),
+      messageForm: document.getElementById('message-form'),
+      messageInput: document.getElementById('message-input'),
+      sendButton: document.getElementById('send-btn'),
+      hintButton: document.getElementById('hint-btn'),
+      voiceButton: document.getElementById('voice-btn'),
+      reportScreen: document.getElementById('report-screen'),
+      interviewTimer: document.getElementById('interview-timer'),
+      endInterviewBtn: document.getElementById('end-interview-btn'),
+      progressText: document.getElementById('progress-text'),
+      progressList: document.getElementById('progress-list'),
+      feedbackWidgets: document.getElementById('feedback-widgets')
+    };
+    
+    const USER_AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g fill="var(--text-primary)"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></g></svg>`;
+    const ASSISTANT_AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="currentColor"><path d="M15.586 2.05c.344.49.133 1.149-.357 1.492-2.857 2-4.229 5.438-3.225 8.468.201.604-.34 1.207-.945.998-3.464-1.192-5.75-4.522-5.05-7.98.14-.693.81-1.15 1.503-.993.694.156 1.15.822.994 1.516-.54 2.652 1.12 5.166 3.497 6.132.61.252 1.26-.205 1.442-.816.82-2.73 2.13-5.26 4.31-6.853.486-.346 1.14-.136 1.49.356zM8.414 21.95c-.344-.49-.133-1.149.357-1.492 2.857-2 4.229-5.438 3.225-8.468-.201-.604.34-1.207.945-.998 3.464 1.192 5.75 4.522 5.05 7.98-.14.693-.81 1.15-1.503-.993-.694-.156-1.15-.822-.994-1.516.54-2.652-1.12-5.166-3.497-6.132-.61-.252-1.26-.205-1.442-.816-.82-2.73-2.13-5.26-4.31-6.853-.486-.346-1.14-.136-1.49-.356z"/></svg>`;
+    
+    const appState = {
+      messages: [], isLoading: false, interviewEnded: false, cvText: '',
+      settings: { specialization: '', companyPersona: '', interviewStyle: '', difficultyLevel: '' },
+      progress: { currentQuestion: 0, totalQuestions: 10, stages: ['Introduction', 'Technical Skills', 'Problem Solving', 'Behavioral', 'Conclusion'] },
+      timer: { intervalId: null, seconds: 0 },
+      recognition: null
+    };
+
+    function initialize() {
+      setupEventListeners();
+      initializeSpeechRecognition();
+    }
+
+    function setupEventListeners() {
+      dom.startInterviewBtn.addEventListener('click', startInterview);
+      dom.endInterviewBtn.addEventListener('click', () => handleAIResponse('<<<FINAL_REPORT>>>The user ended the interview early. Please provide a brief summary based on the conversation so far.<<<END_FINAL_REPORT>>>'));
+      dom.fileUploadArea.addEventListener('click', () => dom.cvUploadInput.click());
+      dom.cvUploadInput.addEventListener('change', handleFileUpload);
+      dom.fileUploadArea.addEventListener('dragover', (e) => { e.preventDefault(); dom.fileUploadArea.classList.add('dragover'); });
+      dom.fileUploadArea.addEventListener('dragleave', () => dom.fileUploadArea.classList.remove('dragover'));
+      dom.fileUploadArea.addEventListener('drop', (e) => { e.preventDefault(); dom.fileUploadArea.classList.remove('dragover'); handleFileUpload(e); });
+      dom.messageForm.addEventListener('submit', handleFormSubmit);
+      dom.hintButton.addEventListener('click', getHint);
+      dom.voiceButton.addEventListener('click', toggleVoiceRecognition);
+      dom.messageInput.addEventListener('input', () => { dom.messageInput.style.height = 'auto'; dom.messageInput.style.height = `${dom.messageInput.scrollHeight}px`; });
+    }
+
+    function initializeSpeechRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        appState.recognition = new SpeechRecognition();
+        appState.recognition.continuous = false;
+        appState.recognition.lang = 'en-US';
+        appState.recognition.interimResults = false;
+        appState.recognition.maxAlternatives = 1;
+
+        appState.recognition.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          dom.messageInput.value = transcript;
+          stopVoiceRecognition();
+          handleFormSubmit(new Event('submit'));
+        };
+        appState.recognition.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
+          stopVoiceRecognition();
+        };
+        appState.recognition.onend = () => {
+          stopVoiceRecognition();
+        };
+      } else {
+        dom.voiceButton.disabled = true;
+        dom.voiceButton.title = "Voice input not supported in your browser.";
+      }
+    }
+
+    function toggleVoiceRecognition() {
+      if (dom.voiceButton.classList.contains('recording')) {
+        stopVoiceRecognition();
+      } else {
+        startVoiceRecognition();
+      }
+    }
+
+    function startVoiceRecognition() {
+      if (appState.recognition && !appState.isLoading) {
+        dom.voiceButton.classList.add('recording');
+        appState.recognition.start();
+      }
+    }
+
+    function stopVoiceRecognition() {
+      if (appState.recognition) {
+        dom.voiceButton.classList.remove('recording');
+        appState.recognition.stop();
+      }
+    }
+
+    function startInterview() {
+      Object.assign(appState.settings, {
+        specialization: dom.specializationSelect.value,
+        companyPersona: dom.companyPersonaSelect.value,
+        interviewStyle: dom.interviewStyleSelect.value,
+        difficultyLevel: dom.difficultyLevelSelect.value
+      });
+      dom.setupScreen.classList.add('hidden');
+      dom.interviewScreen.classList.remove('hidden');
+      dom.interviewTimer.classList.remove('hidden');
+      dom.endInterviewBtn.classList.remove('hidden');
+      
+      resetInterviewState();
+      startTimer();
+      updateProgressTimeline();
+
+      let initialPrompt = "I'm ready to start the interview.";
+      if (appState.cvText) {
+        initialPrompt = `(My CV/Resume:\n${appState.cvText}\n) I'm ready to start the interview. Ask me about my experience.`;
+      }
+      addMessage('user', initialPrompt);
+      fetchAIResponse();
+    }
+    
+    function resetInterviewState() {
+        appState.messages = [];
+        appState.interviewEnded = false;
+        appState.progress.currentQuestion = 0;
+        appState.timer.seconds = 0;
+        dom.reportScreen.innerHTML = '';
+        dom.reportScreen.classList.add('hidden');
+        dom.interviewScreen.classList.remove('hidden');
+        setInputsDisabled(false);
+    }
+    
+    function startTimer() {
+        if (appState.timer.intervalId) clearInterval(appState.timer.intervalId);
+        appState.timer.intervalId = setInterval(() => {
+            appState.timer.seconds++;
+            const mins = String(Math.floor(appState.timer.seconds / 60)).padStart(2, '0');
+            const secs = String(appState.timer.seconds % 60).padStart(2, '0');
+            dom.interviewTimer.textContent = `${mins}:${secs}`;
+        }, 1000);
+    }
+
+    async function handleFileUpload(e) {
+      const file = e.target.files ? e.target.files[0] : e.dataTransfer.files[0];
+      if (!file) return;
+
+      dom.fileInfoEl.textContent = `Processing ${file.name}...`;
+      dom.fileInfoEl.classList.remove('hidden', 'error');
+
+      try {
+        if (file.type === 'application/pdf') {
+          const reader = new FileReader();
+          reader.onload = async (event) => {
+            const typedarray = new Uint8Array(event.target.result);
+            const pdf = await pdfjsLib.getDocument(typedarray).promise;
+            let text = '';
+            for (let i = 1; i <= pdf.numPages; i++) {
+              const page = await pdf.getPage(i);
+              const content = await page.getTextContent();
+              text += content.items.map(s => s.str).join(' ');
+            }
+            appState.cvText = text;
+            dom.fileInfoEl.textContent = `✅ ${file.name} processed successfully!`;
+          };
+          reader.readAsArrayBuffer(file);
+        } else if (file.type === 'text/plain') {
+          appState.cvText = await file.text();
+          dom.fileInfoEl.textContent = `✅ ${file.name} processed successfully!`;
+        } else {
+          throw new Error('Unsupported file type. Please upload PDF or TXT.');
+        }
+      } catch (error) {
+        console.error('Error processing file:', error);
+        dom.fileInfoEl.textContent = `❌ ${error.message}`;
+        dom.fileInfoEl.classList.add('error');
+        appState.cvText = '';
+      }
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const userInput = dom.messageInput.value.trim();
+      if (userInput && !appState.isLoading) {
+        addMessage('user', userInput);
+        dom.messageInput.value = '';
+        dom.messageInput.style.height = 'auto';
+        fetchAIResponse();
+      }
+    }
+
+    function getHint() {
+      if (!appState.isLoading) {
+        addMessage('user', 'I am not sure, can I get a small hint?');
+        fetchAIResponse();
+      }
+    }
+
+    function addMessage(role, content) {
+      if (role === 'assistant' && !content.toLowerCase().includes('any questions for me')) {
+        appState.progress.currentQuestion++;
+      }
+      appState.messages.push({ role, content });
+      renderMessages();
+      dom.chatMessages.scrollTop = dom.chatMessages.scrollHeight;
+    }
+    
+    function renderMessages() {
+        dom.chatMessages.innerHTML = appState.messages
+            .filter(msg => !(msg.role === 'user' && msg.content.startsWith('(My CV/Resume:')))
+            .map(msg => `
+                <div class="message ${msg.role}">
+                    <div class="message-avatar">${msg.role === 'user' ? USER_AVATAR_SVG : ASSISTANT_AVATAR_SVG}</div>
+                    <div class="message-content">${marked.parse(msg.content)}</div>
+                </div>
+            `).join('');
+
+        if (appState.isLoading) showTypingIndicator();
+        dom.chatMessages.scrollTop = dom.chatMessages.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+        const indicatorHTML = `
+            <div class="message assistant" id="typing-indicator">
+                <div class="message-avatar">${ASSISTANT_AVATAR_SVG}</div>
+                <div class="typing-indicator">
+                    <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
+                </div>
+            </div>`;
+        dom.chatMessages.insertAdjacentHTML('beforeend', indicatorHTML);
+        dom.chatMessages.scrollTop = dom.chatMessages.scrollHeight;
+    }
+
+    async function fetchAIResponse() {
+      appState.isLoading = true;
+      setInputsDisabled(true);
+      showTypingIndicator();
+      
+      const { specialization, companyPersona, interviewStyle, difficultyLevel } = appState.settings;
+      try {
+        const response = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Specialization': specialization,
+            'X-Company-Persona': companyPersona,
+            'X-Interview-Style': interviewStyle,
+            'X-Difficulty-Level': difficultyLevel
+          },
+          body: JSON.stringify({ messages: appState.messages })
+        });
+
+        if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+        const data = await response.json();
+        if (data.ok && data.response) handleAIResponse(data.response);
+        else throw new Error(data.error || 'Invalid response from server.');
+
+      } catch (error) {
+        addMessage('assistant', `Sorry, I encountered an error: ${error.message}. Please try again.`);
+      } finally {
+        appState.isLoading = false;
+        renderMessages();
+        if (!appState.interviewEnded) setInputsDisabled(false);
+      }
+    }
+
+    function handleAIResponse(text) {
+        const finalReportMarker = '<<<FINAL_REPORT>>>';
+        const feedbackMarker = '<<<RESPONSE_FEEDBACK>>>';
+        let mainMessage, feedback, finalReport;
+
+        if (text.includes(finalReportMarker)) {
+            appState.interviewEnded = true;
+            [mainMessage, finalReport] = text.split(finalReportMarker).map(s => s.trim());
+        } else if (text.includes(feedbackMarker)) {
+            [mainMessage, feedback] = text.split(feedbackMarker).map(s => s.replace('<<<END_RESPONSE_FEEDBACK>>>', '').trim());
+        } else {
+            mainMessage = text.trim();
+        }
+
+        if (mainMessage) addMessage('assistant', mainMessage);
+        if (feedback) updateDashboard(feedback);
+        if (finalReport) renderFinalReport(finalReport);
+        updateProgressUI();
+    }
+    
+    function setInputsDisabled(disabled) {
+        dom.sendButton.disabled = disabled;
+        dom.hintButton.disabled = disabled;
+        dom.messageInput.disabled = disabled;
+        dom.voiceButton.disabled = disabled;
+        if (disabled) {
+            dom.messageInput.placeholder = "Aura is typing...";
+        } else {
+            dom.messageInput.placeholder = "Type your response...";
+            dom.messageInput.focus();
+        }
+    }
+    
+    function updateProgressUI() {
+        const { currentQuestion, totalQuestions } = appState.progress;
+        dom.progressText.textContent = `${Math.min(currentQuestion, totalQuestions)}/${totalQuestions}`;
+        updateProgressTimeline();
+    }
+    
+    function updateProgressTimeline() {
+        const { stages, currentQuestion, totalQuestions } = appState.progress;
+        const questionsPerStage = Math.ceil(totalQuestions / stages.length);
+        const currentStageIndex = Math.floor(Math.max(0, currentQuestion - 1) / questionsPerStage);
+
+        dom.progressList.innerHTML = stages.map((stage, index) => {
+            let status = '';
+            if (index < currentStageIndex) status = 'completed';
+            else if (index === currentStageIndex) status = 'active';
+            
+            return `
+                <li>
+                    <div class="timeline-marker ${status}">
+                        ${status === 'completed' ? '<svg xmlns="http://www.w3.org/2000/svg" width="0.8em" height="0.8em" viewBox="0 0 16 16" fill="currentColor"><path d="M13.485 4.515a.5.5 0 0 1 0 .707l-8 8a.5.5 0 0 1-.707 0l-4-4a.5.5 0 0 1 .707-.707L5 12.293l7.778-7.778a.5.5 0 0 1 .707 0z"/></svg>' : ''}
+                    </div>
+                    <span class="timeline-text ${status}">${stage}</span>
+                    <div class="timeline-connector"></div>
+                </li>`;
+        }).join('');
+    }
+    
+    function updateDashboard(feedbackText) {
+        const scoreMatch = feedbackText.match(/Score:\s*\[?(\d{1,2})\/?10\]?/i);
+        const score = scoreMatch ? parseInt(scoreMatch[1], 10) : null;
+        
+        let scoreStatus = 'improvement';
+        if (score > 7) scoreStatus = 'good';
+        else if (score >= 5) scoreStatus = 'warning';
+        
+        const feedbackItems = [
+            { name: 'Answer Score', value: score ? `${score}/10` : 'N/A', status: scoreStatus },
+        ];
+        
+        const widgetsHTML = feedbackItems.map(item => `
+            <div class="feedback-widget ${item.status}">
+                <div class="widget-info">
+                    <span>${item.name}</span>
+                </div>
+                <span class="widget-value ${item.status}">${item.value}</span>
+            </div>
+        `).join('');
+        
+        dom.feedbackWidgets.innerHTML = `
+            <div class="feedback-widgets">${widgetsHTML}</div>
+            <div class="text-sm text-muted mt-4">${marked.parse(feedbackText.replace(/Score:\s*\[?\d{1,2}\/?10\]?/i, ''))}</div>
+        `;
+    }
+
+    function renderFinalReport(reportText) {
+        if (appState.timer.intervalId) clearInterval(appState.timer.intervalId);
+        const cleanReport = reportText.replace('<<<END_FINAL_REPORT>>>', '').trim();
+        const reportHtml = marked.parse(cleanReport);
+
+        const scoreMatch = cleanReport.match(/Overall Performance Score:\s*(\d+)/i);
+        const score = scoreMatch ? scoreMatch[1] : 'N/A';
+        const strengths = cleanReport.match(/Strengths:([\s\S]*?)Areas for Development:/is)?.[1] || 'Not available.';
+        const areas = cleanReport.match(/Areas for Development:([\s\S]*?)Actionable Next Steps:/is)?.[1] || 'Not available.';
+        const steps = cleanReport.match(/Actionable Next Steps:([\s\S]*?)Interviewer Notes:/is)?.[1] || 'Not available.';
+      
+        const html = `
+            <div class="report-header">
+                <h2 class="report-title">Interview Complete: Final Report</h2>
+                <p class="report-subtitle">Here's a breakdown of your performance with actionable feedback.</p>
+            </div>
+            <div class="report-grid">
+                <div class="report-card glass-card">
+                    <h3><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg> Overall Performance</h3>
+                    <div class="score-display">
+                        <div class="score-value">${score}<span style="font-size: 1.5rem; color: var(--text-muted);">/100</span></div>
+                    </div>
+                </div>
+                <div class="report-card glass-card">
+                    <h3><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg> Strengths</h3>
+                    ${marked.parse(strengths)}
+                </div>
+                <div class="report-card glass-card">
+                    <h3><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6.3l-6.3-6.3L1.4 1.4 6.3 9 5 10.4l-1.3-1.3c-1.1 2.4-.8 5.5 1.3 7.4 1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l1.4-1.4c.4-.4.4-1 0-1.4z"/></svg> Areas for Development</h3>
+                    ${marked.parse(areas)}
+                </div>
+                <div class="report-card glass-card">
+                    <h3><svg xmlns="http://www.w3.org/2000/svg" width="1.2em" height="1.2em" viewBox="0 0 24 24" fill="currentColor"><path d="M12.25 21.44c-.22 0-.44-.06-.63-.19l-3-1.8c-.48-.29-.63-.91-.35-1.38.29-.48.91-.63 1.38-.35l2.85 1.71 6.88-6.88c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-7.58 7.58c-.19.19-.44.29-.7.29zm-8.8-3.47c-.29-.48-.14-1.09.35-1.38l8.5-5.1c.22-.13.48-.16.71-.08l2.92 1.03 2.15-2.15c.39-.39 1.02-.39 1.41 0 .39.39.39 1.02 0 1.41l-2.85 2.85-3.62-1.28-7.9 4.74c-.2.11-.42.16-.63.16-.29 0-.58-.13-.77-.38z"/></svg> Actionable Next Steps</h3>
+                    ${marked.parse(steps)}
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;">
+                <button id="download-transcript-btn" class="btn btn-secondary">Download Transcript</button>
+                <button id="restart-btn" class="btn btn-primary">Start New Interview</button>
+            </div>`;
+
+        dom.reportScreen.innerHTML = html;
+        dom.interviewScreen.classList.add('hidden');
+        dom.reportScreen.classList.remove('hidden');
+
+        document.getElementById('restart-btn').addEventListener('click', () => window.location.reload());
+        document.getElementById('download-transcript-btn').addEventListener('click', downloadTranscript);
+    }
+    
+    function downloadTranscript() {
+        let transcript = `AI Interview Transcript\nRole: ${appState.settings.specialization}\nCompany: ${appState.settings.companyPersona}\nStyle: ${appState.settings.interviewStyle}\n\n================================\n\n`;
+        appState.messages.forEach(msg => {
+            if (msg.role === 'user' && msg.content.startsWith('(My CV/Resume:')) return;
+            const prefix = msg.role === 'user' ? 'You:' : 'Aura:';
+            const cleanContent = msg.content.replace(/<[^>]*>/g, '');
+            transcript += `${prefix}\n${cleanContent}\n\n`;
+        });
+        const finalReportText = dom.reportScreen.innerText;
+        transcript += "\n\n================================\n";
+        transcript += finalReportText.replace(/Start New Interview|Download Transcript/gi, '').trim();
+
+        const blob = new Blob([transcript], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'AI-Interview-Transcript.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    initialize();
+  </script>
+</body>
+</html>
