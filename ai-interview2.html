@@ -49,10 +49,8 @@
     .file-upload-area:hover, .file-upload-area.dragover { border-color: var(--primary); background: var(--bg-secondary); }
     .file-info { margin-top: 1rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 8px; color: var(--success); }
     .file-info.error { background: rgba(239, 68, 68, 0.1); color: var(--error); }
-    #interview-screen { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; height: calc(100vh - 150px); }
-    .chat-panel { display: flex; flex-direction: column; height: 100%; }
-    .interviewer-info { display: flex; align-items: center; gap: 1rem; }
-    .interviewer-avatar { width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--primary); display:flex; align-items:center; justify-content:center; background: var(--bg-tertiary); }
+    #interview-screen { display: flex; flex-direction: column; height: 100%; gap: 0; }
+    .chat-panel { flex-grow: 1; overflow: hidden; border-radius: 0; display: flex; flex-direction: column; }
     .chat-messages { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
     .message { display: flex; gap: 1rem; max-width: 90%; animation: messageSlide 0.5s ease-out; }
     @keyframes messageSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -70,18 +68,7 @@
     .action-btn:hover { color: var(--primary); background: rgba(34, 211, 238, 0.1); }
     .action-btn.recording { color: var(--error); animation: pulse 1s infinite; }
     @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-    .dashboard-panel { display: flex; flex-direction: column; gap: 1.5rem; overflow-y: auto; }
-    .dashboard-card { padding: 1.5rem; }
-    .dashboard-card-header { display: flex; align-items: center; gap: 0.75rem; font-size: 1.1rem; font-weight: 600; color: var(--primary); margin-bottom: 1rem; }
-    .ai-avatar-vis { position: relative; width: 150px; height: 150px; margin: 1rem auto; display: flex; align-items: center; justify-content: center; }
-    .ai-orb { position: relative; width: 80px; height: 80px; background: var(--bg-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--primary); }
-    .ai-orb-glow { position: absolute; inset: 0; border-radius: 50%; background: var(--primary); filter: blur(20px); opacity: 0.5; transition: all 0.5s; }
-    .ai-ring { position: absolute; border: 1px solid; border-radius: 50%; }
-    .ai-ring-1 { width: 120px; height: 120px; border-color: var(--primary-dark); }
-    .ai-ring-2 { width: 150px; height: 150px; border-color: var(--primary); animation: spin-slow 8s linear infinite; }
-    .ai-avatar-vis.speaking .ai-orb-glow { transform: scale(1.2); opacity: 0.8; }
-    .ai-avatar-vis.speaking .ai-ring-1 { animation: pulse 2s infinite; }
-    @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .dashboard-panel { padding: 1rem; overflow-y: auto; }
     #report-screen { padding: 2rem; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.8s ease-out; }
     .report-header { text-align: center; margin-bottom: 3rem; }
     .report-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
@@ -91,23 +78,15 @@
     .score-display { text-align: center; padding: 2rem 0; }
     .score-value { font-size: 4rem; font-weight: 900; background: linear-gradient(135deg, var(--success), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .hidden { display: none !important; }
-    .mobile-nav { display: none; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
     @media (max-width: 1024px) {
       .main-content { padding: 0; height: calc(100vh - 65px); }
-      #interview-screen { display: flex; flex-direction: column; height: 100%; gap: 0; }
-      .chat-panel { flex-grow: 1; overflow: hidden; border-radius: 0; }
-      .dashboard-panel { padding: 1rem; overflow-y: auto; }
       #setup-screen, #report-screen { padding: 1rem; overflow-y: auto; height: 100%; }
       .setup-card, .report-card { padding: 1.5rem; }
       .setup-title { font-size: 2rem; }
       .form-grid { grid-template-columns: 1fr; }
       .report-grid { grid-template-columns: 1fr; }
-      .mobile-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-secondary); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 0.5rem 0; z-index: 200; }
-      .mobile-nav-btn { background: none; border: none; color: var(--text-muted); padding: 0.5rem 1rem; display: flex; flex-direction: column; align-items: center; gap: 0.25rem; font-size: 0.75rem; }
-      .mobile-nav-btn.active { color: var(--primary); }
-      .chat-panel, .dashboard-panel { height: calc(100% - 60px); }
       .chat-messages { padding-bottom: 1rem; }
       .chat-input-container { padding-bottom: 0.5rem; }
     }
@@ -162,21 +141,9 @@
             </form>
           </div>
         </div>
-        <div id="dashboard-panel" class="dashboard-panel">
-          <div class="dashboard-card glass-card">
-            <h3 class="dashboard-card-header">AI Status</h3>
-            <div id="ai-avatar-vis" class="ai-avatar-vis"><div class="ai-orb-glow"></div><div class="ai-ring ai-ring-1"></div><div class="ai-ring ai-ring-2"></div><div class="ai-orb"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24" fill="var(--primary)"><path d="M15.586 2.05c.344.49.133 1.149-.357 1.492-2.857 2-4.229 5.438-3.225 8.468.201.604-.34 1.207-.945.998-3.464-1.192-5.75-4.522-5.05-7.98.14-.693.81-1.15 1.503-.993.694.156 1.15.822.994 1.516-.54 2.652 1.12 5.166 3.497 6.132.61.252 1.26-.205 1.442-.816.82-2.73-2.13-5.26 4.31-6.853.486-.346 1.14-.136 1.49.356zM8.414 21.95c-.344-.49-.133-1.149.357-1.492 2.857-2 4.229-5.438 3.225-8.468-.201-.604.34-1.207.945-.998 3.464 1.192 5.75 4.522 5.05 7.98-.14-.693.81-1.15-1.503-.993-.694-.156-1.15-.822-.994-1.516-.54-2.652-1.12-5.166-3.497-6.132-.61-.252-1.26-.205-1.442-.816-.82-2.73-2.13-5.26-4.31-6.853-.486-.346-1.14-.136-1.49-.356z"/></svg></div></div>
-            <p id="ai-status-text" class="text-center text-muted">Waiting for you to start...</p>
-          </div>
-          <div class="dashboard-card glass-card"><h3 class="dashboard-card-header">Live Skill Assessment</h3><canvas id="skills-radar-chart"></canvas></div>
-        </div>
       </div>
       <div id="report-screen" class="hidden"></div>
     </main>
-    <nav class="mobile-nav hidden">
-      <button id="mobile-chat-btn" class="mobile-nav-btn active"><svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>Chat</button>
-      <button id="mobile-dash-btn" class="mobile-nav-btn"><svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="currentColor"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>Dashboard</button>
-    </nav>
   </div>
 
   <script>
@@ -189,17 +156,14 @@
       specializationSelect: document.getElementById('specialization'), companyPersonaSelect: document.getElementById('company-persona'),
       interviewStyleSelect: document.getElementById('interview-style'), difficultyLevelSelect: document.getElementById('difficulty-level'),
       cvUploadInput: document.getElementById('cv-upload'), fileUploadArea: document.getElementById('file-upload-area'), fileInfoEl: document.getElementById('file-info'),
-      chatPanel: document.getElementById('chat-panel'), dashboardPanel: document.getElementById('dashboard-panel'),
+      chatPanel: document.getElementById('chat-panel'),
       chatMessages: document.getElementById('chat-messages'), messageForm: document.getElementById('message-form'),
       messageInput: document.getElementById('message-input'), sendButton: document.getElementById('send-btn'),
       hintButton: document.getElementById('hint-btn'), voiceButton: document.getElementById('voice-btn'),
       reportScreen: document.getElementById('report-screen'), interviewTimer: document.getElementById('interview-timer'),
-      mobileNav: document.querySelector('.mobile-nav'), mobileChatBtn: document.getElementById('mobile-chat-btn'), mobileDashBtn: document.getElementById('mobile-dash-btn'),
-      aiAvatar: document.getElementById('ai-avatar-vis'), aiStatusText: document.getElementById('ai-status-text'),
-      skillsRadarChartEl: document.getElementById('skills-radar-chart'),
     };
     const USER_AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></g></svg>`;
-    const ASSISTANT_AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="var(--primary)"><path d="M15.586 2.05c.344.49.133 1.149-.357 1.492-2.857 2-4.229 5.438-3.225 8.468.201.604-.34 1.207-.945.998-3.464-1.192-5.75-4.522-5.05-7.98.14-.693.81-1.15 1.503-.993.694.156 1.15.822.994 1.516-.54 2.652 1.12 5.166 3.497 6.132.61.252 1.26-.205 1.442-.816.82-2.73-2.13-5.26 4.31-6.853.486-.346 1.14-.136 1.49.356zM8.414 21.95c-.344-.49-.133-1.149.357-1.492 2.857-2 4.229-5.438 3.225-8.468-.201-.604.34-1.207.945-.998 3.464 1.192 5.75 4.522 5.05 7.98-.14-.693.81-1.15-1.503-.993-.694-.156-1.15-.822-.994-1.516-.54-2.652-1.12-5.166-3.497-6.132-.61-.252-1.26-.205-1.442-.816-.82-2.73-2.13-5.26-4.31-6.853-.486-.346-1.14-.136-1.49-.356z"/></svg>`;
+    const ASSISTANT_AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="var(--primary)"><path d="M15.586 2.05c.344.49.133 1.149-.357 1.492-2.857 2-4.229 5.438-3.225 8.468.201.604-.34 1.207-.945.998-3.464-1.192-5.75-4.522-5.05-7.98.14-.693.81-1.15 1.503-.993.694.156 1.15.822.994 1.516-.54 2.652 1.12 5.166 3.497 6.132.61.252 1.26-.205 1.442-.816.82-2.73-2.13-5.26 4.31-6.853.486-.346 1.14-.136 1.49.356zM8.414 21.95c-.344-.49-.133-1.149.357-1.492 2.857-2 4.229-5.438 3.225-8.468-.201-.604.34-1.207.945-.998 3.464 1.192 5.75 4.522 5.05 7.98-.14-.693.81-1.15-1.503-.993-.694-.156-1.15-.822-.994-1.516-.54 2.652-1.12-5.166-3.497-6.132-.61-.252-1.26-.205-1.442-.816-.82-2.73-2.13-5.26-4.31-6.853-.486-.346-1.14-.136-1.49-.356z"/></svg>`;
     const appState = {
       messages: [], isLoading: false, interviewEnded: false, cvText: '',
       settings: { specialization: '', companyPersona: '', interviewStyle: '', difficultyLevel: '' },
@@ -223,8 +187,6 @@
       dom.messageForm.addEventListener('submit', handleFormSubmit);
       dom.hintButton.addEventListener('click', getHint);
       dom.voiceButton.addEventListener('click', toggleVoiceRecognition);
-      dom.mobileChatBtn.addEventListener('click', () => showMobileTab('chat'));
-      dom.mobileDashBtn.addEventListener('click', () => showMobileTab('dashboard'));
     }
 
     function initializeSpeechRecognition() {
@@ -248,7 +210,6 @@
       dom.interviewScreen.classList.remove('hidden');
       dom.interviewTimer.classList.remove('hidden');
       dom.endInterviewBtn.classList.remove('hidden');
-      dom.mobileNav.classList.remove('hidden');
       resetInterviewState();
       startTimer();
       initCharts();
@@ -312,7 +273,7 @@
     }
 
     async function fetchAIResponse() {
-        appState.isLoading = true; setInputsDisabled(true); updateAIStatus(true, 'AI is thinking...'); showTypingIndicator();
+        appState.isLoading = true; setInputsDisabled(true); showTypingIndicator();
         const { specialization, companyPersona, interviewStyle, difficultyLevel } = appState.settings;
         try {
             const response = await fetch(WORKER_URL, {
@@ -326,12 +287,15 @@
                 },
                 body: JSON.stringify({ messages: appState.messages })
             });
-            if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+            if (!response.ok) {
+              const errorText = await response.text();
+              throw new Error(`API Error ${response.status}: ${errorText}`);
+            }
             const data = await response.json();
             if (data.ok && data.response) handleAIResponse(data.response);
             else throw new Error(data.error || 'Invalid response from server.');
         } catch (error) { addMessage('assistant', `Sorry, an error occurred: ${error.message}. Please try again.`);
-        } finally { appState.isLoading = false; renderMessages(); updateAIStatus(false, 'Ready for your response.'); if (!appState.interviewEnded) setInputsDisabled(false); }
+        } finally { appState.isLoading = false; renderMessages(); if (!appState.interviewEnded) setInputsDisabled(false); }
     }
 
     function handleAIResponse(text) {
@@ -348,29 +312,19 @@
     
     function setInputsDisabled(disabled) {
         dom.sendButton.disabled = disabled; dom.hintButton.disabled = disabled; dom.messageInput.disabled = disabled; dom.voiceButton.disabled = disabled;
-        dom.messageInput.placeholder = disabled ? "AI is typing..." : "Type your response...";
+        dom.messageInput.placeholder = disabled ? "AI is thinking..." : "Type your response...";
         if (!disabled) dom.messageInput.focus();
-    }
-    
-    function updateAIStatus(isSpeaking, text) { dom.aiAvatar.classList.toggle('speaking', isSpeaking); dom.aiStatusText.textContent = text; }
-
-    function showMobileTab(tabName) {
-      const isChat = tabName === 'chat';
-      dom.chatPanel.classList.toggle('hidden', !isChat);
-      dom.dashboardPanel.classList.toggle('hidden', isChat);
-      dom.mobileChatBtn.classList.toggle('active', isChat);
-      dom.mobileDashBtn.classList.toggle('active', !isChat);
     }
     
     function initCharts() {
         const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { beginAtZero: true, max: 100, pointLabels: { color: 'white', font: { size: 12 } }, grid: { color: 'rgba(255,255,255,0.2)' }, angleLines: { color: 'rgba(255,255,255,0.2)' }, ticks: { display: false } } } };
         const initialData = { labels: ['Technical', 'Communication', 'Problem Solving', 'Leadership', 'Clarity'], datasets: [{ data: [10, 10, 10, 10, 10], fill: true, backgroundColor: 'rgba(34, 211, 238, 0.2)', borderColor: 'rgb(34, 211, 238)', pointBackgroundColor: 'rgb(34, 211, 238)' }]};
         if(appState.charts.skills) appState.charts.skills.destroy();
-        appState.charts.skills = new Chart(dom.skillsRadarChartEl, { type: 'radar', data: initialData, options: chartOptions });
     }
 
     function updateSkillsChart() {
-        const chart = appState.charts.skills; if (!chart) return;
+        if (!appState.charts.skills) return;
+        const chart = appState.charts.skills;
         chart.data.datasets[0].data = chart.data.datasets[0].data.map(d => Math.min(100, d + (Math.random() * 15 + 5)));
         chart.update();
     }
@@ -389,12 +343,14 @@
         </div><div style="text-align: center; margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;"><button id="restart-btn" class="btn btn-primary">Start New Interview</button></div>`;
         dom.reportScreen.innerHTML = html;
         dom.interviewScreen.classList.add('hidden');
-        dom.mobileNav.classList.add('hidden');
         dom.reportScreen.classList.remove('hidden');
 
         const finalChartEl = document.getElementById('final-skills-chart');
-        if (finalChartEl && appState.charts.skills) {
-            new Chart(finalChartEl, { type: 'radar', data: appState.charts.skills.data, options: appState.charts.skills.options });
+        const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { beginAtZero: true, max: 100, pointLabels: { color: 'white', font: { size: 12 } }, grid: { color: 'rgba(255,255,255,0.2)' }, angleLines: { color: 'rgba(255,255,255,0.2)' }, ticks: { display: false } } } };
+        const finalChartData = { labels: ['Technical', 'Communication', 'Problem Solving', 'Leadership', 'Clarity'], datasets: [{ data: [Math.random()*90+10, Math.random()*90+10, Math.random()*90+10, Math.random()*90+10, Math.random()*90+10], fill: true, backgroundColor: 'rgba(34, 211, 238, 0.2)', borderColor: 'rgb(34, 211, 238)', pointBackgroundColor: 'rgb(34, 211, 238)' }]};
+        
+        if (finalChartEl) {
+            new Chart(finalChartEl, { type: 'radar', data: finalChartData, options: chartOptions });
         }
         document.getElementById('restart-btn').addEventListener('click', () => window.location.reload());
     }
