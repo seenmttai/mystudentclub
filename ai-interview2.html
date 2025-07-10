@@ -75,7 +75,7 @@
     .dashboard-card-header { display: flex; align-items: center; gap: 0.75rem; font-size: 1.1rem; font-weight: 600; color: var(--primary); margin-bottom: 1rem; }
     .ai-avatar-vis { position: relative; width: 150px; height: 150px; margin: 1rem auto; display: flex; align-items: center; justify-content: center; }
     .ai-orb { position: relative; width: 80px; height: 80px; background: var(--bg-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--primary); }
-    .ai-orb-glow { position: absolute; inset: 0; border-radius: 50%; background: var(--primary); blur: 2xl; opacity: 0.5; transition: all 0.5s; }
+    .ai-orb-glow { position: absolute; inset: 0; border-radius: 50%; background: var(--primary); filter: blur(20px); opacity: 0.5; transition: all 0.5s; }
     .ai-ring { position: absolute; border: 1px solid; border-radius: 50%; }
     .ai-ring-1 { width: 120px; height: 120px; border-color: var(--primary-dark); }
     .ai-ring-2 { width: 150px; height: 150px; border-color: var(--primary); animation: spin-slow 8s linear infinite; }
@@ -99,7 +99,7 @@
       #interview-screen { display: flex; flex-direction: column; height: 100%; gap: 0; }
       .chat-panel { flex-grow: 1; overflow: hidden; border-radius: 0; }
       .dashboard-panel { padding: 1rem; overflow-y: auto; }
-      #setup-screen, #report-screen { padding: 1rem; }
+      #setup-screen, #report-screen { padding: 1rem; overflow-y: auto; height: 100%; }
       .setup-card, .report-card { padding: 1.5rem; }
       .setup-title { font-size: 2rem; }
       .form-grid { grid-template-columns: 1fr; }
@@ -165,11 +165,10 @@
         <div id="dashboard-panel" class="dashboard-panel">
           <div class="dashboard-card glass-card">
             <h3 class="dashboard-card-header">AI Status</h3>
-            <div id="ai-avatar-vis" class="ai-avatar-vis"><div class="ai-orb-glow"></div><div class="ai-ring ai-ring-1"></div><div class="ai-ring ai-ring-2"></div><div class="ai-orb"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24" fill="var(--primary)"><path d="M15.586 2.05c.344.49.133 1.149-.357 1.492-2.857 2-4.229 5.438-3.225 8.468.201.604-.34 1.207-.945.998-3.464-1.192-5.75-4.522-5.05-7.98.14-.693.81-1.15 1.503-.993.694.156 1.15.822.994 1.516-.54 2.652 1.12 5.166 3.497 6.132.61.252 1.26-.205 1.442-.816.82-2.73-2.13-5.26 4.31-6.853.486-.346 1.14-.136 1.49.356zM8.414 21.95c-.344-.49-.133-1.149.357-1.492 2.857-2 4.229-5.438 3.225-8.468-.201-.604.34-1.207.945-.998 3.464 1.192 5.75 4.522 5.05 7.98-.14.693-.81 1.15-1.503-.993-.694-.156-1.15-.822-.994-1.516.54-2.652-1.12-5.166-3.497-6.132-.61-.252-1.26-.205-1.442-.816-.82-2.73-2.13-5.26-4.31-6.853-.486-.346-1.14-.136-1.49-.356z"/></svg></div></div>
+            <div id="ai-avatar-vis" class="ai-avatar-vis"><div class="ai-orb-glow"></div><div class="ai-ring ai-ring-1"></div><div class="ai-ring ai-ring-2"></div><div class="ai-orb"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24" fill="var(--primary)"><path d="M15.586 2.05c.344.49.133 1.149-.357 1.492-2.857 2-4.229 5.438-3.225 8.468.201.604-.34 1.207-.945.998-3.464-1.192-5.75-4.522-5.05-7.98.14-.693.81-1.15 1.503-.993.694.156 1.15.822.994 1.516-.54 2.652 1.12 5.166 3.497 6.132.61.252 1.26-.205 1.442-.816.82-2.73-2.13-5.26 4.31-6.853.486-.346 1.14-.136 1.49.356zM8.414 21.95c-.344-.49-.133-1.149.357-1.492 2.857-2 4.229-5.438 3.225-8.468-.201-.604.34-1.207.945-.998 3.464 1.192 5.75 4.522 5.05 7.98-.14-.693.81-1.15-1.503-.993-.694-.156-1.15-.822-.994-1.516-.54-2.652-1.12-5.166-3.497-6.132-.61-.252-1.26-.205-1.442-.816-.82-2.73-2.13-5.26-4.31-6.853-.486-.346-1.14-.136-1.49-.356z"/></svg></div></div>
             <p id="ai-status-text" class="text-center text-muted">Waiting for you to start...</p>
           </div>
           <div class="dashboard-card glass-card"><h3 class="dashboard-card-header">Live Skill Assessment</h3><canvas id="skills-radar-chart"></canvas></div>
-          <div class="dashboard-card glass-card"><h3 class="dashboard-card-header">Speaking Pace (WPM)</h3><canvas id="pace-monitor-chart"></canvas></div>
         </div>
       </div>
       <div id="report-screen" class="hidden"></div>
@@ -197,16 +196,15 @@
       reportScreen: document.getElementById('report-screen'), interviewTimer: document.getElementById('interview-timer'),
       mobileNav: document.querySelector('.mobile-nav'), mobileChatBtn: document.getElementById('mobile-chat-btn'), mobileDashBtn: document.getElementById('mobile-dash-btn'),
       aiAvatar: document.getElementById('ai-avatar-vis'), aiStatusText: document.getElementById('ai-status-text'),
-      skillsRadarChartEl: document.getElementById('skills-radar-chart'), paceMonitorChartEl: document.getElementById('pace-monitor-chart'),
+      skillsRadarChartEl: document.getElementById('skills-radar-chart'),
     };
     const USER_AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></g></svg>`;
-    const ASSISTANT_AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="var(--primary)"><path d="M15.586 2.05c.344.49.133 1.149-.357 1.492-2.857 2-4.229 5.438-3.225 8.468.201.604-.34 1.207-.945.998-3.464-1.192-5.75-4.522-5.05-7.98.14-.693.81-1.15 1.503-.993.694.156 1.15.822.994 1.516-.54 2.652 1.12 5.166 3.497 6.132.61.252 1.26-.205 1.442-.816.82-2.73-2.13-5.26 4.31-6.853.486-.346 1.14-.136 1.49.356zM8.414 21.95c-.344-.49-.133-1.149.357-1.492 2.857-2 4.229-5.438 3.225-8.468-.201-.604.34-1.207.945-.998 3.464 1.192 5.75 4.522 5.05 7.98-.14-.693.81-1.15-1.503-.993-.694-.156-1.15-.822-.994-1.516.54-2.652-1.12-5.166-3.497-6.132.61-.252-1.26-.205-1.442-.816-.82-2.73-2.13-5.26-4.31-6.853-.486-.346-1.14-.136-1.49-.356z"/></svg>`;
+    const ASSISTANT_AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="var(--primary)"><path d="M15.586 2.05c.344.49.133 1.149-.357 1.492-2.857 2-4.229 5.438-3.225 8.468.201.604-.34 1.207-.945.998-3.464-1.192-5.75-4.522-5.05-7.98.14-.693.81-1.15 1.503-.993.694.156 1.15.822.994 1.516-.54 2.652 1.12 5.166 3.497 6.132.61.252 1.26-.205 1.442-.816.82-2.73-2.13-5.26 4.31-6.853.486-.346 1.14-.136 1.49.356zM8.414 21.95c-.344-.49-.133-1.149.357-1.492 2.857-2 4.229-5.438 3.225-8.468-.201-.604.34-1.207.945-.998 3.464 1.192 5.75 4.522 5.05 7.98-.14-.693.81-1.15-1.503-.993-.694-.156-1.15-.822-.994-1.516-.54-2.652-1.12-5.166-3.497-6.132-.61-.252-1.26-.205-1.442-.816-.82-2.73-2.13-5.26-4.31-6.853-.486-.346-1.14-.136-1.49-.356z"/></svg>`;
     const appState = {
       messages: [], isLoading: false, interviewEnded: false, cvText: '',
       settings: { specialization: '', companyPersona: '', interviewStyle: '', difficultyLevel: '' },
       timer: { intervalId: null, seconds: 0 }, recognition: null,
-      charts: { skills: null, pace: null },
-      paceData: { labels: [], data: [] }
+      charts: { skills: null },
     };
 
     function initialize() {
@@ -274,7 +272,6 @@
             const mins = String(Math.floor(appState.timer.seconds / 60)).padStart(2, '0');
             const secs = String(appState.timer.seconds % 60).padStart(2, '0');
             dom.interviewTimer.textContent = `${mins}:${secs}`;
-            updatePaceChart(mins + ':' + secs);
         }, 1000);
     }
     
@@ -315,15 +312,26 @@
     }
 
     async function fetchAIResponse() {
-      appState.isLoading = true; setInputsDisabled(true); updateAIStatus(true, 'AI is thinking...'); showTypingIndicator();
-      try {
-        const response = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', ...Object.fromEntries(Object.entries(appState.settings).map(([k, v]) => [`X-${k.charAt(0).toUpperCase() + k.slice(1)}`, v])) }, body: JSON.stringify({ messages: appState.messages }) });
-        if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-        const data = await response.json();
-        if (data.ok && data.response) handleAIResponse(data.response);
-        else throw new Error(data.error || 'Invalid response from server.');
-      } catch (error) { addMessage('assistant', `Sorry, an error occurred: ${error.message}. Please try again.`);
-      } finally { appState.isLoading = false; renderMessages(); updateAIStatus(false, 'Ready for your response.'); if (!appState.interviewEnded) setInputsDisabled(false); }
+        appState.isLoading = true; setInputsDisabled(true); updateAIStatus(true, 'AI is thinking...'); showTypingIndicator();
+        const { specialization, companyPersona, interviewStyle, difficultyLevel } = appState.settings;
+        try {
+            const response = await fetch(WORKER_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Specialization': specialization,
+                    'X-Company-Persona': companyPersona,
+                    'X-Interview-Style': interviewStyle,
+                    'X-Difficulty-Level': difficultyLevel
+                },
+                body: JSON.stringify({ messages: appState.messages })
+            });
+            if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+            const data = await response.json();
+            if (data.ok && data.response) handleAIResponse(data.response);
+            else throw new Error(data.error || 'Invalid response from server.');
+        } catch (error) { addMessage('assistant', `Sorry, an error occurred: ${error.message}. Please try again.`);
+        } finally { appState.isLoading = false; renderMessages(); updateAIStatus(false, 'Ready for your response.'); if (!appState.interviewEnded) setInputsDisabled(false); }
     }
 
     function handleAIResponse(text) {
@@ -355,27 +363,16 @@
     }
     
     function initCharts() {
-        const chartOptions = { plugins: { legend: { display: false } }, scales: { r: { beginAtZero: true, max: 100, pointLabels: { color: 'white', font: { size: 12 } }, grid: { color: 'rgba(255,255,255,0.2)' }, angleLines: { color: 'rgba(255,255,255,0.2)' } } } };
+        const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { beginAtZero: true, max: 100, pointLabels: { color: 'white', font: { size: 12 } }, grid: { color: 'rgba(255,255,255,0.2)' }, angleLines: { color: 'rgba(255,255,255,0.2)' }, ticks: { display: false } } } };
         const initialData = { labels: ['Technical', 'Communication', 'Problem Solving', 'Leadership', 'Clarity'], datasets: [{ data: [10, 10, 10, 10, 10], fill: true, backgroundColor: 'rgba(34, 211, 238, 0.2)', borderColor: 'rgb(34, 211, 238)', pointBackgroundColor: 'rgb(34, 211, 238)' }]};
+        if(appState.charts.skills) appState.charts.skills.destroy();
         appState.charts.skills = new Chart(dom.skillsRadarChartEl, { type: 'radar', data: initialData, options: chartOptions });
-
-        const paceOptions = { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: false, suggestedMin: 80, suggestedMax: 200, ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.1)' } }, x: { ticks: { color: 'white' }, grid: { display: false } } }};
-        appState.charts.pace = new Chart(dom.paceMonitorChartEl, { type: 'line', data: { labels: [], datasets: [{ data: [], borderColor: 'rgb(236, 72, 153)', tension: 0.4 }] }, options: paceOptions });
     }
 
     function updateSkillsChart() {
         const chart = appState.charts.skills; if (!chart) return;
-        chart.data.datasets[0].data = chart.data.datasets[0].data.map(d => Math.min(100, d + (Math.random() * 20 + 5)));
+        chart.data.datasets[0].data = chart.data.datasets[0].data.map(d => Math.min(100, d + (Math.random() * 15 + 5)));
         chart.update();
-    }
-    
-    function updatePaceChart(timeLabel) {
-        const chart = appState.charts.pace; if (!chart) return;
-        const newPace = Math.floor(Math.random() * 50) + 110;
-        chart.data.labels.push(timeLabel);
-        chart.data.datasets[0].data.push(newPace);
-        if (chart.data.labels.length > 10) { chart.data.labels.shift(); chart.data.datasets[0].data.shift(); }
-        chart.update('quiet');
     }
     
     function renderFinalReport(reportText) {
@@ -396,7 +393,9 @@
         dom.reportScreen.classList.remove('hidden');
 
         const finalChartEl = document.getElementById('final-skills-chart');
-        new Chart(finalChartEl, { type: 'radar', data: appState.charts.skills.data, options: appState.charts.skills.options });
+        if (finalChartEl && appState.charts.skills) {
+            new Chart(finalChartEl, { type: 'radar', data: appState.charts.skills.data, options: appState.charts.skills.options });
+        }
         document.getElementById('restart-btn').addEventListener('click', () => window.location.reload());
     }
 
