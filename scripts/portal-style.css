@@ -244,7 +244,6 @@ body {
   justify-content: space-around;
   background-color: var(--surface-bg);
   padding: 0.5rem;
-  box-shadow: var(--shadow-sm);
   margin: 1.5rem auto 0;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   border: 1px solid var(--border-light);
@@ -854,8 +853,8 @@ body {
   .brand-logo { height: 28px; }
   .icon-button svg { width: 20px; height: 20px; }
   .main-content-area { padding: 1rem; }
-  .controls-section { padding: 1rem; margin: 1.5rem auto 0; border-radius: 0; max-width: 100%;}
-  .portal-nav-bar { margin-top: 1.5rem; max-width: 100%; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+  .portal-nav-bar { margin: 1.5rem auto 0; }
+  .controls-section { padding: 1rem; margin: 0 auto 1.5rem; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
   .filter-bar-wrapper.expanded { max-height: 400px; }
   .job-card { flex-direction: row; align-items: center; gap: 1rem; }
   .job-card-actions { margin-left: auto; margin-top: 0; }
