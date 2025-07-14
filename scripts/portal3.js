@@ -73,7 +73,11 @@ function isValidSalary(salary) {
 function renderJobCard(job) {
     const jobCard = document.createElement('article');
     jobCard.className = 'job-card';
-    jobCard.addEventListener('click', () => showModal(job));
+    jobCard.addEventListener('click', (e) => {
+        if (!e.target.closest('.apply-now-card-btn')) {
+            showModal(job);
+        }
+    });
     const companyInitial = job.Company ? job.Company.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
 

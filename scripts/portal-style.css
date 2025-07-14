@@ -257,6 +257,13 @@ body {
   border-radius: var(--radius-full);
   position: relative;
   height: auto;
+  border: none;
+  background-color: transparent;
+  color: var(--text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
 }
 .portal-nav-bar .footer-tab span {
   font-size: 0.9rem;
@@ -267,6 +274,7 @@ body {
 .portal-nav-bar .footer-tab.active {
   background-color: var(--primary-brand);
   color: white;
+  box-shadow: var(--shadow-md);
 }
 .portal-nav-bar .footer-tab:not(.active):hover {
   background-color: var(--neutral-bg);
@@ -316,20 +324,20 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  width: 100%;
-  padding: 0.75rem 1rem;
+  width: auto;
+  padding: 0.6rem 1rem;
   margin-top: 1rem;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-secondary);
-  background-color: var(--neutral-bg);
+  background-color: var(--surface-bg);
   border: 1px solid var(--border-light);
   border-radius: var(--radius-md);
   cursor: pointer;
   transition: all var(--transition-std);
 }
 .filter-toggle-btn:hover {
-  background-color: var(--border-light);
+  background-color: var(--neutral-bg);
   color: var(--text-primary);
 }
 .filter-toggle-btn .arrow-icon {
@@ -642,7 +650,7 @@ body {
 .modal-actions {
   display: flex;
   gap: 1rem;
-  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
   flex-wrap: wrap;
 }
 .btn {
@@ -796,6 +804,18 @@ body {
   .whatsapp-fab { bottom: 1.5rem; right: 1rem; height: 50px; width: 50px; }
   .whatsapp-fab svg { width: 24px; height: 24px; }
   .whatsapp-fab:hover { width: 160px; }
+  .portal-nav-bar {
+    overflow-x: auto;
+    justify-content: flex-start;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .portal-nav-bar::-webkit-scrollbar {
+      display: none;
+  }
+  .portal-nav-bar .footer-tab {
+      flex-shrink: 0;
+  }
 }
 
 @media (max-width: 480px) {
@@ -825,17 +845,9 @@ body {
     width: auto;
     max-width: none;
   }
-  .portal-nav-bar {
-    overflow-x: auto;
-    justify-content: flex-start;
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-  .portal-nav-bar::-webkit-scrollbar {
-      display: none;
-  }
-  .portal-nav-bar .footer-tab {
-      flex-shrink: 0;
-      padding: 0.5rem 0.75rem;
+  .user-hover-card {
+    right: 0;
+    width: 200px;
+    padding: 0.75rem;
   }
 }
