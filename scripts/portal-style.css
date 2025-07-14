@@ -241,43 +241,48 @@ body {
 
 .portal-nav-bar {
   display: flex;
-  justify-content: center;
-  gap: 0.5rem;
+  justify-content: space-around;
   background-color: var(--surface-bg);
   padding: 0.5rem;
-  border-radius: var(--radius-full);
   box-shadow: var(--shadow-sm);
   margin: 1.5rem auto;
-  max-width: fit-content;
+  border-radius: var(--radius-lg);
   border: 1px solid var(--border-light);
+  max-width: 500px;
 }
 .portal-nav-bar .footer-tab {
-  flex: 0 1 auto;
-  padding: 0.5rem 1.25rem;
-  border-radius: var(--radius-full);
-  position: relative;
-  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
   border: none;
-  background-color: transparent;
-  color: var(--text-secondary);
-  font-weight: 500;
+  background: transparent;
+  color: var(--text-muted);
   cursor: pointer;
+  transition: all var(--transition-fast);
+  border-radius: var(--radius-md);
+  flex: 1;
+  padding: 0.5rem 0.25rem;
   text-decoration: none;
-  transition: background-color var(--transition-fast), color var(--transition-fast);
+  height: auto;
 }
 .portal-nav-bar .footer-tab span {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
 }
 .portal-nav-bar .footer-tab .tab-icon {
-  display: none;
+  width: 22px;
+  height: 22px;
+  margin-bottom: 0.1rem;
 }
 .portal-nav-bar .footer-tab.active {
-  background-color: var(--primary-brand);
-  color: white;
-  box-shadow: var(--shadow-md);
+  color: var(--primary-brand);
+  background-color: rgba(59, 130, 246, 0.05);
 }
 .portal-nav-bar .footer-tab:not(.active):hover {
-  background-color: var(--neutral-bg);
   color: var(--primary-brand);
 }
 
@@ -794,8 +799,8 @@ body {
   .main-content-area { padding: 1rem; }
   .controls-section { padding: 1rem; margin: 1.5rem 0; }
   .filter-bar-wrapper.expanded { max-height: 400px; }
-  .job-card { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
-  .job-card-actions { margin-left: 0; margin-top: 0.75rem; }
+  .job-card { flex-direction: row; align-items: center; gap: 1rem; }
+  .job-card-actions { margin-left: auto; margin-top: 0; }
   .modal-dialog { max-width: calc(100% - 2rem); }
   #modal-body-content { padding: 1.5rem; }
   .modal-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
@@ -826,7 +831,9 @@ body {
   .search-input-field { padding: 0.75rem 1rem; padding-right: 2.5rem; font-size: 0.9rem; }
   .search-button { right: 0.25rem; }
   .filter-control { padding: 0.6rem 0.75rem; font-size: 0.85rem; }
-  .job-card { padding: 1rem; }
+  .job-card { padding: 1rem; flex-direction: column; align-items: flex-start; }
+  .job-card-actions { margin-left: 0; margin-top: 1rem; width: 100%; }
+  .apply-now-card-btn { width: 100%; text-align: center; }
   .job-card-company { font-size: 1.1rem; }
   .job-tag { font-size: 0.7rem; padding: 0.2rem 0.6rem; }
   .modal-title-group h2 { font-size: 1.25rem; }

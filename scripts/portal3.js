@@ -361,6 +361,16 @@ function setupEventListeners() {
             filterToggleButton.classList.toggle('expanded');
         });
     }
+
+    if(notificationsBtn && closeNotificationPopup) {
+        notificationsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notificationPopup.style.display = 'flex';
+        });
+        closeNotificationPopup.addEventListener('click', () => {
+            notificationPopup.style.display = 'none';
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
