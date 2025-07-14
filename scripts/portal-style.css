@@ -35,7 +35,7 @@ body {
   background-color: var(--neutral-bg);
   color: var(--text-primary);
   padding-top: 70px;
-  padding-bottom: 2rem;
+  padding-bottom: 65px;
   line-height: 1.6;
 }
 
@@ -244,7 +244,6 @@ body {
   justify-content: space-around;
   background-color: var(--surface-bg);
   padding: 0.5rem;
-  box-shadow: var(--shadow-sm);
   margin: 1.5rem auto 0;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   border: 1px solid var(--border-light);
@@ -270,7 +269,7 @@ body {
   border-right: 1px solid var(--border-light);
 }
 .portal-nav-bar .footer-tab:last-child {
-  border-right: none;
+    border-right: none;
 }
 .portal-nav-bar .footer-tab .tab-icon {
   width: 22px;

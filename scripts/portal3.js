@@ -21,6 +21,7 @@ const menuCloseBtn = document.getElementById('menuCloseBtn');
 const authButtonsContainer = document.querySelector('.auth-buttons-container');
 const filterToggleButton = document.getElementById('filter-toggle-btn');
 const filterBarWrapper = document.querySelector('.filter-bar-wrapper');
+
 const notificationsBtn = document.getElementById('notificationsBtn');
 const notificationPopup = document.getElementById('notificationPopup');
 const closeNotificationPopup = document.getElementById('closeNotificationPopup');
@@ -69,13 +70,13 @@ const LOCATIONS_NOTIF = [
 ];
 const SYNC_TIMESTAMP_KEY = 'notificationSyncTimestamp';
 const SUBSCRIBED_TOPICS_KEY = 'subscribedTopics';
+
 const JOB_TITLE_MAP = {
     "Industrial Training Job Portal": "Industrial Trainee",
     "Fresher Jobs": "CA Fresher",
     "Semi Qualified Jobs": "CA Semi Qualified",
     "Articleship Jobs": "Articleship Trainee"
 };
-
 
 if (window.location.pathname.includes('articleship')) {
   currentTable = 'Articleship Jobs';
@@ -155,8 +156,7 @@ async function showModal(job) {
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Job Description</h3>
             <p class="modal-description">${job.Description || 'No description available.'}</p>
-        </div>
-        `;
+        </div>`;
     modalOverlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
@@ -228,12 +228,9 @@ async function fetchJobs() {
         }
         const category = categoryFilter.value;
         if (category) query = query.ilike('Category', `%${category}%`);
-        const experienceFilter = document.getElementById('experienceFilter');
         if (experienceFilter && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
             const experience = experienceFilter.value;
-            if (experience) {
-                query = query.eq('Experience', experience);
-            }
+            if (experience) query = query.eq('Experience', experience);
         }
         query = query.order('Created_At', { ascending: false }).range(page * limit, (page + 1) * limit - 1);
         const { data, error } = await query;
@@ -460,7 +457,7 @@ function updatePermissionStatusUI() {
 function populateNotificationDropdowns() {
     if (locationSelectEl) {
         locationSelectEl.innerHTML = '<option value="" disabled selected>Select Location</option>';
-        LOCATIONS_NOTIF.forEach(loc => { const opt = document.createElement('option'); opt.value = loc; opt.textContent = loc.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '); locationSelectEl.appendChild(opt); });
+        LOCATIONS_NOTIF.sort().forEach(loc => { const opt = document.createElement('option'); opt.value = loc; opt.textContent = loc.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '); locationSelectEl.appendChild(opt); });
     }
     if (jobTypeSelectEl) {
         jobTypeSelectEl.innerHTML = '<option value="" disabled selected>Select Job Type</option>';
@@ -546,7 +543,7 @@ function setupEventListeners() {
         });
     }
 
-    if(notificationsBtn && closeNotificationPopup) {
+    if(notificationsBtn && notificationPopup && closeNotificationPopup) {
         notificationsBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             notificationPopup.style.display = notificationPopup.style.display === 'flex' ? 'none' : 'flex';
@@ -562,6 +559,41 @@ function setupEventListeners() {
             notificationPopup.style.display = 'none';
         });
     }
+    
+    if (enableNotificationsBtn) {
+        enableNotificationsBtn.addEventListener('click', async () => {
+            try {
+                const permission = await Notification.requestPermission();
+                updatePermissionStatusUI();
+                if (permission === 'granted') {
+                    showNotifStatus("Notifications enabled!", 'success');
+                    await initializeFCM();
+                    renderSubscribedTopics();
+                } else { showNotifStatus("Permission not granted.", 'info'); }
+            } catch (err) { showNotifStatus("Error enabling notifications.", 'error'); }
+        });
+    }
+
+    if (topicAllCheckbox) {
+        topicAllCheckbox.addEventListener('change', async (e) => {
+            const isChecked = e.target.checked;
+            if (!(await (isChecked ? subscribeToTopic('all') : unsubscribeFromTopic('all')))) e.target.checked = !isChecked;
+        });
+    }
+
+    if (locationSelectEl && jobTypeSelectEl && subscribeBtnEl) {
+        const updateSubBtnState = () => { subscribeBtnEl.disabled = !(locationSelectEl.value && jobTypeSelectEl.value); };
+        locationSelectEl.addEventListener('change', updateSubBtnState);
+        jobTypeSelectEl.addEventListener('change', updateSubBtnState);
+        updateSubBtnState();
+        subscribeBtnEl.addEventListener('click', async () => {
+            const location = locationSelectEl.value, jobType = jobTypeSelectEl.value;
+            if (!location || !jobType) { showNotifStatus("Please select location and job type", "error"); return; }
+            const topicName = `${location.toLowerCase().replace(/\s+/g, '-')}-${jobType}`;
+            if (getSubscribedTopics().includes(topicName)) { showNotifStatus("Already subscribed to this topic", "info"); return; }
+            if (await subscribeToTopic(topicName)) { locationSelectEl.selectedIndex = 0; jobTypeSelectEl.selectedIndex = 0; subscribeBtnEl.disabled = true; }
+        });
+    }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -572,6 +604,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     fetchJobs();
     setupEventListeners();
     loadBanners();
+    populateNotificationDropdowns();
     if (Notification.permission === 'granted') {
         initializeFCM().then(() => updateNotificationBadge());
     } else {
