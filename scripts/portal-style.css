@@ -221,7 +221,7 @@ body {
   padding: 1.5rem;
 }
 
-.banner-section { display: none; margin: 2rem 0; }
+.banner-section { display: none; margin-bottom: 2rem; }
 .banner-section .carousel {
   width: 100%;
   aspect-ratio: 16 / 5;
@@ -245,10 +245,11 @@ body {
   background-color: var(--surface-bg);
   padding: 0.5rem;
   box-shadow: var(--shadow-sm);
-  margin: 1.5rem auto;
-  border-radius: var(--radius-lg);
+  margin: 1.5rem auto 0;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   border: 1px solid var(--border-light);
-  max-width: 500px;
+  border-bottom: none;
+  max-width: 1200px;
 }
 .portal-nav-bar .footer-tab {
   display: flex;
@@ -266,17 +267,21 @@ body {
   padding: 0.5rem 0.25rem;
   text-decoration: none;
   height: auto;
+  border-right: 1px solid var(--border-light);
+}
+.portal-nav-bar .footer-tab:last-child {
+  border-right: none;
+}
+.portal-nav-bar .footer-tab .tab-icon {
+  width: 22px;
+  height: 22px;
+  margin-bottom: 0.2rem;
 }
 .portal-nav-bar .footer-tab span {
   font-size: 0.8rem;
   font-weight: 500;
   line-height: 1.2;
   text-align: center;
-}
-.portal-nav-bar .footer-tab .tab-icon {
-  width: 22px;
-  height: 22px;
-  margin-bottom: 0.1rem;
 }
 .portal-nav-bar .footer-tab.active {
   color: var(--primary-brand);
@@ -288,10 +293,13 @@ body {
 
 .controls-section {
   background: var(--surface-bg);
-  border-radius: var(--radius-xl);
+  border-radius: 0 0 var(--radius-xl) var(--radius-xl);
   padding: 1.5rem;
-  margin: 2rem 0;
+  margin: 0 auto 2rem;
   box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+  border-top: none;
+  max-width: 1200px;
 }
 
 .search-bar-wrapper {
@@ -655,7 +663,9 @@ body {
 .modal-actions {
   display: flex;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-top: 2rem;
+  border-top: 1px solid var(--border-light);
+  padding-top: 1.5rem;
   flex-wrap: wrap;
 }
 .btn {
@@ -696,7 +706,7 @@ body {
 
 .whatsapp-fab {
   position: fixed;
-  bottom: 2rem;
+  bottom: 85px;
   right: 1.25rem;
   width: 56px;
   height: 56px;
@@ -748,6 +758,7 @@ body {
 }
 .user-profile-container {
     position: relative;
+    margin-left: 0.5rem;
 }
 .user-icon-wrapper { position: relative; }
 .user-icon {
@@ -791,7 +802,7 @@ body {
 .logout-btn:hover { background-color: #FECACA; }
 
 @media (max-width: 768px) {
-  body { padding-top: 60px; }
+  body { padding-top: 60px; padding-bottom: 60px; }
   .site-header { height: 60px; }
   .header-container { padding: 0 1rem; }
   .brand-logo { height: 28px; }
@@ -806,7 +817,7 @@ body {
   .modal-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
   .modal-logo { width: 56px; height: 56px; font-size: 2rem; }
   .modal-title-group h2 { font-size: 1.4rem; }
-  .whatsapp-fab { bottom: 1.5rem; right: 1rem; height: 50px; width: 50px; }
+  .whatsapp-fab { bottom: 75px; right: 1rem; height: 50px; width: 50px; }
   .whatsapp-fab svg { width: 24px; height: 24px; }
   .whatsapp-fab:hover { width: 160px; }
   .portal-nav-bar {
