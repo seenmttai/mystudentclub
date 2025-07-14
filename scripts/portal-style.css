@@ -221,12 +221,12 @@ body {
   padding: 1.5rem;
 }
 
-.banner-section { display: none; margin-bottom: 2rem; }
+.banner-section { display: none; }
 .banner-section .carousel {
   width: 100%;
   aspect-ratio: 16 / 5;
   background-color: var(--border-light);
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   position: relative;
 }
@@ -244,6 +244,7 @@ body {
   justify-content: space-around;
   background-color: var(--surface-bg);
   padding: 0.5rem;
+  box-shadow: var(--shadow-sm);
   margin: 1.5rem auto 0;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   border: 1px solid var(--border-light);
@@ -662,9 +663,7 @@ body {
 .modal-actions {
   display: flex;
   gap: 1rem;
-  margin-top: 2rem;
-  border-top: 1px solid var(--border-light);
-  padding-top: 1.5rem;
+  margin-bottom: 1.5rem;
   flex-wrap: wrap;
 }
 .btn {
@@ -701,6 +700,54 @@ body {
   background-color: var(--border-light);
   border-color: var(--text-muted);
   transform: translateY(-1px);
+}
+
+.site-footer-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface-bg);
+  display: flex;
+  justify-content: space-around;
+  box-shadow: 0 -2px 5px rgba(0,0,0,0.08);
+  z-index: 900;
+  height: 65px;
+  border-top: 1px solid var(--border-light);
+}
+.footer-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.125rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  flex: 1;
+  padding: 0.5rem 0.25rem;
+  text-decoration: none;
+  height: 100%;
+}
+.footer-tab span {
+  font-size: 0.65rem;
+  font-weight: 500;
+  line-height: 1.2;
+  text-align: center;
+}
+.footer-tab svg {
+  width: 20px;
+  height: 20px;
+  margin-bottom: 0.1rem;
+}
+.footer-tab.active {
+  color: var(--primary-brand);
+  background-color: rgba(59, 130, 246, 0.05);
+}
+.footer-tab:hover {
+  color: var(--primary-brand);
 }
 
 .whatsapp-fab {
@@ -807,7 +854,8 @@ body {
   .brand-logo { height: 28px; }
   .icon-button svg { width: 20px; height: 20px; }
   .main-content-area { padding: 1rem; }
-  .controls-section { padding: 1rem; margin: 1.5rem 0; }
+  .controls-section { padding: 1rem; margin: 1.5rem auto 0; border-radius: 0; max-width: 100%;}
+  .portal-nav-bar { margin-top: 1.5rem; max-width: 100%; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
   .filter-bar-wrapper.expanded { max-height: 400px; }
   .job-card { flex-direction: row; align-items: center; gap: 1rem; }
   .job-card-actions { margin-left: auto; margin-top: 0; }
@@ -816,6 +864,9 @@ body {
   .modal-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
   .modal-logo { width: 56px; height: 56px; font-size: 2rem; }
   .modal-title-group h2 { font-size: 1.4rem; }
+  .site-footer-nav { height: 60px; }
+  .footer-tab svg { width: 18px; height: 18px; }
+  .footer-tab span { font-size: 0.6rem; }
   .whatsapp-fab { bottom: 75px; right: 1rem; height: 50px; width: 50px; }
   .whatsapp-fab svg { width: 24px; height: 24px; }
   .whatsapp-fab:hover { width: 160px; }
