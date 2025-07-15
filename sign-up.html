@@ -427,6 +427,28 @@
             errorMessage.classList.add('show');
         }
     });
+
+    window.handleGoogleSignInToken = async function(id_token) {
+        if (!id_token) {
+            console.error("Native Google Sign-In did not provide a token.");
+            return;
+        }
+        try {
+            const { error } = await supabaseClient.auth.signInWithIdToken({
+                provider: 'google',
+                token: id_token
+            });
+
+            if (error) {
+                console.error('Supabase sign-in with Google token failed:', error.message);
+                alert('Could not complete Google Sign-In: ' + error.message);
+            } else {
+                window.location.href = '/'; 
+            }
+        } catch (e) {
+            console.error("An unexpected error occurred during Google Sign-In:", e);
+        }
+    };
   </script>
 </body>
 </html>

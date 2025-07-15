@@ -86,6 +86,12 @@ if (window.location.pathname.includes('articleship')) {
   currentTable = 'Fresher Jobs';
 }
 
+window.setFcmToken = function(token) {
+    console.log("FCM Token received from native app:", token);
+    currentFcmToken = token;
+    syncNotificationTopics();
+};
+
 function isValidSalary(salary) {
     if (salary === null || salary === undefined) return false;
     const salaryStr = String(salary).trim();
