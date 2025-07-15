@@ -86,12 +86,6 @@ if (window.location.pathname.includes('articleship')) {
   currentTable = 'Fresher Jobs';
 }
 
-window.setFcmToken = function(token) {
-    console.log("FCM Token received from native app:", token);
-    currentFcmToken = token;
-    syncNotificationTopics();
-};
-
 function isValidSalary(salary) {
     if (salary === null || salary === undefined) return false;
     const salaryStr = String(salary).trim();
@@ -443,26 +437,23 @@ async function subscribeToTopic(topic) { return manageTopicSubscription(topic, '
 async function unsubscribeFromTopic(topic) { return manageTopicSubscription(topic, 'unsubscribe'); }
 
 function updatePermissionStatusUI() {
-    if (!permissionStatusDiv || !enableNotificationsBtn || !topicSelectionArea) return;
-
-    if (window.flutter_inappwebview || typeof Notification === 'undefined') {
-        permissionStatusDiv.textContent = 'Notifications are managed by the app. Please check your phone settings.';
+    if (window.flutter_inappwebview) {
+        permissionStatusDiv.textContent = "Notifications are managed by the app.";
         permissionStatusDiv.className = 'notification-status status-info';
         permissionStatusDiv.style.display = 'block';
         enableNotificationsBtn.style.display = 'none';
-        topicSelectionArea.style.display = 'none';
+        topicSelectionArea.style.display = 'block';
         return;
     }
-
+    if (!permissionStatusDiv || !enableNotificationsBtn || !topicSelectionArea) return;
     const permission = Notification.permission;
     enableNotificationsBtn.style.display = permission === 'default' ? 'block' : 'none';
     topicSelectionArea.style.display = permission === 'granted' ? 'block' : 'none';
-
     if (permission === 'granted') {
         permissionStatusDiv.textContent = 'Notifications are enabled.';
         permissionStatusDiv.className = 'notification-status status-success';
     } else if (permission === 'denied') {
-        permissionStatusDiv.textContent = 'Notifications are blocked. Please enable them in your browser settings.';
+        permissionStatusDiv.textContent = 'Notifications are blocked. Please enable them in browser settings.';
         permissionStatusDiv.className = 'notification-status status-error';
     } else {
         permissionStatusDiv.textContent = 'Enable notifications for job alerts.';
@@ -490,8 +481,9 @@ async function initializeFCM() {
         firebaseMessaging = firebase.messaging();
 
         firebaseMessaging.onMessage((payload) => {
-            console.log('Message received. ', payload);
-            if (!window.flutter_inappwebview && Notification.permission === 'granted') {
+            console.log('Foreground message received. ', payload);
+            
+            if (!window.flutter_inappwebview && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
                 const notif = payload.notification || {};
                 new Notification(notif.title, { body: notif.body, icon: notif.icon || '/assets/icon-70x70.png' });
             }
@@ -500,11 +492,10 @@ async function initializeFCM() {
         if ('serviceWorker' in navigator) {
             await navigator.serviceWorker.register('/firebase-messaging-sw.js');
         }
-        
-        if (!window.flutter_inappwebview && Notification.permission === 'granted') {
+
+        if (!window.flutter_inappwebview && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
             await requestTokenAndSyncSubscriptions();
         }
-        
     } catch(err) {
         console.error("Error initializing Firebase Messaging:", err);
     }
@@ -579,12 +570,12 @@ function setupEventListeners() {
             notificationPopup.style.display = notificationPopup.style.display === 'flex' ? 'none' : 'flex';
             if (notificationPopup.style.display === 'flex') {
                 updatePermissionStatusUI();
-                if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                if (window.flutter_inappwebview || Notification.permission === 'granted') {
                     if (!firebaseMessaging || !currentFcmToken) initializeFCM().then(() => renderSubscribedTopics());
                     else renderSubscribedTopics();
-                } else {
-                    renderSubscribedTopics();
-                    if(topicSelectionArea) topicSelectionArea.style.display = 'none';
+                } else { 
+                    renderSubscribedTopics(); 
+                    if(topicSelectionArea) topicSelectionArea.style.display = 'none'; 
                 }
             }
         });
@@ -595,7 +586,7 @@ function setupEventListeners() {
     
     if (enableNotificationsBtn) {
         enableNotificationsBtn.addEventListener('click', async () => {
-            if (window.flutter_inappwebview) {
+             if (window.flutter_inappwebview) {
                 showNotifStatus("Please enable notifications through your phone's app settings.", 'info');
                 return;
             }
@@ -638,6 +629,17 @@ function setupEventListeners() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    if (window.flutter_inappwebview) {
+        const notificationsBtn = document.getElementById('notificationsBtn');
+        const notificationPopup = document.getElementById('notificationPopup');
+        if (notificationsBtn) {
+            notificationsBtn.style.display = 'none';
+        }
+        if (notificationPopup) {
+            notificationPopup.style.display = 'none';
+        }
+    }
+
     const session = await checkAuth();
     updateHeaderAuth(session);
     populateSalaryFilter(currentTable);
@@ -646,6 +648,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupEventListeners();
     loadBanners();
     populateNotificationDropdowns();
+    
     if (!window.flutter_inappwebview && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
         initializeFCM().then(() => updateNotificationBadge());
     } else {
