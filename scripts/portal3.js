@@ -477,13 +477,26 @@ async function initializeFCM() {
             firebase.initializeApp(FIREBASE_CONFIG);
         }
         firebaseMessaging = firebase.messaging();
+
         firebaseMessaging.onMessage((payload) => {
-            const notif = payload.notification || {};
-            new Notification(notif.title, { body: notif.body, icon: notif.icon || '/assets/icon-70x70.png' });
+            console.log('Message received. ', payload);
+            if (!window.flutter_inappwebview && Notification.permission === 'granted') {
+                const notif = payload.notification || {};
+                new Notification(notif.title, { body: notif.body, icon: notif.icon || '/assets/icon-70x70.png' });
+            }
         });
-        if ('serviceWorker' in navigator) await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-        if (Notification.permission === 'granted') await requestTokenAndSyncSubscriptions();
-    } catch(err) { console.error("Error initializing Firebase Messaging:", err); }
+
+        if ('serviceWorker' in navigator) {
+            await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        }
+        
+        if (!window.flutter_inappwebview && Notification.permission === 'granted') {
+            await requestTokenAndSyncSubscriptions();
+        }
+        
+    } catch(err) {
+        console.error("Error initializing Firebase Messaging:", err);
+    }
 }
 
 async function requestTokenAndSyncSubscriptions() {
@@ -568,6 +581,10 @@ function setupEventListeners() {
     
     if (enableNotificationsBtn) {
         enableNotificationsBtn.addEventListener('click', async () => {
+            if (window.flutter_inappwebview) {
+                showNotifStatus("Please enable notifications through your phone's app settings.", 'info');
+                return;
+            }
             try {
                 const permission = await Notification.requestPermission();
                 updatePermissionStatusUI();
@@ -575,8 +592,12 @@ function setupEventListeners() {
                     showNotifStatus("Notifications enabled!", 'success');
                     await initializeFCM();
                     renderSubscribedTopics();
-                } else { showNotifStatus("Permission not granted.", 'info'); }
-            } catch (err) { showNotifStatus("Error enabling notifications.", 'error'); }
+                } else {
+                    showNotifStatus("Permission not granted.", 'info');
+                }
+            } catch (err) {
+                showNotifStatus("Error enabling notifications.", 'error');
+            }
         });
     }
 
@@ -611,7 +632,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupEventListeners();
     loadBanners();
     populateNotificationDropdowns();
-    if (Notification.permission === 'granted') {
+    if (!window.flutter_inappwebview && Notification.permission === 'granted') {
         initializeFCM().then(() => updateNotificationBadge());
     } else {
         updateNotificationBadge();
