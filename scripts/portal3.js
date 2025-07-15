@@ -444,14 +444,25 @@ async function unsubscribeFromTopic(topic) { return manageTopicSubscription(topi
 
 function updatePermissionStatusUI() {
     if (!permissionStatusDiv || !enableNotificationsBtn || !topicSelectionArea) return;
+
+    if (window.flutter_inappwebview || typeof Notification === 'undefined') {
+        permissionStatusDiv.textContent = 'Notifications are managed by the app. Please check your phone settings.';
+        permissionStatusDiv.className = 'notification-status status-info';
+        permissionStatusDiv.style.display = 'block';
+        enableNotificationsBtn.style.display = 'none';
+        topicSelectionArea.style.display = 'none';
+        return;
+    }
+
     const permission = Notification.permission;
     enableNotificationsBtn.style.display = permission === 'default' ? 'block' : 'none';
     topicSelectionArea.style.display = permission === 'granted' ? 'block' : 'none';
+
     if (permission === 'granted') {
         permissionStatusDiv.textContent = 'Notifications are enabled.';
         permissionStatusDiv.className = 'notification-status status-success';
     } else if (permission === 'denied') {
-        permissionStatusDiv.textContent = 'Notifications are blocked. Please enable them in browser settings.';
+        permissionStatusDiv.textContent = 'Notifications are blocked. Please enable them in your browser settings.';
         permissionStatusDiv.className = 'notification-status status-error';
     } else {
         permissionStatusDiv.textContent = 'Enable notifications for job alerts.';
@@ -568,10 +579,13 @@ function setupEventListeners() {
             notificationPopup.style.display = notificationPopup.style.display === 'flex' ? 'none' : 'flex';
             if (notificationPopup.style.display === 'flex') {
                 updatePermissionStatusUI();
-                if (Notification.permission === 'granted') {
+                if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
                     if (!firebaseMessaging || !currentFcmToken) initializeFCM().then(() => renderSubscribedTopics());
                     else renderSubscribedTopics();
-                } else { renderSubscribedTopics(); if(topicSelectionArea) topicSelectionArea.style.display = 'none'; }
+                } else {
+                    renderSubscribedTopics();
+                    if(topicSelectionArea) topicSelectionArea.style.display = 'none';
+                }
             }
         });
         closeNotificationPopup.addEventListener('click', () => {
@@ -632,7 +646,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setupEventListeners();
     loadBanners();
     populateNotificationDropdowns();
-    if (!window.flutter_inappwebview && Notification.permission === 'granted') {
+    if (!window.flutter_inappwebview && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
         initializeFCM().then(() => updateNotificationBadge());
     } else {
         updateNotificationBadge();
