@@ -86,6 +86,12 @@ if (window.location.pathname.includes('articleship')) {
   currentTable = 'Fresher Jobs';
 }
 
+window.setFcmToken = function(token) {
+    console.log("FCM Token received from native app:", token);
+    currentFcmToken = token;
+    syncNotificationTopics();
+};
+
 function isValidSalary(salary) {
     if (salary === null || salary === undefined) return false;
     const salaryStr = String(salary).trim();
@@ -438,9 +444,7 @@ async function unsubscribeFromTopic(topic) { return manageTopicSubscription(topi
 
 function updatePermissionStatusUI() {
     if (window.flutter_inappwebview) {
-        permissionStatusDiv.textContent = "Notifications are managed by the app.";
-        permissionStatusDiv.className = 'notification-status status-info';
-        permissionStatusDiv.style.display = 'block';
+        permissionStatusDiv.style.display = 'none';
         enableNotificationsBtn.style.display = 'none';
         topicSelectionArea.style.display = 'block';
         return;
@@ -570,9 +574,20 @@ function setupEventListeners() {
             notificationPopup.style.display = notificationPopup.style.display === 'flex' ? 'none' : 'flex';
             if (notificationPopup.style.display === 'flex') {
                 updatePermissionStatusUI();
-                if (window.flutter_inappwebview || Notification.permission === 'granted') {
-                    if (!firebaseMessaging || !currentFcmToken) initializeFCM().then(() => renderSubscribedTopics());
-                    else renderSubscribedTopics();
+                
+                let shouldInitFcm = false;
+                if (window.flutter_inappwebview) {
+                    shouldInitFcm = true;
+                } else if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+                    shouldInitFcm = true;
+                }
+
+                if (shouldInitFcm) {
+                    if (!firebaseMessaging || !currentFcmToken) {
+                         initializeFCM().then(() => renderSubscribedTopics());
+                    } else {
+                         renderSubscribedTopics();
+                    }
                 } else { 
                     renderSubscribedTopics(); 
                     if(topicSelectionArea) topicSelectionArea.style.display = 'none'; 
@@ -632,12 +647,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (window.flutter_inappwebview) {
         const notificationsBtn = document.getElementById('notificationsBtn');
         const notificationPopup = document.getElementById('notificationPopup');
-        if (notificationsBtn) {
-            notificationsBtn.style.display = 'none';
-        }
-        if (notificationPopup) {
-            notificationPopup.style.display = 'none';
-        }
     }
 
     const session = await checkAuth();
