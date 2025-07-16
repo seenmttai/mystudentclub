@@ -218,23 +218,15 @@
             <div class="form-group">
                 <label for="domainSelect" class="form-group label">Your Domain</label>
                 <select id="domainSelect" name="domain" class="w-full p-3 border border-border rounded-lg bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
-                    <option value="Finance & Accounting" selected>Finance & Accounting</option>
-                    <option value="Banking">Banking</option>
-                    <option value="Human Resource">Human Resource</option>
-                    <option value="Marketing & Growth">Marketing & Growth</option>
-                    <option value="Sales & Business Development">Sales & Business Development</option>
-                    <option value="Technology">Technology</option>
+                    <option value="Audit & Assurance" selected>Audit & Assurance</option>
+                    <option value="Direct & Indirect Taxation">Direct & Indirect Taxation</option>
+                    <option value="Finance & Corporate Roles">Finance & Corporate Roles</option>
+                    <option value="Consulting & Advisory">Consulting & Advisory</option>
                 </select>
             </div>
             <div class="form-group">
                 <label for="specializationSelect" class="form-group label">Your Specialization</label>
                 <select id="specializationSelect" name="specialization" class="w-full p-3 border border-border rounded-lg bg-gray-50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary">
-                    <option value="Accountant" selected>Accountant</option>
-                    <option value="AP/AR Specialist">AP/AR Specialist</option>
-                    <option value="Corporate Income Tax">Corporate Income Tax</option>
-                    <option value="Direct Tax">Direct Tax</option>
-                    <option value="Equity Research">Equity Research</option>
-                    <option value="ESG">ESG</option>
                 </select>
             </div>
             <button class="submit-btn w-full" id="analyzeBtn">
@@ -359,22 +351,22 @@
 
   <script type="module" src="cv-reviewer.js"></script>
   <script>
-    const resourcesBtn = document.getElementById('resourcesDropdownBtn');
-    const resourcesDropdown = document.getElementById('resourcesDropdown');
-    const dropdownIcon = resourcesBtn.querySelector('.dropdown-icon');
+const resourcesBtn = document.getElementById('resourcesDropdownBtn');
+const resourcesDropdown = document.getElementById('resourcesDropdown');
+const dropdownIcon = resourcesBtn.querySelector('.dropdown-icon');
 
-    resourcesBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        resourcesDropdown.classList.toggle('active');
-        dropdownIcon.classList.toggle('open');
-    });
+resourcesBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    resourcesDropdown.classList.toggle('active');
+    dropdownIcon.classList.toggle('open');
+});
 
-    document.addEventListener('click', (e) => {
-        if (!resourcesBtn.contains(e.target) && !resourcesDropdown.contains(e.target)) {
-            resourcesDropdown.classList.remove('active');
-            dropdownIcon.classList.remove('open');
-        }
-    });
+document.addEventListener('click', (e) => {
+    if (!resourcesBtn.contains(e.target) && !resourcesDropdown.contains(e.target)) {
+        resourcesDropdown.classList.remove('active');
+        dropdownIcon.classList.remove('open');
+    }
+});
   </script>
 </body>
 </html>
