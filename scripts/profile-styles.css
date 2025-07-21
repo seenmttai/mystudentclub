@@ -1,0 +1,161 @@
+body {
+    background-color: #f9fafb;
+}
+.profile-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    color: #1F2937;
+    margin-bottom: 0.5rem;
+}
+.subtitle {
+    text-align: center;
+    color: #6B7280;
+    margin-bottom: 2.5rem;
+}
+.profile-section {
+    background-color: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+.profile-section h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+.form-group label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+.form-group input[disabled] {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+}
+textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+.file-drop-zone {
+    border: 2px dashed #d1d5db;
+    border-radius: 8px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.file-drop-zone:hover {
+    border-color: #3B82F6;
+    background-color: #EFF6FF;
+}
+.file-drop-zone p {
+    color: #6B7280;
+    margin: 0;
+}
+.file-info-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #DBEAFE;
+    color: #1E40AF;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-weight: 500;
+}
+#remove-resume-btn {
+    background: none;
+    border: none;
+    color: #1E40AF;
+    font-size: 1.2rem;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+#remove-resume-btn:hover {
+    opacity: 1;
+}
+.field-note {
+    font-size: 0.8rem;
+    color: #6B7280;
+    margin-top: 0.5rem;
+}
+.form-actions {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+}
+.save-profile-btn {
+    padding: 0.75rem 2rem;
+    background-color: #10B981;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.save-profile-btn:hover {
+    background-color: #059669;
+}
+.save-profile-btn:disabled {
+    background-color: #9CA3AF;
+    cursor: not-allowed;
+}
+.save-profile-btn .fa-spinner {
+    display: none;
+    margin-left: 0.5rem;
+}
+.save-profile-btn:disabled .fa-spinner {
+    display: inline-block;
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    display: none; 
+}
+.loading-overlay.visible {
+    display: flex;
+}

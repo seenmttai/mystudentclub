@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile - My Student Club</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
+    <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/profile-styles.css">
+    <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <header class="site-header">
+         <div class="header-container">
+            <a href="/" class="brand-link"><img src="/assets/logo.png" alt="My Student Club" class="brand-logo"></a>
+            <div class="nav-actions">
+                <div class="auth-buttons-container"></div>
+                <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+            </div>
+        </div>
+    </header>
+     <div class="expanded-menu" id="expandedMenu">
+        <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+        <div class="menu-items-container">
+             <a href="/" class="menu-item">Job Portal</a>
+             <a href="/profile.html" class="menu-item">My Profile</a>
+             <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
+        </div>
+    </div>
+
+    <main class="profile-container">
+        <div id="loading-overlay" class="loading-overlay">
+            <div class="loader-spinner"></div>
+            <p>Loading Profile...</p>
+        </div>
+
+        <form id="profile-form">
+            <h1>My Professional Profile</h1>
+            <p class="subtitle">Keep this updated to help our AI craft the perfect job applications for you.</p>
+
+            
+            <div class="profile-section">
+                <h2>Section 1: Personal Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email ID (cannot be changed)</label>
+                        <input type="email" id="email" name="email" readonly disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact_number">Contact Number *</label>
+                        <input type="tel" id="contact_number" name="contact_number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="linkedin_url">LinkedIn Profile URL</label>
+                        <input type="url" id="linkedin_url" name="linkedin_url" placeholder="https://linkedin.com/in/yourprofile">
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="profile-section">
+                <h2>Section 2: Resume (Mandatory for AI features)</h2>
+                <div id="resume-upload-area">
+                    <label for="resume">Upload your Resume (PDF or .txt) *</label>
+                    <div class="file-drop-zone">
+                        <input type="file" id="resume" name="resume" accept=".pdf,.txt">
+                        <p>Drag & drop your file here, or click to browse.</p>
+                    </div>
+                </div>
+                <div id="resume-display-area" style="display: none;">
+                     <div class="file-info-tag">
+                        <span id="resume-filename"></span>
+                        <button type="button" id="remove-resume-btn">×</button>
+                     </div>
+                     <p class="field-note">Your resume text has been cached in this browser.</p>
+                </div>
+            </div>
+
+            
+            <div class="profile-section">
+                <h2>Section 3: CA Education Details</h2>
+                <div class="form-grid">
+                     <div class="form-group">
+                        <label for="ca_level">Current Level in CA Journey</label>
+                        <select id="ca_level" name="ca_level">
+                            <option value="">Select Level</option>
+                            <option>Foundation Cleared</option>
+                            <option>Inter One Group Cleared</option>
+                            <option>Inter Both Groups Cleared</option>
+                            <option>Final One Group Cleared</option>
+                            <option>Final Cleared (Qualified CA)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="foundation_attempts">CA Foundation Attempts</label>
+                        <input type="number" id="foundation_attempts" name="foundation_attempts" min="0" placeholder="e.g., 1">
+                    </div>
+                    <div class="form-group">
+                        <label for="inter_attempts">CA Inter Attempts</label>
+                        <input type="number" id="inter_attempts" name="inter_attempts" min="0" placeholder="e.g., 2">
+                    </div>
+                    <div class="form-group">
+                        <label for="final_attempts">CA Final Attempts</label>
+                        <input type="number" id="final_attempts" name="final_attempts" min="0" placeholder="e.g., 1">
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label for="achievements">Ranks or Achievements (e.g., AIR 49 in Inter)</label>
+                    <textarea id="achievements" name="achievements" rows="3"></textarea>
+                </div>
+            </div>
+
+            
+            <div class="profile-section">
+                <h2>Section 4: Experience</h2>
+                 <div class="form-grid">
+                    <div class="form-group">
+                        <label for="articleship_firm_type">Articleship Firm Type</label>
+                        <select id="articleship_firm_type" name="articleship_firm_type">
+                            <option value="">Select Type</option>
+                            <option>Big4/6</option>
+                            <option>Mid Size Firm</option>
+                            <option>Small size/Proprietary Firm</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="articleship_domain">Articleship Domain</label>
+                        <select id="articleship_domain" name="articleship_domain">
+                            <option value="">Select Domain</option>
+                            <option>Statutory Audit</option>
+                            <option>Internal Audit</option>
+                            <option>Direct Tax</option>
+                            <option>Indirect Tax</option>
+                            <option>Multiple Domains</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label for="industrial_training_company">Industrial Training Company (if any)</label>
+                    <input type="text" id="industrial_training_company" name="industrial_training_company" placeholder="e.g., Goldman Sachs, HUL">
+                </div>
+            </div>
+            
+            
+            <div class="profile-section">
+                 <h2>Section 5: Job Preferences</h2>
+                 <div class="form-grid">
+                    <div class="form-group">
+                        <label for="current_location">Current Location</label>
+                        <input type="text" id="current_location" name="current_location" placeholder="e.g., Mumbai">
+                    </div>
+                     <div class="form-group">
+                        <label for="preferred_locations">Preferred Locations (comma-separated)</label>
+                        <input type="text" id="preferred_locations" name="preferred_locations" placeholder="e.g., Bangalore, Gurgaon, Pune">
+                    </div>
+                 </div>
+            </div>
+            
+            <div class="form-actions">
+                 <button type="submit" class="save-profile-btn">
+                     <span class="btn-text">Save Profile</span>
+                     <i class="fas fa-spinner fa-spin" style="display: none;"></i>
+                 </button>
+            </div>
+        </form>
+    </main>
+
+    <script type="module" src="https://www.mystudentclub.com/scripts/profile.js"></script>
+</body>
+</html>
