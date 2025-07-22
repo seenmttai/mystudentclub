@@ -796,10 +796,9 @@ downloadReportBtn.addEventListener('click', () => {
   a.download = `${safeFileName}_Analysis_Report.txt`;
   document.body.appendChild(a);
   a.click();
-  setTimeout(() => {
+  setTimeout(() => { 
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, 100);
+  }, 500);
 });
 
 function resetToUploadStageOnError() {

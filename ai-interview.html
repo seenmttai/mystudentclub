@@ -1432,8 +1432,9 @@
         a.download = 'AI-Interview-Transcript.txt';
         document.body.appendChild(a);
         a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+        setTimeout(() => {
+            document.body.removeChild(a);
+        }, 500);
     }
   </script>
 </body>

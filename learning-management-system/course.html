@@ -796,8 +796,9 @@
                         a.download = resource.download_storage_path.split('/').pop() || 'download';
                         document.body.appendChild(a);
                         a.click();
-                        window.URL.revokeObjectURL(url);
-                        a.remove();
+                        setTimeout(() => {
+                            a.remove();
+                        }, 500);
                     } catch (err) {
                         alert('Could not download the file. Please try again.');
                     }
