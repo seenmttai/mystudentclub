@@ -497,12 +497,29 @@ body {
   font-size: 0.85rem;
   white-space: nowrap;
   text-decoration: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 .apply-now-card-btn:hover {
   background-color: var(--primary-hover);
   transform: scale(1.05);
 }
+.apply-now-card-btn:disabled {
+    background-color: var(--text-muted);
+    cursor: not-allowed;
+}
+.apply-now-card-btn .fa-spinner {
+    display: none;
+}
+.apply-now-card-btn:disabled .fa-spinner {
+    display: inline-block;
+}
+.apply-now-card-btn:disabled .btn-text {
+    margin-right: 0.5rem;
+}
+
 
 .loader-container {
   display: none;
@@ -544,6 +561,14 @@ body {
   cursor: not-allowed;
   transform: none;
 }
+.action-button .fa-spinner {
+    display: none;
+    margin-left: 0.5rem;
+}
+.action-button:disabled .fa-spinner {
+    display: inline-block;
+}
+
 .load-more-action { display: none; }
 
 .modal-overlay-container {
@@ -689,6 +714,16 @@ body {
   background-color: var(--primary-hover);
   transform: translateY(-1px);
   box-shadow: var(--shadow-sm);
+}
+.btn-primary:disabled {
+    background-color: var(--text-muted);
+    cursor: not-allowed;
+}
+.btn-primary:disabled .fa-spinner {
+    display: inline-block;
+}
+.btn-primary .fa-spinner {
+    display: none;
 }
 .btn-secondary {
   background-color: var(--neutral-bg);
@@ -917,4 +952,41 @@ body {
     width: 200px;
     padding: 0.75rem;
   }
+}
+
+.modal-section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+.modal-section-subtitle {
+    color: var(--text-secondary);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+}
+.upload-area-modal {
+    border: 2px dashed var(--border-medium);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+.file-name-display {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+.modal-actions-centered {
+    display: flex;
+    justify-content: center;
+}
+.modal-privacy-note {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 1.5rem;
 }

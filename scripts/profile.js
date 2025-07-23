@@ -26,9 +26,9 @@ async function checkAuth() {
 function showLoading(visible, text = "Loading...") {
     if (visible) {
         loadingOverlay.querySelector('p').textContent = text;
-        loadingOverlay.classList.add('visible');
+        loadingOverlay.style.display = 'flex';
     } else {
-        loadingOverlay.classList.remove('visible');
+        loadingOverlay.style.display = 'none';
     }
 }
 
@@ -47,6 +47,7 @@ async function loadProfile() {
 
         if (data && data.profile) {
             populateForm(data.profile);
+            localStorage.setItem('userProfileData', JSON.stringify(data.profile));
         } else {
             const localProfile = localStorage.getItem('userProfileData');
             if (localProfile) populateForm(JSON.parse(localProfile));
@@ -88,6 +89,7 @@ function hideResumeDisplay() {
     document.getElementById('resume-upload-area').style.display = 'block';
     localStorage.removeItem('userCVText');
     localStorage.removeItem('userCVFileName');
+    resumeInput.value = '';
 }
 
 async function handleFile(file) {
@@ -136,7 +138,7 @@ async function handleSave(e) {
 
     const formData = new FormData(profileForm);
     const profileData = Object.fromEntries(formData.entries());
-    delete profileData.resume;  
+    delete profileData.resume;
 
     localStorage.setItem('userProfileData', JSON.stringify(profileData));
 
@@ -151,7 +153,7 @@ async function handleSave(e) {
 
         const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
         if (redirectUrl) {
-            window.location.href = redirectUrl;
+            window.location.href = decodeURIComponent(redirectUrl);
         }
 
     } catch (e) {
@@ -171,14 +173,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         loadProfile();
 
         resumeInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+        resumeDropZone.addEventListener('click', () => resumeInput.click());
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             resumeDropZone.addEventListener(eventName, (e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                if (['dragenter', 'dragover'].includes(eventName)) {
+                    resumeDropZone.classList.add('hover');
+                } else {
+                    resumeDropZone.classList.remove('hover');
+                }
             }, false);
         });
-        ['dragenter', 'dragover'].forEach(eventName => resumeDropZone.classList.add('hover'));
-        ['dragleave', 'drop'].forEach(eventName => resumeDropZone.classList.remove('hover'));
         resumeDropZone.addEventListener('drop', (e) => handleFile(e.dataTransfer.files[0]));
 
         removeResumeBtn.addEventListener('click', hideResumeDisplay);

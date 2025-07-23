@@ -3,1076 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - CA Journey Tracker</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>My Profile - My Student Club</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
+    <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/profile-styles.css">
     <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
     <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <style>
-        :root {
-            --primary-50: #eff6ff;
-            --primary-100: #dbeafe;
-            --primary-500: #3b82f6;
-            --primary-600: #2563eb;
-            --accent-500: #8b5cf6;
-            --success-500: #10b981;
-            --warning-500: #f59e0b;
-            --error-500: #ef4444;
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --gray-900: #111827;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, var(--gray-50) 0%, var(--primary-50) 100%);
-            min-height: 100vh;
-            padding-top: 80px;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .profile-container {
-            max-width: 900px;
-            margin: 0 auto 4rem;
-            padding: 0 1rem;
-        }
-
-        .profile-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            border: 1px solid var(--gray-200);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            padding: 2.5rem;
-            animation: slideUp 0.6s ease-out;
-            transition: all 0.3s ease;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .header-section {
-            text-align: center;
-            margin-bottom: 3rem;
-            padding-bottom: 2rem;
-            border-bottom: 1px solid var(--gray-200);
-        }
-
-        .avatar {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
-            border-radius: 50%;
-            margin: 0 auto 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            font-weight: 700;
-            color: white;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        .header-section h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--gray-800), var(--gray-600));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.5rem;
-        }
-
-        .header-section p {
-            color: var(--gray-600);
-            font-size: 1.125rem;
-        }
-
-        .section-container {
-            margin-bottom: 2.5rem;
-            animation: fadeInUp 0.4s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding: 1rem 1.5rem;
-            background: linear-gradient(135deg, var(--primary-50), var(--accent-50));
-            border-radius: 12px;
-            border-left: 4px solid var(--primary-500);
-        }
-
-        .section-number {
-            background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
-            color: white;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-right: 1rem;
-        }
-
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: var(--gray-800);
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .form-group {
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: var(--gray-700);
-            margin-bottom: 0.5rem;
-            transition: color 0.2s ease;
-        }
-
-        .form-group label.required::after {
-            content: ' *';
-            color: var(--error-500);
-        }
-
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 0.875rem 1rem;
-            border: 2px solid var(--gray-200);
-            border-radius: 12px;
-            font-size: 1rem;
-            background: white;
-            transition: all 0.3s ease;
-            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-        }
-
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-500);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
-            transform: translateY(-1px);
-        }
-
-        .form-group input:disabled, .form-group select:disabled, .form-group textarea:disabled {
-            background: var(--gray-50);
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
-        .form-group input.required-empty {
-            border-color: var(--error-500);
-            background: #fef2f2;
-        }
-
-        .field-note {
-            font-size: 0.75rem;
-            color: var(--gray-500);
-            margin-top: 0.25rem;
-            line-height: 1.4;
-        }
-
-        .file-upload-area {
-            border: 2px dashed var(--gray-300);
-            border-radius: 16px;
-            padding: 2rem;
-            text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .file-upload-area:hover, .file-upload-area.dragover {
-            border-color: var(--primary-500);
-            background: var(--primary-50);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
-        }
-
-        .file-upload-icon {
-            font-size: 3rem;
-            color: var(--primary-500);
-            margin-bottom: 1rem;
-        }
-
-        .file-upload-label {
-            display: block;
-            font-weight: 600;
-            color: var(--gray-700);
-            margin-bottom: 0.5rem;
-        }
-
-        .file-input-container {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-
-        .custom-file-input {
-            background: var(--primary-500);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-        }
-
-        .custom-file-input:hover {
-            background: var(--primary-600);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        #resume-input {
-            position: absolute;
-            left: -9999px;
-        }
-
-        .resume-display {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            background: var(--primary-50);
-            border-radius: 12px;
-            margin-top: 1rem;
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-10px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .file-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--primary-500);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            margin-right: 1rem;
-        }
-
-        .file-name {
-            flex: 1;
-            font-weight: 500;
-            color: var(--gray-700);
-        }
-
-        .remove-file {
-            background: none;
-            border: none;
-            color: var(--error-500);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: transform 0.2s ease;
-        }
-
-        .remove-file:hover {
-            transform: scale(1.1);
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: center;
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--gray-200);
-        }
-
-        .save-btn {
-            background: linear-gradient(135deg, var(--success-500), #34d399);
-            color: white;
-            font-size: 1.125rem;
-            font-weight: 600;
-            padding: 1rem 3rem;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-        }
-
-        .save-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-        }
-
-        .save-btn:disabled {
-            background: var(--gray-400);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(5px);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            display: none;
-        }
-
-        .loading-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--gray-200);
-            border-top-color: var(--primary-500);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        
-        @media (max-width: 768px) {
-            body {
-                padding-top: 70px;
-            }
-
-            .profile-card {
-                margin: 0 -1rem;
-                padding: 1.5rem;
-                border-radius: 0;
-                box-shadow: none;
-            }
-
-            .header-section h1 {
-                font-size: 2rem;
-            }
-
-            .form-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .section-header {
-                padding: 0.75rem 1rem;
-            }
-
-            .save-btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
-        
-        .ca-progress-bar {
-            height: 4px;
-            background: var(--gray-200);
-            border-radius: 2px;
-            margin: 1rem 0;
-            overflow: hidden;
-        }
-
-        .ca-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary-500), var(--accent-500));
-            transition: width 0.3s ease;
-            border-radius: 2px;
-        }
-
-        .dynamic-field-group {
-            opacity: 1;
-            transition: all 0.3s ease;
-        }
-
-        .dynamic-field-group.disabled {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-
-        .tag-input {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            border: 2px solid var(--gray-200);
-            border-radius: 12px;
-            padding: 0.875rem 1rem;
-            min-height: 3rem;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .tag-input:focus-within {
-            border-color: var(--primary-500);
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
-        }
-
-        .tag {
-            background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 16px;
-            font-size: 0.875rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .tag-remove {
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1.2rem;
-            line-height: 1;
-        }
-
-        .tag-input input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: 1rem;
-            background: transparent;
-            min-width: 120px;
-        }
-
-        .section-divider {
-            height: 1px;
-            background: linear-gradient(90deg, transparent, var(--gray-300), transparent);
-            margin: 2rem 0;
-        }
-    </style>
 </head>
 <body>
-    <div class="loading-overlay" id="loading-overlay">
-        <div class="loading-spinner"></div>
-        <p style="margin-top: 1rem; color: var(--gray-600);">Loading your profile...</p>
+    <header class="site-header">
+         <div class="header-container">
+            <a href="/" class="brand-link"><img src="/assets/logo.png" alt="My Student Club" class="brand-logo"></a>
+            <div class="nav-actions">
+                <div class="auth-buttons-container"></div>
+                <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+            </div>
+        </div>
+    </header>
+     <div class="expanded-menu" id="expandedMenu">
+        <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+        <div class="menu-items-container">
+             <a href="/" class="menu-item">Job Portal</a>
+             <a href="/profile.html" class="menu-item">My Profile</a>
+             <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
+        </div>
     </div>
 
     <main class="profile-container">
-        <div class="profile-card">
-            <form id="profile-form">
-                <div class="header-section">
-                    <div class="avatar">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                    <h1>CA Journey Tracker</h1>
-                    <p>Build your professional profile and unlock AI-powered job applications</p>
-                </div>
-
-                
-                <div class="section-container">
-                    <div class="section-header">
-                        <div class="section-number">1</div>
-                        <div class="section-title">Personal Information</div>
-                    </div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label class="required" for="name">Full Name</label>
-                            <input type="text" id="name" name="name" required autocomplete="name">
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email ID (cannot be changed)</label>
-                            <input type="email" id="email" name="email" readonly disabled>
-                        </div>
-                        <div class="form-group">
-                            <label class="required" for="contact_number">Contact Number</label>
-                            <input type="tel" id="contact_number" name="contact_number" required autocomplete="tel">
-                        </div>
-                        <div class="form-group">
-                            <label for="dob">Date of Birth</label>
-                            <input type="date" id="dob" name="dob">
-                        </div>
-                        <div class="form-group">
-                            <label for="linkedin_url">LinkedIn Profile</label>
-                            <input type="url" id="linkedin_url" name="linkedin_url" 
-                                   placeholder="https://linkedin.com/in/yourprofile">
-                        </div>
-                        <div class="form-group">
-                            <label for="github_url">GitHub/Portfolio</label>
-                            <input type="url" id="github_url" name="github_url" 
-                                   placeholder="https://github.com/yourusername">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-divider"></div>
-
-                
-                <div class="section-container">
-                    <div class="section-header">
-                        <div class="section-number">2</div>
-                        <div class="section-title">Resume & Profile</div>
-                    </div>
-                    <div class="file-upload-area" id="file-upload-area">
-                        <i class="fas fa-cloud-upload-alt file-upload-icon"></i>
-                        <div class="file-upload-label">Upload your Resume (PDF/TXT)</div>
-                        <p class="field-note">Required for AI job applications • Max 5MB</p>
-                        <div class="file-input-container">
-                            <input type="file" id="resume-input" accept=".pdf,.txt">
-                            <button type="button" class="custom-file-input">Choose File</button>
-                        </div>
-                    </div>
-                    <div id="resume-display" class="resume-display" style="display: none;">
-                        <div class="file-icon">
-                            <i class="fas fa-file-pdf"></i>
-                        </div>
-                        <span class="file-name" id="resume-name">resume.pdf</span>
-                        <button type="button" class="remove-file" id="remove-resume">×</button>
-                    </div>
-                </div>
-
-                <div class="section-divider"></div>
-
-                
-                <div class="section-container">
-                    <div class="section-header">
-                        <div class="section-number">3</div>
-                        <div class="section-title">CA Journey Progress</div>
-                    </div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="ca_level">Your Current Level</label>
-                            <select id="ca_level" name="ca_level">
-                                <option value="">Select your level</option>
-                                <option value="foundation">CA Foundation</option>
-                                <option value="inter-pending">CA Inter - Both Groups Pending</option>
-                                <option value="inter-partial">CA Inter - One Group Cleared</option>
-                                <option value="inter-cleared">CA Inter - Both Groups Cleared</option>
-                                <option value="final-pending">CA Final - Both Groups Pending</option>
-                                <option value="final-partial">CA Final - One Group Cleared</option>
-                                <option value="ca-qualified">Qualified CA</option>
-                            </select>
-                        </div>
-                        <div class="ca-progress-bar">
-                            <div class="ca-progress-fill" id="progress-fill"></div>
-                        </div>
-                    </div>
-
-                    <div class="dynamic-field-group" id="foundation-fields">
-                        <h4>Foundation Details</h4>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="foundation_attempts">Foundation Attempts</label>
-                                <input type="number" id="foundation_attempts" name="foundation_attempts" min="1" max="5">
-                            </div>
-                            <div class="form-group">
-                                <label for="foundation_score">Foundation Score (%)</label>
-                                <input type="number" id="foundation_score" name="foundation_score" min="0" max="100">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="dynamic-field-group" id="inter-fields" disabled>
-                        <h4>Inter Details</h4>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="inter_attempts">Inter Total Attempts</label>
-                                <input type="number" id="inter_attempts" name="inter_attempts" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="inter_group1">Group 1 Attempts</label>
-                                <input type="number" id="inter_group1" name="inter_group1" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="inter_group2">Group 2 Attempts</label>
-                                <input type="number" id="inter_group2" name="inter_group2" min="0">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="dynamic-field-group" id="final-fields" disabled>
-                        <h4>Final Details</h4>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="final_attempts">Final Total Attempts</label>
-                                <input type="number" id="final_attempts" name="final_attempts" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="rank">CA Rank (if any)</label>
-                                <input type="text" id="rank" name="rank" placeholder="e.g., AIR 1">
-                            </div>
-                            <div class="form-group">
-                                <label for="score">Final Score (%)</label>
-                                <input type="number" id="score" name="score" min="0" max="100">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-divider"></div>
-
-                
-                <div class="section-container">
-                    <div class="section-header">
-                        <div class="section-number">4</div>
-                        <div class="section-title">Experience</div>
-                    </div>
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="articleship_status">Articleship Status</label>
-                            <select id="articleship_status" name="articleship_status">
-                                <option value="">Select status</option>
-                                <option value="not-started">Not Started</option>
-                                <option value="ongoing">Ongoing</option>
-                                <option value="completed">Completed</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="articleship_firm_type">Articleship Firm Type</label>
-                            <select id="articleship_firm_type" name="articleship_firm_type">
-                                <option value="">Select type</option>
-                                <option value="big-fours">Big 4</option>
-                                <option value="big-six">Big 6</option>
-                                <option value="midsize">Mid-size Firm</option>
-                                <option value="small-proprietor">Small/Proprietor</option>
-                                <option value="corporate">Corporate</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="dynamic-field-group" id="articleship-fields">
-                        <h4>Articleship Details</h4>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="articleship_firm">Firm/Company Name</label>
-                                <input type="text" id="articleship_firm" name="articleship_firm" 
-                                       placeholder="e.g., Deloitte Haskins & Sells">
-                            </div>
-                            <div class="form-group">
-                                <label for="articleship_domain">Primary Domain</label>
-                                <select id="articleship_domain" name="articleship_domain">
-                                    <option value="">Select domain</option>
-                                    <option value="statutory-audit">Statutory Audit</option>
-                                    <option value="internal-audit">Internal Audit</option>
-                                    <option value="tax">Direct Tax</option>
-                                    <option value="indirect-tax">Indirect Tax</option>
-                                    <option value="transfer-pricing">Transfer Pricing</option>
-                                    <option value="advisory">Advisory</option>
-                                    <option value="valuation">Valuation</option>
-                                    <option value="multiple">Multiple Domains</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="articleship_start">Start Date</label>
-                                <input type="date" id="articleship_start" name="articleship_start">
-                            </div>
-                            <div class="form-group">
-                                <label for="articleship_end">End Date</label>
-                                <input type="date" id="articleship_end" name="articleship_end">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="articleship_highlights">Key Achievements & Responsibilities</label>
-                            <textarea id="articleship_highlights" name="articleship_highlights" 
-                                      rows="4" placeholder="Managed statutory audit of ABC Ltd..."></textarea>
-                        </div>
-                    </div>
-
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="industrial_training">Industrial Training</label>
-                            <select id="industrial_training" name="industrial_training">
-                                <option value="no">Not Done</option>
-                                <option value="yes">Done</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="other_certifications">Other Certifications</label>
-                            <div class="tag-input" id="certifications-tags">
-                                <input type="text" placeholder="Type certification and press Enter" id="certifications-input">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="dynamic-field-group" id="industrial-training-fields" disabled>
-                        <h4>Industrial Training Details</h4>
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label for="it_company">Company Name</label>
-                                <input type="text" id="it_company" name="it_company" 
-                                       placeholder="e.g., Goldman Sachs, HUL">
-                            </div>
-                            <div class="form-group">
-                                <label for="it_department">Department</label>
-                                <input type="text" id="it_department" name="it_department" 
-                                       placeholder="e.g., Finance, Tax, Internal Audit">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section-divider"></div>
-
-                
-                <div class="section-container">
-                    <div class="section-header">
-                        <div class="section-number">5</div>
-                        <div class="section-title">Job Preferences</div>
-                    </div>
-                    
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="current_location">Current Location</label>
-                            <input type="text" id="current_location" name="current_location" 
-                                   placeholder="e.g., Mumbai, Delhi NCR, Bangalore">
-                        </div>
-                        <div class="form-group">
-                            <label for="preferred_locations">Preferred Job Locations</label>
-                            <div class="tag-input" id="locations-tags">
-                                <input type="text" placeholder="Type location and press Enter" id="locations-input">
-                            </div>
-                            <p class="field-note">Press Enter to add each location</p>
-                        </div>
-                        <div class="form-group">
-                            <label for="preferred_roles">Preferred Job Roles</label>
-                            <div class="tag-input" id="roles-tags">
-                                <input type="text" placeholder="Type role and press Enter" id="roles-input">
-                            </div>
-                            <p class="field-note">e.g., Management Consulting, FP&A, Valuation</p>
-                        </div>
-                        <div class="form-group">
-                            <label for="expected_ctc">Expected Package (LPA)</label>
-                            <input type="number" id="expected_ctc" name="expected_ctc" 
-                                   min="1" max="50" step="0.1" placeholder="e.g., 12.5">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="save-btn" id="save-btn">
-                        <span id="save-text">Save Profile</span>
-                        <i class="fas fa-spinner fa-spin" id="save-spinner" style="display: none;"></i>
-                    </button>
-                </div>
-            </form>
+        <div id="loading-overlay" class="loading-overlay">
+            <div class="loader-spinner"></div>
+            <p>Loading Profile...</p>
         </div>
+
+        <form id="profile-form">
+            <h1>My Professional Profile</h1>
+            <p class="subtitle">Keep this updated to help our AI craft the perfect job applications for you.</p>
+
+            <div class="profile-section">
+                <h2>Section 1: Personal Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email ID (cannot be changed)</label>
+                        <input type="email" id="email" name="email" readonly disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact_number">Contact Number *</label>
+                        <input type="tel" id="contact_number" name="contact_number" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="linkedin_url">LinkedIn Profile URL</label>
+                        <input type="url" id="linkedin_url" name="linkedin_url" placeholder="https://linkedin.com/in/yourprofile">
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2>Section 2: Resume (Mandatory for AI features)</h2>
+                <div id="resume-upload-area">
+                    <label for="resume">Upload your Resume (PDF or .txt) *</label>
+                    <div class="file-drop-zone">
+                        <input type="file" id="resume" name="resume" accept=".pdf,.txt">
+                        <p>Drag & drop your file here, or click to browse.</p>
+                    </div>
+                </div>
+                <div id="resume-display-area" style="display: none;">
+                     <div class="file-info-tag">
+                        <span id="resume-filename"></span>
+                        <button type="button" id="remove-resume-btn">×</button>
+                     </div>
+                     <p class="field-note">Your resume text has been cached in this browser.</p>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2>Section 3: CA Education Details</h2>
+                <div class="form-grid">
+                     <div class="form-group">
+                        <label for="ca_level">Current Level in CA Journey</label>
+                        <select id="ca_level" name="ca_level">
+                            <option value="">Select Level</option>
+                            <option>Foundation Cleared</option>
+                            <option>Inter One Group Cleared</option>
+                            <option>Inter Both Groups Cleared</option>
+                            <option>Final One Group Cleared</option>
+                            <option>Final Cleared (Qualified CA)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="foundation_attempts">CA Foundation Attempts</label>
+                        <input type="number" id="foundation_attempts" name="foundation_attempts" min="0" placeholder="e.g., 1">
+                    </div>
+                    <div class="form-group">
+                        <label for="inter_attempts">CA Inter Attempts</label>
+                        <input type="number" id="inter_attempts" name="inter_attempts" min="0" placeholder="e.g., 2">
+                    </div>
+                    <div class="form-group">
+                        <label for="final_attempts">CA Final Attempts</label>
+                        <input type="number" id="final_attempts" name="final_attempts" min="0" placeholder="e.g., 1">
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label for="achievements">Ranks or Achievements (e.g., AIR 49 in Inter)</label>
+                    <textarea id="achievements" name="achievements" rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2>Section 4: Experience</h2>
+                 <div class="form-grid">
+                    <div class="form-group">
+                        <label for="articleship_firm_type">Articleship Firm Type</label>
+                        <select id="articleship_firm_type" name="articleship_firm_type">
+                            <option value="">Select Type</option>
+                            <option>Big4/6</option>
+                            <option>Mid Size Firm</option>
+                            <option>Small size/Proprietary Firm</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="articleship_domain">Articleship Domain</label>
+                        <select id="articleship_domain" name="articleship_domain">
+                            <option value="">Select Domain</option>
+                            <option>Statutory Audit</option>
+                            <option>Internal Audit</option>
+                            <option>Direct Tax</option>
+                            <option>Indirect Tax</option>
+                            <option>Multiple Domains</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label for="industrial_training_company">Industrial Training Company (if any)</label>
+                    <input type="text" id="industrial_training_company" name="industrial_training_company" placeholder="e.g., Goldman Sachs, HUL">
+                </div>
+            </div>
+            
+            <div class="profile-section">
+                 <h2>Section 5: Job Preferences</h2>
+                 <div class="form-grid">
+                    <div class="form-group">
+                        <label for="current_location">Current Location</label>
+                        <input type="text" id="current_location" name="current_location" placeholder="e.g., Mumbai">
+                    </div>
+                     <div class="form-group">
+                        <label for="preferred_locations">Preferred Locations (comma-separated)</label>
+                        <input type="text" id="preferred_locations" name="preferred_locations" placeholder="e.g., Bangalore, Gurgaon, Pune">
+                    </div>
+                 </div>
+            </div>
+            
+            <div class="form-actions">
+                 <button type="submit" class="save-profile-btn">
+                     <span class="btn-text">Save Profile</span>
+                     <i class="fas fa-spinner fa-spin" style="display: none;"></i>
+                 </button>
+            </div>
+        </form>
     </main>
 
-    <script type="module">
-        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-        
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-
-        let currentUser = null;
-        let profileData = {};
-        function showLoading(show = true) {
-            const overlay = document.getElementById('loading-overlay');
-            overlay.style.display = show ? 'flex' : 'none';
-        }
-
-        function createTagInput(containerId, inputId) {
-            const container = document.getElementById(containerId);
-            const input = document.getElementById(inputId);
-            const hiddenInput = document.createElement('input');
-            hiddenInput.type = 'hidden';
-            hiddenInput.name = containerId.replace('-tags', '');
-            form.appendChild(hiddenInput);
-
-            function addTag(text) {
-                const tag = document.createElement('div');
-                tag.className = 'tag';
-                tag.innerHTML = `${text} <span class="tag-remove" onclick="this.parentElement.remove()">×</span>`;
-                container.insertBefore(tag, input);
-                
-                const tags = Array.from(container.querySelectorAll('.tag')).map(t => t.textContent.replace('×', '').trim());
-                hiddenInput.value = tags.join(',');
-            }
-
-            input.addEventListener('keyup', (e) => {
-                if (e.key === 'Enter' && input.value.trim()) {
-                    addTag(input.value.trim());
-                    input.value = '';
-                }
-            });
-        }
-
-        function updateFieldsByLevel() {
-            const level = document.getElementById('ca_level').value;
-            const progressMap = {
-                'foundation': 15,
-                'inter-pending': 30,
-                'inter-partial': 50,
-                'inter-cleared': 65,
-                'final-pending': 80,
-                'final-partial': 95,
-                'ca-qualified': 100
-            };
-            
-            document.getElementById('progress-fill').style.width = (progressMap[level] || 0) + '%';
-
-            const fieldGroups = {
-                'foundation': ['foundation-fields'],
-                'inter-partial': ['foundation-fields', 'inter-fields'],
-                'inter-cleared': ['foundation-fields', 'inter-fields'],
-                'final-pending': ['foundation-fields', 'inter-fields', 'final-fields'],
-                'final-partial': ['foundation-fields', 'inter-fields', 'final-fields'],
-                'ca-qualified': ['foundation-fields', 'inter-fields', 'final-fields']
-            };
-
-            ['foundation-fields', 'inter-fields', 'final-fields'].forEach(group => {
-                const element = document.getElementById(group);
-                if (element) {
-                    element.classList.toggle('disabled', 
-                        !fieldGroups[level] || !fieldGroups[level].includes(group));
-                    const inputs = element.querySelectorAll('input, select, textarea');
-                    inputs.forEach(input => {
-                        input.disabled = !fieldGroups[level] || !fieldGroups[level].includes(group);
-                    });
-                }
-            });
-        }
-
-        function updateArticleshipFields() {
-            const status = document.getElementById('articleship_status').value;
-            const articleshipGroup = document.getElementById('articleship-fields');
-            const disabled = status === 'not-started' || status === '';
-            
-            articleshipGroup.classList.toggle('disabled', disabled);
-            Array.from(articleshipGroup.querySelectorAll('input, select, textarea'))
-                .forEach(input => input.disabled = disabled);
-        }
-
-        function updateIndustrialTraining() {
-            const hasTraining = document.getElementById('industrial_training').value === 'yes';
-            const itFields = document.getElementById('industrial-training-fields');
-            itFields.classList.toggle('disabled', !hasTraining);
-            Array.from(itFields.querySelectorAll('input'))
-                .forEach(input => input.disabled = !hasTraining);
-        }
-
-        document.getElementById('ca_level').addEventListener('change', updateFieldsByLevel);
-        document.getElementById('articleship_status').addEventListener('change', updateArticleshipFields);
-        document.getElementById('industrial_training').addEventListener('change', updateIndustrialTraining);
-
-        document.querySelector('.custom-file-input').addEventListener('click', () => {
-            document.getElementById('resume-input').click();
-        });
-
-        document.getElementById('resume-input').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            const maxSize = 5 * 1024 * 1024;  
-            
-            if (!file) return;
-            
-            if (file.size > maxSize) {
-                alert('File size must be less than 5MB');
-                return;
-            }
-            
-            showLoading(true);
-            try {
-                let text = '';
-                if (file.type === 'application/pdf') {
-                    const arrayBuffer = await file.arrayBuffer();
-                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-                    for (let i = 1; i <= pdf.numPages; i++) {
-                        const page = await pdf.getPage(i);
-                        const textContent = await page.getTextContent();
-                        text += textContent.items.map(s => s.str).join(' ') + ' ';
-                    }
-                } else if (file.type === 'text/plain') {
-                    text = await file.text();
-                } else {
-                    alert('Please upload PDF or TXT files only');
-                    return;
-                }
-                
-                localStorage.setItem('userCVText', text.trim());
-                localStorage.setItem('userCVFileName', file.name);
-                
-                document.getElementById('file-upload-area').style.display = 'none';
-                document.getElementById('resume-name').textContent = file.name;
-                document.getElementById('resume-display').style.display = 'flex';
-            } catch (err) {
-                console.error(err);
-                alert('Error processing file. Please try again.');
-            } finally {
-                showLoading(false);
-            }
-        });
-
-        document.getElementById('remove-resume').addEventListener('click', () => {
-            localStorage.removeItem('userCVText');
-            localStorage.removeItem('userCVFileName');
-            document.getElementById('resume-display').style.display = 'none';
-            document.getElementById('file-upload-area').style.display = 'block';
-            document.getElementById('resume-input').value = '';
-        });
-
-        const form = document.getElementById('profile-form');
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const requiredFields = form.querySelectorAll('[required]');
-            for (const field of requiredFields) {
-                if (!field.value.trim()) {
-                    field.classList.add('required-empty');
-                    field.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    return;
-                }
-                field.classList.remove('required-empty');
-            }
-            
-            if (!localStorage.getItem('userCVText')) {
-                alert('Please upload your resume');
-                return;
-            }
-            
-            const saveBtn = document.getElementById('save-btn');
-            const saveText = document.getElementById('save-text');
-            const spinner = document.getElementById('save-spinner');
-            
-            saveBtn.disabled = true;
-            saveText.textContent = 'Saving...';
-            spinner.style.display = 'inline-block';
-            
-            try {
-                const profileData = Object.fromEntries(new FormData(form).entries());
-                
-                profileData.preferred_locations = document.getElementById('locations-tags').querySelector('input[type="hidden"]').value;
-                profileData.preferred_roles = document.getElementById('roles-tags').querySelector('input[type="hidden"]').value;
-                profileData.certifications = document.getElementById('certifications-tags').querySelector('input[type="hidden"]').value;
-                
-                localStorage.setItem('userProfileData', JSON.stringify(profileData));
-                
-                await supabaseClient.from('profiles').upsert({
-                    uuid: currentUser.id,
-                    profile: profileData,
-                    updated_at: new Date().toISOString()
-                });
-                
-                alert('Profile saved successfully!');
-                
-                const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
-                if (redirectUrl) {
-                    window.location.href = redirectUrl;
-                }
-                
-            } catch (err) {
-                console.error(err);
-                alert('Profile saved locally. Could not sync with server');
-            } finally {
-                saveBtn.disabled = false;
-                saveText.textContent = 'Save Profile';
-                spinner.style.display = 'none';
-            }
-        });
-
-        (async () => {
-            showLoading(true);
-            
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) {
-                window.location.href = '/login.html';
-                return;
-            }
-            
-            currentUser = session.user;
-            document.getElementById('email').value = currentUser.email;
-   
-            try {
-                const { data } = await supabaseClient
-                    .from('profiles')
-                    .select('profile')
-                    .eq('uuid', currentUser.id)
-                    .single();
-                
-                if (data?.profile) {
-                    profileData = data.profile;
-                    Object.keys(profileData).forEach(key => {
-                        const element = document.getElementById(key) || form.querySelector(`[name="${key}"]`);
-                        if (element && key !== 'certifications' && key !== 'preferred_locations' && key !== 'preferred_roles') {
-                            element.value = profileData[key];
-                        }
-                    });
-                    ['certifications', 'preferred_locations', 'preferred_roles'].forEach(key => {
-                        if (profileData[key]) {
-                            const values = profileData[key].split(',');
-                            const container = document.getElementById(`${key}-tags`);
-                            const hiddenInput = form.querySelector(`[name="${key}"]`);
-                            hiddenInput.value = profileData[key];
-                            
-                            values.forEach(value => {
-                                if (value.trim()) {
-                                    const tag = document.createElement('div');
-                                    tag.className = 'tag';
-                                    tag.innerHTML = `${value.trim()} <span class="tag-remove" onclick="this.parentElement.remove()">×</span>`;
-                                    container.insertBefore(tag, container.querySelector('input'));
-                                }
-                            });
-                        }
-                    });
-                }
-            } catch (err) {
-                console.error(err);
-            }
-            
-            createTagInput('locations-tags', 'locations-input');
-            createTagInput('roles-tags', 'roles-input');
-            createTagInput('certifications-tags', 'certifications-input');
-            
-            updateFieldsByLevel();
-            updateArticleshipFields();
-            updateIndustrialTraining();
-            
-            const resumeFile = localStorage.getItem('userCVFileName');
-            if (resumeFile) {
-                document.getElementById('file-upload-area').style.display = 'none';
-                document.getElementById('resume-name').textContent = resumeFile;
-                document.getElementById('resume-display').style.display = 'flex';
-            }
-            
-            showLoading(false);
-        })();
-    </script>
+    <script type="module" src="https://www.mystudentclub.com/scripts/profile.js"></script>
 </body>
 </html>
