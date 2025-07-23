@@ -2,7 +2,6 @@ import { getDaysAgo } from './date-utils.js';
 
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 const jobsContainer = document.getElementById('jobs');
@@ -22,9 +21,6 @@ const menuCloseBtn = document.getElementById('menuCloseBtn');
 const authButtonsContainer = document.querySelector('.auth-buttons-container');
 const filterToggleButton = document.getElementById('filter-toggle-btn');
 const filterBarWrapper = document.querySelector('.filter-bar-wrapper');
-const profileIncompleteModal = document.getElementById('profile-incomplete-modal');
-const profileModalCloseBtn = document.getElementById('profileModalCloseBtn');
-const goToProfileBtn = document.getElementById('goToProfileBtn');
 
 const notificationsBtn = document.getElementById('notificationsBtn');
 const notificationPopup = document.getElementById('notificationPopup');
@@ -82,31 +78,16 @@ const JOB_TITLE_MAP = {
     "Articleship Jobs": "Articleship Trainee"
 };
 
-function setActivePortalTab() {
-    const path = window.location.pathname;
-    document.querySelectorAll('.portal-nav-bar .footer-tab, .site-footer-nav .footer-tab').forEach(tab => tab.classList.remove('active'));
-    
-    let activeSelector;
-    if (path.includes('articleship.html')) {
-        currentTable = 'Articleship Jobs';
-        activeSelector = 'a[href="/articleship.html"]';
-    } else if (path.includes('semi-qualified.html')) {
-        currentTable = 'Semi Qualified Jobs';
-        activeSelector = 'a[href="/semi-qualified.html"]';
-        if(experienceFilter) experienceFilter.style.display = 'block';
-    } else if (path.includes('fresher.html')) {
-        currentTable = 'Fresher Jobs';
-        activeSelector = 'a[href="/fresher.html"]';
-        if(experienceFilter) experienceFilter.style.display = 'block';
-    } else {
-        currentTable = 'Industrial Training Job Portal';
-        activeSelector = 'a[href="/"]';
-    }
-
-    document.querySelectorAll(activeSelector).forEach(el => el.classList.add('active'));
+if (window.location.pathname.includes('articleship')) {
+  currentTable = 'Articleship Jobs';
+} else if (window.location.pathname.includes('semi-qualified')) {
+  currentTable = 'Semi Qualified Jobs';
+} else if (window.location.pathname.includes('fresher')) {
+  currentTable = 'Fresher Jobs';
 }
 
 window.setFcmToken = function(token) {
+    console.log("FCM Token received from native app:", token);
     currentFcmToken = token;
     syncNotificationTopics();
 };
@@ -125,7 +106,7 @@ function renderJobCard(job) {
     jobCard.className = 'job-card';
     jobCard.addEventListener('click', (e) => {
         if (!e.target.closest('.apply-now-card-btn')) {
-             showModal(job);
+            showModal(job);
         }
     });
     const companyInitial = job.Company ? job.Company.charAt(0).toUpperCase() : '?';
@@ -147,15 +128,8 @@ function renderJobCard(job) {
             </div>
         </div>
         <div class="job-card-actions">
-             <button class="apply-now-card-btn">Apply</button>
+             <a href="${getApplicationLink(job['Application ID'])}" class="apply-now-card-btn" ${isValidUrl(job['Application ID']) ? 'target="_blank"' : ''} onclick="event.stopPropagation();">Apply</a>
         </div>`;
-
-    const applyBtn = jobCard.querySelector('.apply-now-card-btn');
-    applyBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        handleApplyClick(job, applyBtn);
-    });
-
     return jobCard;
 }
 
@@ -176,11 +150,10 @@ async function showModal(job) {
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
         </div>
         <div class="modal-actions">
-            <button id="modalApplyBtn" class="btn btn-primary">
+            <a href="${getApplicationLink(job['Application ID'])}" class="btn btn-primary" ${isValidUrl(job['Application ID']) ? 'target="_blank"' : ''}>
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                <span class="btn-text">Apply Now</span>
-                <i class="fas fa-spinner fa-spin" style="display: none;"></i>
-            </button>
+                Apply Now
+            </a>
             <a id="peerConnectBtn" href="#" class="btn btn-secondary" target="_blank">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 <span>Connect to Peer</span>
@@ -197,12 +170,6 @@ async function showModal(job) {
         `;
     modalOverlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
-
-    const modalApplyBtn = document.getElementById('modalApplyBtn');
-    modalApplyBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        handleApplyClick(job, modalApplyBtn);
-    });
 
     const peerConnectBtn = document.getElementById('peerConnectBtn');
     peerConnectBtn.style.pointerEvents = 'none';
@@ -574,98 +541,9 @@ async function syncNotificationTopics() {
     } catch (err) { showNotifStatus("Failed to sync preferences", "error"); }
 }
 
-function isProfileComplete() {
-    return !!localStorage.getItem('userCVText');
-}
-
-async function handleApplyClick(job, buttonElement) {
-    if (!currentSession) {
-        window.location.href = '/login.html';
-        return;
-    }
-
-    const applyLink = getApplicationLink(job['Application ID']);
-
-    if (applyLink.startsWith('mailto:')) {
-        if (!isProfileComplete()) {
-            const redirectUrl = encodeURIComponent(window.location.href);
-            goToProfileBtn.href = `/profile.html?redirect=${redirectUrl}`;
-            profileIncompleteModal.style.display = 'flex';
-            return;
-        }
-
-        const btnText = buttonElement.querySelector('.btn-text') || buttonElement;
-        const spinner = buttonElement.querySelector('i.fa-spin');
-        
-        const originalText = btnText.textContent;
-        btnText.textContent = 'Preparing...';
-        if (spinner) spinner.style.display = 'inline-block';
-        buttonElement.disabled = true;
-
-        try {
-            const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
-            const cvText = localStorage.getItem('userCVText');
-
-            const emailBody = await generateEmailBody({ profile_data: profileData, cv_text: cvText }, job);
-            const finalMailto = constructMailto(job, emailBody);
-            window.location.href = finalMailto;
-        } catch (e) {
-            console.error("Error in AI email generation, falling back:", e);
-            const fallbackMailto = constructMailto(job, ""); 
-            window.location.href = fallbackMailto;
-        } finally {
-            btnText.textContent = originalText;
-            if (spinner) spinner.style.display = 'none';
-            buttonElement.disabled = false;
-        }
-    } else if (isValidUrl(applyLink)) {
-        window.open(applyLink, '_blank');
-    } else {
-        alert('Application information is not a valid link or email.');
-    }
-}
-
-async function generateEmailBody(profile, job) {
-    const workerUrl = 'https://emailgenerator.bhansalimanan55.workers.dev/';
-    try {
-        const response = await fetch(workerUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                profile_data: profile,
-                job_details: {
-                    company_name: job.Company,
-                    job_description: job.Description,
-                    job_location: job.Location,
-                    job_title: JOB_TITLE_MAP[currentTable] || 'the role'
-                }
-            })
-        });
-        if (!response.ok) {
-           throw new Error(`AI worker responded with status: ${response.status}`);
-        }
-        const data = await response.json();
-        return data.email_body || "";
-    } catch (error) {
-        console.error("Error generating email body:", error);
-        return ""; 
-    }
-}
-
-function constructMailto(job, body) {
-    const rawLink = job['Application ID'];
-    const emailMatch = rawLink.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-    if (!emailMatch) return '#';
-    const email = emailMatch[0];
-    const subject = `Application for ${JOB_TITLE_MAP[currentTable]} at ${job.Company} (Ref: My Student Club)`;
-    return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-}
-
 function setupEventListeners() {
     modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
     modalCloseBtn.addEventListener('click', closeModal);
-    if (profileIncompleteModal) profileModalCloseBtn.addEventListener('click', () => profileIncompleteModal.style.display = 'none');
-    
     searchInput.addEventListener('input', resetAndFetch);
     locationSearchInput.addEventListener('input', resetAndFetch);
     salaryFilter.addEventListener('change', resetAndFetch);
@@ -771,7 +649,11 @@ function setupEventListeners() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-    setActivePortalTab();
+    if (window.flutter_inappwebview) {
+        const notificationsBtn = document.getElementById('notificationsBtn');
+        const notificationPopup = document.getElementById('notificationPopup');
+    }
+
     const session = await checkAuth();
     updateHeaderAuth(session);
     populateSalaryFilter(currentTable);
