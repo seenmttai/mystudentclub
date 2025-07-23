@@ -561,7 +561,7 @@ async function handleApplyClick(job, buttonElement) {
     if (applyLink.startsWith('mailto:')) {
         if (!isProfileComplete()) {
             const redirectUrl = encodeURIComponent(window.location);
-            goToProfileBtn.href = `https://mystudentclub.com/profile.html`;
+            window.location.href = `https://mystudentclub.com/profile.html`;
             profileIncompleteModal.style.display = 'flex';
             return;
         }
