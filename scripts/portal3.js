@@ -560,7 +560,7 @@ async function handleApplyClick(job, buttonElement) {
 
     if (applyLink.startsWith('mailto:')) {
         if (!isProfileComplete()) {
-            const redirectUrl = encodeURIComponent(window.location.href);
+            const redirectUrl = encodeURIComponent(window.location);
             goToProfileBtn.href = `/profile.html?redirect=${redirectUrl}`;
             profileIncompleteModal.style.display = 'flex';
             return;
