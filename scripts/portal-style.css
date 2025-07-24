@@ -435,7 +435,6 @@ body {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
-  margin-top: 1.5rem;
   max-width: 1300px;
   margin-left: auto;
   margin-right: auto;
@@ -1149,8 +1148,7 @@ body {
   transition: all var(--transition-std);
   border: 1px solid transparent;
   font-size: 0.9rem;
-  flex-grow: 1;
-  min-width: 150px;
+  flex: 1 1 auto;
 }
 
 .btn svg {
@@ -1396,10 +1394,21 @@ body {
   background-color: #FECACA;
 }
 
-@media (max-width: 1023px) {
-  .search-bar-wrapper {
-    flex-grow: 1;
+@media (min-width: 1024px) {
+  .job-portal-layout {
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
   }
+  .filter-sidebar {
+    display: block;
+  }
+  .mobile-controls,
+  .filter-modal-overlay {
+    display: none;
+  }
+}
+
+@media (max-width: 1023px) {
   .listings-header {
     flex-direction: column;
     align-items: stretch;
@@ -1439,13 +1448,10 @@ body {
     margin-left: 0;
     margin-top: 1rem;
     width: 100%;
-    flex-direction: row;
     justify-content: flex-end;
   }
   .apply-now-card-btn {
     flex-grow: 1;
-    text-align: center;
-    justify-content: center;
   }
   .modal-dialog {
     max-width: calc(100% - 2rem);
@@ -1521,9 +1527,6 @@ body {
     padding-left: 2.5rem;
     font-size: 0.9rem;
   }
-  .search-button {
-    right: 0.25rem;
-  }
   .job-card {
     padding: 1rem;
   }
@@ -1563,6 +1566,7 @@ body {
   }
   .btn {
     width: 100%;
+    min-width: unset;
   }
   .notification-popup {
     top: 70px;
@@ -1575,5 +1579,11 @@ body {
     right: 0;
     width: 200px;
     padding: 0.75rem;
+  }
+  .modal-footer {
+    flex-direction: column-reverse;
+  }
+  .modal-footer .btn {
+    width: 100%;
   }
 }
