@@ -118,25 +118,69 @@
       </a>
     </nav>
 
-    <section class="controls-section">
-      <div class="search-bar-wrapper">
-        <input type="text" id="searchInput" placeholder="Search by Keywords..." class="search-input-field">
-        <button class="search-button" aria-label="Search">
-            <i class="fas fa-search"></i>
-        </button>
-      </div>
-      <button id="filter-toggle-btn" class="filter-toggle-btn">
+<section class="controls-section">
+    <div class="search-bar-wrapper">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" id="searchInput" placeholder="Search by company or keyword..." class="search-input-field">
+    </div>
+    <button id="filter-toggle-btn" class="filter-toggle-btn">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L12 14.414V19a1 1 0 01-1.447.894l-2-1A1 1 0 018 18v-3.586L3.293 6.707A1 1 0 013 6V4z"></path></svg>
         <span>Filters</span>
-        <svg class="arrow-icon arrow-down" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-        <svg class="arrow-icon arrow-up" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
-      </button>
-      <div class="filter-bar-wrapper">
-        <input type="text" id="locationSearchInput" placeholder="Location" class="filter-control">
-        <select id="salaryFilter" class="filter-control"></select>
-        <input type="text" id="categoryFilter" placeholder="Categories (e.g. Finance, Audit)" class="filter-control">
-      </div>
-    </section>
+        <span id="filter-count-badge" class="filter-count-badge"></span>
+    </button>
+</section>
+
+<div class="filter-modal-overlay" id="filterModalOverlay">
+    <div class="filter-modal" id="filterModal">
+        <div class="filter-modal-header">
+            <h3>Filters</h3>
+            <button class="icon-button" id="closeFilterModalBtn">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <div class="filter-modal-content">
+            <div class="filter-group">
+                <h4>Salary / Stipend</h4>
+                <div id="salaryFilterContainer" class="filter-options-grid">
+                </div>
+            </div>
+            <div class="filter-group" id="experienceFilterGroup" style="display: none;">
+                <h4>Experience Level</h4>
+                <div id="experienceFilterContainer" class="filter-options-grid">
+                    <button class="filter-chip" data-value="">All</button>
+                    <button class="filter-chip" data-value="Freshers">Freshers</button>
+                    <button class="filter-chip" data-value="Experienced">Experienced</button>
+                </div>
+            </div>
+            <div class="filter-group">
+                <h4>Cities</h4>
+                <div id="locationFilterContainer" class="multi-select-container">
+                    <div class="selected-tags-container" id="location-selected-tags"></div>
+                    <div class="multi-select-search">
+                         <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="locationSearch" placeholder="Search for cities...">
+                    </div>
+                    <div class="multi-select-list" id="location-options"></div>
+                </div>
+            </div>
+            <div class="filter-group">
+                <h4>Domain</h4>
+                <div id="categoryFilterContainer" class="multi-select-container">
+                     <div class="selected-tags-container" id="category-selected-tags"></div>
+                    <div class="multi-select-search">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" id="categorySearch" placeholder="Search for domains...">
+                    </div>
+                    <div class="multi-select-list" id="category-options"></div>
+                </div>
+            </div>
+        </div>
+        <div class="filter-modal-footer">
+            <button class="btn btn-secondary" id="resetFiltersBtn">Reset</button>
+            <button class="btn btn-primary" id="applyFiltersBtn">Apply</button>
+        </div>
+    </div>
+</div>
 
     <div class="job-listing-area" id="jobs"></div>
 
