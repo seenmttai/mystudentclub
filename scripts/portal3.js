@@ -91,6 +91,10 @@ function isValidSalary(salary) {
     return true;
 }
 
+function isProfileComplete() {
+    return !!localStorage.getItem('userCVText');
+}
+
 function renderJobCard(job) {
     const jobCard = document.createElement('article');
     jobCard.className = 'job-card';
@@ -118,13 +122,24 @@ function renderJobCard(job) {
             </div>
         </div>
         <div class="job-card-actions">
-             <button class="apply-now-card-btn">Apply</button>
+             <button class="apply-now-card-btn simple-apply-btn">Apply</button>
+             <button class="apply-now-card-btn ai-apply-btn">
+                <span class="btn-text">AI Apply</span>
+                <svg class="icon" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                <i class="fas fa-spinner fa-spin"></i>
+             </button>
         </div>`;
 
-    const applyBtn = jobCard.querySelector('.apply-now-card-btn');
-    applyBtn.addEventListener('click', (e) => {
+    const simpleApplyBtn = jobCard.querySelector('.simple-apply-btn');
+    simpleApplyBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        handleApplyClick(job, applyBtn);
+        handleApplyClick(job, simpleApplyBtn, false);
+    });
+    
+    const aiApplyBtn = jobCard.querySelector('.ai-apply-btn');
+    aiApplyBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        handleApplyClick(job, aiApplyBtn, true);
     });
 
     return jobCard;
@@ -147,15 +162,15 @@ async function showModal(job) {
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
         </div>
         <div class="modal-actions">
-            <button id="modalApplyBtn" class="btn btn-primary">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                <span class="btn-text">Apply Now</span>
-                <i class="fas fa-spinner fa-spin" style="display: none;"></i>
+            <button id="modalSimpleApplyBtn" class="btn btn-secondary">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                <span>Simple Apply</span>
             </button>
-            <a id="peerConnectBtn" href="#" class="btn btn-secondary" target="_blank">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                <span>Connect to Peer</span>
-            </a>
+            <button id="modalAiApplyBtn" class="btn btn-primary">
+                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                <span class="btn-text">AI Powered Apply</span>
+                <i class="fas fa-spinner fa-spin"></i>
+            </button>
         </div>
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Job Description</h3>
@@ -164,41 +179,48 @@ async function showModal(job) {
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>Apply here!</h3>
             <p class="modal-description">${job['Application ID'] || 'No Application ID Available'}</p>
-        </div>
-        `;
+        </div>`;
     modalOverlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    const modalApplyBtn = document.getElementById('modalApplyBtn');
-    modalApplyBtn.addEventListener('click', (e) => {
+    const modalSimpleApplyBtn = document.getElementById('modalSimpleApplyBtn');
+    modalSimpleApplyBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        handleApplyClick(job, modalApplyBtn);
+        handleApplyClick(job, modalSimpleApplyBtn, false);
     });
 
+    const modalAiApplyBtn = document.getElementById('modalAiApplyBtn');
+    modalAiApplyBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleApplyClick(job, modalAiApplyBtn, true);
+    });
+    
     const peerConnectBtn = document.getElementById('peerConnectBtn');
-    peerConnectBtn.style.pointerEvents = 'none';
-    peerConnectBtn.style.opacity = '0.5';
+    if (peerConnectBtn) {
+        peerConnectBtn.style.pointerEvents = 'none';
+        peerConnectBtn.style.opacity = '0.5';
 
-    try {
-        const jobTitleForSearch = JOB_TITLE_MAP[currentTable] || "Trainee";
-        const { data, error } = await supabaseClient.from(currentTable).select('connect_link').eq('id', job.id).single();
-        if (error && error.code !== 'PGRST116') throw error;
+        try {
+            const jobTitleForSearch = JOB_TITLE_MAP[currentTable] || "Trainee";
+            const { data, error } = await supabaseClient.from(currentTable).select('connect_link').eq('id', job.id).single();
+            if (error && error.code !== 'PGRST116') throw error;
 
-        let peerConnectLink;
-        if (data && data.connect_link && isValidUrl(data.connect_link)) {
-            peerConnectLink = data.connect_link;
-        } else {
+            let peerConnectLink;
+            if (data && data.connect_link && isValidUrl(data.connect_link)) {
+                peerConnectLink = data.connect_link;
+            } else {
+                const keywords = `"${jobTitleForSearch}" AND "${job.Company}"`;
+                peerConnectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(keywords)}&origin=FACETED_SEARCH`;
+            }
+            peerConnectBtn.href = peerConnectLink;
+        } catch (error) {
+            const jobTitleForSearch = JOB_TITLE_MAP[currentTable] || "Trainee";
             const keywords = `"${jobTitleForSearch}" AND "${job.Company}"`;
-            peerConnectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(keywords)}&origin=FACETED_SEARCH`;
+            peerConnectBtn.href = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(keywords)}&origin=FACETED_SEARCH`;
+        } finally {
+            peerConnectBtn.style.pointerEvents = 'auto';
+            peerConnectBtn.style.opacity = '1';
         }
-        peerConnectBtn.href = peerConnectLink;
-    } catch (error) {
-        const jobTitleForSearch = JOB_TITLE_MAP[currentTable] || "Trainee";
-        const keywords = `"${jobTitleForSearch}" AND "${job.Company}"`;
-        peerConnectBtn.href = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(keywords)}&origin=FACETED_SEARCH`;
-    } finally {
-        peerConnectBtn.style.pointerEvents = 'auto';
-        peerConnectBtn.style.opacity = '1';
     }
 }
 
@@ -216,9 +238,7 @@ function getApplicationLink(id) {
     if (isValidUrl(id)) return id;
     let emails = id.split(/,|\s/).filter(e => e && e.includes('@'));
     if (emails.length === 0) return '#';
-    let email = emails[0];
-    let subject = `Application for ${currentTable.replace(' Jobs', '')} (Ref: My Student Club)`;
-    return `mailto:${email}?subject=${encodeURIComponent(subject)}`;
+    return constructMailto({ 'Application ID': id, Company: 'the company' });
 }
 
 async function fetchJobs() {
@@ -338,7 +358,7 @@ window.handleLogout = async () => {
     updateHeaderAuth(null);
     const lmsNavLink = document.getElementById('lms-nav-link');
     if (lmsNavLink) lmsNavLink.style.display = 'none';
-}
+};
 
 async function loadBanners() {
     const carousel = document.querySelector('.carousel');
@@ -545,23 +565,17 @@ async function syncNotificationTopics() {
     } catch (err) { showNotifStatus("Failed to sync preferences", "error"); }
 }
 
-function isProfileComplete() {
-    return !!localStorage.getItem('userCVText');
-}
-
-async function handleApplyClick(job, buttonElement) {
+async function handleApplyClick(job, buttonElement, isAiApply = false) {
     if (!currentSession) {
         window.location.href = '/login.html';
         return;
     }
 
-    const applyLink = getApplicationLink(job['Application ID']);
-
-    if (applyLink.startsWith('mailto:')) {
+    if (isAiApply) {
         if (!isProfileComplete()) {
-            const redirectUrl = encodeURIComponent(window.location);
-            window.location.href = `https://mystudentclub.com/profile.html`;
-            profileIncompleteModal.style.display = 'flex';
+            const redirectUrl = encodeURIComponent(window.location.href);
+            alert("Your profile is incomplete. Please upload your resume to use the AI Apply feature.");
+            window.location.href = `/profile.html?redirect=${redirectUrl}`;
             return;
         }
 
@@ -582,6 +596,7 @@ async function handleApplyClick(job, buttonElement) {
             window.location.href = finalMailto;
         } catch (e) {
             console.error("Error in AI email generation, falling back:", e);
+            alert("Could not generate AI email. Opening a standard email draft.");
             const fallbackMailto = constructMailto(job, ""); 
             window.location.href = fallbackMailto;
         } finally {
@@ -589,10 +604,15 @@ async function handleApplyClick(job, buttonElement) {
             if (spinner) spinner.style.display = 'none';
             buttonElement.disabled = false;
         }
-    } else if (isValidUrl(applyLink)) {
-        window.open(applyLink, '_blank');
     } else {
-        alert('Application information is not a valid link or email.');
+        const applyLink = getApplicationLink(job['Application ID']);
+        if (applyLink.startsWith('mailto:')) {
+            window.location.href = applyLink;
+        } else if (isValidUrl(applyLink)) {
+            window.open(applyLink, '_blank');
+        } else {
+            alert('Application information is not a valid link or email.');
+        }
     }
 }
 
@@ -623,8 +643,9 @@ async function generateEmailBody(profile, job) {
     }
 }
 
-function constructMailto(job, body) {
+function constructMailto(job, body = "") {
     const rawLink = job['Application ID'];
+    if (!rawLink) return '#';
     const emailMatch = rawLink.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
     if (!emailMatch) return '#';
     const email = emailMatch[0];
