@@ -189,7 +189,6 @@ async function fetchFilterOptions() {
 
         availableLocations = uniqueLocations;
         availableCategories = uniqueCategories;
-
     } catch (error) {
         console.error("Error fetching filter options:", error);
         availableLocations = [];
@@ -204,7 +203,12 @@ async function fetchJobs() {
     dom.loadMoreButton.style.display = 'none';
 
     try {
-        let query = supabaseClient.from(currentTable).select('id, Company, Location, Salary, Description, Created_At, Category, "Application ID", Experience');
+        let selectColumns = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID"';
+        if (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs") {
+            selectColumns += ', Experience';
+        }
+        
+        let query = supabaseClient.from(currentTable).select(selectColumns);
 
         if (state.searchTerm) {
             const searchPattern = `%${state.searchTerm}%`;
@@ -254,7 +258,7 @@ async function fetchJobs() {
         }
     } catch (error) {
         console.error("Error fetching jobs:", error);
-        dom.jobsContainer.innerHTML = '<p class="no-jobs-found" style="color:red;">Failed to load jobs. Please try again.</p>';
+        dom.jobsContainer.innerHTML = `<p class="no-jobs-found" style="color:red;">Failed to load jobs: ${error.message}</p>`;
     } finally {
         isFetching = false;
         dom.loader.style.display = 'none';
