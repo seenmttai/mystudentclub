@@ -39,7 +39,7 @@
                             <i class="fas fa-book-open"></i>
                             <span>Resources</span>
                         </a></li>
-                        <li><a href="https://mystudentclub.com/cv-reviewer" class="nav-item">
+                        <li><a href="https://mystudentclub.com/cv-reviewer/" class="nav-item">
                             <i class="fas fa-file-alt"></i>
                             <span>CV Review</span>
                         </a></li>
@@ -785,20 +785,31 @@
                             .createSignedUrl(resource.download_storage_path, 300);
 
                         if (error) throw error;
-                        
+
                         const response = await fetch(data.signedUrl);
                         if (!response.ok) throw new Error('Network response was not ok.');
                         const blob = await response.blob();
-                        
-                        const url = window.URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = resource.download_storage_path.split('/').pop() || 'download';
-                        document.body.appendChild(a);
-                        a.click();
-                        window.URL.revokeObjectURL(url);
-                        a.remove();
+                        const fileName = resource.download_storage_path.split('/').pop() || 'download';
+
+                        if (window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler === 'function') {
+                            const reader = new FileReader();
+                            reader.readAsDataURL(blob);
+                            reader.onloadend = function() {
+                                const base64data = reader.result.split(',')[1];
+                                window.flutter_inappwebview.callHandler('blobToBase64Handler', base64data, fileName);
+                            };
+                        } else {
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = fileName;
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            a.remove();
+                        }
                     } catch (err) {
+                        console.error('Download error:', err);
                         alert('Could not download the file. Please try again.');
                     }
                 },
