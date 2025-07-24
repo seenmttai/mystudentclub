@@ -118,39 +118,71 @@
       </a>
     </nav>
 
-    <section class="controls-section">
-      <div class="search-bar-wrapper">
-        <input type="text" id="searchInput" placeholder="Search by Keywords..." class="search-input-field">
-        <button class="search-button" aria-label="Search">
-            <i class="fas fa-search"></i>
-        </button>
-      </div>
-      <button id="filter-toggle-btn" class="filter-toggle-btn">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L12 14.414V19a1 1 0 01-1.447.894l-2-1A1 1 0 018 18v-3.586L3.293 6.707A1 1 0 013 6V4z"></path></svg>
-        <span>Filters</span>
-        <svg class="arrow-icon arrow-down" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-        <svg class="arrow-icon arrow-up" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
-      </button>
-      <div class="filter-bar-wrapper">
-        <input type="text" id="locationSearchInput" placeholder="Location" class="filter-control">
-        <select id="salaryFilter" class="filter-control"></select>
-        <input type="text" id="categoryFilter" placeholder="Categories (e.g. Finance, Audit)" class="filter-control">
-        <select id="experienceFilter" class="filter-control">
-            <option value="">All Experience</option>
-            <option value="Freshers">Freshers</option>
-            <option value="Experienced">Experienced</option>
-        </select>
-      </div>
-    </section>
+    <div class="job-portal-layout">
+        <aside class="filter-sidebar">
+            <div class="filter-sidebar-header">
+                <h3>Filters</h3>
+                <button class="reset-filters-btn" id="desktopResetBtn">Reset All</button>
+            </div>
+            <div class="filter-group">
+                <label for="locationFilterDesktop">Location</label>
+                <div class="multi-select-container" data-type="location">
+                    <input type="text" id="locationFilterDesktop" class="multi-select-input" placeholder="Search cities...">
+                    <div class="multi-select-options"></div>
+                </div>
+                <div class="selected-pills-container" id="locationPillsDesktop"></div>
+            </div>
+            <div class="filter-group">
+                <label for="categoryFilterDesktop">Domain</label>
+                <div class="multi-select-container" data-type="category">
+                    <input type="text" id="categoryFilterDesktop" class="multi-select-input" placeholder="Search domains...">
+                    <div class="multi-select-options"></div>
+                </div>
+                <div class="selected-pills-container" id="categoryPillsDesktop"></div>
+            </div>
+            <div class="filter-group">
+                <label for="salaryFilterDesktop">Salary</label>
+                <select id="salaryFilterDesktop" class="filter-control"></select>
+            </div>
+            <div class="filter-group experience-filter-group" style="display: none;">
+                <label>Experience Level</label>
+                <div class="pill-options">
+                    <button class="pill-btn" data-value="Freshers">Freshers</button>
+                    <button class="pill-btn" data-value="Experienced">Experienced</button>
+                </div>
+            </div>
+        </aside>
 
-    <div class="job-listing-area" id="jobs"></div>
+        <div class="job-listings-container">
+            <div class="mobile-controls">
+                <div class="search-bar-wrapper">
+                    <input type="text" id="searchInput" placeholder="Search jobs by keyword..." class="search-input-field">
+                    <button class="search-button" aria-label="Search"><i class="fas fa-search"></i></button>
+                </div>
+                <button id="open-filter-modal-btn" class="filter-toggle-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L12 14.414V19a1 1 0 01-1.447.894l-2-1A1 1 0 018 18v-3.586L3.293 6.707A1 1 0 013 6V4z"></path></svg>
+                    <span>Filters</span>
+                </button>
+            </div>
 
-    <div class="loader-container" id="loader">
-      <div class="loader-spinner"></div>
-    </div>
+            <div class="listings-header">
+                <div id="active-filters-display" class="active-filters-container"></div>
+                <div class="sort-by-container">
+                    <label for="sortBySelect">Sort by:</label>
+                    <select id="sortBySelect" class="filter-control">
+                        <option value="newest">Newest First</option>
+                        <option value="salary_desc">Salary: High to Low</option>
+                        <option value="salary_asc">Salary: Low to High</option>
+                    </select>
+                </div>
+            </div>
 
-    <div class="load-more-wrapper">
-      <button id="loadMore" class="action-button load-more-action">Load More Jobs</button>
+            <div class="job-listing-area" id="jobs"></div>
+            <div class="loader-container" id="loader"><div class="loader-spinner"></div></div>
+            <div class="load-more-wrapper">
+                <button id="loadMore" class="action-button load-more-action">Load More Jobs</button>
+            </div>
+        </div>
     </div>
   </main>
 
@@ -159,6 +191,48 @@
       <button class="modal-close-action" id="modalCloseBtn">×</button>
       <div id="modal-body-content"></div>
     </div>
+  </div>
+
+  <div class="filter-modal-overlay" id="filterModalOverlay">
+      <div class="filter-modal-content">
+          <div class="modal-header">
+              <h4>Filters</h4>
+              <button class="modal-close-action" id="closeFilterModalBtn">×</button>
+          </div>
+          <div class="modal-body">
+              <div class="filter-group">
+                  <label for="locationFilterMobile">Location</label>
+                  <div class="multi-select-container" data-type="location">
+                      <input type="text" id="locationFilterMobile" class="multi-select-input" placeholder="Search cities...">
+                      <div class="multi-select-options"></div>
+                  </div>
+                  <div class="selected-pills-container" id="locationPillsMobile"></div>
+              </div>
+              <div class="filter-group">
+                  <label for="categoryFilterMobile">Domain</label>
+                  <div class="multi-select-container" data-type="category">
+                      <input type="text" id="categoryFilterMobile" class="multi-select-input" placeholder="Search domains...">
+                      <div class="multi-select-options"></div>
+                  </div>
+                  <div class="selected-pills-container" id="categoryPillsMobile"></div>
+              </div>
+              <div class="filter-group">
+                  <label for="salaryFilterMobile">Salary</label>
+                  <select id="salaryFilterMobile" class="filter-control"></select>
+              </div>
+              <div class="filter-group experience-filter-group" style="display: none;">
+                  <label>Experience Level</label>
+                  <div class="pill-options">
+                      <button class="pill-btn" data-value="Freshers">Freshers</button>
+                      <button class="pill-btn" data-value="Experienced">Experienced</button>
+                  </div>
+              </div>
+          </div>
+          <div class="modal-footer">
+              <button class="btn btn-secondary" id="mobileResetBtn">Reset</button>
+              <button class="btn btn-primary" id="applyFiltersBtn">Show Jobs</button>
+          </div>
+      </div>
   </div>
 
   <a href="https://api.whatsapp.com/send/?phone=919313148303" target="_blank" class="whatsapp-fab" aria-label="Contact us on WhatsApp">
