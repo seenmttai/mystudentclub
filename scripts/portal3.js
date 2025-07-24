@@ -175,13 +175,26 @@ function closeModal() {
 }
 
 async function fetchFilterOptions() {
-    const { data, error } = await supabaseClient.rpc('get_distinct_locations_and_categories', { table_name: currentTable });
-    if (error) {
+    try {
+        const [locationsRes, categoriesRes] = await Promise.all([
+            supabaseClient.from(currentTable).select('Location'),
+            supabaseClient.from(currentTable).select('Category')
+        ]);
+
+        if (locationsRes.error) throw locationsRes.error;
+        if (categoriesRes.error) throw categoriesRes.error;
+
+        const uniqueLocations = [...new Set(locationsRes.data.map(item => item.Location).filter(Boolean))].sort();
+        const uniqueCategories = [...new Set(categoriesRes.data.map(item => item.Category).filter(Boolean))].sort();
+
+        availableLocations = uniqueLocations;
+        availableCategories = uniqueCategories;
+
+    } catch (error) {
         console.error("Error fetching filter options:", error);
-        return;
+        availableLocations = [];
+        availableCategories = [];
     }
-    availableLocations = data.locations.filter(Boolean).sort();
-    availableCategories = data.categories.filter(Boolean).sort();
 }
 
 async function fetchJobs() {
@@ -504,6 +517,7 @@ async function loadBanners() {
     try {
         const { data, error } = await supabaseClient.from('Banners').select('Image, Hyperlink, Type');
         if (error) throw error;
+        const banners = data;
         carousel.innerHTML = '';
         const currentType = currentTable === "Semi Qualified Jobs" ? "Semi-Qualified" : currentTable === "Fresher Jobs" ? "Freshers" : currentTable.split(' ')[0];
         const relevantBanners = banners.filter(b => b.Type === 'All' || b.Type === currentType);
@@ -717,5 +731,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadBanners();
     populateNotificationDropdowns();
     updateNotificationBadge();
-    if (Notification.permission === 'granted') initializeFCM();
+    if (Notification.permission === 'granted') {
+        initializeFCM();
+    }
 });
