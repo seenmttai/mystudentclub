@@ -184,11 +184,9 @@ async function fetchFilterOptions() {
         if (locationsRes.error) throw locationsRes.error;
         if (categoriesRes.error) throw categoriesRes.error;
 
-        const uniqueLocations = [...new Set(locationsRes.data.map(item => item.Location).filter(Boolean))].sort();
-        const uniqueCategories = [...new Set(categoriesRes.data.map(item => item.Category).filter(Boolean))].sort();
+        availableLocations = [...new Set(locationsRes.data.map(item => item.Location).filter(Boolean))].sort();
+        availableCategories = [...new Set(categoriesRes.data.map(item => item.Category).filter(Boolean))].sort();
 
-        availableLocations = uniqueLocations;
-        availableCategories = uniqueCategories;
     } catch (error) {
         console.error("Error fetching filter options:", error);
         availableLocations = [];
@@ -684,7 +682,7 @@ function setupEventListeners() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+async function initializePage() {
     dom.jobsContainer = document.getElementById('jobs');
     dom.loader = document.getElementById('loader');
     dom.modalOverlay = document.getElementById('modal');
@@ -729,13 +727,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const session = await checkAuth();
     updateHeaderAuth(session);
     populateSalaryFilter();
-    await fetchFilterOptions();
-    fetchJobs();
     setupEventListeners();
-    loadBanners();
+    
+    await Promise.all([fetchJobs(), fetchFilterOptions(), loadBanners()]);
+    
     populateNotificationDropdowns();
     updateNotificationBadge();
     if (Notification.permission === 'granted') {
         initializeFCM();
     }
-});
+}
+
+document.addEventListener('DOMContentLoaded', initializePage);
