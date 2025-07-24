@@ -1,44 +1,17 @@
 import { getDaysAgo } from './date-utils.js';
 
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM6NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-const jobsContainer = document.getElementById('jobs');
-const loader = document.getElementById('loader');
-const modalOverlay = document.getElementById('modal');
-const modalBody = document.getElementById('modal-body-content');
-const modalCloseBtn = document.getElementById('modalCloseBtn');
-const searchInput = document.getElementById('searchInput');
-const locationSearchInput = document.getElementById('locationSearchInput');
-const salaryFilter = document.getElementById('salaryFilter');
-const categoryFilter = document.getElementById('categoryFilter');
-const experienceFilter = document.getElementById('experienceFilter');
-const loadMoreButton = document.getElementById('loadMore');
-const menuButton = document.getElementById('menuButton');
-const expandedMenu = document.getElementById('expandedMenu');
-const menuCloseBtn = document.getElementById('menuCloseBtn');
-const authButtonsContainer = document.querySelector('.auth-buttons-container');
-const filterToggleButton = document.getElementById('filter-toggle-btn');
-const filterBarWrapper = document.querySelector('.filter-bar-wrapper');
-const profileIncompleteModal = document.getElementById('profile-incomplete-modal');
-const profileModalCloseBtn = document.getElementById('profileModalCloseBtn');
-const goToProfileBtn = document.getElementById('goToProfileBtn');
-
-const notificationsBtn = document.getElementById('notificationsBtn');
-const notificationPopup = document.getElementById('notificationPopup');
-const closeNotificationPopup = document.getElementById('closeNotificationPopup');
-const notificationStatusEl = document.getElementById('notificationStatus');
-const notificationBadge = document.getElementById('notificationBadge');
-const topicAllCheckbox = document.getElementById('topic-all');
-const topicSelectionArea = document.getElementById('topic-selection-area');
-const permissionStatusDiv = document.getElementById('notification-permission-status');
-const enableNotificationsBtn = document.getElementById('enable-notifications-btn');
-const subscribedTopicsListEl = document.getElementById('subscribedTopicsList');
-const locationSelectEl = document.getElementById('locationSelect');
-const jobTypeSelectEl = document.getElementById('jobTypeSelect');
-const subscribeBtnEl = document.getElementById('subscribeBtn');
-const specificSubscriptionForm = document.getElementById('specific-subscription-form');
+let jobsContainer, loader, modalOverlay, modalBody, modalCloseBtn, searchInput,
+    locationSearchInput, salaryFilter, categoryFilter, experienceFilter, loadMoreButton,
+    menuButton, expandedMenu, menuCloseBtn, authButtonsContainer, filterToggleButton,
+    filterBarWrapper, profileIncompleteModal, profileModalCloseBtn, goToProfileBtn,
+    notificationsBtn, notificationPopup, closeNotificationPopup, notificationStatusEl,
+    notificationBadge, topicAllCheckbox, topicSelectionArea, permissionStatusDiv,
+    enableNotificationsBtn, subscribedTopicsListEl, locationSelectEl, jobTypeSelectEl,
+    subscribeBtnEl, specificSubscriptionForm;
 
 let isFetching = false;
 let page = 0;
@@ -86,18 +59,18 @@ function setActivePortalTab() {
     document.querySelectorAll('.portal-nav-bar .footer-tab, .site-footer-nav .footer-tab').forEach(tab => tab.classList.remove('active'));
     
     let activeSelector;
-    if (path.includes('articleship.html')) {
+    if (path.includes('/articleship')) {
         currentTable = 'Articleship Jobs';
         activeSelector = 'a[href="/articleship.html"]';
-    } else if (path.includes('semi-qualified.html')) {
+    } else if (path.includes('/semi-qualified')) {
         currentTable = 'Semi Qualified Jobs';
         activeSelector = 'a[href="/semi-qualified.html"]';
         if(experienceFilter) experienceFilter.style.display = 'block';
-    } else if (path.includes('fresher.html')) {
+    } else if (path.includes('/fresher')) {
         currentTable = 'Fresher Jobs';
         activeSelector = 'a[href="/fresher.html"]';
         if(experienceFilter) experienceFilter.style.display = 'block';
-    } else {
+    } else { 
         currentTable = 'Industrial Training Job Portal';
         activeSelector = 'a[href="/"]';
     }
@@ -587,8 +560,8 @@ async function handleApplyClick(job, buttonElement) {
 
     if (applyLink.startsWith('mailto:')) {
         if (!isProfileComplete()) {
-            const redirectUrl = encodeURIComponent(window.location.href);
-            goToProfileBtn.href = `/profile.html?redirect=${redirectUrl}`;
+            const redirectUrl = encodeURIComponent(window.location);
+            window.location.href = `https://mystudentclub.com/profile.html`;
             profileIncompleteModal.style.display = 'flex';
             return;
         }
@@ -770,6 +743,46 @@ function setupEventListeners() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    if (typeof pdfjsLib !== 'undefined') {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+    }
+
+    jobsContainer = document.getElementById('jobs');
+    loader = document.getElementById('loader');
+    modalOverlay = document.getElementById('modal');
+    modalBody = document.getElementById('modal-body-content');
+    modalCloseBtn = document.getElementById('modalCloseBtn');
+    searchInput = document.getElementById('searchInput');
+    locationSearchInput = document.getElementById('locationSearchInput');
+    salaryFilter = document.getElementById('salaryFilter');
+    categoryFilter = document.getElementById('categoryFilter');
+    experienceFilter = document.getElementById('experienceFilter');
+    loadMoreButton = document.getElementById('loadMore');
+    menuButton = document.getElementById('menuButton');
+    expandedMenu = document.getElementById('expandedMenu');
+    menuCloseBtn = document.getElementById('menuCloseBtn');
+    authButtonsContainer = document.querySelector('.auth-buttons-container');
+    filterToggleButton = document.getElementById('filter-toggle-btn');
+    filterBarWrapper = document.querySelector('.filter-bar-wrapper');
+    profileIncompleteModal = document.getElementById('profile-incomplete-modal');
+    profileModalCloseBtn = document.getElementById('profileModalCloseBtn');
+    goToProfileBtn = document.getElementById('goToProfileBtn');
+
+    notificationsBtn = document.getElementById('notificationsBtn');
+    notificationPopup = document.getElementById('notificationPopup');
+    closeNotificationPopup = document.getElementById('closeNotificationPopup');
+    notificationStatusEl = document.getElementById('notificationStatus');
+    notificationBadge = document.getElementById('notificationBadge');
+    topicAllCheckbox = document.getElementById('topic-all');
+    topicSelectionArea = document.getElementById('topic-selection-area');
+    permissionStatusDiv = document.getElementById('notification-permission-status');
+    enableNotificationsBtn = document.getElementById('enable-notifications-btn');
+    subscribedTopicsListEl = document.getElementById('subscribedTopicsList');
+    locationSelectEl = document.getElementById('locationSelect');
+    jobTypeSelectEl = document.getElementById('jobTypeSelect');
+    subscribeBtnEl = document.getElementById('subscribeBtn');
+    specificSubscriptionForm = document.getElementById('specific-subscription-form');
+    
     setActivePortalTab();
     const session = await checkAuth();
     updateHeaderAuth(session);
