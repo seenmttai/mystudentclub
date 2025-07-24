@@ -1,7 +1,8 @@
 import { getDaysAgo } from './date-utils.js';
 
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 let jobsContainer, loader, modalOverlay, modalBody, modalCloseBtn, searchInput,
     locationSearchInput, salaryFilter, categoryFilter, experienceFilter, loadMoreButton,
@@ -219,23 +220,44 @@ async function fetchJobs() {
     try {
         let query = supabaseClient.from(currentTable).select('id, Company, Location, Salary, Description, Created_At, Category, "Application ID"');
         const searchTerm = searchInput.value.trim();
-        if (searchTerm) query = query.or(`Company.ilike.%${searchTerm}%,Location.ilike.%${searchTerm}%,Description.ilike.%${searchTerm}%,Category.ilike.%${searchTerm}%`);
+        if (searchTerm) query = query.or(`Company.ilike.%${searchTerm}%,Description.ilike.%${searchTerm}%`);
+        
         const locationSearch = locationSearchInput.value.trim();
-        if (locationSearch) query = query.ilike('Location', `%${locationSearch}%`);
-        const salary = salaryFilter.value;
-        if (salary) {
-            if (salary.endsWith('+')) query = query.gte('Salary', parseInt(salary));
-            else if (salary.includes('-')) {
-                const [min, max] = salary.split('-').map(Number);
-                query = query.gte('Salary', min).lte('Salary', max);
+        if (locationSearch) {
+            const locations = locationSearch.split(',').map(loc => loc.trim()).filter(loc => loc);
+            if (locations.length > 0) {
+                const locationFilters = locations.map(loc => `Location.ilike.%${loc}%`).join(',');
+                query = query.or(locationFilters);
             }
         }
-        const category = categoryFilter.value;
-        if (category) query = query.ilike('Category', `%${category}%`);
+        
+        const categorySearch = categoryFilter.value.trim();
+        if (categorySearch) {
+            const categories = categorySearch.split(',').map(cat => cat.trim()).filter(cat => cat);
+            if (categories.length > 0) {
+                const categoryFilters = categories.map(cat => `Category.ilike.%${cat}%`).join(',');
+                query = query.or(categoryFilters);
+            }
+        }
+        
+        const salary = salaryFilter.value;
+        if (salary) {
+            if (salary.endsWith('+')) {
+                const minValue = parseInt(salary);
+                if (!isNaN(minValue)) query = query.gte('Salary', minValue);
+            } else if (salary.includes('-')) {
+                const [min, max] = salary.split('-').map(Number);
+                if (!isNaN(min) && !isNaN(max)) {
+                    query = query.gte('Salary', min).lte('Salary', max);
+                }
+            }
+        }
+
         if (experienceFilter && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
             const experience = experienceFilter.value;
             if (experience) query = query.eq('Experience', experience);
         }
+
         query = query.order('Created_At', { ascending: false }).range(page * limit, (page + 1) * limit - 1);
         const { data, error } = await query;
 
@@ -274,16 +296,8 @@ function populateSalaryFilter(table) {
     if (table === "Industrial Training Job Portal") options = [{ value: '', text: 'Any Stipend' }, { value: '10000-20000', text: '₹10k - ₹20k' }, { value: '20000-40000', text: '₹20k - ₹40k' }, { value: '40000+', text: '₹40k+' }];
     else if (table === "Articleship Jobs") options = [{ value: '', text: 'Any Stipend' }, { value: '0-5000', text: 'Below ₹5k' }, { value: '5000-10000', text: '₹5k - ₹10k' }, { value: '10000-15000', text: '₹10k - ₹15k' }, { value: '15000+', text: '₹15k+' }];
     else if (table === "Semi Qualified Jobs") options = [{ value: '', text: 'Any Salary' }, { value: '0-25000', text: 'Below ₹25k' }, { value: '25000-35000', text: '₹25k - ₹35k' }, { value: '35000-50000', text: '₹35k - ₹50k' }, { value: '50000+', text: 'Above ₹50k' }];
-    else if (table === "Fresher Jobs") options = [{ value: '', text: 'Any Salary' }, { value: '0-12', text: '< 12 LPA' }, { value: '12-18', text: '12-18 LPA' }, { value: '18+', text: '> 18 LPA' }];
+    else if (table === "Fresher Jobs") options = [{ value: '', text: 'Any Salary' }, { value: '0-1200000', text: '< 12 LPA' }, { value: '1200000-1800000', text: '12-18 LPA' }, { value: '1800000+', text: '> 18 LPA' }];
     options.forEach(opt => { let o = document.createElement('option'); o.value = opt.value; o.textContent = opt.text; salaryFilter.appendChild(o); });
-}
-
-async function fetchCategories() {
-    categoryFilter.innerHTML = `<option value="">All Categories</option>`;
-    let categories = [];
-    if (currentTable === "Industrial Training Job Portal" || currentTable === "Articleship Jobs") categories = ["Accounting", "Auditing", "Finance", "Taxation", "Costing", "Consultancy"];
-    else if (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs") categories = ["Accounting", "Audit", "Consultancy", "Controllership", "Direct Taxation", "Equity Research", "Finance", "Investment Banking", "Private Equity", "Indirect Taxation", "Internal Audit", "Statutory Audit"];
-    categories.sort().forEach(category => { const option = document.createElement('option'); option.value = category; option.textContent = category; categoryFilter.appendChild(option); });
 }
 
 async function checkAuth() {
@@ -327,7 +341,7 @@ window.handleLogout = async () => {
     updateHeaderAuth(null);
     const lmsNavLink = document.getElementById('lms-nav-link');
     if (lmsNavLink) lmsNavLink.style.display = 'none';
-}
+};
 
 async function loadBanners() {
     const carousel = document.querySelector('.carousel');
@@ -630,7 +644,7 @@ function setupEventListeners() {
     searchInput.addEventListener('input', resetAndFetch);
     locationSearchInput.addEventListener('input', resetAndFetch);
     salaryFilter.addEventListener('change', resetAndFetch);
-    categoryFilter.addEventListener('change', resetAndFetch);
+    categoryFilter.addEventListener('input', resetAndFetch);
     if (experienceFilter) experienceFilter.addEventListener('change', resetAndFetch);
     loadMoreButton.addEventListener('click', fetchJobs);
     menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
@@ -776,7 +790,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const session = await checkAuth();
     updateHeaderAuth(session);
     populateSalaryFilter(currentTable);
-    fetchCategories();
     fetchJobs();
     setupEventListeners();
     loadBanners();
