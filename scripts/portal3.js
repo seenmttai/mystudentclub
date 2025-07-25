@@ -186,12 +186,25 @@ async function fetchFilterOptions() {
 
         availableLocations = [...new Set(locationsRes.data.map(item => item.Location).filter(Boolean))].sort();
         availableCategories = [...new Set(categoriesRes.data.map(item => item.Category).filter(Boolean))].sort();
-
     } catch (error) {
         console.error("Error fetching filter options:", error);
         availableLocations = [];
         availableCategories = [];
     }
+}
+
+function parseSalaryFilter(salaryFilterValue) {
+    if (!salaryFilterValue) return { min: null, max: null };
+
+    if (salaryFilterValue.endsWith('+')) {
+        return { min: parseInt(salaryFilterValue, 10), max: null };
+    }
+    
+    if (salaryFilterValue.includes('-')) {
+        const [min, max] = salaryFilterValue.split('-').map(Number);
+        return { min, max };
+    }
+    return { min: null, max: null };
 }
 
 async function fetchJobs() {
@@ -221,13 +234,12 @@ async function fetchJobs() {
             query = query.or(categoryFilters);
         }
         if (state.salary) {
-            if (state.salary.endsWith('+')) {
-                const minValue = parseInt(state.salary);
-                if (!isNaN(minValue)) query = query.gte('Salary', minValue);
-            } else if (state.salary.includes('-')) {
-                const [min, max] = state.salary.split('-').map(Number);
-                if (!isNaN(min) && !isNaN(max)) query = query.gte('Salary', min).lte('Salary', max);
-            }
+            const { min, max } = parseSalaryFilter(state.salary);
+            query = query.filter('Salary', 'not.is', null);
+            query = query.filter('Salary', 'match', '^[0-9,]+$');
+            
+            if (min !== null) query = query.gte('Salary', min);
+            if (max !== null) query = query.lte('Salary', max);
         }
         if (state.experience && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
             query = query.eq('Experience', state.experience);
@@ -235,10 +247,12 @@ async function fetchJobs() {
 
         const [sortCol, sortDir] = state.sortBy.split('_');
         const isAsc = sortDir === 'asc';
-        query = query.order(sortCol === 'newest' ? 'Created_At' : 'Salary', {
-            ascending: isAsc,
-            nullsFirst: false
-        });
+
+        if (sortCol === 'salary') {
+            query = query.order('Salary', { ascending: isAsc, nullsFirst: false });
+        } else {
+             query = query.order('Created_At', { ascending: false });
+        }
 
         query = query.range(page * limit, (page + 1) * limit - 1);
         const { data, error } = await query;
@@ -256,7 +270,7 @@ async function fetchJobs() {
         }
     } catch (error) {
         console.error("Error fetching jobs:", error);
-        dom.jobsContainer.innerHTML = `<p class="no-jobs-found" style="color:red;">Failed to load jobs: ${error.message}</p>`;
+        dom.jobsContainer.innerHTML = `<p class="no-jobs-found" style="color:red;">Failed to load jobs. Please check filters or try again.</p>`;
     } finally {
         isFetching = false;
         dom.loader.style.display = 'none';
