@@ -379,12 +379,11 @@ body {
   justify-content: space-around;
   background-color: var(--surface-bg);
   padding: 0.5rem;
-  margin: 1.5rem auto 0;
+  margin: 1.5rem auto 1.5rem;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   border: 1px solid var(--border-light);
   border-bottom: none;
   max-width: 1300px;
-  margin-bottom: 0.5rem;
 }
 
 .portal-nav-bar .footer-tab {
