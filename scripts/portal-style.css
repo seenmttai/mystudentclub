@@ -384,7 +384,7 @@ body {
   border: 1px solid var(--border-light);
   border-bottom: none;
   max-width: 1300px;
-  padding-bottom: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .portal-nav-bar .footer-tab {
