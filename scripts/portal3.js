@@ -61,14 +61,14 @@ function setActivePortalTab() {
 
     experienceFilterGroups.forEach(el => el.style.display = 'none');
 
-    if (path.includes('/articleship')) {
+    if (path.includes('/articleship.html')) {
         currentTable = 'Articleship Jobs';
         activeSelector = 'a[href="/articleship.html"]';
-    } else if (path.includes('/semi-qualified')) {
+    } else if (path.includes('/semi-qualified.html')) {
         currentTable = 'Semi Qualified Jobs';
         activeSelector = 'a[href="/semi-qualified.html"]';
         experienceFilterGroups.forEach(el => el.style.display = 'block');
-    } else if (path.includes('/fresher')) {
+    } else if (path.includes('/fresher.html')) {
         currentTable = 'Fresher Jobs';
         activeSelector = 'a[href="/fresher.html"]';
         experienceFilterGroups.forEach(el => el.style.display = 'block');
@@ -149,7 +149,6 @@ function showModal(job) {
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
         </div>
         <div class="modal-actions">${actionsHtml}</div>
-
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>Apply here!</h3>
             <p class="modal-description">${job['Application ID'] || 'No Application ID Available'}</p>
@@ -234,10 +233,17 @@ async function fetchJobs() {
 
         const [sortCol, sortDir] = state.sortBy.split('_');
         const isAsc = sortDir === 'asc';
-        query = query.order(sortCol === 'newest' ? 'Created_At' : 'Salary', {
+        
+        const orderOptions = {
             ascending: isAsc,
             nullsFirst: false
-        });
+        };
+
+        if (sortCol === 'newest') {
+            query = query.order('Created_At', { ascending: false, nullsFirst: false });
+        } else if (sortCol === 'salary') {
+            query = query.order('Salary', orderOptions);
+        }
 
         query = query.range(page * limit, (page + 1) * limit - 1);
         const { data, error } = await query;
@@ -450,7 +456,6 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
         const spinner = buttonElement.querySelector('i.fa-spin');
         const originalText = btnText.textContent;
         btnText.textContent = 'Preparing...';
-        if (spinner) spinner.style.display = 'inline-block';
         buttonElement.disabled = true;
 
         try {
@@ -463,7 +468,6 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
             window.location.href = constructMailto(job, ""); 
         } finally {
             btnText.textContent = originalText;
-            if (spinner) spinner.style.display = 'none';
             buttonElement.disabled = false;
         }
     } else {
@@ -514,6 +518,7 @@ function getApplicationLink(id) {
             new URL(trimmedId);
             return trimmedId;
         } catch (_) {
+            return `https://${trimmedId}`;
         }
     }
     if (trimmedId.includes('@')) {
@@ -607,8 +612,45 @@ async function unsubscribeFromTopic(topic) { return manageTopicSubscription(topi
 
 function updatePermissionStatusUI() { if (!dom.permissionStatusDiv) return; const permission = Notification.permission; dom.enableNotificationsBtn.style.display = permission === 'default' ? 'block' : 'none'; dom.topicSelectionArea.style.display = permission === 'granted' ? 'block' : 'none'; if (permission === 'granted') { dom.permissionStatusDiv.textContent = 'Notifications are enabled.'; dom.permissionStatusDiv.className = 'notification-status status-success'; } else if (permission === 'denied') { dom.permissionStatusDiv.textContent = 'Notifications are blocked in browser settings.'; dom.permissionStatusDiv.className = 'notification-status status-error'; } else { dom.permissionStatusDiv.textContent = 'Enable notifications for job alerts.'; dom.permissionStatusDiv.className = 'notification-status status-info'; } dom.permissionStatusDiv.style.display = 'block'; }
 function populateNotificationDropdowns() { if (dom.locationSelectEl) { dom.locationSelectEl.innerHTML = '<option value="" disabled selected>Select Location</option>'; LOCATIONS_NOTIF.sort().forEach(loc => { const opt=document.createElement('option'); opt.value=loc; opt.textContent=loc.charAt(0).toUpperCase()+loc.slice(1); dom.locationSelectEl.appendChild(opt); }); } if (dom.jobTypeSelectEl) { dom.jobTypeSelectEl.innerHTML = '<option value="" disabled selected>Select Job Type</option>'; JOB_TYPES_NOTIF.forEach(type => { const opt=document.createElement('option'); opt.value=type.value; opt.textContent=type.label; dom.jobTypeSelectEl.appendChild(opt); }); } }
-async function initializeFCM() { try { if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG); firebaseMessaging = firebase.messaging(); firebaseMessaging.onMessage(payload => { console.log('Message received. ', payload); }); if ('serviceWorker' in navigator) await navigator.serviceWorker.register('/firebase-messaging-sw.js'); if (Notification.permission === 'granted') await requestTokenAndSync(); } catch(err) { console.error("FCM Init Error:", err); } }
-async function requestTokenAndSync() { if (!firebaseMessaging) return; try { const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY }); if (token) { currentFcmToken = token; await syncNotificationTopics(); } } catch (err) { console.error('Token retrieval error.', err); } }
+
+async function initializeFCM() {
+    try {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(FIREBASE_CONFIG);
+        }
+        firebaseMessaging = firebase.messaging();
+        firebaseMessaging.onMessage(payload => {
+            console.log('Message received. ', payload);
+        });
+        
+        if ('serviceWorker' in navigator) {
+            await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+            if (Notification.permission === 'granted') {
+                await requestTokenAndSync();
+            }
+        }
+    } catch(err) {
+        console.error("FCM Initialization Error:", err);
+    }
+}
+
+async function requestTokenAndSync() {
+    if (!firebaseMessaging) return;
+
+    try {
+        await navigator.serviceWorker.ready;
+        const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY });
+        if (token) {
+            currentFcmToken = token;
+            await syncNotificationTopics();
+        } else {
+            console.warn('No registration token available. Request permission to generate one.');
+        }
+    } catch (err) {
+        console.error('Token retrieval error.', err);
+    }
+}
+
 function shouldSync() { const lastSync = localStorage.getItem('notificationSyncTimestamp'); if (!lastSync) return true; return new Date(parseInt(lastSync)).toDateString() !== new Date().toDateString(); }
 async function syncNotificationTopics() { if (!currentFcmToken || !shouldSync()) return; await Promise.all(getSubscribedTopics().map(topic => manageTopicSubscription(topic, 'subscribe'))); localStorage.setItem('notificationSyncTimestamp', Date.now().toString()); }
 
