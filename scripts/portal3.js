@@ -85,11 +85,9 @@ function renderJobCard(job) {
     jobCard.className = 'job-card';
     jobCard.addEventListener('click', () => showModal(job));
     
-    const companyInitial = job.Company ? job.Company.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
 
     jobCard.innerHTML = `
-        <div class="job-card-logo">${companyInitial}</div>
         <div class="job-card-details">
             <h3 class="job-card-company">${job.Company || 'N/A'}</h3>
             <p class="job-card-posted">Posted ${postedDate}</p>
@@ -208,12 +206,14 @@ async function fetchJobs() {
 
         if (state.searchTerm) {
             const searchPattern = `%${state.searchTerm}%`;
-            query = query.or(`Company.ilike.${searchPattern},Description.ilike.${searchPattern},Location.ilike.${searchPattern}`);
+            query = query.or(`Company.ilike.${searchPattern},Description.ilike.${searchPattern},Location.ilike.${searchPattern},Category.ilike.${searchPattern}`);
         }
+        
         if (state.locations.length > 0) {
-            const locationFilters = state.locations.map(loc => `Location.ilike.%${loc}%`).join(',');
+            const locationFilters = state.locations.map(loc => `Location.ilike.%${loc.replace(/, /g, '%')}%`).join(',');
             query = query.or(locationFilters);
         }
+        
         if (state.categories.length > 0) {
             const categoryFilters = state.categories.map(cat => `Category.ilike.%${cat}%`).join(',');
             query = query.or(categoryFilters);
@@ -261,7 +261,7 @@ async function fetchJobs() {
         }
     } catch (error) {
         console.error("Error fetching jobs:", error);
-        dom.jobsContainer.innerHTML = `<p class="no-jobs-found" style="color:red;">Failed to load jobs: ${error.message}</p>`;
+        dom.jobsContainer.innerHTML = `<p class="no-jobs-found" style="color:red;">${error.message}</p>`;
     } finally {
         isFetching = false;
         dom.loader.style.display = 'none';
@@ -663,7 +663,21 @@ function setupEventListeners() {
     dom.modalCloseBtn.addEventListener('click', closeModal);
     dom.loadMoreButton.addEventListener('click', () => fetchJobs());
 
-    dom.searchInput.addEventListener('input', () => updateState({ searchTerm: dom.searchInput.value }));
+    const searchInputs = [dom.searchInput, dom.searchInputDesktop];
+    searchInputs.forEach(input => {
+        if (input) {
+            input.addEventListener('input', () => {
+                const searchTerm = input.value;
+                state.searchTerm = searchTerm;
+                searchInputs.forEach(otherInput => {
+                    if (otherInput && otherInput !== input) {
+                        otherInput.value = searchTerm;
+                    }
+                });
+                resetAndFetch();
+            });
+        }
+    });
     
     [dom.sortBySelect, dom.sortBySelectMobile].forEach(select => {
         if(select) select.addEventListener('change', () => {
@@ -780,7 +794,8 @@ async function initializePage() {
     dom.modalOverlay = document.getElementById('modal');
     dom.modalBody = document.getElementById('modal-body-content');
     dom.modalCloseBtn = document.getElementById('modalCloseBtn');
-    dom.searchInput = document.getElementById('searchInput');
+    dom.searchInput = document.getElementById('searchInputMobile');
+    dom.searchInputDesktop = document.getElementById('searchInputDesktop');
     dom.sortBySelect = document.getElementById('sortBySelect');
     dom.sortBySelectMobile = document.getElementById('sortBySelectMobile');
     dom.loadMoreButton = document.getElementById('loadMore');
