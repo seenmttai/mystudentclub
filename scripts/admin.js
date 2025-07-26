@@ -461,6 +461,9 @@ document.getElementById('job-form').addEventListener('submit', async (e) => {
   const formData = new FormData(e.target);
   const jobData = Object.fromEntries(formData.entries());
   const table = jobData.table;
+  if (jobData.Salary === '') {
+    jobData.Salary = null;
+  }
   const jobId = jobData.id;
   delete jobData.table;
   delete jobData.id;
