@@ -54,7 +54,7 @@ const JOB_TITLE_MAP = {
 
 function setActivePortalTab() {
     const path = window.location.pathname;
-    document.querySelectorAll('.portal-nav-bar .footer-tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.portal-nav-bar .footer-tab, .site-footer-nav .footer-tab').forEach(tab => tab.classList.remove('active'));
     
     let activeSelector;
     const experienceFilterGroups = document.querySelectorAll('.experience-filter-group');
@@ -85,12 +85,16 @@ function renderJobCard(job) {
     jobCard.className = 'job-card';
     jobCard.addEventListener('click', () => showModal(job));
     
+    const companyInitial = job.Company ? job.Company.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
 
     jobCard.innerHTML = `
+        <div class="job-card-logo">${companyInitial}</div>
         <div class="job-card-details">
-            <h3 class="job-card-company">${job.Company || 'N/A'}</h3>
-            <p class="job-card-posted">Posted ${postedDate}</p>
+            <div class="job-card-header">
+                <h3 class="job-card-company">${job.Company || 'N/A'}</h3>
+                <p class="job-card-posted">Posted ${postedDate}</p>
+            </div>
             <div class="job-card-meta">
                 <span class="job-tag">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -101,7 +105,7 @@ function renderJobCard(job) {
             </div>
         </div>
         <div class="job-card-actions">
-             <button class="view-details-btn">View Details</button>
+             <button class="apply-now-card-btn">View Details</button>
         </div>`;
 
     return jobCard;
@@ -148,12 +152,12 @@ function showModal(job) {
         </div>
         <div class="modal-actions">${actionsHtml}</div>
         <div class="modal-section">
-            <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>Apply here!</h3>
-            <p class="modal-description">${job['Application ID'] || 'No Application ID Available'}</p>
-        </div>
-        <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Job Description</h3>
             <p class="modal-description">${job.Description || 'No description available.'}</p>
+        </div>
+        <div class="modal-section">
+            <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>Apply here!</h3>
+            <p class="modal-description">${job['Application ID'] || 'No Application ID Available'}</p>
         </div>`;
         
     dom.modalOverlay.style.display = 'flex';
@@ -184,7 +188,6 @@ async function fetchFilterOptions() {
         availableCategories = [...new Set(categoriesRes.data.map(item => item.Category).filter(Boolean))].sort();
 
     } catch (error) {
-        console.error("Error fetching filter options:", error);
         availableLocations = [];
         availableCategories = [];
     }
@@ -208,12 +211,10 @@ async function fetchJobs() {
             const searchPattern = `%${state.searchTerm}%`;
             query = query.or(`Company.ilike.${searchPattern},Description.ilike.${searchPattern},Location.ilike.${searchPattern},Category.ilike.${searchPattern}`);
         }
-        
         if (state.locations.length > 0) {
-            const locationFilters = state.locations.map(loc => `Location.ilike.%${loc.replace(/, /g, '%')}%`).join(',');
+            const locationFilters = state.locations.map(loc => `Location.ilike.%${loc}%`).join(',');
             query = query.or(locationFilters);
         }
-        
         if (state.categories.length > 0) {
             const categoryFilters = state.categories.map(cat => `Category.ilike.%${cat}%`).join(',');
             query = query.or(categoryFilters);
@@ -233,17 +234,10 @@ async function fetchJobs() {
 
         const [sortCol, sortDir] = state.sortBy.split('_');
         const isAsc = sortDir === 'asc';
-        
-        const orderOptions = {
+        query = query.order(sortCol === 'newest' ? 'Created_At' : 'Salary', {
             ascending: isAsc,
             nullsFirst: false
-        };
-
-        if (sortCol === 'newest') {
-            query = query.order('Created_At', { ascending: false, nullsFirst: false });
-        } else if (sortCol === 'salary') {
-            query = query.order('Salary', orderOptions);
-        }
+        });
 
         query = query.range(page * limit, (page + 1) * limit - 1);
         const { data, error } = await query;
@@ -260,8 +254,7 @@ async function fetchJobs() {
             if (page === 0) dom.jobsContainer.innerHTML = '<p class="no-jobs-found">No jobs found matching your criteria.</p>';
         }
     } catch (error) {
-        console.error("Error fetching jobs:", error);
-        dom.jobsContainer.innerHTML = `<p class="no-jobs-found" style="color:red;">${error.message}</p>`;
+        dom.jobsContainer.innerHTML = `<p class="no-jobs-found" style="color:red;">Failed to load jobs: ${error.message}</p>`;
     } finally {
         isFetching = false;
         dom.loader.style.display = 'none';
@@ -312,7 +305,7 @@ function renderPills(container, items, type) {
         removeBtn.onclick = () => {
             state[type] = state[type].filter(i => i !== item);
             renderPills(container, state[type], type);
-            if (container.closest('.filter-sidebar-content')) {
+            if (container.closest('.filter-sidebar')) {
                 resetAndFetch();
             }
         };
@@ -350,8 +343,6 @@ function syncAndFetch() {
     renderPills(dom.categoryPillsMobile, state.categories, 'categories');
     if (dom.salaryFilterDesktop) dom.salaryFilterDesktop.value = state.salary;
     if (dom.salaryFilterMobile) dom.salaryFilterMobile.value = state.salary;
-    if (dom.sortBySelect) dom.sortBySelect.value = state.sortBy;
-    if (dom.sortBySelectMobile) dom.sortBySelectMobile.value = state.sortBy;
 
     document.querySelectorAll('.pill-btn').forEach(btn => {
         if (btn.dataset.value === state.experience) {
@@ -377,7 +368,7 @@ function setupMultiSelect(container) {
         const stateKey = type === 'location' ? 'locations' : 'categories';
         const filteredSource = source.filter(item => item.toLowerCase().includes(filter.toLowerCase()) && !state[stateKey].includes(item));
         optionsContainer.innerHTML = '';
-        filteredSource.slice(0, 10).forEach(item => {
+        filteredSource.forEach(item => {
             const optionEl = document.createElement('div');
             optionEl.className = 'multi-select-option';
             optionEl.textContent = item;
@@ -385,7 +376,7 @@ function setupMultiSelect(container) {
                 if (!state[stateKey].includes(item)) {
                     state[stateKey].push(item);
                     renderPills(pillsContainer, state[stateKey], stateKey);
-                    if(container.closest('.filter-sidebar-content')) resetAndFetch();
+                    if(container.closest('.filter-sidebar')) resetAndFetch();
                 }
                 input.value = '';
                 optionsContainer.classList.remove('show');
@@ -421,7 +412,7 @@ function updateHeaderAuth(session) {
     }
 }
 
-async function handleLogout() {
+window.handleLogout = async () => {
     await supabaseClient.auth.signOut();
     currentSession = null;
     updateHeaderAuth(null);
@@ -453,8 +444,10 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
         }
 
         const btnText = buttonElement.querySelector('.btn-text');
+        const spinner = buttonElement.querySelector('i.fa-spin');
         const originalText = btnText.textContent;
         btnText.textContent = 'Preparing...';
+        if (spinner) spinner.style.display = 'inline-block';
         buttonElement.disabled = true;
 
         try {
@@ -467,6 +460,7 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
             window.location.href = constructMailto(job, ""); 
         } finally {
             btnText.textContent = originalText;
+            if (spinner) spinner.style.display = 'none';
             buttonElement.disabled = false;
         }
     } else {
@@ -494,7 +488,6 @@ async function generateEmailBody(profile, job) {
         const data = await response.json();
         return data.email_body || "";
     } catch (error) {
-        console.error("Error generating email body:", error);
         return ""; 
     }
 }
@@ -517,7 +510,6 @@ function getApplicationLink(id) {
             new URL(trimmedId);
             return trimmedId;
         } catch (_) {
-            return `https://${trimmedId}`;
         }
     }
     if (trimmedId.includes('@')) {
@@ -553,14 +545,13 @@ async function loadBanners() {
             carousel.appendChild(a);
         });
 
-        if (relevantBanners.length > 1) {
+        const slides = document.querySelectorAll('.carousel-item');
+        if (slides.length > 1) {
             let currentSlide = 0;
-            const slides = document.querySelectorAll('.carousel-item');
             const showSlide = (idx) => { slides.forEach(s => s.classList.remove('active')); slides[idx].classList.add('active'); };
             setInterval(() => { currentSlide = (currentSlide + 1) % slides.length; showSlide(currentSlide); }, 5000);
         }
     } catch (e) {
-        console.error("Failed to load banners", e);
         bannerSection.style.display = 'none';
     }
 }
@@ -605,89 +596,38 @@ function formatTopicForDisplay(topic) {
 }
 
 function updateSpecificTopicAreaVisibility() { if (dom.specificSubscriptionForm) dom.specificSubscriptionForm.style.display = dom.topicAllCheckbox.checked ? 'none' : 'block'; }
-async function manageTopicSubscription(topic, action) { if (!currentFcmToken) { showNotifStatus('Token not available. Please enable notifications first.', 'error'); return false; } try { const response = await fetch('https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ token: currentFcmToken, topic, action }) }); if (!response.ok) throw new Error(await response.text()); let topics = getSubscribedTopics(); if (action === 'subscribe' && !topics.includes(topic)) topics.push(topic); else if (action === 'unsubscribe') topics = topics.filter(t => t !== topic); saveSubscribedTopics(topics); renderSubscribedTopics(); return true; } catch (err) { showNotifStatus(`Failed to ${action}`, 'error'); return false; } }
+async function manageTopicSubscription(topic, action) { if (!currentFcmToken) { showNotifStatus('Token not available.', 'error'); return false; } try { const response = await fetch('https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ token: currentFcmToken, topic, action }) }); if (!response.ok) throw new Error(await response.text()); let topics = getSubscribedTopics(); if (action === 'subscribe' && !topics.includes(topic)) topics.push(topic); else if (action === 'unsubscribe') topics = topics.filter(t => t !== topic); saveSubscribedTopics(topics); renderSubscribedTopics(); return true; } catch (err) { showNotifStatus(`Failed to ${action}`, 'error'); return false; } }
 async function subscribeToTopic(topic) { return manageTopicSubscription(topic, 'subscribe'); }
 async function unsubscribeFromTopic(topic) { return manageTopicSubscription(topic, 'unsubscribe'); }
 
-function updatePermissionStatusUI() { if (!dom.permissionStatusDiv) return; const permission = Notification.permission; dom.enableNotificationsBtn.style.display = permission === 'default' ? 'block' : 'none'; dom.topicSelectionArea.style.display = permission === 'granted' ? 'block' : 'none'; if (permission === 'granted') { dom.permissionStatusDiv.textContent = 'Notifications are enabled.'; dom.permissionStatusDiv.className = 'notification-status status-success'; } else if (permission === 'denied') { dom.permissionStatusDiv.textContent = 'Notifications are blocked. Please enable them in your browser settings.'; dom.permissionStatusDiv.className = 'notification-status status-error'; } else { dom.permissionStatusDiv.textContent = 'Enable notifications to receive real-time job alerts.'; dom.permissionStatusDiv.className = 'notification-status status-info'; } dom.permissionStatusDiv.style.display = 'block'; }
+function updatePermissionStatusUI() { if (!dom.permissionStatusDiv) return; const permission = Notification.permission; dom.enableNotificationsBtn.style.display = permission === 'default' ? 'block' : 'none'; dom.topicSelectionArea.style.display = permission === 'granted' ? 'block' : 'none'; if (permission === 'granted') { dom.permissionStatusDiv.textContent = 'Notifications are enabled.'; dom.permissionStatusDiv.className = 'notification-status status-success'; } else if (permission === 'denied') { dom.permissionStatusDiv.textContent = 'Notifications are blocked in browser settings.'; dom.permissionStatusDiv.className = 'notification-status status-error'; } else { dom.permissionStatusDiv.textContent = 'Enable notifications for job alerts.'; dom.permissionStatusDiv.className = 'notification-status status-info'; } dom.permissionStatusDiv.style.display = 'block'; }
 function populateNotificationDropdowns() { if (dom.locationSelectEl) { dom.locationSelectEl.innerHTML = '<option value="" disabled selected>Select Location</option>'; LOCATIONS_NOTIF.sort().forEach(loc => { const opt=document.createElement('option'); opt.value=loc; opt.textContent=loc.charAt(0).toUpperCase()+loc.slice(1); dom.locationSelectEl.appendChild(opt); }); } if (dom.jobTypeSelectEl) { dom.jobTypeSelectEl.innerHTML = '<option value="" disabled selected>Select Job Type</option>'; JOB_TYPES_NOTIF.forEach(type => { const opt=document.createElement('option'); opt.value=type.value; opt.textContent=type.label; dom.jobTypeSelectEl.appendChild(opt); }); } }
-
-async function initializeFCM() {
-    try {
-        if (!firebase.apps.length) {
-            firebase.initializeApp(FIREBASE_CONFIG);
-        }
-        firebaseMessaging = firebase.messaging();
-        firebaseMessaging.onMessage(payload => {
-            console.log('Message received. ', payload);
-        });
-
-        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-        await navigator.serviceWorker.ready;
-
-        const token = await firebaseMessaging.getToken({ 
-            vapidKey: VAPID_KEY,
-            serviceWorkerRegistration: registration 
-        });
-
-        if (token) {
-            currentFcmToken = token;
-            await syncNotificationTopics();
-            return true; 
-        } else {
-            console.warn('No registration token available. Request permission to generate one.');
-            showNotifStatus('Could not get token. Please try again.', 'error');
-            return false;
-        }
-    } catch (err) {
-        console.error('An error occurred during FCM initialization. ', err);
-        showNotifStatus('Notification setup failed. See console for details.', 'error');
-        return false;
-    }
-}
-
+async function initializeFCM() { try { if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG); firebaseMessaging = firebase.messaging(); firebaseMessaging.onMessage(payload => {}); if ('serviceWorker' in navigator) await navigator.serviceWorker.register('/firebase-messaging-sw.js'); if (Notification.permission === 'granted') await requestTokenAndSync(); } catch(err) {} }
+async function requestTokenAndSync() { if (!firebaseMessaging) return; try { const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY }); if (token) { currentFcmToken = token; await syncNotificationTopics(); } } catch (err) {} }
 function shouldSync() { const lastSync = localStorage.getItem('notificationSyncTimestamp'); if (!lastSync) return true; return new Date(parseInt(lastSync)).toDateString() !== new Date().toDateString(); }
 async function syncNotificationTopics() { if (!currentFcmToken || !shouldSync()) return; await Promise.all(getSubscribedTopics().map(topic => manageTopicSubscription(topic, 'subscribe'))); localStorage.setItem('notificationSyncTimestamp', Date.now().toString()); }
-
-function applyTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    if (savedTheme === 'dark') {
-      document.documentElement.setAttribute('data-theme', 'dark');
-    } else {
-      document.documentElement.removeAttribute('data-theme');
-    }
-}
 
 function setupEventListeners() {
     dom.modalOverlay.addEventListener('click', (e) => { if (e.target === dom.modalOverlay) closeModal(); });
     dom.modalCloseBtn.addEventListener('click', closeModal);
     dom.loadMoreButton.addEventListener('click', () => fetchJobs());
 
-    const searchInputs = [dom.searchInput, dom.searchInputDesktop];
-    searchInputs.forEach(input => {
-        if (input) {
-            input.addEventListener('input', () => {
-                const searchTerm = input.value;
-                state.searchTerm = searchTerm;
-                searchInputs.forEach(otherInput => {
-                    if (otherInput && otherInput !== input) {
-                        otherInput.value = searchTerm;
-                    }
-                });
-                resetAndFetch();
-            });
+    const handleSearchInput = (e) => {
+        const searchTerm = e.target.value;
+        if (state.searchTerm !== searchTerm) {
+            updateState({ searchTerm });
+            if (e.target === dom.searchInputMobile && dom.searchInputDesktop) {
+                dom.searchInputDesktop.value = searchTerm;
+            } else if (e.target === dom.searchInputDesktop && dom.searchInputMobile) {
+                dom.searchInputMobile.value = searchTerm;
+            }
         }
-    });
-    
-    [dom.sortBySelect, dom.sortBySelectMobile].forEach(select => {
-        if(select) select.addEventListener('change', () => {
-            const newSortBy = select.value;
-            state.sortBy = newSortBy;
-            if (dom.sortBySelect) dom.sortBySelect.value = newSortBy;
-            if (dom.sortBySelectMobile) dom.sortBySelectMobile.value = newSortBy;
-            resetAndFetch();
-        });
-    });
+    };
+
+    if(dom.searchInputMobile) dom.searchInputMobile.addEventListener('input', handleSearchInput);
+    if(dom.searchInputDesktop) dom.searchInputDesktop.addEventListener('input', handleSearchInput);
+
+    dom.sortBySelect.addEventListener('change', () => updateState({ sortBy: dom.sortBySelect.value }));
     
     dom.menuButton.addEventListener('click', () => dom.expandedMenu.classList.add('active'));
     dom.menuCloseBtn.addEventListener('click', () => dom.expandedMenu.classList.remove('active'));
@@ -704,7 +644,13 @@ function setupEventListeners() {
 
     [dom.desktopResetBtn, dom.mobileResetBtn].forEach(btn => {
         if(btn) btn.addEventListener('click', () => {
-            state.locations = []; state.categories = []; state.salary = ''; state.experience = '';
+            state.locations = []; 
+            state.categories = []; 
+            state.salary = ''; 
+            state.experience = '';
+            state.searchTerm = '';
+            if (dom.searchInputMobile) dom.searchInputMobile.value = '';
+            if (dom.searchInputDesktop) dom.searchInputDesktop.value = '';
             syncAndFetch();
             if (btn.id === 'mobileResetBtn') dom.filterModalOverlay.classList.remove('show');
         });
@@ -726,23 +672,10 @@ function setupEventListeners() {
     
     if(dom.notificationsBtn) dom.notificationsBtn.addEventListener('click', (e) => {
         e.stopPropagation(); dom.notificationPopup.style.display = dom.notificationPopup.style.display === 'flex' ? 'none' : 'flex';
-        if (dom.notificationPopup.style.display === 'flex') { updatePermissionStatusUI(); renderSubscribedTopics(); }
+        if (dom.notificationPopup.style.display === 'flex') { updatePermissionStatusUI(); if (Notification.permission === 'granted') { if (!firebaseMessaging) initializeFCM().then(renderSubscribedTopics); else renderSubscribedTopics(); } else { renderSubscribedTopics(); } }
     });
     if(dom.closeNotificationPopup) dom.closeNotificationPopup.addEventListener('click', () => dom.notificationPopup.style.display = 'none');
-    
-    if(dom.enableNotificationsBtn) dom.enableNotificationsBtn.addEventListener('click', async () => { 
-        try { 
-            const permission = await Notification.requestPermission(); 
-            if (permission === 'granted') {
-                await initializeFCM();
-            }
-            updatePermissionStatusUI(); 
-        } catch (err) { 
-            console.error("Error requesting notification permission:", err); 
-            updatePermissionStatusUI();
-        } 
-    });
-
+    if(dom.enableNotificationsBtn) dom.enableNotificationsBtn.addEventListener('click', async () => { try { const permission = await Notification.requestPermission(); updatePermissionStatusUI(); if (permission === 'granted') await initializeFCM(); } catch (err) {} });
     if(dom.topicAllCheckbox) dom.topicAllCheckbox.addEventListener('change', (e) => e.target.checked ? subscribeToTopic('all') : unsubscribeFromTopic('all'));
     if(dom.subscribeBtnEl) dom.subscribeBtnEl.addEventListener('click', async () => { const location = dom.locationSelectEl.value; const jobType = dom.jobTypeSelectEl.value; if (!location || !jobType) return; const topicName = `${location}-${jobType}`; if (await subscribeToTopic(topicName)) { dom.locationSelectEl.selectedIndex = 0; dom.jobTypeSelectEl.selectedIndex = 0; dom.subscribeBtnEl.disabled = true; } });
     if(dom.locationSelectEl && dom.jobTypeSelectEl && dom.subscribeBtnEl) {
@@ -759,20 +692,6 @@ function setupEventListeners() {
             e.stopPropagation();
             resourcesDropdown.classList.toggle('active');
             if (dropdownIcon) dropdownIcon.classList.toggle('open');
-        });
-    }
-
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    if(darkModeToggle) {
-        darkModeToggle.addEventListener('click', () => {
-            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
-            if (isDarkMode) {
-                document.documentElement.removeAttribute('data-theme');
-                localStorage.setItem('theme', 'light');
-            } else {
-                document.documentElement.setAttribute('data-theme', 'dark');
-                localStorage.setItem('theme', 'dark');
-            }
         });
     }
 
@@ -794,10 +713,9 @@ async function initializePage() {
     dom.modalOverlay = document.getElementById('modal');
     dom.modalBody = document.getElementById('modal-body-content');
     dom.modalCloseBtn = document.getElementById('modalCloseBtn');
-    dom.searchInput = document.getElementById('searchInputMobile');
-    dom.searchInputDesktop = document.getElementById('searchInputDesktop');
+    dom.searchInputMobile = document.getElementById('searchInputMobile');
+    dom.searchInputDesktop = document.getElementById('searchFilterDesktop');
     dom.sortBySelect = document.getElementById('sortBySelect');
-    dom.sortBySelectMobile = document.getElementById('sortBySelectMobile');
     dom.loadMoreButton = document.getElementById('loadMore');
     dom.activeFiltersDisplay = document.getElementById('active-filters-display');
     dom.menuButton = document.getElementById('menuButton');
@@ -831,7 +749,6 @@ async function initializePage() {
     dom.subscribeBtnEl = document.getElementById('subscribeBtn');
     dom.specificSubscriptionForm = document.getElementById('specific-subscription-form');
     
-    applyTheme();
     setActivePortalTab();
     const session = await checkAuth();
     updateHeaderAuth(session);
@@ -842,13 +759,6 @@ async function initializePage() {
     
     populateNotificationDropdowns();
     updateNotificationBadge();
-    
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/firebase-messaging-sw.js').catch(err => {
-            console.error('Service Worker registration failed during page load:', err);
-        });
-    }
-
     if (Notification.permission === 'granted') {
         initializeFCM();
     }
