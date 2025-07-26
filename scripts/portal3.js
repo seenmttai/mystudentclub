@@ -453,7 +453,6 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
         }
 
         const btnText = buttonElement.querySelector('.btn-text');
-        const spinner = buttonElement.querySelector('i.fa-spin');
         const originalText = btnText.textContent;
         btnText.textContent = 'Preparing...';
         buttonElement.disabled = true;
@@ -606,11 +605,11 @@ function formatTopicForDisplay(topic) {
 }
 
 function updateSpecificTopicAreaVisibility() { if (dom.specificSubscriptionForm) dom.specificSubscriptionForm.style.display = dom.topicAllCheckbox.checked ? 'none' : 'block'; }
-async function manageTopicSubscription(topic, action) { if (!currentFcmToken) { showNotifStatus('Token not available.', 'error'); return false; } try { const response = await fetch('https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ token: currentFcmToken, topic, action }) }); if (!response.ok) throw new Error(await response.text()); let topics = getSubscribedTopics(); if (action === 'subscribe' && !topics.includes(topic)) topics.push(topic); else if (action === 'unsubscribe') topics = topics.filter(t => t !== topic); saveSubscribedTopics(topics); renderSubscribedTopics(); return true; } catch (err) { showNotifStatus(`Failed to ${action}`, 'error'); return false; } }
+async function manageTopicSubscription(topic, action) { if (!currentFcmToken) { showNotifStatus('Token not available. Please enable notifications first.', 'error'); return false; } try { const response = await fetch('https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ token: currentFcmToken, topic, action }) }); if (!response.ok) throw new Error(await response.text()); let topics = getSubscribedTopics(); if (action === 'subscribe' && !topics.includes(topic)) topics.push(topic); else if (action === 'unsubscribe') topics = topics.filter(t => t !== topic); saveSubscribedTopics(topics); renderSubscribedTopics(); return true; } catch (err) { showNotifStatus(`Failed to ${action}`, 'error'); return false; } }
 async function subscribeToTopic(topic) { return manageTopicSubscription(topic, 'subscribe'); }
 async function unsubscribeFromTopic(topic) { return manageTopicSubscription(topic, 'unsubscribe'); }
 
-function updatePermissionStatusUI() { if (!dom.permissionStatusDiv) return; const permission = Notification.permission; dom.enableNotificationsBtn.style.display = permission === 'default' ? 'block' : 'none'; dom.topicSelectionArea.style.display = permission === 'granted' ? 'block' : 'none'; if (permission === 'granted') { dom.permissionStatusDiv.textContent = 'Notifications are enabled.'; dom.permissionStatusDiv.className = 'notification-status status-success'; } else if (permission === 'denied') { dom.permissionStatusDiv.textContent = 'Notifications are blocked in browser settings.'; dom.permissionStatusDiv.className = 'notification-status status-error'; } else { dom.permissionStatusDiv.textContent = 'Enable notifications for job alerts.'; dom.permissionStatusDiv.className = 'notification-status status-info'; } dom.permissionStatusDiv.style.display = 'block'; }
+function updatePermissionStatusUI() { if (!dom.permissionStatusDiv) return; const permission = Notification.permission; dom.enableNotificationsBtn.style.display = permission === 'default' ? 'block' : 'none'; dom.topicSelectionArea.style.display = permission === 'granted' ? 'block' : 'none'; if (permission === 'granted') { dom.permissionStatusDiv.textContent = 'Notifications are enabled.'; dom.permissionStatusDiv.className = 'notification-status status-success'; } else if (permission === 'denied') { dom.permissionStatusDiv.textContent = 'Notifications are blocked. Please enable them in your browser settings.'; dom.permissionStatusDiv.className = 'notification-status status-error'; } else { dom.permissionStatusDiv.textContent = 'Enable notifications to receive real-time job alerts.'; dom.permissionStatusDiv.className = 'notification-status status-info'; } dom.permissionStatusDiv.style.display = 'block'; }
 function populateNotificationDropdowns() { if (dom.locationSelectEl) { dom.locationSelectEl.innerHTML = '<option value="" disabled selected>Select Location</option>'; LOCATIONS_NOTIF.sort().forEach(loc => { const opt=document.createElement('option'); opt.value=loc; opt.textContent=loc.charAt(0).toUpperCase()+loc.slice(1); dom.locationSelectEl.appendChild(opt); }); } if (dom.jobTypeSelectEl) { dom.jobTypeSelectEl.innerHTML = '<option value="" disabled selected>Select Job Type</option>'; JOB_TYPES_NOTIF.forEach(type => { const opt=document.createElement('option'); opt.value=type.value; opt.textContent=type.label; dom.jobTypeSelectEl.appendChild(opt); }); } }
 
 async function initializeFCM() {
@@ -622,32 +621,28 @@ async function initializeFCM() {
         firebaseMessaging.onMessage(payload => {
             console.log('Message received. ', payload);
         });
-        
-        if ('serviceWorker' in navigator) {
-            await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-            if (Notification.permission === 'granted') {
-                await requestTokenAndSync();
-            }
-        }
-    } catch(err) {
-        console.error("FCM Initialization Error:", err);
-    }
-}
 
-async function requestTokenAndSync() {
-    if (!firebaseMessaging) return;
-
-    try {
+        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
         await navigator.serviceWorker.ready;
-        const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY });
+
+        const token = await firebaseMessaging.getToken({ 
+            vapidKey: VAPID_KEY,
+            serviceWorkerRegistration: registration 
+        });
+
         if (token) {
             currentFcmToken = token;
             await syncNotificationTopics();
+            return true; 
         } else {
             console.warn('No registration token available. Request permission to generate one.');
+            showNotifStatus('Could not get token. Please try again.', 'error');
+            return false;
         }
     } catch (err) {
-        console.error('Token retrieval error.', err);
+        console.error('An error occurred during FCM initialization. ', err);
+        showNotifStatus('Notification setup failed. See console for details.', 'error');
+        return false;
     }
 }
 
@@ -717,10 +712,23 @@ function setupEventListeners() {
     
     if(dom.notificationsBtn) dom.notificationsBtn.addEventListener('click', (e) => {
         e.stopPropagation(); dom.notificationPopup.style.display = dom.notificationPopup.style.display === 'flex' ? 'none' : 'flex';
-        if (dom.notificationPopup.style.display === 'flex') { updatePermissionStatusUI(); if (Notification.permission === 'granted') { if (!firebaseMessaging) initializeFCM().then(renderSubscribedTopics); else renderSubscribedTopics(); } else { renderSubscribedTopics(); } }
+        if (dom.notificationPopup.style.display === 'flex') { updatePermissionStatusUI(); renderSubscribedTopics(); }
     });
     if(dom.closeNotificationPopup) dom.closeNotificationPopup.addEventListener('click', () => dom.notificationPopup.style.display = 'none');
-    if(dom.enableNotificationsBtn) dom.enableNotificationsBtn.addEventListener('click', async () => { try { const permission = await Notification.requestPermission(); updatePermissionStatusUI(); if (permission === 'granted') await initializeFCM(); } catch (err) { console.error(err); } });
+    
+    if(dom.enableNotificationsBtn) dom.enableNotificationsBtn.addEventListener('click', async () => { 
+        try { 
+            const permission = await Notification.requestPermission(); 
+            if (permission === 'granted') {
+                await initializeFCM();
+            }
+            updatePermissionStatusUI(); 
+        } catch (err) { 
+            console.error("Error requesting notification permission:", err); 
+            updatePermissionStatusUI();
+        } 
+    });
+
     if(dom.topicAllCheckbox) dom.topicAllCheckbox.addEventListener('change', (e) => e.target.checked ? subscribeToTopic('all') : unsubscribeFromTopic('all'));
     if(dom.subscribeBtnEl) dom.subscribeBtnEl.addEventListener('click', async () => { const location = dom.locationSelectEl.value; const jobType = dom.jobTypeSelectEl.value; if (!location || !jobType) return; const topicName = `${location}-${jobType}`; if (await subscribeToTopic(topicName)) { dom.locationSelectEl.selectedIndex = 0; dom.jobTypeSelectEl.selectedIndex = 0; dom.subscribeBtnEl.disabled = true; } });
     if(dom.locationSelectEl && dom.jobTypeSelectEl && dom.subscribeBtnEl) {
@@ -819,6 +827,13 @@ async function initializePage() {
     
     populateNotificationDropdowns();
     updateNotificationBadge();
+    
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/firebase-messaging-sw.js').catch(err => {
+            console.error('Service Worker registration failed during page load:', err);
+        });
+    }
+
     if (Notification.permission === 'granted') {
         initializeFCM();
     }
