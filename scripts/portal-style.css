@@ -1067,6 +1067,8 @@ body {
   line-height: 1.7;
   color: var(--text-secondary);
   font-size: 0.95rem;
+  overflow-wrap: break-word;
+  word-break: break-all;
 }
 .modal-actions {
   display: flex;
