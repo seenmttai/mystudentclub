@@ -25,10 +25,6 @@
       </a>
       <div class="nav-actions">
         <div class="auth-buttons-container"></div>
-        <button id="darkModeToggle" class="icon-button" aria-label="Toggle Dark Mode">
-            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM18.894 6.106a.75.75 0 010 1.06l-1.591 1.59a.75.75 0 11-1.06-1.06l1.59-1.59a.75.75 0 011.06 0zM21.75 12a.75.75 0 01-.75.75h-2.25a.75.75 0 010-1.5H21a.75.75 0 01.75.75zM17.894 17.894a.75.75 0 011.06 0l1.59 1.591a.75.75 0 11-1.06 1.06l-1.59-1.59a.75.75 0 010-1.061zM12 18.75a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0v-2.25a.75.75 0 01.75-.75zM5.106 17.894a.75.75 0 010-1.06l1.59-1.591a.75.75 0 111.061 1.06l-1.59 1.59a.75.75 0 01-1.06 0zM3 12a.75.75 0 01.75-.75h2.25a.75.75 0 010 1.5H3.75A.75.75 0 013 12zM6.106 5.106a.75.75 0 011.06 0l1.591 1.59a.75.75 0 01-1.06 1.06l-1.59-1.591a.75.75 0 010-1.06z" /></svg>
-            <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 01.162.819A8.97 8.97 0 009 6a9 9 0 009 9 8.97 8.97 0 004.463-.69a.75.75 0 01.981.98 10.503 10.503 0 01-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-3.51 1.713-6.635 4.398-8.552a.75.75 0 01.818.162z" clip-rule="evenodd" /></svg>
-        </button>
         <button id="notificationsBtn" class="icon-button notification-icon-btn" aria-label="Manage Notifications">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -64,7 +60,7 @@
             </button>
             <div class="dropdown-content" id="resourcesDropdown">
                 <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
-                <a href="mystudentclub.com/ca-industrial-training-resources" class="dropdown-item">CA Industrial Training Resources</a>
+                <a href="/index.html" class="dropdown-item">CA Industrial Training</a>
                 <a href="/articleship.html" class="dropdown-item">Articleship</a>
             </div>
         </div>
@@ -111,67 +107,72 @@
       <a href="/" class="footer-tab active">
         <span>Industrial Training</span>
       </a>
-      <a href="/fresher.html" class="footer-tab">
-        <span>Freshers</span>
-      </a>
       <a href="/articleship.html" class="footer-tab">
         <span>Articleship</span>
       </a>
       <a href="/semi-qualified.html" class="footer-tab">
         <span>Semi Qualified</span>
       </a>
+      <a href="/fresher.html" class="footer-tab">
+        <span>Freshers</span>
+      </a>
     </nav>
 
     <div class="job-portal-layout">
         <aside class="filter-sidebar">
-            <div class="sort-by-container">
-              <label for="sortBySelect">Sort by</label>
-              <select id="sortBySelect" class="filter-control">
-                  <option value="newest">Newest First</option>
-                  <option value="salary_desc">Stipend: High to Low</option>
-                  <option value="salary_asc">Stipend: Low to High</option>
-              </select>
+            <div class="filter-sidebar-header">
+                <h3>Filters</h3>
+                <button class="reset-filters-btn" id="desktopResetBtn">Reset All</button>
             </div>
-            <div class="filter-sidebar-content">
-              <div class="filter-sidebar-header">
-                  <h3>Filters</h3>
-                  <button class="reset-filters-btn" id="desktopResetBtn">Reset All</button>
-              </div>
-              <div class="filter-group">
-                  <label for="locationFilterDesktop">Location</label>
-                  <div class="multi-select-container" data-type="location">
-                      <input type="text" id="locationFilterDesktop" class="multi-select-input" placeholder="Search cities...">
-                      <div class="multi-select-options"></div>
-                  </div>
-                  <div class="selected-pills-container" id="locationPillsDesktop"></div>
-              </div>
-              <div class="filter-group">
-                  <label for="categoryFilterDesktop">Category</label>
-                  <div class="multi-select-container" data-type="category">
-                      <input type="text" id="categoryFilterDesktop" class="multi-select-input" placeholder="Search categories...">
-                      <div class="multi-select-options"></div>
-                  </div>
-                  <div class="selected-pills-container" id="categoryPillsDesktop"></div>
-              </div>
-              <div class="filter-group">
-                  <label for="salaryFilterDesktop">Stipend</label>
-                  <select id="salaryFilterDesktop" class="filter-control"></select>
-              </div>
-              <div class="filter-group experience-filter-group" style="display: none;">
-                  <label>Experience Level</label>
-                  <div class="pill-options">
-                      <button class="pill-btn" data-value="Freshers">Freshers</button>
-                      <button class="pill-btn" data-value="Experienced">Experienced</button>
-                  </div>
-              </div>
+            <div class="filter-group">
+                <label for="sortBySelect">Sort by</label>
+                <select id="sortBySelect" class="filter-control">
+                    <option value="newest">Newest First</option>
+                    <option value="salary_desc">Stipend: High to Low</option>
+                    <option value="salary_asc">Stipend: Low to High</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="searchFilterDesktop">Keyword</label>
+                <div class="search-bar-wrapper">
+                    <i class="fas fa-search search-button"></i>
+                    <input type="text" id="searchFilterDesktop" placeholder="Search jobs by keyword..." class="search-input-field">
+                </div>
+            </div>
+            <div class="filter-group">
+                <label for="locationFilterDesktop">Location</label>
+                <div class="multi-select-container" data-type="location">
+                    <input type="text" id="locationFilterDesktop" class="multi-select-input" placeholder="Search cities...">
+                    <div class="multi-select-options"></div>
+                </div>
+                <div class="selected-pills-container" id="locationPillsDesktop"></div>
+            </div>
+            <div class="filter-group">
+                <label for="categoryFilterDesktop">Category</label>
+                <div class="multi-select-container" data-type="category">
+                    <input type="text" id="categoryFilterDesktop" class="multi-select-input" placeholder="Search categories...">
+                    <div class="multi-select-options"></div>
+                </div>
+                <div class="selected-pills-container" id="categoryPillsDesktop"></div>
+            </div>
+            <div class="filter-group">
+                <label for="salaryFilterDesktop">Stipend</label>
+                <select id="salaryFilterDesktop" class="filter-control"></select>
+            </div>
+            <div class="filter-group experience-filter-group" style="display: none;">
+                <label>Experience Level</label>
+                <div class="pill-options">
+                    <button class="pill-btn" data-value="Freshers">Freshers</button>
+                    <button class="pill-btn" data-value="Experienced">Experienced</button>
+                </div>
             </div>
         </aside>
 
-        <div class="job-listings-column">
+        <div class="job-listings-container">
             <div class="mobile-controls">
                 <div class="search-bar-wrapper">
                     <i class="fas fa-search search-button"></i>
-                    <input type="text" id="searchInput" placeholder="Search jobs, companies..." class="search-input-field">
+                    <input type="text" id="searchInputMobile" placeholder="Search jobs by keyword..." class="search-input-field">
                 </div>
                 <button id="open-filter-modal-btn" class="filter-toggle-btn">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L12 14.414V19a1 1 0 01-1.447.894l-2-1A1 1 0 018 18v-3.586L3.293 6.707A1 1 0 013 6V4z"></path></svg>
@@ -181,22 +182,12 @@
 
             <div class="listings-header">
                 <div id="active-filters-display" class="active-filters-container"></div>
-                <div class="sort-by-container-mobile">
-                    <label for="sortBySelectMobile">Sort by:</label>
-                    <select id="sortBySelectMobile" class="filter-control">
-                        <option value="newest">Newest First</option>
-                        <option value="salary_desc">Stipend: High to Low</option>
-                        <option value="salary_asc">Stipend: Low to High</option>
-                    </select>
-                </div>
             </div>
 
-            <div class="job-listing-scroll-container">
-              <div class="job-listing-area" id="jobs"></div>
-              <div class="loader-container" id="loader"><div class="loader-spinner"></div></div>
-              <div class="load-more-wrapper">
-                  <button id="loadMore" class="action-button load-more-action">Load More Jobs</button>
-              </div>
+            <div class="job-listing-area" id="jobs"></div>
+            <div class="loader-container" id="loader"><div class="loader-spinner"></div></div>
+            <div class="load-more-wrapper">
+                <button id="loadMore" class="action-button load-more-action">Load More Jobs</button>
             </div>
         </div>
     </div>
@@ -216,6 +207,14 @@
               <button class="modal-close-action" id="closeFilterModalBtn">×</button>
           </div>
           <div class="modal-body">
+               <div class="filter-group">
+                <label for="sortBySelectMobile">Sort by</label>
+                <select id="sortBySelectMobile" class="filter-control">
+                    <option value="newest">Newest First</option>
+                    <option value="salary_desc">Stipend: High to Low</option>
+                    <option value="salary_asc">Stipend: Low to High</option>
+                </select>
+              </div>
               <div class="filter-group">
                   <label for="locationFilterMobile">Location</label>
                   <div class="multi-select-container" data-type="location">
