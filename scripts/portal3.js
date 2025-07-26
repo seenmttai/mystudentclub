@@ -343,6 +343,8 @@ function syncAndFetch() {
     renderPills(dom.categoryPillsMobile, state.categories, 'categories');
     if (dom.salaryFilterDesktop) dom.salaryFilterDesktop.value = state.salary;
     if (dom.salaryFilterMobile) dom.salaryFilterMobile.value = state.salary;
+    if (dom.sortBySelect) dom.sortBySelect.value = state.sortBy;
+    if (dom.sortBySelectMobile) dom.sortBySelectMobile.value = state.sortBy;
 
     document.querySelectorAll('.pill-btn').forEach(btn => {
         if (btn.dataset.value === state.experience) {
@@ -627,7 +629,20 @@ function setupEventListeners() {
     if(dom.searchInputMobile) dom.searchInputMobile.addEventListener('input', handleSearchInput);
     if(dom.searchInputDesktop) dom.searchInputDesktop.addEventListener('input', handleSearchInput);
 
-    dom.sortBySelect.addEventListener('change', () => updateState({ sortBy: dom.sortBySelect.value }));
+    const handleSortChange = (e) => {
+        const newSortBy = e.target.value;
+        if (state.sortBy !== newSortBy) {
+            updateState({ sortBy: newSortBy });
+            if (e.target.id === 'sortBySelect' && dom.sortBySelectMobile) {
+                dom.sortBySelectMobile.value = newSortBy;
+            } else if (e.target.id === 'sortBySelectMobile' && dom.sortBySelect) {
+                dom.sortBySelect.value = newSortBy;
+            }
+        }
+    };
+    
+    if (dom.sortBySelect) dom.sortBySelect.addEventListener('change', handleSortChange);
+    if (dom.sortBySelectMobile) dom.sortBySelectMobile.addEventListener('change', handleSortChange);
     
     dom.menuButton.addEventListener('click', () => dom.expandedMenu.classList.add('active'));
     dom.menuCloseBtn.addEventListener('click', () => dom.expandedMenu.classList.remove('active'));
@@ -649,6 +664,7 @@ function setupEventListeners() {
             state.salary = ''; 
             state.experience = '';
             state.searchTerm = '';
+            state.sortBy = 'newest';
             if (dom.searchInputMobile) dom.searchInputMobile.value = '';
             if (dom.searchInputDesktop) dom.searchInputDesktop.value = '';
             syncAndFetch();
@@ -716,6 +732,7 @@ async function initializePage() {
     dom.searchInputMobile = document.getElementById('searchInputMobile');
     dom.searchInputDesktop = document.getElementById('searchFilterDesktop');
     dom.sortBySelect = document.getElementById('sortBySelect');
+    dom.sortBySelectMobile = document.getElementById('sortBySelectMobile');
     dom.loadMoreButton = document.getElementById('loadMore');
     dom.activeFiltersDisplay = document.getElementById('active-filters-display');
     dom.menuButton = document.getElementById('menuButton');

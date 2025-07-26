@@ -487,7 +487,7 @@ body {
 .filter-group label {
   display: block;
   font-size: 0.9rem;
-  font-weight: 500;
+  font-weight: 600;
   margin-bottom: 0.75rem;
 }
 
@@ -593,27 +593,6 @@ body {
 
 .active-filter-pill button:hover {
   opacity: 1;
-}
-
-.sort-by-container {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.sort-by-container label {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  font-weight: 500;
-  white-space: nowrap;
-}
-
-.sort-by-container select {
-  font-size: 0.85rem;
-  padding: 0.4rem 0.6rem;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-light);
-  background-color: var(--surface-bg);
 }
 
 .multi-select-container {
@@ -1399,6 +1378,7 @@ body {
   .job-portal-layout {
     grid-template-columns: 300px 1fr;
     gap: 2rem;
+    align-items: flex-start;
   }
   .filter-sidebar {
     display: block;
@@ -1406,6 +1386,22 @@ body {
   .mobile-controls,
   .filter-modal-overlay {
     display: none;
+  }
+  .job-listings-container {
+    height: calc(100vh - 90px);
+    overflow-y: auto;
+    padding-right: 10px;
+  }
+  .job-listings-container::-webkit-scrollbar {
+    width: 8px;
+  }
+  .job-listings-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .job-listings-container::-webkit-scrollbar-thumb {
+    background-color: var(--border-medium);
+    border-radius: 10px;
+    border: 3px solid var(--neutral-bg);
   }
 }
 

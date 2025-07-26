@@ -1,3 +1,4 @@
+--- FILE: articleship.html ---
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -118,20 +119,19 @@
       </a>
     </nav>
 
-    <div class="sort-by-container">
-      <label for="sortBySelect">Sort by:</label>
-      <select id="sortBySelect" class="filter-control">
-          <option value="newest">Newest First</option>
-          <option value="salary_desc">Stipend: High to Low</option>
-          <option value="salary_asc">Stipend: Low to High</option>
-      </select>
-  </div>
-
     <div class="job-portal-layout">
         <aside class="filter-sidebar">
             <div class="filter-sidebar-header">
                 <h3>Filters</h3>
                 <button class="reset-filters-btn" id="desktopResetBtn">Reset All</button>
+            </div>
+            <div class="filter-group">
+                <label for="sortBySelect">Sort by</label>
+                <select id="sortBySelect" class="filter-control">
+                    <option value="newest">Newest First</option>
+                    <option value="salary_desc">Stipend: High to Low</option>
+                    <option value="salary_asc">Stipend: Low to High</option>
+                </select>
             </div>
             <div class="filter-group">
                 <label for="searchFilterDesktop">Keyword</label>
@@ -208,6 +208,14 @@
               <button class="modal-close-action" id="closeFilterModalBtn">×</button>
           </div>
           <div class="modal-body">
+              <div class="filter-group">
+                <label for="sortBySelectMobile">Sort by</label>
+                <select id="sortBySelectMobile" class="filter-control">
+                    <option value="newest">Newest First</option>
+                    <option value="salary_desc">Stipend: High to Low</option>
+                    <option value="salary_asc">Stipend: Low to High</option>
+                </select>
+              </div>
               <div class="filter-group">
                   <label for="locationFilterMobile">Location</label>
                   <div class="multi-select-container" data-type="location">
