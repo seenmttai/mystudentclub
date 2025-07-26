@@ -406,16 +406,6 @@ body {
 .filter-sidebar {
   display: none;
 }
-.sort-by-container {
-  margin-bottom: 1.5rem;
-}
-.sort-by-container label {
-  display: block;
-  font-size: 1rem;
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-  color: var(--text-primary);
-}
 .filter-sidebar-content {
   flex-grow: 1;
   overflow-y: auto;
@@ -554,7 +544,7 @@ body {
   border-color: var(--primary-brand);
 }
 
-.mobile-controls {
+.mobile-controls, .desktop-controls {
   display: flex;
   gap: 1rem;
   margin-bottom: 1.5rem;
@@ -610,6 +600,9 @@ body {
   color: var(--text-primary);
   border-color: var(--text-muted);
 }
+.desktop-controls {
+    display: none;
+}
 
 .listings-header {
   display: flex;
@@ -648,19 +641,20 @@ body {
 .active-filter-pill button:hover {
   opacity: 1;
 }
-.sort-by-container-mobile {
+.sort-by-container-mobile, .sort-by-container-desktop {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
-.sort-by-container-mobile label {
+.sort-by-container-mobile label, .sort-by-container-desktop label {
   font-size: 0.9rem;
   color: var(--text-secondary);
   font-weight: 500;
 }
-.sort-by-container-mobile .filter-control {
+.sort-by-container-mobile .filter-control, .sort-by-container-desktop .filter-control {
   font-size: 0.9rem;
   padding: 0.4rem 0.6rem;
+  min-width: 180px;
 }
 
 .job-listing-scroll-container {
@@ -687,19 +681,6 @@ body {
   transform: translateY(-5px);
   box-shadow: var(--shadow-md);
   border-color: rgba(var(--primary-brand-rgb), 0.5);
-}
-.job-card-logo {
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-md);
-  background-color: rgba(var(--primary-brand-rgb), 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 1.75rem;
-  color: var(--primary-brand);
-  flex-shrink: 0;
 }
 .job-card-details {
   flex-grow: 1;
@@ -798,63 +779,6 @@ body {
   outline: none;
   border-color: var(--primary-brand);
   box-shadow: 0 0 0 2px rgba(var(--primary-brand-rgb), 0.15);
-}
-
-.filter-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 1050;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0s 0.3s;
-}
-.filter-modal-overlay.show {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 0.3s ease;
-}
-.filter-modal-content {
-  background-color: var(--surface-bg);
-  width: 100%;
-  max-height: 85vh;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-  display: flex;
-  flex-direction: column;
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
-}
-.filter-modal-overlay.show .filter-modal-content {
-  transform: translateY(0);
-}
-.filter-modal-content .modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-  flex-shrink: 0;
-}
-.filter-modal-content .modal-header h4 {
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-.filter-modal-content .modal-body {
-  padding: 1.5rem;
-  overflow-y: auto;
-}
-.filter-modal-content .modal-footer {
-  display: flex;
-  gap: 1rem;
-  padding: 1rem 1.5rem;
-  border-top: 1px solid var(--border-color);
-  flex-shrink: 0;
 }
 
 .modal-overlay-container {
@@ -987,7 +911,7 @@ body {
 }
 
 .action-button, .btn {
-  padding: 0.7rem 1.5rem;
+  padding: 0.6rem 1.2rem;
   border: 1px solid transparent;
   background-color: var(--primary-brand);
   color: white;
@@ -1000,7 +924,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 .action-button:hover, .btn:hover {
   background-color: var(--primary-hover);
@@ -1153,11 +1077,15 @@ body {
 @media (min-width: 768px) {
   .portal-nav-bar {
     flex-wrap: nowrap;
-    border-bottom: 0;
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 0.5rem;
+    gap: 0.5rem;
+    justify-content: center;
   }
   .portal-nav-bar .footer-tab {
     flex: 0 1 auto;
+    background-color: transparent !important;
+    color: var(--text-secondary);
   }
   .portal-nav-bar .footer-tab:after {
     content: '';
@@ -1180,13 +1108,16 @@ body {
 }
 
 @media (min-width: 1024px) {
+  .mobile-controls {
+    display: none;
+  }
+  .desktop-controls {
+      display: flex;
+  }
   .job-portal-layout {
     grid-template-columns: 320px 1fr;
     gap: 2rem;
     align-items: flex-start;
-  }
-  .mobile-controls {
-    display: none;
   }
   .filter-sidebar {
     display: flex;
@@ -1196,32 +1127,22 @@ body {
     height: calc(100vh - 110px);
   }
   .job-listing-scroll-container {
-    height: calc(100vh - 90px - 2rem);
+    height: calc(100vh - 90px - 8rem);
     overflow-y: scroll;
     padding-right: 1rem;
     margin-right: -1rem;
   }
 }
 
-@media (max-width: 767px) {
-  .listings-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 1.5rem;
-  }
-  .job-card-actions {
-    margin-left: 0;
-    margin-top: 1rem;
-    width: 100%;
-  }
-  .view-details-btn {
-    width: 100%;
-    padding-top: 0.8rem;
-    padding-bottom: 0.8rem;
-  }
+@media (max-width: 1023px) {
+    .listings-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1.5rem;
+    }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   body {
     padding-top: 60px;
     font-size: 15px;
@@ -1244,13 +1165,18 @@ body {
     gap: 1rem;
     padding: 1.25rem;
   }
-  .job-card-company {
-    font-size: 1.4rem;
+  .job-card-actions {
+    margin-left: 0;
+    margin-top: 1rem;
+    width: 100%;
   }
-  .job-card-logo {
-    width: 50px;
-    height: 50px;
-    font-size: 1.8rem;
+  .view-details-btn {
+    width: 100%;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+  }
+  .job-card-company {
+    font-size: 1.2rem;
   }
 
   .modal-dialog { max-width: calc(100% - 2rem); }
