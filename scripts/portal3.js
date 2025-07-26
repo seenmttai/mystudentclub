@@ -54,7 +54,7 @@ const JOB_TITLE_MAP = {
 
 function setActivePortalTab() {
     const path = window.location.pathname;
-    document.querySelectorAll('.portal-nav-bar .footer-tab, .site-footer-nav .footer-tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.portal-nav-bar .footer-tab').forEach(tab => tab.classList.remove('active'));
     
     let activeSelector;
     const experienceFilterGroups = document.querySelectorAll('.experience-filter-group');
@@ -91,10 +91,8 @@ function renderJobCard(job) {
     jobCard.innerHTML = `
         <div class="job-card-logo">${companyInitial}</div>
         <div class="job-card-details">
-            <div class="job-card-header">
-                <h3 class="job-card-company">${job.Company || 'N/A'}</h3>
-                <p class="job-card-posted">Posted ${postedDate}</p>
-            </div>
+            <h3 class="job-card-company">${job.Company || 'N/A'}</h3>
+            <p class="job-card-posted">Posted ${postedDate}</p>
             <div class="job-card-meta">
                 <span class="job-tag">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -105,7 +103,7 @@ function renderJobCard(job) {
             </div>
         </div>
         <div class="job-card-actions">
-             <button class="apply-now-card-btn">View Details</button>
+             <button class="view-details-btn">View Details</button>
         </div>`;
 
     return jobCard;
@@ -307,7 +305,7 @@ function renderPills(container, items, type) {
         removeBtn.onclick = () => {
             state[type] = state[type].filter(i => i !== item);
             renderPills(container, state[type], type);
-            if (container.closest('.filter-sidebar')) {
+            if (container.closest('.filter-sidebar-content')) {
                 resetAndFetch();
             }
         };
@@ -345,6 +343,8 @@ function syncAndFetch() {
     renderPills(dom.categoryPillsMobile, state.categories, 'categories');
     if (dom.salaryFilterDesktop) dom.salaryFilterDesktop.value = state.salary;
     if (dom.salaryFilterMobile) dom.salaryFilterMobile.value = state.salary;
+    if (dom.sortBySelect) dom.sortBySelect.value = state.sortBy;
+    if (dom.sortBySelectMobile) dom.sortBySelectMobile.value = state.sortBy;
 
     document.querySelectorAll('.pill-btn').forEach(btn => {
         if (btn.dataset.value === state.experience) {
@@ -378,7 +378,7 @@ function setupMultiSelect(container) {
                 if (!state[stateKey].includes(item)) {
                     state[stateKey].push(item);
                     renderPills(pillsContainer, state[stateKey], stateKey);
-                    if(container.closest('.filter-sidebar')) resetAndFetch();
+                    if(container.closest('.filter-sidebar-content')) resetAndFetch();
                 }
                 input.value = '';
                 optionsContainer.classList.remove('show');
@@ -414,7 +414,7 @@ function updateHeaderAuth(session) {
     }
 }
 
-window.handleLogout = async () => {
+async function handleLogout() {
     await supabaseClient.auth.signOut();
     currentSession = null;
     updateHeaderAuth(null);
@@ -548,9 +548,9 @@ async function loadBanners() {
             carousel.appendChild(a);
         });
 
-        const slides = document.querySelectorAll('.carousel-item');
-        if (slides.length > 1) {
+        if (relevantBanners.length > 1) {
             let currentSlide = 0;
+            const slides = document.querySelectorAll('.carousel-item');
             const showSlide = (idx) => { slides.forEach(s => s.classList.remove('active')); slides[idx].classList.add('active'); };
             setInterval(() => { currentSlide = (currentSlide + 1) % slides.length; showSlide(currentSlide); }, 5000);
         }
@@ -611,13 +611,31 @@ async function requestTokenAndSync() { if (!firebaseMessaging) return; try { con
 function shouldSync() { const lastSync = localStorage.getItem('notificationSyncTimestamp'); if (!lastSync) return true; return new Date(parseInt(lastSync)).toDateString() !== new Date().toDateString(); }
 async function syncNotificationTopics() { if (!currentFcmToken || !shouldSync()) return; await Promise.all(getSubscribedTopics().map(topic => manageTopicSubscription(topic, 'subscribe'))); localStorage.setItem('notificationSyncTimestamp', Date.now().toString()); }
 
+function applyTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+    }
+}
+
 function setupEventListeners() {
     dom.modalOverlay.addEventListener('click', (e) => { if (e.target === dom.modalOverlay) closeModal(); });
     dom.modalCloseBtn.addEventListener('click', closeModal);
     dom.loadMoreButton.addEventListener('click', () => fetchJobs());
 
     dom.searchInput.addEventListener('input', () => updateState({ searchTerm: dom.searchInput.value }));
-    dom.sortBySelect.addEventListener('change', () => updateState({ sortBy: dom.sortBySelect.value }));
+    
+    [dom.sortBySelect, dom.sortBySelectMobile].forEach(select => {
+        if(select) select.addEventListener('change', () => {
+            const newSortBy = select.value;
+            state.sortBy = newSortBy;
+            if (dom.sortBySelect) dom.sortBySelect.value = newSortBy;
+            if (dom.sortBySelectMobile) dom.sortBySelectMobile.value = newSortBy;
+            resetAndFetch();
+        });
+    });
     
     dom.menuButton.addEventListener('click', () => dom.expandedMenu.classList.add('active'));
     dom.menuCloseBtn.addEventListener('click', () => dom.expandedMenu.classList.remove('active'));
@@ -679,6 +697,20 @@ function setupEventListeners() {
         });
     }
 
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    if(darkModeToggle) {
+        darkModeToggle.addEventListener('click', () => {
+            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            if (isDarkMode) {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+    }
+
     document.addEventListener('click', (e) => {
         if (dom.expandedMenu && dom.expandedMenu.classList.contains('active') && !dom.expandedMenu.contains(e.target) && !dom.menuButton.contains(e.target)) dom.expandedMenu.classList.remove('active');
         if (dom.notificationPopup && dom.notificationPopup.style.display === 'flex' && !dom.notificationPopup.contains(e.target) && !dom.notificationsBtn.contains(e.target)) dom.notificationPopup.style.display = 'none';
@@ -699,6 +731,7 @@ async function initializePage() {
     dom.modalCloseBtn = document.getElementById('modalCloseBtn');
     dom.searchInput = document.getElementById('searchInput');
     dom.sortBySelect = document.getElementById('sortBySelect');
+    dom.sortBySelectMobile = document.getElementById('sortBySelectMobile');
     dom.loadMoreButton = document.getElementById('loadMore');
     dom.activeFiltersDisplay = document.getElementById('active-filters-display');
     dom.menuButton = document.getElementById('menuButton');
@@ -732,6 +765,7 @@ async function initializePage() {
     dom.subscribeBtnEl = document.getElementById('subscribeBtn');
     dom.specificSubscriptionForm = document.getElementById('specific-subscription-form');
     
+    applyTheme();
     setActivePortalTab();
     const session = await checkAuth();
     updateHeaderAuth(session);
