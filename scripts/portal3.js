@@ -61,14 +61,14 @@ function setActivePortalTab() {
 
     experienceFilterGroups.forEach(el => el.style.display = 'none');
 
-    if (path.includes('/articleship.html')) {
+    if (path.includes('/articleship')) {
         currentTable = 'Articleship Jobs';
         activeSelector = 'a[href="/articleship.html"]';
-    } else if (path.includes('/semi-qualified.html')) {
+    } else if (path.includes('/semi-qualified')) {
         currentTable = 'Semi Qualified Jobs';
         activeSelector = 'a[href="/semi-qualified.html"]';
         experienceFilterGroups.forEach(el => el.style.display = 'block');
-    } else if (path.includes('/fresher.html')) {
+    } else if (path.includes('/fresher')) {
         currentTable = 'Fresher Jobs';
         activeSelector = 'a[href="/fresher.html"]';
         experienceFilterGroups.forEach(el => el.style.display = 'block');
