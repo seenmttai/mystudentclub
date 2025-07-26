@@ -111,14 +111,14 @@
       <a href="/" class="footer-tab active">
         <span>Industrial Training</span>
       </a>
+      <a href="/fresher.html" class="footer-tab">
+        <span>Freshers</span>
+      </a>
       <a href="/articleship.html" class="footer-tab">
         <span>Articleship</span>
       </a>
       <a href="/semi-qualified.html" class="footer-tab">
         <span>Semi Qualified</span>
-      </a>
-      <a href="/fresher.html" class="footer-tab">
-        <span>Freshers</span>
       </a>
     </nav>
 
@@ -171,7 +171,7 @@
             <div class="mobile-controls">
                 <div class="search-bar-wrapper">
                     <i class="fas fa-search search-button"></i>
-                    <input type="text" id="searchInputMobile" class="search-input-field" placeholder="Search jobs, companies...">
+                    <input type="text" id="searchInput" placeholder="Search jobs, companies..." class="search-input-field">
                 </div>
                 <button id="open-filter-modal-btn" class="filter-toggle-btn">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L12 14.414V19a1 1 0 01-1.447.894l-2-1A1 1 0 018 18v-3.586L3.293 6.707A1 1 0 013 6V4z"></path></svg>
@@ -179,12 +179,9 @@
                 </button>
             </div>
 
-            <div class="desktop-controls">
-                 <div class="search-bar-wrapper">
-                    <i class="fas fa-search search-button"></i>
-                    <input type="text" id="searchInputDesktop" class="search-input-field" placeholder="Search jobs, companies, skills...">
-                </div>
-                <div class="sort-by-container-desktop">
+            <div class="listings-header">
+                <div id="active-filters-display" class="active-filters-container"></div>
+                <div class="sort-by-container-mobile">
                     <label for="sortBySelectMobile">Sort by:</label>
                     <select id="sortBySelectMobile" class="filter-control">
                         <option value="newest">Newest First</option>
@@ -192,10 +189,6 @@
                         <option value="salary_asc">Stipend: Low to High</option>
                     </select>
                 </div>
-            </div>
-
-            <div class="listings-header">
-                <div id="active-filters-display" class="active-filters-container"></div>
             </div>
 
             <div class="job-listing-scroll-container">
