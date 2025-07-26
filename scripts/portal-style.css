@@ -641,17 +641,17 @@ body {
 .active-filter-pill button:hover {
   opacity: 1;
 }
-.sort-by-container-mobile, .sort-by-container-desktop {
+.sort-by-container-mobile, .sort-by-container-desktop, .sort-by-container {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
-.sort-by-container-mobile label, .sort-by-container-desktop label {
+.sort-by-container-mobile label, .sort-by-container-desktop label, .sort-by-container label {
   font-size: 0.9rem;
   color: var(--text-secondary);
   font-weight: 500;
 }
-.sort-by-container-mobile .filter-control, .sort-by-container-desktop .filter-control {
+.sort-by-container-mobile .filter-control, .sort-by-container-desktop .filter-control, .sort-by-container .filter-control {
   font-size: 0.9rem;
   padding: 0.4rem 0.6rem;
   min-width: 180px;
@@ -1078,14 +1078,26 @@ body {
   .portal-nav-bar {
     flex-wrap: nowrap;
     border-bottom: 1px solid var(--border-color);
-    padding-bottom: 0.5rem;
+    padding: 0.5rem;
     gap: 0.5rem;
     justify-content: center;
+    position: relative;
+    border-bottom: 0;
+  }
+  .portal-nav-bar:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: var(--border-color);
   }
   .portal-nav-bar .footer-tab {
     flex: 0 1 auto;
     background-color: transparent !important;
     color: var(--text-secondary);
+    position: relative;
   }
   .portal-nav-bar .footer-tab:after {
     content: '';
@@ -1108,7 +1120,7 @@ body {
 }
 
 @media (min-width: 1024px) {
-  .mobile-controls {
+  .mobile-controls, .listings-header {
     display: none;
   }
   .desktop-controls {
@@ -1134,15 +1146,23 @@ body {
   }
 }
 
-@media (max-width: 1023px) {
-    .listings-header {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 1.5rem;
-    }
+@media (max-width: 767px) {
+  .desktop-controls, .listings-header {
+      display: none;
+  }
+  .job-card-actions {
+    margin-left: 0;
+    margin-top: 1rem;
+    width: 100%;
+  }
+  .view-details-btn {
+    width: 100%;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+  }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   body {
     padding-top: 60px;
     font-size: 15px;
@@ -1165,20 +1185,9 @@ body {
     gap: 1rem;
     padding: 1.25rem;
   }
-  .job-card-actions {
-    margin-left: 0;
-    margin-top: 1rem;
-    width: 100%;
-  }
-  .view-details-btn {
-    width: 100%;
-    padding-top: 0.8rem;
-    padding-bottom: 0.8rem;
-  }
   .job-card-company {
     font-size: 1.2rem;
   }
-
   .modal-dialog { max-width: calc(100% - 2rem); }
   #modal-body-content { padding: 1.5rem; }
   .modal-header { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
