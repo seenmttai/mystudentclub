@@ -237,7 +237,7 @@ async function fetchJobs() {
         query = query.order(sortCol === 'newest' ? 'Created_At' : 'Salary', {
             ascending: isAsc,
             nullsFirst: false
-        });
+        }).order('id', { ascending: false });
 
         query = query.range(page * limit, (page + 1) * limit - 1);
         const { data, error } = await query;
