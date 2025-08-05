@@ -259,6 +259,7 @@ async function fetchJobs() {
         isFetching = false;
         dom.loader.style.display = 'none';
         renderActiveFilterPills();
+        syncFiltersUI();
     }
 }
 
@@ -336,24 +337,30 @@ function renderActiveFilterPills() {
     });
 }
 
-function syncAndFetch() {
-    renderPills(dom.locationPillsDesktop, state.locations, 'locations');
-    renderPills(dom.locationPillsMobile, state.locations, 'locations');
-    renderPills(dom.categoryPillsDesktop, state.categories, 'categories');
-    renderPills(dom.categoryPillsMobile, state.categories, 'categories');
+function syncFiltersUI() {
+    if (dom.searchInputMobile) dom.searchInputMobile.value = state.searchTerm;
+    if (dom.searchInputDesktop) dom.searchInputDesktop.value = state.searchTerm;
     if (dom.salaryFilterDesktop) dom.salaryFilterDesktop.value = state.salary;
     if (dom.salaryFilterMobile) dom.salaryFilterMobile.value = state.salary;
     if (dom.sortBySelect) dom.sortBySelect.value = state.sortBy;
     if (dom.sortBySelectMobile) dom.sortBySelectMobile.value = state.sortBy;
 
-    document.querySelectorAll('.pill-btn').forEach(btn => {
-        if (btn.dataset.value === state.experience) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
+    renderPills(dom.locationPillsDesktop, state.locations, 'locations');
+    renderPills(dom.locationPillsMobile, state.locations, 'locations');
+    renderPills(dom.categoryPillsDesktop, state.categories, 'categories');
+    renderPills(dom.categoryPillsMobile, state.categories, 'categories');
+
+    document.querySelectorAll('.pill-options').forEach(group => {
+        group.querySelectorAll('.pill-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.value === state.experience);
+        });
     });
 
+    renderActiveFilterPills();
+}
+
+function syncAndFetch() {
+    syncFiltersUI();
     resetAndFetch();
 }
 
@@ -666,6 +673,9 @@ function setupEventListeners() {
             state.searchTerm = '';
             state.sortBy = 'newest';
             if (dom.searchInputMobile) dom.searchInputMobile.value = '';
+            if (currentTable === 'Fresher Jobs') {
+                state.experience = 'Freshers';
+            }
             if (dom.searchInputDesktop) dom.searchInputDesktop.value = '';
             syncAndFetch();
             if (btn.id === 'mobileResetBtn') dom.filterModalOverlay.classList.remove('show');
@@ -767,10 +777,16 @@ async function initializePage() {
     dom.specificSubscriptionForm = document.getElementById('specific-subscription-form');
     
     setActivePortalTab();
+
+    if (currentTable === 'Fresher Jobs') {
+        state.experience = 'Freshers';
+    }
+
     const session = await checkAuth();
     updateHeaderAuth(session);
     populateSalaryFilter();
     setupEventListeners();
+    syncFiltersUI();
     
     await Promise.all([fetchJobs(), fetchFilterOptions(), loadBanners()]);
     
