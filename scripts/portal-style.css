@@ -558,8 +558,8 @@ body {
   align-items: flex-start;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-bottom: 1.5rem;
-  min-height: 38px;
+  margin-bottom: 0.2rem;
+  min-height: auto;
 }
 
 .active-filters-container {
