@@ -46,7 +46,7 @@ const state = {
 const dom = {};
 
 const JOB_TITLE_MAP = {
-    "Industrial Training Job Portal": "Industrial Trainee",
+    "Industrial Training Job Portal": "Industrial Training",
     "Fresher Jobs": "CA Fresher",
     "Semi Qualified Jobs": "CA Semi Qualified",
     "Articleship Jobs": "Articleship Trainee"
