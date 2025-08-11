@@ -342,7 +342,7 @@
     window.addEventListener('DOMContentLoaded', async () => {
       const { data: { session }, error } = await supabaseClient.auth.getSession();
       if (session) {
-        window.location.href = '/';
+        window.location.href = '/profile.html';
       }
     });
 
