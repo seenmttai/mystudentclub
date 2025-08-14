@@ -2,6 +2,13 @@ const generateData = () => {
   const baseURL = "https://www.mystudentclub.com/assets/";
   const newStudents = [
     {
+      name: "Virali Doshi",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/virali-doshi1905",
+      image: baseURL + "virali.jpg",
+      company: "Deutsche Bank"
+    },
+    {
       name: "Anisha Mehta",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/anisha-mehta1/",
@@ -154,6 +161,76 @@ const generateData = () => {
       linkedin: "https://www.linkedin.com/in/devang-sinsinwar/",
       image: baseURL + "devang.jpeg",
       company: "Intel"
+    },
+    {
+      name: "Viddhi S Mittal",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/viddhismittal/",
+      image: baseURL + "vasistha.jpg",
+      company: "Amazon"
+    },
+    {
+      name: "Priya Jain",
+      course: "MSC IT Guarantee Program",
+      linkedin: "N/A", // No LinkedIn provided
+      image: baseURL + "kamini.jpg", // Assuming an image for Priya Jain
+      company: "Amazon"
+    },
+    {
+      name: "Aitullah Nabi",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/aitullahnabi/",
+      image: baseURL + "bhojwani.jpg", // Assuming an image for Aitullah Nabi
+      company: "Amazon"
+    },
+    {
+      name: "Charu Kewalramani",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/charu-kewalramani-40a55930b/",
+      image: baseURL + "Charu.jpg",
+      company: "DE Shaw"
+    },
+    {
+      name: "Pooja Kedia",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/pooja-kedia-2578a1214/",
+      image: baseURL + "Pooja.jpg",
+      company: "HSBC"
+    },
+    {
+      name: "Piyu Jain",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/piyujain/",
+      image: baseURL + "Piyu.jpg",
+      company: "Reliance"
+    },
+    {
+      name: "Diksha Borse",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/diksha-borse/",
+      image: baseURL + "Diksha.jpg",
+      company: "Amazon"
+    },
+    {
+      name: "Dev Mundra",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/devmundra2003/",
+      image: baseURL + "Dev.jpg",
+      company: "UBS"
+    },
+    {
+      name: "Anisha Nagwani",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/anisha-nagwani/?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAADnKIpwBe0wAQbMcCPwAxAPt5utUANKgoA",
+      image: baseURL + "nagwani.jpg",
+      company: "Barclays"
+    },
+    {
+      name: "Sajal Mittal",
+      course: "MSC IT Guarantee Program",
+      linkedin: "https://www.linkedin.com/in/sajalmittal15/",
+      image: baseURL + "sajal.jpg",
+      company: "PepsiCo"
     }
   ];
 
@@ -322,12 +399,12 @@ const initializeCarousel = () => {
       <h3>${student.name}</h3>
       <p>${student.course}</p>
       <p class="company-info">Placed at:<br><strong>${student.company}</strong></p>
-      <a href="${student.linkedin}" class="linkedin-button" target="_blank">
+      ${student.linkedin && student.linkedin !== 'N/A' ? `<a href="${student.linkedin}" class="linkedin-button" target="_blank">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="linkedin-icon">
           <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
         </svg>
         View Profile
-      </a>
+      </a>` : ''}
     `;
     carousel.appendChild(card);
   });

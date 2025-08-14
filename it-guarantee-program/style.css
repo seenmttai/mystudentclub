@@ -24,31 +24,6 @@ body {
   box-sizing: border-box;
 }
 
-.badge {
-  background: #ff4d4d;
-  color: white;
-  display: inline-block;
-  padding: 12px 24px;
-  border-radius: 25px;
-  font-weight: 600;
-  font-size: 16px;
-  margin-bottom: 30px;
-  box-shadow: 0 5px 15px rgba(255, 77, 77, 0.3);
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
 h1 {
   font-size: 56px;
   margin: 0 0 15px; 
@@ -410,12 +385,22 @@ h1 {
     margin-bottom: 10px;
   }
 
-  .feature.placement-guarantee {
+  /* Specific order for mobile features */
+  .features .feature:nth-child(1) { /* All-in-one Placement Workshop */
     order: 1;
+  }
+  .features .feature:nth-child(2) { /* Trusted By 1000+ Students */
+    order: 2;
+  }
+  .features .feature.rating { /* 4.9 / 5 Rated Workshop */
+    order: 3;
+  }
+  .features .feature.placement-guarantee { /* 95% Placement Rate */
+    order: 4; /* Changed from 1 to 4 */
   }
 
   .money-back-sticker {
-    order: 2;
+    order: 5; /* Ensure sticker is after features if displayed */
     position: relative;
     top: auto;
     right: auto;
@@ -425,19 +410,6 @@ h1 {
     .money-back-sticker {
       display: none;
     }
-  }
-
-  .feature.rating {
-    order: 3;
-  }
-
-  .feature.placement-guarantee + .money-back-sticker + .feature.rating + .feature {
-    order: 4;
-  }
-
-  .feature:nth-child(1),
-  .feature:nth-child(2) {
-    order: 5;
   }
 
   h1 {
@@ -538,11 +510,6 @@ h1 {
 
   h1 {
     font-size: 32px;
-  }
-
-  .badge {
-    font-size: 14px;
-    padding: 10px 20px;
   }
 
   .feature {
@@ -914,11 +881,15 @@ h1 {
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
   backdrop-filter: blur(5px);
   border: 1px solid rgba(255,255,255,0.18);
-  color: rgba(255,255,255,0.8);
-  font-size: 2.5rem;
   pointer-events: none;
   opacity: 0.5;
   animation: rotateEmblem 10s infinite linear;
+}
+
+.award-icon {
+  width: 60px;
+  height: 60px;
+  fill: rgba(255,255,255,0.8);
 }
 
 @keyframes rotateEmblem {
@@ -1070,3 +1041,21 @@ h1 {
   background: rgba(41, 128, 185, 0.9);
 }
 
+.eligibility-info-new {
+  line-height: 1.4;
+  font-size: 20px;
+  margin-top: 0;
+  margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+  .eligibility-info-new {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .eligibility-info-new {
+    font-size: 14px;
+  }
+}
