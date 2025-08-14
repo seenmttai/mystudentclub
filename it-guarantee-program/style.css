@@ -65,6 +65,15 @@ h1 {
   margin-bottom: 30px; 
 }
 
+.eligibility-info,
+.access-info {
+  font-size: 18px;
+  color: #4a4a8f;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  line-height: 1.5;
+}
+
 .subtitle {
   font-size: 20px;
   color: #4a4a8f;
@@ -469,6 +478,11 @@ h1 {
     min-height: 90px;
     max-width: 100%;
   }
+
+  .eligibility-info,
+  .access-info {
+    font-size: 16px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -579,6 +593,11 @@ h1 {
   .fixed-cta .register-btn {
     padding: 6px 12px;
     font-size: 12px;
+  }
+
+  .eligibility-info,
+  .access-info {
+    font-size: 14px;
   }
 }
 
@@ -1050,3 +1069,4 @@ h1 {
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
   background: rgba(41, 128, 185, 0.9);
 }
+
