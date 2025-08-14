@@ -497,7 +497,7 @@ const initializeCountdown = () => {
 const initializeTestimonials = () => {
   const testimonials = [
     {
-      text: "The MSC IT Program has been a game-changer in my journey to find CA Industrial Training. It made things super convenient by having all vacancies from platforms like Naukri, LinkedIn, and many others in one place. The batch gave students like me special attention, with priority support for IT placements. We had interactive sessions with professionals from different industries, helping me understand how each industry works and choose the best fit for myself. From CV making to mock interviews, everything was covered under one roof with valuable feedback that helped me improve. I’m truly grateful to Padam and the entire MSC team for their incredible work in helping students like us get placed.\n\nI’d highly recommend the MSC IT Program to anyone serious about pursuing Industry Training!",
+      text: "The MSC IT Program has been a game-changer in my journey to find CA Industrial Training. It made things super convenient by having all vacancies from platforms like Naukri, LinkedIn, and many others in one place. The batch gave students like me special attention, with priority support for IT placements. We had interactive sessions with professionals from different industries, helping me understand how each industry works and choose the best fit for myself. From CV making to mock interviews, everything was covered under one roof with valuable feedback that helped me improve. I'm truly grateful to Padam and the entire MSC team for their incredible work in helping students like us get placed.\n\nI'd highly recommend the MSC IT Program to anyone serious about pursuing Industry Training!",
       image: "https://mystudentclub.pages.dev/assets/t1.jpg"
     },
     {
@@ -647,6 +647,25 @@ const initializeCertificate = () => {
   }
 };
 
+function initializeParallax(){
+  const layers = document.querySelectorAll('.layer');
+  if(!layers.length) return;
+  const move = (x=0,y=0)=>layers.forEach(el=>{
+    const d = parseFloat(el.dataset.depth||0.05);
+    el.style.transform = `translate3d(${x*d}px, ${y*d}px, 0)`;
+  });
+  window.addEventListener('mousemove', e=>{
+    const cx = window.innerWidth/2, cy = window.innerHeight/2;
+    move((e.clientX-cx)*0.04, (e.clientY-cy)*0.06);
+  });
+  window.addEventListener('scroll', ()=>{
+    const y = window.scrollY*0.08; layers.forEach(el=>{
+      const d = parseFloat(el.dataset.depth||0.05);
+      el.style.transform = `translate3d(0, ${y*d}px, 0)`;
+    });
+  }, {passive:true});
+}
+
 function adjustDaysGrid() {
 
 }
@@ -660,6 +679,7 @@ document.addEventListener('DOMContentLoaded', () => {
   safe(initializeCarousel, 'carousel');
   safe(initializeCertificate, 'certificate');
   safe(initializeCountdown, 'countdown');
+  safe(initializeParallax, 'parallax');
   AOS.init({
     duration: 1000,
     once: true

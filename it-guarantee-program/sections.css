@@ -8,7 +8,8 @@
   padding: 60px 20px;
   box-sizing: border-box;
   text-align: center;
-  background: white;
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fafbfe 100%);
   position: relative;
   overflow: hidden;
 }
@@ -55,6 +56,7 @@
   font-size: 42px;
   margin-bottom: 40px;
   position: relative;
+  letter-spacing: -0.02em;
 }
 
 .highlight {
@@ -69,6 +71,10 @@
   position: relative;
   box-sizing: border-box;
   cursor: grab;
+  background: linear-gradient(180deg, #ffffff, #fbfcff);
+  border: 1px solid #eef1f6;
+  border-radius: 16px;
+  padding: 20px;
   overflow: hidden;
 }
 
@@ -107,6 +113,7 @@
   background-size: cover;
   background-position: center;
   border: 3px solid #4CAF50;
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.15);
 }
 
 .student-image img {
@@ -937,4 +944,3 @@
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
   background: rgba(41, 128, 185, 0.9);
 }
-
