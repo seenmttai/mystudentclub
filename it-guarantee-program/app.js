@@ -172,15 +172,15 @@ const generateData = () => {
     {
       name: "Priya Jain",
       course: "MSC IT Guarantee Program",
-      linkedin: "N/A", // No LinkedIn provided
-      image: baseURL + "kamini.jpg", // Assuming an image for Priya Jain
+      linkedin: "N/A", 
+      image: baseURL + "kamini.jpg", 
       company: "Amazon"
     },
     {
       name: "Aitullah Nabi",
       course: "MSC IT Guarantee Program",
       linkedin: "https://www.linkedin.com/in/aitullahnabi/",
-      image: baseURL + "bhojwani.jpg", // Assuming an image for Aitullah Nabi
+      image: baseURL + "bhojwani.jpg", 
       company: "Amazon"
     },
     {

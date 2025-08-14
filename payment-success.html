@@ -62,11 +62,18 @@
         padding: 0.2rem 0.5rem;
         border-radius: 4px;
         font-weight: 500;
+        word-break: break-all;
+        overflow-wrap: anywhere;
+        white-space: normal;
     }
     .warning-text {
         color: #c2410c;
         font-weight: 600;
         margin-top: 1rem;
+    }
+    @media (max-width: 420px) {
+      .success-card { padding: 1.25rem 1rem 1.75rem; }
+      .success-icon { width: 64px; height: 64px; }
     }
   </style>
 </head>
@@ -94,6 +101,9 @@
 
     <a href="https://www.mystudentclub.com/learning-management-system/" class="block w-full text-center px-6 py-3 rounded-lg font-semibold text-lg btn-primary mb-4">
       Go to Learning Portal
+    </a>
+    <a href="https://chat.whatsapp.com/INink4xN86SCNpmzLWwnEP?mode=ac_t" target="_blank" rel="noopener" class="block w-full text-center px-6 py-3 rounded-lg font-semibold text-lg bg-green-600 text-white hover:bg-green-700 transition mb-4">
+      Join the WhatsApp Group for Updates
     </a>
     <a href="/" class="text-sm text-gray-500 hover:text-gray-700">Back to Homepage</a>
   </div>
