@@ -1,86 +1,77 @@
 const generateData = () => {
   const baseURL = "https://www.mystudentclub.com/assets/";
 
+  const allAvailableStudents = [
+    { name: "Simran Singh", course: "MSC IT Guarantee Program", linkedin: "N/A", image: baseURL + "simran.jpg", company: "Amazon" },
+    { name: "Virali Doshi", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/virali-doshi1905", image: baseURL + "virali.jpg", company: "Deutsche Bank" },
+    { name: "Anisha Mehta", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/anisha-mehta1/", image: baseURL + "anisha_mehta.jpeg", company: "Adani" },
+    { name: "Aarushi Agarwal", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/aarushi-agarwal003/", image: baseURL + "Aarushi.jpeg", company: "Mizuho Bank" },
+    { name: "Vindhya Gupta", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/vindhya-gupta/", image: baseURL + "vindhya.jpeg", company: "Hindustan Times" },
+    { name: "Vishal Sharma", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/vishal-sharma057/", image: baseURL + "vishal.jpeg", company: "Bajaj Finance" },
+    { name: "Chery Lunia", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/cheryluniya/", image: baseURL + "Chery.jpeg", company: "Goldman Sachs" },
+    { name: "Prabhjyot Singh", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/prabhjyotsinghca/", image: baseURL + "prabhjyot.jpeg", company: "Unilever" },
+    { name: "Chandini Meher", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/chandini-meher/", image: baseURL + "Chandini.jpeg", company: "HDFC Bank" },
+    { name: "Kirti Yadav", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/kirtiyadav07/", image: baseURL + "Kirti.jpeg", company: "DLF" },
+    { name: "Raunaq Verma", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/raunaqverma17662/", image: baseURL + "Raunaq.jpeg", company: "HDFC Bank" },
+    { name: "Kavin S", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/s-kavin/", image: baseURL + "Kavin.jpeg", company: "Ashok Leyland" },
+    { name: "Aishwarya Lakshmi", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/aishwary0406/", image: baseURL + "aishwarye.jpeg", company: "Flipkart" },
+    { name: "Shreya Jain", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/shreya-jain03/", image: baseURL + "Shreya.jpeg", company: "ONGC" },
+    { name: "Sakshi Suryavanshi", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/sakshiasuryavanshi/", image: baseURL + "sakshi.jpeg", company: "ZF" },
+    { name: "Deepanshu Jain", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/deepanshu-jain-23078822a/", image: baseURL + "deepanshu.jpeg", company: "Henkel" },
+    { name: "Chandra Lekha", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/chandralekhauckoo", image: baseURL + "Chandra.jpeg", company: "ITC" },
+    { name: "Sakshi Sipholya", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/sakshisipolya/", image: baseURL + "sipholya.jpeg", company: "Deutsche Bank" },
+    { name: "Rahul Koli", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/rahulkoli15/", image: baseURL + "koli.jpeg", company: "Morgan Stanley" },
+    { name: "Anisha Shah", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/anisha-shah25/", image: baseURL + "Anisha.jpeg", company: "UBS" },
+    { name: "Arbaz Jakate", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/arbaz-jakate/", image: baseURL + "Arbaz.jpeg", company: "Mondelez" },
+    { name: "Monisha Agrawala", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/monisha-agrawala-/", image: baseURL + "monisha.jpeg", company: "Goldman Sachs" },
+    { name: "Hari Karnati", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/hari-karnati", image: baseURL + "karnati.jpeg", company: "Amazon" },
+    { name: "Devang Sinsinwar", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/devang-sinsinwar/", image: baseURL + "devang.jpeg", company: "Intel" },
+    { name: "Viddhi S Mittal", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/viddhismittal/", image: baseURL + "vasistha.jpg", company: "Amazon" },
+    { name: "Priya Jain", course: "MSC IT Guarantee Program", linkedin: "N/A", image: baseURL + "kamini.jpg", company: "Amazon" },
+    { name: "Aitullah Nabi", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/aitullahnabi/", image: baseURL + "bhojwani.jpg", company: "Amazon" },
+    { name: "Charu Kewalramani", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/charu-kewalramani-40a55930b/", image: baseURL + "Charu.jpg", company: "DE Shaw" },
+    { name: "Pooja Kedia", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/pooja-kedia-2578a1214/", image: baseURL + "Pooja.jpg", company: "HSBC" },
+    { name: "Piyu Jain", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/piyujain/", image: baseURL + "Piyu.jpg", company: "Reliance" },
+    { name: "Diksha Borse", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/diksha-borse/", image: baseURL + "Diksha.jpg", company: "Amazon" },
+    { name: "Dev Mundra", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/devmundra2003/", image: baseURL + "Dev.jpg", company: "UBS" },
+    { name: "Anisha Nagwani", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/anisha-nagwani/?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAADnKIpwBe0wAQbMcCPwAxAPt5utUANKgoA", image: baseURL + "nagwani.jpg", company: "Barclays" },
+    { name: "Sajal Mittal", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/sajalmittal15/", image: baseURL + "sajal.jpg", company: "PepsiCo" },
+    { name: "Abhishek Puranik", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/abhishek-puranik221b/", image: baseURL + "Abhishek-Puranik.jpg", company: "BPCL" },
+    { name: "NSR Varma", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/varmansr/", image: baseURL + "NSR-Varma.jpg", company: "Alivira" },
+    { name: "Harsh Yadav", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/fcaharshyadav/", image: baseURL + "Harsh-Yadav.jpg", company: "Avery Dennison" },
+    { name: "Nandana Krishnadas", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/nandana-krishnadas-120247318/", image: baseURL + "Nandana.jpg", company: "Amazon" },
+    { name: "Muskan Chawla", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/muskan-chawla-b994152a9/", image: baseURL + "Muskan-Chawla.jpg", company: "Whitewater Advisory" },
+    { name: "P Hritish Kumar", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/hritishkumar/", image: baseURL + "Hritish.jpg", company: "DLF" },
+    { name: "Aakanksha Lolge", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/aakankshalolge/", image: baseURL + "Aakanksha-Lolge.jpg", company: "BPCL" },
+    { name: "Harinee Selvam", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/harinee-selvam-a03416204/", image: baseURL + "Harinee-Selvam.jpg", company: "Flipkart" },
+    { name: "Pratik Ulhas Naik", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/naik-pratik/", image: baseURL + "Pratik-Naik-Protiviti.jpg", company: "Protiviti" },
+    { name: "Stephen DCosta", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/stephensn6/", image: baseURL + "Stephen.jpg", company: "UBS" },
+    { name: "Khushi Tejani", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/khushitejani/", image: baseURL + "Khushi-Tejani-BPCL.jpg", company: "BPCL" },
+    { name: "Yash Nema", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/yash-nema18/", image: baseURL + "Yash-Nema.jpg", company: "Amazon" },
+    { name: "Prathmesh Randive", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/prathmesh-randive/", image: baseURL + "Prathmesh-Randive.jpg", company: "UBS" },
+    { name: "Vivek Vardan", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/vivek-vardhan-9a05982a1/", image: baseURL + "Vivek-Vardhan.jpg", company: "UBS" },
+    { name: "Vishal Jangid", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/vishall-jangid/", image: baseURL + "Vishal-Jangid.jpg", company: "PPG Asian Paints" },
+    { name: "Swayam Atal", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/swayamatal/", image: baseURL + "Swayam-Atal.jpg", company: "Amazon" },
+    { name: "Siddhant Naithani", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/siddhantnaithani999/", image: baseURL + "Siddhant-Naithani.jpg", company: "Signify" },
+    { name: "Sanjana Sivakali", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/sanjanasivakali/", image: baseURL + "Sanjana-Sivakali.jpg", company: "Ashok Leyland" },
+    { name: "Shiv Pratap Singh", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/shiv-pratap-singh-52b721222/", image: baseURL + "Shiv-Pratap-Singh.jpg", company: "1MG" },
+    { name: "Aditi Tagalpallewar", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/aditi-tagalpallewar/", image: baseURL + "Aditi-Tagalwellakar.jpg", company: "UBS" }
+  ];
 
-const allAvailableStudents = [
-  { name: "Simran Singh", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/simransingh-ca-aspirant/", image: baseURL + "simran.jpg", company: "Amazon" },
-  { name: "Virali Doshi", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/virali-doshi1905", image: baseURL + "virali.jpg", company: "Deutsche Bank" },
-  { name: "Anisha Mehta", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/anisha-mehta1/", image: baseURL + "anisha_mehta.jpeg", company: "Adani" },
-  { name: "Aarushi Agarwal", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/aarushi-agarwal003/", image: baseURL + "Aarushi.jpeg", company: "Mizuho Bank" },
-  { name: "Vindhya Gupta", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/vindhya-gupta/", image: baseURL + "vindhya.jpeg", company: "Hindustan Times" },
-  { name: "Vishal Sharma", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/vishal-sharma057/", image: baseURL + "vishal.jpeg", company: "Bajaj Finance" },
-  { name: "Chery Lunia", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/cheryluniya/", image: baseURL + "Chery.jpeg", company: "Goldman Sachs" },
-  { name: "Prabhjyot Singh", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/prabhjyotsinghca/", image: baseURL + "prabhjyot.jpeg", company: "Unilever" },
-  { name: "Chandini Meher", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/chandini-meher/", image: baseURL + "Chandini.jpeg", company: "HDFC Bank" },
-  { name: "Kirti Yadav", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/kirtiyadav07/", image: baseURL + "Kirti.jpeg", company: "DLF" },
-  { name: "Raunaq Verma", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/raunaqverma17662/", image: baseURL + "Raunaq.jpeg", company: "HDFC Bank" },
-  { name: "Kavin S", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/s-kavin/", image: baseURL + "Kavin.jpeg", company: "Ashok Leyland" },
-  { name: "Aishwarya Lakshmi", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/aishwary0406/", image: baseURL + "aishwarye.jpeg", company: "Flipkart" },
-  { name: "Shreya Jain", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/shreya-jain03/", image: baseURL + "Shreya.jpeg", company: "ONGC" },
-  { name: "Sakshi Suryavanshi", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/sakshiasuryavanshi/", image: baseURL + "sakshi.jpeg", company: "ZF" },
-  { name: "Deepanshu Jain", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/deepanshu-jain-23078822a/", image: baseURL + "deepanshu.jpeg", company: "Henkel" },
-  { name: "Chandra Lekha", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/chandralekhauckoo", image: baseURL + "Chandra.jpeg", company: "ITC" },
-  { name: "Sakshi Sipholya", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/sakshisipolya/", image: baseURL + "sipholya.jpeg", company: "Deutsche Bank" },
-  { name: "Rahul Koli", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/rahulkoli15/", image: baseURL + "koli.jpeg", company: "Morgan Stanley" },
-  { name: "Anisha Shah", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/anisha-shah25/", image: baseURL + "Anisha.jpeg", company: "UBS" },
-  { name: "Arbaz Jakate", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/arbaz-jakate/", image: baseURL + "Arbaz.jpeg", company: "Mondelez" },
-  { name: "Monisha Agrawala", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/monisha-agrawala-/", image: baseURL + "monisha.jpeg", company: "Goldman Sachs" },
-  { name: "Hari Karnati", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/hari-karnati", image: baseURL + "karnati.jpeg", company: "Amazon" },
-  { name: "Devang Sinsinwar", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/devang-sinsinwar/", image: baseURL + "devang.jpeg", company: "Intel" },
-  { name: "Viddhi S Mittal", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/viddhismittal/", image: baseURL + "viddhi.jpg", company: "Amazon" }, 
-  { name: "Priya Jain", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/priyaaajain/", image: baseURL + "Priya.jpg", company: "Amazon" }, 
-  { name: "Aitullah Nabi", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/aitullahnabi/", image: baseURL + "Aitullah.jpg", company: "Amazon" },
-  { name: "Charu Kewalramani", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/charu-kewalramani-40a55930b/", image: baseURL + "Charu.jpg", company: "DE Shaw" },
-  { name: "Pooja Kedia", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/pooja-kedia-2578a1214/", image: baseURL + "Pooja.jpg", company: "HSBC" },
-  { name: "Piyu Jain", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/piyujain/", image: baseURL + "Piyu.jpg", company: "Reliance" },
-  { name: "Diksha Borse", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/diksha-borse/", image: baseURL + "Diksha.jpg", company: "Amazon" },
-  { name: "Dev Mundra", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/devmundra2003/", image: baseURL + "Dev.jpg", company: "UBS" },
-  { name: "Anisha Nagwani", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/anisha-nagwani/?miniProfileUrn=urn%3Ali%3Afs_miniProfile%3AACoAADnKIpwBe0wAQbMcCPwAxAPt5utUANKgoA", image: baseURL + "nagwani.jpg", company: "Barclays" },
-  { name: "Sajal Mittal", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/sajalmittal15/", image: baseURL + "sajal.jpg", company: "PepsiCo" },
-  { name: "Abhishek Puranik", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/abhishek-puranik221b/", image: baseURL + "Abhishek-Puranik.jpg", company: "BPCL" },
-  { name: "NSR Varma", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/varmansr/", image: baseURL + "NSR-Varma.jpg", company: "Alivira" },
-  { name: "Harsh Yadav", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/fcaharshyadav/", image: baseURL + "Harsh-Yadav.jpg", company: "Avery Dennison" },
-  { name: "Nandana Krishnadas", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/nandana-krishnadas-120247318/", image: baseURL + "Nandana.jpg", company: "Amazon" },
-  { name: "Muskan Chawla", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/muskan-chawla-b994152a9/", image: baseURL + "Muskan-Chawla.jpg", company: "Whitewater Advisory" },
-  { name: "P Hritish Kumar", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/hritishkumar/", image: baseURL + "Hritish.jpg", company: "DLF" },
-  { name: "Aakanksha Lolge", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/aakankshalolge/", image: baseURL + "Aakanksha-Lolge.jpg", company: "BPCL" },
-  { name: "Harinee Selvam", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/harinee-selvam-a03416204/", image: baseURL + "Harinee-Selvam.jpg", company: "Flipkart" },
-  { name: "Pratik Ulhas Naik", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/naik-pratik/", image: baseURL + "Pratik-Naik-Protiviti.jpg", company: "Protiviti" },
-  { name: "Stephen DCosta", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/stephensn6/", image: baseURL + "Stephen.jpg", company: "UBS" },
-  { name: "Khushi Tejani", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/khushitejani/", image: baseURL + "Khushi-Tejani-BPCL.jpg", company: "BPCL" },
-  { name: "Yash Nema", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/yash-nema18/", image: baseURL + "Yash-Nema.jpg", company: "Amazon" },
-  { name: "Prathmesh Randive", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/prathmesh-randive/", image: baseURL + "Prathmesh-Randive.jpg", company: "UBS" },
-  { name: "Vivek Vardan", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/vivek-vardhan-9a05982a1/", image: baseURL + "Vivek-Vardhan.jpg", company: "UBS" },
-  { name: "Vishal Jangid", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/vishall-jangid/", image: baseURL + "Vishal-Jangid.jpg", company: "PPG Asian Paints" },
-  { name: "Swayam Atal", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/swayamatal/", image: baseURL + "Swayam-Atal.jpg", company: "Amazon" },
-  { name: "Siddhant Naithani", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/siddhantnaithani999/", image: baseURL + "Siddhant-Naithani.jpg", company: "Signify" },
-  { name: "Sanjana Sivakali", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/sanjanasivakali/", image: baseURL + "Sanjana-Sivakali.jpg", company: "Ashok Leyland" },
-  { name: "Shiv Pratap Singh", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/shiv-pratap-singh-52b721222/", image: baseURL + "Shiv-Pratap-Singh.jpg", company: "1MG" },
-  { name: "Aditi Tagalpallewar", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/aditi-tagalpallewar/", image: baseURL + "Aditi-Tagalwellakar.jpg", company: "UBS" },
-  { name: "Tanya Bhojwani", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/tanya-bhojwani/", image: baseURL + "bhojwani.jpg", company: "Hindalco Eternia" },
-  { name: "Arjun Vasishta", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/arjun-vasistha/", image: baseURL + "vasistha.jpg", company: "Unilever" },
-  { name: "Kamini Jha", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/jha-kamini/", image: baseURL + "kamini.jpg", company: "HSBC" },
-  { name: "Shubham Kumar", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/shubham-kumar-ca10/", image: baseURL + "kumar.jpg", company: "Reliance" }
-];
-
-const prioritizedStudentsOrder = [
-  { name: "Simran Singh", company: "Amazon" },
-  { name: "Virali Doshi", company: "Deutsche Bank" },
-  { name: "Viddhi S Mittal", company: "Amazon" },
-  { name: "Priya Jain", company: "Amazon" },
-  { name: "Aitullah Nabi", company: "Amazon" },
-  { name: "Charu Kewalramani", company: "DE Shaw" },
-  { name: "Pooja Kedia", company: "HSBC" },
-  { name: "Piyu Jain", company: "Reliance" },
-  { name: "Diksha Borse", company: "Amazon" },
-  { name: "Dev Mundra", company: "UBS" },
-  { name: "Anisha Nagwani", company: "Barclays" },
-  { name: "Sajal Mittal", company: "PepsiCo" },
-  { name: "Tanya Bhojwani", company: "Hindalco Eternia" },
-  { name: "Arjun Vasishta", company: "Unilever" },
-  { name: "Kamini Jha", company: "HSBC" },
-  { name: "Shubham Kumar", company: "Reliance" }
-];
+  const prioritizedStudentsOrder = [
+    { name: "Simran Singh", company: "Amazon" },
+    { name: "Virali Doshi", company: "Deutsche Bank" },
+    { name: "Viddhi S Mittal", company: "Amazon" },
+    { name: "Priya Jain", company: "Amazon" },
+    { name: "Aitullah Nabi", company: "Amazon" },
+    { name: "Charu Kewalramani", company: "DE Shaw" },
+    { name: "Pooja Kedia", company: "HSBC" },
+    { name: "Piyu Jain", company: "Reliance" },
+    { name: "Diksha Borse", company: "Amazon" },
+    { name: "Dev Mundra", company: "UBS" },
+    { name: "Anisha Nagwani", company: "Barclays" },
+    { name: "Sajal Mittal", company: "PepsiCo" }
+  ];
 
   const students = [];
   const addedStudentKeys = new Set(); 
@@ -89,7 +80,7 @@ const prioritizedStudentsOrder = [
     const foundStudent = allAvailableStudents.find(
       s => s.name === pStudent.name && s.company === pStudent.company
     );
-    if (foundStudent) { 
+    if (foundStudent) {
       const key = foundStudent.name + foundStudent.company;
       if (!addedStudentKeys.has(key)) {
         students.push(foundStudent);
@@ -202,23 +193,28 @@ const initializeCountdown = () => {
   const timerEl = document.getElementById('timer');
   if (!timerEl) return;
 
+  const targetDate = new Date('2025-08-17T23:59:00');
+
   function updateTimer() {
     const now = new Date();
-    const target = new Date(now);
+    const diff = targetDate - now;
 
-    target.setHours(24, 0, 0, 0);
-
-    const diff = target - now;
+    if (diff <= 0) {
+      timerEl.textContent = "00h 00m 00s";
+      clearInterval(timerInterval); 
+      return;
+    }
     
-    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    timerEl.textContent = `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
+    timerEl.textContent = `${String(days).padStart(2, '0')}d ${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
   }
 
   updateTimer();
-  setInterval(updateTimer, 1000);
+  const timerInterval = setInterval(updateTimer, 1000);
 };
 
 const initializeTestimonials = () => {
