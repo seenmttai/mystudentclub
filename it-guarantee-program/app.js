@@ -27,8 +27,8 @@ const allAvailableStudents = [
   { name: "Monisha Agrawala", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/monisha-agrawala-/", image: baseURL + "monisha.jpeg", company: "Goldman Sachs" },
   { name: "Hari Karnati", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/hari-karnati", image: baseURL + "karnati.jpeg", company: "Amazon" },
   { name: "Devang Sinsinwar", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/devang-sinsinwar/", image: baseURL + "devang.jpeg", company: "Intel" },
-  { name: "Viddhi S Mittal", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/viddhismittal/", image: "N/A", company: "Amazon" }, // Image reassigned to Arjun Vasishta
-  { name: "Priya Jain", course: "MSC IT Guarantee Program", linkedin: "N/A", image: "N/A", company: "Amazon" }, // Image reassigned to Kamini Jha
+  { name: "Viddhi S Mittal", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/viddhismittal/", image: baseURL + "viddhi.jpg", company: "Amazon" }, 
+  { name: "Priya Jain", course: "MSC IT Guarantee Program", linkedin: "N/A", image: baseURL + "Priya.jpg", company: "Amazon" }, 
   { name: "Aitullah Nabi", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/aitullahnabi/", image: baseURL + "Aitullah.jpg", company: "Amazon" },
   { name: "Charu Kewalramani", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/charu-kewalramani-40a55930b/", image: baseURL + "Charu.jpg", company: "DE Shaw" },
   { name: "Pooja Kedia", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/pooja-kedia-2578a1214/", image: baseURL + "Pooja.jpg", company: "HSBC" },
