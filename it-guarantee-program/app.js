@@ -55,8 +55,13 @@ const generateData = () => {
     { name: "Siddhant Naithani", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/siddhantnaithani999/", image: baseURL + "Siddhant-Naithani.jpg", company: "Signify" },
     { name: "Sanjana Sivakali", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/sanjanasivakali/", image: baseURL + "Sanjana-Sivakali.jpg", company: "Ashok Leyland" },
     { name: "Shiv Pratap Singh", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/shiv-pratap-singh-52b721222/", image: baseURL + "Shiv-Pratap-Singh.jpg", company: "1MG" },
-    { name: "Aditi Tagalpallewar", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/aditi-tagalpallewar/", image: baseURL + "Aditi-Tagalwellakar.jpg", company: "UBS" }
+    { name: "Aditi Tagalpallewar", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/aditi-tagalpallewar/", image: baseURL + "Aditi-Tagalwellakar.jpg", company: "UBS" },
+    { name: "Shubham Kumar", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/shubham-kumar-ca10/", image: baseURL + "kumar.jpg", company: "Reliance" },
+    { name: "Kamini Jha", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/jha-kamini/", image: baseURL + "kamini.jpg", company: "HSBC" },
+    { name: "Arjun Vasistha", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/arjun-vasistha/", image: baseURL + "vasistha.jpg", company: "Unilever" },
+    { name: "Tanya Bhojwani", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/tanya-bhojwani/", image: baseURL + "bhojwani.jpg", company: "Hindalco Eternia" }
   ];
+
 
   const prioritizedStudentsOrder = [
     { name: "Simran Singh", company: "Amazon" },
@@ -70,7 +75,11 @@ const generateData = () => {
     { name: "Diksha Borse", company: "Amazon" },
     { name: "Dev Mundra", company: "UBS" },
     { name: "Anisha Nagwani", company: "Barclays" },
-    { name: "Sajal Mittal", company: "PepsiCo" }
+    { name: "Sajal Mittal", company: "PepsiCo" },
+    { name: "shubham Kumar", company: "Reliance" },
+    { name: "kamini Jha", company: "HSBC" },
+    { name: "Arjun Vasistha", company: "Unilever" },
+    { name: "Tanya Bhojwani", company: "Hindalco Eternia" },
   ];
 
   const students = [];
