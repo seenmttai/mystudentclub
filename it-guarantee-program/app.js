@@ -2,7 +2,7 @@ const generateData = () => {
   const baseURL = "https://www.mystudentclub.com/assets/";
 
   const allAvailableStudents = [
-    { name: "Simran Singh", course: "MSC IT Guarantee Program", linkedin: "N/A", image: baseURL + "simran.jpg", company: "Amazon" },
+    { name: "Simran Singh", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/simransingh-ca-aspirant/", image: baseURL + "simran.jpg", company: "Amazon" },
     { name: "Virali Doshi", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/virali-doshi1905", image: baseURL + "virali.jpg", company: "Deutsche Bank" },
     { name: "Anisha Mehta", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/anisha-mehta1/", image: baseURL + "anisha_mehta.jpeg", company: "Adani" },
     { name: "Aarushi Agarwal", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/aarushi-agarwal003/", image: baseURL + "Aarushi.jpeg", company: "Mizuho Bank" },
@@ -27,7 +27,7 @@ const generateData = () => {
     { name: "Hari Karnati", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/hari-karnati", image: baseURL + "karnati.jpeg", company: "Amazon" },
     { name: "Devang Sinsinwar", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/devang-sinsinwar/", image: baseURL + "devang.jpeg", company: "Intel" },
     { name: "Viddhi S Mittal", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/viddhismittal/", image: baseURL + "vasistha.jpg", company: "Amazon" },
-    { name: "Priya Jain", course: "MSC IT Guarantee Program", linkedin: "N/A", image: baseURL + "kamini.jpg", company: "Amazon" },
+    { name: "Priya Jain", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/priyaaajain/", image: baseURL + "kamini.jpg", company: "Amazon" },
     { name: "Aitullah Nabi", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/aitullahnabi/", image: baseURL + "bhojwani.jpg", company: "Amazon" },
     { name: "Charu Kewalramani", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/charu-kewalramani-40a55930b/", image: baseURL + "Charu.jpg", company: "DE Shaw" },
     { name: "Pooja Kedia", course: "MSC IT Guarantee Program", linkedin: "https://www.linkedin.com/in/pooja-kedia-2578a1214/", image: baseURL + "Pooja.jpg", company: "HSBC" },
