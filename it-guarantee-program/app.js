@@ -200,7 +200,6 @@ const initializeCarousel = () => {
 
 const initializeCountdown = () => {
   const timerEl = document.getElementById('timer');
-  const footercta = document.getElementById('cta-footer');
   if (!timerEl) return;
 
   const targetDate = new Date('2025-08-17T23:59:00');
@@ -210,9 +209,8 @@ const initializeCountdown = () => {
     const diff = targetDate - now;
 
     if (diff <= 0) {
-      timerEl.textContent = "Registrations closed!";
+      timerEl.textContent = "00h 00m 00s";
       clearInterval(timerInterval); 
-      footercta.style.display="none";
       return;
     }
     
@@ -412,7 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
   safe(initializeTestimonials, 'testimonials');
   safe(initializeCarousel, 'carousel');
   safe(initializeCertificate, 'certificate');
-  safe(initializeCountdown, 'countdown');
   safe(initializeParallax, 'parallax');
   AOS.init({
     duration: 1000,

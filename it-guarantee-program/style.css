@@ -230,7 +230,7 @@ h1 {
   box-shadow: 0 15px 30px rgba(76, 175, 80, 0.4);
 }
 
-.fixed-cta {
+/* .fixed-cta {
   position: fixed;
   bottom: 0;
   left: 0;
@@ -306,7 +306,7 @@ h1 {
 .fixed-cta .register-btn:hover {
   transform: scale(1.05);
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
-}
+} */
 
 .student-card .company-info {
   margin: 10px 0;
@@ -919,7 +919,7 @@ h1 {
   100% { background-position: 300% center; }
 }
 
-.pulse-btn {
+/* .pulse-btn {
   position: relative;
   overflow: hidden;
   transition: all 0.3s ease !important;
@@ -994,7 +994,7 @@ h1 {
   font-weight: 600;
   color: #ff4d4d;
   animation: pulse 2s infinite;
-}
+} */
 
 @media (max-width: 768px) {
   .fixed-cta {
