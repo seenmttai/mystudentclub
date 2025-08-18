@@ -200,6 +200,7 @@ const initializeCarousel = () => {
 
 const initializeCountdown = () => {
   const timerEl = document.getElementById('timer');
+  const footercta = document.getElementById('cta-footer');
   if (!timerEl) return;
 
   const targetDate = new Date('2025-08-17T23:59:00');
@@ -209,8 +210,9 @@ const initializeCountdown = () => {
     const diff = targetDate - now;
 
     if (diff <= 0) {
-      timerEl.textContent = "00h 00m 00s";
+      timerEl.textContent = "Registrations closed!";
       clearInterval(timerInterval); 
+      footercta.style.display="none";
       return;
     }
     
