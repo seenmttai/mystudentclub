@@ -297,6 +297,7 @@ async function analyzeCv() {
     }
 
     analysisResultText = data.response;
+    console.log(analysisResultText);
 
     processStructuredResults(analysisResultText);
 
