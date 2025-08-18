@@ -371,18 +371,15 @@ function parseAndDisplayOverallScore(text) {
 
         if (scoreMatch) {
             overallScore = parseInt(scoreMatch[1], 10);
-        } else {
         }
         if (justMatch) {
             justification = justMatch[1].trim();
-        } else {
         }
     } else {
          const fallbackScoreMatch = text.match(/<score>(\d+)<\/score>/i) || text.match(/Overall Score:\s*(\d+)\/100/i);
          if (fallbackScoreMatch) {
             overallScore = parseInt(fallbackScoreMatch[1], 10);
             justification = "Score extracted via fallback method.";
-         } else {
          }
     }
 
@@ -403,86 +400,79 @@ function parseAndDisplayMeasurableResults(text) {
         return;
     }
 
-    const points = content.split('---');
+    const points = content.split(/<<END_POINT>>|---/);
     let html = '';
     points.forEach((point) => {
-        if (point.trim()) {
-            const originalMatch = point.match(/Original:\s*"([\s\S]+?)"/i);
-            const critiqueMatch = point.match(/Critique:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/i);
+        if (!point.trim()) return;
 
-            html += `<div class="feedback-point border-b border-border pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0">`;
-            if (originalMatch && originalMatch[1]) {
-                html += `<p class="mb-1 text-sm"><strong>Original:</strong> <code class="text-xs">${originalMatch[1].trim()}</code></p>`;
-            }
-            if (critiqueMatch && critiqueMatch[1]) {
-                html += `<p class="mb-2 text-sm"><strong>Critique:</strong> ${formatFeedbackText(critiqueMatch[1].trim())}</p>`;
-            }
-
-            const suggestionStartIndex = point.search(/Rewrite Suggestion \d+:/i);
-            if (suggestionStartIndex !== -1) {
-                const suggestionsText = point.substring(suggestionStartIndex);
-                const suggestions = suggestionsText.split(/Rewrite Suggestion \d+:/i).filter(s => s.trim());
-                if (suggestions.length > 0) {
-                    html += `<div class="mt-2 text-sm"><strong>Rewrite Suggestions:</strong>`;
-                    html += `<ul class="list-none ml-0 mt-1 space-y-1">`;
-                    suggestions.forEach(sugg => {
-                        const trimmedSugg = sugg.trim().replace(/^"|"$/g, '');
-                        if (trimmedSugg) {
-                            html += `<li class="rewrite-suggestion">${simpleMarkdownToHtml(trimmedSugg)}</li>`;
-                        }
-                    });
-                    html += `</ul>`;
-                    html += `</div>`;
-                }
-            }
-            html += `</div>`;
+        const originalMatch = point.match(/Original:\s*"([\s\S]+?)"/i);
+        const critiqueMatch = point.match(/Critique:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/i);
+        
+        html += `<div class="feedback-point border-b border-border pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0">`;
+        if (originalMatch && originalMatch[1]) {
+             html += `<p class="mb-1 text-sm"><strong>Original:</strong> <code class="text-xs">${originalMatch[1].trim()}</code></p>`;
         }
+        if (critiqueMatch && critiqueMatch[1]) {
+             html += `<p class="mb-2 text-sm"><strong>Critique:</strong> ${formatFeedbackText(critiqueMatch[1].trim())}</p>`;
+        }
+        
+        const allSuggestions = [...point.matchAll(/Rewrite Suggestion \d+:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/gi)];
+
+        if (allSuggestions.length > 0) {
+            html += `<div class="mt-2 text-sm"><strong>Rewrite Suggestions:</strong>`;
+            html += `<ul class="list-none ml-0 mt-1 space-y-1">`;
+            allSuggestions.forEach(match => {
+                const suggestionText = match[1].trim();
+                if (suggestionText) {
+                    html += `<li class="rewrite-suggestion">${simpleMarkdownToHtml(suggestionText)}</li>`;
+                }
+            });
+            html += `</ul></div>`;
+        }
+        html += `</div>`;
     });
     measurableResultsContent.innerHTML = html || '<p class="text-text-secondary">Could not parse measurable results.</p>';
 }
 
 function parseAndDisplayPhrasesSuggestions(text) {
-    const content = extractSectionContent(text, '<<<PHRASES_SUGGESTIONS>>>', '<<<END_PHRASES_SUGGESTIONS>>>');
-    if (!content) {
-        phrasesSuggestionsContent.innerHTML = '<p class="text-text-secondary">No phrase suggestions available.</p>';
-        return;
-    }
-    const points = content.split('---');
-    let html = '';
-    points.forEach((point) => {
-        if (point.trim()) {
-            const originalMatch = point.match(/Original:\s*"([\s\S]+?)"/i);
-            const critiqueMatch = point.match(/Critique:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/i);
+     const content = extractSectionContent(text, '<<<PHRASES_SUGGESTIONS>>>', '<<<END_PHRASES_SUGGESTIONS>>>');
+     if (!content) {
+         phrasesSuggestionsContent.innerHTML = '<p class="text-text-secondary">No phrase suggestions available.</p>';
+         return;
+     }
+     
+     const points = content.split(/<<END_POINT>>|---/);
+     let html = '';
+     points.forEach((point) => {
+        if (!point.trim()) return;
 
-            html += `<div class="feedback-point border-b border-border pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0">`;
-            if (originalMatch && originalMatch[1]) {
-                html += `<p class="mb-1 text-sm"><strong>Original:</strong> <code class="text-xs">${originalMatch[1].trim()}</code></p>`;
-            }
-            if (critiqueMatch && critiqueMatch[1]) {
-                html += `<p class="mb-2 text-sm"><strong>Critique:</strong> ${formatFeedbackText(critiqueMatch[1].trim())}</p>`;
-            }
+        const originalMatch = point.match(/Original:\s*"([\s\S]+?)"/i);
+        const critiqueMatch = point.match(/Critique:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/i);
 
-            const suggestionStartIndex = point.search(/Rewrite Suggestion \d+:/i);
-            if (suggestionStartIndex !== -1) {
-                const suggestionsText = point.substring(suggestionStartIndex);
-                const suggestions = suggestionsText.split(/Rewrite Suggestion \d+:/i).filter(s => s.trim());
-                if (suggestions.length > 0) {
-                    html += `<div class="mt-2 text-sm"><strong>Rewrite Suggestions:</strong>`;
-                    html += `<ul class="list-none ml-0 mt-1 space-y-1">`;
-                    suggestions.forEach(sugg => {
-                        const trimmedSugg = sugg.trim().replace(/^"|"$/g, '');
-                        if (trimmedSugg) {
-                            html += `<li class="rewrite-suggestion">${simpleMarkdownToHtml(trimmedSugg)}</li>`;
-                        }
-                    });
-                    html += `</ul>`;
-                    html += `</div>`;
-                }
-            }
-            html += `</div>`;
+        html += `<div class="feedback-point border-b border-border pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0">`;
+        if (originalMatch && originalMatch[1]) {
+            html += `<p class="mb-1 text-sm"><strong>Original:</strong> <code class="text-xs">${originalMatch[1].trim()}</code></p>`;
         }
-    });
-    phrasesSuggestionsContent.innerHTML = html || '<p class="text-text-secondary">Could not parse phrase suggestions.</p>';
+        if (critiqueMatch && critiqueMatch[1]) {
+            html += `<p class="mb-2 text-sm"><strong>Critique:</strong> ${formatFeedbackText(critiqueMatch[1].trim())}</p>`;
+        }
+        
+        const allSuggestions = [...point.matchAll(/Rewrite Suggestion \d+:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/gi)];
+
+        if (allSuggestions.length > 0) {
+            html += `<div class="mt-2 text-sm"><strong>Rewrite Suggestions:</strong>`;
+            html += `<ul class="list-none ml-0 mt-1 space-y-1">`;
+            allSuggestions.forEach(match => {
+                const suggestionText = match[1].trim();
+                if (suggestionText) {
+                    html += `<li class="rewrite-suggestion">${simpleMarkdownToHtml(suggestionText)}</li>`;
+                }
+            });
+            html += `</ul></div>`;
+        }
+        html += `</div>`;
+     });
+     phrasesSuggestionsContent.innerHTML = html || '<p class="text-text-secondary">Could not parse phrase suggestions.</p>';
 }
 
 function parseAndDisplayHardSkills(text) {
