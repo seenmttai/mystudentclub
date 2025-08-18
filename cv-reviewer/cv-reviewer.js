@@ -117,7 +117,7 @@ async function handleFile(file) {
 
   proceedToDomainBtn.disabled = true;
   proceedToDomainBtn.classList.add('opacity-50', 'cursor-not-allowed');
-  removeFileBtn.disabled = true; 
+  removeFileBtn.disabled = true;
 
   try {
     await generatePdfPreview(file);
@@ -127,7 +127,7 @@ async function handleFile(file) {
      alert(`Error processing PDF: ${error.message}. Please try another file.`);
      resetUpload();
   } finally {
-      removeFileBtn.disabled = false; 
+      removeFileBtn.disabled = false;
   }
 }
 
@@ -202,7 +202,7 @@ function resetUpload() {
   fileName.textContent = 'document.pdf';
   fileSize.textContent = '0 KB';
   previewThumbnail.innerHTML = '';
-  proceedToDomainBtn.disabled = true; 
+  proceedToDomainBtn.disabled = true;
   proceedToDomainBtn.classList.add('opacity-50', 'cursor-not-allowed');
 }
 
@@ -269,10 +269,10 @@ async function analyzeCv() {
   loadingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
   startLoadingAnimation();
-  clearResultsContent(); 
+  clearResultsContent();
 
   try {
-    const response = await fetch('https://cv-reviewer.bhansalimanan55.workers.dev/', { 
+    const response = await fetch('https://cv-reviewer.bhansalimanan55.workers.dev/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -408,53 +408,7 @@ function parseAndDisplayMeasurableResults(text) {
     points.forEach((point) => {
         if (point.trim()) {
             const originalMatch = point.match(/Original:\s*"([\s\S]+?)"/i);
-            const critiqueMatch = point.match(/Critique:\s*([\s\S]+?)(Rewrite Suggestions:|Suggestion 1:|\* Suggestion 1:|\n\n|\*   Suggestion|$)/i);
-            const suggestionsBlockMatch = point.match(/(Rewrite Suggestions.*?):\s*([\s\S]*)/i);
-
-            html += `<div class="feedback-point border-b border-border pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0">`;
-            if (originalMatch && originalMatch[1]) {
-                 html += `<p class="mb-1 text-sm"><strong>Original:</strong> <code class="text-xs">${originalMatch[1].trim()}</code></p>`;
-            }
-            if (critiqueMatch && critiqueMatch[1]) {
-                 html += `<p class="mb-2 text-sm"><strong>Critique:</strong> ${formatFeedbackText(critiqueMatch[1].trim())}</p>`;
-            }
-             if (suggestionsBlockMatch && suggestionsBlockMatch[2]) {
-                 html += `<div class="mt-2 text-sm"><strong>Rewrite Suggestions:</strong>`;
-                 const suggestionsText = suggestionsBlockMatch[2].trim();
-                 const suggestions = suggestionsText.split(/\* Suggestion \d+:|\n\s*-\s*|\n\s*\*\s*/i).filter(s => s.trim());
-                 if (suggestions.length > 0) {
-                    html += `<ul class="list-none ml-0 mt-1 space-y-1">`; 
-                    suggestions.forEach(sugg => {
-                        const trimmedSugg = sugg.trim().replace(/^"|"$/g, '');
-                        if(trimmedSugg) {
-                            html += `<li class="rewrite-suggestion">${simpleMarkdownToHtml(trimmedSugg)}</li>`;
-                        }
-                    });
-                    html += `</ul>`;
-                 } else {
-                    html += `<p class="text-xs text-text-secondary ml-2 italic">No specific suggestions parsed.</p>`;
-                 }
-                 html += `</div>`;
-            }
-            html += `</div>`;
-        }
-    });
-    measurableResultsContent.innerHTML = html || '<p class="text-text-secondary">Could not parse measurable results.</p>';
-}
-
-function parseAndDisplayPhrasesSuggestions(text) {
-     const content = extractSectionContent(text, '<<<PHRASES_SUGGESTIONS>>>', '<<<END_PHRASES_SUGGESTIONS>>>');
-     if (!content) {
-         phrasesSuggestionsContent.innerHTML = '<p class="text-text-secondary">No phrase suggestions available.</p>';
-         return;
-     }
-     const points = content.split('---');
-     let html = '';
-     points.forEach((point) => {
-        if (point.trim()) {
-            const originalMatch = point.match(/Original:\s*"([\s\S]+?)"/i);
-            const critiqueMatch = point.match(/Critique:\s*([\s\S]+?)(Rewrite Suggestions:|Suggestion 1:|\* Suggestion 1:|\n\n|\*   Suggestion|$)/i);
-            const suggestionsBlockMatch = point.match(/(Rewrite Suggestions.*?):\s*([\s\S]*)/i);
+            const critiqueMatch = point.match(/Critique:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/i);
 
             html += `<div class="feedback-point border-b border-border pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0">`;
             if (originalMatch && originalMatch[1]) {
@@ -463,28 +417,72 @@ function parseAndDisplayPhrasesSuggestions(text) {
             if (critiqueMatch && critiqueMatch[1]) {
                 html += `<p class="mb-2 text-sm"><strong>Critique:</strong> ${formatFeedbackText(critiqueMatch[1].trim())}</p>`;
             }
-            if (suggestionsBlockMatch && suggestionsBlockMatch[2]) {
-                html += `<div class="mt-2 text-sm"><strong>Rewrite Suggestions:</strong>`;
-                const suggestionsText = suggestionsBlockMatch[2].trim();
-                const suggestions = suggestionsText.split(/\* Suggestion \d+:|\n\s*-\s*|\n\s*\*\s*/i).filter(s => s.trim());
-                 if (suggestions.length > 0) {
+
+            const suggestionStartIndex = point.search(/Rewrite Suggestion \d+:/i);
+            if (suggestionStartIndex !== -1) {
+                const suggestionsText = point.substring(suggestionStartIndex);
+                const suggestions = suggestionsText.split(/Rewrite Suggestion \d+:/i).filter(s => s.trim());
+                if (suggestions.length > 0) {
+                    html += `<div class="mt-2 text-sm"><strong>Rewrite Suggestions:</strong>`;
                     html += `<ul class="list-none ml-0 mt-1 space-y-1">`;
                     suggestions.forEach(sugg => {
-                       const trimmedSugg = sugg.trim().replace(/^"|"$/g, '');
-                        if(trimmedSugg) {
+                        const trimmedSugg = sugg.trim().replace(/^"|"$/g, '');
+                        if (trimmedSugg) {
                             html += `<li class="rewrite-suggestion">${simpleMarkdownToHtml(trimmedSugg)}</li>`;
                         }
                     });
                     html += `</ul>`;
-                 } else {
-                    html += `<p class="text-xs text-text-secondary ml-2 italic">No specific suggestions parsed.</p>`;
-                 }
-                html += `</div>`;
+                    html += `</div>`;
+                }
             }
             html += `</div>`;
         }
-     });
-     phrasesSuggestionsContent.innerHTML = html || '<p class="text-text-secondary">Could not parse phrase suggestions.</p>';
+    });
+    measurableResultsContent.innerHTML = html || '<p class="text-text-secondary">Could not parse measurable results.</p>';
+}
+
+function parseAndDisplayPhrasesSuggestions(text) {
+    const content = extractSectionContent(text, '<<<PHRASES_SUGGESTIONS>>>', '<<<END_PHRASES_SUGGESTIONS>>>');
+    if (!content) {
+        phrasesSuggestionsContent.innerHTML = '<p class="text-text-secondary">No phrase suggestions available.</p>';
+        return;
+    }
+    const points = content.split('---');
+    let html = '';
+    points.forEach((point) => {
+        if (point.trim()) {
+            const originalMatch = point.match(/Original:\s*"([\s\S]+?)"/i);
+            const critiqueMatch = point.match(/Critique:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/i);
+
+            html += `<div class="feedback-point border-b border-border pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0">`;
+            if (originalMatch && originalMatch[1]) {
+                html += `<p class="mb-1 text-sm"><strong>Original:</strong> <code class="text-xs">${originalMatch[1].trim()}</code></p>`;
+            }
+            if (critiqueMatch && critiqueMatch[1]) {
+                html += `<p class="mb-2 text-sm"><strong>Critique:</strong> ${formatFeedbackText(critiqueMatch[1].trim())}</p>`;
+            }
+
+            const suggestionStartIndex = point.search(/Rewrite Suggestion \d+:/i);
+            if (suggestionStartIndex !== -1) {
+                const suggestionsText = point.substring(suggestionStartIndex);
+                const suggestions = suggestionsText.split(/Rewrite Suggestion \d+:/i).filter(s => s.trim());
+                if (suggestions.length > 0) {
+                    html += `<div class="mt-2 text-sm"><strong>Rewrite Suggestions:</strong>`;
+                    html += `<ul class="list-none ml-0 mt-1 space-y-1">`;
+                    suggestions.forEach(sugg => {
+                        const trimmedSugg = sugg.trim().replace(/^"|"$/g, '');
+                        if (trimmedSugg) {
+                            html += `<li class="rewrite-suggestion">${simpleMarkdownToHtml(trimmedSugg)}</li>`;
+                        }
+                    });
+                    html += `</ul>`;
+                    html += `</div>`;
+                }
+            }
+            html += `</div>`;
+        }
+    });
+    phrasesSuggestionsContent.innerHTML = html || '<p class="text-text-secondary">Could not parse phrase suggestions.</p>';
 }
 
 function parseAndDisplayHardSkills(text) {
@@ -569,7 +567,7 @@ function clearResultsContent() {
      categoryItems.forEach(item => {
         const pointsEl = item.querySelector('.points');
         const fillBar = item.querySelector('.category-fill');
-        const maxPoints = pointsEl.textContent.split('/')[1] || '0'; 
+        const maxPoints = pointsEl.textContent.split('/')[1] || '0';
         pointsEl.textContent = `0/${maxPoints}`;
         if(fillBar) fillBar.style.width = `0%`;
     });
@@ -590,7 +588,7 @@ function simpleMarkdownToHtml(md) {
         .replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded text-sm">$1</code>')
         .replace(/^#{1,6}\s+(.*$)/gm, (match, content) => {
             const level = match.indexOf(' ');
-            return `<h${level+1} class="font-semibold mt-4 mb-2 text-lg">${content}</h${level+1}>`; 
+            return `<h${level+1} class="font-semibold mt-4 mb-2 text-lg">${content}</h${level+1}>`;
         })
         .replace(/^\s*[\-\*]\s+(.*$)/gm, '<li>$1</li>')
         .replace(/^\s*\d+\.\s+(.*$)/gm, '<li>$1</li>')
@@ -602,37 +600,37 @@ function simpleMarkdownToHtml(md) {
              const listType = /^\s*[\-\*]/.test(md) ? 'ul' : 'ol';
              return `<${listType}>${content}</${listType}>`;
         })
-        .replace(/<\/(ul|ol)>\s*<\1>/g, '') 
-        .replace(/(\r\n|\n|\r)/g, '<br>') 
-        .replace(/<br>\s*<br>/g, '</p><p>') 
-        .replace(/^<p>|<\/p>$/g, '') 
-        .replace(/^(.+?)$/gm, (match) => { 
+        .replace(/<\/(ul|ol)>\s*<\1>/g, '')
+        .replace(/(\r\n|\n|\r)/g, '<br>')
+        .replace(/<br>\s*<br>/g, '</p><p>')
+        .replace(/^<p>|<\/p>$/g, '')
+        .replace(/^(.+?)$/gm, (match) => {
             if (match.trim().startsWith('<') || match.trim().startsWith('<') || /^\s*(<li>|<ul>|<ol>)/.test(match)) {
                  return match;
             }
             return `<p>${match}</p>`;
         })
-         .replace(/<p>\s*<\/p>/g, ''); 
+         .replace(/<p>\s*<\/p>/g, '');
 }
 
 function formatFeedbackText(text) {
     if (!text) return '<p class="text-sm text-text-secondary italic">No details available.</p>';
     let html = simpleMarkdownToHtml(text);
 
-    html = html.replace(/\[GOOD\]/g, '<span class="highlight-good" title="Good point">✓</span>'); 
-    html = html.replace(/\[ISSUE\]/g, '<span class="highlight-issue" title="Area for improvement">✗</span>'); 
+    html = html.replace(/\[GOOD\]/g, '<span class="highlight-good" title="Good point">✓</span>');
+    html = html.replace(/\[ISSUE\]/g, '<span class="highlight-issue" title="Area for improvement">✗</span>');
 
     html = html.replace(/<br>\s*\*   \*\*(.*?):\*\*/g, '<br><strong class="block mt-3 mb-1 text-base text-primary">$1:</strong>');
     html = html.replace(/^   \*\*(.*?):\*\*/g, '<strong class="block mt-3 mb-1 text-base text-primary">$1:</strong>');
 
-     html = html.replace(/<br>\s*[\-\*]\s+/g, '<br><li>'); 
-     html = html.replace(/<\/li><br>/g, '</li>'); 
+     html = html.replace(/<br>\s*[\-\*]\s+/g, '<br><li>');
+     html = html.replace(/<\/li><br>/g, '</li>');
 
      html = html.replace(/(<li>.*?<\/li>)/gs, (match) => {
-         if (match.includes('<ul>') || match.includes('<ol>')) return match; 
+         if (match.includes('<ul>') || match.includes('<ol>')) return match;
          return `<ul>${match}</ul>`;
      });
-     html = html.replace(/<\/ul>\s*<ul>/g, ''); 
+     html = html.replace(/<\/ul>\s*<ul>/g, '');
 
     return html;
 }
@@ -683,19 +681,19 @@ function updateScoreBreakdown(overallScore, resultsText) {
         const pointsEl = item.querySelector('.points');
         const fillBar = item.querySelector('.category-fill');
         const maxPointsText = pointsEl.textContent.split('/')[1];
-        if (!maxPointsText) return; 
+        if (!maxPointsText) return;
         const maxPoints = parseInt(maxPointsText.match(/\d+/)[0], 10);
 
         let calculatedPoints = 0;
         let percentage = 0;
 
          if (foundSpecificScores && categoryScores[categoryKey] !== undefined) {
-            calculatedPoints = Math.min(categoryScores[categoryKey], maxPoints); 
+            calculatedPoints = Math.min(categoryScores[categoryKey], maxPoints);
             percentage = (calculatedPoints / maxPoints) * 100;
         } else {
 
              calculatedPoints = Math.round((overallScore / 100) * maxPoints);
-             percentage = overallScore; 
+             percentage = overallScore;
          }
 
         pointsEl.textContent = `${calculatedPoints}/${maxPoints} pts`;
@@ -762,20 +760,20 @@ downloadReportBtn.addEventListener('click', () => {
                .replace(/<\/ol>/g, '')
                .replace(/<li>/g, '\n - ')
                .replace(/<\/li>/g, '')
-               .replace(/<h[1-6].*?>(.*?)<\/h[1-6]>/g, '\n### $1\n') 
+               .replace(/<h[1-6].*?>(.*?)<\/h[1-6]>/g, '\n### $1\n')
                .replace(/^\s*•\s*/gm, ' - ')
                .replace(/Original:\s*<code.*?>([\s\S]*?)<\/code>/gi, 'Original: "$1"')
                .replace(/Critique:\s*/gi, '\nCritique: ')
                .replace(/Rewrite Suggestions:/gi, '\nRewrite Suggestions:')
                .replace(/<div class="rewrite-suggestion">([\s\S]*?)<\/div>/gi, '  * Suggestion: $1')
-               .replace(/<span class="highlight-good".*?>✓<\/span>/g,'(+)') 
+               .replace(/<span class="highlight-good".*?>✓<\/span>/g,'(+)')
                .replace(/<span class="highlight-issue".*?>✗<\/span>/g,'(-)')
                .replace(/&/g, '&')
                .replace(/</g, '<')
                .replace(/>/g, '>')
                .replace(/"/g, '"')
                .replace(/'/g, "'")
-               .replace(/\n\s*\n/g, '\n\n') 
+               .replace(/\n\s*\n/g, '\n\n')
                .trim();
 
            reportContent += cleanedContent + '\n\n';
@@ -810,6 +808,6 @@ function resetToUploadStageOnError() {
      domainSpecializationSection.style.display = 'none';
      resetUpload();
      uploadSection.style.display = 'block';
-     heroSection.style.display = 'block'; 
+     heroSection.style.display = 'block';
      uploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
