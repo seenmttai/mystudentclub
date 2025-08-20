@@ -57,7 +57,7 @@ const specializationOptions = {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  populateSpecializations();
+  //populateSpecializations();
   const svg = document.querySelector('.score-chart');
   if (svg && !document.getElementById('scoreGradient')) {
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
