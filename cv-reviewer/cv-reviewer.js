@@ -272,8 +272,8 @@ async function analyzeCv() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'X-Domain': selectedDomain,
-        'X-Specialization': selectedSpecialization,
+        'X-Domain': 'Financing',
+        'X-Specialization': 'Accounting',
         'Origin': window.location.origin
       },
       body: JSON.stringify({ images: pdfImages })
@@ -317,10 +317,10 @@ function startLoadingAnimation() {
         "Uploading resume securely...",
         "Analyzing document structure...",
         "Extracting key skills and experience...",
-        "Evaluating alignment with "+ selectedDomain + " standards...",
+        "Evaluating alignment with "+ "Financing" + " standards...",
         "Assessing impact and achievements...",
         "Checking grammar and readability...",
-        "Generating tailored recommendations for " + selectedSpecialization + "...",
+        "Generating tailored recommendations for " + "Domain" + "...",
         "Compiling your detailed report...",
         "Finalizing results..."
     ];
@@ -708,8 +708,8 @@ downloadReportBtn.addEventListener('click', () => {
 
   let reportContent = `My Student Club - CV Analysis Report\n`;
   reportContent += `=====================================\n\n`;
-  reportContent += `Domain: ${selectedDomain}\n`;
-  reportContent += `Specialization: ${selectedSpecialization}\n\n`;
+  reportContent += `Domain: Financing\n`;
+  reportContent += `Specialization: Accounting\n\n`;
 
   const sections = [
       { title: "Overall Score", start: '<<<OVERALL_SCORE>>>', end: '<<<END_OVERALL_SCORE>>>' },
