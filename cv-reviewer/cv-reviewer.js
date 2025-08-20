@@ -10,12 +10,12 @@ const previewThumbnail = document.getElementById('previewThumbnail');
 const fileName = document.getElementById('fileName');
 const fileSize = document.getElementById('fileSize');
 const removeFileBtn = document.getElementById('removeFileBtn');
-const proceedToDomainBtn = document.getElementById('proceedToDomainBtn');
-const domainSpecializationSection = document.getElementById('domainSpecializationSection');
-const backToUploadBtn = document.getElementById('backToUploadBtn');
-const domainSelect = document.getElementById('domainSelect');
-const specializationSelect = document.getElementById('specializationSelect');
-const analyzeBtn = document.getElementById('analyzeBtn');
+const proceedToReviewBtn = document.getElementById('proceedToDomainBtn');
+//const domainSpecializationSection = document.getElementById('domainSpecializationSection');
+//const backToUploadBtn = document.getElementById('backToUploadBtn');
+//const domainSelect = document.getElementById('domainSelect');
+//const specializationSelect = document.getElementById('specializationSelect');
+//const analyzeBtn = document.getElementById('analyzeBtn');
 const loadingSection = document.getElementById('loadingSection');
 const loadingProgressText = document.getElementById('loadingProgressText');
 const resultsSection = document.getElementById('resultsSection');
@@ -115,14 +115,14 @@ async function handleFile(file) {
   previewArea.style.display = 'flex';
   previewArea.classList.add('flex-col', 'gap-4');
 
-  proceedToDomainBtn.disabled = true;
-  proceedToDomainBtn.classList.add('opacity-50', 'cursor-not-allowed');
+  proceedToReviewBtn.disabled = true;
+  proceedToReviewBtn.classList.add('opacity-50', 'cursor-not-allowed');
   removeFileBtn.disabled = true;
 
   try {
     await generatePdfPreview(file);
-    proceedToDomainBtn.disabled = false;
-    proceedToDomainBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    proceedToReviewBtn.disabled = false;
+    proceedToReviewBtn.classList.remove('opacity-50', 'cursor-not-allowed');
   } catch (error) {
      alert(`Error processing PDF: ${error.message}. Please try another file.`);
      resetUpload();
@@ -202,31 +202,31 @@ function resetUpload() {
   fileName.textContent = 'document.pdf';
   fileSize.textContent = '0 KB';
   previewThumbnail.innerHTML = '';
-  proceedToDomainBtn.disabled = true;
-  proceedToDomainBtn.classList.add('opacity-50', 'cursor-not-allowed');
+  proceedToReviewBtn.disabled = true;
+  proceedToReviewBtn.classList.add('opacity-50', 'cursor-not-allowed');
 }
 
-proceedToDomainBtn.addEventListener('click', () => {
+proceedToReviewBtn.addEventListener('click', () => {
     if (!selectedFile || pdfImages.length === 0) {
          alert("Please wait for the PDF preview and processing to complete.");
          return;
      }
     uploadSection.style.display = 'none';
-    domainSpecializationSection.style.display = 'block';
-    domainSpecializationSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    //domainSpecializationSection.style.display = 'block';
+    //domainSpecializationSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
 });
 
-backToUploadBtn.addEventListener('click', () => {
-    domainSpecializationSection.style.display = 'none';
+/*backToUploadBtn.addEventListener('click', () => {
+    //domainSpecializationSection.style.display = 'none';
     uploadSection.style.display = 'block';
-});
+});*/
 
-domainSelect.addEventListener('change', populateSpecializations);
+//domainSelect.addEventListener('change', populateSpecializations);
 
-function populateSpecializations() {
-    const selectedDomain = domainSelect.value;
-    const options = specializationOptions[selectedDomain] || [];
-    specializationSelect.innerHTML = '';
+/*function populateSpecializations() {
+    //const selectedDomain = domainSelect.value;
+    //const options = specializationOptions[selectedDomain] || [];
+    //specializationSelect.innerHTML = '';
 
     if (options.length === 0) {
         specializationSelect.innerHTML = '<option value="" disabled selected>No specializations available</option>';
@@ -243,24 +243,20 @@ function populateSpecializations() {
              specializationSelect.options[0].selected = true;
         }
     }
-}
+}*/
 
-analyzeBtn.addEventListener('click', analyzeCv);
+proceedToReviewBtn.addEventListener('click', analyzeCv);
 
 async function analyzeCv() {
   if (!selectedFile || pdfImages.length === 0) {
     alert('PDF not processed correctly. Please re-upload.');
     return;
   }
-  if (!domainSelect.value || !specializationSelect.value) {
-      alert('Please select a domain and specialization.');
-      return;
-  }
 
-  const selectedDomain = domainSelect.value;
-  const selectedSpecialization = specializationSelect.value;
+  const selectedDomain = 'Financing';
+  const selectedSpecialization = 'Accounting';
 
-  domainSpecializationSection.style.display = 'none';
+  //domainSpecializationSection.style.display = 'none';
   heroSection.style.display = 'none';
   loadingSection.style.display = 'block';
   resultsSection.style.display = 'none';
@@ -321,10 +317,10 @@ function startLoadingAnimation() {
         "Uploading resume securely...",
         "Analyzing document structure...",
         "Extracting key skills and experience...",
-        "Evaluating alignment with "+ domainSelect.value + " standards...",
+        "Evaluating alignment with "+ selectedDomain + " standards...",
         "Assessing impact and achievements...",
         "Checking grammar and readability...",
-        "Generating tailored recommendations for " + specializationSelect.value + "...",
+        "Generating tailored recommendations for " + selectedSpecialization + "...",
         "Compiling your detailed report...",
         "Finalizing results..."
     ];
@@ -697,7 +693,7 @@ function resetToUploadStage() {
     resetUpload();
     resultsSection.style.display = 'none';
     tipsSection.style.display = 'none';
-    domainSpecializationSection.style.display = 'none';
+    //domainSpecializationSection.style.display = 'none';
     loadingSection.style.display = 'none';
     heroSection.style.display = 'block';
     uploadSection.style.display = 'block';
@@ -712,8 +708,8 @@ downloadReportBtn.addEventListener('click', () => {
 
   let reportContent = `My Student Club - CV Analysis Report\n`;
   reportContent += `=====================================\n\n`;
-  reportContent += `Domain: ${domainSelect.value}\n`;
-  reportContent += `Specialization: ${specializationSelect.value}\n\n`;
+  reportContent += `Domain: ${selectedDomain}\n`;
+  reportContent += `Specialization: ${selectedSpecialization}\n\n`;
 
   const sections = [
       { title: "Overall Score", start: '<<<OVERALL_SCORE>>>', end: '<<<END_OVERALL_SCORE>>>' },
@@ -795,7 +791,7 @@ function resetToUploadStageOnError() {
      loadingSection.style.display = 'none';
      resultsSection.style.display = 'none';
      tipsSection.style.display = 'none';
-     domainSpecializationSection.style.display = 'none';
+     //domainSpecializationSection.style.display = 'none';
      resetUpload();
      uploadSection.style.display = 'block';
      heroSection.style.display = 'block';
