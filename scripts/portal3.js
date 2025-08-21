@@ -1,8 +1,22 @@
+
 import { getDaysAgo } from './date-utils.js';
 
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+window.flutter_app = {
+    isReady: false, 
+    fcmToken: null
+};
+window.setFcmToken = function(token) {
+    console.log("FCM Token received from Flutter App:", token);
+    window.flutter_app.fcmToken = token;
+    const topicSelectionArea = document.getElementById('topic-selection-area');
+    if (topicSelectionArea && topicSelectionArea.style.display !== 'block') {
+        updatePermissionStatusUI();
+    }
+};
 
 let isFetching = false;
 let page = 0;
@@ -605,16 +619,87 @@ function formatTopicForDisplay(topic) {
 }
 
 function updateSpecificTopicAreaVisibility() { if (dom.specificSubscriptionForm) dom.specificSubscriptionForm.style.display = dom.topicAllCheckbox.checked ? 'none' : 'block'; }
-async function manageTopicSubscription(topic, action) { if (!currentFcmToken) { showNotifStatus('Token not available.', 'error'); return false; } try { const response = await fetch('https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ token: currentFcmToken, topic, action }) }); if (!response.ok) throw new Error(await response.text()); let topics = getSubscribedTopics(); if (action === 'subscribe' && !topics.includes(topic)) topics.push(topic); else if (action === 'unsubscribe') topics = topics.filter(t => t !== topic); saveSubscribedTopics(topics); renderSubscribedTopics(); return true; } catch (err) { showNotifStatus(`Failed to ${action}`, 'error'); return false; } }
+async function manageTopicSubscription(topic, action) { 
+    currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
+    if (!currentFcmToken) { showNotifStatus('Token not available.', 'error'); return false; } 
+    try { 
+        const response = await fetch('https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ token: currentFcmToken, topic, action }) }); 
+        if (!response.ok) throw new Error(await response.text()); 
+        let topics = getSubscribedTopics(); 
+        if (action === 'subscribe' && !topics.includes(topic)) topics.push(topic); 
+        else if (action === 'unsubscribe') topics = topics.filter(t => t !== topic); 
+        saveSubscribedTopics(topics); 
+        renderSubscribedTopics(); 
+        return true; 
+    } catch (err) { 
+        showNotifStatus(`Failed to ${action}`, 'error'); 
+        return false; 
+    } 
+}
 async function subscribeToTopic(topic) { return manageTopicSubscription(topic, 'subscribe'); }
 async function unsubscribeFromTopic(topic) { return manageTopicSubscription(topic, 'unsubscribe'); }
 
-function updatePermissionStatusUI() { if (!dom.permissionStatusDiv) return; const permission = Notification.permission; dom.enableNotificationsBtn.style.display = permission === 'default' ? 'block' : 'none'; dom.topicSelectionArea.style.display = permission === 'granted' ? 'block' : 'none'; if (permission === 'granted') { dom.permissionStatusDiv.textContent = 'Notifications are enabled.'; dom.permissionStatusDiv.className = 'notification-status status-success'; } else if (permission === 'denied') { dom.permissionStatusDiv.textContent = 'Notifications are blocked in browser settings.'; dom.permissionStatusDiv.className = 'notification-status status-error'; } else { dom.permissionStatusDiv.textContent = 'Enable notifications for job alerts.'; dom.permissionStatusDiv.className = 'notification-status status-info'; } dom.permissionStatusDiv.style.display = 'block'; }
+function updatePermissionStatusUI() { 
+    if (!dom.permissionStatusDiv) return;
+    
+    if (window.flutter_app.isReady) {
+        dom.enableNotificationsBtn.style.display = 'none';
+        dom.topicSelectionArea.style.display = 'block';
+        dom.permissionStatusDiv.textContent = 'Notifications are managed by the app.';
+        dom.permissionStatusDiv.className = 'notification-status status-success';
+        dom.permissionStatusDiv.style.display = 'block';
+        return;
+    }
+
+    const permission = Notification.permission; 
+    dom.enableNotificationsBtn.style.display = permission === 'default' ? 'block' : 'none'; 
+    dom.topicSelectionArea.style.display = permission === 'granted' ? 'block' : 'none'; 
+    if (permission === 'granted') { 
+        dom.permissionStatusDiv.textContent = 'Notifications are enabled.'; 
+        dom.permissionStatusDiv.className = 'notification-status status-success'; 
+    } else if (permission === 'denied') { 
+        dom.permissionStatusDiv.textContent = 'Notifications are blocked in browser settings.'; 
+        dom.permissionStatusDiv.className = 'notification-status status-error'; 
+    } else { 
+        dom.permissionStatusDiv.textContent = 'Enable notifications for job alerts.'; 
+        dom.permissionStatusDiv.className = 'notification-status status-info'; 
+    } 
+    dom.permissionStatusDiv.style.display = 'block'; 
+}
 function populateNotificationDropdowns() { if (dom.locationSelectEl) { dom.locationSelectEl.innerHTML = '<option value="" disabled selected>Select Location</option>'; LOCATIONS_NOTIF.sort().forEach(loc => { const opt=document.createElement('option'); opt.value=loc; opt.textContent=loc.charAt(0).toUpperCase()+loc.slice(1); dom.locationSelectEl.appendChild(opt); }); } if (dom.jobTypeSelectEl) { dom.jobTypeSelectEl.innerHTML = '<option value="" disabled selected>Select Job Type</option>'; JOB_TYPES_NOTIF.forEach(type => { const opt=document.createElement('option'); opt.value=type.value; opt.textContent=type.label; dom.jobTypeSelectEl.appendChild(opt); }); } }
-async function initializeFCM() { try { if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG); firebaseMessaging = firebase.messaging(); firebaseMessaging.onMessage(payload => {}); if ('serviceWorker' in navigator) await navigator.serviceWorker.register('/firebase-messaging-sw.js'); if (Notification.permission === 'granted') await requestTokenAndSync(); } catch(err) {} }
-async function requestTokenAndSync() { if (!firebaseMessaging) return; try { const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY }); if (token) { currentFcmToken = token; await syncNotificationTopics(); } } catch (err) {} }
+
+async function initializeFCM() {
+    if (window.flutter_app.isReady) {
+        console.log("Running in Flutter app, skipping web FCM init.");
+        currentFcmToken = window.flutter_app.fcmToken;
+        await syncNotificationTopics();
+        return;
+    }
+
+    try { 
+        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG); 
+        firebaseMessaging = firebase.messaging(); 
+        firebaseMessaging.onMessage(payload => {}); 
+        if ('serviceWorker' in navigator) await navigator.serviceWorker.register('/firebase-messaging-sw.js'); 
+        if (Notification.permission === 'granted') await requestTokenAndSync(); 
+    } catch(err) {} 
+}
+
+async function requestTokenAndSync() { 
+    if (window.flutter_app.isReady) return; 
+    if (!firebaseMessaging) return; 
+    try { 
+        const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY }); 
+        if (token) { currentFcmToken = token; await syncNotificationTopics(); } 
+    } catch (err) {} 
+}
 function shouldSync() { const lastSync = localStorage.getItem('notificationSyncTimestamp'); if (!lastSync) return true; return new Date(parseInt(lastSync)).toDateString() !== new Date().toDateString(); }
-async function syncNotificationTopics() { if (!currentFcmToken || !shouldSync()) return; await Promise.all(getSubscribedTopics().map(topic => manageTopicSubscription(topic, 'subscribe'))); localStorage.setItem('notificationSyncTimestamp', Date.now().toString()); }
+async function syncNotificationTopics() { 
+    currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
+    if (!currentFcmToken || !shouldSync()) return; 
+    await Promise.all(getSubscribedTopics().map(topic => manageTopicSubscription(topic, 'subscribe'))); 
+    localStorage.setItem('notificationSyncTimestamp', Date.now().toString()); 
+}
 
 function setupEventListeners() {
     dom.modalOverlay.addEventListener('click', (e) => { if (e.target === dom.modalOverlay) closeModal(); });
@@ -698,8 +783,17 @@ function setupEventListeners() {
     
     if(dom.notificationsBtn) dom.notificationsBtn.addEventListener('click', (e) => {
         e.stopPropagation(); dom.notificationPopup.style.display = dom.notificationPopup.style.display === 'flex' ? 'none' : 'flex';
-        if (dom.notificationPopup.style.display === 'flex') { updatePermissionStatusUI(); if (Notification.permission === 'granted') { if (!firebaseMessaging) initializeFCM().then(renderSubscribedTopics); else renderSubscribedTopics(); } else { renderSubscribedTopics(); } }
+        if (dom.notificationPopup.style.display === 'flex') { 
+            updatePermissionStatusUI(); 
+            if (window.flutter_app.isReady || Notification.permission === 'granted') { 
+                if (!firebaseMessaging && !window.flutter_app.isReady) initializeFCM().then(renderSubscribedTopics); 
+                else renderSubscribedTopics(); 
+            } else { 
+                renderSubscribedTopics(); 
+            } 
+        }
     });
+
     if(dom.closeNotificationPopup) dom.closeNotificationPopup.addEventListener('click', () => dom.notificationPopup.style.display = 'none');
     if(dom.enableNotificationsBtn) dom.enableNotificationsBtn.addEventListener('click', async () => { try { const permission = await Notification.requestPermission(); updatePermissionStatusUI(); if (permission === 'granted') await initializeFCM(); } catch (err) {} });
     if(dom.topicAllCheckbox) dom.topicAllCheckbox.addEventListener('change', (e) => e.target.checked ? subscribeToTopic('all') : unsubscribeFromTopic('all'));
@@ -792,7 +886,7 @@ async function initializePage() {
     
     populateNotificationDropdowns();
     updateNotificationBadge();
-    if (Notification.permission === 'granted') {
+    if (Notification.permission === 'granted' || window.flutter_app.isReady) {
         initializeFCM();
     }
 }
