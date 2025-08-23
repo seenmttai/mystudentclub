@@ -5,7 +5,7 @@ const firebaseConfig = {
     apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
     authDomain: "msc-notif.firebaseapp.com",
     projectId: "msc-notif",
-    storageBucket: "msc-notif.firebasestorage.app",
+    storageBucket: "msc-notif.appspot.com",
     messagingSenderId: "228639798414",
     appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
     measurementId: "G-X4M23TB936"
@@ -16,12 +16,10 @@ try {
     const messaging = firebase.messaging();
 
     self.addEventListener('install', (event) => {
-        console.log('Service worker installing.');
         self.skipWaiting();
     });
 
     self.addEventListener('activate', (event) => {
-        console.log('Service worker activating.');
         event.waitUntil(self.clients.claim());
     });
 
