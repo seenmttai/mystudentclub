@@ -1,4 +1,3 @@
-
 import { getDaysAgo } from './date-utils.js';
 
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
@@ -24,6 +23,7 @@ const limit = 15;
 let hasMoreData = true;
 let currentTable = 'Industrial Training Job Portal';
 let currentSession = null;
+let appliedJobIds = new Set();
 let debounceTimeout = null;
 let availableLocations = [];
 let availableCategories = [];
@@ -54,7 +54,8 @@ const state = {
     categories: [],
     salary: '',
     experience: '',
-    sortBy: 'newest'
+    sortBy: 'newest',
+    applicationStatus: 'all'
 };
 
 const dom = {};
@@ -97,10 +98,14 @@ function setActivePortalTab() {
 function renderJobCard(job) {
     const jobCard = document.createElement('article');
     jobCard.className = 'job-card';
+    jobCard.dataset.jobId = job.id;
     jobCard.addEventListener('click', () => showModal(job));
     
     const companyInitial = job.Company ? job.Company.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
+    const isApplied = appliedJobIds.has(job.id);
+    const buttonText = isApplied ? 'Applied' : 'View Details';
+    const buttonClass = isApplied ? 'applied' : '';
 
     jobCard.innerHTML = `
         <div class="job-card-logo">${companyInitial}</div>
@@ -119,7 +124,7 @@ function renderJobCard(job) {
             </div>
         </div>
         <div class="job-card-actions">
-             <button class="apply-now-card-btn">View Details</button>
+             <button class="apply-now-card-btn ${buttonClass}">${buttonText}</button>
         </div>`;
 
     return jobCard;
@@ -130,24 +135,29 @@ function showModal(job) {
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     const applyLink = getApplicationLink(job['Application ID']);
     const isMailto = applyLink.startsWith('mailto:');
+    const isApplied = appliedJobIds.has(job.id);
+    const buttonClass = isApplied ? 'applied' : '';
 
     let actionsHtml = '';
     if (isMailto) {
+        const simpleApplyText = isApplied ? 'Applied' : 'Simple Apply';
+        const aiApplyText = isApplied ? 'Applied' : 'AI Powered Apply';
         actionsHtml = `
-            <button id="modalSimpleApplyBtn" class="btn btn-secondary">
+            <button id="modalSimpleApplyBtn" class="btn btn-secondary ${buttonClass}">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                <span>Simple Apply</span>
+                <span>${simpleApplyText}</span>
             </button>
-            <button id="modalAiApplyBtn" class="btn btn-primary">
+            <button id="modalAiApplyBtn" class="btn btn-primary ${buttonClass}">
                 <svg fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                <span class="btn-text">AI Powered Apply</span>
+                <span class="btn-text">${aiApplyText}</span>
                 <i class="fas fa-spinner fa-spin"></i>
             </button>`;
     } else {
+        const applyText = isApplied ? 'Applied' : 'Apply Now';
         actionsHtml = `
-            <a href="${applyLink}" class="btn btn-primary" target="_blank">
+            <a href="${applyLink}" id="modalExternalApplyBtn" class="btn btn-primary ${buttonClass}" target="_blank">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                Apply Now
+                ${applyText}
             </a>`;
     }
 
@@ -180,6 +190,8 @@ function showModal(job) {
     if (isMailto) {
         document.getElementById('modalSimpleApplyBtn').addEventListener('click', (e) => handleApplyClick(job, e.currentTarget, false));
         document.getElementById('modalAiApplyBtn').addEventListener('click', (e) => handleApplyClick(job, e.currentTarget, true));
+    } else {
+        document.getElementById('modalExternalApplyBtn').addEventListener('click', (e) => handleApplyClick(job, e.currentTarget));
     }
 }
 
@@ -244,6 +256,9 @@ async function fetchJobs() {
         }
         if (state.experience && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
             query = query.eq('Experience', state.experience);
+        }
+        if (state.applicationStatus === 'not_applied' && currentSession && appliedJobIds.size > 0) {
+            query = query.not('id', 'in', `(${[...appliedJobIds].join(',')})`);
         }
 
         const [sortCol, sortDir] = state.sortBy.split('_');
@@ -364,10 +379,11 @@ function syncFiltersUI() {
     renderPills(dom.categoryPillsDesktop, state.categories, 'categories');
     renderPills(dom.categoryPillsMobile, state.categories, 'categories');
 
-    document.querySelectorAll('.pill-options').forEach(group => {
-        group.querySelectorAll('.pill-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.value === state.experience);
-        });
+    document.querySelectorAll('.experience-filter-group .pill-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === state.experience);
+    });
+    document.querySelectorAll('.application-status-filter-group .pill-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === state.applicationStatus);
     });
 
     renderActiveFilterPills();
@@ -438,9 +454,13 @@ function updateHeaderAuth(session) {
 window.handleLogout = async () => {
     await supabaseClient.auth.signOut();
     currentSession = null;
+    appliedJobIds.clear();
     updateHeaderAuth(null);
+    document.querySelectorAll('.application-status-filter-group').forEach(el => el.style.display = 'none');
     const lmsNavLink = document.getElementById('lms-nav-link');
     if (lmsNavLink) lmsNavLink.style.display = 'none';
+    state.applicationStatus = 'all';
+    resetAndFetch();
 };
 
 async function checkUserEnrollment() {
@@ -458,6 +478,8 @@ function isProfileComplete() { return !!localStorage.getItem('userCVText'); }
 
 async function handleApplyClick(job, buttonElement, isAiApply = false) {
     if (!currentSession) { window.location.href = '/login.html'; return; }
+
+    markJobAsApplied(job);
 
     if (isAiApply) {
         if (!isProfileComplete()) {
@@ -487,7 +509,42 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
             buttonElement.disabled = false;
         }
     } else {
-        window.location.href = getApplicationLink(job['Application ID']);
+        const applyLink = getApplicationLink(job['Application ID']);
+        if (applyLink.startsWith('mailto:')) {
+            window.location.href = applyLink;
+        }
+    }
+}
+
+async function markJobAsApplied(job) {
+    if (!currentSession || appliedJobIds.has(job.id)) return;
+
+    appliedJobIds.add(job.id);
+
+    document.querySelectorAll(`#modalSimpleApplyBtn, #modalAiApplyBtn, #modalExternalApplyBtn`).forEach(btn => {
+        if (btn) {
+            btn.classList.add('applied');
+            const textEl = btn.querySelector('span') || btn;
+            if (textEl) textEl.textContent = 'Applied';
+        }
+    });
+    
+    const card = document.querySelector(`.job-card[data-job-id='${job.id}']`);
+    if (card) {
+        const cardButton = card.querySelector('.apply-now-card-btn');
+        if (cardButton) {
+            cardButton.classList.add('applied');
+            cardButton.textContent = 'Applied';
+        }
+    }
+
+    try {
+        const { error } = await supabaseClient
+            .from('job_applications')
+            .insert({ user_id: currentSession.user.id, job_id: job.id, job_table: currentTable });
+        if (error) throw error;
+    } catch (error) {
+        console.error('Failed to save application status:', error);
     }
 }
 
@@ -701,6 +758,22 @@ async function syncNotificationTopics() {
     localStorage.setItem('notificationSyncTimestamp', Date.now().toString()); 
 }
 
+async function initializeUserFeatures() {
+    if (!currentSession) return;
+    document.querySelectorAll('.application-status-filter-group').forEach(el => el.style.display = 'block');
+    try {
+        const { data, error } = await supabaseClient
+            .from('job_applications')
+            .select('job_id')
+            .eq('user_id', currentSession.user.id)
+            .eq('job_table', currentTable);
+        if (error) throw error;
+        appliedJobIds = new Set(data.map(app => app.job_id));
+    } catch (error) {
+        console.error('Error fetching applied jobs:', error);
+    }
+}
+
 function setupEventListeners() {
     dom.modalOverlay.addEventListener('click', (e) => { if (e.target === dom.modalOverlay) closeModal(); });
     dom.modalCloseBtn.addEventListener('click', closeModal);
@@ -757,6 +830,7 @@ function setupEventListeners() {
             state.experience = '';
             state.searchTerm = '';
             state.sortBy = 'newest';
+            state.applicationStatus = 'all';
             if (dom.searchInputMobile) dom.searchInputMobile.value = '';
             if (currentTable === 'Fresher Jobs') {
                 state.experience = 'Freshers';
@@ -769,11 +843,21 @@ function setupEventListeners() {
 
     if(dom.salaryFilterDesktop) dom.salaryFilterDesktop.addEventListener('change', () => updateState({ salary: dom.salaryFilterDesktop.value }));
 
-    document.querySelectorAll('.pill-options').forEach(group => {
+    document.querySelectorAll('.experience-filter-group .pill-options').forEach(group => {
         group.addEventListener('click', (e) => {
             if (e.target.classList.contains('pill-btn')) {
                 const value = e.target.dataset.value;
                 state.experience = state.experience === value ? '' : value;
+                syncAndFetch();
+            }
+        });
+    });
+
+    document.querySelectorAll('.application-status-filter-group .pill-options').forEach(group => {
+        group.addEventListener('click', (e) => {
+            if (e.target.classList.contains('pill-btn')) {
+                const value = e.target.dataset.value;
+                state.applicationStatus = value;
                 syncAndFetch();
             }
         });
@@ -872,12 +956,28 @@ async function initializePage() {
     
     setActivePortalTab();
 
+    const session = await checkAuth();
+    updateHeaderAuth(session);
+
+    if (!session) {
+        let visitCount = parseInt(localStorage.getItem('portalVisitCount') || '0');
+        visitCount++;
+        localStorage.setItem('portalVisitCount', visitCount.toString());
+        if (visitCount >= 3) {
+            document.getElementById('loginPromptOverlay').style.display = 'flex';
+            const layout = document.querySelector('.job-portal-layout');
+            if (layout) layout.style.display = 'none';
+            return;
+        }
+    } else {
+        localStorage.removeItem('portalVisitCount');
+        await initializeUserFeatures();
+    }
+
     if (currentTable === 'Fresher Jobs') {
         state.experience = 'Freshers';
     }
 
-    const session = await checkAuth();
-    updateHeaderAuth(session);
     populateSalaryFilter();
     setupEventListeners();
     syncFiltersUI();

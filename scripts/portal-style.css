@@ -908,6 +908,16 @@ body {
   margin-right: 0.5rem;
 }
 
+.apply-now-card-btn.applied {
+    background-color: var(--primary-accent);
+    border-color: var(--primary-accent);
+}
+
+.apply-now-card-btn.applied:hover {
+    background-color: #047857;
+    border-color: #047857;
+}
+
 .loader-container {
   display: none;
   text-align: center;
@@ -1178,6 +1188,16 @@ body {
   background-color: var(--border-light);
   border-color: var(--text-muted);
   transform: translateY(-1px);
+}
+
+.btn.applied {
+    background-color: var(--primary-accent);
+    border-color: var(--primary-accent);
+}
+
+.btn.applied:hover {
+    background-color: #047857;
+    border-color: #047857;
 }
 
 .site-footer-nav {
