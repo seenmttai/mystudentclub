@@ -23,13 +23,12 @@ const limit = 15;
 let hasMoreData = true;
 let currentTable = 'Industrial Training Job Portal';
 let currentSession = null;
+let appliedJobIds = new Set();
 let debounceTimeout = null;
 let availableLocations = [];
 let availableCategories = [];
 let currentFcmToken = null;
 let firebaseMessaging;
-let fcmInitStarted = false;
-let tokenReady = false;
 
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
@@ -55,7 +54,8 @@ const state = {
     categories: [],
     salary: '',
     experience: '',
-    sortBy: 'newest'
+    sortBy: 'newest',
+    applicationStatus: 'all'
 };
 
 const dom = {};
@@ -98,10 +98,14 @@ function setActivePortalTab() {
 function renderJobCard(job) {
     const jobCard = document.createElement('article');
     jobCard.className = 'job-card';
+    jobCard.dataset.jobId = job.id;
     jobCard.addEventListener('click', () => showModal(job));
     
     const companyInitial = job.Company ? job.Company.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
+    const isApplied = appliedJobIds.has(job.id);
+    const buttonText = isApplied ? 'Applied' : 'View Details';
+    const buttonClass = isApplied ? 'applied' : '';
 
     jobCard.innerHTML = `
         <div class="job-card-logo">${companyInitial}</div>
@@ -115,12 +119,12 @@ function renderJobCard(job) {
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     ${job.Location || 'N/A'}
                 </span>
-                ${job.Salary ? `<span class="job-tag"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>₹${job.Salary}</span>` : ''}
+                ${job.Salary ? `<span class="job-tag"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>â‚¹${job.Salary}</span>` : ''}
                 ${job.Category ? `<span class="job-tag">${job.Category}</span>` : ''}
             </div>
         </div>
         <div class="job-card-actions">
-             <button class="apply-now-card-btn">View Details</button>
+             <button class="apply-now-card-btn ${buttonClass}">${buttonText}</button>
         </div>`;
 
     return jobCard;
@@ -131,24 +135,29 @@ function showModal(job) {
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     const applyLink = getApplicationLink(job['Application ID']);
     const isMailto = applyLink.startsWith('mailto:');
+    const isApplied = appliedJobIds.has(job.id);
+    const buttonClass = isApplied ? 'applied' : '';
 
     let actionsHtml = '';
     if (isMailto) {
+        const simpleApplyText = isApplied ? 'Applied' : 'Simple Apply';
+        const aiApplyText = isApplied ? 'Applied' : 'AI Powered Apply';
         actionsHtml = `
-            <button id="modalSimpleApplyBtn" class="btn btn-secondary">
+            <button id="modalSimpleApplyBtn" class="btn btn-secondary ${buttonClass}">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                <span>Simple Apply</span>
+                <span>${simpleApplyText}</span>
             </button>
-            <button id="modalAiApplyBtn" class="btn btn-primary">
+            <button id="modalAiApplyBtn" class="btn btn-primary ${buttonClass}">
                 <svg fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                <span class="btn-text">AI Powered Apply</span>
+                <span class="btn-text">${aiApplyText}</span>
                 <i class="fas fa-spinner fa-spin"></i>
             </button>`;
     } else {
+        const applyText = isApplied ? 'Applied' : 'Apply Now';
         actionsHtml = `
-            <a href="${applyLink}" class="btn btn-primary" target="_blank">
+            <a href="${applyLink}" id="modalExternalApplyBtn" class="btn btn-primary ${buttonClass}" target="_blank">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                Apply Now
+                ${applyText}
             </a>`;
     }
 
@@ -161,7 +170,7 @@ function showModal(job) {
             </div>
         </div>
         <div class="modal-meta-tags">
-            ${job.Salary ? `<span class="job-tag">Stipend: ₹${job.Salary}</span>` : ''}
+            ${job.Salary ? `<span class="job-tag">Stipend: â‚¹${job.Salary}</span>` : ''}
             <span class="job-tag">Posted: ${postedDate}</span>
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
         </div>
@@ -181,6 +190,8 @@ function showModal(job) {
     if (isMailto) {
         document.getElementById('modalSimpleApplyBtn').addEventListener('click', (e) => handleApplyClick(job, e.currentTarget, false));
         document.getElementById('modalAiApplyBtn').addEventListener('click', (e) => handleApplyClick(job, e.currentTarget, true));
+    } else {
+        document.getElementById('modalExternalApplyBtn').addEventListener('click', (e) => handleApplyClick(job, e.currentTarget));
     }
 }
 
@@ -246,6 +257,9 @@ async function fetchJobs() {
         if (state.experience && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
             query = query.eq('Experience', state.experience);
         }
+        if (state.applicationStatus === 'not_applied' && currentSession && appliedJobIds.size > 0) {
+            query = query.not('id', 'in', `(${[...appliedJobIds].join(',')})`);
+        }
 
         const [sortCol, sortDir] = state.sortBy.split('_');
         const isAsc = sortDir === 'asc';
@@ -296,9 +310,9 @@ function updateState(newState) {
 function populateSalaryFilter() {
     const salaryFilters = [dom.salaryFilterDesktop, dom.salaryFilterMobile];
     let options = [];
-    if (currentTable === "Industrial Training Job Portal") options = [{ value: '', text: 'Any Stipend' }, { value: '10000-20000', text: '₹10k - ₹20k' }, { value: '20000-40000', text: '₹20k - ₹40k' }, { value: '40000+', text: '₹40k+' }];
-    else if (currentTable === "Articleship Jobs") options = [{ value: '', text: 'Any Stipend' }, { value: '0-5000', text: 'Below ₹5k' }, { value: '5000-10000', text: '₹5k - ₹10k' }, { value: '10000-15000', text: '₹10k - ₹15k' }, { value: '15000+', text: '₹15k+' }];
-    else if (currentTable === "Semi Qualified Jobs") options = [{ value: '', text: 'Any Salary' }, { value: '0-25000', text: 'Below ₹25k' }, { value: '25000-35000', text: '₹25k - ₹35k' }, { value: '35000-50000', text: '₹35k - ₹50k' }, { value: '50000+', text: 'Above ₹50k' }];
+    if (currentTable === "Industrial Training Job Portal") options = [{ value: '', text: 'Any Stipend' }, { value: '10000-20000', text: 'â‚¹10k - â‚¹20k' }, { value: '20000-40000', text: 'â‚¹20k - â‚¹40k' }, { value: '40000+', text: 'â‚¹40k+' }];
+    else if (currentTable === "Articleship Jobs") options = [{ value: '', text: 'Any Stipend' }, { value: '0-5000', text: 'Below â‚¹5k' }, { value: '5000-10000', text: 'â‚¹5k - â‚¹10k' }, { value: '10000-15000', text: 'â‚¹10k - â‚¹15k' }, { value: '15000+', text: 'â‚¹15k+' }];
+    else if (currentTable === "Semi Qualified Jobs") options = [{ value: '', text: 'Any Salary' }, { value: '0-25000', text: 'Below â‚¹25k' }, { value: '25000-35000', text: 'â‚¹25k - â‚¹35k' }, { value: '35000-50000', text: 'â‚¹35k - â‚¹50k' }, { value: '50000+', text: 'Above â‚¹50k' }];
     else if (currentTable === "Fresher Jobs") options = [{ value: '', text: 'Any Salary' }, { value: '0-1200000', text: '< 12 LPA' }, { value: '1200000-1800000', text: '12-18 LPA' }, { value: '1800000+', text: '> 18 LPA' }];
 
     salaryFilters.forEach(select => {
@@ -317,7 +331,7 @@ function renderPills(container, items, type) {
         pill.className = 'selected-pill';
         pill.textContent = item;
         const removeBtn = document.createElement('button');
-        removeBtn.innerHTML = '×';
+        removeBtn.innerHTML = 'Ã—';
         removeBtn.onclick = () => {
             state[type] = state[type].filter(i => i !== item);
             renderPills(container, state[type], type);
@@ -337,7 +351,7 @@ function renderActiveFilterPills() {
         pill.className = 'active-filter-pill';
         pill.textContent = item;
         const removeBtn = document.createElement('button');
-        removeBtn.innerHTML = '×';
+        removeBtn.innerHTML = 'Ã—';
         removeBtn.onclick = () => {
             if (state.locations.includes(item)) {
                 state.locations = state.locations.filter(i => i !== item);
@@ -365,10 +379,11 @@ function syncFiltersUI() {
     renderPills(dom.categoryPillsDesktop, state.categories, 'categories');
     renderPills(dom.categoryPillsMobile, state.categories, 'categories');
 
-    document.querySelectorAll('.pill-options').forEach(group => {
-        group.querySelectorAll('.pill-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.value === state.experience);
-        });
+    document.querySelectorAll('.experience-filter-group .pill-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === state.experience);
+    });
+    document.querySelectorAll('.application-status-filter-group .pill-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === state.applicationStatus);
     });
 
     renderActiveFilterPills();
@@ -439,9 +454,13 @@ function updateHeaderAuth(session) {
 window.handleLogout = async () => {
     await supabaseClient.auth.signOut();
     currentSession = null;
+    appliedJobIds.clear();
     updateHeaderAuth(null);
+    document.querySelectorAll('.application-status-filter-group').forEach(el => el.style.display = 'none');
     const lmsNavLink = document.getElementById('lms-nav-link');
     if (lmsNavLink) lmsNavLink.style.display = 'none';
+    state.applicationStatus = 'all';
+    resetAndFetch();
 };
 
 async function checkUserEnrollment() {
@@ -459,6 +478,8 @@ function isProfileComplete() { return !!localStorage.getItem('userCVText'); }
 
 async function handleApplyClick(job, buttonElement, isAiApply = false) {
     if (!currentSession) { window.location.href = '/login.html'; return; }
+
+    markJobAsApplied(job);
 
     if (isAiApply) {
         if (!isProfileComplete()) {
@@ -488,7 +509,42 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
             buttonElement.disabled = false;
         }
     } else {
-        window.location.href = getApplicationLink(job['Application ID']);
+        const applyLink = getApplicationLink(job['Application ID']);
+        if (applyLink.startsWith('mailto:')) {
+            window.location.href = applyLink;
+        }
+    }
+}
+
+async function markJobAsApplied(job) {
+    if (!currentSession || appliedJobIds.has(job.id)) return;
+
+    appliedJobIds.add(job.id);
+
+    document.querySelectorAll(`#modalSimpleApplyBtn, #modalAiApplyBtn, #modalExternalApplyBtn`).forEach(btn => {
+        if (btn) {
+            btn.classList.add('applied');
+            const textEl = btn.querySelector('span') || btn;
+            if (textEl) textEl.textContent = 'Applied';
+        }
+    });
+    
+    const card = document.querySelector(`.job-card[data-job-id='${job.id}']`);
+    if (card) {
+        const cardButton = card.querySelector('.apply-now-card-btn');
+        if (cardButton) {
+            cardButton.classList.add('applied');
+            cardButton.textContent = 'Applied';
+        }
+    }
+
+    try {
+        const { error } = await supabaseClient
+            .from('job_applications')
+            .insert({ user_id: currentSession.user.id, job_id: job.id, job_table: currentTable });
+        if (error) throw error;
+    } catch (error) {
+        console.error('Failed to save application status:', error);
     }
 }
 
@@ -596,7 +652,7 @@ function renderSubscribedTopics() {
             const { location, jobType } = formatTopicForDisplay(topic);
             const tag = document.createElement('div');
             tag.className = 'topic-tag';
-            tag.innerHTML = `<span>${location}${jobType ? ` - ${jobType}`: ''}</span><button class="topic-remove" data-topic="${topic}">×</button>`;
+            tag.innerHTML = `<span>${location}${jobType ? ` - ${jobType}`: ''}</span><button class="topic-remove" data-topic="${topic}">Ã—</button>`;
             dom.subscribedTopicsListEl.appendChild(tag);
         });
         dom.subscribedTopicsListEl.querySelectorAll('.topic-remove').forEach(btn => btn.addEventListener('click', async (e) => {
@@ -670,65 +726,29 @@ function updatePermissionStatusUI() {
 function populateNotificationDropdowns() { if (dom.locationSelectEl) { dom.locationSelectEl.innerHTML = '<option value="" disabled selected>Select Location</option>'; LOCATIONS_NOTIF.sort().forEach(loc => { const opt=document.createElement('option'); opt.value=loc; opt.textContent=loc.charAt(0).toUpperCase()+loc.slice(1); dom.locationSelectEl.appendChild(opt); }); } if (dom.jobTypeSelectEl) { dom.jobTypeSelectEl.innerHTML = '<option value="" disabled selected>Select Job Type</option>'; JOB_TYPES_NOTIF.forEach(type => { const opt=document.createElement('option'); opt.value=type.value; opt.textContent=type.label; dom.jobTypeSelectEl.appendChild(opt); }); } }
 
 async function initializeFCM() {
-    if (fcmInitStarted) return;
-    fcmInitStarted = true;
-
     if (window.flutter_app.isReady) {
+        console.log("Running in Flutter app, skipping web FCM init.");
         currentFcmToken = window.flutter_app.fcmToken;
-        tokenReady = !!currentFcmToken;
         await syncNotificationTopics();
         return;
     }
 
     try { 
-        if (!firebase.messaging.isSupported()) return;
         if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG); 
         firebaseMessaging = firebase.messaging(); 
         firebaseMessaging.onMessage(payload => {}); 
-        if ('serviceWorker' in navigator) {
-            await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-            await navigator.serviceWorker.ready;
-        }
+        if ('serviceWorker' in navigator) await navigator.serviceWorker.register('/firebase-messaging-sw.js'); 
         if (Notification.permission === 'granted') await requestTokenAndSync(); 
     } catch(err) {} 
 }
 
-async function getTokenWithRetry(maxRetries = 3) {
-    if (!firebaseMessaging) return null;
-    try {
-        const reg = await navigator.serviceWorker.ready;
-        for (let i = 0; i < maxRetries; i++) {
-            try {
-                const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY, serviceWorkerRegistration: reg });
-                if (token) return token;
-            } catch (err) {
-            }
-            await new Promise(r => setTimeout(r, (i + 1) * 1000));
-        }
-    } catch (e) {
-    }
-    return null;
-}
-
 async function requestTokenAndSync() { 
-    if (window.flutter_app.isReady || !firebaseMessaging) return; 
+    if (window.flutter_app.isReady) return; 
+    if (!firebaseMessaging) return; 
     try { 
-        const token = await getTokenWithRetry(); 
-        if (token) { 
-            currentFcmToken = token; 
-            tokenReady = true;
-            if(dom.subscribeBtnEl) {
-                const updateSubBtn = () => { dom.subscribeBtnEl.disabled = !(tokenReady && dom.locationSelectEl.value && dom.jobTypeSelectEl.value); };
-                updateSubBtn();
-            }
-            await syncNotificationTopics(); 
-        } else {
-            tokenReady = false;
-            showNotifStatus('Could not get notification token.', 'error');
-        }
-    } catch (err) {
-        tokenReady = false;
-    } 
+        const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY }); 
+        if (token) { currentFcmToken = token; await syncNotificationTopics(); } 
+    } catch (err) {} 
 }
 function shouldSync() { const lastSync = localStorage.getItem('notificationSyncTimestamp'); if (!lastSync) return true; return new Date(parseInt(lastSync)).toDateString() !== new Date().toDateString(); }
 async function syncNotificationTopics() { 
@@ -736,6 +756,22 @@ async function syncNotificationTopics() {
     if (!currentFcmToken || !shouldSync()) return; 
     await Promise.all(getSubscribedTopics().map(topic => manageTopicSubscription(topic, 'subscribe'))); 
     localStorage.setItem('notificationSyncTimestamp', Date.now().toString()); 
+}
+
+async function initializeUserFeatures() {
+    if (!currentSession) return;
+    document.querySelectorAll('.application-status-filter-group').forEach(el => el.style.display = 'block');
+    try {
+        const { data, error } = await supabaseClient
+            .from('job_applications')
+            .select('job_id')
+            .eq('user_id', currentSession.user.id)
+            .eq('job_table', currentTable);
+        if (error) throw error;
+        appliedJobIds = new Set(data.map(app => app.job_id));
+    } catch (error) {
+        console.error('Error fetching applied jobs:', error);
+    }
 }
 
 function setupEventListeners() {
@@ -794,6 +830,7 @@ function setupEventListeners() {
             state.experience = '';
             state.searchTerm = '';
             state.sortBy = 'newest';
+            state.applicationStatus = 'all';
             if (dom.searchInputMobile) dom.searchInputMobile.value = '';
             if (currentTable === 'Fresher Jobs') {
                 state.experience = 'Freshers';
@@ -806,11 +843,21 @@ function setupEventListeners() {
 
     if(dom.salaryFilterDesktop) dom.salaryFilterDesktop.addEventListener('change', () => updateState({ salary: dom.salaryFilterDesktop.value }));
 
-    document.querySelectorAll('.pill-options').forEach(group => {
+    document.querySelectorAll('.experience-filter-group .pill-options').forEach(group => {
         group.addEventListener('click', (e) => {
             if (e.target.classList.contains('pill-btn')) {
                 const value = e.target.dataset.value;
                 state.experience = state.experience === value ? '' : value;
+                syncAndFetch();
+            }
+        });
+    });
+
+    document.querySelectorAll('.application-status-filter-group .pill-options').forEach(group => {
+        group.addEventListener('click', (e) => {
+            if (e.target.classList.contains('pill-btn')) {
+                const value = e.target.dataset.value;
+                state.applicationStatus = value;
                 syncAndFetch();
             }
         });
@@ -823,7 +870,7 @@ function setupEventListeners() {
         if (dom.notificationPopup.style.display === 'flex') { 
             updatePermissionStatusUI(); 
             if (window.flutter_app.isReady || Notification.permission === 'granted') { 
-                if (!fcmInitStarted) initializeFCM().then(renderSubscribedTopics); 
+                if (!firebaseMessaging && !window.flutter_app.isReady) initializeFCM().then(renderSubscribedTopics); 
                 else renderSubscribedTopics(); 
             } else { 
                 renderSubscribedTopics(); 
@@ -836,7 +883,7 @@ function setupEventListeners() {
     if(dom.topicAllCheckbox) dom.topicAllCheckbox.addEventListener('change', (e) => e.target.checked ? subscribeToTopic('all') : unsubscribeFromTopic('all'));
     if(dom.subscribeBtnEl) dom.subscribeBtnEl.addEventListener('click', async () => { const location = dom.locationSelectEl.value; const jobType = dom.jobTypeSelectEl.value; if (!location || !jobType) return; const topicName = `${location}-${jobType}`; if (await subscribeToTopic(topicName)) { dom.locationSelectEl.selectedIndex = 0; dom.jobTypeSelectEl.selectedIndex = 0; dom.subscribeBtnEl.disabled = true; } });
     if(dom.locationSelectEl && dom.jobTypeSelectEl && dom.subscribeBtnEl) {
-        const updateSubBtn = () => { dom.subscribeBtnEl.disabled = !(tokenReady && dom.locationSelectEl.value && dom.jobTypeSelectEl.value); };
+        const updateSubBtn = () => { dom.subscribeBtnEl.disabled = !(dom.locationSelectEl.value && dom.jobTypeSelectEl.value); };
         dom.locationSelectEl.addEventListener('change', updateSubBtn);
         dom.jobTypeSelectEl.addEventListener('change', updateSubBtn);
     }
@@ -909,12 +956,28 @@ async function initializePage() {
     
     setActivePortalTab();
 
+    const session = await checkAuth();
+    updateHeaderAuth(session);
+
+    if (!session) {
+        let visitCount = parseInt(localStorage.getItem('portalVisitCount') || '0');
+        visitCount++;
+        localStorage.setItem('portalVisitCount', visitCount.toString());
+        if (visitCount >= 3) {
+            document.getElementById('loginPromptOverlay').style.display = 'flex';
+            const layout = document.querySelector('.job-portal-layout');
+            if (layout) layout.style.display = 'none';
+            return;
+        }
+    } else {
+        localStorage.removeItem('portalVisitCount');
+        await initializeUserFeatures();
+    }
+
     if (currentTable === 'Fresher Jobs') {
         state.experience = 'Freshers';
     }
 
-    const session = await checkAuth();
-    updateHeaderAuth(session);
     populateSalaryFilter();
     setupEventListeners();
     syncFiltersUI();
