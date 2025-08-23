@@ -166,6 +166,13 @@
                     <button class="pill-btn" data-value="Experienced">Experienced</button>
                 </div>
             </div>
+            <div class="filter-group application-status-filter-group" style="display: none;">
+                <label>Application Status</label>
+                <div class="pill-options">
+                    <button class="pill-btn active" data-value="all">All Jobs</button>
+                    <button class="pill-btn" data-value="not_applied">Not Applied</button>
+                </div>
+            </div>
         </aside>
 
         <div class="job-listings-container">
@@ -242,12 +249,29 @@
                       <button class="pill-btn" data-value="Experienced">Experienced</button>
                   </div>
               </div>
+              <div class="filter-group application-status-filter-group" style="display: none;">
+                <label>Application Status</label>
+                <div class="pill-options">
+                    <button class="pill-btn active" data-value="all">All Jobs</button>
+                    <button class="pill-btn" data-value="not_applied">Not Applied</button>
+                </div>
+            </div>
           </div>
           <div class="modal-footer">
               <button class="btn btn-secondary" id="mobileResetBtn">Reset</button>
               <button class="btn btn-primary" id="applyFiltersBtn">Show Jobs</button>
           </div>
       </div>
+  </div>
+
+  <div id="loginPromptOverlay" class="modal-overlay-container" style="display: none; z-index: 2001;">
+    <div class="modal-dialog" style="max-width: 400px;">
+      <div style="padding: 2rem; text-align: center;">
+        <h3>Login to Continue</h3>
+        <p style="margin: 1rem 0;">You've viewed our portal a few times. Please log in to continue accessing all job listings.</p>
+        <a href="/login.html" class="btn btn-primary" style="width: 100%;">Login / Sign Up</a>
+      </div>
+    </div>
   </div>
 
   <a href="https://api.whatsapp.com/send/?phone=919313148303" target="_blank" class="whatsapp-fab" aria-label="Contact us on WhatsApp">
