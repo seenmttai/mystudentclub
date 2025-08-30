@@ -748,7 +748,9 @@ async function requestTokenAndSync() {
     try { 
         const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY }); 
         if (token) { currentFcmToken = token; await syncNotificationTopics(); } 
-    } catch (err) {} 
+    } catch (err) {
+        console.log(err);
+    } 
 }
 function shouldSync() { const lastSync = localStorage.getItem('notificationSyncTimestamp'); if (!lastSync) return true; return new Date(parseInt(lastSync)).toDateString() !== new Date().toDateString(); }
 async function syncNotificationTopics() { 
