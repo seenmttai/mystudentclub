@@ -688,7 +688,7 @@ async function manageTopicSubscription(topic, action) {
 
         retries--;
         showNotifStatus(`Loading...`, 'info');
-        await new Promise(resolve => setTimeout(resolve, 10000)); // Wait for 10 seconds
+        await new Promise(resolve => setTimeout(resolve, 10000));
     }
 
     if (!currentFcmToken) {
@@ -743,31 +743,53 @@ function populateNotificationDropdowns() { if (dom.locationSelectEl) { dom.locat
 
 async function initializeFCM() {
     if (window.flutter_app.isReady) {
-        console.log("Running in Flutter app, skipping web FCM init.");
         currentFcmToken = window.flutter_app.fcmToken;
         await syncNotificationTopics();
         return;
     }
 
-    try { 
-        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG); 
-        firebaseMessaging = firebase.messaging(); 
-        firebaseMessaging.onMessage(payload => {}); 
-        if ('serviceWorker' in navigator) await navigator.serviceWorker.register('/firebase-messaging-sw.js'); 
-        if (Notification.permission === 'granted') await requestTokenAndSync(); 
-    } catch(err) {} 
+    try {
+        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+
+        if (!('serviceWorker' in navigator)) return;
+        
+        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
+        await navigator.serviceWorker.ready;
+
+        if (!navigator.serviceWorker.controller) {
+            await new Promise(resolve => {
+                navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
+            });
+        }
+
+        firebaseMessaging = firebase.messaging();
+        firebaseMessaging.onMessage(() => {});
+
+        if (Notification.permission === 'granted') {
+            await requestTokenAndSync(registration);
+        }
+    } catch (err) {
+        console.error('FCM init failed', err);
+    }
 }
 
-async function requestTokenAndSync() { 
-    if (window.flutter_app.isReady) return; 
-    if (!firebaseMessaging) return; 
-    try { 
-        const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY }); 
-        if (token) { currentFcmToken = token; await syncNotificationTopics(); } 
+async function requestTokenAndSync(registration) {
+    if (window.flutter_app.isReady || !firebaseMessaging) return;
+    try {
+        const token = await firebaseMessaging.getToken({
+            vapidKey: VAPID_KEY,
+            serviceWorkerRegistration: registration,
+        });
+        if (token) {
+            currentFcmToken = token;
+            await syncNotificationTopics();
+        }
     } catch (err) {
-        console.log(err);
-    } 
+        console.log('getToken failed', err);
+        showNotifStatus('Could not enable notifications. Please try again.', 'error');
+    }
 }
+
 function shouldSync() { const lastSync = localStorage.getItem('notificationSyncTimestamp'); if (!lastSync) return true; return new Date(parseInt(lastSync)).toDateString() !== new Date().toDateString(); }
 async function syncNotificationTopics() { 
     currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
