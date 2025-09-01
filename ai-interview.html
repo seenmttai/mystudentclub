@@ -52,6 +52,25 @@
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
         }
 
+        .subtitles-overlay {
+        position: absolute;
+        left: 50%;
+        bottom: 76px;             
+        transform: translateX(-50%);
+        background: rgba(0,0,0,.65);
+        color: #fff;
+        padding: .6rem .9rem;
+        border-radius: 10px;
+        font-size: 1rem;
+        line-height: 1.35;
+        max-width: 88%;
+        text-align: center;
+        z-index: 20;                
+        pointer-events: none;
+        white-space: pre-wrap;
+        }
+
+
         .setup-container::before {
             content: '';
             position: absolute;
@@ -1550,7 +1569,7 @@
                 if (item.type === 'text') {
                     this.speakWithHands(0, 0.5);
                     try {
-                        const preprocessedText = this.lipsync.en.preProcessText(item.content);
+                        const preprocessedText = this.lipsync.en.preProcessText(sanitizeForTTS(item.content));
                         const response = await fetch(this.opt.ttsEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: preprocessedText }) });
                         if (!response.ok) throw new Error(`TTS Error: ${response.status} ${await response.text()}`);
                         const data = await response.json();
@@ -1724,6 +1743,28 @@
         const WORKER_URL = 'https://interviewme.bhansalimanan55.workers.dev/';
         const TTS_ENDPOINT = 'https://us-central1-msc-notif.cloudfunctions.net/gcp-tts-rate-limited';
         const AVATAR_URL = 'https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb?morphTargets=ARKit,Oculus+Visemes,mouthOpen,mouthSmile,eyesClosed,eyesLookUp,eyesLookDown';
+
+        let EMOJI_CHAR, NON_TTS;
+        try {
+        EMOJI_CHAR = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u;
+        NON_TTS    = /[^\p{L}\p{N}\p{P}\p{Z}\n\r\t]/gu;
+        } catch {
+        EMOJI_CHAR = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
+        NON_TTS    = /[^A-Za-z0-9\s.,!?;:'"()[\]{}<>@#$%^&*_\-+=/\\|~`]/g;
+        }
+        function extractEmojisAndSanitize(text = "") {
+        const chars = Array.from(text);
+        const emojis = [];
+        const noEmoji = chars.map(ch => {
+            if (EMOJI_CHAR.test(ch)) { emojis.push(ch); return ""; }
+            return ch;
+        }).join("");
+        let clean = noEmoji.replace(NON_TTS, "").replace(/\s{2,}/g, " ").trim();
+        return { clean, emojis };
+        }
+        function sanitizeForTTS(s) {
+        return extractEmojisAndSanitize(s).clean;
+        }
 
         const setupScreen = document.getElementById('setup-screen');
         const loadingScreen = document.getElementById('loading-screen');
@@ -2062,7 +2103,7 @@
 
                     const ended = !!(data.meta && data.meta.ended);
                     const progress = data.meta && typeof data.meta.progress === 'number' ? data.meta.progress : undefined;
-
+                    /*
                     messages.push({ role: 'assistant', content: aiMessage });
                     addChatMessage('ai', 'Alex Johnson', aiMessage);
                     
@@ -2071,7 +2112,24 @@
                     }
                     if (avatar && isModelLoaded) {
                         avatar.speakText(aiMessage);
+                    }*/
+                    messages.push({ role: 'assistant', content: aiMessage });
+                    addChatMessage('ai', 'Alex Johnson', aiMessage);
+
+                    const { clean, emojis } = extractEmojisAndSanitize(aiMessage);
+
+                    if (avatar && isModelLoaded) {
+                    emojis.slice(0, 3).forEach((e, i) => {
+                        const known = avatar.animEmojis[e] ? e : '😊';
+                        setTimeout(() => avatar.speakEmoji(known), i * 400);
+                    });
+                    avatar.speakText(clean);
                     }
+
+                    if (areSubtitlesOn) {
+                    showSubtitles(`${timestampNow()} Alex: ${aiMessage}`);
+                    }
+
 
                     if (typeof score === 'number') {
                         scores.push(score);
