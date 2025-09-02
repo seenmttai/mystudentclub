@@ -9,7 +9,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Garamond:wght@400;700&family=Montserrat:wght@400;500;600;700;800&family=Lato:wght@300;400;700&family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Garamond:wght@400;700&family=Montserrat:wght@400;500;600;700;800&family=Lato:wght@300;400;700&family=Merriweather:wght@300;400;700&family=Calibri:wght@400;700&family=Cambria:wght@400;700&display=swap" rel="stylesheet"/>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
@@ -75,7 +75,6 @@
       overscroll-behavior: contain; 
       flex-grow: 1; 
       
-      
       scrollbar-width: thin;
       scrollbar-color: #94a3b8 transparent;
     }
@@ -94,210 +93,196 @@
     }
 
     .cv-template{
-      width:210mm;height:297mm;overflow:hidden;background:#fff;color:var(--ink);font-size:9pt;line-height:1.3;box-shadow:0 0 0 1px rgba(0,0,0,.04) inset
+      width:210mm;
+      min-height: 297mm;
+      overflow:hidden;background:#fff;color:var(--ink);font-size:9pt;line-height:1.3;box-shadow:0 0 0 1px rgba(0,0,0,.04) inset;
     }
     .cv-template ul{list-style-position:outside;margin-left:1.4em}
     .cv-template li{margin-bottom:2px}
     .cv-template p{margin-bottom:2px}
-    
-    
-    .icon-contact-container {
-      display: grid;
-      grid-template-columns: auto auto;
-      justify-content: center;
-      gap: 5px 25px;
-      margin-top: 6px;
-    }
-    .icon-contact-flex-wrap { display: flex; flex-wrap: wrap; gap: 6px 20px; }
-    .icon-contact-vertical-list { display: flex; flex-direction: column; gap: 4px; }
-
-    .icon-contact-item { display: flex; align-items: center; gap: 8px; }
-    .icon-contact-item i.fa-solid, .icon-contact-item i.fa-brands {
-      color: var(--ink);
-      font-size: 1em;
-      width: 16px;
-      text-align: center;
-    }
-    .icon-contact-item a, .icon-contact-item span {
-      color: var(--brand);
-      text-decoration: none;
-      font-weight: normal;
-    }
-    .icon-contact-item a:hover { text-decoration: underline; }
 
     
-    #exit-fullscreen-btn {
-      display: none; position: fixed; top: 1rem; right: 1.5rem; z-index: 9999;
-      background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(4px); color: #fff;
-      border: 1px solid rgba(255,255,255,0.2); width: 44px; height: 44px;
-      border-radius: 50%; font-size: 20px; cursor: pointer; transition: all .2s;
-      justify-content: center; align-items: center;
-    }
-    #exit-fullscreen-btn:hover { background: rgba(17, 24, 39, 0.9); transform: scale(1.05); }
-    body.fullscreen-mode { overflow: hidden; }
-    .fullscreen-mode .navigation-bar, .fullscreen-mode .template-header { display: none; }
-    .fullscreen-mode .cv-viewer { padding: 0; }
-    .fullscreen-mode .template-card.active {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      max-width: none; z-index: 5000; border-radius: 0; box-shadow: none;
-    }
-    .fullscreen-mode .cv-container { height: 100%; }
-    .fullscreen-mode .cv-content { --cv-scale: 1; transform: scale(var(--cv-scale)); }
+    .cv-style-black-header { padding: 25px; font-family: 'Calibri', sans-serif; font-size: 10.5pt; color: #000; }
+    .cv-style-black-header .header-main { text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-bottom: 8px; }
+    .cv-style-black-header h1 { font-size: 22pt; font-weight: bold; }
+    .cv-style-black-header .contact-info { font-size: 10pt; }
+    .cv-style-black-header .contact-info span { margin: 0 10px; }
+    .cv-style-black-header .section-header { display: flex; justify-content: space-between; align-items: center; background-color: #000; color: #fff; padding: 5px 10px; margin-top: 10px; }
+    .cv-style-black-header h2 { font-size: 11pt; font-weight: bold; text-transform: uppercase; }
+    .cv-style-black-header .date { font-size: 9pt; font-weight: bold; }
+    .cv-style-black-header table { width: 100%; border-collapse: collapse; font-size: 10pt; margin-top: 5px; }
+    .cv-style-black-header th, .cv-style-black-header td { border: 1px solid #000; padding: 4px 6px; text-align: left; }
+    .cv-style-black-header th { background-color: #d9d9d9; font-weight: bold; }
+    .cv-style-black-header .work-item, .cv-style-black-header .leadership-item { margin-top: 8px; }
+    .cv-style-black-header .work-item h3, .cv-style-black-header .leadership-item h3 { font-size: 10.5pt; font-weight: bold; }
+    .cv-style-black-header ul { padding-left: 20px; margin-top: 4px; }
+    .cv-style-black-header ul li { margin-bottom: 4px; }
+    .cv-style-black-header .courses-grid { display: grid; grid-template-columns: 180px 1fr; gap: 5px 10px; margin-top: 5px; }
+    .cv-style-black-header .course-title { font-weight: bold; }
+    .cv-style-black-header strong { font-weight: bold; }
+    .cv-style-black-header .skills-section { margin-top: 10px; }
+    .cv-style-black-header .skills-grid { display: grid; grid-template-columns: 120px 1fr; }
 
     
-     .structured-professional{padding:22px;font-family:'Garamond',serif;font-size:9.5pt}
-    .structured-professional h1{font-size:24pt;font-weight:700;letter-spacing:.3px;color:#1f2937}
-    .structured-professional .icon-contact-container { font-size: 9pt; font-family: 'Garamond', serif; }
-    .structured-professional h2{background:linear-gradient(135deg,#f3f4f6 0%,#e5e7eb 100%);color:#1f2937;padding:6px 10px;margin:10px 0 6px;font-size:10.5pt;font-weight:700;text-transform:uppercase;border-left:4px solid var(--brand);border-radius:0 4px 4px 0}
-    .structured-professional table{width:100%;border-collapse:collapse;font-size:8.5pt}
-    .structured-professional th,.structured-professional td{border:1px solid var(--border);padding:4px 6px;text-align:left;vertical-align:top}
-    .structured-professional th{background:linear-gradient(135deg,#e5e7eb 0%,#d1d5db 100%)}
-    .structured-professional .work-item{display:grid;grid-template-columns:110px 1fr;gap:8px;margin-bottom:8px;padding:6px;border-left:3px solid #e5e7eb;border-radius:4px}
-    .structured-professional .work-item-title{font-weight:700;font-size:9.5pt;padding-top:2px}
-    .structured-professional .work-item-details{border-left:2px solid #e5e7eb;padding-left:10px}
-
-    .modern-two-column{display:flex;font-family:'Montserrat',sans-serif;font-size:8.5pt}
-    .modern-two-column .sidebar{width:34%;background:linear-gradient(135deg,#111827 0%,#1f2937 100%);color:#f9fafb;padding:22px}
-    .modern-two-column .main-content{width:66%;padding:22px}
-    .modern-two-column h1{font-size:26pt;color:#111827;margin-bottom:2px;font-weight:700}
-    .modern-two-column .job-title-main{font-size:11pt;color:#4b5563;margin-bottom:10px;font-weight:500}
-    .modern-two-column .sidebar h2{color:#60a5fa;font-size:9.5pt;text-transform:uppercase;border-bottom:2px solid #4b5563;padding-bottom:4px;margin:14px 0 6px;font-weight:600}
-    .modern-two-column .sidebar .icon-contact-item { font-size: 8.5pt; }
-    .modern-two-column .sidebar .icon-contact-item i { color: #9ca3af; }
-    .modern-two-column .sidebar .icon-contact-item span, .modern-two-column .sidebar .icon-contact-item a { color: #f9fafb; }
-    .modern-two-column .main-content h2{color:#1f2937;font-size:12pt;border-bottom:2px solid #60a5fa;padding-bottom:4px;margin:10px 0 6px;font-weight:600}
-    .modern-two-column .job-item{margin-bottom:8px;padding:6px;border-radius:4px;background:#fafafa}
-    .modern-two-column .job-header{display:flex;justify-content:space-between;align-items:baseline}
-    .modern-two-column .job-title{font-size:9.5pt;font-weight:700}
-    .modern-two-column .company{color:#374151;font-weight:500}
-
-    .corporate-achiever{padding:20px;font-family:'Roboto',sans-serif;font-size:8.5pt}
-    .corporate-achiever .header-block{background:linear-gradient(135deg,#f3f4f6 0%,#e5e7eb 100%);padding:10px;border-left:5px solid var(--accent);margin-bottom:8px;border-radius:0 6px 6px 0}
-    .corporate-achiever h1{font-size:23pt;font-weight:700}
-    .corporate-achiever .contact{display:flex;justify-content:space-between;flex-wrap:wrap;margin-top:4px;font-size:8pt;gap:6px}
-    .corporate-achiever .contact .icon-contact-item { font-size: 8.5pt; }
-    .corporate-achiever h2{background:linear-gradient(135deg,#1f2937 0%,#374151 100%);color:#fff;padding:4px 10px;margin:8px -20px 6px -20px;text-transform:uppercase;font-size:9.5pt;letter-spacing:.5px;font-weight:600}
-    .corporate-achiever .section-content{padding:0 6px}
-    .corporate-achiever table{width:100%;border-collapse:collapse;font-size:8pt;margin-top:4px}
-    .corporate-achiever th,.corporate-achiever td{border:1px solid #e5e7eb;padding:3px 4px;text-align:left}
-    .corporate-achiever th{background:linear-gradient(135deg,#f3f4f6 0%,#e5e7eb 100%)}
-    .corporate-achiever .skills-grid{columns:2;gap:12px;padding-left:14px}
-    .corporate-achiever .job-item{margin-bottom:6px;padding:4px 0}
-
-    .data-driven-analyst{padding:20px;font-family:'Lato',sans-serif;font-size:8.5pt}
-    .data-driven-analyst h1{font-size:23pt;text-align:center;font-weight:700;color:#1f2937}
-    .data-driven-analyst .contact{border-bottom:2px solid #ccc;padding-bottom:6px;margin-bottom:6px}
-    .data-driven-analyst .icon-contact-container { font-family: 'Garamond', serif; font-size: 9pt; }
-    .data-driven-analyst .summary{background:linear-gradient(135deg,#fafafa 0%,#f3f4f6 100%);border:1px solid #eee;padding:6px;margin-bottom:6px;text-align:justify;border-radius:4px}
-    .data-driven-analyst h2{font-size:10.5pt;text-transform:uppercase;margin:8px 0 5px;border-bottom:2px solid #333;padding-bottom:2px;font-weight:600}
-    .data-driven-analyst .job-block{border-left:3px solid var(--brand);padding-left:8px;margin-bottom:6px;background:#fafafa;padding:6px 6px 6px 14px;border-radius:0 4px 4px 0}
-    .data-driven-analyst .job-header{display:flex;justify-content:space-between;font-weight:700}
-    .data-driven-analyst table{width:100%;font-size:8pt}
-    .data-driven-analyst th,.data-driven-analyst td{padding:3px}
-    .data-driven-analyst .skills-two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-
-    .organized-specialist{padding:20px;font-family:'Montserrat',sans-serif;font-size:8.5pt}
-    .organized-specialist .header-top{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #4f46e5;padding-bottom:6px}
-    .organized-specialist h1{font-size:23pt;font-weight:700}
-    .organized-specialist .contact{text-align:right;font-size:8pt}
-    .organized-specialist .key-skills{background:linear-gradient(135deg,#eef2ff 0%,#e0e7ff 100%);padding:6px;margin:6px 0;border-radius:6px;border:1px solid #c7d2fe}
-    .organized-specialist h2{font-size:9.5pt;background:linear-gradient(135deg,#4f46e5 0%,#6366f1 100%);color:#fff;padding:3px 8px;margin:6px 0 4px;display:inline-block;border-radius:4px;font-weight:600}
-    .organized-specialist .job-item{margin-bottom:6px;padding:4px;background:#fafafa;border-radius:4px}
-    .organized-specialist .job-title{font-weight:700;font-size:9.5pt}
-    .organized-specialist .domain{font-style:italic;color:#4f46e5;font-size:8pt}
-    .organized-specialist .grid-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-
-    .investigative-auditor{padding:20px;font-family:'Merriweather',serif;font-size:8.5pt}
-    .investigative-auditor h1{font-size:23pt;text-align:center;font-weight:700;color:#1f2937}
-    .investigative-auditor .contact{text-align:center;border-bottom:2px solid #ddd;padding-bottom:6px;margin-bottom:6px}
-    .investigative-auditor .icon-contact-container { font-family: 'Garamond', serif; font-size: 9pt; }
-    .investigative-auditor h2{font-size:10.5pt;text-transform:uppercase;margin-top:6px;border-bottom:2px solid #111;padding-bottom:3px;font-weight:600}
-    .investigative-auditor .project-title{font-weight:700;margin-top:4px}
-    .investigative-auditor ul{margin-top:3px}
-    .investigative-auditor ul ul{list-style:circle;margin-left:14px;margin-top:1px}
-    .investigative-auditor b{color:#c2410c}
-    .investigative-auditor table{width:100%;margin-top:4px}
-    .investigative-auditor th,.investigative-auditor td{border:1px solid #eee;padding:3px 4px;text-align:left;font-size:8pt}
-    .investigative-auditor th{background:linear-gradient(135deg,#fafafa 0%,#f3f4f6 100%)}
-
-    .clean-minimalist{padding:28px;font-family:'Lato',sans-serif;font-size:8.5pt}
-    .clean-minimalist h1{font-size:25pt;font-weight:300;letter-spacing:2px;color:#1f2937}
-    .clean-minimalist .contact{margin-top:3px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #eee}
-    .clean-minimalist .icon-contact-item { font-size: 8.5pt; }
-    .clean-minimalist h2{font-size:9.5pt;text-transform:uppercase;letter-spacing:1px;color:#374151;margin:10px 0 5px;font-weight:600}
-    .clean-minimalist hr{border:0;height:1px;background:#eee;margin:8px 0}
-    .clean-minimalist .job-header{display:flex;justify-content:space-between;font-weight:700}
-    .clean-minimalist .bullets-tight li{padding-left:8px;position:relative}
-    .clean-minimalist .bullets-tight li::before{content:'–';position:absolute;left:0}
-
-    .polished-finalist{display:grid;grid-template-columns:1.05fr 2fr;font-family:'Roboto',sans-serif;font-size:8.5pt}
-    .polished-finalist .left-col{padding:20px;background:linear-gradient(135deg,#f8f9fa 0%,#e9ecef 100%);border-right:1px solid #e9ecef}
-    .polished-finalist .right-col{padding:20px}
-    .polished-finalist h1{font-size:21pt;color:#212529;font-weight:700}
-    .polished-finalist .tagline{font-size:9.5pt;color:#495057;font-weight:500}
-    .polished-finalist .left-col .icon-contact-item { font-size: 8.5pt; }
-    .polished-finalist .left-col .icon-contact-item i { color: #212529; }
-    .polished-finalist .left-col .icon-contact-item span, .polished-finalist .left-col .icon-contact-item a { color: #495057; }
-    .polished-finalist h2{font-size:10.5pt;text-transform:uppercase;letter-spacing:.5px;color:#007bff;margin-top:8px;padding-bottom:3px;border-bottom:1px solid #dee2e6;font-weight:600}
-    .polished-finalist .job-item{margin-top:5px}
-    .polished-finalist .job-title{font-weight:700}
-    .polished-finalist .company{color:#6c757d}
-    .polished-finalist ul{padding-left:12px}
-
-    .dynamic-intern{padding:20px;font-family:'Lato',sans-serif;font-size:8.5pt}
-    .dynamic-intern .header-top{border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:6px}
-    .dynamic-intern h1{font-size:23pt;font-weight:700}
-    .dynamic-intern .icon-contact-container { font-family: 'Garamond', serif; font-size: 9pt; justify-content: start; gap: 5px 40px; }
-    .dynamic-intern h2{font-size:9.5pt;text-transform:uppercase;color:#333;margin:8px 0 5px;background:linear-gradient(135deg,#f0f0f0 0%,#e5e5e5 100%);padding:3px;border-left:3px solid #555;font-weight:600}
-    .dynamic-intern .job-item{margin-bottom:6px;padding:4px;background:#fafafa;border-radius:4px}
-    .dynamic-intern .role{font-weight:700}
-    .dynamic-intern .org{font-style:italic}
-    .dynamic-intern .grid-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-    .dynamic-intern li{margin-bottom:1px}
-
-    .compact-pro{display:flex;font-family:'Merriweather',serif;font-size:8.5pt}
-    .compact-pro .sidebar{width:200px;background:linear-gradient(135deg,#4a5568 0%,#2d3748 100%);color:#f7fafc;padding:20px;text-align:center}
-    .compact-pro .sidebar h1{font-size:19pt;margin-bottom:6px;font-weight:700}
-    .compact-pro .sidebar h2{color:#a0aec0;font-size:8.5pt;text-transform:uppercase;margin:12px 0 5px;border-bottom:1px solid #718096;padding-bottom:3px;font-weight:600}
-    .compact-pro .sidebar .icon-contact-item { font-size: 8.5pt; justify-content: center; }
-    .compact-pro .sidebar .icon-contact-item i { color: #a0aec0; }
-    .compact-pro .sidebar .icon-contact-item span, .compact-pro .sidebar .icon-contact-item a { color: #f7fafc; }
-    .compact-pro .main{padding:20px;flex:1}
-    .compact-pro .main h2{font-size:12pt;color:#2d3748;margin-bottom:5px;font-weight:600}
-    .compact-pro .job-item{margin-bottom:6px;padding-left:10px;border-left:2px solid #cbd5e0;background:#fafafa;padding:4px 4px 4px 14px;border-radius:0 4px 4px 0}
-    .compact-pro .job-header{display:flex;justify-content:space-between;font-weight:700}
+    .cv-style-blue-corp { padding: 20px; font-family: 'Calibri', 'Arial', sans-serif; font-size: 10pt; color: #000; }
+    .cv-style-blue-corp .header-main { background-color: #2F5496; color: white; padding: 8px; text-align: center; }
+    .cv-style-blue-corp h1 { font-size: 18pt; margin-bottom: 4px; }
+    .cv-style-blue-corp .contact-info { font-size: 9pt; }
+    .cv-style-blue-corp .contact-info span { margin: 0 8px; }
+    .cv-style-blue-corp .section-title { background-color: #2F5496; color: white; padding: 4px 8px; font-weight: bold; text-transform: uppercase; font-size: 11pt; margin-top: 10px; }
+    .cv-style-blue-corp table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 9.5pt; }
+    .cv-style-blue-corp th, .cv-style-blue-corp td { border: 1px solid #000; padding: 4px; text-align: center; }
+    .cv-style-blue-corp th { background-color: #D9E1F2; font-weight: bold; }
+    .cv-style-blue-corp td:nth-child(3) { text-align: left; }
+    .cv-style-blue-corp .work-exp-item { margin-top: 8px; border: 1px solid #BFBFBF; padding: 8px; }
+    .cv-style-blue-corp .work-title-bar { display: flex; justify-content: space-between; align-items: center; background-color: #D9E1F2; padding: 4px; margin: -8px -8px 8px -8px; border-bottom: 1px solid #BFBFBF;}
+    .cv-style-blue-corp .work-title-bar h3 { font-size: 10pt; font-weight: bold; }
+    .cv-style-blue-corp .work-title-bar span { font-size: 9pt; font-weight: bold; }
+    .cv-style-blue-corp .work-exp-item p { margin: 5px 0; font-size: 9.5pt; }
+    .cv-style-blue-corp .work-exp-item ul { padding-left: 20px; list-style-type: disc; margin-top: 5px; }
+    .cv-style-blue-corp hr { border: none; border-top: 1px solid #BFBFBF; margin: 8px 0; }
+    .cv-style-blue-corp strong { font-weight: bold; }
 
     
-    @media (max-width: 768px) {
-      body { -webkit-text-size-adjust: 100%; }
-      .cv-viewer { padding: 0; }
-      .navigation-bar { padding: .5rem; gap: .5rem; }
-      #cv-counter { font-size: .8rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .template-card { border-radius: 0; box-shadow: none; }
-      .template-header { padding: 0.75rem 1rem; }
-      .cv-container { padding: 1rem 0; background: #d1d5db; }
-      .cv-content {
-          box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-      }
-    }
+    .cv-style-blue-grid { padding: 25px; font-family: 'Arial', sans-serif; font-size: 9.5pt; color: #333; }
+    .cv-style-blue-grid .header-main { text-align: center; padding-bottom: 10px; border-bottom: 1px solid #ccc; }
+    .cv-style-blue-grid h1 { font-size: 20pt; }
+    .cv-style-blue-grid .contact-info { font-size: 9pt; margin-top: 5px; }
+    .cv-style-blue-grid .section-header { background-color: #2F5597; color: white; padding: 5px 10px; margin: 10px 0 5px 0; font-weight: bold; font-size: 11pt; text-transform: uppercase; }
+    .cv-style-blue-grid .objective-text { background-color: #F2F2F2; border-left: 3px solid #2F5597; padding: 8px; margin-bottom: 10px; }
+    .cv-style-blue-grid table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+    .cv-style-blue-grid th, .cv-style-blue-grid td { border: 1px solid #BFBFBF; padding: 5px; text-align: left; }
+    .cv-style-blue-grid th { background-color: #DDEBF7; font-weight: bold; }
+    .cv-style-blue-grid .exp-item { margin-bottom: 10px; }
+    .cv-style-blue-grid .exp-header { display: flex; justify-content: space-between; align-items: center; background-color: #F2F2F2; padding: 4px 8px; border: 1px solid #ddd; border-bottom: none; }
+    .cv-style-blue-grid .exp-header h3 { font-size: 10pt; font-weight: bold; }
+    .cv-style-blue-grid .exp-body { padding: 8px; border: 1px solid #ddd; border-top: none; }
+    .cv-style-blue-grid .exp-body ul { padding-left: 20px; }
+    .cv-style-blue-grid .skills-container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .cv-style-blue-grid .skills-container ul { padding-left: 20px; }
+    .cv-style-blue-grid .info-table { width: 100%; }
+    .cv-style-blue-grid .info-table td { border: 1px solid #BFBFBF; padding: 5px; vertical-align: top; }
+    .cv-style-blue-grid .info-table td:first-child { font-weight: bold; background-color: #F2F2F2; width: 150px; }
+    .cv-style-blue-grid .info-table ul { padding-left: 20px; margin: 0; }
+
+    
+    .cv-style-blue-grey { padding: 25px; font-family: 'Calibri', sans-serif; font-size: 10pt; }
+    .cv-style-blue-grey .header-main { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #5B9BD5; padding-bottom: 8px; }
+    .cv-style-blue-grey h1 { font-size: 24pt; font-weight: normal; color: #44546A; }
+    .cv-style-blue-grey .contact-info { text-align: right; font-size: 9.5pt; }
+    .cv-style-blue-grey .summary { margin: 10px 0; font-style: italic; }
+    .cv-style-blue-grey .section-header { background-color: #44546A; color: white; padding: 4px 8px; margin: 10px 0 5px; font-size: 11pt; }
+    .cv-style-blue-grey .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .cv-style-blue-grey h3 { font-size: 10.5pt; font-weight: bold; }
+    .cv-style-blue-grey .date { font-size: 10pt; font-weight: bold; color: #595959; }
+    .cv-style-blue-grey ul { padding-left: 20px; margin-bottom: 10px; }
+    .cv-style-blue-grey .positing-item { margin-top: 10px; display: grid; grid-template-columns: 200px 1fr; }
+    .cv-style-blue-grey .positing-item h3 { font-size: 10pt; }
+    .cv-style-blue-grey table { width: 100%; border-collapse: collapse; margin-top: 5px; font-size: 9.5pt; }
+    .cv-style-blue-grey th, .cv-style-blue-grey td { border: 1px solid #ccc; padding: 4px; text-align: left; }
+    .cv-style-blue-grey th { background-color: #F2F2F2; font-weight: bold; }
+
+    
+    .cv-style-blue-variant { padding: 25px; font-family: 'Arial', sans-serif; font-size: 9.5pt; color: #333; }
+    .cv-style-blue-variant .header-main { text-align: center; border-bottom: 1px solid #ccc; padding-bottom: 8px; }
+    .cv-style-blue-variant h1 { font-size: 22pt; }
+    .cv-style-blue-variant .contact-info { font-size: 9pt; }
+    .cv-style-blue-variant .section-header { background-color: #4472C4; color: white; padding: 5px 10px; margin-top: 12px; margin-bottom: 8px; font-weight: bold; font-size: 10.5pt; text-transform: uppercase; }
+    .cv-style-blue-variant table { width: 100%; border-collapse: collapse; }
+    .cv-style-blue-variant th, .cv-style-blue-variant td { border: 1px solid #BFBFBF; padding: 5px; text-align: center; }
+    .cv-style-blue-variant th { background-color: #D9E1F2; font-weight: bold; }
+    .cv-style-blue-variant .work-item { margin-top: 10px; }
+    .cv-style-blue-variant .work-header { display: flex; justify-content: space-between; align-items: center; background-color: #E2EFDA; padding: 6px; border: 1px solid #A9D08E; }
+    .cv-style-blue-variant .work-header h3 { font-size: 10pt; font-weight: bold; }
+    .cv-style-blue-variant .work-body { padding: 8px; }
+    .cv-style-blue-variant .work-body p { font-size: 9pt; font-style: italic; margin-bottom: 5px; }
+    .cv-style-blue-variant ul { padding-left: 18px; }
+    .cv-style-blue-variant .leadership-item { display: grid; grid-template-columns: 200px 1fr; gap: 10px; margin-top: 8px; }
+    .cv-style-blue-variant .leadership-item h3 { font-size: 10pt; font-weight: bold; }
+    .cv-style-blue-variant .hobbies-grid { display: grid; grid-template-columns: 100px 1fr; gap: 5px; margin-top: 5px; }
+    .cv-style-blue-variant .hobbies-grid div:first-child { font-weight: bold; }
+
+    
+    .cv-style-objective-top { padding: 25px; font-family: 'Calibri', sans-serif; font-size: 10pt; }
+    .cv-style-objective-top .header-main { text-align: center; border-bottom: 2px solid #2F5496; padding-bottom: 8px; margin-bottom: 10px; }
+    .cv-style-objective-top h1 { font-size: 24pt; color: #1F3864; }
+    .cv-style-objective-top .contact-info { font-size: 9.5pt; color: #595959; }
+    .cv-style-objective-top .section-header { background-color: #AEAAAA; color: white; padding: 5px 10px; margin: 12px 0 8px 0; font-weight: bold; font-size: 11pt; text-transform: uppercase; }
+    .cv-style-objective-top .objective { background-color: #F2F2F2; border: 1px solid #D9D9D9; padding: 10px; text-align: justify; margin-bottom: 10px; }
+    .cv-style-objective-top table { width: 100%; border-collapse: collapse; }
+    .cv-style-objective-top th, .cv-style-objective-top td { border: 1px solid #BFBFBF; padding: 5px; text-align: left; }
+    .cv-style-objective-top th { background-color: #DDEBF7; font-weight: bold; }
+    .cv-style-objective-top .work-item { border: 1px solid #D9D9D9; margin-bottom: 10px; }
+    .cv-style-objective-top .work-header { display: flex; justify-content: space-between; align-items: center; background-color: #F2F2F2; padding: 6px 10px; border-bottom: 1px solid #D9D9D9; }
+    .cv-style-objective-top .work-header h3 { font-size: 10.5pt; font-weight: bold; }
+    .cv-style-objective-top .work-body { padding: 10px; }
+    .cv-style-objective-top ul { padding-left: 20px; }
+    .cv-style-objective-top .strengths-grid { columns: 2; }
+
+    
+    .cv-style-objective-box { padding: 25px; font-family: 'Calibri', sans-serif; font-size: 10.5pt; }
+    .cv-style-objective-box .header-main { text-align: center; padding-bottom: 8px; }
+    .cv-style-objective-box h1 { font-size: 20pt; }
+    .cv-style-objective-box .contact-info { font-size: 10pt; }
+    .cv-style-objective-box .objective { border: 1px solid #000; padding: 8px; text-align: justify; margin: 10px 0; }
+    .cv-style-objective-box .section-header { background-color: #4472C4; color: white; padding: 4px 10px; margin: 12px 0 8px 0; font-weight: bold; font-size: 11pt; text-transform: uppercase; }
+    .cv-style-objective-box table { width: 100%; border-collapse: collapse; }
+    .cv-style-objective-box th, .cv-style-objective-box td { border: 1px solid #000; padding: 5px; text-align: left; }
+    .cv-style-objective-box th { font-weight: bold; }
+    .cv-style-objective-box .item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+    .cv-style-objective-box h3 { font-size: 10.5pt; font-weight: bold; }
+    .cv-style-objective-box .date { font-size: 10pt; }
+    .cv-style-objective-box ul { padding-left: 20px; }
     
     
-    @media print{
-      body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-      .cv-template{width:210mm;height:297mm;overflow:hidden}
-      .cv-content{transform:none !important}
-      .template-card,.navigation-bar,.main-header, .template-header, .action-btn {display: none !important;}
-      .cv-viewer, .cv-container { padding: 0 !important; }
-      .template-card.active { display: block !important; box-shadow: none; }
-      body, html { height: auto; overflow: visible; }
-    }
+    .cv-style-modern-complex { padding: 25px; font-family: 'Calibri', 'Segoe UI', sans-serif; font-size: 9.5pt; }
+    .cv-style-modern-complex .header-main { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #ccc; padding-bottom: 10px; }
+    .cv-style-modern-complex .header-main h1 { font-size: 20pt; font-weight: normal; }
+    .cv-style-modern-complex .header-contact { text-align: right; }
+    .cv-style-modern-complex .header-contact div { display: flex; justify-content: flex-end; align-items: center; gap: 5px; margin-bottom: 2px; }
+    .cv-style-modern-complex .header-main i { width: 15px; text-align: center; }
+    .cv-style-modern-complex .tagline { font-size: 12pt; }
+    .cv-style-modern-complex .section-header { background-color: #E7E6E6; padding: 4px 8px; margin: 12px 0 8px 0; font-weight: bold; font-size: 10pt; text-transform: uppercase; }
+    .cv-style-modern-complex table { width: 100%; border-collapse: collapse; }
+    .cv-style-modern-complex th, .cv-style-modern-complex td { border: 1px solid #BFBFBF; padding: 4px; text-align: center; }
+    .cv-style-modern-complex th { font-weight: bold; }
+    .cv-style-modern-complex .work-item { margin-bottom: 10px; }
+    .cv-style-modern-complex .work-header { display: flex; justify-content: space-between; align-items: center; }
+    .cv-style-modern-complex .work-header h3 { font-size: 10pt; font-weight: bold; }
+    .cv-style-modern-complex .work-header span { font-size: 9pt; font-weight: bold; }
+    .cv-style-modern-complex .work-body h4 { font-style: italic; margin: 4px 0; }
+    .cv-style-modern-complex .work-body ul { padding-left: 18px; }
+    .cv-style-modern-complex .work-body li::marker { content: '■ '; color: #595959; font-size: 0.8em; }
+    .cv-style-modern-complex .extra-grid { display: grid; grid-template-columns: 150px 1fr; margin-top: 8px; gap: 8px; }
+    .cv-style-modern-complex .extra-grid strong { font-size: 9.5pt; }
+
+    
+    .cv-style-sps { padding: 25px; font-family: 'Calibri', sans-serif; font-size: 10pt; }
+    .cv-style-sps .header-main { text-align: center; }
+    .cv-style-sps h1 { font-size: 18pt; }
+    .cv-style-sps .contact-info { font-size: 9.5pt; margin-bottom: 10px; }
+    .cv-style-sps .objective { border: 1px solid #000; padding: 8px; margin-bottom: 10px; background-color: #F2F2F2; }
+    .cv-style-sps .objective h2 { font-size: 11pt; font-weight: bold; }
+    .cv-style-sps .objective p { text-align: justify; }
+    .cv-style-sps .section-header { border-bottom: 1.5px solid #000; padding-bottom: 2px; margin: 12px 0 8px 0; font-weight: bold; font-size: 11pt; text-transform: uppercase; }
+    .cv-style-sps table { width: 100%; border-collapse: collapse; }
+    .cv-style-sps th, .cv-style-sps td { border: 1px solid #000; padding: 4px; text-align: left; }
+    .cv-style-sps th { background-color: #D9D9D9; font-weight: bold; }
+    .cv-style-sps .work-header { display: flex; justify-content: space-between; align-items: center; background-color: #D9D9D9; padding: 4px 8px; border: 1px solid #000; }
+    .cv-style-sps .work-header h3 { font-size: 10.5pt; font-weight: bold; }
+    .cv-style-sps .work-body { padding: 8px; display: grid; grid-template-columns: 120px 1fr; gap: 10px; }
+    .cv-style-sps .work-body strong { font-weight: bold; }
+    .cv-style-sps .work-body ul { padding-left: 18px; margin: 0; }
+    .cv-style-sps .extra-section ul { padding-left: 20px; }
+    .cv-style-sps .skills-grid { display: grid; grid-template-columns: 100px 1fr; gap: 5px; }
+
   </style>
 </head>
 <body>
 
   <nav class="navigation-bar">
     <button id="prev-btn" class="nav-btn">&larr; Previous</button>
-    <div id="cv-counter">Template 1 of 10</div>
+    <div id="cv-counter">Template 1 of 9</div>
     <button id="next-btn" class="nav-btn">Next &rarr;</button>
   </nav>
 
@@ -306,7 +291,7 @@
     
     <div class="template-card active">
       <div class="template-header">
-        <h3>1.</h3>
+        <h3>1. Professional Black Header</h3>
         <div class="header-actions">
           <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
           <button class="download-btn" data-target="cv-template-1">Download PDF</button>
@@ -314,993 +299,993 @@
       </div>
       <div class="cv-container">
         <div class="cv-content">
-          <div id="cv-template-1" class="cv-template structured-professional">
-            <div class="header">
-              <h1>Aarohi Deshpande</h1>
-              <div class="icon-contact-container">
-                <div class="icon-contact-item">
-                  <i class="fa-solid fa-phone"></i><a href="tel:+919876543210">+91 98765 43210</a>
-                </div>
-                <div class="icon-contact-item">
-                  <i class="fa-solid fa-envelope"></i><a href="mailto:aarohi.d@email.com">aarohi.d@email.com</a>
-                </div>
+          <div id="cv-template-1" class="cv-template cv-style-black-header">
+            <div class="header-main">
+              <h1>Padam Bhansali</h1>
+              <div class="contact-info">
+                <span>+91 7228881182</span> |
+                <span>capadambhansali@gmail.com</span> |
+                <span>Linkedin: Padam Bhansali</span>
               </div>
             </div>
 
-            <h2>Professional & Educational Qualifications</h2>
+            <div class="section-header">
+              <h2>ACADEMIC QUALIFICATIONS</h2>
+            </div>
             <table>
-              <thead><tr><th>Examination</th><th>Year</th><th>Institution</th><th>Percentage</th><th>Remarks</th></tr></thead>
+              <thead>
+                <tr><th>Year</th><th>Degree/ Examination</th><th>Board/ Institute</th><th>%/ CGPA</th><th>Remarks</th></tr>
+              </thead>
               <tbody>
-                <tr><td>CA Final (Both Groups)</td><td>May 2025</td><td>ICAI</td><td>Awaited</td><td>-</td></tr>
-                <tr><td>CA Intermediate</td><td>Nov 2022</td><td>ICAI</td><td>61.5%</td><td>Exemption in Audit & Assurance</td></tr>
-                <tr><td>CA Foundation</td><td>Dec 2020</td><td>ICAI</td><td>68.75%</td><td>First Attempt</td></tr>
-                <tr><td>B. Com</td><td>Mar 2022</td><td>BMCC</td><td>78.2%</td><td>Distinction</td></tr>
-                <tr><td>Class XII (HSC)</td><td>Mar 2019</td><td>Fergusson College</td><td>88.4%</td><td>-</td></tr>
+                <tr><td>Nov 2023</td><td>CA Intermediate</td><td>ICAI</td><td>222/400</td><td>Exemption in FM-EFF</td></tr>
+                <tr><td>May 2023</td><td>CA Intermediate</td><td>ICAI</td><td>200/400</td><td></td></tr>
+                <tr><td>Dec 2020</td><td>CA Foundation</td><td>ICAI</td><td>265/400</td><td>Cleared in 1st Attempt</td></tr>
+                <tr><td>2020-2023</td><td>B. Com (Hons.)</td><td>St. Xavier's University, Kolkata</td><td>8.52 CGPA</td><td>First Division</td></tr>
+                <tr><td>2020</td><td>Class XII, CBSE</td><td>Rotary Public School, Bargarh</td><td>96.5%</td><td>School Topper</td></tr>
+                <tr><td>2018</td><td>Class X, CBSE</td><td>Rotary Public School, Bargarh</td><td>94.75%</td><td>Among the Top 5</td></tr>
               </tbody>
             </table>
 
-            <h2>Work Experience (Articleship)</h2>
+            <div class="section-header">
+              <h2>WORK EXPERIENCE</h2>
+              <span class="date"></span>
+            </div>
             <div class="work-item">
-              <div class="work-item-title">Article Assistant<br>H Agarwal & Associates<br>(Aug'22 - Present)</div>
-              <div class="work-item-details">
-                <p><strong>Accounting & MIS</strong></p>
-                <ul>
-                  <li>Managed end-to-end accounting in Tally & SAP for 5+ clients (400+ entries/month).</li>
-                  <li>Bank recs & MIS dashboards; reduced month-end close by ~15%.</li>
-                  <li>Filed GST/TDS for 20+ clients with 100% on-time compliance.</li>
-                </ul>
-                <p><strong>Process/Controls</strong></p>
-                <ul>
-                  <li>Standardized invoice-to-pay checklist; cut vendor queries by 30%.</li>
-                  <li>Built 3 Excel templates (aging, variance, collection) used by partners.</li>
-                </ul>
+              <div class="section-header" style="background: none; color: #000; padding: 0; margin-top: 5px;">
+                <h3>Article Trainee – Risk Advisory || BDO India LLP, Bengaluru</h3>
+                <span class="date"><strong>March 24 – Present</strong></span>
               </div>
+              <ul>
+                <li>Independently handled the concurrent audit of a major <strong>hospitality sector</strong> client, covering <strong>10+ critical areas</strong> such as HR Payroll, Procurement, Room revenue, Food & Beverages, Banquets, and other revenue.</li>
+                <li>Identified discrepancies in <strong>GST and TDS compliance</strong> and recommended actionable solutions to enhance regulatory adherence.</li>
+                <li>Prepared comprehensive <strong>concurrent audit reports</strong>, highlighting key findings and recommending areas for improvement.</li>
+                <li>Worked closely with the client's <strong>finance and operational teams</strong> to ensure the seamless implementation of recommended changes, enhancing operational efficiency.</li>
+                <li>Automated the cleaning of <strong>night audit reports</strong> by collaborating with BDO's <strong>Data Analytics</strong> team, <strong>reducing audit time by 20%</strong>.</li>
+              </ul>
             </div>
-
             <div class="work-item">
-              <div class="work-item-title">Article Assistant<br>J Agarwal & Associates<br>(Oct'21 - Aug'22)</div>
-              <div class="work-item-details">
-                <p><strong>Auditing & Assurance</strong></p>
+                <div class="section-header" style="background: none; color: #000; padding: 0; margin-top: 5px;">
+                  <h3>Article Trainee || S L A & Associates, Balangir, Odisha</h3>
+                  <span class="date"><strong>August 23 – February 24</strong></span>
+                </div>
                 <ul>
-                  <li>Supported statutory audits (turnover up to ₹5,000 Cr) under Ind AS.</li>
-                  <li>Special audit of state construction PSU (₹2,500 Cr+)—flagged key exceptions.</li>
-                  <li>Internal audits for DISCOMs; identified 10+ control gaps.</li>
-                  <li>Concurrent audits across 15+ PSB branches.</li>
-                </ul>
-                <p><strong>Taxation & Compliance</strong></p>
-                <ul>
-                  <li>Filed 50+ TARs (3CA/3CD) & ITRs; automated 26AS/GL tie-outs.</li>
-                  <li>Drafted replies to IT/GST notices—100% resolved within SLA.</li>
+                  <li>Assisted in the execution of audit of Government-aided <strong>Schools & Colleges</strong> including vouching verification, and report filing.</li>
+                  <li>Handled the <strong>Concurrent Audit</strong> of a <strong>Nationalized Bank</strong> & 5 branches of a <strong>cooperative bank</strong>, and handled areas like Cash verification, Jewel Loan verification and KYC policy as well.</li>
+                  <li>Conducted <strong>Stock Audit</strong> for a prominent distributor of <strong>Marico products</strong>, focusing on verifying expired products and assessing inventory management practices.</li>
                 </ul>
               </div>
+
+            <div class="section-header">
+                <h2>POSITIONS OF LEADERSHIP</h2>
+            </div>
+            <div class="leadership-item">
+                <div class="section-header" style="background: none; color: #000; padding: 0; margin-top: 5px;">
+                    <h3>Event Head || Economics Exhibition, Rotary Public School</h3>
+                    <span class="date"><strong>2020</strong></span>
+                </div>
+                <ul>
+                    <li>Organized an Economics exhibition with over 80+ participants, divided into 20+ different teams, ensuring smooth coordination of activities, and managing team assignments.</li>
+                    <li>Headed 7+ teams, each working on diverse projects & presentation ideas, providing guidance and support throughout the preparation phase.</li>
+                </ul>
+            </div>
+            <div class="leadership-item">
+                <div class="section-header" style="background: none; color: #000; padding: 0; margin-top: 5px;">
+                    <h3>Captain || Literary Club, Rotary Public School</h3>
+                    <span class="date"><strong>2019</strong></span>
+                </div>
+                <ul>
+                    <li>Fostered a collaborative environment among club members to encourage debates and writing competitions.</li>
+                    <li>Coordinated with teachers and external speakers for workshops and sessions to enhance students' writing and public speaking abilities.</li>
+                </ul>
             </div>
 
-            <h2>Extra Curricular, Skills & Achievements</h2>
-            <table>
-              <tbody>
-                <tr><td style="font-weight:700;width:25%">Position</td><td><strong>Business Development Specialist, Hyperjump Marketing Co. (Dec'20–Jun'21):</strong> Negotiated B2B deals; created proposals & simple FMs.</td></tr>
-                <tr><td style="font-weight:700">Technical</td><td>MS Office, Google Workspace, Power BI, Tally ERP, SAP (basic).</td></tr>
-                <tr><td style="font-weight:700">Awards</td><td>NISM RA cert; Power BI/Excel certificates; GD winner (MCS); Articles in ICAI newsletters.</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    
-    <div class="template-card">
-      <div class="template-header">
-        <h3>2.</h3>
-        <div class="header-actions">
-          <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
-          <button class="download-btn" data-target="cv-template-2">Download PDF</button>
-        </div>
-      </div>
-      <div class="cv-container"><div class="cv-content">
-        <div id="cv-template-2" class="cv-template modern-two-column">
-          <div class="sidebar">
-            <h2>Contact</h2>
-            <div class="icon-contact-vertical-list">
-              <div class="icon-contact-item"><i class="fa-solid fa-phone"></i><span>+91 91401 02428</span></div>
-              <div class="icon-contact-item"><i class="fa-solid fa-envelope"></i><span>siddharth.awasthi@email.com</span></div>
-              <div class="icon-contact-item"><i class="fa-brands fa-linkedin"></i><span>linkedin.com/in/siddharthca</span></div>
-              <div class="icon-contact-item"><i class="fa-solid fa-location-dot"></i><span>Uttar Pradesh, India</span></div>
+            <div class="section-header">
+                <h2>COURSES & CERTIFICATIONS</h2>
             </div>
-            <h2>Technical Skills</h2>
-            <ul style="list-style: none; padding: 0;">
-              <li><strong>ERP:</strong> Tally Prime, SAP FICO (Basic), Zoho Books</li>
-              <li><strong>Office:</strong> Advanced Excel (Pivots, Power Query), PPT, Word</li>
-              <li><strong>Tax:</strong> ClearTax, Winman</li>
-            </ul>
-            <h2>IT Training</h2>
-            <ul style="list-style: none; padding: 0;"><li>ICAI ITT & Adv. ITT</li><li>Intro to Excel (Coursera)</li></ul>
-            <h2>Soft Skills</h2>
-            <ul style="list-style: none; padding: 0;"><li>Teamwork</li><li>Problem Solving</li><li>Communication</li><li>Adaptable</li></ul>
-            <h2>Languages</h2>
-            <ul style="list-style: none; padding: 0;"><li>English</li><li>Hindi</li></ul>
-          </div>
-          <div class="main-content">
-            <h1>Siddharth Awasthi</h1>
-            <p class="job-title-main">Chartered Accountant Finalist</p>
-
-            <h2>Summary</h2>
-            <p>Meticulous CA Finalist seeking industrial training. Strong across accounting, taxation & audits; keen on analytics-driven decision support.</p>
-
-            <h2>Professional Experience (Articleship)</h2>
-            <div class="job-item">
-              <div class="job-header"><span class="job-title">Articled Assistant</span><span class="date">Nov 2021 - Present</span></div>
-              <div class="company">R K S A & Associates, New Delhi</div>
-              <p><strong>Statutory Audit</strong></p>
-              <ul>
-                <li>Planned & executed audits for private cos/LLPs in retail & manufacturing.</li>
-                <li>Payroll checks incl. bonus, PF/ESI returns; FA/LIAB ledgers scrutiny.</li>
-                <li>Designed sampling sheets; reduced rework through standardized workpapers.</li>
-              </ul>
-              <p><strong>Concurrent Audit – Bank of Baroda</strong></p>
-              <ul>
-                <li>Verified daily transactions; reviewed loan documentation & NPA tagging.</li>
-                <li>KYC/AML checks; monitored high-value transactions & red flags.</li>
-              </ul>
-              <p><strong>GST & Income Tax</strong></p>
-              <ul>
-                <li>GSTR-1/3B/9/9C filings; 1–2 day TAT with 2B reconciliation.</li>
-                <li>15CA/CB certifications; ITR, TDS & TCS returns for diverse profiles.</li>
-              </ul>
+            <div class="courses-grid">
+                <div class="course-title">Excel for Beginners, CA Monk</div>
+                <div>Learned the basics of MS Excel, including Power Query, V-lookup, Pivot Table, etc.</div>
+                <div class="course-title">Financial Modeling, CA Monk</div>
+                <div>Developed a strong foundation in financial modeling, including building financial projections, and analyzing financial statements.</div>
+                <div class="course-title">Power BI Course, SkillCourse</div>
+                <div>Developed proficiency in data visualization, dashboard creation, and deriving actionable insights using Power BI.</div>
+                <div class="course-title">Finance Masterclass, CA Monk</div>
+                <div>Learned essential finance skills, including MIS Reporting, drafting financial statements, ratio analysis, and insights on Ind AS 115 & Ind AS 116.</div>
             </div>
 
-            <h2>Education</h2>
-            <div class="job-item">
-              <p><strong>CA Final</strong>, ICAI (Attempt: May 2025)</p>
-              <p><strong>CA Intermediate</strong>, ICAI (Nov 2021)</p>
-              <p><strong>CA Foundation</strong>, ICAI (Nov 2019) – First Attempt</p>
-              <p><strong>B.Com</strong>, PPN College, Kanpur (Jan 2022)</p>
-            </div>
-
-            <h2>Achievements</h2>
-            <ul><li>Represented Kanpur at ICAI regional debates; won branch-level round.</li></ul>
-          </div>
-        </div>
-      </div></div>
-    </div>
-
-    
-    <div class="template-card">
-      <div class="template-header">
-        <h3>3.</h3>
-        <div class="header-actions">
-          <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
-          <button class="download-btn" data-target="cv-template-3">Download PDF</button>
-        </div>
-      </div>
-      <div class="cv-container"><div class="cv-content">
-        <div id="cv-template-3" class="cv-template corporate-achiever">
-          <div class="header-block">
-            <h1>Karan Mehta</h1>
-            <div class="contact">
-              <div class="icon-contact-item"><i class="fa-solid fa-envelope"></i><a href="mailto:karan.mehta@email.com">karan.mehta@email.com</a></div>
-              <div class="icon-contact-item"><i class="fa-solid fa-phone"></i><a href="tel:+918421337217">+91 84213 37217</a></div>
-              <div class="icon-contact-item"><i class="fa-brands fa-linkedin"></i><a href="https://linkedin.com/in/karanmehtaca" target="_blank">linkedin.com/in/karanmehtaca</a></div>
-              <div class="icon-contact-item"><i class="fa-solid fa-location-dot"></i><span>Pune, Maharashtra</span></div>
-            </div>
-          </div>
-
-          <div class="section-content"><strong>Professional Summary:</strong> Results-oriented CA Finalist with 3.5 yrs of experience in statutory audits, accounting & compliance for 80+ clients. Filed 500+ GST, 300+ TDS, 200+ ITRs & 150+ ROC filings with 99.2% accuracy. Built Excel automations cutting reporting time by 35% and designed process SOPs adopted firm-wide.</div>
-
-          <h2>Work Experience</h2>
-          <div class="section-content">
-            <div class="job-item">
-              <p><span class="job-title">Senior Article Assistant | Ramprakash & Associates, Pune</span> <span class="date">(Sep 2021 - Present)</span></p>
-              <ul>
-                <li><strong>Statutory Audits:</strong> Led 25+ statutory audits for unlisted entities (turnover ₹50-800 Cr) across Ind AS and old GAAP. Supervised junior team of 3.</li>
-                <li><strong>Specialized Audits:</strong> Tax audits u/s 44AB for 15+ entities; prepared 3CB/3CD reports. Internal audits for 8 manufacturing units.</li>
-                <li><strong>GST & Indirect Tax:</strong> Monthly GSTR-1/3B filings for 40+ clients; quarterly GSTR-1/3B reconciliations. Assisted in GST audit defense for 3 cases worth ₹12+ Cr disputed ITC.</li>
-                <li><strong>Income Tax & TDS:</strong> Filed 200+ ITRs across all categories; handled complex cases (capital gains, foreign income). TDS/TCS return filing for 50+ deductors.</li>
-                <li><strong>Corporate Compliance:</strong> ROC filings (MGT-7, AOC-4, DIR-3 KYC, ADT-1); MCA event-based compliances.</li>
-                <li><strong>Financial Reporting:</strong> Prepared financial statements with detailed notes to accounts under Ind AS. Improved month-end closing from 15 to 8 days.</li>
-                <li><strong>Process Innovation:</strong> Developed Excel VBA macros for aging analysis, GST 2B/3B reconciliation. Created standardized audit programs reducing prep time by 40%.</li>
-              </ul>
-            </div>
-            <div class="job-item">
-              <p><span class="job-title">Junior Article Assistant | KMG & Associates, Mumbai</span> <span class="date">(Jan 2021 - Aug 2021)</span></p>
-              <ul>
-                <li>Supported statutory audits for 10+ SME clients; performed substantive testing. Exposure to bank audits and cooperative society audits.</li>
-                <li>Assisted in preparation of management representation letters. Coordinated with client teams for PBC collection.</li>
-              </ul>
-            </div>
-          </div>
-
-          <h2>Key Projects & Achievements</h2>
-          <div class="section-content">
-            <ul>
-              <li><strong>Digital Audit Transformation:</strong> Led IDEA software implementation for data analytics; designed automated exception reports, improving audit efficiency by 30%.</li>
-              <li><strong>Revenue Assurance:</strong> Conducted revenue audit for ₹400 Cr logistics co; identified ₹8 Cr unrecorded revenue via cut-off testing.</li>
-              <li><strong>GST Optimization:</strong> Designed ITC tracking system; recovered ₹45 lakh unmatched ITC for a manufacturing client.</li>
-              <li><strong>Audit Documentation:</strong> Created standardized workpaper templates and checklists, reducing review time by 25%.</li>
-              <li><strong>Tax Notice Resolution:</strong> Successfully defended 12 income tax/GST notices aggregating ₹2.8 Cr, achieving 85% reduction in final demand.</li>
-              <li><strong>Training & Mentorship:</strong> Trained 15+ junior articles/interns on audit procedures, taxation, and software.</li>
-            </ul>
-          </div>
-
-          <h2>Educational Qualification</h2>
-          <div class="section-content">
-            <table>
-              <thead><tr><th>Course</th><th>Year</th><th>Institution</th><th>Score</th><th>Rank/Achievement</th></tr></thead>
-              <tbody>
-                <tr><td>CA Final</td><td>2025</td><td>ICAI</td><td>Appearing May</td><td>All 8 papers in single attempt</td></tr>
-                <tr><td>CA Intermediate</td><td>2021</td><td>ICAI</td><td>57.20%</td><td>Exemption in Law & Audit</td></tr>
-                <tr><td>CA Foundation</td><td>2019</td><td>ICAI</td><td>63%</td><td>First Attempt, AIR 2847</td></tr>
-                <tr><td>B.Com (Hons)</td><td>2021</td><td>Pune University</td><td>78.5%</td><td>Distinction, Topper in Cost Accounting</td></tr>
-                <tr><td>Class XII (Commerce)</td><td>2019</td><td>DRK College</td><td>85%</td><td>School Rank 3, Topper Accountancy</td></tr>
-              </tbody>
-            </table>
-          </div>
-
-          <h2>Technical Proficiency & Tools</h2>
-          <div class="section-content">
-            <ul class="skills-grid">
-              <li><strong>Advanced Excel:</strong> Pivots, Power Query, VBA Macros, Complex Formulas</li>
-              <li><strong>ERP Systems:</strong> Tally Prime (Expert), SAP FICO (Intermediate), Zoho, QuickBooks</li>
-              <li><strong>Audit Software:</strong> IDEA Data Analysis, ACL Analytics, TeamMate</li>
-              <li><strong>Tax Software:</strong> ClearTax, TaxCloud, TRACES, MCA-21, GST Portal</li>
-              <li><strong>Financial Modeling:</strong> DCF Models, Ratio Analysis, Sensitivity Analysis</li>
-              <li><strong>Database & Analytics:</strong> SQL (Basic), Power BI (Intermediate), Tableau (Basic)</li>
-              <li><strong>Documentation:</strong> Microsoft Office Suite (Expert), Google Workspace</li>
-              <li><strong>Programming:</strong> VBA (Advanced), Python (Basic)</li>
-              <li><strong>Project Management:</strong> MS Project, Trello, Asana</li>
-            </ul>
-          </div>
-
-          <h2>Professional Development & Certifications</h2>
-          <div class="section-content">
-            <ul class="skills-grid">
-              <li><strong>NISM Certifications:</strong> Research Analyst, Currency, Equity Derivatives</li>
-              <li><strong>Financial Modeling:</strong> Wharton Online, CFA Investment Foundations</li>
-              <li><strong>Data Analytics:</strong> Google Data Analytics, Microsoft Power BI Certification</li>
-              <li><strong>Audit & Risk:</strong> ISCA Risk Management, IIA Internal Auditing</li>
-              <li><strong>Technology:</strong> Microsoft Excel Expert, Tally Certified, SAP FICO Fundamentals</li>
-              <li><strong>Leadership:</strong> Dale Carnegie Training, Toastmasters CC</li>
-              <li><strong>Industry Knowledge:</strong> IFRS Certificate, Ind AS Workshop, GST Practitioner</li>
-              <li><strong>Language:</strong> IELTS Band 8, Business English Certificate</li>
-              <li><strong>Soft Skills:</strong> Six Sigma Yellow Belt, Design Thinking</li>
-              <li><strong>Memberships:</strong> ICAI Student Member, IIA Student, CFA Institute Affiliate</li>
-            </ul>
-          </div>
-        </div>
-      </div></div>
-    </div>
-
-    
-    <div class="template-card">
-      <div class="template-header">
-        <h3>4.</h3>
-        <div class="header-actions">
-          <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
-          <button class="download-btn" data-target="cv-template-4">Download PDF</button>
-        </div>
-      </div>
-      <div class="cv-container"><div class="cv-content">
-        <div id="cv-template-4" class="cv-template data-driven-analyst">
-          <h1>Ravi Shah</h1>
-          <div class="contact">
-            <div class="icon-contact-container">
-                <div class="icon-contact-item"><i class="fa-solid fa-phone"></i><a href="tel:+918767731678">+91 87677 31678</a></div>
-                <div class="icon-contact-item"><i class="fa-solid fa-envelope"></i><a href="mailto:ravi.shah.ca@email.com">ravi.shah.ca@email.com</a></div>
-                <div class="icon-contact-item"><i class="fa-brands fa-linkedin"></i><a href="https://linkedin.com/in/ravishah-ca" target="_blank">linkedin.com/in/ravishah-ca</a></div>
-                <div class="icon-contact-item"><i class="fa-solid fa-location-dot"></i><span>Mumbai, Maharashtra</span></div>
-            </div>
-          </div>
-          <div class="summary">Analytically-minded CA Finalist with extensive experience in Internal/Statutory Audits, Merchant Banking support, and Financial Due Diligence. Specialized in IPO readiness, DRHP preparation, data analytics, and process optimization. Proficient in advanced Excel, Power BI, and automated reconciliation. Supported 8 IPO processes, conducted due diligence for ₹2,500+ Cr transactions, and implemented data-driven audit methodologies reducing testing time by 45%.</div>
-
-          <h2>Professional Qualifications & Education</h2>
-          <table>
-            <tbody>
-              <tr><th>Qualification</th><th>Year</th><th>Score</th><th>Institution</th><th>Achievements</th></tr>
-              <tr><td>CA Final</td><td>2025</td><td>Appearing May</td><td>ICAI</td><td>SFM & Analytics Focus</td></tr>
-              <tr><td>CA Intermediate (Group 2)</td><td>May 2022</td><td>59.00%</td><td>ICAI</td><td>FM & Economics Exemption</td></tr>
-              <tr><td>CA Intermediate (Group 1)</td><td>May 2021</td><td>50.00%</td><td>ICAI</td><td>First Attempt</td></tr>
-              <tr><td>B.Com (Banking & Finance)</td><td>2022</td><td>72.29%</td><td>H.R. College</td><td>Distinction, Finance Specialization</td></tr>
-              <tr><td>Class XII (Commerce)</td><td>2019</td><td>88.2%</td><td>Jai Hind College</td><td>Economics Topper</td></tr>
-            </tbody>
-          </table>
-
-          <h2>Professional Experience</h2>
-          <div class="job-block">
-            <div class="job-header"><span>Senior Analyst | ADV & Associates, Andheri</span><span>Nov 2021 - Present</span></div>
-            <p><strong>Domain Focus:</strong> Investment Banking, Internal Audit, Statutory Audit, Financial Due Diligence</p>
-            <ul>
-              <li><strong>IPO & Capital Markets:</strong> Supported 8 IPOs; led financial data for DRHP across manufacturing, tech, healthcare. Prepared projections, peer analysis for companies up to ₹5,000 Cr.</li>
-              <li><strong>Due Diligence Leadership:</strong> Led FDD for 12 M&A transactions (₹2,500+ Cr deal value). Identified deal-breaker issues saving clients ₹180+ Cr.</li>
-              <li><strong>Internal Audit Excellence:</strong> Designed & executed risk-based IA for 15+ organizations. Developed process mapping, control matrices.</li>
-              <li><strong>Advanced Analytics:</strong> Built automated data analytics framework (Power BI, Python) for continuous monitoring. Developed exception reporting algorithms (94% accuracy), reducing manual testing by 60%.</li>
-              <li><strong>Regulatory Compliance:</strong> Managed SEBI, RBI, FEMA compliance for 25+ clients. Defended 5 regulatory inspections (zero material findings).</li>
-              <li><strong>Valuation & Modeling:</strong> Prepared valuation models (DCF, comparable company analysis). Built sensitivity/scenario models for strategic decisions.</li>
-              <li><strong>Statutory Audit Innovation:</strong> Revolutionized audit using data analytics and continuous auditing. Designed automated journal entry testing.</li>
-              <li><strong>Client Relationship Management:</strong> Managed C-suite, bankers, regulators. Presented complex analyses to board/investors.</li>
-              <li><strong>Team Leadership:</strong> Supervised 8+ junior professionals; trained on financial modeling, audit, regulatory requirements.</li>
-            </ul>
-          </div>
-
-          <div class="job-block">
-            <div class="job-header"><span>Audit Associate | Ambavat Jain & Associates LLP</span><span>Aug 2021 - Nov 2021</span></div>
-            <p><strong>Foundation Building:</strong> Core Accounting, Tax Compliance, Basic Audit Procedures</p>
-            <ul>
-              <li><strong>Accounting Systems:</strong> Managed books in Tally Prime for 25+ SME clients. Streamlined month-end closing, reducing time from 5 to 2 days.</li>
-              <li><strong>Tax Compliance Mastery:</strong> Filed 150+ GSTR-1/3B with 100% on-time compliance; performed GST reconciliations. Filed 80+ TDS returns with automated 26AS matching.</li>
-              <li><strong>Audit Support:</strong> Assisted in statutory audits for 10+ clients; performed substantive testing. Experience in audit sampling, materiality assessment.</li>
-            </ul>
-          </div>
-
-          <div class="job-block">
-            <div class="job-header"><span>Research Intern | Motilal Oswal Financial Services</span><span>Jan 2021 - Jul 2021</span></div>
-            <p><strong>Capital Markets Exposure:</strong> Equity Research, Financial Modeling, Investment Analysis</p>
-            <ul>
-              <li><strong>Equity Research:</strong> Analyzed 20+ listed companies (FMCG, Tech, Banking); prepared research reports with buy/sell/hold. Developed financial models.</li>
-              <li><strong>Market Analysis:</strong> Tracked daily market movements, sector rotation, macroeconomic indicators. Built automated screeners.</li>
-            </ul>
-          </div>
-
-          <h2>Technical Expertise & Software Proficiency</h2>
-          <div class="skills-two">
-            <div>
-              <ul>
-                <li><strong>Advanced Analytics:</strong> Power BI (Expert), Tableau, Python (Pandas), SQL</li>
-                <li><strong>Financial Modeling:</strong> Excel VBA (Expert), Monte Carlo Simulations, DCF</li>
-                <li><strong>ERP & Accounting:</strong> Tally Prime (Expert), SAP FICO (Intermediate), Oracle, QuickBooks</li>
-                <li><strong>Audit Software:</strong> IDEA (Certified), ACL Analytics, TeamMate</li>
-                <li><strong>Tax Technology:</strong> ClearTax, TaxCloud, TRACES, GST Portal APIs</li>
-                <li><strong>Database Management:</strong> Microsoft Access, MySQL (Basic)</li>
-                <li><strong>Presentation Tools:</strong> PowerPoint (Expert), Prezi, Canva</li>
-              </ul>
+            <div class="section-header">
+                <h2>EXTRA-CURRICULAR ACTIVITIES & ACHIEVEMENTS</h2>
             </div>
             <div>
-              <ul>
-                <li><strong>Programming:</strong> VBA (Expert), Python (Intermediate)</li>
-                <li><strong>Cloud Platforms:</strong> Microsoft Azure (Certified), AWS (Basic)</li>
-                <li><strong>Business Intelligence:</strong> Power Platform, SharePoint</li>
-                <li><strong>Statistical Software:</strong> STATA, E-Views, Bloomberg Terminal</li>
-                <li><strong>Specialized Tools:</strong> Capital IQ, PitchBook, Factset</li>
-                <li><strong>Regulatory Software:</strong> XBRL tools, SEBI/RBI filing systems</li>
-                <li><strong>Communication:</strong> Advanced English, Business Writing</li>
-                <li><strong>Industry Knowledge:</strong> Ind AS, IFRS, US GAAP (Basic)</li>
-              </ul>
+                <p><strong>Sports</strong></p>
+                <ul>
+                    <li>Secured Semi-Finalist (Chess) position at Inter-Departmental Tournament out of 80+ participants organized by St. Xavier's University.</li>
+                    <li>Won 1st prize in Chess Tournament organized by ICAI EICASA Sambalpur.</li>
+                </ul>
+                <p><strong>Miscellaneous</strong></p>
+                <ul>
+                    <li>Wrote monthly articles for the EICASA Newsletter, contributing insights & updates to the readers.</li>
+                    <li>Won 1st Prize at the Senior Secondary level out of 10 teams in the Economics Exhibition, Rotary Public School, Bargarh.</li>
+                </ul>
             </div>
+
+            <div class="section-header">
+                <h2>ADDITIONAL SKILLS</h2>
+            </div>
+            <div class="skills-section">
+                <div class="skills-grid">
+                    <div><strong>IT Skills</strong></div>
+                    <div>MS Excel, MS PPT, Power BI, Zoho Books, Quick Books</div>
+                    <div><strong>Languages</strong></div>
+                    <div>English, Hindi, Odia</div>
+                </div>
+            </div>
+
           </div>
         </div>
-      </div></div>
+      </div>
     </div>
 
     
     <div class="template-card">
-      <div class="template-header">
-        <h3>5.</h3>
-        <div class="header-actions">
-          <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
-          <button class="download-btn" data-target="cv-template-5">Download PDF</button>
+        <div class="template-header">
+          <h3>2. Corporate Blue Header</h3>
+          <div class="header-actions">
+            <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
+            <button class="download-btn" data-target="cv-template-2">Download PDF</button>
+          </div>
         </div>
-      </div>
-      <div class="cv-container"><div class="cv-content">
-        <div id="cv-template-5" class="cv-template organized-specialist">
-          <div class="header-top">
-            <div><h1>Deepak Kumar</h1></div>
-            <div class="contact">
-              <div class="icon-contact-vertical-list">
-                <div class="icon-contact-item" style="justify-content: flex-end;"><span>+91 96622 08665</span><i class="fa-solid fa-phone"></i></div>
-                <div class="icon-contact-item" style="justify-content: flex-end;"><a href="mailto:deepak.kumar.ca@email.com">deepak.kumar.ca@email.com</a><i class="fa-solid fa-envelope"></i></div>
-                <div class="icon-contact-item" style="justify-content: flex-end;"><a href="https://linkedin.com/in/deepakkumar-ca" target="_blank">linkedin.com/in/deepakkumar-ca</a><i class="fa-brands fa-linkedin"></i></div>
-                <div class="icon-contact-item" style="justify-content: flex-end;"><span>Surat, Gujarat</span><i class="fa-solid fa-location-dot"></i></div>
-              </div>
-            </div>
-          </div>
+        <div class="cv-container">
+          <div class="cv-content">
+            <div id="cv-template-2" class="cv-template cv-style-blue-corp">
+                <div class="header-main">
+                    <h1>CA Padam Bhansali</h1>
+                    <div class="contact-info">
+                        <span>Silvassa</span> |
+                        <span>capadambhansali@gmail.com</span> |
+                        <span>+91 7228881182</span> |
+                        <span>http://www.linkedin.com/in/ca-padam-bhansali</span>
+                    </div>
+                </div>
 
-          <div class="key-skills"><strong>Core Competencies & Expertise:</strong>
-            <br/><strong>Audit & Assurance:</strong> Statutory, Tax, Concurrent Bank, Stock, Internal Control Reviews, Risk Assessment
-            <br/><strong>Tax & Compliance:</strong> Income Tax (ITR), TDS/TCS, GST (Registration to Audit), Advance Tax & Self-Assessment
-            <br/><strong>Technology & Tools:</strong> Advanced Excel (Macros/VBA), Tally Prime (Expert), SAP FICO (Functional), Power BI, GSTN, TRACES
-          </div>
+                <div class="section-title">EDUCATIONAL & PROFESSIONAL QUALIFICATIONS</div>
+                <table>
+                    <thead>
+                        <tr><th>COURSE</th><th>YEAR</th><th>INSTITUTION</th><th>MARKS</th><th>REMARKS</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>CA Intermediate</td><td>Nov 2023</td><td>ICAI</td><td>434/800</td><td>Exemption in 2 subjects</td></tr>
+                        <tr><td>CA Foundation</td><td>July 2021</td><td>ICAI</td><td>272/400</td><td>Exemption in 3 subjects</td></tr>
+                        <tr><td>B.Com (Honors)</td><td>2021-2024</td><td>St. Xavier's College, Kolkata</td><td>8 CGPA</td><td>Ranked 6th best college in India by NIRF 2024</td></tr>
+                        <tr><td>Class XII</td><td>2021</td><td>DAV Public School</td><td>481/500 (96.2%)</td><td>Rank 1 in school</td></tr>
+                        <tr><td>Class X</td><td>2019</td><td>HMS</td><td>476/500 (95.2%)</td><td>Rank 2 in school</td></tr>
+                    </tbody>
+                </table>
 
-          <h2>Professional Experience</h2>
-          <div class="job-item">
-            <div class="job-title">Senior Article Assistant – Patel Kabrawala & Co, Surat</div>
-            <div class="domain">Comprehensive CA Practice - Audit, Tax, Advisory (Aug'21 – Present)</div>
-            <ul>
-              <li><strong>Statutory & Compliance Audits:</strong> Led 40+ statutory audits across textile, diamond, construction (₹30-600 Cr). Supervised 2-5 members.</li>
-              <li><strong>Specialized Bank Audits:</strong> Conducted statutory audits of 3 nationalized bank branches. Reviewed loan portfolios (₹250+ Cr), NPA classification.</li>
-              <li><strong>Risk-Based Internal Audits:</strong> Designed & executed risk-based IA for 15+ organizations. Identified operational inefficiencies saving ₹45+ Lakh annually.</li>
-              <li><strong>Concurrent Audit:</strong> Performed concurrent audits for bank branches. Built automated exception reports. Detected 25+ policy violations.</li>
-              <li><strong>Stock & Inventory Audits:</strong> Conducted physical verification & valuation audits for bank borrowers. Identified discrepancies worth ₹18+ Lakh.</li>
-              <li><strong>GST Audit & Advisory:</strong> Performed GST audits for 20+ clients, ITC eligibility reviews. Defended 8 GST audit cases (₹75+ Lakh disputed), achieving 60% reduction.</li>
-              <li><strong>Income Tax & TDS:</strong> Filed 300+ ITRs across categories; managed 200+ TDS returns. Resolved 50+ CPC-TDS/ITR mismatches.</li>
-              <li><strong>Corporate Law & ROC Compliance:</strong> Handled complete ROC/MCA compliance (annual filings, charge registrations). Maintained statutory registers.</li>
-              <li><strong>Process Innovation & Automation:</strong> Developed 15+ Excel VBA applications for audit sampling, working papers. Created automated GST reconciliation (70% less manual effort).</li>
-              <li><strong>Training & Knowledge Sharing:</strong> Conducted training for 25+ junior staff. Developed SOPs for audit/compliance.</li>
-            </ul>
-          </div>
+                <div class="section-title">WORK EXPERIENCE</div>
+                <div class="work-exp-item">
+                    <div class="work-title-bar">
+                        <h3>Article Trainee | Kothari Jain Patil and Associates</h3>
+                        <span>April 2024 - Present</span>
+                    </div>
+                    <p>During my Articleship, I gained valuable experience working with two distinct <strong>offshore clients</strong>, focusing on diverse financial and accounting challenges:</p>
+                    <p><strong>Client 1: E-Commerce Business</strong></p>
+                    <ul>
+                        <li>Developed a detailed <strong>Management Information System (MIS)</strong> report and an <strong>interactive dashboard</strong> in Excel, delivering actionable insights for informed decision-making.</li>
+                        <li>Conducted a comprehensive <strong>analysis of marketing expenditure returns</strong> across multiple countries by preparing monthly reports that outlined expenses on channels such as <strong>Google, Facebook, X, Snapchat, TikTok and Pinterest</strong>, and evaluated the corresponding revenue generated, utilizing the e-commerce analytics tool <strong>Triple Whale</strong>.</li>
+                        <li>Identified cost-saving opportunities by preparing <strong>weekly reports</strong> on major cost centers, facilitating a <strong>cost reduction by 10%</strong>.</li>
+                        <li>Managed the entire accounting process by seamlessly integrating sales data from <strong>Shopify to QuickBooks via A2X</strong>, establishing <strong>transaction categorization rules</strong>, performing monthly <strong>bank reconciliations</strong> for five accounts, and maintaining compliance with accounting standards through meticulous <strong>financial recordkeeping</strong>.</li>
+                    </ul>
+                    <hr>
+                    <p><strong>Client 2: Credit Repair Organization</strong></p>
+                    <ul>
+                        <li>Developed reports on <strong>budgeting, cost management, and factoring</strong>, providing critical insights to support <strong>financial decision making</strong>.</li>
+                        <li>Ensured <strong>data integrity</strong> by generating comparative reports to <strong>identify discrepancies</strong> between systems, collaborating with the IT team for timely resolution.</li>
+                        <li>Led the successful <strong>migration of accounting software from QuickBooks to Salesforce</strong>, customizing the <strong>Accounting Seed</strong> module to enhance the overall accounting process.</li>
+                    </ul>
+                </div>
 
-          <div class="job-item">
-            <div class="job-title">Audit Trainee – Shah Gupta & Associates, Ahmedabad</div>
-            <div class="domain">Foundation Training - Core Audit & Accounting (Jan'21 – Jul'21)</div>
-            <ul>
-              <li><strong>Audit Fundamentals:</strong> Exposure to audit planning, risk assessment, substantive testing. Assisted in vouching for 12 SMEs.</li>
-              <li><strong>Accounting & Book-keeping:</strong> Managed accounting cycles in Tally ERP for 8 clients. Prepared financial statements.</li>
-              <li><strong>Tax Return Preparation:</strong> Assisted in 60+ income tax returns for individuals, HUFs.</li>
-            </ul>
-          </div>
-
-          <div class="grid-2col">
-            <div>
-              <h2>Academic Qualifications & Rankings</h2>
-              <ul>
-                <li><strong>CA Final:</strong> Appearing May 2025 (All 8 papers in single attempt)</li>
-                <li><strong>CA Intermediate (Group 2):</strong> May 2022 - 61.25% (Advanced Accounting Exemption)</li>
-                <li><strong>CA Intermediate (Group 1):</strong> Nov 2021 - 58.75% (Business Law & Ethics Exemption)</li>
-                <li><strong>CA Foundation:</strong> July 2019 - 65.50% (First Attempt, AIR 5,247)</li>
-                <li><strong>B.Com (Regular):</strong> Gujarat University - 72.8% (Distinction)</li>
-                <li><strong>Class XII (Commerce):</strong> Gujarat State Board - 89.2% (School Rank 1)</li>
-              </ul>
-              
-              <h2>Professional Certifications & Training</h2>
-              <ul>
-                <li><strong>ICAI Mandatory:</strong> ITT, GMCS, Adv. ITT</li>
-                <li><strong>Specialized:</strong> Internal Audit (Goldman Sachs), Data Analysis for Accounting (Deloitte), Adv. Excel & VBA (Microsoft)</li>
-                <li><strong>Industry:</strong> Forensic Auditing (KPMG), GST Audit (EY), Banking Ops & Concurrent Audit (ICAI)</li>
-                <li><strong>Technology:</strong> Tally Certified, SAP FICO, Power BI Data Analyst (Microsoft)</li>
-                <li><strong>Soft Skills:</strong> Leadership (Dale Carnegie), Business Communication (British Council)</li>
-              </ul>
-            </div>
-            <div>
-              <h2>Technical Skills & Software Mastery</h2>
-              <ul>
-                <li><strong>Spreadsheet:</strong> Excel Expert (Pivots, Power Query, VBA Macros, Solver)</li>
-                <li><strong>ERP & Accounting:</strong> Tally Prime (Expert), SAP FICO (Functional), Oracle (Basic), QuickBooks</li>
-                <li><strong>Audit & Compliance:</strong> IDEA, ACL, TeamMate, CaseWare, AuditBoard</li>
-                <li><strong>Tax & Regulatory:</strong> ClearTax, IT e-Filing, TRACES (Expert), GST Portal, MCA-21</li>
-                <li><strong>BI & Analytics:</strong> Power BI (Dashboard Creation), Tableau (Basic), Google Analytics</li>
-                <li><strong>Database:</strong> Microsoft Access (Advanced), SQL Server (Basic)</li>
-                <li><strong>Programming:</strong> VBA (Expert), Python for Finance (Intermediate)</li>
-                <li><strong>Communication:</strong> PowerPoint (Expert), Adobe Acrobat Pro, Canva</li>
-              </ul>
-
-              <h2>Language Proficiency & Communication</h2>
-              <ul>
-                <li><strong>Native:</strong> Hindi, Gujarati, English (Fluent)</li>
-                <li><strong>Professional:</strong> Business Writing, Technical Documentation, Client Presentation</li>
-                <li><strong>Industry:</strong> Audit Report Writing, Tax Notice Responses, Board Presentations</li>
-              </ul>
+                <div class="section-title">CERTIFICATIONS</div>
+                <div class="work-exp-item">
+                    <div class="work-title-bar">
+                        <h3>Microsoft Power BI, Infosys</h3>
+                        <span>2024</span>
+                    </div>
+                    <ul>
+                        <li>Developed skills in business intelligence (BI) for <strong>gathering and analyzing data</strong> to create insightful <strong>reports, scorecards, and dashboards</strong> in Excel, facilitating informed decision-making.</li>
+                        <li>Completed <strong>real-world projects</strong> using Microsoft Power BI, enhancing capabilities in <strong>data visualization and analysis</strong> for effective data exploration and presentation.</li>
+                    </ul>
+                </div>
+                <div class="work-exp-item">
+                    <div class="work-title-bar">
+                        <h3>EXCEL Masterclass, CA Monk</h3>
+                        <span>2024</span>
+                    </div>
+                    <ul>
+                        <li>Advanced proficiency in Excel, demonstrated through completing a comprehensive Excel masterclass; skilled in using <strong>Xlookup, Index, Match and Power Query</strong> for complex data retrieval.</li>
+                        <li>Expertise in utilizing <strong>Power Pivot, VBA, Pivot Tables and Pivot Charts</strong> for data analysis and visualization; and utilizing <strong>Conditional Formatting</strong> in to highlight key insights and data trends effectively.</li>
+                    </ul>
+                </div>
+                
+                <div class="section-title">ACHIEVEMENTS AND EXTRA CURRICULAR ACTIVITIES</div>
+                <div style="padding: 8px;">
+                    <ul>
+                        <li><strong>Awarded 3rd Prize</strong> in 'Ace the Case', a case study competition conducted at St. Xavier's College involving corporate and retrenchment strategies, negotiations, mergers and acquisition.</li>
+                        <li>Won <strong>1st position</strong> in Art Fare for <strong>Zentangle Art</strong> of Lord Ganesha out of <strong>80+ participants</strong>.</li>
+                        <li>Awarded <strong>3rd position</strong> in Essay Writing Competition in school out of <strong>50+ participants</strong>.</li>
+                    </ul>
+                </div>
             </div>
           </div>
         </div>
-      </div></div>
-    </div>
+      </div>
 
     
     <div class="template-card">
-      <div class="template-header">
-        <h3>6.</h3>
-        <div class="header-actions">
-          <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
-          <button class="download-btn" data-target="cv-template-6">Download PDF</button>
+        <div class="template-header">
+          <h3>3. Grid & Table Layout</h3>
+          <div class="header-actions">
+            <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
+            <button class="download-btn" data-target="cv-template-3">Download PDF</button>
+          </div>
         </div>
-      </div>
-      <div class="cv-container"><div class="cv-content">
-        <div id="cv-template-6" class="cv-template investigative-auditor">
-          <h1>Rajesh Nair</h1>
-          <div class="contact">
-            <div class="icon-contact-container">
-              <div class="icon-contact-item"><i class="fa-solid fa-phone"></i><a href="tel:+917627056152">+91 76270 56152</a></div>
-              <div class="icon-contact-item"><i class="fa-solid fa-envelope"></i><a href="mailto:rajesh.nair.ca@email.com">rajesh.nair.ca@email.com</a></div>
-              <div class="icon-contact-item"><i class="fa-brands fa-linkedin"></i><a href="https://linkedin.com/in/rajeshnair-audit" target="_blank">linkedin.com/in/rajeshnair-audit</a></div>
-              <div class="icon-contact-item"><i class="fa-solid fa-location-dot"></i><span>Saket, New Delhi</span></div>
+        <div class="cv-container">
+          <div class="cv-content">
+            <div id="cv-template-3" class="cv-template cv-style-blue-grid">
+                <div class="header-main">
+                    <h1>CA Padam Bhansali</h1>
+                    <div class="contact-info">
+                        Email: <a>capadambhansali@gmail.com</a> | Mobile: 7228881182 | Location: Bengaluru | LinkedIn: <a>Padam Bhansali</a>
+                    </div>
+                </div>
+
+                <div class="section-header">OBJECTIVE</div>
+                <div class="objective-text">
+                    Highly motivated CA Article Trainee with a strong analytical mindset and a passion for delivering actionable insights. Seeking a CA
+                    <strong>Industrial Trainee</strong> role to enhance practical skills, drive financial efficiency and contribute to the operational success of the organization.
+                </div>
+
+                <div class="section-header">PROFESSIONAL/ACADEMIC QUALIFICATION</div>
+                <table>
+                    <thead>
+                        <tr><th>Qualification</th><th>Year</th><th>Institution/ Board</th><th>Percentage</th><th>Remarks</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>CA Intermediate</td><td>NOV 2023</td><td>ICAI</td><td>56.12%</td><td>Exemption in 4 Subjects</td></tr>
+                        <tr><td>CA Foundation</td><td>DEC 2022</td><td>ICAI</td><td>62.75%</td><td>Exemption in 3 Subjects</td></tr>
+                        <tr><td>B. Com</td><td>2023-2026</td><td>University Of Mysore</td><td>8 GPA</td><td>College Ranker</td></tr>
+                        <tr><td>Class 12th</td><td>2022</td><td>BIEAP</td><td>88%</td><td>School Rank 1</td></tr>
+                        <tr><td>Class 10th</td><td>2020</td><td>Andhra Pradesh State Board</td><td>10.0 CGPA</td><td>School Rank 1</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="section-header">EXPERIENCE</div>
+                <div class="exp-item">
+                    <div class="exp-header">
+                        <h3>Kantilal Patel & Co., Ahmedabad - Domain - Transfer Pricing, Audit, DT, IDT</h3>
+                        <span><strong>Aug 2024 - Present</strong></span>
+                    </div>
+                    <div class="exp-body">
+                        <ul>
+                            <li>Assisted in the preparation and filing of Income Tax returns, including <strong>Assessments and Appeals</strong>, gaining insights into <strong>Tax Planning and Compliance Strategies</strong> tailored to Indian tax regulations for diverse industries.</li>
+                            <li>Participated in <strong>GST audits and Compliance reviews</strong>, contributing to the implementation of efficient <strong>Tax Strategies</strong>, conducting <strong>Impact Assessments</strong> of transactions, and ensuring timely filing of returns to mitigate penalties.</li>
+                            <li><strong>Prepared and reviewed financial statements</strong>, ensuring accuracy and completeness while gaining hands-on experience in <strong>financial reporting and analysis</strong>.</li>
+                            <li>Engaged in <strong>statutory audits</strong> for various clients, ensuring compliance with the Companies Act and enhancing analytical and problem-solving skills through fieldwork and report preparation.</li>
+                            <li>Collaborated on <strong>Financial Statement Reviews</strong>, identifying Discrepancies and Suggesting improvements to <strong>Internal Controls</strong>, thereby enhancing clients' Financial Integrity and Operational Efficiency.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="exp-item">
+                    <div class="exp-header">
+                        <h3>Goenka Mehta & Co, Ahmedabad - Domain - Transfer Pricing s International Taxation</h3>
+                        <span><strong>Feb 2024 - Aug 2024</strong></span>
+                    </div>
+                    <div class="exp-body">
+                        <ul>
+                            <li>Conducted comprehensive <strong>transfer pricing analysis for 15+ clients</strong>, including functional and economic analysis, benchmarking studies, and documentation preparation.</li>
+                            <li>Managed <strong>3+ high-value clients</strong> (revenues >$1B) across industries such as manufacturing, distribution, and services, including IT, pharmaceuticals, electronics, and consumer goods.</li>
+                            <li>Finalized submissions and drafted responses to <strong>show cause notices</strong>, successfully arguing for the reduction of tax adjustments.</li>
+                            <li>Gained hands-on experience by working with <strong>billion-dollar revenue companies</strong> in Middle Eastern countries, primarily the UAE.</li>
+                            <li>Managed <strong>corporate tax (CT) and transfer pricing (TP) projects for 10 clients in the UAE</strong>, including tax structuring, advisory services, impact assessments, and Qualified Free Zone Person (QFZP) analysis.</li>
+                            <li>Developed robust <strong>transfer pricing risk assessment frameworks</strong>, identifying potential exposure areas and implementing pre-emptive measures to minimize audit and dispute risks.</li>
+                            <li>Contributed to firm newsletters and webinars on complex transfer pricing topics, as well as content for the organization's LinkedIn page.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="skills-container">
+                    <div>
+                        <div class="section-header" style="margin-left: 0;">TECHNICAL SKILLS:</div>
+                        <ul>
+                            <li>Proficient in MS-Excel, Word and PowerPoint</li>
+                            <li>Financial Modelling and Valuations</li>
+                            <li>Analytical and Problem-Solving</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <div class="section-header" style="margin-left: 0;">OTHER SKILLS:</div>
+                        <ul>
+                            <li>Ability to work under pressure and meet deadlines</li>
+                            <li>Curiosity to Learn new things, Team Player and Active Listener</li>
+                            <li>Strong Communication skills</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section-header">ADDITIONAL INFORMATION:</div>
+                <table class="info-table">
+                    <tbody>
+                        <tr>
+                            <td>Certifications</td>
+                            <td>
+                                <ul>
+                                    <li>Financial Modeling and Valuation Analyst (FMVA® from CFI)</li>
+                                    <li>Capital Markets Securities Analyst (CMSA® from CFI)</li>
+                                    <li>JPMorgan Investment Banking (MsA targets, Financial Analysis, Investment Recommendation)</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Personal Details</td>
+                            <td>
+                                <ul>
+                                    <li>Hobbies: Exploring new things, music and podcasts, cricket, and football.</li>
+                                    <li>Languages: English, Telugu and Hindi</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Achievements</td>
+                            <td>
+                                <ul>
+                                    <li>Awarded <strong>Best Performance</strong> for consistently exceeding targets during articleship</li>
+                                    <li>Cleared CA Intermediate on the first attempt with three exemptions, achieving the highest score in our batch</li>
+                                    <li>Won <strong>Junior Head Boy</strong> elections and was the <strong>District Winner</strong> at the school level in <strong>Master Orator Competition</strong></li>
+                                    <li>Led our school cricket team as <strong>captain</strong>, guiding the team to several key victories against over 15 other teams</li>
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Languages</td>
+                            <td><ul><li>Hindi, English, Telugu</li></ul></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
           </div>
-
-          <h2>Professional Summary</h2>
-          <p>Specialized Forensic & Risk Advisory professional (3.5+ years) in fraud investigation, internal controls evaluation, and complex audit engagements. Expert in data analytics, process mapping, and control testing for large conglomerates. Investigated fraud (₹15+ Cr), designed ICFR frameworks (revenues ₹10,000+ Cr), and led risk advisory across 25+ industries.</p>
-
-          <h2>Academic Qualifications & Professional Development</h2>
-          <table>
-            <tbody>
-              <tr><th>Degree/Examination</th><th>Year</th><th>Score/CGPA</th><th>Institution</th><th>Achievements & Specialization</th></tr>
-              <tr><td>CA Final</td><td>2025</td><td>Appearing May</td><td>ICAI</td><td>SFM & Analytics Focus</td></tr>
-              <tr><td>CA Intermediate</td><td>2022</td><td>63.17%</td><td>ICAI</td><td>Audit & Assurance + Information Systems Exemptions (First Attempt)</td></tr>
-              <tr><td>CA Foundation</td><td>2020</td><td>69.75%</td><td>ICAI</td><td>Distinction, AIR 2,245</td></tr>
-              <tr><td>B.Com (Hons)</td><td>2022</td><td>8.4/10 CGPA</td><td>Delhi University (Shri Ram College)</td><td>Gold Medalist, Topper in Auditing & Corporate Law</td></tr>
-              <tr><td>Class XII (Commerce + Math)</td><td>2019</td><td>92.20%</td><td>CBSE - Modern School</td><td>School Topper, Accountancy & Economics Excellence</td></tr>
-            </tbody>
-          </table>
-
-          <h2>Work Experience — Risk Advisory & Forensic Audit Specialist</h2>
-          <div class="project-title">MGC Global Risk Advisory LLP, New Delhi (Sep 2021 – Present)</div>
-          <p><strong>Primary Domains:</strong> Forensic Auditing, Internal Controls & Compliance (ICFR), Risk Assessment, Data Analytics</p>
-
-          <ul>
-            <li><b>Large Conglomerate Engagements (₹10,000+ Cr Annual Revenue):</b>
-              <ul>
-                <li><strong>DCM Shriram Group:</strong> Led ICFR assessment (15 subsidiaries, 25+ locations). Designed control matrices for O2C, P2P, R2R. Identified 85+ control gaps and remediation roadmap.</li>
-                <li><strong>VLCC Healthcare:</strong> Conducted fraud risk assessment (150+ centers); implemented continuous monitoring detecting ₹2.8 Cr annual revenue leakages.</li>
-                <li><strong>Technico Industries:</strong> Executed SOX 404 compliance (scoping, walkthroughs, testing). Achieved clean external audit opinion.</li>
-              </ul>
-            </li>
-            <li><b>Specialized Fraud Investigation & Forensic Accounting:</b>
-              <ul>
-                <li><strong>Multi-Vendor Invoice Manipulation (₹1.2 Cr+):</strong> Uncovered fraud at Sun King using data analytics (Benford's Law, duplicate payments). Recovered 78% funds.</li>
-                <li><strong>Payroll Fraud Detection:</strong> Identified ghost employee schemes (₹45+ Lakh). Developed automated payroll analytics.</li>
-                <li><strong>Revenue Recognition Fraud:</strong> Investigated complex manipulation at tech co. Analyzed 10,000+ transactions.</li>
-              </ul>
-            </li>
-            <li><b>Internal Controls & Risk Management:</b>
-              <ul>
-                <li><strong>COSO Framework:</strong> Designed & implemented ERM for 8 organizations (COSO 2013). Conducted risk assessments.</li>
-                <li><strong>Process Re-engineering:</strong> Led optimization, resulting in 30% cycle time reduction, 40% control effectiveness improvement.</li>
-              </ul>
-            </li>
-            <li><b>Advanced Data Analytics & Technology:</b>
-              <ul>
-                <li><strong>IDEA & ACL:</strong> Performed 100% data analytics using advanced sampling, duplicate detection. Developed custom scripts.</li>
-                <li><strong>Continuous Auditing:</strong> Designed real-time monitoring with SQL. Built executive dashboards with daily KRI updates.</li>
-                <li><strong>Predictive Analytics:</strong> Implemented ML for fraud detection (92% accuracy). Reduced false positives by 65%.</li>
-              </ul>
-            </li>
-            <li><b>Physical Asset Verification & Inventory:</b>
-              <ul>
-                <li><strong>Fixed Asset Register:</strong> Led FAR cleanup for 5 clients (15,000+ assets, ₹500+ Cr). Identified discrepancies.</li>
-                <li><strong>Fabindia Inventory Audit:</strong> Conducted surprise stock counts (25 retail locations). Identified management gaps saving ₹18+ Lakh.</li>
-              </ul>
-            </li>
-            <li><b>Client Relationship & Project Management:</b>
-              <ul>
-                <li><strong>Stakeholder Management:</strong> Managed C-suite, audit committees (20+ clients). Presented complex findings.</li>
-                <li><strong>Team Leadership:</strong> Supervised 6-12 professionals. Developed training programs.</li>
-              </ul>
-            </li>
-          </ul>
-
-          <h2>Additional Professional Experience & Training</h2>
-          <div class="project-title">Specialized Assignments & Consulting Projects</div>
-          <ul>
-            <li><strong>Stock & Tax Audit:</strong> Conducted statutory & tax audits for 15+ entities. Specialized in transfer pricing, international taxation.</li>
-            <li><strong>Banking & Financial Services:</strong> Performed concurrent audits for 5 PSU bank branches (₹800+ Cr portfolio).</li>
-            <li><strong>Government & PSU Audits:</strong> Participated in statutory audits of 3 government enterprises.</li>
-            <li><strong>Startup & SME Advisory:</strong> Provided risk assessment/internal control advisory to 12 startups/SMEs.</li>
-          </ul>
-
-          <h2>Technical Expertise & Software Mastery</h2>
-          <ul>
-            <li><strong>Forensic & Audit Analytics:</strong> IDEA (Certified), ACL (Advanced), Tableau, R, Python, Benford's Law.</li>
-            <li><strong>Advanced Excel & Modeling:</strong> VBA (Expert), Power Query/Pivot, Monte Carlo, DCF, Dashboard.</li>
-            <li><strong>Database & Programming:</strong> SQL (Intermediate), MySQL, MS Access (Expert), Python for Data Analysis.</li>
-            <li><strong>ERP & Accounting Systems:</strong> SAP FICO (Functional), Oracle, Tally Prime (Expert), QuickBooks.</li>
-            <li><strong>Risk Management Tools:</strong> GRC Platforms (ServiceNow), Risk Assessment Software, Control Testing.</li>
-            <li><strong>Presentation & Communication:</strong> PowerPoint (Expert), Visio, Adobe Creative Suite, Report Writing.</li>
-          </ul>
         </div>
-      </div></div>
-    </div>
+      </div>
 
     
     <div class="template-card">
-      <div class="template-header">
-        <h3>7.</h3>
-        <div class="header-actions">
-          <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
-          <button class="download-btn" data-target="cv-template-7">Download PDF</button>
+        <div class="template-header">
+          <h3>4. Modern Blue/Grey Layout</h3>
+          <div class="header-actions">
+            <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
+            <button class="download-btn" data-target="cv-template-4">Download PDF</button>
+          </div>
+        </div>
+        <div class="cv-container">
+          <div class="cv-content">
+            <div id="cv-template-4" class="cv-template cv-style-blue-grey">
+                <div class="header-main">
+                    <h1>Name</h1>
+                    <div class="contact-info">
+                        Mobile: +91-7228881182<br>
+                        LinkedIn Id: <br>
+                        Email: capadambhansali@gmail.com
+                    </div>
+                </div>
+                <p class="summary">
+                    CA articleship trainee with experience in statutory audits and compliance, seeking an industrial training role to further enhance my skills in
+                    a corporate environment. Eager to bring my analytical strengths and practical knowledge to contribute effectively to the team.
+                </p>
+
+                <div class="section-header">Articleship Experience</div>
+                <div class="item-header">
+                    <h3>Article | Assurance service - ABC & Company Statutory Audit, Mumbai</h3>
+                    <span class="date">Feb'23 - Oct'24</span>
+                </div>
+                <ul>
+                    <li>Handled end to end work with a team of 5+ people, including planning the audit, executing various areas, preparing audit deliverables like analysis of the financial statement, Letter of Representation, critical notes to accounts with minimal review points well within the deadlines as per IGAAP.</li>
+                    <li>Detected 25+ duplicate vouchers for a PSU, total of which amounted to about 70 lakh rupees.</li>
+                    <li>Detected employee fraud for a leading smartphone giant, where managers were involved in favoring their previous employers in tenders from the current company.</li>
+                    <li>Led various areas including inventory, cost of goods sold, trade payables, provisions, employee benefit expenses, actuarial valuation, borrowings, deposits for evaluating the adequacy of internal control and risk management systems.</li>
+                </ul>
+                
+                <div class="section-header">Positing of Leadership</div>
+                <div class="positing-item">
+                    <h3>Cultural President Amarvani Convent School</h3>
+                    <ul>
+                        <li>Led 20+ drives involving more than <strong>500+ people</strong>, assisting cultural society, during the past 1.5 years school.</li>
+                        <li>Conducted various events and competition including annual day and sports day.</li>
+                    </ul>
+                </div>
+                <div class="positing-item">
+                    <h3>President- Quizzard KiiT International School</h3>
+                    <div>Headed a team of <strong>50 students</strong> in the quiz society of the school. Planned participation and preparation in various events and quiz competitions. Arranged for various training sessions by the top notch quizmasters. Led a team for 5 people in a case competition and secured the first rank among all the participating schools.</div>
+                </div>
+                
+                <div class="section-header">Certification Course</div>
+                <div class="item-header">
+                    <h3>Financial Modeling & Valuation Analyst (CFI)</h3>
+                    <span class="date">Nov 23</span>
+                </div>
+                <p style="font-style: italic;">(Prepared Financial Models for top Indian startups)</p>
+                <ul>
+                    <li>Built comprehensive financial models for leading Indian startups, including revenue forecasts, DCF valuations, and scenario analysis to support investor decision-making.</li>
+                    <li>Gained hands-on expertise in valuation techniques such as Comparable Company Analysis and Precedent Transactions, ensuring accurate and industry-aligned startup valuations.</li>
+                    <li>Applied real-world case studies to model operating metrics, build dynamic dashboards, and assess financial viability under multiple business assumptions.</li>
+                </ul>
+                <div class="item-header">
+                    <h3>Excel Masterclass</h3>
+                    <span class="date">Dec 23</span>
+                </div>
+                <ul>
+                    <li>Achieved advanced Excel proficiency, mastering tools like VLOOKUP, HLOOKUP, Conditional Formatting, and Data Validation for efficient data handling.</li>
+                    <li>Developed strong analytical skills using PivotTables and PivotCharts to summarize, visualize, and derive insights from large datasets.</li>
+                    <li>Applied Excel functions and dynamic formulas to automate workflows and enhance decision-making accuracy.</li>
+                </ul>
+                
+                <div class="section-header">ICAI Training (Optional)</div>
+                <p><strong>Orientation Program course (ICITSS) → Completed:</strong> Received best speaker award.</p>
+                <p><strong>IT Training → Completed</strong> 90+ Hours of training & secured A+ grade.</p>
+
+                <div class="section-header">EDUCATION</div>
+                <table>
+                    <thead>
+                        <tr><th>Course</th><th>Year of Passing</th><th>Performance</th><th>Remarks</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>CA Intermediate</td><td>Nov 23</td><td>350/600</td><td>Exemption in Law & Tax (First Attempt)</td></tr>
+                        <tr><td>CA Foundation</td><td>Nov 22</td><td>250/400</td><td>Passed with distinction with 84% in Quantitative aptitude</td></tr>
+                        <tr><td>B. Com (2nd Year)</td><td>April 23</td><td>74.42%</td><td>First-class with distinction (Pune University)</td></tr>
+                        <tr><td>Intermediate</td><td>2020</td><td>93.4%</td><td>CBSE- Commerce, Secured 99 Marks in accountancy and 95 marks in economics</td></tr>
+                        <tr><td>Matriculation</td><td>2018</td><td>CGPA 9.2</td><td>Secured A1 grade in Mathematics</td></tr>
+                    </tbody>
+                </table>
+                
+                <div class="section-header">HONORS & AWARDS</div>
+                <ul>
+                    <li>Received a gold medal in state-level taekwondo championship.</li>
+                    <li>Received runners up in Concordia- quiz hosted by XIMB</li>
+                </ul>
+                
+                <div class="section-header">EXTRA-CURRICULAR ACTIVITIES</div>
+                <ul>
+                    <li>Undertook Python For Finance (CA Monk: 60 Hours).</li>
+                    <li>Interested in Badminton & Meditation.</li>
+                    <li>Learned various skills relating to video editing, website creation, data optimization, search engine optimization & Google business.</li>
+                </ul>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="cv-container"><div class="cv-content">
-        <div id="cv-template-7" class="cv-template clean-minimalist">
-          <h1>Neha Singh</h1>
-          <div class="contact icon-contact-flex-wrap">
-            <div class="icon-contact-item"><i class="fa-solid fa-phone"></i><a href="tel:+919377331266">+91 93773 31266</a></div>
-            <div class="icon-contact-item"><i class="fa-solid fa-envelope"></i><a href="mailto:neha.singh.ca@email.com">neha.singh.ca@email.com</a></div>
-            <div class="icon-contact-item"><i class="fa-brands fa-linkedin"></i><a href="https://linkedin.com/in/nehasingh-ca" target="_blank">linkedin.com/in/nehasingh-ca</a></div>
-            <div class="icon-contact-item"><i class="fa-solid fa-location-dot"></i><span>Mumbai, Maharashtra</span></div>
-          </div>
-
-          <h2>Professional Summary</h2>
-          <p>Accomplished CA Finalist with expertise in Statutory Auditing, Direct & Indirect Taxation, Financial Reporting, and Corporate Compliance. 4+ years of Big 4 experience, listed company engagements, and complex audits. Proven ability to lead audit teams, manage client relationships, and deliver high-quality services. Specialized in Ind AS implementation and revenue recognition.</p>
-          <hr/>
-
-          <h2>Educational Background & Professional Qualifications</h2>
-          <p><strong>CA Final (All Groups):</strong> ICAI — Appearing May 2025 (Advanced Auditing, Financial Reporting, Strategic Financial Management focus)</p>
-          <p><strong>CA Intermediate:</strong> ICAI — 55.3% (Nov 2022) — Exemptions in Auditing & Assurance and Information Technology & Strategic Management</p>
-          <p><strong>CA Foundation:</strong> ICAI — 67.5% (June 2020) — First Attempt, AIR 3,245</p>
-          <p><strong>Bachelor of Commerce (Honours):</strong> Sydenham College, Mumbai University — 7.62 SGPA (2023) — Specialized in Advanced Accounting and Corporate Finance</p>
-          <p><strong>Class XII (HSC - Commerce):</strong> K.C. College, Mumbai — 91.2% (2020) — Excellence in Accountancy and Economics</p>
-          <p><strong>Class X (SSC):</strong> St. Xavier's High School, Mumbai — 94.4% (2018) — Academic Excellence Award</p>
-          <hr/>
-
-          <h2>Professional Experience</h2>
-          <div class="job-item">
-            <div class="job-header"><span>Senior Article Assistant | Amit Desai & Co., Mumbai</span><span>Oct 2021 – Present</span></div>
-            <ul class="bullets-tight">
-              <li><strong>Statutory Audit Leadership:</strong> Led 30+ statutory audits for listed/unlisted entities (₹25-1,500 Cr) across manufacturing, tech, real estate. Supervised 4-8 members, 98% client retention.</li>
-              <li><strong>Listed Company Specialization:</strong> Managed audits for 8 BSE/NSE listed companies (quarterly reviews, annual audits). Ensured SEBI, Listing Agreement, corporate governance compliance.</li>
-              <li><strong>Advanced Financial Reporting:</strong> Expert in Ind AS implementation (Ind AS 115, 109, 116, 103). Prepared notes to financial statements, assisted in investor comms.</li>
-              <li><strong>Specialized Audit Areas:</strong> Detailed testing of Fixed Asset Register (5,000+ assets, ₹200+ Cr). Inventory counts (15+ locations). Led revenue cut-off testing.</li>
-              <li><strong>Tax Compliance:</strong> Managed TDS/TCS, advance tax, provision calculations. Ensured accurate current/deferred tax under Ind AS. Defended 6 tax scrutiny assessments (zero additional liability).</li>
-              <li><strong>Internal Control Assessment:</strong> Designed & tested ICFR (ITGC, entity-level, process-level controls). Recommended remediation, improving control environment.</li>
-              <li><strong>Client Relationship:</strong> Interfaced with CFOs, Finance Directors, Audit Committees. Delivered management letters, presentations for 12+ listed entities.</li>
-              <li><strong>Process Innovation:</strong> Developed standardized audit programs/templates (35% time reduction). Implemented IDEA software for 100% population testing. Automated reconciliation tools (150+ hours saved).</li>
-              <li><strong>Team Development:</strong> Mentored 15+ junior article assistants (technical guidance, professional development). Conducted training on ESG, cybersecurity, digital transformation.</li>
-              <li><strong>Quality Assurance:</strong> Senior reviewer for 25+ audit files. Maintained 4.8/5.0 quality rating, zero regulatory findings.</li>
-            </ul>
-          </div>
-
-          <div class="job-item">
-            <div class="job-header"><span>Industrial Training Specialist | Reliance Industries Limited</span><span>Jan 2024 – Jun 2024</span></div>
-            <ul class="bullets-tight">
-              <li><strong>Corporate Finance & Consolidation:</strong> Supported quarterly/annual financial consolidation for Reliance Group (150+ subsidiaries). Expertise in intercompany eliminations, currency translation.</li>
-              <li><strong>Management Reporting:</strong> Prepared comprehensive MIS reports (variance, trend analysis, KPIs). Developed automated templates (reducing closing cycle from 12 to 7 days).</li>
-              <li><strong>Audit Coordination:</strong> Assisted external auditors during reviews/audits (schedules, documentation, query resolution). Coordinated with business units for seamless execution.</li>
-              <li><strong>Internal Audit Assistance:</strong> Supported internal audit team in risk assessment, control testing, process documentation across retail, petrochemicals, digital services.</li>
-              <li><strong>Treasury & Cash Management:</strong> Assisted treasury in daily cash flow, bank reconciliations, investment monitoring. Exposure to FX risk, derivative accounting.</li>
-            </ul>
-          </div>
-
-          <div class="job-item">
-            <div class="job-header"><span>Audit Associate | K. S. Aiyar & Co., Mumbai</span><span>Jun 2021 – Sep 2021</span></div>
-            <ul class="bullets-tight">
-              <li><strong>Foundation Building:</strong> Exposure to audit fundamentals (risk assessment, materiality, sampling). Assisted in 8 statutory audits for SME clients.</li>
-              <li><strong>Working Paper Preparation:</strong> Developed proficiency in audit documentation, work paper preparation, review note resolution.</li>
-              <li><strong>Client Communication:</strong> Coordinated with client finance teams for PBC list, query clarification.</li>
-            </ul>
-          </div>
-          <hr/>
-
-          <h2>Technical Skills & Professional Competencies</h2>
-          <p><strong>Audit & Assurance Tools:</strong> Advanced Excel (Pivot, VBA, Power Query), IDEA, TeamMate, CaseWare, Inflo, MindBridge AI.
-          <strong>Financial Reporting & Analysis:</strong> Ind AS Expert, IFRS, US GAAP (Basic), FS Analysis, Ratio Analysis, Cash Flow Statements.
-          <strong>ERP & Accounting Systems:</strong> SAP FICO (Functional), Oracle, Tally Prime, QuickBooks, Zoho, NetSuite.
-          <strong>Tax & Compliance Software:</strong> Winman, ClearTax, IT e-Filing, TRACES, GST Portal, MCA-21.
-          <strong>Data Analytics & BI:</strong> Power BI, Tableau (Basic), SQL (Intermediate), Python (Basic), Fraud Detection.
-          <strong>Communication & Presentation:</strong> Advanced PowerPoint, Report Writing, Client Presentations, Stakeholder Management.</p>
-          <hr/>
-        </div>
-      </div></div>
-    </div>
 
     
     <div class="template-card">
-      <div class="template-header">
-        <h3>8.</h3>
-        <div class="header-actions">
-          <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
-          <button class="download-btn" data-target="cv-template-8">Download PDF</button>
+        <div class="template-header">
+          <h3>5. Blue Header Variant</h3>
+          <div class="header-actions">
+            <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
+            <button class="download-btn" data-target="cv-template-5">Download PDF</button>
+          </div>
+        </div>
+        <div class="cv-container">
+          <div class="cv-content">
+            <div id="cv-template-5" class="cv-template cv-style-blue-variant">
+                <div class="header-main">
+                    <h1>Padam Bhansali</h1>
+                    <div class="contact-info">
+                        +91 7228881182 | capadambhansali@gmail.com | linkedin.com/in/padam-bhansali
+                    </div>
+                </div>
+
+                <div class="section-header">EDUCATION</div>
+                <table>
+                    <thead>
+                        <tr><th>COURSE</th><th>YEAR</th><th>INSTITUTION</th><th>MARKS</th><th>REMARKS</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>CA Intermediate</td><td>Nov 24</td><td>ICAI</td><td>380/600 (63.3%)</td><td>Mumbai City Rank 3, Exemption in 4 Subjects</td></tr>
+                        <tr><td>CA Foundation</td><td>Dec 2022</td><td>ICAI</td><td>250/400 (62.5%)</td><td>Cleared in First Attempt</td></tr>
+                        <tr><td>B.COM.</td><td>2022-2025</td><td>Ahmedabad University</td><td>500/800 (62.5%)</td><td>99/100 in Mathematics</td></tr>
+                        <tr><td>Class XII (CBSE Board)</td><td>Mar 2021</td><td>Devasya International School</td><td>500/800 (62.5%)</td><td>-</td></tr>
+                        <tr><td>Class X (CBSE Board)</td><td>Mar 2019</td><td>SKR High School, Pune</td><td>500/800 (62.5%)</td><td>School topper out of a batch of 80</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="section-header">WORK EXPERIENCE</div>
+                <div class="work-item">
+                    <div class="work-header">
+                        <h3>Kantilal Patel & Co. || Article Assistant, Ahmedabad</h3>
+                        <span><strong>January 23 – Present</strong></span>
+                    </div>
+                    <div class="work-body">
+                        <p>(Renowned firm in Ahmedabad with 5+ Branches, 20+ Partners, 100+ Clients.)</p>
+                        <ul>
+                            <li>Filed over <strong>50 ITRs</strong> for a diverse range of entities including companies, HUFs, partnerships, and individuals. Gained experience in income tax.</li>
+                            <li>Conducted <strong>15+ statutory and tax audits</strong> for various entities, including OPCs, Section 8 companies, Private Limited companies and Trusts involved in Trading, Manufacturing, IT, Automobiles and Solar sectors.</li>
+                            <li>Prepared and filed GST returns, detailed reconciliations to ensure accurate filings and filed GSTR-9</li>
+                            <li>Prepared and filed GST returns, detailed reconciliations to ensure accurate filings and filed GSTR-9 and GSTR-9C returns.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section-header">POSITIONS OF LEADERSHIP</div>
+                <div class="leadership-item">
+                    <h3>Founder, My Student Club</h3>
+                    <ul>
+                        <li>Led 100+ drives involving <strong>more than 500+ people</strong>, assisting civil society, during the past 1.5 years of the pandemic.</li>
+                        <li>Conducted Programs for creating awareness regarding Covid Vaccination.</li>
+                    </ul>
+                </div>
+                <div class="leadership-item">
+                    <h3>National Case Competition</h3>
+                    <ul>
+                        <li>Headed a team of <strong>5 students</strong> in the National Case Competition, demonstrating exceptional leadership and strategic planning skills; our innovative approach and effective collaboration resulted in a <strong>top 10% ranking</strong> among 50 participating teams.</li>
+                    </ul>
+                </div>
+
+                <div class="section-header">EXTRA-CURRICULAR ACTIVITIES & ACHIEVEMENTS</div>
+                <ul>
+                    <li><strong>Co-Founder at FinTaxLife:</strong> Established and managing an innovative platform providing essential financial, tax, and investment knowledge. Launched <strong>VentureIQ</strong>, an AI-driven solution for evaluating the feasibility of business ideas to support entrepreneurs.</li>
+                    <li><strong>Passionate Stock Market Enthusiast:</strong> A dedicated stock market enthusiast with a keen interest in investment strategies. Started exploring the market at the age of 16.</li>
+                    <li><strong>Leadership in Sports:</strong> Led a football team at the district level and cricket teams in local, community and ICAI-organized leagues. Actively engaged in playing cricket and table tennis.</li>
+                </ul>
+
+                <div class="section-header">INTEREST AND HOBBIES</div>
+                <div class="hobbies-grid">
+                    <div><strong>Kho-Kho</strong></div>
+                    <div>Captained school cricket team for 2 years and represented at state level.</div>
+                    <div><strong>Trekking</strong></div>
+                    <div><strong>Kumar Parvatha Trek:</strong> Climbed Kumar Parvatha which is at altitude of 700 m. <br><strong>Skandgiri Trek:</strong> Climbed 2100 Feet in 1.5 hours.</div>
+                </div>
+
+                <div class="section-header">SIGNIFICANT AWARDS & CERTIFICATIONS</div>
+                <ul>
+                    <li>Certified <strong>Financial Modeling & Valuation Analyst (FMVA)</strong> by CFI.</li>
+                    <li>Obtained <strong>Research Analyst Certification</strong> from NISM.</li>
+                    <li>Received a Certificate from <strong>Trinity College of London</strong> in English Speaking.</li>
+                    <li>Awarded with <strong>Employee of the Quarter</strong> (Performance Award) at Flipkart during the Internship period.</li>
+                    <li>Achieved <strong>advanced-level certifications in Power BI and MS Excel</strong>.</li>
+                </ul>
+
+                <div class="section-header">ADDITIONAL SKILLS</div>
+                <table>
+                    <tbody>
+                        <tr><td style="width: 200px; font-weight: bold;">Additional Skills</td><td>SAP, Tally Prime, MS Office</td></tr>
+                        <tr><td style="font-weight: bold;">Languages</td><td>Fluent in English; Hindi, Telugu</td></tr>
+                        <tr><td style="font-weight: bold;">Certifications & Training</td><td>MSC IT Certificate</td></tr>
+                    </tbody>
+                </table>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="cv-container"><div class="cv-content">
-        <div id="cv-template-8" class="cv-template polished-finalist">
-          <div class="left-col">
-            <h2>Contact Information</h2>
-            <div class="icon-contact-vertical-list">
-              <div class="icon-contact-item"><i class="fa-solid fa-phone"></i><span>+91 93162 98994</span></div>
-              <div class="icon-contact-item"><i class="fa-solid fa-envelope"></i><span>rohan.thakrar@email.com</span></div>
-              <div class="icon-contact-item"><i class="fa-brands fa-linkedin"></i><span>linkedin.com/in/rohanthakrar</span></div>
-              <div class="icon-contact-item"><i class="fa-solid fa-location-dot"></i><span>Mumbai, Maharashtra</span></div>
-            </div>
-            
-            <h2>Technical Proficiency</h2>
-            <ul>
-              <li><strong>Office Suite:</strong> MS-Word, PowerPoint, Excel (VBA/Macros)</li>
-              <li><strong>Audit Software:</strong> IDEA, ACL Analytics, TeamMate</li>
-              <li><strong>ERP Systems:</strong> Tally Prime, SAP FICO, Oracle Financials</li>
-              <li><strong>Analytics:</strong> Power BI, Tableau, SQL, Python (Basic)</li>
-              <li><strong>Tax Software:</strong> ClearTax, Winman, TRACES</li>
-            </ul>
-            
-            <h2>Languages</h2>
-            <ul>
-              <li>English (Native)</li>
-              <li>Hindi (Native)</li>
-              <li>Gujarati (Native)</li>
-            </ul>
-            
-            <h2>Core Interests</h2>
-            <ul>
-              <li>Advanced Financial Accounting & Reporting</li>
-              <li>Forensic Auditing & Investigation</li>
-              <li>Corporate Taxation & Advisory</li>
-              <li>Financial Modeling & Valuation</li>
-              <li>Risk Management & Internal Controls</li>
-            </ul>
-            
-            <h2>Professional Certifications</h2>
-            <ul>
-              <li>ICAI Orientation Course & IT Training</li>
-              <li>NISM Series XV – Research Analyst</li>
-              <li>Microsoft Excel Expert</li>
-              <li>Tally Certified Professional (TCP)</li>
-            </ul>
-            
-            <h2>Awards & Recognition</h2>
-            <ul>
-              <li>All India Rank 48 – CA Foundation</li>
-              <li>Research Paper on "Blockchain in Audit" presented at WIRC</li>
-              <li>Best Article Assistant Award 2023</li>
-              <li>Client Excellence Award (3 years)</li>
-            </ul>
-            
-            <h2>Professional Memberships</h2>
-            <ul>
-              <li>ICAI (Student Member)</li>
-              <li>Institute of Internal Auditors (Affiliate)</li>
-            </ul>
-          </div>
-
-          <div class="right-col">
-            <h1>Rohan Thakrar</h1>
-            <p class="tagline">Chartered Accountant Finalist & Audit Specialist</p>
-
-            <h2>Professional Summary</h2>
-            <p>Accomplished CA Finalist with 3.5+ years of experience across statutory auditing, internal controls, and financial reporting for large enterprises. Expertise in complex audits (Insurance ₹47,000+ Cr AUM, Healthcare ₹250+ Cr revenue, NBFC ₹13,000+ Cr loan book). Proven track record in implementing advanced audit methodologies, risk assessment, and data analytics solutions for enhanced quality and efficiency.</p>
-
-            <h2>Educational Background</h2>
-            <p><strong>CA Final (May 2025):</strong> ICAI — Appearing for all 8 papers (SFM and Advanced Auditing focus)</p>
-            <p><strong>CA Intermediate (May 2022):</strong> 323/600 marks — Exemptions in Auditing & Assurance and Strategic Management</p>
-            <p><strong>CA Foundation (June 2020):</strong> 226/400 marks — All India Rank 48, first attempt</p>
-            <p><strong>B.Com (Regular):</strong> N.R. Swamy College, Bangalore University — SGPA 6.27 (Advanced Accounting & Corporate Finance specialization)</p>
-
-            <h2>Professional Experience</h2>
-            <div class="job-item">
-              <div class="job-title">Senior Article Trainee | Multi-Sector Audit Engagements</div>
-              <div class="company">Mumbai Financial District (Aug 2021 – Present)</div>
-              <ul>
-                <li><strong>Life Insurance Audit (₹47,000 Cr AUM):</strong> Led statutory audit for major life insurance corp (policy admin, claims, investments). Implemented advanced sampling (2.5 million policies).</li>
-                <li><strong>Healthcare Sector (₹250 Cr Revenue):</strong> Managed audit of multi-specialty hospital chain (revenue cycle, inventory, fixed assets ₹50+ Cr). Developed specialized audit procedures for patient billing.</li>
-                <li><strong>NBFC Audit (₹13,000 Cr Loan Portfolio):</strong> Executed audit focusing on loan origination, credit risk, NPA classification, RBI compliance. Tested loan loss provisioning.</li>
-                <li><strong>Advanced Audit Methodologies:</strong> Pioneered continuous auditing using data analytics (100% population testing). Achieved 40% audit efficiency improvement.</li>
-                <li><strong>Internal Controls & Risk Assessment:</strong> Designed ICFR frameworks (COSO 2013). Conducted management deficiency communications.</li>
-                <li><strong>Financial Reporting:</strong> Prepared & reviewed complex financial statements (Ind AS), consolidation, segment reporting. Specialized in financial instruments, revenue recognition.</li>
-              </ul>
-            </div>
-
-            <div class="job-item">
-              <div class="job-title">Audit Associate | Emerging Sectors Focus</div>
-              <div class="company">Mumbai & Pune Operations (Jan 2021 – Jul 2021)</div>
-              <ul>
-                <li><strong>Technology Sector Audits:</strong> Supported audits of 5 tech companies (software revenue, IP valuation). Expertise in subscription-based models.</li>
-                <li><strong>Manufacturing Excellence:</strong> Detailed inventory audits for automotive component manufacturers. Implemented perpetual inventory tracking (25% improved accuracy).</li>
-                <li><strong>Service Sector:</strong> Audits for professional services, educational institutions (revenue cut-off, expense classification).</li>
-              </ul>
-            </div>
-
-            <h2>Key Projects & Innovations</h2>
-            <ul>
-              <li><strong>Claims Exception Analytics:</strong> Developed analytics framework for insurance claims, reducing manual review by 35%. Deployed across 3 clients (₹500+ Cr claims annually).</li>
-              <li><strong>NBFC Risk Assessment:</strong> Created NPA prediction model using statistical analysis. Designed automated early warning systems.</li>
-              <li><strong>Audit Quality Enhancement:</strong> Led firm-wide initiative for standardized documentation, quality control. Achieved 30% reduction in review notes.</li>
-              <li><strong>Digital Transformation:</strong> Championed cloud-based audit management, automated work papers. Reduced completion time by 25%.</li>
-            </ul>
-
-            <h2>Technical Skills & Specialized Knowledge</h2>
-            <ul>
-              <li><strong>Industry Expertise:</strong> Insurance, Healthcare, NBFCs, Technology, Manufacturing, Real Estate.</li>
-              <li><strong>Regulatory Knowledge:</strong> IRDAI, RBI, SEBI, Healthcare regulations.</li>
-              <li><strong>Advanced Analytics:</strong> Statistical sampling, regression, trend evaluation, ratio analysis.</li>
-              <li><strong>Risk Management:</strong> Enterprise risk assessment, IC design, fraud detection, process improvement.</li>
-            </ul>
+    
+    
+    <div class="template-card">
+        <div class="template-header">
+          <h3>6. Objective Top Layout</h3>
+          <div class="header-actions">
+            <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
+            <button class="download-btn" data-target="cv-template-6">Download PDF</button>
           </div>
         </div>
-      </div></div>
-    </div>
+        <div class="cv-container">
+          <div class="cv-content">
+            <div id="cv-template-6" class="cv-template cv-style-objective-top">
+                <div class="header-main">
+                    <h1>CA Padam Bhansali</h1>
+                    <div class="contact-info">
+                        +91 9313148303 | capadambhansali@gmail.com | LinkedIn | FinTaxLife | Bengaluru
+                    </div>
+                </div>
+
+                <div class="section-header">CAREER OBJECTIVE</div>
+                <div class="objective">
+                    Aspiring finance professional with a strong foundation in audit, taxation, and the investment world. Eager to leverage analytical
+                    expertise and financial acumen to drive strategic growth and operational excellence at a leading global financial institution.
+                </div>
+
+                <div class="section-header">EDUCATIONAL QUALIFICATION</div>
+                <table>
+                    <thead>
+                        <tr><th>Course</th><th>Year</th><th>Institution</th><th>Marks</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>CA Intermediate</td><td>May 23 & Nov 23</td><td>ICAI</td><td>419/800 (52.4%)</td></tr>
+                        <tr><td>CA Foundation</td><td>June 2022</td><td>ICAI</td><td>268/400 (67%)</td></tr>
+                        <tr><td>CSEET</td><td>July 2022</td><td>ICSI</td><td>156/200 (78%)</td></tr>
+                        <tr><td>B. Com. (SEM-1)</td><td>Pursuing (2023-2026)</td><td>Datta Meghe Institute of Higher Education & Research (Deemed to be University)</td><td>505/700 (72.14%)</td></tr>
+                        <tr><td>CBSE - Class XII</td><td>Mar 2022</td><td>Prerna International School, Nagpur</td><td>478/500 (95.6%)</td></tr>
+                        <tr><td>CBSE - Class X</td><td>Mar 2020</td><td>Sandipani School, Nagpur</td><td>465/500 (93%)</td></tr>
+                    </tbody>
+                </table>
+
+                <div class="section-header">WORK EXPERIENCE</div>
+                <div class="work-item">
+                    <div class="work-header">
+                        <h3>Article Assistant | Malani Somani Chandak & Associates | Pune</h3>
+                        <span><strong>(February 2024 – Present)</strong></span>
+                    </div>
+                    <div class="work-body">
+                        <ul>
+                            <li><strong>Audit:</strong> Conducted <strong>15+ statutory and tax audits</strong> for various entities, including OPCs, Section 8 companies, Private Limited companies and Trusts involved in Trading, Manufacturing, IT, Automobiles and Solar sectors. Performed Internal Audits for government entities. Gained experience in Statutory Audit of State Bank of India and Revenue Audit of Bank of Maharashtra.</li>
+                            <li><strong>Direct Tax:</strong> Filed over <strong>50 ITRs</strong> for a diverse range of entities including companies, HUFs, partnerships, and individuals. Gained experience in income tax litigations as well as in evaluating taxability and withholding rates for Form 15CA/15CB in accordance with DTAA provisions.</li>
+                            <li><strong>Indirect Tax:</strong> Prepared and filed GST returns, detailed reconciliations to ensure accurate filings and filed GSTR-9 and GSTR-9C returns. Gained proficiency in handling Service Tax notices.</li>
+                            <li><strong>Bookkeeping & Finalization:</strong> Performed comprehensive book keeping and successfully finalized accounts, ensuring compliance with Accounting Standards and relevant statutory requirements.</li>
+                            <li><strong>Regulatory Filings and Compliance:</strong> Filed ROC, PTRC and SFT returns. Filed TDS-TCS returns including Form 26QB for property transactions. Prepared TDS reconciliations for accurate filings. Handled a range of filings for Non-Profit Organizations (NPOs).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section-header">LEADERSHIP, INTERESTS AND COMMUNITY ENGAGEMENT</div>
+                <ul>
+                    <li><strong>Co-Founder at FinTaxLife:</strong> Established and managing an innovative platform providing essential financial, tax, and investment knowledge. Launched <strong>VentureIQ</strong>, an AI-driven solution for evaluating the feasibility of business ideas to support entrepreneurs.</li>
+                    <li><strong>Passionate Stock Market Enthusiast:</strong> A dedicated stock market enthusiast with a keen interest in investment strategies. Started exploring the market at the age of 16.</li>
+                    <li><strong>Leadership in Sports:</strong> Led a football team at the district level and cricket teams in local, community and ICAI-organized leagues. Actively engaged in playing cricket and table tennis.</li>
+                    <li><strong>Outdoor Enthusiast and Volunteer:</strong> Completed challenging treks and contributed to community initiatives with Zero Gravity NGO, including painting and improving the condition of government schools.</li>
+                </ul>
+
+                <div class="section-header">STRENGTHS</div>
+                <ul class="strengths-grid">
+                    <li>Conceptual understanding</li>
+                    <li>Disciplined, Diligent, and Hardworking</li>
+                    <li>Entrepreneurial Mindset</li>
+                    <li>Self-motivated</li>
+                    <li>Team Player</li>
+                    <li>Results-oriented</li>
+                    <li>Analytical mind</li>
+                    <li>Goal-driven</li>
+                    <li>Strategic thinker</li>
+                </ul>
+
+                <div class="section-header">CERTIFICATIONS & TRAININGS</div>
+                <ul>
+                    <li><strong>ICAI:</strong> Completed IT and OC Trainings.</li>
+                    <li><strong>CA Monk:</strong> Advanced Excel Course (15+ hours).</li>
+                    <li><strong>NISM:</strong> Completed Financial Literacy course and currently pursuing certifications in Equity Derivatives, Research Analysis, and Mutual Fund Distribution.</li>
+                    <li><strong>MS Office:</strong> Completed MS-CIT Certificate course with an 88% score (88/100) from MKCL.</li>
+                    <li><strong>Software Proficiency:</strong> Proficient in ERP systems like Tally Prime-ERP, SAP & Zoho Books.</li>
+                </ul>
+
+                <div class="section-header">LANGUAGES PROFICIENCIES</div>
+                <ul>
+                    <li>Fluent in <strong>English, Hindi, and Marathi</strong>.</li>
+                </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+    
+    <div class="template-card">
+        <div class="template-header">
+          <h3>7. Boxed Objective</h3>
+          <div class="header-actions">
+            <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
+            <button class="download-btn" data-target="cv-template-7">Download PDF</button>
+          </div>
+        </div>
+        <div class="cv-container">
+          <div class="cv-content">
+            <div id="cv-template-7" class="cv-template cv-style-objective-box">
+                <div class="header-main">
+                    <h1>Padam Bhansali</h1>
+                    <div class="contact-info">
+                        +91 7228881182 | capadambhansali@gmail.com | Mumbai
+                    </div>
+                </div>
+
+                <div class="objective">
+                    <strong>CAREER OBJECTIVE:</strong> To associate myself with an Industrial training opportunity with an organization that puts my knowledge and practical understanding to utmost use and helps achieve maximum goals for the organization.
+                </div>
+
+                <div class="section-header">EDUCATIONAL QUALIFICATION</div>
+                <table>
+                    <thead>
+                        <tr><th>Course</th><th>Year</th><th>Institution</th><th>Marks</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>CA Intermediate</td><td>2023</td><td>ICAI</td><td>429/800 (Exemption: Financial Management)</td></tr>
+                        <tr><td>CA Foundation</td><td>2021</td><td>ICAI</td><td>271/400 (Exemption in all 4 subjects)</td></tr>
+                        <tr><td>Bachelor of Commerce</td><td>March,2023</td><td>Mithibai College of Arts, Science & Commerce</td><td>CGPA 8.11</td></tr>
+                        <tr><td>HSC - Class XII</td><td>March, 2020</td><td>Mithibai College of Arts, Science & Commerce</td><td>445/500 (89%)</td></tr>
+                        <tr><td>ICSE - Class X</td><td>March, 2018</td><td>Cambridge School (Ryan International Group)</td><td>450/500 (90%)</td></tr>
+                    </tbody>
+                </table>
+                
+                <div class="section-header">WORK EXPERIENCE</div>
+                <div class="item-header">
+                    <h3>Article Assistant | JMMK & Co. (Grrowwide Group) | Mumbai</h3>
+                    <span class="date">(February 2024 – Present)</span>
+                </div>
+                <ul>
+                    <li><strong>Statutory Audit:</strong> Led end-to-end statutory audit process for multiple clients across various industries. Assisted in the process of <strong>Restatement of Financial Statements</strong> and prepared <strong>standalone and consolidated</strong> financial statements, drafted audit reports, identifying key findings and areas for improvement.</li>
+                    <li><strong>Direct Tax:</strong> Supported <strong>tax audits</strong> for clients, ensuring compliance with direct tax regulations and assisted in Income Tax computation during Tax season.</li>
+                    <li><strong>Indirect Tax:</strong> Computed and filed <strong>GSTR-1, GSTR-3B, GST 9 & 9C returns</strong> ensuring timely and accurate submission during the GST season. Managed the preparation and filing of Professional Tax returns, ensuring full compliance with state regulations.</li>
+                </ul>
+                <div class="item-header" style="margin-top: 10px;">
+                    <h3>Merchant Banking Internship | Bonanza Portfolio Ltd. | Mumbai</h3>
+                    <span class="date">(June 2023 - July 2023)</span>
+                </div>
+                <ul>
+                    <li>Conducted comprehensive company valuations, including preparing <strong>Discounted Cash Flow (DCF) models</strong> to assess business value and investment potential. Developed and projected future cash flows to support financial forecasting and strategic decision-making. Assisted in the <strong>private placement process of Non-Convertible Debentures (NCDs)</strong>, preparing investor presentations and ensuring regulatory compliance, improved Excel learning.</li>
+                </ul>
+
+                <div class="section-header">LEADERSHIP, INTERESTS AND COMMUNITY ENGAGEMENT</div>
+                <ul>
+                    <li><strong>Mithibai Entrepreneurship Development Cell</strong> - Sub-Head of Logistics, overseeing event coordination and logistics management.</li>
+                    <li><strong>Presentations and Public Speaking</strong> - Recognition for presentations in school, college and OC training, anchoring for school events and assemblies.</li>
+                    <li><strong>Member of Public Relations</strong> team for college fest Kshitij.</li>
+                    <li><strong>International Cultural Engagement</strong> - Participated in World wide level Theatre Cultural festival in school, hosted international exchange students fostering cross-cultural understanding and communication.</li>
+                    <li><strong>Academic Projects</strong>
+                        <ul style="list-style-type: disc; margin-left: 20px;">
+                            <li><strong>Field Visit (2022)</strong> - Visited a public limited company to understand the working of their HR department.</li>
+                            <li><strong>Start-up Pitch (2022)</strong> - Presentation pitch on a start-up idea as a part of entrepreneurship management.</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <div class="section-header">ACHIEVEMENTS</div>
+                <ul>
+                    <li>Awarded for Best Presentation in school, Best host for Assembly, Won elocution competitions.</li>
+                    <li>First place in Throwball competition - (2019), (2024).</li>
+                    <li>Completed Level 4 in Bharatnatyam, showcasing skills in classical dance.</li>
+                    <li>Awarded in school for securing 100 in Maths for two consecutive semesters.</li>
+                </ul>
+
+                <div class="section-header">SKILLS</div>
+                <ul>
+                    <li>Presentation skills, Public speaking, Leadership skills, Communication skills.</li>
+                    <li>Software Proficiency: Proficient in MS Excel, PPT, ERP systems like Tally Prime-ERP.</li>
+                </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    
+    
+    <div class="template-card">
+        <div class="template-header">
+          <h3>8. Modern Complex Layout</h3>
+          <div class="header-actions">
+            <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
+            <button class="download-btn" data-target="cv-template-8">Download PDF</button>
+          </div>
+        </div>
+        <div class="cv-container">
+          <div class="cv-content">
+            <div id="cv-template-8" class="cv-template cv-style-modern-complex">
+                <div class="header-main">
+                    <div>
+                        <h1 class="name">Padam Bhansali</h1>
+                        <div class="tagline">Chartered Accountant (Nov'24) | Flipkart</div>
+                    </div>
+                    <div class="header-contact">
+                        <div><i class="fa-solid fa-envelope"></i>Bhansalipadam7@gmail.com</div>
+                        <div><i class="fa-solid fa-phone"></i>+91 9313148303</div>
+                        <div><i class="fa-solid fa-location-dot"></i>Bengaluru</div>
+                        <div><i class="fa-brands fa-linkedin"></i>www.linkedin.com/in/ca-padam-bhansali</div>
+                    </div>
+                </div>
+
+                <div class="section-header">PROFESSIONAL & EDUCATIONAL QUALIFICATIONS</div>
+                <table>
+                    <thead>
+                        <tr><th>EXAMINATION</th><th>YEAR</th><th>INSTITUTION</th><th>PERCENTAGE</th><th>REMARKS</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>CA Final</td><td>Nov 2024</td><td rowspan="3">The Institute of Chartered Accountants of India (Cleared all levels in first attempt)</td><td>68%</td><td>State Rank 1</td></tr>
+                        <tr><td>CA Intermediate</td><td>Nov 2021</td><td>60%</td><td>Exemption in All Group 1 Papers</td></tr>
+                        <tr><td>CA Foundation</td><td>Nov 2020</td><td>75%</td><td>70+ Score in all subjects</td></tr>
+                        <tr><td>B.Com</td><td>Mar 2023</td><td>RJTCC (Gujarat University)</td><td>76%</td><td>First Class Distinction</td></tr>
+                        <tr><td>Class XII (GSEB)</td><td>Mar 2020</td><td>Devasya International School</td><td>88%</td><td>School Rank 1</td></tr>
+                        <tr><td>Class X (TSEB)</td><td>Mar 2018</td><td>New Vision School</td><td>92%</td><td>School Rank 1</td></tr>
+                    </tbody>
+                </table>
+                
+                <div class="section-header">WORK EXPERIENCE</div>
+                <div class="work-item">
+                    <div class="work-header">
+                        <h3>Flipkart (Bengaluru) – Industrial Trainee (Business Finance)</h3>
+                        <span>(Dec'23 - Present)</span>
+                    </div>
+                    <div class="work-body">
+                        <h4>Business Finance</h4>
+                        <ul>
+                            <li>Assisted in identifying and implementing <strong>cost-saving strategies</strong> across PAN India Fulfillment and Sortation Centers, driving operational efficiency and contributing to <strong>Annual Savings of ₹100 Crores</strong>.</li>
+                            <li>Assisted in the <strong>optimization and finalization of monthly plans</strong> for over ₹100 crore in monthly operating expenses. Collaborated with multiple stakeholders including Planning, Operations, Design, HR, and Procurement.</li>
+                            <li>Facilitated in an approximate <strong>₹50 lakh monthly cost reduction</strong> by eliminating buffers, design improvements and better cross-deployment of manpower.</li>
+                            <li>Efficiently <strong>managed multiple responsibilities</strong> alongside core duties, including overseeing the accrual process for the South Zone, supporting the Zonal Finance Team, managing finance involved in large inventory supply chain.</li>
+                            <li>Prepared a comprehensive <strong>dashboard to track Operative KPIs</strong> across different functions and monitor manpower changes (site-wise and function-wise). Solely responsible for reporting results and conclusions from the analysis to the upper management.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="work-item">
+                    <div class="work-header">
+                        <h3>Goenka Mehta & Associates (Ahmedabad) – Article Assistant (Accounting)</h3>
+                        <span>(Jan'23 - Nov'23)</span>
+                    </div>
+                    <div class="work-body">
+                        <h4>Accounting</h4>
+                        <ul>
+                            <li>Managed <strong>end-to-end accounting processes</strong> for New Zealand based companies, resulting in higher accuracy in their financial records and streamlined accounting workflows.</li>
+                            <li>Ensured timely <strong>statutory compliance</strong>, reducing penalties through efficient GST filing and taxation-related services for offshore clients.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="work-item">
+                    <div class="work-header">
+                        <h3>Kantilal Patel & Co. (Ahmedabad) – Article Assistant (Auditing and Assurance)</h3>
+                        <span>(Apr'22 - Dec'22)</span>
+                    </div>
+                    <div class="work-body">
+                        <h4>Auditing & Assurance</h4>
+                        <ul>
+                            <li>Assisted in <strong>statutory audit</strong> of a cooperative bank with over 75 branches, <strong>₹10,000 Cr in deposits</strong>, identifying critical areas of improvement.</li>
+                            <li>Conducted comprehensive <strong>statutory audits, tax audits, GST audits, and internal audits for 30+ clients</strong> across industries such as healthcare, construction, VC's, tobacco, ice cream manufacturing, e-commerce, logistics etc.</li>
+                            <li>Prepared and <strong>filed income tax returns</strong> for individuals, trusts, and companies, optimizing tax savings through tax planning and claiming deductions under various sections, assisted in <strong>GST filing</strong> for various organizations, ensuring timely and accurate submissions.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section-header">EXTRA CURRICULAR ACTIVITIES, SKILLS, ACHIEVEMENTS & INTERESTS</div>
+                <div class="extra-grid">
+                    <strong>Position of Responsibility</strong>
+                    <div><strong>My Student Club – Founder</strong> (Dec'22 - Present)
+                        <ul style="padding-left: 15px;">
+                            <li>A student social networking platform, achieving <strong>5000+</strong> member registrations within first quarter with monthly <strong>50K+ site visits</strong>, growing a <strong>25-member team</strong> and generating <strong>₹1 Lakh in monthly profits</strong>.</li>
+                            <li>Organized <strong>100+ guidance sessions</strong> on CA preparation, industrial training, and skill development, featuring Shark Tank pitchers, influencers, and AIR 1 holders, positively impacting 10,000+ participants.</li>
+                        </ul>
+                    </div>
+                    
+                    <strong>Technical Skills</strong>
+                    <div>
+                        <ul><li>Proficient in MS-Office (Excel, Word & PowerPoint), Google Tools (Sheets & Slides).</li><li>Working Knowledge of Power Bi.</li></ul>
+                    </div>
+                    
+                    <strong>Significant Awards & Certifications</strong>
+                    <div>
+                        <ul>
+                            <li>Certified <strong>Financial Modeling & Valuation Analyst (FMVA)</strong> by CFI.</li>
+                            <li>Obtained <strong>Research Analyst Certification</strong> from NISM.</li>
+                            <li>Received a Certificate from <strong>Trinity College of London</strong> in English Speaking.</li>
+                            <li>Awarded with <strong>Employee of the Quarter</strong> (Performance Award) at Flipkart during the Internship period.</li>
+                            <li>Achieved <strong>advanced-level certifications in Power BI and MS Excel</strong>.</li>
+                            <li>Consistently ranked among the <strong>top 3 throughout academics</strong>.</li>
+                            <li>Winner of <strong>Group Discussion</strong> Competition in MCS.</li>
+                        </ul>
+                    </div>
+                    
+                    <strong>Extra-Curricular</strong>
+                    <div>
+                        <ul>
+                            <li>Built & grew StepFly (Online CA Lecture Portal) to <strong>₹1 Crore in annual revenue</strong>.</li>
+                            <li><strong>Hosted</strong> various sessions with 1000+ participants and participated as <strong>Speaker</strong> for student guidance programs.</li>
+                            <li>Authored multiple articles featured in <strong>ICAI Newsletters</strong>.</li>
+                            <li><strong>Investor</strong> in stock market & crypto since age 14.</li>
+                            <li>Contributed as <strong>Volunteer</strong> at Ahmedabad National Conference.</li>
+                            <li><strong>Content Writing:</strong> Grown LinkedIn following to 10K+ with over 1 million impressions.</li>
+                        </ul>
+                    </div>
+                    
+                    <strong>Interests</strong>
+                    <div>
+                        <ul>
+                            <li><strong>Cricket: Man of the Match</strong> in Flipkart Finance Team corporate cricket league.</li>
+                            <li><strong>Business Research:</strong> Enthusiastic about analyzing businesses through studying research reports and financials.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
     
     <div class="template-card">
-      <div class="template-header">
-        <h3>9.</h3>
-        <div class="header-actions">
-          <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
-          <button class="download-btn" data-target="cv-template-9">Download PDF</button>
+        <div class="template-header">
+          <h3>9. SPS Objective Box Style</h3>
+          <div class="header-actions">
+            <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
+            <button class="download-btn" data-target="cv-template-9">Download PDF</button>
+          </div>
+        </div>
+        <div class="cv-container">
+          <div class="cv-content">
+            <div id="cv-template-9" class="cv-template cv-style-sps">
+                <div class="header-main">
+                    <h1>Padam Bhansali</h1>
+                    <div class="contact-info">
+                        Email: capadambhansali@gmail.com | Phone: +91-7228881182 | https://www.linkedin.com/in/ca-padam-bhansali
+                    </div>
+                </div>
+
+                <div class="objective">
+                    <h2>CAREER OBJECTIVE</h2>
+                    <p>
+                        A highly motivated and ambitious CA aspirant currently pursuing articleship under SPS Associates, Delhi.
+                        Actively seeking an industrial training opportunity with a dynamic organization to acquire comprehensive
+                        industry insights, practical experience, and deliver impactful contributions to the entity.
+                    </p>
+                </div>
+
+                <div class="section-header">PROFESSIONAL & EDUCATIONAL QUALIFICATIONS</div>
+                <table>
+                    <thead>
+                        <tr><th>Course/Examination</th><th>Institution</th><th>Year of Passing</th><th>Results</th><th>Remarks</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>CA Intermediate (Both Groups)</td><td>ICAI</td><td>2023</td><td>459/800</td><td>Cleared both groups in 1st attempt with exemption in 3 subjects.</td></tr>
+                        <tr><td>CA Foundation</td><td>ICAI</td><td>2022</td><td>335/400 (84%)</td><td>Cleared the exam in 1st attempt with distinction in all subjects.</td></tr>
+                        <tr><td>B. Com (Hons)</td><td>Atmaram Sanatan Dharma College (DU)</td><td>2024</td><td>7.27 CGPA</td><td>Completed the program with First Division.</td></tr>
+                        <tr><td>Class XII (Commerce)</td><td>RPVV Sector-5 Dwarka</td><td>2021</td><td>97.75%</td><td>Achieved 1st Rank in School out of 140+ students.</td></tr>
+                        <tr><td>Class X</td><td>GGSSS Mohan Garden</td><td>2019</td><td>96.6%</td><td>1st Rank in the entire district (received excellence award).</td></tr>
+                    </tbody>
+                </table>
+                
+                <div class="section-header">WORK EXPERIENCE</div>
+                <div class="work-header">
+                    <h3>Article Assistant – (SPS ASSOCIATES)</h3>
+                    <span><strong>Jun'24 – CURRENT</strong></span>
+                </div>
+                <div class="work-body">
+                    <strong>Statutory Audit</strong>
+                    <ul>
+                        <li>Led statutory audits for a diverse portfolio of <strong>listed and unlisted companies</strong> with revenues exceeding ₹700 Cr. Gained exposure in various industries such as <strong>Tourism, Trading, Manufacturing, IT, and Business Consulting</strong>.</li>
+                        <li>Developed a strong <strong>understanding of financial reporting frameworks</strong>, including the structure and components of financial statements and gained exposure to industry-specific accounting treatments and disclosures.</li>
+                        <li><strong>Performed detailed testing of financial statements to ensure accurate financial reporting and regulatory compliance</strong> as per the Companies Act, Income Tax Act, and Ind AS.</li>
+                        <li><strong>Evaluated the effectiveness of internal control systems</strong> across financial processes, identified control weaknesses and procedural gaps, and provided actionable recommendations to strengthen controls and enhance process efficiency.</li>
+                        <li><strong>Coordinated with clients and cross-functional teams</strong> for gathering financial data and resolving discrepancies. Improving the communication and client interaction.</li>
+                    </ul>
+                </div>
+                <div class="work-body" style="padding-top:0;">
+                    <strong>Statutory Compliance & Tax Filings</strong>
+                    <ul>
+                        <li><strong>Independently managed the end-to-end process of filing statutory returns</strong>, ensuring strict adherence to compliance timelines under GST and TDS regulations, minimizing the risk of penalties and interest liabilities.</li>
+                        <li><strong>Prepared, reviewed, and filed GST returns</strong> including GSTR-1, GSTR-3B, and GSTR-9, as well as TDS returns (Forms 24Q and 26Q), with precision and in alignment with applicable tax laws and organizational policies.</li>
+                        <li>Conducted regular <strong>reconciliations of Input Tax Credit (ITC)</strong> across purchase registers, GSTR-2A/2B, and books of accounts, ensuring optimal credit utilization, timely corrections, and accurate reporting in GST filings.</li>
+                        <li>Led <strong>GST audits for three clients</strong>, reconciling turnover, and ITC between books and the GST portal, identifying discrepancies, and streamlining processes for improved compliance and reporting accuracy.</li>
+                    </ul>
+                </div>
+                <div class="work-body" style="padding-top:0;">
+                    <strong>Financial Reporting & others</strong>
+                    <ul>
+                        <li>Oversaw complete <strong>accounting operations using Tally Prime</strong>, including journal entries, ledger maintenance, bank reconciliations, and expense tracking, to ensure accurate financial data entry, processing, and timely reporting.</li>
+                        <li><strong>Prepared, reviewed, and finalized financial statements for over 10 clients</strong> across various sectors, ensuring full compliance with applicable Accounting Standards, tax laws, and statutory reporting requirements.</li>
+                        <li>Independently prepared <strong>15 CA/CB and Financial Capability Certificates</strong> for various clients across different sectors after reviewing and analyzing client-submitted data, financial statements, and supporting documentation.</li>
+                    </ul>
+                </div>
+
+                <div class="section-header">EXTRACURRICULAR ACTIVITIES, CERTIFICATIONS, AND SKILLS</div>
+                <div class="extra-section">
+                    <strong>Extracurricular Activities</strong>
+                    <ul>
+                        <li><strong>Branch-Level Winner in the Elocution Contest</strong> conducted by ICAI as part of the National Talent Search, demonstrating public speaking skills and thought articulation skills. <strong>AIR 96 in S7 National online poetry contest</strong>.</li>
+                        <li><strong>Silver Medalist in National-level Accounting Olympiad</strong> - 2024. Secured <strong>AIR 9 in ICAI Commerce Quiz</strong> - 2020.</li>
+                        <li><strong>Excellence Award in Academics</strong>, conferred by the Honorable Former Education Minister of Delhi in the presence of Honorable Former Chief Minister for consistent academic excellence in 2019.</li>
+                    </ul>
+                    <strong>Certifications</strong>
+                    <ul>
+                        <li><strong>FMVA Certification:</strong> Successfully completed a 19+ hour Financial Modeling and Valuation course from CA Monk, gaining hands-on knowledge in building dynamic financial models and performing valuation analysis.</li>
+                        <li><strong>ICAI Trainings:</strong> Completed <strong>Information Technology (IT) and Orientation Course (OC)</strong> conducted by the Institute of Chartered Accountants of India (ICAI); recognized as <strong>Best Presenter</strong> in both IT and OC batches.</li>
+                    </ul>
+                    <div class="skills-grid">
+                        <strong>Skill Set</strong>
+                        <div>
+                            <strong>Technical Skills:</strong> Proficient in MS Excel, MS PowerPoint, and MS Word; experienced in Tally Prime for efficient accounting operations; <strong>foundational knowledge of SAP ERP</strong> systems.<br>
+                            <strong>Soft Skills:</strong> Excellent communication and interpersonal skills and strong leadership and team management abilities; adept at <strong>critical thinking</strong>, effectively adapting to dynamic and evolving environments, and creative writing.
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="cv-container"><div class="cv-content">
-        <div id="cv-template-9" class="cv-template dynamic-intern">
-          <div class="header-top">
-            <h1>Pooja Shrivas</h1>
-            <div class="icon-contact-container">
-                <div class="icon-contact-item"><i class="fa-solid fa-phone"></i><a href="tel:+918412912076">+91 84129 12076</a></div>
-                <div class="icon-contact-item"><i class="fa-solid fa-envelope"></i><a href="mailto:pooja.shrivas@email.com">pooja.shrivas@email.com</a></div>
-                <div class="icon-contact-item"><i class="fa-brands fa-linkedin"></i><a href="https://linkedin.com/in/poojashrivas" target="_blank">linkedin.com/in/poojashrivas</a></div>
-            </div>
-          </div>
 
-          <h2>Professional Summary</h2>
-          <p>Dynamic CA Finalist specializing in Financial Markets, Investment Analysis, & Equity Research. Combines auditing excellence with modern financial analytics. CFA Level 1 candidate with experience in equity valuation, bond analysis, portfolio management, and investment banking simulations. Leverages technology and data analytics to drive investment decisions.</p>
-
-          <h2>Educational Foundation & Professional Qualifications</h2>
-          <p><strong>CFA Program:</strong> Level 1 Candidate (Result Awaited Dec 2024) — Comprehensive preparation across all 10 topics.</p>
-          <p><strong>ICAI Chartered Accountancy:</strong> 
-          <br/>• CA Final: Appearing May 2025 (SFM and Advanced Financial Management focus)
-          <br/>• CA Intermediate Group 2: May 2022 — FM & SM Exemptions (Top 15%)
-          <br/>• CA Intermediate Group 1: Nov 2021 — Cost & Management Accounting Exemption (First Attempt)
-          <br/>• CA Foundation: Dec 2019 — 68.25% (First Attempt, AIR 4,562)</p>
-          <p><strong>Bachelor of Commerce:</strong> Santaji Mahavidyalaya, Nagpur — 8.17 CGPA (2019–2022) — Specialized in Financial Markets and Investment Analysis.</p>
-          <p><strong>Class XII (Commerce + Math):</strong> Hislop College, Nagpur — 88.4% (2019) — Mathematics, Economics, Accountancy Excellence.</p>
-
-          <h2>Professional Experience</h2>
-          <div class="job-item">
-            <div class="role">Financial Analyst & Audit Specialist</div><div class="org">APJ & ASSOCIATES, Nagpur (Apr 2022 – Present)</div>
-            <ul>
-              <li><strong>Equity Research & Valuation:</strong> Analyzed 25+ listed companies (FMCG, Banking, Tech). Developed DCF models with scenarios, sensitivity, Monte Carlo simulations.</li>
-              <li><strong>Fixed Income & Bond Analysis:</strong> Performed credit analysis for bonds (₹500+ Cr portfolio). Developed yield curve, duration, credit risk models. Utilized Bloomberg Terminal.</li>
-              <li><strong>Investment Portfolio Management:</strong> Supported portfolio managers in asset allocation, rebalancing. Conducted sector rotation, momentum studies. Maintained performance dashboards.</li>
-              <li><strong>Concurrent Bank Audit:</strong> Led concurrent audit teams for 4 bank branches (treasury ops, investment compliance, ALM). Ensured RBI guidelines adherence.</li>
-              <li><strong>Advanced Financial Modeling:</strong> Built complex models for IPO valuations, M&A. Developed automated DCF templates with integrated sensitivity.</li>
-              <li><strong>Market Research & Analysis:</strong> Prepared research reports on sectoral trends, macro impacts, regulatory changes. Analyzed earnings, management guidance.</li>
-              <li><strong>Client Advisory & Relationship Management:</strong> Provided investment advisory to HNIs, institutional clients. Conducted portfolio reviews, risk profiling.</li>
-              <li><strong>Tax Compliance & Statutory Services:</strong> Independently filed 100+ income tax returns (salary, capital gains, foreign assets). Specialized in capital gains optimization.</li>
-            </ul>
-          </div>
-
-          <div class="job-item">
-            <div class="role">Audit Associate & Financial Analyst</div><div class="org">ARTH & ASSOCIATES, Pune (Aug 2021 – Mar 2022)</div>
-            <ul>
-              <li><strong>Revenue Audit & Business Analysis:</strong> Conducted revenue audits for service companies (>₹2 Cr monthly) focusing on contract accounting, Ind AS 115. Identified leakages worth ₹8+ Lakh.</li>
-              <li><strong>Pharmaceutical Industry:</strong> Executed internal audits for 6 pharma companies (inventory, regulatory, transfer pricing). Reviewed distributor channels (₹25+ Cr annual transactions).</li>
-              <li><strong>Statutory Audit:</strong> Supported audits for manufacturing, trading, service sectors (₹150+ Cr turnover). Performed vouching, balance confirmation.</li>
-            </ul>
-          </div>
-
-          <div class="job-item">
-            <div class="role">Research Intern & Investment Analyst</div><div class="org">NiveshGuru Wealth Management, Nagpur (Jan–Mar 2021)</div>
-            <ul>
-              <li><strong>Investment Research & Strategy:</strong> Assisted senior portfolio managers in equity research (15+ large-cap stocks) focusing on fundamental/technical analysis. Developed investment themes (ESG).</li>
-              <li><strong>Fixed Income Strategy Support:</strong> Conducted yield curve, credit spread evaluation. Prepared monthly fixed income market reports.</li>
-              <li><strong>Client Communication:</strong> Authored 20+ investor education articles. Created investor presentation materials.</li>
-            </ul>
-          </div>
-
-          <h2>Professional Certifications & Specialized Training</h2>
-          <div class="grid-3col">
-            <div>
-              <p><strong>NISM Certifications:</strong></p>
-              <ul>
-                <li>Series V-A: Mutual Fund Distributors</li>
-                <li>Series VIII-A: Equity Derivatives</li>
-                <li>Series X-A: Investment Adviser (Level 1)</li>
-              </ul>
-            </div>
-            <div>
-              <p><strong>Investment Banking:</strong></p>
-              <ul>
-                <li>J.P. Morgan Virtual Experience</li>
-                <li>Goldman Sachs Virtual Insight</li>
-                <li>Morgan Stanley Simulation</li>
-              </ul>
-            </div>
-            <div>
-              <p><strong>Credit Analysis:</strong></p>
-              <ul>
-                <li>Standard Chartered Credit Risk Simulation</li>
-                <li>Moody's Analytics Certification</li>
-                <li>S&P Global Market Intelligence</li>
-              </ul>
-            </div>
-          </div>
-
-          <h2>Technical Skills & Software Proficiency</h2>
-          <ul>
-            <li><strong>Financial Analysis & Modeling:</strong> Advanced Excel (VBA Macros, Solver), Bloomberg Terminal, Refinitiv Eikon, Capital IQ, FactSet.</li>
-            <li><strong>Data Analytics & Visualization:</strong> Power BI (Advanced), Tableau (Intermediate), Python (Pandas, NumPy), SQL (Queries).</li>
-            <li><strong>Portfolio Management:</strong> Riskalyze, Morningstar Advisor, YCharts, Portfolio Visualizer.</li>
-            <li><strong>Research Platforms:</strong> Thomson Reuters, Bloomberg Professional, S&P Capital IQ, Zacks, Value Line.</li>
-            <li><strong>Programming & Automation:</strong> VBA (Expert), Python (yfinance, pandas-datareader), MATLAB (Basic).</li>
-            <li><strong>Presentation & Communication:</strong> PowerPoint (Advanced), Canva Pro, Adobe Creative Suite (Basic).</li>
-          </ul>
-        </div>
-      </div></div>
-    </div>
-
-    
-    <div class="template-card">
-      <div class="template-header">
-        <h3>10.</h3>
-        <div class="header-actions">
-          <button class="action-btn fullscreen-btn" title="Toggle Fullscreen"><i class="fa-solid fa-expand"></i></button>
-          <button class="download-btn" data-target="cv-template-10">Download PDF</button>
-        </div>
-      </div>
-      <div class="cv-container"><div class="cv-content">
-        <div id="cv-template-10" class="cv-template compact-pro">
-          <div class="sidebar">
-            <h1>Viren Sharma</h1>
-            <p>CA Finalist & Audit Specialist</p>
-            <h2>Contact Details</h2>
-            <div class="icon-contact-vertical-list">
-              <div class="icon-contact-item"><i class="fa-solid fa-phone"></i><span>+91 96504 38976</span></div>
-              <div class="icon-contact-item"><i class="fa-solid fa-envelope"></i><span>viren.sharma@email.com</span></div>
-              <div class="icon-contact-item"><i class="fa-brands fa-linkedin"></i><span>linkedin.com/in/virensharma-ca</span></div>
-              <div class="icon-contact-item"><i class="fa-solid fa-location-dot"></i><span>New Delhi, India</span></div>
-            </div>
-            
-            <h2>Educational Background</h2>
-            <p><strong>CA Final</strong> (May 2025)<br/>All 8 papers in single attempt<br/>
-            <strong>CA Intermediate</strong> (May 2022)<br/>54% — Perfect Score in Audit MCQs (30/30)<br/>
-            <strong>B.Com (Hons)</strong> (Jun 2022)<br/>Delhi University (SOL) — 7.2 CGPA<br/>
-            <strong>Class XII</strong> (2020)<br/>89.4% — Commerce Stream</p>
-            
-            <h2>Core Competencies</h2>
-            <p><strong>Audit Excellence:</strong> Statutory, Internal, Tax, Bank, Insurance<br/>
-            <strong>Risk Management:</strong> ICFR, Process Design, Control Testing<br/>
-            <strong>Tax Expertise:</strong> Income Tax, TDS/TCS, GST, Transfer Pricing<br/>
-            <strong>Technology:</strong> Data Analytics, Process Automation, AI Tools</p>
-            
-            <h2>Technical Skills</h2>
-            <p><strong>Advanced Software:</strong> Excel/VBA, Power BI, IDEA, ACL, SQL<br/>
-            <strong>ERP Systems:</strong> Tally Prime, SAP FICO, Oracle Financials<br/>
-            <strong>Tax Platforms:</strong> CompuTax, ClearTax, TRACES, GST Portal<br/>
-            <strong>Programming:</strong> Python, R (Basic)</p>
-            
-            <h2>Certifications</h2>
-            <p><strong>Investment:</strong> NISM Investment Adviser, CFA Investment Foundations<br/>
-            <strong>Technology:</strong> Microsoft Power BI Certified, Google Analytics IQ<br/>
-            <strong>Professional:</strong> KPMG Career Catalyst, EY NextGen Leader</p>
-          </div>
-
-          <div class="main">
-            <h2>Professional Summary</h2>
-            <p>Accomplished CA Article Trainee with broad experience across Statutory Audits, Tax Audits, Internal Controls, and Risk Assessment. Track record in complex audits including Life Insurance (₹47,000+ Cr AUM), Banking, Government enterprises. Proven leadership managing teams, coordinating with management, delivering high-quality assurance. Advanced expertise in data analytics and automation.</p>
-
-            <h2>Professional Experience</h2>
-            <p><strong>KG Somani & Co. LLP, New Delhi (Sep 2021 – Present)</strong></p>
-            
-            <div class="job-item">
-              <div class="job-header"><span>Statutory Audit Leadership</span></div>
-              <ul>
-                <li><strong>Life Insurance Corp Audit (₹47,000+ Cr AUM):</strong> Led 6-professional team for statutory audit (policy admin, claims, investments). Implemented advanced sampling (2.8 million policies).</li>
-                <li><strong>Luxury Retail Chain (₹150+ Cr Revenue):</strong> Managed end-to-end audit for 45 locations. Conducted revenue cycle, inventory, loyalty program audits. Verified 4,500+ invoices, 250+ payrolls.</li>
-                <li><strong>Multi-Location Distribution Audit (₹40+ Cr Ops):</strong> Executed audit of complex distribution network (warehouse, logistics, dealers). Tested fixed assets, freight costs, TDS compliance.</li>
-                <li><strong>Manufacturing Sector:</strong> Conducted audits for 8 entities (auto, textiles). Specialized in inventory valuation, WIP, overheads. Implemented continuous auditing.</li>
-              </ul>
-            </div>
-            
-            <div class="job-item">
-              <div class="job-header"><span>Specialized Audit Engagements</span></div>
-              <ul>
-                <li><strong>Tax Audit - Life Insurance Corp:</strong> Managed comprehensive tax audit (Sec 44AB) covering investment income, policy holder taxation. Prepared detailed 3CD report.</li>
-                <li><strong>Public Sector Bank Branch Audit:</strong> Conducted intensive bank audit (credit risk, NPA classification). Reviewed ₹320 Cr loan portfolio.</li>
-                <li><strong>Treasury Operations & Investment Audit:</strong> Detailed audit of bank treasury (gov securities, money market, FX, derivatives). Ensured SLR compliance.</li>
-                <li><strong>Co-operative Banking:</strong> Audits for 3 cooperative banks (member deposits, lending, agri loans). Specialized in cooperative accounting.</li>
-              </ul>
-            </div>
-            
-            <div class="job-item">
-              <div class="job-header"><span>Government & PSU Audit Excellence</span></div>
-              <ul>
-                <li><strong>Quality Review - Infrastructure Dev Corp:</strong> Led quality review for state infra company (FS preparation, audit documentation).</li>
-                <li><strong>Petroleum Sector Special Audit:</strong> Participated in special audit of petroleum distributor (pricing, subsidy validation). Investigated 150+ exceptions.</li>
-                <li><strong>Municipal Corp Audit:</strong> Assisted in statutory audit (property tax, utility billing, contract management). Specialized in government fund accounting.</li>
-              </ul>
-            </div>
-
-            <h2>Process Innovation & Technology Integration</h2>
-            <ul>
-              <li><strong>Automated Sampling Workpaper:</strong> Designed Excel-based sampling tool. Adopted across 8 engagements (50% efficiency gain).</li>
-              <li><strong>GST-Income Tax Cross-Verification:</strong> Created VBA macro cross-referencing GST/IT computations. Reduced manual reconciliation by 75%.</li>
-              <li><strong>Client Portal Development:</strong> Implemented SharePoint client portal (tracking, document sharing, queries). Improved satisfaction by 40%.</li>
-              <li><strong>Data Analytics Implementation:</strong> Pioneered IDEA software for 100% population testing (journal entry, duplicates). Achieved 35% audit coverage improvement.</li>
-              <li><strong>Risk Assessment Automation:</strong> Developed automated framework using ratio analysis, benchmarking. Generates real-time risk scores.</li>
-            </ul>
-
-            <h2>Leadership & Team Development</h2>
-            <ul>
-              <li><strong>Cross-Functional Team Leadership:</strong> Managed teams of 4-12 professionals. Maintained team performance >95%.</li>
-              <li><strong>Training Program:</strong> Designed/delivered curriculum for 35+ junior professionals (98% completion).</li>
-              <li><strong>Knowledge Management:</strong> Established firm-wide repository (audit procedures, updates). Improved consistency.</li>
-              <li><strong>Client Relationship:</strong> Managed board members, audit committees, senior management. Delivered findings to 20+ boards.</li>
-            </ul>
-
-            <h2>Professional Recognition & Achievements</h2>
-            <ul>
-              <li><strong>Performance Excellence:</strong> "Outstanding Article Assistant 2023." Top 5% in client feedback, quality reviews.</li>
-              <li><strong>Innovation Recognition:</strong> "Technology Innovation Award" for automated audit tools (30% efficiency).</li>
-              <li><strong>Industry Contributions:</strong> Published 8+ technical articles. Speaker at professional seminars.</li>
-              <li><strong>Academic Excellence:</strong> Top 10% throughout CA education, perfect score in audit exam.</li>
-            </ul>
-          </div>
-        </div>
-      </div></div>
-    </div>
   </main>
   
   <button id="exit-fullscreen-btn" title="Exit Fullscreen (Esc)"><i class="fa-solid fa-compress"></i></button>
@@ -1396,7 +1381,7 @@
           const opt = {
             margin:[0,0,0,0],
             filename:`CV_${cvName}.pdf`,
-            image:{ type:'jpeg', quality:0.96 },
+            image:{ type:'jpeg', quality:0.98 },
             pagebreak:{ mode:['css','legacy'] },
             html2canvas:{
               scale:2,
@@ -1405,9 +1390,8 @@
                 const node = clonedDoc.getElementById(targetId);
                 if(!node) return;
                 node.style.width = '210mm';
-                node.style.height = '297mm';
+                node.style.height = 'auto';
                 node.style.minHeight = '297mm';
-                node.style.maxHeight = '297mm';
                 node.style.overflow = 'hidden';
                 node.style.margin = '0';
                 const scaled = node.closest('.cv-content');
@@ -1427,13 +1411,7 @@
             jsPDF:{ unit:'mm', format:'a4', orientation:'portrait' }
           };
 
-          const worker = html2pdf().set(opt).from(sourceEl).toPdf();
-          worker.get('pdf').then((pdf)=>{
-            const total = pdf.internal.getNumberOfPages();
-            if(total > 1){
-              for(let p = total; p >= 2; p--) pdf.deletePage(p);
-            }
-          }).save();
+          html2pdf().set(opt).from(sourceEl).save();
         });
       });
     });
