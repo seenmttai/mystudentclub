@@ -307,36 +307,13 @@ function updateState(newState) {
     resetAndFetch();
 }
 
-
 function populateSalaryFilter() {
     const salaryFilters = [dom.salaryFilterDesktop, dom.salaryFilterMobile];
     let options = [];
-    if (currentTable === "Industrial Training Job Portal") options = [
-        { value: '', text: 'Any Stipend' }, 
-        { value: '10000-20000', text: '₹10k - ₹20k' }, 
-        { value: '20000-40000', text: '₹20k - ₹40k' }, 
-        { value: '40000+', text: '₹40k+' }
-    ];
-    else if (currentTable === "Articleship Jobs") options = [
-        { value: '', text: 'Any Stipend' }, 
-        { value: '0-5000', text: 'Below ₹5k' }, 
-        { value: '5000-10000', text: '₹5k - ₹10k' }, 
-        { value: '10000-15000', text: '₹10k - ₹15k' }, 
-        { value: '15000+', text: '₹15k+' }
-    ];
-    else if (currentTable === "Semi Qualified Jobs") options = [
-        { value: '', text: 'Any Salary' }, 
-        { value: '0-25000', text: 'Below ₹25k' }, 
-        { value: '25000-35000', text: '₹25k - ₹35k' }, 
-        { value: '35000-50000', text: '₹35k - ₹50k' }, 
-        { value: '50000+', text: 'Above ₹50k' }
-    ];
-    else if (currentTable === "Fresher Jobs") options = [
-        { value: '', text: 'Any Salary' }, 
-        { value: '0-1200000', text: '< 12 LPA' }, 
-        { value: '1200000-1800000', text: '12-18 LPA' }, 
-        { value: '1800000+', text: '> 18 LPA' }
-    ];
+    if (currentTable === "Industrial Training Job Portal") options = [{ value: '', text: 'Any Stipend' }, { value: '10000-20000', text: '₹‚¹10k - ₹‚¹20k' }, { value: '20000-40000', text: '₹‚¹20k - ₹‚¹40k' }, { value: '40000+', text: '₹‚¹40k+' }];
+    else if (currentTable === "Articleship Jobs") options = [{ value: '', text: 'Any Stipend' }, { value: '0-5000', text: 'Below ₹‚¹5k' }, { value: '5000-10000', text: '₹‚¹5k - ₹‚¹10k' }, { value: '10000-15000', text: '₹‚¹10k - ₹‚¹15k' }, { value: '15000+', text: '₹‚¹15k+' }];
+    else if (currentTable === "Semi Qualified Jobs") options = [{ value: '', text: 'Any Salary' }, { value: '0-25000', text: 'Below ₹‚¹25k' }, { value: '25000-35000', text: '₹‚¹25k - ₹‚¹35k' }, { value: '35000-50000', text: '₹‚¹35k - ₹‚¹50k' }, { value: '50000+', text: 'Above ₹‚¹50k' }];
+    else if (currentTable === "Fresher Jobs") options = [{ value: '', text: 'Any Salary' }, { value: '0-1200000', text: '< 12 LPA' }, { value: '1200000-1800000', text: '12-18 LPA' }, { value: '1800000+', text: '> 18 LPA' }];
 
     salaryFilters.forEach(select => {
         if (!select) return;
