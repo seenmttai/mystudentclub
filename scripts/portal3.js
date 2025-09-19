@@ -307,13 +307,36 @@ function updateState(newState) {
     resetAndFetch();
 }
 
+
 function populateSalaryFilter() {
     const salaryFilters = [dom.salaryFilterDesktop, dom.salaryFilterMobile];
     let options = [];
-    if (currentTable === "Industrial Training Job Portal") options = [{ value: '', text: 'Any Stipend' }, { value: '10000-20000', text: 'â‚¹10k - â‚¹20k' }, { value: '20000-40000', text: 'â‚¹20k - â‚¹40k' }, { value: '40000+', text: 'â‚¹40k+' }];
-    else if (currentTable === "Articleship Jobs") options = [{ value: '', text: 'Any Stipend' }, { value: '0-5000', text: 'Below â‚¹5k' }, { value: '5000-10000', text: 'â‚¹5k - â‚¹10k' }, { value: '10000-15000', text: 'â‚¹10k - â‚¹15k' }, { value: '15000+', text: 'â‚¹15k+' }];
-    else if (currentTable === "Semi Qualified Jobs") options = [{ value: '', text: 'Any Salary' }, { value: '0-25000', text: 'Below â‚¹25k' }, { value: '25000-35000', text: 'â‚¹25k - â‚¹35k' }, { value: '35000-50000', text: 'â‚¹35k - â‚¹50k' }, { value: '50000+', text: 'Above â‚¹50k' }];
-    else if (currentTable === "Fresher Jobs") options = [{ value: '', text: 'Any Salary' }, { value: '0-1200000', text: '< 12 LPA' }, { value: '1200000-1800000', text: '12-18 LPA' }, { value: '1800000+', text: '> 18 LPA' }];
+    if (currentTable === "Industrial Training Job Portal") options = [
+        { value: '', text: 'Any Stipend' }, 
+        { value: '10000-20000', text: '₹10k - ₹20k' }, 
+        { value: '20000-40000', text: '₹20k - ₹40k' }, 
+        { value: '40000+', text: '₹40k+' }
+    ];
+    else if (currentTable === "Articleship Jobs") options = [
+        { value: '', text: 'Any Stipend' }, 
+        { value: '0-5000', text: 'Below ₹5k' }, 
+        { value: '5000-10000', text: '₹5k - ₹10k' }, 
+        { value: '10000-15000', text: '₹10k - ₹15k' }, 
+        { value: '15000+', text: '₹15k+' }
+    ];
+    else if (currentTable === "Semi Qualified Jobs") options = [
+        { value: '', text: 'Any Salary' }, 
+        { value: '0-25000', text: 'Below ₹25k' }, 
+        { value: '25000-35000', text: '₹25k - ₹35k' }, 
+        { value: '35000-50000', text: '₹35k - ₹50k' }, 
+        { value: '50000+', text: 'Above ₹50k' }
+    ];
+    else if (currentTable === "Fresher Jobs") options = [
+        { value: '', text: 'Any Salary' }, 
+        { value: '0-1200000', text: '< 12 LPA' }, 
+        { value: '1200000-1800000', text: '12-18 LPA' }, 
+        { value: '1800000+', text: '> 18 LPA' }
+    ];
 
     salaryFilters.forEach(select => {
         if (!select) return;
@@ -331,7 +354,7 @@ function renderPills(container, items, type) {
         pill.className = 'selected-pill';
         pill.textContent = item;
         const removeBtn = document.createElement('button');
-        removeBtn.innerHTML = 'Ã—';
+        removeBtn.innerHTML = '';
         removeBtn.onclick = () => {
             state[type] = state[type].filter(i => i !== item);
             renderPills(container, state[type], type);
@@ -351,7 +374,7 @@ function renderActiveFilterPills() {
         pill.className = 'active-filter-pill';
         pill.textContent = item;
         const removeBtn = document.createElement('button');
-        removeBtn.innerHTML = 'Ã—';
+        removeBtn.innerHTML = '';
         removeBtn.onclick = () => {
             if (state.locations.includes(item)) {
                 state.locations = state.locations.filter(i => i !== item);
@@ -652,7 +675,7 @@ function renderSubscribedTopics() {
             const { location, jobType } = formatTopicForDisplay(topic);
             const tag = document.createElement('div');
             tag.className = 'topic-tag';
-            tag.innerHTML = `<span>${location}${jobType ? ` - ${jobType}`: ''}</span><button class="topic-remove" data-topic="${topic}">Ã—</button>`;
+            tag.innerHTML = `<span>${location}${jobType ? ` - ${jobType}`: ''}</span><button class="topic-remove" data-topic="${topic}"> </button>`;
             dom.subscribedTopicsListEl.appendChild(tag);
         });
         dom.subscribedTopicsListEl.querySelectorAll('.topic-remove').forEach(btn => btn.addEventListener('click', async (e) => {
