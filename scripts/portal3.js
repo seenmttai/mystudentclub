@@ -678,23 +678,7 @@ function formatTopicForDisplay(topic) {
 function updateSpecificTopicAreaVisibility() { if (dom.specificSubscriptionForm) dom.specificSubscriptionForm.style.display = dom.topicAllCheckbox.checked ? 'none' : 'block'; }
 async function manageTopicSubscription(topic, action) { 
     currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
-    let retries = 3; 
-    while (!currentFcmToken && retries > 0) {
-        currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
-        
-        if (currentFcmToken) {
-            break; 
-        }
-
-        retries--;
-        showNotifStatus(`Loading...`, 'info');
-        await new Promise(resolve => setTimeout(resolve, 10000));
-    }
-
-    if (!currentFcmToken) {
-        showNotifStatus('Token not available. Please refresh the page.', 'error');
-        return false;
-    }
+    if (!currentFcmToken) { showNotifStatus('Token not available.', 'error'); return false; } 
     try { 
         const response = await fetch('https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ token: currentFcmToken, topic, action }) }); 
         if (!response.ok) throw new Error(await response.text()); 
@@ -743,53 +727,29 @@ function populateNotificationDropdowns() { if (dom.locationSelectEl) { dom.locat
 
 async function initializeFCM() {
     if (window.flutter_app.isReady) {
+        console.log("Running in Flutter app, skipping web FCM init.");
         currentFcmToken = window.flutter_app.fcmToken;
         await syncNotificationTopics();
         return;
     }
 
-    try {
-        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-
-        if (!('serviceWorker' in navigator)) return;
-        
-        const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
-        await navigator.serviceWorker.ready;
-
-        if (!navigator.serviceWorker.controller) {
-            await new Promise(resolve => {
-                navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
-            });
-        }
-
-        firebaseMessaging = firebase.messaging();
-        firebaseMessaging.onMessage(() => {});
-
-        if (Notification.permission === 'granted') {
-            await requestTokenAndSync(registration);
-        }
-    } catch (err) {
-        console.error('FCM init failed', err);
-    }
+    try { 
+        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG); 
+        firebaseMessaging = firebase.messaging(); 
+        firebaseMessaging.onMessage(payload => {}); 
+        if ('serviceWorker' in navigator) await navigator.serviceWorker.register('/firebase-messaging-sw.js'); 
+        if (Notification.permission === 'granted') await requestTokenAndSync(); 
+    } catch(err) {} 
 }
 
-async function requestTokenAndSync(registration) {
-    if (window.flutter_app.isReady || !firebaseMessaging) return;
-    try {
-        const token = await firebaseMessaging.getToken({
-            vapidKey: VAPID_KEY,
-            serviceWorkerRegistration: registration,
-        });
-        if (token) {
-            currentFcmToken = token;
-            await syncNotificationTopics();
-        }
-    } catch (err) {
-        console.log('getToken failed', err);
-        showNotifStatus('Could not enable notifications. Please try again.', 'error');
-    }
+async function requestTokenAndSync() { 
+    if (window.flutter_app.isReady) return; 
+    if (!firebaseMessaging) return; 
+    try { 
+        const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY }); 
+        if (token) { currentFcmToken = token; await syncNotificationTopics(); } 
+    } catch (err) {} 
 }
-
 function shouldSync() { const lastSync = localStorage.getItem('notificationSyncTimestamp'); if (!lastSync) return true; return new Date(parseInt(lastSync)).toDateString() !== new Date().toDateString(); }
 async function syncNotificationTopics() { 
     currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
