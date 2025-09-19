@@ -678,7 +678,23 @@ function formatTopicForDisplay(topic) {
 function updateSpecificTopicAreaVisibility() { if (dom.specificSubscriptionForm) dom.specificSubscriptionForm.style.display = dom.topicAllCheckbox.checked ? 'none' : 'block'; }
 async function manageTopicSubscription(topic, action) { 
     currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
-    if (!currentFcmToken) { showNotifStatus('Token not available.', 'error'); return false; } 
+    let retries = 3; 
+    while (!currentFcmToken && retries > 0) {
+        currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
+        
+        if (currentFcmToken) {
+            break; 
+        }
+
+        retries--;
+        showNotifStatus(`Loading...`, 'info');
+        await new Promise(resolve => setTimeout(resolve, 10000)); // Wait for 10 seconds
+    }
+
+    if (!currentFcmToken) {
+        showNotifStatus('Token not available. Please refresh the page.', 'error');
+        return false;
+    }
     try { 
         const response = await fetch('https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ token: currentFcmToken, topic, action }) }); 
         if (!response.ok) throw new Error(await response.text()); 
@@ -748,7 +764,9 @@ async function requestTokenAndSync() {
     try { 
         const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY }); 
         if (token) { currentFcmToken = token; await syncNotificationTopics(); } 
-    } catch (err) {} 
+    } catch (err) {
+        console.log(err);
+    } 
 }
 function shouldSync() { const lastSync = localStorage.getItem('notificationSyncTimestamp'); if (!lastSync) return true; return new Date(parseInt(lastSync)).toDateString() !== new Date().toDateString(); }
 async function syncNotificationTopics() { 
