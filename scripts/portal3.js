@@ -9,7 +9,6 @@ window.flutter_app = {
     fcmToken: null
 };
 window.setFcmToken = function(token) {
-    console.log("FCM Token received from Flutter App:", token);
     window.flutter_app.fcmToken = token;
     const topicSelectionArea = document.getElementById('topic-selection-area');
     if (topicSelectionArea && topicSelectionArea.style.display !== 'block') {
@@ -25,8 +24,8 @@ let currentTable = 'Industrial Training Job Portal';
 let currentSession = null;
 let appliedJobIds = new Set();
 let debounceTimeout = null;
-let availableLocations = [];
-let availableCategories = [];
+let allLocations = [];
+let allCategories = {};
 let currentFcmToken = null;
 let firebaseMessaging;
 
@@ -119,7 +118,7 @@ function renderJobCard(job) {
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     ${job.Location || 'N/A'}
                 </span>
-                ${job.Salary ? `<span class="job-tag"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>â‚¹${job.Salary}</span>` : ''}
+                ${job.Salary ? `<span class="job-tag"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>₹${job.Salary}</span>` : ''}
                 ${job.Category ? `<span class="job-tag">${job.Category}</span>` : ''}
             </div>
         </div>
@@ -170,7 +169,7 @@ function showModal(job) {
             </div>
         </div>
         <div class="modal-meta-tags">
-            ${job.Salary ? `<span class="job-tag">Stipend: â‚¹${job.Salary}</span>` : ''}
+            ${job.Salary ? `<span class="job-tag">Stipend: ₹${job.Salary}</span>` : ''}
             <span class="job-tag">Posted: ${postedDate}</span>
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
         </div>
@@ -202,20 +201,22 @@ function closeModal() {
 
 async function fetchFilterOptions() {
     try {
-        const [locationsRes, categoriesRes] = await Promise.all([
-            supabaseClient.from(currentTable).select('Location'),
-            supabaseClient.from(currentTable).select('Category')
+        const [locationsResponse, categoriesResponse] = await Promise.all([
+            fetch('/locations.json'),
+            fetch('/categories.json')
         ]);
 
-        if (locationsRes.error) throw locationsRes.error;
-        if (categoriesRes.error) throw categoriesRes.error;
+        if (!locationsResponse.ok || !categoriesResponse.ok) {
+            throw new Error('Failed to load filter data');
+        }
 
-        availableLocations = [...new Set(locationsRes.data.map(item => item.Location).filter(Boolean))].sort();
-        availableCategories = [...new Set(categoriesRes.data.map(item => item.Category).filter(Boolean))].sort();
+        allLocations = await locationsResponse.json();
+        allCategories = await categoriesResponse.json();
 
     } catch (error) {
-        availableLocations = [];
-        availableCategories = [];
+        console.error("Error fetching filter options from JSON:", error);
+        allLocations = [];
+        allCategories = {};
     }
 }
 
@@ -307,7 +308,6 @@ function updateState(newState) {
     resetAndFetch();
 }
 
-
 function populateSalaryFilter() {
     const salaryFilters = [dom.salaryFilterDesktop, dom.salaryFilterMobile];
     let options = [];
@@ -354,7 +354,7 @@ function renderPills(container, items, type) {
         pill.className = 'selected-pill';
         pill.textContent = item;
         const removeBtn = document.createElement('button');
-        removeBtn.innerHTML = '';
+        removeBtn.innerHTML = '×';
         removeBtn.onclick = () => {
             state[type] = state[type].filter(i => i !== item);
             renderPills(container, state[type], type);
@@ -374,7 +374,7 @@ function renderActiveFilterPills() {
         pill.className = 'active-filter-pill';
         pill.textContent = item;
         const removeBtn = document.createElement('button');
-        removeBtn.innerHTML = '';
+        removeBtn.innerHTML = '×';
         removeBtn.onclick = () => {
             if (state.locations.includes(item)) {
                 state.locations = state.locations.filter(i => i !== item);
@@ -426,10 +426,16 @@ function setupMultiSelect(container) {
     const pillsContainer = document.getElementById(pillsContainerId);
 
     const renderOptions = (filter = '') => {
-        const source = type === 'location' ? availableLocations : availableCategories;
+        const source = type === 'location' ? allLocations : (allCategories[currentTable] || []);
         const stateKey = type === 'location' ? 'locations' : 'categories';
-        const filteredSource = source.filter(item => item.toLowerCase().includes(filter.toLowerCase()) && !state[stateKey].includes(item));
+        
+        const filteredSource = source.filter(item => 
+            item.toLowerCase().includes(filter.toLowerCase()) && 
+            !state[stateKey].includes(item)
+        );
+        
         optionsContainer.innerHTML = '';
+        
         filteredSource.forEach(item => {
             const optionEl = document.createElement('div');
             optionEl.className = 'multi-select-option';
@@ -438,14 +444,30 @@ function setupMultiSelect(container) {
                 if (!state[stateKey].includes(item)) {
                     state[stateKey].push(item);
                     renderPills(pillsContainer, state[stateKey], stateKey);
-                    if(container.closest('.filter-sidebar')) resetAndFetch();
+                    if (container.closest('.filter-sidebar')) resetAndFetch();
                 }
                 input.value = '';
                 optionsContainer.classList.remove('show');
             };
             optionsContainer.appendChild(optionEl);
         });
-        optionsContainer.classList.toggle('show', filteredSource.length > 0);
+
+        if (filter.trim() && !source.some(item => item.toLowerCase() === filter.toLowerCase().trim())) {
+            const customOption = document.createElement('div');
+            customOption.className = 'multi-select-option';
+            customOption.innerHTML = `Search for: <strong>"${filter}"</strong>`;
+            customOption.onclick = () => {
+                state.searchTerm = filter.trim();
+                state.locations = [];
+                state.categories = [];
+                input.value = '';
+                optionsContainer.classList.remove('show');
+                syncAndFetch();
+            };
+            optionsContainer.appendChild(customOption);
+        }
+
+        optionsContainer.classList.toggle('show', optionsContainer.children.length > 0);
     };
 
     input.addEventListener('input', () => renderOptions(input.value));
@@ -675,7 +697,7 @@ function renderSubscribedTopics() {
             const { location, jobType } = formatTopicForDisplay(topic);
             const tag = document.createElement('div');
             tag.className = 'topic-tag';
-            tag.innerHTML = `<span>${location}${jobType ? ` - ${jobType}`: ''}</span><button class="topic-remove" data-topic="${topic}"> </button>`;
+            tag.innerHTML = `<span>${location}${jobType ? ` - ${jobType}`: ''}</span><button class="topic-remove" data-topic="${topic}">×</button>`;
             dom.subscribedTopicsListEl.appendChild(tag);
         });
         dom.subscribedTopicsListEl.querySelectorAll('.topic-remove').forEach(btn => btn.addEventListener('click', async (e) => {
@@ -711,7 +733,7 @@ async function manageTopicSubscription(topic, action) {
 
         retries--;
         showNotifStatus(`Loading...`, 'info');
-        await new Promise(resolve => setTimeout(resolve, 10000)); // Wait for 10 seconds
+        await new Promise(resolve => setTimeout(resolve, 10000));
     }
 
     if (!currentFcmToken) {
@@ -766,7 +788,6 @@ function populateNotificationDropdowns() { if (dom.locationSelectEl) { dom.locat
 
 async function initializeFCM() {
     if (window.flutter_app.isReady) {
-        console.log("Running in Flutter app, skipping web FCM init.");
         currentFcmToken = window.flutter_app.fcmToken;
         await syncNotificationTopics();
         return;
@@ -788,7 +809,6 @@ async function requestTokenAndSync() {
         const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY }); 
         if (token) { currentFcmToken = token; await syncNotificationTopics(); } 
     } catch (err) {
-        console.log(err);
     } 
 }
 function shouldSync() { const lastSync = localStorage.getItem('notificationSyncTimestamp'); if (!lastSync) return true; return new Date(parseInt(lastSync)).toDateString() !== new Date().toDateString(); }
@@ -1018,12 +1038,14 @@ async function initializePage() {
     if (currentTable === 'Fresher Jobs') {
         state.experience = 'Freshers';
     }
-
+    
+    await fetchFilterOptions();
+    
     populateSalaryFilter();
     setupEventListeners();
     syncFiltersUI();
     
-    await Promise.all([fetchJobs(), fetchFilterOptions(), loadBanners()]);
+    await Promise.all([fetchJobs(), loadBanners()]);
     
     populateNotificationDropdowns();
     updateNotificationBadge();
