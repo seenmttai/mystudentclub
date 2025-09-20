@@ -48,7 +48,7 @@ const JOB_TYPES_NOTIF = [
 const LOCATIONS_NOTIF = [ "mumbai", "bangalore", "gurgaon", "pune", "kolkata", "delhi", "noida", "hyderabad", "ahmedabad", "chennai", "jaipur" ];
 
 const state = {
-    searchTerm: '',
+    keywords: [],
     locations: [],
     categories: [],
     salary: '',
@@ -234,21 +234,17 @@ async function fetchJobs() {
         
         let query = supabaseClient.from(currentTable).select(selectColumns);
         
-        const searchTerms = state.searchTerm.trim().split(/\s+/).filter(Boolean);
-        if (searchTerms.length > 0) {
-            searchTerms.forEach(term => {
-                const searchPattern = `%${term}%`;
-                query = query.or(`Company.ilike.${searchPattern},Description.ilike.${searchPattern},Location.ilike.${searchPattern},Category.ilike.${searchPattern}`);
-            });
+        if (state.keywords.length > 0) {
+            const keywordOrs = state.keywords.map(k => `Company.ilike.%${k}%,Description.ilike.%${k}%,Category.ilike.%${k}%,Location.ilike.%${k}%`).join(',');
+            query = query.or(keywordOrs);
         }
-
         if (state.locations.length > 0) {
-            const locationFilters = state.locations.map(loc => `Location.ilike.%${loc}%`).join(',');
-            query = query.or(locationFilters);
+            const locationOr = state.locations.map(loc => `Location.ilike.%${loc}%`).join(',');
+            query = query.or(locationOr);
         }
         if (state.categories.length > 0) {
-            const categoryFilters = state.categories.map(cat => `Category.ilike.%${cat}%`).join(',');
-            query = query.or(categoryFilters);
+            const categoryOr = state.categories.map(cat => `Category.ilike.%${cat}%`).join(',');
+            query = query.or(categoryOr);
         }
         if (state.salary) {
             if (state.salary.endsWith('+')) {
@@ -373,38 +369,36 @@ function renderPills(container, items, type) {
 
 function renderActiveFilterPills() {
     dom.activeFiltersDisplay.innerHTML = '';
-    [...state.locations, ...state.categories].forEach(item => {
+    const createPill = (item, type) => {
         const pill = document.createElement('div');
         pill.className = 'active-filter-pill';
         pill.textContent = item;
+        pill.dataset.type = type;
         const removeBtn = document.createElement('button');
         removeBtn.innerHTML = '×';
         removeBtn.onclick = () => {
-            if (state.locations.includes(item)) {
-                state.locations = state.locations.filter(i => i !== item);
-            }
-            if (state.categories.includes(item)) {
-                state.categories = state.categories.filter(i => i !== item);
-            }
+            state[type] = state[type].filter(i => i !== item);
             syncAndFetch();
         };
         pill.appendChild(removeBtn);
         dom.activeFiltersDisplay.appendChild(pill);
-    });
+    };
+
+    state.keywords.forEach(item => createPill(item, 'keywords'));
+    state.locations.forEach(item => createPill(item, 'locations'));
+    state.categories.forEach(item => createPill(item, 'categories'));
 }
 
 function syncFiltersUI() {
-    if (dom.searchInputMobile) dom.searchInputMobile.value = state.searchTerm;
-    if (dom.searchInputDesktop) dom.searchInputDesktop.value = state.searchTerm;
-    if (dom.salaryFilterDesktop) dom.salaryFilterDesktop.value = state.salary;
-    if (dom.salaryFilterMobile) dom.salaryFilterMobile.value = state.salary;
-    if (dom.sortBySelect) dom.sortBySelect.value = state.sortBy;
-    if (dom.sortBySelectMobile) dom.sortBySelectMobile.value = state.sortBy;
-
     renderPills(dom.locationPillsDesktop, state.locations, 'locations');
     renderPills(dom.locationPillsMobile, state.locations, 'locations');
     renderPills(dom.categoryPillsDesktop, state.categories, 'categories');
     renderPills(dom.categoryPillsMobile, state.categories, 'categories');
+
+    if (dom.salaryFilterDesktop) dom.salaryFilterDesktop.value = state.salary;
+    if (dom.salaryFilterMobile) dom.salaryFilterMobile.value = state.salary;
+    if (dom.sortBySelect) dom.sortBySelect.value = state.sortBy;
+    if (dom.sortBySelectMobile) dom.sortBySelectMobile.value = state.sortBy;
 
     document.querySelectorAll('.experience-filter-group .pill-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.value === state.experience);
@@ -481,6 +475,32 @@ function setupMultiSelect(container) {
     document.addEventListener('click', (e) => {
         if (!container.contains(e.target)) optionsContainer.classList.remove('show');
     });
+}
+
+function processAndApplySearch(inputElement) {
+    const value = inputElement.value.trim();
+    if (!value) return;
+
+    const terms = value.split(/[\s,]+/).filter(Boolean);
+    const currentCategories = allCategories[currentTable] || [];
+
+    terms.forEach(term => {
+        const lowerTerm = term.toLowerCase();
+        
+        const isLocation = allLocations.some(loc => loc.toLowerCase() === lowerTerm);
+        const isCategory = currentCategories.some(cat => cat.toLowerCase() === lowerTerm);
+
+        if (isLocation && !state.locations.includes(term)) {
+            state.locations.push(term);
+        } else if (isCategory && !state.categories.includes(term)) {
+            state.categories.push(term);
+        } else if (!isLocation && !isCategory && !state.keywords.includes(term)) {
+            state.keywords.push(term);
+        }
+    });
+
+    inputElement.value = '';
+    syncAndFetch();
 }
 
 async function checkAuth() {
@@ -846,20 +866,20 @@ function setupEventListeners() {
     dom.modalCloseBtn.addEventListener('click', closeModal);
     dom.loadMoreButton.addEventListener('click', () => fetchJobs());
 
-    const handleSearchInput = (e) => {
-        const searchTerm = e.target.value;
-        if (state.searchTerm !== searchTerm) {
-            updateState({ searchTerm });
-            if (e.target === dom.searchInputMobile && dom.searchInputDesktop) {
-                dom.searchInputDesktop.value = searchTerm;
-            } else if (e.target === dom.searchInputDesktop && dom.searchInputMobile) {
-                dom.searchInputMobile.value = searchTerm;
+    [dom.searchInputMobile, dom.searchInputDesktop].forEach(input => {
+        if (input) {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    processAndApplySearch(input);
+                }
+            });
+            const searchButton = input.parentElement.querySelector('.search-button');
+            if(searchButton) {
+                searchButton.addEventListener('click', () => processAndApplySearch(input));
             }
         }
-    };
-
-    if(dom.searchInputMobile) dom.searchInputMobile.addEventListener('input', handleSearchInput);
-    if(dom.searchInputDesktop) dom.searchInputDesktop.addEventListener('input', handleSearchInput);
+    });
 
     const handleSortChange = (e) => {
         const newSortBy = e.target.value;
@@ -891,11 +911,11 @@ function setupEventListeners() {
 
     [dom.desktopResetBtn, dom.mobileResetBtn].forEach(btn => {
         if(btn) btn.addEventListener('click', () => {
+            state.keywords = [];
             state.locations = []; 
             state.categories = []; 
             state.salary = ''; 
             state.experience = '';
-            state.searchTerm = '';
             state.sortBy = 'newest';
             state.applicationStatus = 'all';
             if (dom.searchInputMobile) dom.searchInputMobile.value = '';
