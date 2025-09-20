@@ -233,11 +233,15 @@ async function fetchJobs() {
         }
         
         let query = supabaseClient.from(currentTable).select(selectColumns);
-
-        if (state.searchTerm) {
-            const searchPattern = `%${state.searchTerm}%`;
-            query = query.or(`Company.ilike.${searchPattern},Description.ilike.${searchPattern},Location.ilike.${searchPattern},Category.ilike.${searchPattern}`);
+        
+        const searchTerms = state.searchTerm.trim().split(/\s+/).filter(Boolean);
+        if (searchTerms.length > 0) {
+            searchTerms.forEach(term => {
+                const searchPattern = `%${term}%`;
+                query = query.or(`Company.ilike.${searchPattern},Description.ilike.${searchPattern},Location.ilike.${searchPattern},Category.ilike.${searchPattern}`);
+            });
         }
+
         if (state.locations.length > 0) {
             const locationFilters = state.locations.map(loc => `Location.ilike.%${loc}%`).join(',');
             query = query.or(locationFilters);
@@ -452,17 +456,19 @@ function setupMultiSelect(container) {
             optionsContainer.appendChild(optionEl);
         });
 
-        if (filter.trim() && !source.some(item => item.toLowerCase() === filter.toLowerCase().trim())) {
+        if (filter.trim()) {
             const customOption = document.createElement('div');
             customOption.className = 'multi-select-option';
-            customOption.innerHTML = `Search for: <strong>"${filter}"</strong>`;
+            customOption.innerHTML = `Add filter for: <strong>"${filter}"</strong>`;
             customOption.onclick = () => {
-                state.searchTerm = filter.trim();
-                state.locations = [];
-                state.categories = [];
+                const term = filter.trim();
+                if (term && !state[stateKey].includes(term)) {
+                    state[stateKey].push(term);
+                    renderPills(pillsContainer, state[stateKey], stateKey);
+                    if (container.closest('.filter-sidebar')) resetAndFetch();
+                }
                 input.value = '';
                 optionsContainer.classList.remove('show');
-                syncAndFetch();
             };
             optionsContainer.appendChild(customOption);
         }
