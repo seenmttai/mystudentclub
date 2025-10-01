@@ -445,7 +445,6 @@ window.deleteJob = async function(id, table) {
       .eq('id', id);
 
     if (error) throw error;
-    location.reload();
   } catch (error) {
     console.error('Failed to delete job:', error);
     alert('Failed to delete job: ' + error.message);
@@ -495,7 +494,6 @@ document.getElementById('job-form').addEventListener('submit', async (e) => {
       console.warn("No active session token found, skipping notification trigger.");
     }
 
-    location.reload();
 
   } catch (error) {
     console.error('Error saving job:', error);
