@@ -701,90 +701,102 @@ function resetToUploadStage() {
 }
 
 downloadReportBtn.addEventListener('click', () => {
-  if (!analysisResultText) {
-      alert("No analysis report available to download.");
-      return;
-  }
+    if (!analysisResultText) {
+        alert("No analysis report available to download.");
+        return;
+    }
 
-  let reportContent = `My Student Club - CV Analysis Report\n`;
-  reportContent += `=====================================\n\n`;
-  reportContent += `Domain: Financing\n`;
-  reportContent += `Specialization: Accounting\n\n`;
+    let reportContent = `My Student Club - CV Analysis Report\n`;
+    reportContent += `=====================================\n\n`;
+    reportContent += `Domain: Financing\n`;
+    reportContent += `Specialization: Accounting\n\n`;
 
-  const sections = [
-      { title: "Overall Score", start: '<<<OVERALL_SCORE>>>', end: '<<<END_OVERALL_SCORE>>>' },
-      { title: "Recruiter Tips", start: '<<<RECRUITER_TIPS>>>', end: '<<<END_RECRUITER_TIPS>>>' },
-      { title: "Measurable Results Analysis", start: '<<<MEASURABLE_RESULTS>>>', end: '<<<END_MEASURABLE_RESULTS>>>' },
-      { title: "Phrases Suggestions", start: '<<<PHRASES_SUGGESTIONS>>>', end: '<<<END_PHRASES_SUGGESTIONS>>>' },
-      { title: "Hard Skills Analysis", start: '<<<HARD_SKILLS>>>', end: '<<<END_HARD_SKILLS>>>' },
-      { title: "Soft Skills Analysis", start: '<<<SOFT_SKILLS>>>', end: '<<<END_SOFT_SKILLS>>>' },
-      { title: "Action Verbs Usage", start: '<<<ACTION_VERBS>>>', end: '<<<END_ACTION_VERBS>>>' },
-      { title: "Grammar & Proofreading", start: '<<<GRAMMAR_CHECK>>>', end: '<<<END_GRAMMAR_CHECK>>>' },
-      { title: "Formatting & Readability", start: '<<<FORMATTING_READABILITY>>>', end: '<<<END_FORMATTING_READABILITY>>>' },
-      { title: "Education & Qualification", start: '<<<EDUCATION_QUALIFICATION>>>', end: '<<<END_EDUCATION_QUALIFICATION>>>' },
-      { title: "Articleship Experience", start: '<<<ARTICLESIP_EXPERIENCE>>>', end: '<<<END_ARTICLESIP_EXPERIENCE>>>' },
-      { title: "Final Recommendations", start: '<<<FINAL_RECOMMENDATIONS>>>', end: '<<<END_FINAL_RECOMMENDATIONS>>>' }
-  ];
+    const sections = [
+        { title: "Overall Score", start: '<<<OVERALL_SCORE>>>', end: '<<<END_OVERALL_SCORE>>>' },
+        { title: "Recruiter Tips", start: '<<<RECRUITER_TIPS>>>', end: '<<<END_RECRUITER_TIPS>>>' },
+        { title: "Measurable Results Analysis", start: '<<<MEASURABLE_RESULTS>>>', end: '<<<END_MEASURABLE_RESULTS>>>' },
+        { title: "Phrases Suggestions", start: '<<<PHRASES_SUGGESTIONS>>>', end: '<<<END_PHRASES_SUGGESTIONS>>>' },
+        { title: "Hard Skills Analysis", start: '<<<HARD_SKILLS>>>', end: '<<<END_HARD_SKILLS>>>' },
+        { title: "Soft Skills Analysis", start: '<<<SOFT_SKILLS>>>', end: '<<<END_SOFT_SKILLS>>>' },
+        { title: "Action Verbs Usage", start: '<<<ACTION_VERBS>>>', end: '<<<END_ACTION_VERBS>>>' },
+        { title: "Grammar & Proofreading", start: '<<<GRAMMAR_CHECK>>>', end: '<<<END_GRAMMAR_CHECK>>>' },
+        { title: "Formatting & Readability", start: '<<<FORMATTING_READABILITY>>>', end: '<<<END_FORMATTING_READABILITY>>>' },
+        { title: "Education & Qualification", start: '<<<EDUCATION_QUALIFICATION>>>', end: '<<<END_EDUCATION_QUALIFICATION>>>' },
+        { title: "Articleship Experience", start: '<<<ARTICLESIP_EXPERIENCE>>>', end: '<<<END_ARTICLESIP_EXPERIENCE>>>' },
+        { title: "Final Recommendations", start: '<<<FINAL_RECOMMENDATIONS>>>', end: '<<<END_FINAL_RECOMMENDATIONS>>>' }
+    ];
 
-  sections.forEach(section => {
-      const content = extractSectionContent(analysisResultText, section.start, section.end);
-      if (content) {
-          reportContent += `${section.title}\n`;
-          reportContent += `${'-'.repeat(section.title.length)}\n`;
-           let cleanedContent = content
-               .replace(/\[GOOD\]/g, '(+)')
-               .replace(/\[ISSUE\]/g, '(-)')
-               .replace(/<br>/g, '\n')
-               .replace(/<p>/g, '\n')
-               .replace(/<\/p>/g, '')
-               .replace(/<strong>(.*?)<\/strong>/g, '*$1*')
-               .replace(/<em>(.*?)<\/em>/g, '_$1_')
-               .replace(/<code>(.*?)<\/code>/g, '`$1`')
-               .replace(/<ul>/g, '')
-               .replace(/<\/ul>/g, '')
-               .replace(/<ol>/g, '')
-               .replace(/<\/ol>/g, '')
-               .replace(/<li>/g, '\n - ')
-               .replace(/<\/li>/g, '')
-               .replace(/<h[1-6].*?>(.*?)<\/h[1-6]>/g, '\n### $1\n')
-               .replace(/^\s*•\s*/gm, ' - ')
-               .replace(/Original:\s*<code.*?>([\s\S]*?)<\/code>/gi, 'Original: "$1"')
-               .replace(/Critique:\s*/gi, '\nCritique: ')
-               .replace(/Rewrite Suggestions:/gi, '\nRewrite Suggestions:')
-               .replace(/<div class="rewrite-suggestion">([\s\S]*?)<\/div>/gi, '  * Suggestion: $1')
-               .replace(/<span class="highlight-good".*?>✓<\/span>/g,'(+)')
-               .replace(/<span class="highlight-issue".*?>✗<\/span>/g,'(-)')
-               .replace(/&/g, '&')
-               .replace(/</g, '<')
-               .replace(/>/g, '>')
-               .replace(/"/g, '"')
-               .replace(/'/g, "'")
-               .replace(/\n\s*\n/g, '\n\n')
-               .trim();
+    sections.forEach(section => {
+        const content = extractSectionContent(analysisResultText, section.start, section.end);
+        if (content) {
+            reportContent += `${section.title}\n`;
+            reportContent += `${'-'.repeat(section.title.length)}\n`;
+            let cleanedContent = content
+                .replace(/\[GOOD\]/g, '(+)')
+                .replace(/\[ISSUE\]/g, '(-)')
+                .replace(/<br>/g, '\n')
+                .replace(/<p>/g, '\n')
+                .replace(/<\/p>/g, '')
+                .replace(/<strong>(.*?)<\/strong>/g, '*$1*')
+                .replace(/<em>(.*?)<\/em>/g, '_$1_')
+                .replace(/<code>(.*?)<\/code>/g, '`$1`')
+                .replace(/<ul>/g, '')
+                .replace(/<\/ul>/g, '')
+                .replace(/<ol>/g, '')
+                .replace(/<\/ol>/g, '')
+                .replace(/<li>/g, '\n - ')
+                .replace(/<\/li>/g, '')
+                .replace(/<h[1-6].*?>(.*?)<\/h[1-6]>/g, '\n### $1\n')
+                .replace(/^\s*•\s*/gm, ' - ')
+                .replace(/Original:\s*<code.*?>([\s\S]*?)<\/code>/gi, 'Original: "$1"')
+                .replace(/Critique:\s*/gi, '\nCritique: ')
+                .replace(/Rewrite Suggestions:/gi, '\nRewrite Suggestions:')
+                .replace(/<div class="rewrite-suggestion">([\s\S]*?)<\/div>/gi, '  * Suggestion: $1')
+                .replace(/<span class="highlight-good".*?>✓<\/span>/g,'(+)')
+                .replace(/<span class="highlight-issue".*?>✗<\/span>/g,'(-)')
+                .replace(/&/g, '&')
+                .replace(/</g, '<')
+                .replace(/>/g, '>')
+                .replace(/"/g, '"')
+                .replace(/'/g, "'")
+                .replace(/\n\s*\n/g, '\n\n')
+                .trim();
 
-           reportContent += cleanedContent + '\n\n';
-      } else {
-           reportContent += `${section.title}\n`;
-           reportContent += `${'-'.repeat(section.title.length)}\n`;
-           reportContent += `(No details available for this section)\n\n`;
-      }
-  });
+            reportContent += cleanedContent + '\n\n';
+        } else {
+            reportContent += `${section.title}\n`;
+            reportContent += `${'-'.repeat(section.title.length)}\n`;
+            reportContent += `(No details available for this section)\n\n`;
+        }
+    });
 
-  reportContent += `---------------------------------------------------------------\n`;
-  reportContent += `Generated by My Student Club CV Reviewer\n`;
+    reportContent += `---------------------------------------------------------------\n`;
+    reportContent += `Generated by My Student Club CV Reviewer\n`;
 
-  const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  const safeFileName = selectedFile ? selectedFile.name.replace(/[^a-z0-9_.-]/gi, '_').replace('.pdf', '') : 'CV';
-  a.href = url;
-  a.download = `${safeFileName}_Analysis_Report.txt`;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => {
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }, 100);
+    const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
+    const safeFileName = selectedFile ? selectedFile.name.replace(/[^a-z0-9_.-]/gi, '_').replace('.pdf', '') : 'CV';
+    const filename = `${safeFileName}_Analysis_Report.txt`;
+
+    if (window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler === 'function') {
+        const reader = new FileReader();
+        reader.readAsDataURL(blob);
+        reader.onloadend = function() {
+            const base64data = reader.result;
+            const base64Content = base64data.split(',')[1];
+            window.flutter_inappwebview.callHandler('blobToBase64Handler', base64Content, filename);
+        };
+    } else {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 100);
+    }
 });
 
 function resetToUploadStageOnError() {
