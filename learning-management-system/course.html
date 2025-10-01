@@ -774,7 +774,8 @@
                     this.downloadResource(resource);
                 },
                 async downloadResource(resource) {
-                    if (!resource || !resource.download_storage_path || resource.download_storage_path === 'None') {
+                    const path = resource.download_storage_path;
+                    if (!path || path === 'None') {
                         alert('No downloadable file available for this resource.');
                         return;
                     }
@@ -782,27 +783,28 @@
                     try {
                         const { data, error } = await supabase.storage
                             .from('industrial-training-mastery-resources')
-                            .createSignedUrl(resource.download_storage_path, 300);
+                            .createSignedUrl(path, 300);
 
                         if (error) throw error;
 
                         const response = await fetch(data.signedUrl);
                         if (!response.ok) throw new Error('Network response was not ok.');
                         const blob = await response.blob();
-                        const fileName = resource.download_storage_path.split('/').pop() || 'download';
+                        const filename = path.split('/').pop() || 'download';
 
                         if (window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler === 'function') {
                             const reader = new FileReader();
                             reader.readAsDataURL(blob);
                             reader.onloadend = function() {
-                                const base64data = reader.result.split(',')[1];
-                                window.flutter_inappwebview.callHandler('blobToBase64Handler', base64data, fileName);
+                                const base64data = reader.result;
+                                const base64Content = base64data.split(',')[1];
+                                window.flutter_inappwebview.callHandler('blobToBase64Handler', base64Content, filename);
                             };
                         } else {
                             const url = window.URL.createObjectURL(blob);
                             const a = document.createElement('a');
                             a.href = url;
-                            a.download = fileName;
+                            a.download = filename;
                             document.body.appendChild(a);
                             a.click();
                             window.URL.revokeObjectURL(url);
