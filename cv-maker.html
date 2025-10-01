@@ -1393,17 +1393,18 @@
                 btn.addEventListener('click', async () => {
                     const targetId = btn.dataset.target;
                     const sourceEl = document.getElementById(targetId);
+                    const cvName = (cvData.personal.name || 'CV').trim().replace(/[\s,]+/g, '_');
+                    const filename = `CV_${cvName}.pdf`;
 
                     try {
                         if (document.fonts && document.fonts.ready) await document.fonts.ready;
                     } catch (e) {
                         console.warn('Font loading check failed.', e);
                     }
-
-                    const cvName = (cvData.personal.name || 'CV').trim().replace(/[\s,]+/g, '_');
+                    
                     const opt = {
                         margin: [0, 0, 0, 0],
-                        filename: `CV_${cvName}.pdf`,
+                        filename: filename,
                         image: { type: 'jpeg', quality: 0.98 },
                         html2canvas: {
                             scale: 3,
@@ -1411,25 +1412,18 @@
                             onclone: (clonedDoc) => {
                                 const node = clonedDoc.getElementById(targetId);
                                 if (!node) return;
-                                
                                 node.style.height = '297mm';
                                 node.style.overflow = 'hidden';
                                 node.querySelectorAll('[data-priority]').forEach(el => el.style.display = '');
-
                                 node.style.display = 'block';
-                                node.offsetHeight; 
-
+                                node.offsetHeight;
                                 if (node.scrollHeight > node.clientHeight + 2) {
                                     const removableItems = Array.from(node.querySelectorAll('[data-priority]'))
                                       .sort((a, b) => (b.dataset.priority - a.dataset.priority) || (b.getBoundingClientRect().top - a.getBoundingClientRect().top));
-                                      
                                     while (node.scrollHeight > node.clientHeight + 2) {
                                         const itemToHide = removableItems.shift();
-                                        if (itemToHide) {
-                                            itemToHide.style.display = 'none';
-                                        } else {
-                                            break;
-                                        }
+                                        if (itemToHide) itemToHide.style.display = 'none';
+                                        else break;
                                     }
                                 }
                             }
@@ -1437,7 +1431,18 @@
                         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                     };
 
-                    html2pdf().from(sourceEl).set(opt).save();
+                    if (window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler === 'function') {
+                        const pdfBlob = await html2pdf().from(sourceEl).set(opt).output('blob');
+                        const reader = new FileReader();
+                        reader.readAsDataURL(pdfBlob);
+                        reader.onloadend = function() {
+                            const base64data = reader.result;
+                            const base64Content = base64data.split(',')[1];
+                            window.flutter_inappwebview.callHandler('blobToBase64Handler', base64Content, filename);
+                        };
+                    } else {
+                        html2pdf().from(sourceEl).set(opt).save();
+                    }
                 });
             });
 

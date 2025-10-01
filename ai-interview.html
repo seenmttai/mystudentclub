@@ -2103,42 +2103,47 @@
 
                     const ended = !!(data.meta && data.meta.ended);
                     const progress = data.meta && typeof data.meta.progress === 'number' ? data.meta.progress : undefined;
-                    /*
-                    messages.push({ role: 'assistant', content: aiMessage });
-                    addChatMessage('ai', 'Alex Johnson', aiMessage);
-                    
-                    if (areSubtitlesOn) {
-                        showSubtitles(`${timestampNow()} Alex: ${aiMessage}`);
+
+                    if (/<<<FINAL_INTERVIEW_REPORT>>>/i.test(aiMessage)) {
+                        const reportContent = aiMessage.replace(/<<<FINAL_INTERVIEW_REPORT>>>/i, '').trim();
+                        addChatMessage('ai', 'Final Report', reportContent);
+                        messages.push({ role: 'assistant', content: aiMessage });
+
+                        const downloadBtnContainer = document.createElement('div');
+                        downloadBtnContainer.style.padding = '0 1rem 1rem 1rem';
+                        
+                        const downloadBtn = document.createElement('button');
+                        downloadBtn.className = 'btn btn-primary';
+                        downloadBtn.style.width = '100%';
+                        downloadBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 0.5rem;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download Report`;
+                        downloadBtn.onclick = () => downloadInterviewReport(reportContent);
+
+                        downloadBtnContainer.appendChild(downloadBtn);
+                        chatMessages.appendChild(downloadBtnContainer);
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    } else {
+                        messages.push({ role: 'assistant', content: aiMessage });
+                        addChatMessage('ai', 'Alex Johnson', aiMessage);
+
+                        const { clean, emojis } = extractEmojisAndSanitize(aiMessage);
+
+                        if (avatar && isModelLoaded) {
+                            emojis.slice(0, 3).forEach((e, i) => {
+                                const known = avatar.animEmojis[e] ? e : '😊';
+                                setTimeout(() => avatar.speakEmoji(known), i * 400);
+                            });
+                            avatar.speakText(clean);
+                        }
+
+                        if (areSubtitlesOn) {
+                            showSubtitles(`${timestampNow()} Alex: ${aiMessage}`);
+                        }
                     }
-                    if (avatar && isModelLoaded) {
-                        avatar.speakText(aiMessage);
-                    }*/
-                    messages.push({ role: 'assistant', content: aiMessage });
-                    addChatMessage('ai', 'Alex Johnson', aiMessage);
-
-                    const { clean, emojis } = extractEmojisAndSanitize(aiMessage);
-
-                    if (avatar && isModelLoaded) {
-                    emojis.slice(0, 3).forEach((e, i) => {
-                        const known = avatar.animEmojis[e] ? e : '😊';
-                        setTimeout(() => avatar.speakEmoji(known), i * 400);
-                    });
-                    avatar.speakText(clean);
-                    }
-
-                    if (areSubtitlesOn) {
-                    showSubtitles(`${timestampNow()} Alex: ${aiMessage}`);
-                    }
-
 
                     if (typeof score === 'number') {
                         scores.push(score);
                         updateScoreAndProgress(progress);
                         addChatMessage('ai', 'Score', `Assessment for your last answer: ${score.toFixed(1)}/10`);
-                    }
-
-                    if (/<<<FINAL_INTERVIEW_REPORT>>>/i.test(aiMessage)) {
-                        addChatMessage('ai', 'Final Report', aiMessage);
                     }
 
                     if (ended) {
@@ -2218,6 +2223,36 @@
             }
             if (typeof progress === 'number') {
                 progressPill.textContent = `Progress: ${Math.round(progress)}%`;
+            }
+        }
+
+        async function downloadInterviewReport(reportContent) {
+            const filename = "AI_Interview_Report.txt";
+            const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
+
+            if (window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler === 'function') {
+                try {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(blob);
+                    reader.onloadend = function() {
+                        const base64data = reader.result;
+                        const base64Content = base64data.split(',')[1];
+                        window.flutter_inappwebview.callHandler('blobToBase64Handler', base64Content, filename);
+                    };
+                } catch (e) {
+                    console.error("Flutter download failed:", e);
+                    alert("Download failed. Please try again.");
+                }
+            } else {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
             }
         }
 
