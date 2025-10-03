@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Student Club - Apply</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        .status-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding: 2rem;
+            text-align: center;
+        }
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid rgba(59, 130, 246, 0.2);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1.5rem;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .status-message {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        .error-message {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #ef4444;
+        }
+        .error-message a {
+            color: #3b82f6;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+        #iframe-container {
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+        #iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="status-container" class="status-container">
+        <div id="spinner" class="spinner"></div>
+        <p id="status-message" class="status-message">Processing your request...</p>
+    </div>
+
+    <div id="iframe-container"></div>
+
+    <script>
+        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        const statusContainer = document.getElementById('status-container');
+        const statusMessage = document.getElementById('status-message');
+        const spinner = document.getElementById('spinner');
+        const iframeContainer = document.getElementById('iframe-container');
+
+        const PORTAL_CONFIG = {
+            'industrial': {
+                tableName: 'Industrial Training Job Portal',
+                subject: 'Application for CA Industrial Training (Ref: My Student Club)',
+                jobTitle: 'CA Industrial Trainee'
+            },
+            'fresher': {
+                tableName: 'Fresher Jobs',
+                subject: 'Application for Role of CA Fresher (Ref: My Student Club)',
+                jobTitle: 'CA Fresher'
+            },
+            'semi': {
+                tableName: 'Semi Qualified Jobs',
+                subject: 'Application for Semi Qualified Role (Ref: My Student Club)',
+                jobTitle: 'CA Semi-Qualified'
+            },
+            'articleship': {
+                tableName: 'Articleship Jobs',
+                subject: 'Application for Articleship (Ref: My Student Club)',
+                jobTitle: 'Articleship Trainee'
+            }
+        };
+
+        function displayError(message) {
+            spinner.style.display = 'none';
+            statusMessage.innerHTML = message;
+            statusMessage.className = 'error-message';
+        }
+
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return string.startsWith('http');
+            } catch (_) {
+                return false;
+            }
+        }
+
+        function isEmail(string) {
+            return string && string.includes('@') && !isValidUrl(string);
+        }
+
+        async function handleAiMail(portal, jobId) {
+            statusMessage.textContent = 'Analyzing your profile for a personalized application...';
+
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) {
+                displayError('You must be logged in to use the AI Apply feature. Please <a href="/login.html">log in</a>.');
+                return;
+            }
+
+            const profileData = localStorage.getItem('userProfileData');
+            const cvText = localStorage.getItem('userCVText');
+            if (!profileData || !cvText) {
+                displayError('Your profile is incomplete. Please <a href="/profile.html">upload your resume</a> to use AI features.');
+                return;
+            }
+
+            const config = PORTAL_CONFIG[portal];
+            if (!config) {
+                displayError('Invalid portal specified.');
+                return;
+            }
+
+            statusMessage.textContent = 'Fetching job details...';
+            const { data: jobDetails, error: jobError } = await supabase
+                .from(config.tableName)
+                .select('Company, Description, Location, "Application ID"')
+                .eq('id', jobId)
+                .single();
+
+            if (jobError || !jobDetails) {
+                displayError('Could not retrieve job details to generate the email.');
+                return;
+            }
+
+            const emailAddress = jobDetails['Application ID'];
+            if (!isEmail(emailAddress)) {
+                displayError('This job does not support email applications.');
+                return;
+            }
+
+            statusMessage.textContent = 'Generating AI-powered email body...';
+            let emailBody = "";
+            try {
+                const workerUrl = 'https://emailgenerator.bhansalimanan55.workers.dev/';
+                const response = await fetch(workerUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        profile_data: {
+                            profile_data: JSON.parse(profileData),
+                            cv_text: cvText
+                        },
+                        job_details: {
+                            company_name: jobDetails.Company,
+                            job_description: jobDetails.Description,
+                            job_location: jobDetails.Location,
+                            job_title: config.jobTitle
+                        }
+                    })
+                });
+
+                if (!response.ok) throw new Error(`AI worker responded with status: ${response.status}`);
+                const data = await response.json();
+                emailBody = data.email_body || "";
+            } catch (e) {
+                console.error("AI email generation failed, falling back.", e);
+            }
+
+            const subject = `${config.subject} at ${jobDetails.Company}`;
+            const mailtoLink = `mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}`;
+            window.location.href = mailtoLink;
+        }
+
+        function handleSimpleRedirect(portal, jobId) {
+            if (isValidUrl(jobId)) {
+                statusContainer.style.display = 'none';
+                const iframe = document.createElement('iframe');
+                iframe.src = jobId;
+                iframeContainer.appendChild(iframe);
+                iframeContainer.style.display = 'block';
+            } else if (isEmail(jobId)) {
+                const config = PORTAL_CONFIG[portal];
+                const subject = config ? config.subject : 'Job Application (Ref: My Student Club)';
+                const mailtoLink = `mailto:${jobId}?subject=${encodeURIComponent(subject)}`;
+                window.location.href = mailtoLink;
+            } else {
+                displayError('Invalid application link or email provided.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const portal = params.get('portal');
+            const jobId = params.get('job_id');
+            const useAiMail = params.has('ai_mail');
+
+            if (!jobId) {
+                displayError('No job identifier specified in the URL.');
+                return;
+            }
+
+            if (useAiMail) {
+                if (!portal) {
+                    displayError('Portal must be specified for AI-powered applications.');
+                    return;
+                }
+                handleAiMail(portal, jobId);
+            } else {
+                handleSimpleRedirect(portal, jobId);
+            }
+        });
+    </script>
+</body>
+</html>
