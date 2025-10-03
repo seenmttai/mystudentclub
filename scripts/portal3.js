@@ -66,13 +66,6 @@ const JOB_TITLE_MAP = {
     "Articleship Jobs": "Articleship Trainee"
 };
 
-const JOB_TYPE_MAP = {
-    "Industrial Training Job Portal": "industrial",
-    "Fresher Jobs": "fresher",
-    "Semi Qualified Jobs": "semi",
-    "Articleship Jobs": "articleship"
-};
-
 function setActivePortalTab() {
     const path = window.location.pathname;
     document.querySelectorAll('.portal-nav-bar .footer-tab, .site-footer-nav .footer-tab').forEach(tab => tab.classList.remove('active'));
@@ -105,6 +98,7 @@ function renderJobCard(job) {
     const jobCard = document.createElement('article');
     jobCard.className = 'job-card';
     jobCard.dataset.jobId = job.id;
+    jobCard.addEventListener('click', () => showModal(job));
     
     const companyInitial = job.Company ? job.Company.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
@@ -129,19 +123,8 @@ function renderJobCard(job) {
             </div>
         </div>
         <div class="job-card-actions">
-             <button class="apply-now-card-btn ${buttonClass}" ${isApplied ? 'disabled' : ''}>${buttonText}</button>
+             <button class="apply-now-card-btn ${buttonClass}">${buttonText}</button>
         </div>`;
-
-    jobCard.addEventListener('click', (e) => {
-        if (!e.target.closest('.apply-now-card-btn')) {
-            showModal(job);
-        }
-    });
-    
-    jobCard.querySelector('.apply-now-card-btn').addEventListener('click', (e) => {
-        e.stopPropagation();
-        showModal(job);
-    });
 
     return jobCard;
 }
@@ -149,8 +132,8 @@ function renderJobCard(job) {
 function showModal(job) {
     const companyInitial = job.Company ? job.Company.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
-    const applicationTarget = job['Application ID'];
-    const isMailto = applicationTarget && applicationTarget.includes('@') && !applicationTarget.startsWith('http');
+    const applyLink = getApplicationLink(job['Application ID']);
+    const isMailto = applyLink.startsWith('mailto:');
     const isApplied = appliedJobIds.has(job.id);
     const buttonClass = isApplied ? 'applied' : '';
 
@@ -159,11 +142,11 @@ function showModal(job) {
         const simpleApplyText = isApplied ? 'Applied' : 'Simple Apply';
         const aiApplyText = isApplied ? 'Applied' : 'AI Powered Apply';
         actionsHtml = `
-            <button id="modalSimpleApplyBtn" class="btn btn-secondary ${buttonClass}" ${isApplied ? 'disabled' : ''}>
+            <button id="modalSimpleApplyBtn" class="btn btn-secondary ${buttonClass}">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                 <span>${simpleApplyText}</span>
             </button>
-            <button id="modalAiApplyBtn" class="btn btn-primary ${buttonClass}" ${isApplied ? 'disabled' : ''}>
+            <button id="modalAiApplyBtn" class="btn btn-primary ${buttonClass}">
                 <svg fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                 <span class="btn-text">${aiApplyText}</span>
                 <i class="fas fa-spinner fa-spin"></i>
@@ -171,10 +154,10 @@ function showModal(job) {
     } else {
         const applyText = isApplied ? 'Applied' : 'Apply Now';
         actionsHtml = `
-            <button id="modalExternalApplyBtn" class="btn btn-primary ${buttonClass}" ${isApplied ? 'disabled' : ''}>
+            <a href="${applyLink}" id="modalExternalApplyBtn" class="btn btn-primary ${buttonClass}" target="_blank">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 ${applyText}
-            </button>`;
+            </a>`;
     }
 
     dom.modalBody.innerHTML = `
@@ -203,9 +186,12 @@ function showModal(job) {
     dom.modalOverlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    document.getElementById('modalSimpleApplyBtn')?.addEventListener('click', () => handleApplicationRedirect(job, false));
-    document.getElementById('modalAiApplyBtn')?.addEventListener('click', () => handleApplicationRedirect(job, true));
-    document.getElementById('modalExternalApplyBtn')?.addEventListener('click', () => handleApplicationRedirect(job, false));
+    if (isMailto) {
+        document.getElementById('modalSimpleApplyBtn').addEventListener('click', (e) => handleApplyClick(job, e.currentTarget, false));
+        document.getElementById('modalAiApplyBtn').addEventListener('click', (e) => handleApplyClick(job, e.currentTarget, true));
+    } else {
+        document.getElementById('modalExternalApplyBtn').addEventListener('click', (e) => handleApplyClick(job, e.currentTarget));
+    }
 }
 
 function closeModal() {
@@ -528,7 +514,7 @@ function updateHeaderAuth(session) {
     if (session) {
         let email = session.user.email || 'User';
         let initial = email.charAt(0).toUpperCase();
-        dom.authButtonsContainer.innerHTML = `<div class="user-profile-container"><div class="user-icon-wrapper"><div class="user-icon" data-email="${email}">${initial}</div><div class="user-hover-card"><div class="user-hover-content"><p class="user-email">${email}</p><a href="/profile.html" class="logout-btn" style="background-color: #E0E7FF; color: #3730A3; border-color: #C7D2FE; text-align: center;">My Profile</a><button id="logoutBtn" class="logout-btn">Logout</button></div></div></div></div>`;
+        dom.authButtonsContainer.innerHTML = `<div class="user-profile-container"><div class="user-icon-wrapper"><div class="user-icon" data-email="${email}">${initial}</div><div class="user-hover-card"><div class="user-hover-content"><p class="user-email">${email}</p><button id="logoutBtn" class="logout-btn">Logout</button></div></div></div></div>`;
         document.getElementById('logoutBtn').addEventListener('click', handleLogout);
         checkUserEnrollment();
     } else {
@@ -561,33 +547,44 @@ async function checkUserEnrollment() {
 
 function isProfileComplete() { return !!localStorage.getItem('userCVText'); }
 
-async function handleApplicationRedirect(job, isAiApply = false) {
-    if (!currentSession) {
-        window.location.href = '/login.html';
-        return;
-    }
+async function handleApplyClick(job, buttonElement, isAiApply = false) {
+    if (!currentSession) { window.location.href = '/login.html'; return; }
 
-    markJobAsApplied(job); 
+    markJobAsApplied(job);
 
-    const portal = JOB_TYPE_MAP[currentTable];
-    
-    if (!portal) {
-        alert('Application portal details are missing.');
-        return;
-    }
-
-    let url = `/application.html?portal=${portal}&job_id=${job.id}`;
-    
     if (isAiApply) {
         if (!isProfileComplete()) {
             alert("Your profile is incomplete. Please upload your resume to use the AI Apply feature.");
             window.location.href = `/profile.html?redirect=${encodeURIComponent(window.location.href)}`;
             return;
         }
-        url += '&ai_mail=true';
+
+        const btnText = buttonElement.querySelector('.btn-text');
+        const spinner = buttonElement.querySelector('i.fa-spin');
+        const originalText = btnText.textContent;
+        btnText.textContent = 'Preparing...';
+        if (spinner) spinner.style.display = 'inline-block';
+        buttonElement.disabled = true;
+
+        try {
+            const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
+            const cvText = localStorage.getItem('userCVText');
+            const emailBody = await generateEmailBody({ profile_data: profileData, cv_text: cvText }, job);
+            window.location.href = constructMailto(job, emailBody);
+        } catch (e) {
+            alert("Could not generate AI email. Opening a standard email draft.");
+            window.location.href = constructMailto(job, ""); 
+        } finally {
+            btnText.textContent = originalText;
+            if (spinner) spinner.style.display = 'none';
+            buttonElement.disabled = false;
+        }
+    } else {
+        const applyLink = getApplicationLink(job['Application ID']);
+        if (applyLink.startsWith('mailto:')) {
+            window.location.href = applyLink;
+        }
     }
-    
-    window.open(url, '_blank');
 }
 
 async function markJobAsApplied(job) {
@@ -600,7 +597,6 @@ async function markJobAsApplied(job) {
             btn.classList.add('applied');
             const textEl = btn.querySelector('span') || btn;
             if (textEl) textEl.textContent = 'Applied';
-            btn.disabled = true;
         }
     });
     
@@ -610,7 +606,6 @@ async function markJobAsApplied(job) {
         if (cardButton) {
             cardButton.classList.add('applied');
             cardButton.textContent = 'Applied';
-            cardButton.disabled = true;
         }
     }
 
@@ -622,6 +617,56 @@ async function markJobAsApplied(job) {
     } catch (error) {
         console.error('Failed to save application status:', error);
     }
+}
+
+async function generateEmailBody(profile, job) {
+    const workerUrl = 'https://emailgenerator.bhansalimanan55.workers.dev/';
+    try {
+        const response = await fetch(workerUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                profile_data: profile,
+                job_details: {
+                    company_name: job.Company,
+                    job_description: job.Description,
+                    job_location: job.Location,
+                    job_title: JOB_TITLE_MAP[currentTable] || 'the role'
+                }
+            })
+        });
+        if (!response.ok) throw new Error(`AI worker responded with status: ${response.status}`);
+        const data = await response.json();
+        return data.email_body || "";
+    } catch (error) {
+        return ""; 
+    }
+}
+
+function constructMailto(job, body = "") {
+    const rawLink = job['Application ID'];
+    if (!rawLink) return '#';
+    const emailMatch = rawLink.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    if (!emailMatch) return '#';
+    const email = emailMatch[0];
+    const subject = `Application for ${JOB_TITLE_MAP[currentTable]} at ${job.Company} (Ref: My Student Club)`;
+    return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+function getApplicationLink(id) {
+    if (!id) return '#';
+    const trimmedId = id.trim();
+    if (trimmedId.startsWith('http')) {
+        try {
+            new URL(trimmedId);
+            return trimmedId;
+        } catch (_) {
+        }
+    }
+    if (trimmedId.includes('@')) {
+        return constructMailto({ 'Application ID': trimmedId, Company: 'the company' });
+    }
+    return `https://www.google.com/search?q=${encodeURIComponent(trimmedId + ' careers')}`;
 }
 
 async function loadBanners() {
