@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <title>Job Open Handler</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <!-- Reduce referrer leakage -->
     <meta name="referrer" content="no-referrer" />
     <style>
       :root { color-scheme: light dark; }
@@ -53,7 +52,7 @@
 
       const qs = new URLSearchParams(window.location.search);
       const portal = (qs.get("portal") || "").toLowerCase();
-      const jobId = (qs.get("jobId") || "").trim();
+      const jobId = (qs.get("job_id") || "").trim();
       const aiMail = qs.has("aiMail");
       const company = qs.get("company") || "the company";
       const title = qs.get("title") || (JOB_TITLE_MAP[portal] || "the role");
