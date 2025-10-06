@@ -396,16 +396,36 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (dataToSave.connect_link === '') dataToSave.connect_link = null;
 
             const isEdit = id && id.trim() !== '';
-            const { error } = isEdit ? await supabaseClient.from(table).update(dataToSave).eq('id', id) : await supabaseClient.from(table).insert([dataToSave]).select();
-            if (error) throw error;
+            let savedJob;
+
+            if (isEdit) {
+                const { data, error } = await supabaseClient.from(table).update(dataToSave).eq('id', id).select().single();
+                if (error) throw error;
+                savedJob = data;
+            } else {
+                const { data, error } = await supabaseClient.from(table).insert([dataToSave]).select().single();
+                if (error) throw error;
+                savedJob = data;
+            }
             
             closeJobEditModal();
             
-            if (currentSession?.access_token && !isEdit) { // Only notify for new jobs
-                await triggerNotifications({ ...dataToSave, table }, currentSession.access_token);
+            if (isEdit) {
+                const oldCard = dom.jobs.querySelector(`.job-card[data-job-id='${id}']`);
+                if (oldCard) {
+                    const newCard = renderJobCard(savedJob, table);
+                    oldCard.replaceWith(newCard);
+                }
+            } else {
+                if (dom.jobs.textContent === 'No jobs found.') {
+                    dom.jobs.innerHTML = '';
+                }
+                const newCard = renderJobCard(savedJob, table);
+                dom.jobs.prepend(newCard);
+                if (currentSession?.access_token) {
+                    await triggerNotifications({ ...savedJob, table }, currentSession.access_token);
+                }
             }
-            
-            debouncedFetch();
         } catch (error) {
             alert('Failed to save job: ' + error.message);
         } finally {
@@ -422,7 +442,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const jobId = card.dataset.jobId;
 
         if (button) {
-            e.stopPropagation(); // Prevent modal from opening when clicking action buttons
+            e.stopPropagation();
             const action = button.dataset.action;
             if (action === 'delete') {
                 await deleteJob(jobId, currentTable);
@@ -438,7 +458,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     dom.tableSelect.addEventListener('change', (e) => updateCategoryOptions(e.target.value));
 
-    // Expose globally for inline HTML onclick attributes that haven't been refactored yet
     window.addNewBanner = addNewBanner;
     window.showAddJobModal = showAddJobModal;
     window.closeJobEditModal = closeJobEditModal;
