@@ -196,10 +196,10 @@ function showModal(job) {
             <h3 class="font-bold text-gray-800 mb-2">Application Details:</h3>
             <p class="text-gray-700">${job['Application ID']}</p>
         </div>
-        ${job.Peer_Link ? `
+        ${job.connect_link ? `
         <div class="mt-4">
             <h3 class="font-bold text-gray-800 mb-2">Peer Connection:</h3>
-            <a href="${job.Peer_Link}" target="_blank" class="text-blue-600 hover:underline">${job.Peer_Link}</a>
+            <a href="${job.connect_link}" target="_blank" class="text-blue-600 hover:underline">${job.connect_link}</a>
         </div>` : ''}
     `;
     document.getElementById('modal').style.display = 'flex';
@@ -393,13 +393,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             const jobData = Object.fromEntries(formData.entries());
             const { table, id, ...dataToSave } = jobData;
             if (dataToSave.Salary === '') dataToSave.Salary = null;
+            if (dataToSave.connect_link === '') dataToSave.connect_link = null;
+
             const isEdit = id && id.trim() !== '';
             const { error } = isEdit ? await supabaseClient.from(table).update(dataToSave).eq('id', id) : await supabaseClient.from(table).insert([dataToSave]).select();
             if (error) throw error;
+            
             closeJobEditModal();
-            if (currentSession?.access_token) {
+            
+            if (currentSession?.access_token && !isEdit) { // Only notify for new jobs
                 await triggerNotifications({ ...dataToSave, table }, currentSession.access_token);
             }
+            
             debouncedFetch();
         } catch (error) {
             alert('Failed to save job: ' + error.message);
@@ -417,6 +422,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const jobId = card.dataset.jobId;
 
         if (button) {
+            e.stopPropagation(); // Prevent modal from opening when clicking action buttons
             const action = button.dataset.action;
             if (action === 'delete') {
                 await deleteJob(jobId, currentTable);
@@ -432,22 +438,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     dom.tableSelect.addEventListener('change', (e) => updateCategoryOptions(e.target.value));
 
-    // Expose globally for inline HTML onclick attributes
+    // Expose globally for inline HTML onclick attributes that haven't been refactored yet
     window.addNewBanner = addNewBanner;
     window.showAddJobModal = showAddJobModal;
     window.closeJobEditModal = closeJobEditModal;
     window.closeModal = closeModal;
 
-    try {
-        await loadBanners();
-    } catch (error) {
-        document.getElementById('banner-editor').innerHTML = '<p style="color:red;">Error loading banners.</p>';
-    }
-
-    try {
-        await fetchCategories();
-        await fetchJobs();
-    } catch (error) {
-        dom.jobs.innerHTML = '<p style="color:red;">Error loading initial data.</p>';
-    }
+    try { await loadBanners(); } catch (error) { console.error("Failed to load banners:", error); }
+    try { await fetchCategories(); await fetchJobs(); } catch (error) { console.error("Failed to load initial data:", error); }
 });
