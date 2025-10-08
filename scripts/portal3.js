@@ -516,7 +516,19 @@ function updateHeaderAuth(session) {
     if (session) {
         let email = session.user.email || 'User';
         let initial = email.charAt(0).toUpperCase();
-        dom.authButtonsContainer.innerHTML = `<div class="user-profile-container"><div class="user-icon-wrapper"><div class="user-icon" data-email="${email}">${initial}</div><div class="user-hover-card"><div class="user-hover-content"><p class="user-email">${email}</p><button id="logoutBtn" class="logout-btn">Logout</button></div></div></div></div>`;
+        dom.authButtonsContainer.innerHTML = `
+            <div class="user-profile-container">
+                <div class="user-icon-wrapper">
+                    <div class="user-icon" data-email="${email}">${initial}</div>
+                    <div class="user-hover-card">
+                        <div class="user-hover-content">
+                            <p class="user-email">${email}</p>
+                            <a href="/profile.html" class="profile-link-btn">Edit Profile</a>
+                            <button id="logoutBtn" class="logout-btn">Logout</button>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
         document.getElementById('logoutBtn').addEventListener('click', handleLogout);
         checkUserEnrollment();
     } else {
