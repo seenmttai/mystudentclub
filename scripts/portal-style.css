@@ -63,6 +63,11 @@ body {
   align-items: center;
 }
 
+.brand-link {
+  display: flex;
+  align-items: center;
+}
+
 .brand-logo {
   height: 30px;
   transition: transform 0.2s var(--transition-fast);
@@ -621,6 +626,7 @@ body {
   max-height: 200px;
   overflow-y: auto;
   z-index: 101;
+  -webkit-overflow-scrolling: touch;
 }
 
 .multi-select-options.show {

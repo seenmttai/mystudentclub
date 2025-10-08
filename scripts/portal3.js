@@ -100,7 +100,8 @@ function renderJobCard(job) {
     jobCard.dataset.jobId = job.id;
     jobCard.addEventListener('click', () => showModal(job));
     
-    const companyInitial = job.Company ? job.Company.charAt(0).toUpperCase() : '?';
+    const companyName = (job.Company || '').trim();
+    const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     const isApplied = appliedJobIds.has(job.id);
     const buttonText = isApplied ? 'Applied' : 'View Details';
@@ -130,7 +131,8 @@ function renderJobCard(job) {
 }
 
 function showModal(job) {
-    const companyInitial = job.Company ? job.Company.charAt(0).toUpperCase() : '?';
+    const companyName = (job.Company || '').trim();
+    const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     const applyLink = getApplicationLink(job['Application ID']);
     const isMailto = applyLink.startsWith('mailto:');
