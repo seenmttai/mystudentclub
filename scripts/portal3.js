@@ -1064,7 +1064,7 @@ async function initializePage() {
         let visitCount = parseInt(localStorage.getItem('portalVisitCount') || '0');
         visitCount++;
         localStorage.setItem('portalVisitCount', visitCount.toString());
-        if (visitCount >= 3) {
+        if (visitCount >= 30000) {
             document.getElementById('loginPromptOverlay').style.display = 'flex';
             const layout = document.querySelector('.job-portal-layout');
             if (layout) layout.style.display = 'none';
