@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+  <link rel="icon" type="image/x-icon" href="ahttps://www.mystudentclub.com/assets/icon-70x70.png">
   <style>
     .login-page {
       min-height: 100vh;
@@ -360,7 +360,7 @@
 
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-
+      
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
 
@@ -457,7 +457,7 @@
         resetMessageDiv.classList.remove('show');
         resetMessageDiv.classList.add('hidden');
         resetMessageDiv.textContent = '';
-
+        
         if (!email) {
             resetMessageDiv.textContent = 'Please enter your email address.';
             resetMessageDiv.className = 'message error-message show';
@@ -472,14 +472,14 @@
                 redirectTo: `${window.location.origin}/update-password.html`,
             });
             if (error) throw error;
-
-            resetMessageDiv.textContent = 'Password reset instructions have been sent to your email.';
+            
+            resetMessageDiv.innerHTML = 'Password reset instructions have been sent to your email.<br><br><strong>Please check your spam/junk folder.</strong> To ensure future delivery, please mark the email as "not spam".';
             resetMessageDiv.className = 'message show'; 
             resetMessageDiv.style.backgroundColor = '#d1fae5';
             resetMessageDiv.style.borderColor = '#a7f3d0';
             resetMessageDiv.style.color = '#065f46';
             resetForm.reset();
-
+            
         } catch (error) {
             resetMessageDiv.textContent = error.message;
             resetMessageDiv.className = 'message error-message show';
