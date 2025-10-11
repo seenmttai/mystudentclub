@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/x-icon" href="ahttps://www.mystudentclub.com/assets/icon-70x70.png">
+  <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
   <style>
     .login-page {
       min-height: 100vh;
@@ -276,7 +276,10 @@
             <input type="email" id="email" class="form-input" required>
           </div>
           <div class="form-group">
-            <label for="password" class="form-label">Password</label>
+            <div class="flex items-center justify-between">
+              <label for="password" class="form-label">Password</label>
+              <a href="#" id="forgot-password-link" class="text-sm text-indigo-600 hover:text-indigo-500">Forgot password?</a>
+            </div>
             <input type="password" id="password" class="form-input" required>
           </div>
           <button type="submit" class="login-btn">
@@ -305,6 +308,40 @@
     </main>
   </div>
 
+<div id="forgot-password-modal" class="fixed z-10 inset-0 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Reset Password</h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-gray-500">Enter your email address and we'll send you a link to reset your password.</p>
+                            <form id="reset-password-form" class="mt-4">
+                                <div class="form-group">
+                                    <label for="reset-email" class="form-label">Email Address</label>
+                                    <input type="email" id="reset-email" class="form-input" required>
+                                </div>
+                                <div id="reset-message" class="hidden text-sm p-3 rounded-md mt-4"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" id="send-reset-link-btn" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 sm:ml-3 sm:w-auto sm:text-sm">
+                    Send Reset Link
+                </button>
+                <button type="button" id="cancel-reset-btn" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:mt-0 sm:w-auto sm:text-sm">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
   <script>
     const supabaseClient = supabase.createClient('https://izsggdtdiacxdsjjncdq.supabase.co', 
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0');
@@ -323,7 +360,7 @@
 
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      
+
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
 
@@ -391,6 +428,66 @@
             console.error("An unexpected error occurred during Google Sign-In:", e);
         }
     };
+
+    const forgotPasswordLink = document.getElementById('forgot-password-link');
+    const forgotPasswordModal = document.getElementById('forgot-password-modal');
+    const cancelResetBtn = document.getElementById('cancel-reset-btn');
+    const sendResetLinkBtn = document.getElementById('send-reset-link-btn');
+    const resetForm = document.getElementById('reset-password-form');
+    const resetEmailInput = document.getElementById('reset-email');
+    const resetMessageDiv = document.getElementById('reset-message');
+
+    forgotPasswordLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        forgotPasswordModal.classList.remove('hidden');
+    });
+
+    function closeResetModal() {
+        forgotPasswordModal.classList.add('hidden');
+        resetMessageDiv.classList.add('hidden');
+        resetMessageDiv.textContent = '';
+        resetForm.reset();
+    }
+
+    cancelResetBtn.addEventListener('click', closeResetModal);
+    forgotPasswordModal.querySelector('.fixed.inset-0').addEventListener('click', closeResetModal);
+
+    sendResetLinkBtn.addEventListener('click', async () => {
+        const email = resetEmailInput.value;
+        resetMessageDiv.classList.remove('show');
+        resetMessageDiv.classList.add('hidden');
+        resetMessageDiv.textContent = '';
+
+        if (!email) {
+            resetMessageDiv.textContent = 'Please enter your email address.';
+            resetMessageDiv.className = 'message error-message show';
+            return;
+        }
+
+        sendResetLinkBtn.disabled = true;
+        sendResetLinkBtn.textContent = 'Sending...';
+
+        try {
+            const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/update-password.html`,
+            });
+            if (error) throw error;
+
+            resetMessageDiv.textContent = 'Password reset instructions have been sent to your email.';
+            resetMessageDiv.className = 'message show'; 
+            resetMessageDiv.style.backgroundColor = '#d1fae5';
+            resetMessageDiv.style.borderColor = '#a7f3d0';
+            resetMessageDiv.style.color = '#065f46';
+            resetForm.reset();
+
+        } catch (error) {
+            resetMessageDiv.textContent = error.message;
+            resetMessageDiv.className = 'message error-message show';
+        } finally {
+            sendResetLinkBtn.disabled = false;
+            sendResetLinkBtn.textContent = 'Send Reset Link';
+        }
+    });
   </script>
 </body>
 </html>
