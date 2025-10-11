@@ -4,50 +4,859 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Firm & Stipend Reviews - My Student Club</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cal+Sans:wght@600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        .main-content-area { max-width: 900px; }
-        .page-header { text-align: center; margin-bottom: 2.5rem; }
-        .page-header h1 { font-size: 2.5rem; font-weight: 700; color: var(--text-primary); }
-        .page-header p { color: var(--text-secondary); }
+        :root {
+            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --accent-blue: #667eea;
+            --accent-purple: #764ba2;
+            --accent-pink: #f5576c;
+            --surface-elevated: #ffffff;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+            --shadow-xl: 0 20px 40px rgba(0,0,0,0.12);
+        }
 
-        #review-form-container { display: none; margin-bottom: 3rem; }
-        #login-prompt { text-align: center; background-color: #eef2ff; border: 1px solid #c7d2fe; padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 3rem; }
-        #review-form { background-color: var(--surface-bg); padding: 2rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--border-light); }
-        #review-form h2 { font-size: 1.5rem; margin-bottom: 1.5rem; font-weight: 600; }
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
-        .form-group label { display: block; font-weight: 500; margin-bottom: 0.5rem; font-size: 0.9rem; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--border-medium); border-radius: var(--radius-md); font-size: 0.95rem; }
-        .form-group textarea { resize: vertical; min-height: 100px; }
-        .rating-group .stars { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 0.25rem; }
-        .rating-group input[type="radio"] { display: none; }
-        .rating-group label { font-size: 1.75rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s; }
-        .rating-group input:checked ~ label, .rating-group label:hover, .rating-group label:hover ~ label { color: var(--secondary-accent); }
-        
-        .filter-controls { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
-        .filter-controls input, .filter-controls select { padding: 0.75rem; border: 1px solid var(--border-medium); border-radius: var(--radius-md); font-size: 0.95rem; flex-grow: 1; }
-        
-        .review-card { background-color: var(--surface-bg); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); }
-        .review-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
-        .review-card h3 { font-size: 1.25rem; font-weight: 600; color: var(--primary-brand); }
-        .review-card .location { color: var(--text-secondary); font-size: 0.9rem; }
-        .review-card .date { font-size: 0.8rem; color: var(--text-muted); }
-        .review-meta { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-light); }
-        .meta-item { text-align: center; }
-        .meta-item .label { font-size: 0.8rem; color: var(--text-muted); }
-        .meta-item .value, .meta-item .stars { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); }
-        .meta-item .stars .fa-star { color: var(--secondary-accent); }
-        .review-body h4 { font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; }
-        .review-body p { white-space: pre-wrap; line-height: 1.7; color: var(--text-secondary); }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f7fafc;
+            color: var(--text-primary);
+        }
+
+        .main-content-area {
+            max-width: 1200px;
+            padding: 2rem 1rem;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: var(--gradient-primary);
+            border-radius: 24px;
+            color: white;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.4;
+        }
+
+        .hero-section h1 {
+            font-family: 'Cal Sans', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-section p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .controls-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+        }
+
+        .controls-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .controls-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.5rem;
+            background: #f7fafc;
+            padding: 0.25rem;
+            border-radius: 12px;
+        }
+
+        .view-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .view-btn.active {
+            background: white;
+            box-shadow: var(--shadow-sm);
+            color: var(--accent-blue);
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-group {
+            position: relative;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-group input, .filter-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .filter-group input:focus, .filter-group select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            padding: 0.5rem 1rem;
+            background: #f7fafc;
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .tag.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        #review-form-container {
+            display: none;
+            margin-bottom: 2rem;
+        }
+
+        #review-form {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        #review-form h2 {
+            font-size: 1.75rem;
+            margin-bottom: 2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .form-section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+            line-height: 1.6;
+        }
+
+        .rating-group .stars {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .rating-group input[type="radio"] {
+            display: none;
+        }
+
+        .rating-group label {
+            font-size: 2rem;
+            color: #cbd5e0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .rating-group input:checked ~ label,
+        .rating-group label:hover,
+        .rating-group label:hover ~ label {
+            color: #fbbf24;
+            transform: scale(1.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.25rem;
+            background: #f7fafc;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .checkbox-item input {
+            margin-right: 0.75rem;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-item:hover {
+            background: #edf2f7;
+        }
+
+        .checkbox-item.checked {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        .submit-btn {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 1rem 3rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: var(--shadow-md);
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .review-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .review-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-primary);
+        }
+
+        .review-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .review-firm {
+            flex: 1;
+        }
+
+        .review-card h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .review-card h3:hover {
+            color: var(--accent-purple);
+        }
+
+        .review-meta-top {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .meta-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.875rem;
+            background: #f7fafc;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .verified-badge {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: white;
+        }
+
+        .review-date {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .ratings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            border-radius: 16px;
+        }
+
+        .rating-item {
+            text-align: center;
+        }
+
+        .rating-item .label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .rating-item .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .rating-item .stars {
+            display: flex;
+            justify-content: center;
+            gap: 0.25rem;
+            font-size: 1.25rem;
+        }
+
+        .rating-item .stars .fa-star {
+            color: #fbbf24;
+        }
+
+        .salary-highlight {
+            background: var(--gradient-success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            font-size: 1.75rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .review-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .review-tag {
+            padding: 0.4rem 1rem;
+            background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 100%);
+            color: var(--accent-purple);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .review-content {
+            margin-bottom: 1.5rem;
+        }
+
+        .review-content h4 {
+            font-weight: 600;
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+        }
+
+        .review-content p {
+            line-height: 1.8;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+        }
+
+        .review-actions {
+            display: flex;
+            gap: 1rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            background: #f7fafc;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .action-btn:hover {
+            background: #edf2f7;
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .action-btn.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        .helpful-count {
+            background: var(--accent-blue);
+            color: white;
+            padding: 0.25rem 0.625rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        #login-prompt {
+            text-align: center;
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 2px solid #93c5fd;
+        }
+
+        #login-prompt p {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+        }
+
+        #login-prompt a {
+            color: var(--accent-blue);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        #login-prompt a:hover {
+            color: var(--accent-purple);
+        }
+
+        .load-more-wrapper {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .load-more-btn {
+            padding: 1rem 2.5rem;
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+
+        .load-more-btn:hover {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .loader-container {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .loader-spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid var(--accent-blue);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            position: relative;
+        }
+
+        .modal-header {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 2.5rem;
+            border-radius: 24px 24px 0 0;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal-body {
+            padding: 2.5rem;
+        }
+
+        .firm-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .firm-stat-card {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 1.5rem;
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .firm-stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .firm-stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chart-container {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: #f7fafc;
+            border-radius: 16px;
+        }
+
+        @media (max-width: 768px) {
+            .ratings-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .review-card {
+                padding: 1.5rem;
+            }
+
+            .modal-content {
+                margin: 1rem;
+            }
+
+            .modal-header, .modal-body {
+                padding: 1.5rem;
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state p {
+            color: var(--text-secondary);
+        }
+
+        .mobile-controls {
+            display: none; 
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-toggle-btn {
+            width: 100%;
+            display: flex; 
+            justify-content: center;
+            padding: 0.875rem;
+            gap: 0.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px; 
+            cursor: pointer;
+        }
+
+        .filter-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1050; display: flex; justify-content: center; align-items: flex-end; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s 0.3s; }
+        .filter-modal-overlay.show { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
+        .filter-modal-content { background-color: white; width: 100%; max-height: 85vh; border-radius: 16px 16px 0 0; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s ease; }
+        .filter-modal-overlay.show .filter-modal-content { transform: translateY(0); }
+        .filter-modal-content .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); }
+        .filter-modal-content .modal-header h4 { font-size: 1.1rem; font-weight: 600; margin: 0; }
+        .modal-close-action { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+        .filter-modal-content .modal-body { padding: 1.5rem; overflow-y: auto; }
+        .filter-modal-content .modal-footer { display: flex; gap: 1rem; padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); }
+        .btn { flex: 1; padding: 0.75rem 1rem; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; } 
+        .btn.btn-secondary { background-color: #e2e8f0; color: var(--text-primary); }
+        .btn.btn-primary { background: var(--gradient-primary); color: white; }
+
+        details[open] .details-arrow {
+            transform: rotate(180deg);
+        }
+        .details-arrow {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        @media (max-width: 768px) {
+            #desktop-filter-container {
+                display: none;
+            }
+            #mobile-filter-trigger {
+                display: block;
+            }
+
+            .ratings-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .review-card {
+                padding: 1.5rem;
+            }
+
+            .modal-content {
+                margin: 1rem;
+            }
+
+            .modal-header, .modal-body {
+                padding: 1.5rem;
+            }
+        }
     </style>
 </head>
 <body>
     <header class="site-header">
          <div class="header-container">
-            <a href="/" class="brand-link"><img src="/assets/logo.png" alt="My Student Club" class="brand-logo"></a>
+            <a href="/" class="brand-link"><img src="https://mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo"></a>
             <div class="nav-actions">
                 <div class="auth-buttons-container"></div>
                 <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
@@ -65,111 +874,354 @@
     </div>
 
     <main class="main-content-area">
-        <div class="page-header">
-            <h1>Firm & Stipend Reviews</h1>
-            <p>Honest, anonymous insights from the CA community.</p>
-        </div>
 
         <div id="review-form-container">
             <form id="review-form">
-                <h2><i class="fas fa-plus-circle"></i> Add Your Review</h2>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="firm_name">Firm/Company Name *</label>
-                        <input type="text" id="firm_name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="location">Location</label>
-                        <input type="text" id="location" placeholder="e.g., Mumbai">
-                    </div>
-                    <div class="form-group">
-                        <label for="job_type">Job Type *</label>
-                        <select id="job_type" required>
-                            <option value="Articleship">Articleship</option>
-                            <option value="Industrial Training">Industrial Training</option>
-                            <option value="Fresher">Fresher Job</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="role_title">Your Role</label>
-                        <input type="text" id="role_title" placeholder="e.g., Audit Associate">
-                    </div>
-                    <div class="form-group">
-                        <label for="salary">Stipend / Salary *</label>
-                        <input type="number" id="salary" placeholder="e.g., 25000" required>
-                    </div>
-                     <div class="form-group">
-                        <label for="salary_period">Salary Period *</label>
-                        <select id="salary_period" required>
-                            <option value="monthly">Monthly</option>
-                            <option value="yearly">Yearly (CTC)</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-grid" style="margin-top: 1.5rem; border-top: 1px solid var(--border-light); padding-top: 1.5rem;">
-                    <div class="form-group rating-group">
-                        <label>Overall Rating *</label>
-                        <div class="stars">
-                            <input type="radio" id="overall-5" name="overall_rating" value="5" required><label for="overall-5"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="overall-4" name="overall_rating" value="4"><label for="overall-4"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="overall-3" name="overall_rating" value="3"><label for="overall-3"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="overall-2" name="overall_rating" value="2"><label for="overall-2"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="overall-1" name="overall_rating" value="1"><label for="overall-1"><i class="fas fa-star"></i></label>
+                <h2><i class="fas fa-pen-to-square"></i> Share Your Experience</h2>
+
+                <div class="form-section">
+                    <div class="form-section-title">Basic Information</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="firm_name">Firm/Company Name *</label>
+                            <input type="text" id="firm_name" required placeholder="e.g., Deloitte">
                         </div>
-                    </div>
-                     <div class="form-group rating-group">
-                        <label>Work-Life Balance</label>
-                        <div class="stars">
-                            <input type="radio" id="wlb-5" name="work_life_balance_rating" value="5"><label for="wlb-5"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="wlb-4" name="work_life_balance_rating" value="4"><label for="wlb-4"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="wlb-3" name="work_life_balance_rating" value="3"><label for="wlb-3"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="wlb-2" name="work_life_balance_rating" value="2"><label for="wlb-2"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="wlb-1" name="work_life_balance_rating" value="1"><label for="wlb-1"><i class="fas fa-star"></i></label>
+                        <div class="form-group">
+                            <label for="location">Location *</label>
+                            <input type="text" id="location" required placeholder="e.g., Mumbai, Delhi">
                         </div>
-                    </div>
-                     <div class="form-group rating-group">
-                        <label>Learning Experience</label>
-                        <div class="stars">
-                            <input type="radio" id="learning-5" name="learning_experience_rating" value="5"><label for="learning-5"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="learning-4" name="learning_experience_rating" value="4"><label for="learning-4"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="learning-3" name="learning_experience_rating" value="3"><label for="learning-3"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="learning-2" name="learning_experience_rating" value="2"><label for="learning-2"><i class="fas fa-star"></i></label>
-                            <input type="radio" id="learning-1" name="learning_experience_rating" value="1"><label for="learning-1"><i class="fas fa-star"></i></label>
+                        <div class="form-group">
+                            <label for="job_type">Job Type *</label>
+                            <select id="job_type" required>
+                                <option value="">Select Type</option>
+                                <option value="Articleship">Articleship</option>
+                                <option value="Industrial Training">Industrial Training</option>
+                                <option value="Fresher">Fresher Job</option>
+                                <option value="Semi-Qualified">Semi-Qualified</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="role_title">Your Role</label>
+                            <input type="text" id="role_title" placeholder="e.g., Audit Associate">
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group" style="margin-top: 1rem;">
-                    <label for="review_text">Your Review (Pros, Cons, etc.)</label>
-                    <textarea id="review_text" rows="4"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="interview_questions">Interview Questions (if any)</label>
-                    <textarea id="interview_questions" rows="3"></textarea>
+                <div class="form-section">
+                    <div class="form-section-title">Compensation</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="salary">Stipend / Salary (₹) *</label>
+                            <input type="number" id="salary" required placeholder="e.g., 25000">
+                        </div>
+                        <div class="form-group">
+                            <label for="salary_period">Period *</label>
+                            <select id="salary_period" required>
+                                <option value="monthly">Monthly</option>
+                                <option value="yearly">Yearly (CTC)</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
-                <button type="submit" class="action-button">Submit Anonymously</button>
-                <div id="form-status" style="margin-top: 1rem; text-align: center;"></div>
+                <div class="form-section">
+                    <div class="form-section-title">Ratings</div>
+                    <div class="form-grid">
+                        <div class="form-group rating-group">
+                            <label>Overall Rating *</label>
+                            <div class="stars">
+                                <input type="radio" id="overall-5" name="overall_rating" value="5" required><label for="overall-5"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="overall-4" name="overall_rating" value="4"><label for="overall-4"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="overall-3" name="overall_rating" value="3"><label for="overall-3"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="overall-2" name="overall_rating" value="2"><label for="overall-2"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="overall-1" name="overall_rating" value="1"><label for="overall-1"><i class="fas fa-star"></i></label>
+                            </div>
+                        </div>
+                        <div class="form-group rating-group">
+                            <label>Work-Life Balance</label>
+                            <div class="stars">
+                                <input type="radio" id="wlb-5" name="work_life_balance_rating" value="5"><label for="wlb-5"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="wlb-4" name="work_life_balance_rating" value="4"><label for="wlb-4"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="wlb-3" name="work_life_balance_rating" value="3"><label for="wlb-3"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="wlb-2" name="work_life_balance_rating" value="2"><label for="wlb-2"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="wlb-1" name="work_life_balance_rating" value="1"><label for="wlb-1"><i class="fas fa-star"></i></label>
+                            </div>
+                        </div>
+                        <div class="form-group rating-group">
+                            <label>Learning Experience</label>
+                            <div class="stars">
+                                <input type="radio" id="learning-5" name="learning_experience_rating" value="5"><label for="learning-5"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="learning-4" name="learning_experience_rating" value="4"><label for="learning-4"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="learning-3" name="learning_experience_rating" value="3"><label for="learning-3"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="learning-2" name="learning_experience_rating" value="2"><label for="learning-2"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="learning-1" name="learning_experience_rating" value="1"><label for="learning-1"><i class="fas fa-star"></i></label>
+                            </div>
+                        </div>
+                        <div class="form-group rating-group">
+                            <label>Interview Difficulty</label>
+                            <div class="stars">
+                                <input type="radio" id="interview-5" name="interview_difficulty_rating" value="5"><label for="interview-5"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="interview-4" name="interview_difficulty_rating" value="4"><label for="interview-4"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="interview-3" name="interview_difficulty_rating" value="3"><label for="interview-3"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="interview-2" name="interview_difficulty_rating" value="2"><label for="interview-2"><i class="fas fa-star"></i></label>
+                                <input type="radio" id="interview-1" name="interview_difficulty_rating" value="1"><label for="interview-1"><i class="fas fa-star"></i></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <details>
+                        <summary class="form-section-title" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                            <span>Company Culture (Select all that apply)</span>
+                            <span class="details-arrow">▼</span>
+                        </summary>
+                        <div class="checkbox-group" style="margin-top: 1.5rem;">
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Flexible Hours">
+                                <span>Flexible Hours</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Remote Work">
+                                <span>Remote Work</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Good Mentorship">
+                                <span>Good Mentorship</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Fast-Paced">
+                                <span>Fast-Paced</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Collaborative">
+                                <span>Collaborative</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Competitive">
+                                <span>Competitive</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Client Facing">
+                                <span>Client Facing</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Growth Opportunities">
+                                <span>Growth Opportunities</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Work-Life Balance">
+                                <span>Work-Life Balance</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="High Pressure">
+                                <span>High Pressure</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Innovative">
+                                <span>Innovative</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Traditional">
+                                <span>Traditional</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Team Outings">
+                                <span>Team Outings</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Performance Bonus">
+                                <span>Performance Bonus</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Flexible Leave">
+                                <span>Flexible Leave</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Learning Budget">
+                                <span>Learning Budget</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Gym Membership">
+                                <span>Gym Membership</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input type="checkbox" name="culture_tags" value="Free Food">
+                                <span>Free Food</span>
+                            </label>
+                        </div>
+                    </details>
+                </div>
+
+                <div class="form-section">
+                    <div class="form-section-title">Your Experience</div>
+                    <div class="form-group">
+                        <label for="review_text">Review (Pros, Cons, etc.)</label>
+                        <textarea id="review_text" rows="5" placeholder="Share your experience..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="interview_questions">Interview Questions (if any)</label>
+                        <textarea id="interview_questions" rows="3" placeholder="What questions were you asked?"></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i> Submit Anonymous Review
+                </button>
+                <div id="form-status" style="margin-top: 1rem; text-align: center; font-weight: 500;"></div>
             </form>
         </div>
 
         <div id="login-prompt">
-            <p><strong>Want to share your experience?</strong> <a href="/login.html" class="font-semibold text-blue-600">Log in</a> to submit your anonymous review.</p>
+            <p><strong>Want to share your experience?</strong> <a href="/login.html">Log in</a> to submit your anonymous review and help the community.</p>
         </div>
-        
-        <div class="reviews-section">
-            <div class="filter-controls">
-                <input type="text" id="search-firm" placeholder="Search by firm name...">
+
+        <div id="mobile-filter-trigger">
+            <button id="open-filter-modal-btn" class="filter-toggle-btn">
+                <i class="fas fa-filter"></i>
+                <span>Filters</span>
+            </button>
+        </div>
+
+        <div id="desktop-filter-container"> 
+            <div class="controls-section">
+                <div class="controls-header">
+                    <h2><i class="fas fa-filter"></i> Filter & Sort</h2>
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="cards">
+                            <i class="fas fa-grip"></i> Cards
+                        </button>
+                        <button class="view-btn" data-view="list">
+                            <i class="fas fa-list"></i> List
+                        </button>
+                    </div>
+                </div>
+
+                <div class="filter-grid">
+                    <div class="filter-group">
+                        <label>Search Firm</label>
+                        <input type="text" id="search-firm" placeholder="Search by name...">
+                    </div>
+                    <div class="filter-group">
+                        <label>Job Type</label>
+                        <select id="filter-job-type">
+                            <option value="">All Types</option>
+                            <option value="Articleship">Articleship</option>
+                            <option value="Industrial Training">Industrial Training</option>
+                            <option value="Fresher">Fresher Job</option>
+                            <option value="Semi-Qualified">Semi-Qualified</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Location</label>
+                        <input type="text" id="filter-location" placeholder="e.g., Mumbai">
+                    </div>
+                    <div class="filter-group">
+                        <label>Min Rating</label>
+                        <select id="filter-rating">
+                            <option value="">Any Rating</option>
+                            <option value="4">4+ Stars</option>
+                            <option value="3">3+ Stars</option>
+                            <option value="2">2+ Stars</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label>Sort By</label>
+                        <select id="sort-by">
+                            <option value="created_at">Latest First</option>
+                            <option value="overall_rating">Highest Rated</option>
+                            <option value="salary">Highest Salary</option>
+                            <option value="helpful_count">Most Helpful</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="tags-container">
+                    <div class="tag" data-tag="Flexible Hours">💼 Flexible Hours</div>
+                    <div class="tag" data-tag="Remote Work">🏠 Remote Work</div>
+                    <div class="tag" data-tag="Good Mentorship">👨‍🏫 Good Mentorship</div>
+                    <div class="tag" data-tag="Fast-Paced">⚡ Fast-Paced</div>
+                    <div class="tag" data-tag="Collaborative">🤝 Collaborative</div>
+                    <div class="tag" data-tag="Growth Opportunities">📈 Growth</div>
+                    <div class="tag" data-tag="Work-Life Balance">⚖️ Work-Life</div>
+                    <div class="tag" data-tag="High Pressure">🔥 High Pressure</div>
+                    <div class="tag" data-tag="Innovative">💡 Innovative</div>
+                    <div class="tag" data-tag="Traditional">📚 Traditional</div>
+                    <div class="tag" data-tag="Team Outings">🎉 Team Outings</div>
+                    <div class="tag" data-tag="Performance Bonus">💰 Performance Bonus</div>
+                    <div class="tag" data-tag="Flexible Leave">🌴 Flexible Leave</div>
+                    <div class="tag" data-tag="Learning Budget">📖 Learning Budget</div>
+                    <div class="tag" data-tag="Gym Membership">💪 Gym Membership</div>
+                    <div class="tag" data-tag="Free Food">🍕 Free Food</div>
+                </div>
             </div>
+        </div>
+
+        <div class="reviews-section">
             <div id="reviews-container">
-                <div id="loader" class="loader-container"><div class="loader-spinner"></div></div>
+                <div id="loader" class="loader-container">
+                    <div class="loader-spinner"></div>
+                </div>
             </div>
             <div class="load-more-wrapper">
-                <button id="load-more" class="action-button load-more-action" style="display: none;">Load More Reviews</button>
+                <button id="load-more" class="load-more-btn" style="display: none;">
+                    <i class="fas fa-chevron-down"></i> Load More Reviews
+                </button>
             </div>
         </div>
     </main>
+
+    <div id="firm-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-firm-name"></h2>
+                <button class="modal-close" id="modal-close-btn">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="firm-stats-grid">
+                    <div class="firm-stat-card">
+                        <div class="firm-stat-value" id="modal-review-count">0</div>
+                        <div class="firm-stat-label">Reviews</div>
+                    </div>
+                    <div class="firm-stat-card">
+                        <div class="firm-stat-value" id="modal-avg-rating">0.0</div>
+                        <div class="firm-stat-label">Avg Rating</div>
+                    </div>
+                    <div class="firm-stat-card">
+                        <div class="firm-stat-value" id="modal-avg-salary">₹0</div>
+                        <div class="firm-stat-label">Avg Salary</div>
+                    </div>
+                    <div class="firm-stat-card">
+                        <div class="firm-stat-value" id="modal-wlb-rating">0.0</div>
+                        <div class="firm-stat-label">WLB Rating</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="ratings-chart"></canvas>
+                </div>
+
+                <h3 style="margin-bottom: 1.5rem;">All Reviews</h3>
+                <div id="modal-reviews-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="filter-modal-overlay" id="filterModalOverlay">
+        <div class="filter-modal-content">
+            <div class="modal-header">
+                <h4>Filters</h4>
+                <button class="modal-close-action" id="closeFilterModalBtn">×</button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="mobileResetBtn">Reset</button>
+                <button class="btn btn-primary" id="applyFiltersBtn">Show Reviews</button>
+            </div>
+        </div>
+    </div>
 
     <script type="module">
         const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
@@ -180,7 +1232,15 @@
         let isFetching = false;
         let page = 0;
         const PAGE_SIZE = 10;
-        
+        let currentFilters = {
+            search: '',
+            jobType: '',
+            location: '',
+            minRating: '',
+            tags: [],
+            sortBy: 'created_at'
+        };
+
         const dom = {
             reviewFormContainer: document.getElementById('review-form-container'),
             loginPrompt: document.getElementById('login-prompt'),
@@ -190,14 +1250,20 @@
             loader: document.getElementById('loader'),
             loadMoreBtn: document.getElementById('load-more'),
             searchFirmInput: document.getElementById('search-firm'),
-            authButtonsContainer: document.querySelector('.auth-buttons-container')
+            filterJobType: document.getElementById('filter-job-type'),
+            filterLocation: document.getElementById('filter-location'),
+            filterRating: document.getElementById('filter-rating'),
+            sortBy: document.getElementById('sort-by'),
+            authButtonsContainer: document.querySelector('.auth-buttons-container'),
+            firmModal: document.getElementById('firm-modal'),
+            modalCloseBtn: document.getElementById('modal-close-btn')
         };
-        
+
         function renderStars(rating, max = 5) {
-            if (!rating) return 'N/A';
+            if (!rating) return '<span style="color: var(--text-muted);">N/A</span>';
             let stars = '';
             for (let i = 1; i <= max; i++) {
-                stars += `<i class="fas fa-star" style="color: ${i <= rating ? 'var(--secondary-accent)' : '#e2e8f0'}"></i>`;
+                stars += `<i class="fas fa-star" style="color: ${i <= rating ? '#fbbf24' : '#e2e8f0'}"></i>`;
             }
             return stars;
         }
@@ -205,40 +1271,107 @@
         function renderReviewCard(review) {
             const card = document.createElement('div');
             card.className = 'review-card';
-            const salaryFormatted = review.salary ? `₹${new Intl.NumberFormat('en-IN').format(review.salary)}/${review.salary_period === 'yearly' ? 'yr' : 'mo'}` : 'N/A';
-            const date = new Date(review.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+            const salaryFormatted = review.salary 
+                ? `₹${new Intl.NumberFormat('en-IN').format(review.salary)}/${review.salary_period === 'yearly' ? 'yr' : 'mo'}` 
+                : 'N/A';
+
+            const date = new Date(review.created_at).toLocaleDateString('en-GB', { 
+                day: 'numeric', 
+                month: 'short', 
+                year: 'numeric' 
+            });
+
+            const tags = review.culture_tags && typeof review.culture_tags === 'string' ? JSON.parse(review.culture_tags) : (review.culture_tags || []);
+            const tagsHtml = tags.map(tag => `<span class="review-tag">${tag}</span>`).join('');
+
+            const isHelpful = review.user_helpful_vote;
+            const helpfulCount = review.helpful_count || 0;
 
             card.innerHTML = `
                 <div class="review-header">
-                    <div>
-                        <h3>${review.firm_name}</h3>
-                        <p class="location">${review.job_type} in ${review.location || 'N/A'}</p>
+                    <div class="review-firm">
+                        <h3 data-firm="${review.firm_name}">${review.firm_name}</h3>
+                        <div class="review-meta-top">
+                            <span class="meta-badge">
+                                <i class="fas fa-briefcase"></i> ${review.job_type}
+                            </span>
+                            <span class="meta-badge">
+                                <i class="fas fa-map-marker-alt"></i> ${review.location || 'N/A'}
+                            </span>
+                            ${review.role_title ? `<span class="meta-badge">${review.role_title}</span>` : ''}
+                        </div>
                     </div>
-                    <span class="date">${date}</span>
+                    <div class="review-date">${date}</div>
                 </div>
-                <div class="review-meta">
-                    <div class="meta-item">
+
+                ${review.salary ? `<div class="salary-highlight">${salaryFormatted}</div>` : ''}
+
+                <div class="ratings-grid">
+                    <div class="rating-item">
                         <div class="label">Overall</div>
                         <div class="stars">${renderStars(review.overall_rating)}</div>
+                        <div class="value">${review.overall_rating}/5</div>
                     </div>
-                    <div class="meta-item">
-                        <div class="label">Salary</div>
-                        <div class="value">${salaryFormatted}</div>
-                    </div>
-                    <div class="meta-item">
-                        <div class="label">WLB</div>
+                    ${review.work_life_balance_rating ? `
+                    <div class="rating-item">
+                        <div class="label">Work-Life</div>
                         <div class="stars">${renderStars(review.work_life_balance_rating)}</div>
-                    </div>
-                    <div class="meta-item">
+                        <div class="value">${review.work_life_balance_rating}/5</div>
+                    </div>` : ''}
+                    ${review.learning_experience_rating ? `
+                    <div class="rating-item">
                         <div class="label">Learning</div>
                         <div class="stars">${renderStars(review.learning_experience_rating)}</div>
-                    </div>
+                        <div class="value">${review.learning_experience_rating}/5</div>
+                    </div>` : ''}
+                    ${review.interview_difficulty_rating ? `
+                    <div class="rating-item">
+                        <div class="label">Interview</div>
+                        <div class="stars">${renderStars(review.interview_difficulty_rating)}</div>
+                        <div class="value">${review.interview_difficulty_rating}/5</div>
+                    </div>` : ''}
                 </div>
-                <div class="review-body">
-                    ${review.review_text ? `<h4>Review</h4><p>${review.review_text}</p>` : ''}
-                    ${review.interview_questions ? `<h4>Interview Questions</h4><p>${review.interview_questions}</p>` : ''}
+
+                ${tagsHtml ? `<div class="review-tags">${tagsHtml}</div>` : ''}
+
+                <div class="review-content">
+                    ${review.review_text ? `
+                        <h4><i class="fas fa-comment-dots"></i> Review</h4>
+                        <p>${review.review_text}</p>
+                    ` : ''}
+                    ${review.interview_questions ? `
+                        <h4><i class="fas fa-question-circle"></i> Interview Questions</h4>
+                        <p>${review.interview_questions}</p>
+                    ` : ''}
+                </div>
+
+                <div class="review-actions">
+                    <button class="action-btn helpful-btn ${isHelpful ? 'active' : ''}" data-review-id="${review.id}">
+                        <i class="fas fa-thumbs-up"></i>
+                        Helpful
+                        ${helpfulCount > 0 ? `<span class="helpful-count">${helpfulCount}</span>` : ''}
+                    </button>
+                    <button class="action-btn share-btn" data-review-id="${review.id}">
+                        <i class="fas fa-share"></i>
+                        Share
+                    </button>
                 </div>
             `;
+
+            card.querySelector('h3').addEventListener('click', () => openFirmModal(review.firm_name));
+
+            if (currentUser) {
+                card.querySelector('.helpful-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleHelpful(review.id, e.currentTarget);
+                });
+            }
+
+            card.querySelector('.share-btn').addEventListener('click', () => {
+                shareReview(review);
+            });
+
             return card;
         }
 
@@ -246,45 +1379,253 @@
             if (isFetching) return;
             isFetching = true;
             dom.loader.style.display = 'block';
+
             if (!loadMore) {
                 page = 0;
-                dom.reviewsContainer.innerHTML = '';
+                dom.reviewsContainer.innerHTML = '<div id="loader" class="loader-container"><div class="loader-spinner"></div></div>';
             }
 
             try {
-                let query = supabaseClient.from('firm_reviews')
-                    .select('firm_name, location, job_type, role_title, salary, salary_period, overall_rating, work_life_balance_rating, learning_experience_rating, review_text, interview_questions, created_at')
-                    .eq('status', 'approved')
-                    .order('created_at', { ascending: false })
-                    .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+                let query = supabaseClient
+                    .from('firm_reviews')
+                    .select('*, helpful_count:review_helpful_votes(count)', { count: 'exact' })
+                    .eq('status', 'approved');
 
-                const searchTerm = dom.searchFirmInput.value.trim();
-                if (searchTerm) {
-                    query = query.ilike('firm_name', `%${searchTerm}%`);
+                if (currentFilters.search) {
+                    query = query.ilike('firm_name', `%${currentFilters.search}%`);
                 }
+                if (currentFilters.jobType) {
+                    query = query.eq('job_type', currentFilters.jobType);
+                }
+                if (currentFilters.location) {
+                    query = query.ilike('location', `%${currentFilters.location}%`);
+                }
+                if (currentFilters.minRating) {
+                    query = query.gte('overall_rating', parseInt(currentFilters.minRating));
+                }
+                if (currentFilters.tags.length > 0) {
+                    query = query.contains('culture_tags', currentFilters.tags);
+                }
+
+                const sortOrder = currentFilters.sortBy === 'helpful_count' ? false : { ascending: false };
+                query = query.order(currentFilters.sortBy, sortOrder);
+
+                query = query.range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
 
                 const { data, error } = await query;
                 if (error) throw error;
 
+                if (currentUser && data.length > 0) {
+                    const reviewIds = data.map(r => r.id);
+                    const { data: votes } = await supabaseClient
+                        .from('review_helpful_votes')
+                        .select('review_id')
+                        .eq('user_id', currentUser.id)
+                        .in('review_id', reviewIds);
+
+                    const votedIds = new Set(votes?.map(v => v.review_id) || []);
+                    data.forEach(review => {
+                        review.user_helpful_vote = votedIds.has(review.id);
+                    });
+                }
+
+                const loaderElem = document.getElementById('loader');
+                if (loaderElem) loaderElem.remove();
+
                 if (data.length > 0) {
-                    data.forEach(review => dom.reviewsContainer.appendChild(renderReviewCard(review)));
+                    data.forEach(review => {
+                        review.helpful_count = review.helpful_count;
+                        dom.reviewsContainer.appendChild(renderReviewCard(review));
+                    });
                     page++;
                     dom.loadMoreBtn.style.display = data.length < PAGE_SIZE ? 'none' : 'block';
                 } else {
                     dom.loadMoreBtn.style.display = 'none';
                     if (!loadMore) {
-                        dom.reviewsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No reviews found matching your criteria.</p>';
+                        dom.reviewsContainer.innerHTML = `
+                            <div class="empty-state">
+                                <div class="empty-state-icon">🔍</div>
+                                <h3>No reviews found</h3>
+                                <p>Try adjusting your filters or be the first to review!</p>
+                            </div>
+                        `;
                     }
                 }
             } catch (error) {
                 console.error('Error fetching reviews:', error);
-                dom.reviewsContainer.innerHTML = '<p style="text-align: center; color: var(--error);">Could not load reviews. Please try again later.</p>';
+                dom.reviewsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">❌</div>
+                        <h3>Error loading reviews</h3>
+                        <p>Please try again later.</p>
+                    </div>
+                `;
             } finally {
                 isFetching = false;
                 dom.loader.style.display = 'none';
             }
         }
-        
+
+        async function toggleHelpful(reviewId, button) {
+            if (!currentUser) {
+                alert('Please log in to mark reviews as helpful');
+                return;
+            }
+
+            const isActive = button.classList.contains('active');
+            const countSpan = button.querySelector('.helpful-count');
+            let currentCount = countSpan ? parseInt(countSpan.textContent, 10) : 0;
+
+            button.classList.toggle('active');
+            const newCount = isActive ? currentCount - 1 : currentCount + 1;
+
+            if (newCount > 0) {
+                if (countSpan) {
+                    countSpan.textContent = newCount;
+                } else {
+                    const newSpan = document.createElement('span');
+                    newSpan.className = 'helpful-count';
+                    newSpan.textContent = newCount;
+                    button.appendChild(newSpan);
+                }
+            } else if (countSpan) {
+                countSpan.remove();
+            }
+
+            try {
+                if (isActive) {
+                    const { error } = await supabaseClient
+                        .from('review_helpful_votes')
+                        .delete()
+                        .match({ review_id: reviewId, user_id: currentUser.id });
+                    if (error) throw error;
+                } else { 
+                    const { error } = await supabaseClient
+                        .from('review_helpful_votes')
+                        .insert({ review_id: reviewId, user_id: currentUser.id });
+                    if (error) throw error;
+                }
+            } catch (error) {
+                console.error('Error toggling helpful:', error);
+                alert('Could not save your vote. Please try again.');
+                button.classList.toggle('active'); 
+                if(countSpan) {
+                    countSpan.textContent = currentCount;
+                } else { 
+                    const addedSpan = button.querySelector('.helpful-count');
+                    if(addedSpan) addedSpan.remove();
+                }
+            }
+        }
+
+        function shareReview(review) {
+            const text = `Check out this review of ${review.firm_name} on My Student Club`;
+            const url = window.location.href;
+
+            if (navigator.share) {
+                navigator.share({ title: text, url });
+            } else {
+                navigator.clipboard.writeText(url);
+                alert('Link copied to clipboard!');
+            }
+        }
+
+        async function openFirmModal(firmName) {
+            dom.firmModal.classList.add('active');
+            document.getElementById('modal-firm-name').textContent = firmName;
+
+            try {
+                const { data: reviews, error } = await supabaseClient
+                    .from('firm_reviews')
+                    .select('*')
+                    .eq('firm_name', firmName)
+                    .eq('status', 'approved');
+
+                if (error) throw error;
+
+                const reviewCount = reviews.length;
+                const avgRating = reviews.reduce((sum, r) => sum + r.overall_rating, 0) / reviewCount;
+                const monthlyStipends = reviews
+                    .filter(r => r.salary)
+                    .map(r => r.salary_period === 'yearly' ? r.salary / 12 : r.salary);
+                const avgSalary = monthlyStipends.length > 0
+                    ? monthlyStipends.reduce((sum, s) => sum + s, 0) / monthlyStipends.length
+                    : 0;
+                const wlbRatings = reviews.filter(r => r.work_life_balance_rating);
+                const avgWlb = wlbRatings.length > 0 ? wlbRatings.reduce((sum, r) => sum + r.work_life_balance_rating, 0) / wlbRatings.length : 0;
+
+                document.getElementById('modal-review-count').textContent = reviewCount;
+                document.getElementById('modal-avg-rating').textContent = reviewCount > 0 ? avgRating.toFixed(1) : 'N/A';
+                document.getElementById('modal-avg-salary').textContent = avgSalary > 0 
+                    ? '₹' + Math.round(avgSalary).toLocaleString('en-IN')
+                    : 'N/A';
+                document.getElementById('modal-wlb-rating').textContent = avgWlb ? avgWlb.toFixed(1) : 'N/A';
+
+                const modalReviewsContainer = document.getElementById('modal-reviews-container');
+                modalReviewsContainer.innerHTML = '';
+                reviews.forEach(review => {
+                    modalReviewsContainer.appendChild(renderReviewCard(review));
+                });
+
+                createRatingsChart(reviews);
+            } catch (error) {
+                console.error('Error loading firm data:', error);
+            }
+        }
+
+        function createRatingsChart(reviews) {
+            const ctx = document.getElementById('ratings-chart');
+
+            if (window.firmChart) {
+                window.firmChart.destroy();
+            }
+
+            const ratingsCount = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+            reviews.forEach(r => {
+                ratingsCount[r.overall_rating]++;
+            });
+
+            window.firmChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
+                    datasets: [{
+                        label: 'Number of Reviews',
+                        data: [ratingsCount[1], ratingsCount[2], ratingsCount[3], ratingsCount[4], ratingsCount[5]],
+                        backgroundColor: [
+                            'rgba(239, 68, 68, 0.7)',
+                            'rgba(251, 146, 60, 0.7)',
+                            'rgba(250, 204, 21, 0.7)',
+                            'rgba(34, 197, 94, 0.7)',
+                            'rgba(59, 130, 246, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgb(239, 68, 68)',
+                            'rgb(251, 146, 60)',
+                            'rgb(250, 204, 21)',
+                            'rgb(34, 197, 94)',
+                            'rgb(59, 130, 246)'
+                        ],
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        }
+
         async function handleSubmit(e) {
             e.preventDefault();
             if (!currentUser) {
@@ -293,88 +1634,250 @@
                 return;
             }
 
-            const formData = new FormData(dom.reviewForm);
-            const ratingInputs = dom.reviewForm.querySelectorAll('input[type="radio"]:checked');
-            const ratings = {};
-            ratingInputs.forEach(input => {
-                ratings[input.name] = parseInt(input.value);
-            });
-            
+            const cultureTags = Array.from(document.querySelectorAll('input[name="culture_tags"]:checked'))
+                .map(input => input.value);
+
             const reviewData = {
                 user_id: currentUser.id,
-                firm_name: dom.reviewForm.querySelector('#firm_name').value,
-                location: dom.reviewForm.querySelector('#location').value,
-                job_type: dom.reviewForm.querySelector('#job_type').value,
-                role_title: dom.reviewForm.querySelector('#role_title').value,
-                salary: parseInt(dom.reviewForm.querySelector('#salary').value),
-                salary_period: dom.reviewForm.querySelector('#salary_period').value,
-                review_text: dom.reviewForm.querySelector('#review_text').value,
-                interview_questions: dom.reviewForm.querySelector('#interview_questions').value,
-                ...ratings
+                firm_name: document.getElementById('firm_name').value.trim(),
+                location: document.getElementById('location').value.trim(),
+                job_type: document.getElementById('job_type').value,
+                role_title: document.getElementById('role_title').value.trim(),
+                salary: parseInt(document.getElementById('salary').value),
+                salary_period: document.getElementById('salary_period').value,
+                overall_rating: parseInt(document.querySelector('input[name="overall_rating"]:checked')?.value),
+                work_life_balance_rating: parseInt(document.querySelector('input[name="work_life_balance_rating"]:checked')?.value) || null,
+                learning_experience_rating: parseInt(document.querySelector('input[name="learning_experience_rating"]:checked')?.value) || null,
+                interview_difficulty_rating: parseInt(document.querySelector('input[name="interview_difficulty_rating"]:checked')?.value) || null,
+                review_text: document.getElementById('review_text').value.trim(),
+                interview_questions: document.getElementById('interview_questions').value.trim(),
+                culture_tags: JSON.stringify(cultureTags)
             };
 
             if (!reviewData.overall_rating) {
-                 dom.formStatus.textContent = 'Please provide an overall rating.';
-                 dom.formStatus.style.color = 'var(--error)';
-                 return;
+                dom.formStatus.textContent = 'Please provide an overall rating.';
+                dom.formStatus.style.color = '#ef4444';
+                return;
             }
 
             const submitBtn = dom.reviewForm.querySelector('button[type="submit"]');
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
 
             try {
                 const { error } = await supabaseClient.from('firm_reviews').insert([reviewData]);
                 if (error) {
-                     if (error.code === '23505') { 
+                    if (error.code === '23505') {
                         throw new Error('You have already submitted a review for this firm and job type.');
                     }
                     throw error;
                 }
-                dom.formStatus.textContent = 'Thank you! Your review has been submitted.';
-                dom.formStatus.style.color = 'var(--success)';
+
+                dom.formStatus.textContent = '✓ Thank you! Your review has been submitted successfully.';
+                dom.formStatus.style.color = '#22c55e';
                 dom.reviewForm.reset();
-                setTimeout(() => dom.formStatus.textContent = '', 5000);
+
+                setTimeout(() => {
+                    dom.formStatus.textContent = '';
+                    fetchReviews(false);
+                }, 3000);
             } catch (error) {
                 dom.formStatus.textContent = `Error: ${error.message}`;
-                dom.formStatus.style.color = 'var(--error)';
+                dom.formStatus.style.color = '#ef4444';
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'Submit Anonymously';
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Anonymous Review';
             }
         }
 
         function handleAuthStateChange(session) {
-             if (session && session.user) {
+            if (session && session.user) {
                 currentUser = session.user;
                 dom.reviewFormContainer.style.display = 'block';
                 dom.loginPrompt.style.display = 'none';
-                let initial = session.user.email.charAt(0).toUpperCase();
-                dom.authButtonsContainer.innerHTML = `<div class="user-profile-container"><div class="user-icon-wrapper"><div class="user-icon">${initial}</div><div class="user-hover-card"><div class="user-hover-content"><p class="user-email">${session.user.email}</p><button id="logoutBtn" class="logout-btn">Logout</button></div></div></div></div>`;
+
+                const initial = session.user.email.charAt(0).toUpperCase();
+                dom.authButtonsContainer.innerHTML = `
+                    <div class="user-profile-container">
+                        <div class="user-icon-wrapper">
+                            <div class="user-icon">${initial}</div>
+                            <div class="user-hover-card">
+                                <div class="user-hover-content">
+                                    <p class="user-email">${session.user.email}</p>
+                                    <button id="logoutBtn" class="logout-btn">Logout</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
                 document.getElementById('logoutBtn').addEventListener('click', () => supabaseClient.auth.signOut());
             } else {
                 currentUser = null;
                 dom.reviewFormContainer.style.display = 'none';
                 dom.loginPrompt.style.display = 'block';
-                dom.authButtonsContainer.innerHTML = `<a href="/login.html" class="icon-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg></a>`;
+                dom.authButtonsContainer.innerHTML = `
+                    <a href="/login.html" class="icon-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </a>
+                `;
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchReviews();
-            dom.loadMoreBtn.addEventListener('click', () => fetchReviews(true));
+        function setupFilters() {
             let debounce;
-            dom.searchFirmInput.addEventListener('input', () => {
+
+            dom.searchFirmInput.addEventListener('input', (e) => {
+                currentFilters.search = e.target.value.trim();
                 clearTimeout(debounce);
-                debounce = setTimeout(() => {
-                    fetchReviews(false);
-                }, 400);
+                debounce = setTimeout(() => fetchReviews(false), 400);
             });
 
-            supabaseClient.auth.getSession().then(({ data: { session } }) => handleAuthStateChange(session));
-            supabaseClient.auth.onAuthStateChange((_event, session) => handleAuthStateChange(session));
-            
+            dom.filterJobType.addEventListener('change', (e) => {
+                currentFilters.jobType = e.target.value;
+                fetchReviews(false);
+            });
+
+            dom.filterLocation.addEventListener('input', (e) => {
+                currentFilters.location = e.target.value.trim();
+                clearTimeout(debounce);
+                debounce = setTimeout(() => fetchReviews(false), 400);
+            });
+
+            dom.filterRating.addEventListener('change', (e) => {
+                currentFilters.minRating = e.target.value;
+                fetchReviews(false);
+            });
+
+            dom.sortBy.addEventListener('change', (e) => {
+                currentFilters.sortBy = e.target.value;
+                fetchReviews(false);
+            });
+
+            document.querySelectorAll('.tags-container .tag').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    const tagValue = tag.dataset.tag;
+                    tag.classList.toggle('active');
+
+                    if (tag.classList.contains('active')) {
+                        currentFilters.tags.push(tagValue);
+                    } else {
+                        currentFilters.tags = currentFilters.tags.filter(t => t !== tagValue);
+                    }
+
+                    fetchReviews(false);
+                });
+            });
+        }
+
+        document.querySelectorAll('.checkbox-item').forEach(item => {
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) {
+                    item.classList.add('checked');
+                } else {
+                    item.classList.remove('checked');
+                }
+            });
+        });
+
+        dom.modalCloseBtn.addEventListener('click', () => {
+            dom.firmModal.classList.remove('active');
+        });
+
+        dom.firmModal.addEventListener('click', (e) => {
+            if (e.target === dom.firmModal) {
+                dom.firmModal.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchReviews();
+            setupFilters();
+
+            dom.loadMoreBtn.addEventListener('click', () => fetchReviews(true));
             dom.reviewForm.addEventListener('submit', handleSubmit);
+
+            const filterModalOverlay = document.getElementById('filterModalOverlay');
+            const openFilterModalBtn = document.getElementById('open-filter-modal-btn');
+            const closeFilterModalBtn = document.getElementById('closeFilterModalBtn');
+            const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+            const mobileResetBtn = document.getElementById('mobileResetBtn');
+
+            const controlsSection = document.querySelector('.controls-section');
+            const desktopContainer = document.getElementById('desktop-filter-container');
+            const modalBody = filterModalOverlay.querySelector('.modal-body');
+
+            function handleResponsiveFilters() {
+                if (window.innerWidth <= 768) {
+
+                    if (controlsSection && modalBody && controlsSection.parentElement !== modalBody) {
+                        modalBody.appendChild(controlsSection);
+                    }
+                } else {
+
+                    if (controlsSection && desktopContainer && controlsSection.parentElement !== desktopContainer) {
+                        desktopContainer.appendChild(controlsSection);
+                    }
+                }
+            }
+
+            handleResponsiveFilters();
+
+            window.addEventListener('resize', handleResponsiveFilters);
+
+            openFilterModalBtn.addEventListener('click', () => filterModalOverlay.classList.add('show'));
+            closeFilterModalBtn.addEventListener('click', () => filterModalOverlay.classList.remove('show'));
+            applyFiltersBtn.addEventListener('click', () => filterModalOverlay.classList.remove('show'));
+            filterModalOverlay.addEventListener('click', (e) => {
+                if (e.target === filterModalOverlay) {
+                    filterModalOverlay.classList.remove('show');
+                }
+            });
+
+            mobileResetBtn.addEventListener('click', () => {
+
+                document.getElementById('search-firm').value = '';
+                document.getElementById('filter-job-type').value = '';
+                document.getElementById('filter-location').value = '';
+                document.getElementById('filter-rating').value = '';
+                document.getElementById('sort-by').value = 'created_at';
+                document.querySelectorAll('.tags-container .tag.active').forEach(tag => tag.classList.remove('active'));
+
+                currentFilters = {
+                    search: '', jobType: '', location: '', minRating: '', tags: [], sortBy: 'created_at'
+                };
+
+                fetchReviews(false);
+                filterModalOverlay.classList.remove('show');
+            });
+
+            const menuButton = document.getElementById('menuButton');
+            const expandedMenu = document.getElementById('expandedMenu');
+            const menuCloseBtn = document.getElementById('menuCloseBtn');
+
+            menuButton.addEventListener('click', () => {
+                expandedMenu.classList.add('active');
+            });
+
+            menuCloseBtn.addEventListener('click', () => {
+                expandedMenu.classList.remove('active');
+            });
+
+            expandedMenu.addEventListener('click', (e) => {
+                if (e.target === expandedMenu) {
+                    expandedMenu.classList.remove('active');
+                }
+            });
+
+            supabaseClient.auth.getSession().then(({ data: { session } }) => {
+                handleAuthStateChange(session);
+            });
+
+            supabaseClient.auth.onAuthStateChange((_event, session) => {
+                handleAuthStateChange(session);
+            });
         });
     </script>
 </body>
