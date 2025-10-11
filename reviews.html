@@ -674,7 +674,8 @@
             max-width: 900px;
             width: 100%;
             max-height: 90vh;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
             box-shadow: var(--shadow-xl);
             position: relative;
         }
@@ -711,6 +712,7 @@
 
         .modal-body {
             padding: 2.5rem;
+            overflow-y: auto;
         }
 
         .firm-stats-grid {
@@ -787,6 +789,21 @@
             color: var(--text-secondary);
         }
 
+        #review-form-fieldset {
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .create-review-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
         .mobile-controls {
             display: none; 
             margin-bottom: 1.5rem;
@@ -820,11 +837,29 @@
         .btn.btn-secondary { background-color: #e2e8f0; color: var(--text-primary); }
         .btn.btn-primary { background: var(--gradient-primary); color: white; }
 
+        details {
+            transition: all 0.2s ease-in-out;
+        }
+
+        details summary {
+            cursor: pointer;
+            list-style: none; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        details summary::-webkit-details-marker {
+            display: none; 
+        }
+
         details[open] .details-arrow {
             transform: rotate(180deg);
         }
         .details-arrow {
             transition: transform 0.2s ease-in-out;
+            font-size: 1.25rem;
+            color: var(--text-secondary);
         }
 
         @media (max-width: 768px) {
@@ -851,6 +886,12 @@
                 padding: 1.5rem;
             }
         }
+
+        @media (min-width: 769px) {
+            #mobile-filter-trigger {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -874,208 +915,222 @@
     </div>
 
     <main class="main-content-area">
-
-        <div id="review-form-container">
-            <form id="review-form">
-                <h2><i class="fas fa-pen-to-square"></i> Share Your Experience</h2>
-
-                <div class="form-section">
-                    <div class="form-section-title">Basic Information</div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="firm_name">Firm/Company Name *</label>
-                            <input type="text" id="firm_name" required placeholder="e.g., Deloitte">
-                        </div>
-                        <div class="form-group">
-                            <label for="location">Location *</label>
-                            <input type="text" id="location" required placeholder="e.g., Mumbai, Delhi">
-                        </div>
-                        <div class="form-group">
-                            <label for="job_type">Job Type *</label>
-                            <select id="job_type" required>
-                                <option value="">Select Type</option>
-                                <option value="Articleship">Articleship</option>
-                                <option value="Industrial Training">Industrial Training</option>
-                                <option value="Fresher">Fresher Job</option>
-                                <option value="Semi-Qualified">Semi-Qualified</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="role_title">Your Role</label>
-                            <input type="text" id="role_title" placeholder="e.g., Audit Associate">
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <div class="form-section-title">Compensation</div>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="salary">Stipend / Salary (₹) *</label>
-                            <input type="number" id="salary" required placeholder="e.g., 25000">
-                        </div>
-                        <div class="form-group">
-                            <label for="salary_period">Period *</label>
-                            <select id="salary_period" required>
-                                <option value="monthly">Monthly</option>
-                                <option value="yearly">Yearly (CTC)</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <div class="form-section-title">Ratings</div>
-                    <div class="form-grid">
-                        <div class="form-group rating-group">
-                            <label>Overall Rating *</label>
-                            <div class="stars">
-                                <input type="radio" id="overall-5" name="overall_rating" value="5" required><label for="overall-5"><i class="fas fa-star"></i></label>
-                                <input type="radio" id="overall-4" name="overall_rating" value="4"><label for="overall-4"><i class="fas fa-star"></i></label>
-                                <input type="radio" id="overall-3" name="overall_rating" value="3"><label for="overall-3"><i class="fas fa-star"></i></label>
-                                <input type="radio" id="overall-2" name="overall_rating" value="2"><label for="overall-2"><i class="fas fa-star"></i></label>
-                                <input type="radio" id="overall-1" name="overall_rating" value="1"><label for="overall-1"><i class="fas fa-star"></i></label>
-                            </div>
-                        </div>
-                        <div class="form-group rating-group">
-                            <label>Work-Life Balance</label>
-                            <div class="stars">
-                                <input type="radio" id="wlb-5" name="work_life_balance_rating" value="5"><label for="wlb-5"><i class="fas fa-star"></i></label>
-                                <input type="radio" id="wlb-4" name="work_life_balance_rating" value="4"><label for="wlb-4"><i class="fas fa-star"></i></label>
-                                <input type="radio" id="wlb-3" name="work_life_balance_rating" value="3"><label for="wlb-3"><i class="fas fa-star"></i></label>
-                                <input type="radio" id="wlb-2" name="work_life_balance_rating" value="2"><label for="wlb-2"><i class="fas fa-star"></i></label>
-                                <input type="radio" id="wlb-1" name="work_life_balance_rating" value="1"><label for="wlb-1"><i class="fas fa-star"></i></label>
-                            </div>
-                        </div>
-                        <div class="form-group rating-group">
-                            <label>Learning Experience</label>
-                            <div class="stars">
-                                <input type="radio" id="learning-5" name="learning_experience_rating" value="5"><label for="learning-5"><i class="fas fa-star"></i></label>
-                                <input type="radio" id="learning-4" name="learning_experience_rating" value="4"><label for="learning-4"><i class="fas fa-star"></i></label>
-                                <input type="radio" id="learning-3" name="learning_experience_rating" value="3"><label for="learning-3"><i class="fas fa-star"></i></label>
-                                <input type="radio" id="learning-2" name="learning_experience_rating" value="2"><label for="learning-2"><i class="fas fa-star"></i></label>
-                                <input type="radio" id="learning-1" name="learning_experience_rating" value="1"><label for="learning-1"><i class="fas fa-star"></i></label>
-                            </div>
-                        </div>
-                        <div class="form-group rating-group">
-                            <label>Interview Difficulty</label>
-                            <div class="stars">
-                                <input type="radio" id="interview-5" name="interview_difficulty_rating" value="5"><label for="interview-5"><i class="fas fa-star"></i></label>
-                                <input type="radio" id="interview-4" name="interview_difficulty_rating" value="4"><label for="interview-4"><i class="fas fa-star"></i></label>
-                                <input type="radio" id="interview-3" name="interview_difficulty_rating" value="3"><label for="interview-3"><i class="fas fa-star"></i></label>
-                                <input type="radio" id="interview-2" name="interview_difficulty_rating" value="2"><label for="interview-2"><i class="fas fa-star"></i></label>
-                                <input type="radio" id="interview-1" name="interview_difficulty_rating" value="1"><label for="interview-1"><i class="fas fa-star"></i></label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <details>
-                        <summary class="form-section-title" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-                            <span>Company Culture (Select all that apply)</span>
-                            <span class="details-arrow">▼</span>
-                        </summary>
-                        <div class="checkbox-group" style="margin-top: 1.5rem;">
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Flexible Hours">
-                                <span>Flexible Hours</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Remote Work">
-                                <span>Remote Work</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Good Mentorship">
-                                <span>Good Mentorship</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Fast-Paced">
-                                <span>Fast-Paced</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Collaborative">
-                                <span>Collaborative</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Competitive">
-                                <span>Competitive</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Client Facing">
-                                <span>Client Facing</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Growth Opportunities">
-                                <span>Growth Opportunities</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Work-Life Balance">
-                                <span>Work-Life Balance</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="High Pressure">
-                                <span>High Pressure</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Innovative">
-                                <span>Innovative</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Traditional">
-                                <span>Traditional</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Team Outings">
-                                <span>Team Outings</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Performance Bonus">
-                                <span>Performance Bonus</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Flexible Leave">
-                                <span>Flexible Leave</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Learning Budget">
-                                <span>Learning Budget</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Gym Membership">
-                                <span>Gym Membership</span>
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="culture_tags" value="Free Food">
-                                <span>Free Food</span>
-                            </label>
-                        </div>
-                    </details>
-                </div>
-
-                <div class="form-section">
-                    <div class="form-section-title">Your Experience</div>
-                    <div class="form-group">
-                        <label for="review_text">Review (Pros, Cons, etc.)</label>
-                        <textarea id="review_text" rows="5" placeholder="Share your experience..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="interview_questions">Interview Questions (if any)</label>
-                        <textarea id="interview_questions" rows="3" placeholder="What questions were you asked?"></textarea>
-                    </div>
-                </div>
-
-                <button type="submit" class="submit-btn">
-                    <i class="fas fa-paper-plane"></i> Submit Anonymous Review
-                </button>
-                <div id="form-status" style="margin-top: 1rem; text-align: center; font-weight: 500;"></div>
-            </form>
+        <div class="create-review-section">
+             <button id="open-review-form-btn" class="submit-btn">
+                <i class="fas fa-pen-to-square"></i> Share Your Experience
+            </button>
         </div>
 
-        <div id="login-prompt">
-            <p><strong>Want to share your experience?</strong> <a href="/login.html">Log in</a> to submit your anonymous review and help the community.</p>
+        
+        <div id="review-form-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-pen-to-square"></i> Share Your Experience</h2>
+                    <button class="modal-close" id="review-modal-close-btn">×</button>
+                </div>
+                <div class="modal-body">
+                    <div id="review-form-login-prompt" style="display: none; margin-bottom: 2rem; text-align: center; background: #f0f4ff; padding: 1rem; border-radius: 12px;">
+                        <p><strong>Please <a href="/login.html" style="color: var(--accent-blue); text-decoration: underline;">log in</a> to share your experience.</strong></p>
+                    </div>
+                    <form id="review-form">
+                        <fieldset id="review-form-fieldset">
+                            <div class="form-section">
+                                <div class="form-section-title">Basic Information</div>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="firm_name">Firm/Company Name *</label>
+                                        <input type="text" id="firm_name" required placeholder="e.g., Deloitte">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="location">Location *</label>
+                                        <input type="text" id="location" required placeholder="e.g., Mumbai, Delhi">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="job_type">Job Type *</label>
+                                        <select id="job_type" required>
+                                            <option value="">Select Type</option>
+                                            <option value="Articleship">Articleship</option>
+                                            <option value="Industrial Training">Industrial Training</option>
+                                            <option value="Fresher">Fresher Job</option>
+                                            <option value="Semi-Qualified">Semi-Qualified</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="role_title">Your Role</label>
+                                        <input type="text" id="role_title" placeholder="e.g., Audit Associate">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <div class="form-section-title">Compensation</div>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label for="salary">Stipend / Salary (₹) *</label>
+                                        <input type="number" id="salary" required placeholder="e.g., 25000">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="salary_period">Period *</label>
+                                        <select id="salary_period" required>
+                                            <option value="monthly">Monthly</option>
+                                            <option value="yearly">Yearly (CTC)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <div class="form-section-title">Ratings</div>
+                                <div class="form-grid">
+                                    <div class="form-group rating-group">
+                                        <label>Overall Rating *</label>
+                                        <div class="stars">
+                                            <input type="radio" id="overall-5" name="overall_rating" value="5" required><label for="overall-5"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="overall-4" name="overall_rating" value="4"><label for="overall-4"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="overall-3" name="overall_rating" value="3"><label for="overall-3"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="overall-2" name="overall_rating" value="2"><label for="overall-2"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="overall-1" name="overall_rating" value="1"><label for="overall-1"><i class="fas fa-star"></i></label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group rating-group">
+                                        <label>Work-Life Balance</label>
+                                        <div class="stars">
+                                            <input type="radio" id="wlb-5" name="work_life_balance_rating" value="5"><label for="wlb-5"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="wlb-4" name="work_life_balance_rating" value="4"><label for="wlb-4"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="wlb-3" name="work_life_balance_rating" value="3"><label for="wlb-3"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="wlb-2" name="work_life_balance_rating" value="2"><label for="wlb-2"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="wlb-1" name="work_life_balance_rating" value="1"><label for="wlb-1"><i class="fas fa-star"></i></label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group rating-group">
+                                        <label>Learning Experience</label>
+                                        <div class="stars">
+                                            <input type="radio" id="learning-5" name="learning_experience_rating" value="5"><label for="learning-5"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="learning-4" name="learning_experience_rating" value="4"><label for="learning-4"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="learning-3" name="learning_experience_rating" value="3"><label for="learning-3"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="learning-2" name="learning_experience_rating" value="2"><label for="learning-2"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="learning-1" name="learning_experience_rating" value="1"><label for="learning-1"><i class="fas fa-star"></i></label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group rating-group">
+                                        <label>Interview Difficulty</label>
+                                        <div class="stars">
+                                            <input type="radio" id="interview-5" name="interview_difficulty_rating" value="5"><label for="interview-5"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="interview-4" name="interview_difficulty_rating" value="4"><label for="interview-4"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="interview-3" name="interview_difficulty_rating" value="3"><label for="interview-3"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="interview-2" name="interview_difficulty_rating" value="2"><label for="interview-2"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="interview-1" name="interview_difficulty_rating" value="1"><label for="interview-1"><i class="fas fa-star"></i></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <details>
+                                    <summary class="form-section-title" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                                        <span>Company Culture (Select all that apply)</span>
+                                        <span class="details-arrow">▼</span>
+                                    </summary>
+                                    <div class="checkbox-group" style="margin-top: 1.5rem;">
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Flexible Hours">
+                                            <span>Flexible Hours</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Remote Work">
+                                            <span>Remote Work</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Good Mentorship">
+                                            <span>Good Mentorship</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Fast-Paced">
+                                            <span>Fast-Paced</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Collaborative">
+                                            <span>Collaborative</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Competitive">
+                                            <span>Competitive</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Client Facing">
+                                            <span>Client Facing</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Growth Opportunities">
+                                            <span>Growth Opportunities</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Work-Life Balance">
+                                            <span>Work-Life Balance</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="High Pressure">
+                                            <span>High Pressure</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Innovative">
+                                            <span>Innovative</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Traditional">
+                                            <span>Traditional</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Team Outings">
+                                            <span>Team Outings</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Performance Bonus">
+                                            <span>Performance Bonus</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Flexible Leave">
+                                            <span>Flexible Leave</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Learning Budget">
+                                            <span>Learning Budget</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Gym Membership">
+                                            <span>Gym Membership</span>
+                                        </label>
+                                        <label class="checkbox-item">
+                                            <input type="checkbox" name="culture_tags" value="Free Food">
+                                            <span>Free Food</span>
+                                        </label>
+                                    </div>
+                                </details>
+                            </div>
+
+                            <div class="form-section">
+                                <div class="form-section-title">Your Experience</div>
+                                <div class="form-group">
+                                    <label for="review_text">Review (Pros, Cons, etc.)</label>
+                                    <textarea id="review_text" rows="5" placeholder="Share your experience..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="interview_questions">Interview Questions (if any)</label>
+                                    <textarea id="interview_questions" rows="3" placeholder="What questions were you asked?"></textarea>
+                                </div>
+                            </div>
+                        </fieldset>
+
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i> Submit Anonymous Review
+                        </button>
+                        <div id="form-status" style="margin-top: 1rem; text-align: center; font-weight: 500;"></div>
+                    </form>
+                </div>
+            </div>
         </div>
 
+        
         <div id="mobile-filter-trigger">
             <button id="open-filter-modal-btn" class="filter-toggle-btn">
                 <i class="fas fa-filter"></i>
@@ -1084,17 +1139,19 @@
         </div>
 
         <div id="desktop-filter-container"> 
-            <div class="controls-section">
-                <div class="controls-header">
+            <details class="controls-section" open>
+                <summary class="controls-header">
                     <h2><i class="fas fa-filter"></i> Filter & Sort</h2>
-                    <div class="view-toggle">
-                        <button class="view-btn active" data-view="cards">
-                            <i class="fas fa-grip"></i> Cards
-                        </button>
-                        <button class="view-btn" data-view="list">
-                            <i class="fas fa-list"></i> List
-                        </button>
-                    </div>
+                    <div class="details-arrow">▼</div>
+                </summary>
+
+                <div class="view-toggle" style="margin-bottom: 1.5rem; justify-content: flex-end;">
+                    <button class="view-btn active" data-view="cards">
+                        <i class="fas fa-grip"></i> Cards
+                    </button>
+                    <button class="view-btn" data-view="list">
+                        <i class="fas fa-list"></i> List
+                    </button>
                 </div>
 
                 <div class="filter-grid">
@@ -1154,9 +1211,10 @@
                     <div class="tag" data-tag="Gym Membership">💪 Gym Membership</div>
                     <div class="tag" data-tag="Free Food">🍕 Free Food</div>
                 </div>
-            </div>
+            </details>
         </div>
 
+        
         <div class="reviews-section">
             <div id="reviews-container">
                 <div id="loader" class="loader-container">
@@ -1171,6 +1229,7 @@
         </div>
     </main>
 
+    
     <div id="firm-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1207,6 +1266,7 @@
         </div>
     </div>
 
+    
     <div class="filter-modal-overlay" id="filterModalOverlay">
         <div class="filter-modal-content">
             <div class="modal-header">
@@ -1214,7 +1274,7 @@
                 <button class="modal-close-action" id="closeFilterModalBtn">×</button>
             </div>
             <div class="modal-body">
-
+                
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="mobileResetBtn">Reset</button>
@@ -1242,8 +1302,11 @@
         };
 
         const dom = {
-            reviewFormContainer: document.getElementById('review-form-container'),
-            loginPrompt: document.getElementById('login-prompt'),
+            reviewFormModal: document.getElementById('review-form-modal'),
+            reviewModalCloseBtn: document.getElementById('review-modal-close-btn'),
+            openReviewFormBtn: document.getElementById('open-review-form-btn'),
+            reviewFormLoginPrompt: document.getElementById('review-form-login-prompt'),
+            reviewFormFieldset: document.getElementById('review-form-fieldset'),
             reviewForm: document.getElementById('review-form'),
             formStatus: document.getElementById('form-status'),
             reviewsContainer: document.getElementById('reviews-container'),
@@ -1404,6 +1467,7 @@
                     query = query.gte('overall_rating', parseInt(currentFilters.minRating));
                 }
                 if (currentFilters.tags.length > 0) {
+
                     query = query.contains('culture_tags', currentFilters.tags);
                 }
 
@@ -1434,6 +1498,7 @@
 
                 if (data.length > 0) {
                     data.forEach(review => {
+
                         review.helpful_count = review.helpful_count;
                         dom.reviewsContainer.appendChild(renderReviewCard(review));
                     });
@@ -1493,7 +1558,7 @@
             }
 
             try {
-                if (isActive) {
+                if (isActive) { 
                     const { error } = await supabaseClient
                         .from('review_helpful_votes')
                         .delete()
@@ -1507,6 +1572,7 @@
                 }
             } catch (error) {
                 console.error('Error toggling helpful:', error);
+
                 alert('Could not save your vote. Please try again.');
                 button.classList.toggle('active'); 
                 if(countSpan) {
@@ -1535,6 +1601,7 @@
             document.getElementById('modal-firm-name').textContent = firmName;
 
             try {
+
                 const { data: reviews, error } = await supabaseClient
                     .from('firm_reviews')
                     .select('*')
@@ -1680,7 +1747,8 @@
                 setTimeout(() => {
                     dom.formStatus.textContent = '';
                     fetchReviews(false);
-                }, 3000);
+                    dom.reviewFormModal.classList.remove('active');
+                }, 2000);
             } catch (error) {
                 dom.formStatus.textContent = `Error: ${error.message}`;
                 dom.formStatus.style.color = '#ef4444';
@@ -1693,8 +1761,8 @@
         function handleAuthStateChange(session) {
             if (session && session.user) {
                 currentUser = session.user;
-                dom.reviewFormContainer.style.display = 'block';
-                dom.loginPrompt.style.display = 'none';
+                dom.reviewFormLoginPrompt.style.display = 'none';
+                dom.reviewFormFieldset.disabled = false;
 
                 const initial = session.user.email.charAt(0).toUpperCase();
                 dom.authButtonsContainer.innerHTML = `
@@ -1713,8 +1781,8 @@
                 document.getElementById('logoutBtn').addEventListener('click', () => supabaseClient.auth.signOut());
             } else {
                 currentUser = null;
-                dom.reviewFormContainer.style.display = 'none';
-                dom.loginPrompt.style.display = 'block';
+                dom.reviewFormLoginPrompt.style.display = 'block';
+                dom.reviewFormFieldset.disabled = true;
                 dom.authButtonsContainer.innerHTML = `
                     <a href="/login.html" class="icon-button">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1789,6 +1857,18 @@
         dom.firmModal.addEventListener('click', (e) => {
             if (e.target === dom.firmModal) {
                 dom.firmModal.classList.remove('active');
+            }
+        });
+
+        dom.openReviewFormBtn.addEventListener('click', () => {
+            dom.reviewFormModal.classList.add('active');
+        });
+        dom.reviewModalCloseBtn.addEventListener('click', () => {
+            dom.reviewFormModal.classList.remove('active');
+        });
+        dom.reviewFormModal.addEventListener('click', (e) => {
+            if (e.target === dom.reviewFormModal) {
+                dom.reviewFormModal.classList.remove('active');
             }
         });
 
