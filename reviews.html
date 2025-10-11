@@ -11,11 +11,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
             --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             --gradient-success: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --accent-blue: #667eea;
-            --accent-purple: #764ba2;
+            --accent-blue: #3B82F6;
+            --accent-purple: #1D4ED8;
             --accent-pink: #f5576c;
             --surface-elevated: #ffffff;
             --text-primary: #1a202c;
@@ -197,6 +197,9 @@
         }
 
         .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             padding: 0.5rem 1rem;
             background: #f7fafc;
             border: 2px solid var(--border-color);
@@ -826,11 +829,12 @@
 
         .filter-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1050; display: flex; justify-content: center; align-items: flex-end; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s 0.3s; }
         .filter-modal-overlay.show { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
-        .filter-modal-content { background-color: white; width: 100%; max-height: 85vh; border-radius: 16px 16px 0 0; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s ease; }
+        .filter-modal-content { background-color: white; width: 100%; max-height: 85vh; border-radius: 16px 16px 0 0; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s ease; overflow: hidden; }
         .filter-modal-overlay.show .filter-modal-content { transform: translateY(0); }
-        .filter-modal-content .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); }
+        .filter-modal-content .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background: var(--gradient-primary); color: white; border-radius: 16px 16px 0 0; }
         .filter-modal-content .modal-header h4 { font-size: 1.1rem; font-weight: 600; margin: 0; }
-        .modal-close-action { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+        .modal-close-action { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: white; opacity: 0.8; }
+        .modal-close-action:hover { opacity: 1; }
         .filter-modal-content .modal-body { padding: 1.5rem; overflow-y: auto; }
         .filter-modal-content .modal-footer { display: flex; gap: 1rem; padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); }
         .btn { flex: 1; padding: 0.75rem 1rem; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; } 
@@ -921,7 +925,6 @@
             </button>
         </div>
 
-        
         <div id="review-form-modal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1130,7 +1133,6 @@
             </div>
         </div>
 
-        
         <div id="mobile-filter-trigger">
             <button id="open-filter-modal-btn" class="filter-toggle-btn">
                 <i class="fas fa-filter"></i>
@@ -1194,27 +1196,26 @@
                 </div>
 
                 <div class="tags-container">
-                    <div class="tag" data-tag="Flexible Hours">💼 Flexible Hours</div>
-                    <div class="tag" data-tag="Remote Work">🏠 Remote Work</div>
-                    <div class="tag" data-tag="Good Mentorship">👨‍🏫 Good Mentorship</div>
-                    <div class="tag" data-tag="Fast-Paced">⚡ Fast-Paced</div>
-                    <div class="tag" data-tag="Collaborative">🤝 Collaborative</div>
-                    <div class="tag" data-tag="Growth Opportunities">📈 Growth</div>
-                    <div class="tag" data-tag="Work-Life Balance">⚖️ Work-Life</div>
-                    <div class="tag" data-tag="High Pressure">🔥 High Pressure</div>
-                    <div class="tag" data-tag="Innovative">💡 Innovative</div>
-                    <div class="tag" data-tag="Traditional">📚 Traditional</div>
-                    <div class="tag" data-tag="Team Outings">🎉 Team Outings</div>
-                    <div class="tag" data-tag="Performance Bonus">💰 Performance Bonus</div>
-                    <div class="tag" data-tag="Flexible Leave">🌴 Flexible Leave</div>
-                    <div class="tag" data-tag="Learning Budget">📖 Learning Budget</div>
-                    <div class="tag" data-tag="Gym Membership">💪 Gym Membership</div>
-                    <div class="tag" data-tag="Free Food">🍕 Free Food</div>
+                    <div class="tag" data-tag="Flexible Hours"><i class="fas fa-clock"></i> Flexible Hours</div>
+                    <div class="tag" data-tag="Remote Work"><i class="fas fa-house-laptop"></i> Remote Work</div>
+                    <div class="tag" data-tag="Good Mentorship"><i class="fas fa-chalkboard-teacher"></i> Good Mentorship</div>
+                    <div class="tag" data-tag="Fast-Paced"><i class="fas fa-bolt"></i> Fast-Paced</div>
+                    <div class="tag" data-tag="Collaborative"><i class="fas fa-users"></i> Collaborative</div>
+                    <div class="tag" data-tag="Growth Opportunities"><i class="fas fa-chart-line"></i> Growth</div>
+                    <div class="tag" data-tag="Work-Life Balance"><i class="fas fa-scale-balanced"></i> Work-Life</div>
+                    <div class="tag" data-tag="High Pressure"><i class="fas fa-fire"></i> High Pressure</div>
+                    <div class="tag" data-tag="Innovative"><i class="fas fa-lightbulb"></i> Innovative</div>
+                    <div class="tag" data-tag="Traditional"><i class="fas fa-landmark"></i> Traditional</div>
+                    <div class="tag" data-tag="Team Outings"><i class="fas fa-glass-cheers"></i> Team Outings</div>
+                    <div class="tag" data-tag="Performance Bonus"><i class="fas fa-money-bill-wave"></i> Performance Bonus</div>
+                    <div class="tag" data-tag="Flexible Leave"><i class="fas fa-plane-departure"></i> Flexible Leave</div>
+                    <div class="tag" data-tag="Learning Budget"><i class="fas fa-book-open"></i> Learning Budget</div>
+                    <div class="tag" data-tag="Gym Membership"><i class="fas fa-dumbbell"></i> Gym Membership</div>
+                    <div class="tag" data-tag="Free Food"><i class="fas fa-utensils"></i> Free Food</div>
                 </div>
             </details>
         </div>
 
-        
         <div class="reviews-section">
             <div id="reviews-container">
                 <div id="loader" class="loader-container">
@@ -1229,7 +1230,6 @@
         </div>
     </main>
 
-    
     <div id="firm-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -1266,7 +1266,6 @@
         </div>
     </div>
 
-    
     <div class="filter-modal-overlay" id="filterModalOverlay">
         <div class="filter-modal-content">
             <div class="modal-header">
@@ -1274,7 +1273,7 @@
                 <button class="modal-close-action" id="closeFilterModalBtn">×</button>
             </div>
             <div class="modal-body">
-                
+
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" id="mobileResetBtn">Reset</button>
@@ -1509,7 +1508,7 @@
                     if (!loadMore) {
                         dom.reviewsContainer.innerHTML = `
                             <div class="empty-state">
-                                <div class="empty-state-icon">🔍</div>
+                                <div class="empty-state-icon"><i class="fas fa-search"></i></div>
                                 <h3>No reviews found</h3>
                                 <p>Try adjusting your filters or be the first to review!</p>
                             </div>
@@ -1520,7 +1519,7 @@
                 console.error('Error fetching reviews:', error);
                 dom.reviewsContainer.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">❌</div>
+                        <div class="empty-state-icon"><i class="fas fa-exclamation-triangle"></i></div>
                         <h3>Error loading reviews</h3>
                         <p>Please try again later.</p>
                     </div>
