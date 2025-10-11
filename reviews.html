@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firm & Stipend Reviews - My Student Club</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .main-content-area { max-width: 900px; }
+        .page-header { text-align: center; margin-bottom: 2.5rem; }
+        .page-header h1 { font-size: 2.5rem; font-weight: 700; color: var(--text-primary); }
+        .page-header p { color: var(--text-secondary); }
+
+        #review-form-container { display: none; margin-bottom: 3rem; }
+        #login-prompt { text-align: center; background-color: #eef2ff; border: 1px solid #c7d2fe; padding: 1.5rem; border-radius: var(--radius-lg); margin-bottom: 3rem; }
+        #review-form { background-color: var(--surface-bg); padding: 2rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-md); border: 1px solid var(--border-light); }
+        #review-form h2 { font-size: 1.5rem; margin-bottom: 1.5rem; font-weight: 600; }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .form-group label { display: block; font-weight: 500; margin-bottom: 0.5rem; font-size: 0.9rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.75rem; border: 1px solid var(--border-medium); border-radius: var(--radius-md); font-size: 0.95rem; }
+        .form-group textarea { resize: vertical; min-height: 100px; }
+        .rating-group .stars { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 0.25rem; }
+        .rating-group input[type="radio"] { display: none; }
+        .rating-group label { font-size: 1.75rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s; }
+        .rating-group input:checked ~ label, .rating-group label:hover, .rating-group label:hover ~ label { color: var(--secondary-accent); }
+        
+        .filter-controls { display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap; }
+        .filter-controls input, .filter-controls select { padding: 0.75rem; border: 1px solid var(--border-medium); border-radius: var(--radius-md); font-size: 0.95rem; flex-grow: 1; }
+        
+        .review-card { background-color: var(--surface-bg); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border-light); }
+        .review-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
+        .review-card h3 { font-size: 1.25rem; font-weight: 600; color: var(--primary-brand); }
+        .review-card .location { color: var(--text-secondary); font-size: 0.9rem; }
+        .review-card .date { font-size: 0.8rem; color: var(--text-muted); }
+        .review-meta { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-light); }
+        .meta-item { text-align: center; }
+        .meta-item .label { font-size: 0.8rem; color: var(--text-muted); }
+        .meta-item .value, .meta-item .stars { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); }
+        .meta-item .stars .fa-star { color: var(--secondary-accent); }
+        .review-body h4 { font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; }
+        .review-body p { white-space: pre-wrap; line-height: 1.7; color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+         <div class="header-container">
+            <a href="/" class="brand-link"><img src="/assets/logo.png" alt="My Student Club" class="brand-logo"></a>
+            <div class="nav-actions">
+                <div class="auth-buttons-container"></div>
+                <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+            </div>
+        </div>
+    </header>
+     <div class="expanded-menu" id="expandedMenu">
+        <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+        <div class="menu-items-container">
+             <a href="/" class="menu-item">Job Portal</a>
+             <a href="/profile.html" class="menu-item">My Profile</a>
+             <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
+             <a href="/firm-reviews.html" class="menu-item">Firm Reviews</a>
+        </div>
+    </div>
+
+    <main class="main-content-area">
+        <div class="page-header">
+            <h1>Firm & Stipend Reviews</h1>
+            <p>Honest, anonymous insights from the CA community.</p>
+        </div>
+
+        <div id="review-form-container">
+            <form id="review-form">
+                <h2><i class="fas fa-plus-circle"></i> Add Your Review</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="firm_name">Firm/Company Name *</label>
+                        <input type="text" id="firm_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <input type="text" id="location" placeholder="e.g., Mumbai">
+                    </div>
+                    <div class="form-group">
+                        <label for="job_type">Job Type *</label>
+                        <select id="job_type" required>
+                            <option value="Articleship">Articleship</option>
+                            <option value="Industrial Training">Industrial Training</option>
+                            <option value="Fresher">Fresher Job</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="role_title">Your Role</label>
+                        <input type="text" id="role_title" placeholder="e.g., Audit Associate">
+                    </div>
+                    <div class="form-group">
+                        <label for="salary">Stipend / Salary *</label>
+                        <input type="number" id="salary" placeholder="e.g., 25000" required>
+                    </div>
+                     <div class="form-group">
+                        <label for="salary_period">Salary Period *</label>
+                        <select id="salary_period" required>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly (CTC)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-grid" style="margin-top: 1.5rem; border-top: 1px solid var(--border-light); padding-top: 1.5rem;">
+                    <div class="form-group rating-group">
+                        <label>Overall Rating *</label>
+                        <div class="stars">
+                            <input type="radio" id="overall-5" name="overall_rating" value="5" required><label for="overall-5"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="overall-4" name="overall_rating" value="4"><label for="overall-4"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="overall-3" name="overall_rating" value="3"><label for="overall-3"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="overall-2" name="overall_rating" value="2"><label for="overall-2"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="overall-1" name="overall_rating" value="1"><label for="overall-1"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                     <div class="form-group rating-group">
+                        <label>Work-Life Balance</label>
+                        <div class="stars">
+                            <input type="radio" id="wlb-5" name="work_life_balance_rating" value="5"><label for="wlb-5"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="wlb-4" name="work_life_balance_rating" value="4"><label for="wlb-4"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="wlb-3" name="work_life_balance_rating" value="3"><label for="wlb-3"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="wlb-2" name="work_life_balance_rating" value="2"><label for="wlb-2"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="wlb-1" name="work_life_balance_rating" value="1"><label for="wlb-1"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                     <div class="form-group rating-group">
+                        <label>Learning Experience</label>
+                        <div class="stars">
+                            <input type="radio" id="learning-5" name="learning_experience_rating" value="5"><label for="learning-5"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="learning-4" name="learning_experience_rating" value="4"><label for="learning-4"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="learning-3" name="learning_experience_rating" value="3"><label for="learning-3"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="learning-2" name="learning_experience_rating" value="2"><label for="learning-2"><i class="fas fa-star"></i></label>
+                            <input type="radio" id="learning-1" name="learning_experience_rating" value="1"><label for="learning-1"><i class="fas fa-star"></i></label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 1rem;">
+                    <label for="review_text">Your Review (Pros, Cons, etc.)</label>
+                    <textarea id="review_text" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="interview_questions">Interview Questions (if any)</label>
+                    <textarea id="interview_questions" rows="3"></textarea>
+                </div>
+
+                <button type="submit" class="action-button">Submit Anonymously</button>
+                <div id="form-status" style="margin-top: 1rem; text-align: center;"></div>
+            </form>
+        </div>
+
+        <div id="login-prompt">
+            <p><strong>Want to share your experience?</strong> <a href="/login.html" class="font-semibold text-blue-600">Log in</a> to submit your anonymous review.</p>
+        </div>
+        
+        <div class="reviews-section">
+            <div class="filter-controls">
+                <input type="text" id="search-firm" placeholder="Search by firm name...">
+            </div>
+            <div id="reviews-container">
+                <div id="loader" class="loader-container"><div class="loader-spinner"></div></div>
+            </div>
+            <div class="load-more-wrapper">
+                <button id="load-more" class="action-button load-more-action" style="display: none;">Load More Reviews</button>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        let currentUser = null;
+        let isFetching = false;
+        let page = 0;
+        const PAGE_SIZE = 10;
+        
+        const dom = {
+            reviewFormContainer: document.getElementById('review-form-container'),
+            loginPrompt: document.getElementById('login-prompt'),
+            reviewForm: document.getElementById('review-form'),
+            formStatus: document.getElementById('form-status'),
+            reviewsContainer: document.getElementById('reviews-container'),
+            loader: document.getElementById('loader'),
+            loadMoreBtn: document.getElementById('load-more'),
+            searchFirmInput: document.getElementById('search-firm'),
+            authButtonsContainer: document.querySelector('.auth-buttons-container')
+        };
+        
+        function renderStars(rating, max = 5) {
+            if (!rating) return 'N/A';
+            let stars = '';
+            for (let i = 1; i <= max; i++) {
+                stars += `<i class="fas fa-star" style="color: ${i <= rating ? 'var(--secondary-accent)' : '#e2e8f0'}"></i>`;
+            }
+            return stars;
+        }
+
+        function renderReviewCard(review) {
+            const card = document.createElement('div');
+            card.className = 'review-card';
+            const salaryFormatted = review.salary ? `₹${new Intl.NumberFormat('en-IN').format(review.salary)}/${review.salary_period === 'yearly' ? 'yr' : 'mo'}` : 'N/A';
+            const date = new Date(review.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+
+            card.innerHTML = `
+                <div class="review-header">
+                    <div>
+                        <h3>${review.firm_name}</h3>
+                        <p class="location">${review.job_type} in ${review.location || 'N/A'}</p>
+                    </div>
+                    <span class="date">${date}</span>
+                </div>
+                <div class="review-meta">
+                    <div class="meta-item">
+                        <div class="label">Overall</div>
+                        <div class="stars">${renderStars(review.overall_rating)}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="label">Salary</div>
+                        <div class="value">${salaryFormatted}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="label">WLB</div>
+                        <div class="stars">${renderStars(review.work_life_balance_rating)}</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="label">Learning</div>
+                        <div class="stars">${renderStars(review.learning_experience_rating)}</div>
+                    </div>
+                </div>
+                <div class="review-body">
+                    ${review.review_text ? `<h4>Review</h4><p>${review.review_text}</p>` : ''}
+                    ${review.interview_questions ? `<h4>Interview Questions</h4><p>${review.interview_questions}</p>` : ''}
+                </div>
+            `;
+            return card;
+        }
+
+        async function fetchReviews(loadMore = false) {
+            if (isFetching) return;
+            isFetching = true;
+            dom.loader.style.display = 'block';
+            if (!loadMore) {
+                page = 0;
+                dom.reviewsContainer.innerHTML = '';
+            }
+
+            try {
+                let query = supabaseClient.from('firm_reviews')
+                    .select('firm_name, location, job_type, role_title, salary, salary_period, overall_rating, work_life_balance_rating, learning_experience_rating, review_text, interview_questions, created_at')
+                    .eq('status', 'approved')
+                    .order('created_at', { ascending: false })
+                    .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1);
+
+                const searchTerm = dom.searchFirmInput.value.trim();
+                if (searchTerm) {
+                    query = query.ilike('firm_name', `%${searchTerm}%`);
+                }
+
+                const { data, error } = await query;
+                if (error) throw error;
+
+                if (data.length > 0) {
+                    data.forEach(review => dom.reviewsContainer.appendChild(renderReviewCard(review)));
+                    page++;
+                    dom.loadMoreBtn.style.display = data.length < PAGE_SIZE ? 'none' : 'block';
+                } else {
+                    dom.loadMoreBtn.style.display = 'none';
+                    if (!loadMore) {
+                        dom.reviewsContainer.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No reviews found matching your criteria.</p>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching reviews:', error);
+                dom.reviewsContainer.innerHTML = '<p style="text-align: center; color: var(--error);">Could not load reviews. Please try again later.</p>';
+            } finally {
+                isFetching = false;
+                dom.loader.style.display = 'none';
+            }
+        }
+        
+        async function handleSubmit(e) {
+            e.preventDefault();
+            if (!currentUser) {
+                dom.formStatus.textContent = 'You must be logged in to submit a review.';
+                dom.formStatus.style.color = 'var(--error)';
+                return;
+            }
+
+            const formData = new FormData(dom.reviewForm);
+            const ratingInputs = dom.reviewForm.querySelectorAll('input[type="radio"]:checked');
+            const ratings = {};
+            ratingInputs.forEach(input => {
+                ratings[input.name] = parseInt(input.value);
+            });
+            
+            const reviewData = {
+                user_id: currentUser.id,
+                firm_name: dom.reviewForm.querySelector('#firm_name').value,
+                location: dom.reviewForm.querySelector('#location').value,
+                job_type: dom.reviewForm.querySelector('#job_type').value,
+                role_title: dom.reviewForm.querySelector('#role_title').value,
+                salary: parseInt(dom.reviewForm.querySelector('#salary').value),
+                salary_period: dom.reviewForm.querySelector('#salary_period').value,
+                review_text: dom.reviewForm.querySelector('#review_text').value,
+                interview_questions: dom.reviewForm.querySelector('#interview_questions').value,
+                ...ratings
+            };
+
+            if (!reviewData.overall_rating) {
+                 dom.formStatus.textContent = 'Please provide an overall rating.';
+                 dom.formStatus.style.color = 'var(--error)';
+                 return;
+            }
+
+            const submitBtn = dom.reviewForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            try {
+                const { error } = await supabaseClient.from('firm_reviews').insert([reviewData]);
+                if (error) {
+                     if (error.code === '23505') { 
+                        throw new Error('You have already submitted a review for this firm and job type.');
+                    }
+                    throw error;
+                }
+                dom.formStatus.textContent = 'Thank you! Your review has been submitted.';
+                dom.formStatus.style.color = 'var(--success)';
+                dom.reviewForm.reset();
+                setTimeout(() => dom.formStatus.textContent = '', 5000);
+            } catch (error) {
+                dom.formStatus.textContent = `Error: ${error.message}`;
+                dom.formStatus.style.color = 'var(--error)';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Anonymously';
+            }
+        }
+
+        function handleAuthStateChange(session) {
+             if (session && session.user) {
+                currentUser = session.user;
+                dom.reviewFormContainer.style.display = 'block';
+                dom.loginPrompt.style.display = 'none';
+                let initial = session.user.email.charAt(0).toUpperCase();
+                dom.authButtonsContainer.innerHTML = `<div class="user-profile-container"><div class="user-icon-wrapper"><div class="user-icon">${initial}</div><div class="user-hover-card"><div class="user-hover-content"><p class="user-email">${session.user.email}</p><button id="logoutBtn" class="logout-btn">Logout</button></div></div></div></div>`;
+                document.getElementById('logoutBtn').addEventListener('click', () => supabaseClient.auth.signOut());
+            } else {
+                currentUser = null;
+                dom.reviewFormContainer.style.display = 'none';
+                dom.loginPrompt.style.display = 'block';
+                dom.authButtonsContainer.innerHTML = `<a href="/login.html" class="icon-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg></a>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchReviews();
+            dom.loadMoreBtn.addEventListener('click', () => fetchReviews(true));
+            let debounce;
+            dom.searchFirmInput.addEventListener('input', () => {
+                clearTimeout(debounce);
+                debounce = setTimeout(() => {
+                    fetchReviews(false);
+                }, 400);
+            });
+
+            supabaseClient.auth.getSession().then(({ data: { session } }) => handleAuthStateChange(session));
+            supabaseClient.auth.onAuthStateChange((_event, session) => handleAuthStateChange(session));
+            
+            dom.reviewForm.addEventListener('submit', handleSubmit);
+        });
+    </script>
+</body>
+</html>
