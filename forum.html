@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussion Forum - My Student Club</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
+    <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
+    <style>
+        .forum-container { max-width: 1000px; margin: 2rem auto; padding: 1.5rem; }
+        .forum-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border-light); padding-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
+        .forum-header h1 { font-size: 2rem; font-weight: 700; margin: 0; }
+        .threads-list { display: flex; flex-direction: column; gap: 1rem; }
+        .thread-item { background: var(--surface-bg); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; border: 1px solid var(--border-light); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; transition: all var(--transition-std); text-decoration: none; color: var(--text-primary); }
+        .thread-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--primary-brand); }
+        .thread-main { flex-grow: 1; padding-right: 1rem; }
+        .thread-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.25rem; color: var(--text-primary); }
+        .thread-meta { font-size: 0.8rem; color: var(--text-secondary); }
+        .thread-stats { text-align: right; flex-shrink: 0; padding-left: 1rem; display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem; }
+        .stat-item { font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem; justify-content: flex-end; }
+        .stat-item .count { font-weight: 600; color: var(--text-primary); }
+        .action-button i { margin-right: 0.5rem; }
+        .empty-state { text-align: center; padding: 3rem; background: var(--surface-bg); border-radius: var(--radius-lg); color: var(--text-secondary); }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+      <div class="header-container">
+        <a href="/" class="brand-link">
+          <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
+        </a>
+        <div class="nav-actions">
+          <div class="auth-buttons-container"></div>
+          <button id="notificationsBtn" class="icon-button notification-icon-btn" aria-label="Manage Notifications">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            <span class="notification-badge" id="notificationBadge"></span>
+          </button>
+          <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="expanded-menu" id="expandedMenu">
+      <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+      </button>
+      <div class="menu-items-container">
+          <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
+          <a href="/articleship-guarantee-program/" class="menu-item">Articleship Program</a>
+          <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
+          <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
+          <a href="/forum.html" class="menu-item">Discussion Forum</a>
+          <div class="menu-item-dropdown">
+              <button class="menu-item" id="resourcesDropdownBtn">
+                  Resources
+                  <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+              </button>
+              <div class="dropdown-content" id="resourcesDropdown">
+                  <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
+                  <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
+                  <a href="/articleship.html" class="dropdown-item">Articleship</a>
+              </div>
+          </div>
+      </div>
+    </div>
+
+    <main class="forum-container">
+        <div class="forum-header">
+            <h1>Discussion Forum</h1>
+            <a href="/new-thread.html" id="new-thread-btn" class="action-button" style="display: none;">
+                <i class="fas fa-plus"></i> New Thread
+            </a>
+        </div>
+
+        <div id="threads-list" class="threads-list">
+            <div id="loader" class="loader-container" style="display: block;"><div class="loader-spinner"></div></div>
+        </div>
+    </main>
+
+    <footer class="site-footer-nav">
+      <a href="/" class="footer-tab active">
+        <span>Industrial Training</span>
+      </a>
+      <a href="/articleship.html" class="footer-tab">
+        <span>Articleship</span>
+      </a>
+      <a href="/semi-qualified.html" class="footer-tab">
+        <span>Semi Qualified</span>
+      </a>
+      <a href="/fresher.html" class="footer-tab">
+        <span>Freshers</span>
+      </a>
+    </footer>
+
+    <script type="module" src="https://www.mystudentclub.com/scripts/portal3.js"></script>
+    <script type="module">
+        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const threadsList = document.getElementById('threads-list');
+        const loader = document.getElementById('loader');
+        const newThreadBtn = document.getElementById('new-thread-btn');
+
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+            if (seconds < 60) return "just now";
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " years ago";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " months ago";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " days ago";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " hours ago";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " minutes ago";
+            return Math.floor(seconds) + " seconds ago";
+        }
+
+        async function fetchThreads() {
+            loader.style.display = 'block';
+            threadsList.innerHTML = '';
+            threadsList.appendChild(loader);
+
+            const { data, error } = await supabaseClient
+                .from('forum_threads')
+                .select('*')
+                .order('last_activity_at', { ascending: false });
+
+            loader.style.display = 'none';
+
+            if (error) {
+                threadsList.innerHTML = '<div class="empty-state"><p>Error loading threads. Please try again later.</p></div>';
+                console.error(error);
+                return;
+            }
+
+            if (data.length === 0) {
+                threadsList.innerHTML = '<div class="empty-state"><p>No discussions yet. Be the first to start one!</p></div>';
+                return;
+            }
+
+            data.forEach(thread => {
+                const threadEl = document.createElement('a');
+                threadEl.href = `/thread.html?id=${thread.id}`;
+                threadEl.className = 'thread-item';
+                const authorName = thread.author_email ? thread.author_email.split('@')[0] : 'Anonymous';
+
+                threadEl.innerHTML = `
+                    <div class="thread-main">
+                        <h2 class="thread-title">${thread.title}</h2>
+                        <p class="thread-meta">Started by ${authorName} &middot; ${timeAgo(thread.created_at)}</p>
+                    </div>
+                    <div class="thread-stats">
+                        <div class="stat-item"><span class="count">${thread.reply_count}</span> Replies</div>
+                        <div class="stat-item">Last activity ${timeAgo(thread.last_activity_at)}</div>
+                    </div>
+                `;
+                threadsList.appendChild(threadEl);
+            });
+        }
+
+        supabaseClient.auth.onAuthStateChange((_event, session) => {
+            if (session && session.user) {
+                newThreadBtn.style.display = 'inline-flex';
+            } else {
+                newThreadBtn.style.display = 'none';
+            }
+        });
+
+        fetchThreads();
+    </script>
+</body>
+</html>

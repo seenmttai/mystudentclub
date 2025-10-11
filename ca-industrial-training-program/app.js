@@ -1,6 +1,33 @@
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+(async () => {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+
+    if (session && session.user) {
+        try {
+            const { error, count } = await supabaseClient
+                .from('enrollment')
+                .select('course', { count: 'exact', head: true })
+                .eq('uuid', session.user.id)
+                .eq('course', 'industrial-training-mastery');
+            
+            if (error) {
+                console.error("Enrollment check failed:", error);
+                return;
+            }
+
+            if (count > 0) {
+                window.location.href = '/learning-management-system/';
+            }
+        } catch (e) {
+            console.error("Error during enrollment check:", e);
+        }
+    }
+})();
 
 const generateData = () => {
   const baseURL = "https://www.mystudentclub.com/assets/";
@@ -410,26 +437,7 @@ function initializeCurriculumCenter() {
 
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  const { data: { session } } = await supabaseClient.auth.getSession();
-
-  if (session && session.user) {
-      try {
-          const { data, error, count } = await supabaseClient
-              .from('enrollment')
-              .select('course', { count: 'exact', head: true })
-              .eq('uuid', session.user.id)
-              .eq('course', 'industrial-training-mastery');
-          
-          if (!error && count > 0) {
-              window.location.href = '/learning-management-system/';
-              return;
-          }
-      } catch (e) {
-          console.error("Error checking enrollment:", e);
-      }
-  }
-
+document.addEventListener('DOMContentLoaded', () => {
   safe(initializeTestimonials, 'testimonials');
   safe(initializeCarousel, 'carousel');
   safe(initializeCertificate, 'certificate');
