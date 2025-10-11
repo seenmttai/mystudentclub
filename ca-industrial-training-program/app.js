@@ -1,3 +1,7 @@
+const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+
 const generateData = () => {
   const baseURL = "https://www.mystudentclub.com/assets/";
 
@@ -237,7 +241,7 @@ const initializeTestimonials = () => {
       image: "https://mystudentclub.pages.dev/assets/t2.jpg"
     },
     {
-      text: "Hi everyone I'm Pragesh one of the student who enrolled under My student club MSC Industrial Training Program and that too in the first batch and i'm happy to share that I've been selected by HDFC bank for IT in the ECG department. Being said that it as a step taken by me without thinking anything because i didn't had much idea about MSC at that time but trust me the kind of lectures that ere conducted by Padam during the 10-12 days period having different people each time sharing different strategies and their story made it all worth it . And the kind of support that was given after the batch by Padam made it clear ho much efforts he is trying to put behind each and every person enrolled under the batch reaching them out on call on regular basis made…",
+      text: "Hi everyone I'm Pragesh one of the student who enrolled under My student club Industrial Training Guarantee Program and that too in the first batch and i'm happy to share that I've been selected by HDFC bank for IT in the ECG department. Being said that it as a step taken by me without thinking anything because i didn't had much idea about MSC at that time but trust me the kind of lectures that ere conducted by Padam during the 10-12 days period having different people each time sharing different strategies and their story made it all worth it . And the kind of support that was given after the batch by Padam made it clear ho much efforts he is trying to put behind each and every person enrolled under the batch reaching them out on call on regular basis made…",
       image: "https://mystudentclub.pages.dev/assets/t3.jpg"
     },
     {
@@ -406,7 +410,26 @@ function initializeCurriculumCenter() {
 
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+
+  if (session && session.user) {
+      try {
+          const { data, error, count } = await supabaseClient
+              .from('enrollment')
+              .select('course', { count: 'exact', head: true })
+              .eq('uuid', session.user.id)
+              .eq('course', 'industrial-training-mastery');
+          
+          if (!error && count > 0) {
+              window.location.href = '/learning-management-system/';
+              return;
+          }
+      } catch (e) {
+          console.error("Error checking enrollment:", e);
+      }
+  }
+
   safe(initializeTestimonials, 'testimonials');
   safe(initializeCarousel, 'carousel');
   safe(initializeCertificate, 'certificate');
