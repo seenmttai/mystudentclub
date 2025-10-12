@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supabase Video Link Fetcher</title>
-    <!-- Supabase JS Library CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -32,7 +31,7 @@
         input[type="email"],
         input[type="password"],
         input[type="number"] {
-            width: calc(100% - 16px); /* Adjust for padding */
+            width: calc(100% - 16px);
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -55,7 +54,7 @@
             border-radius: 4px;
             background-color: #e9ecef;
             border: 1px solid #ced4da;
-            word-wrap: break-word; /* Ensure long links wrap */
+            word-wrap: break-word; 
         }
         #result.error {
             background-color: #f8d7da;
@@ -83,7 +82,6 @@
 
         <div id="auth-status">Checking auth status...</div>
 
-        <!-- Login Form -->
         <div id="login-form" class="hidden">
             <h2>Login</h2>
             <div class="form-group">
@@ -98,10 +96,8 @@
             <p><small>You need to be logged in to fetch video links.</small></p>
         </div>
 
-        <!-- Logout Button -->
          <button id="logout-button" class="hidden">Logout</button>
 
-        <!-- Video Fetch Form (shown when logged in) -->
         <div id="video-fetch-form" class="hidden">
             <h2>Get Video</h2>
              <div class="form-group">
@@ -115,7 +111,6 @@
             <button id="fetch-button">Fetch Link</button>
         </div>
 
-        <!-- Result Display Area -->
         <div id="result">Result will appear here...</div>
     </div>
 
@@ -123,10 +118,8 @@
         const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 
-        // Use Supabase V2 syntax with CDN
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        // DOM Elements
         const loginForm = document.getElementById('login-form');
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
@@ -139,7 +132,6 @@
         const resultDiv = document.getElementById('result');
         const authStatusDiv = document.getElementById('auth-status');
 
-        // --- Authentication ---
 
         const checkUser = async () => {
             const { data: { session }, error } = await supabase.auth.getSession();
@@ -154,23 +146,19 @@
             }
 
             if (session && session.user) {
-                // User is logged in
                 authStatusDiv.textContent = `Logged in as: ${session.user.email}`;
                 loginForm.classList.add('hidden');
                 logoutButton.classList.remove('hidden');
-                videoFetchForm.classList.remove('hidden'); // Show fetch form
-                 // Clear password field on successful login/session check
+                videoFetchForm.classList.remove('hidden'); 
                 if (passwordInput) passwordInput.value = '';
             } else {
-                // User is not logged in
                 authStatusDiv.textContent = 'You are not logged in.';
-                loginForm.classList.remove('hidden'); // Show login form
+                loginForm.classList.remove('hidden'); 
                 logoutButton.classList.add('hidden');
                 videoFetchForm.classList.add('hidden');
             }
-             // Clear previous results on auth change
             resultDiv.textContent = 'Result will appear here...';
-            resultDiv.className = ''; // Reset result styling
+            resultDiv.className = ''; 
         };
 
         loginButton.addEventListener('click', async (e) => {
@@ -199,7 +187,6 @@
             } else {
                  resultDiv.textContent = 'Login successful!';
                  resultDiv.className = 'success';
-                 // No need to manually call checkUser here, onAuthStateChange will handle it
             }
         });
 
@@ -212,19 +199,15 @@
                  resultDiv.textContent = `Logout failed: ${error.message}`;
                  resultDiv.className = 'error';
             } else {
-                // No need to manually call checkUser here, onAuthStateChange will handle it
                  resultDiv.textContent = 'Logged out successfully.';
                  resultDiv.className = 'success';
             }
         });
 
-        // Listen for auth changes (login, logout, token refresh)
         supabase.auth.onAuthStateChange((_event, session) => {
              console.log('Auth state changed:', _event, session);
-             checkUser(); // Update UI based on new auth state
+             checkUser(); 
         });
-
-        // --- RPC Call ---
 
         fetchButton.addEventListener('click', async () => {
             const courseName = courseNameInput.value.trim();
@@ -244,7 +227,7 @@
             }
 
             resultDiv.textContent = 'Fetching video link...';
-            resultDiv.className = ''; // Reset styling
+            resultDiv.className = ''; 
 
             try {
                 const { data, error } = await supabase.rpc('get_video_link', {
@@ -254,21 +237,17 @@
 
                 if (error) {
                     console.error('Supabase RPC Error:', error);
-                    // Use the specific error message from the function if available
                     resultDiv.textContent = `Error: ${error.message}`;
-                    // You could check error.code === 'P0001' or 'P0002' here too
                     resultDiv.className = 'error';
                 } else if (data) {
-                    // Success! Display the link
                     resultDiv.textContent = `Video Link Found: `;
                     const link = document.createElement('a');
                     link.href = data;
                     link.textContent = data;
-                    link.target = '_blank'; // Open in new tab
+                    link.target = '_blank'; 
                     resultDiv.appendChild(link);
                     resultDiv.className = 'success';
                 } else {
-                     // Should ideally be caught by the RPC error, but as a fallback
                      resultDiv.textContent = 'No data returned, but no specific error.';
                      resultDiv.className = 'error';
                 }
@@ -280,7 +259,6 @@
             }
         });
 
-        // Initial check when the page loads
         checkUser();
 
     </script>

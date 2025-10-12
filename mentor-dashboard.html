@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentorship Dashboard - My Student Club</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
+    <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --forum-primary: #1e40af;
+            --forum-primary-light: #3b82f6;
+            --forum-secondary: #0ea5e9;
+            --forum-success: #059669;
+            --forum-warning: #d97706;
+            --forum-danger: #dc2626;
+            --forum-bg: #f8fafc;
+            --forum-card: #ffffff;
+            --forum-border: #e2e8f0;
+            --forum-text: #0f172a;
+            --forum-text-secondary: #334155;
+            --forum-text-muted: #64748b;
+            --forum-hover: #f1f5f9;
+            --forum-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --forum-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --forum-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+
+        body { 
+            background: var(--forum-bg); 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--forum-text);
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .dashboard-header h1 {
+            font-size: 2rem;
+            font-weight: 800;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            background: var(--forum-card);
+            padding: 0.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--forum-border);
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--forum-text-secondary);
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            background: var(--forum-hover);
+        }
+
+        .tab.active {
+            background: var(--forum-primary);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--forum-card);
+            padding: 1.75rem;
+            border-radius: 12px;
+            border: 1px solid var(--forum-border);
+            box-shadow: var(--forum-shadow-sm);
+        }
+
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--forum-text);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--forum-text-muted);
+        }
+
+        .card {
+            background: var(--forum-card);
+            border-radius: 12px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--forum-border);
+            box-shadow: var(--forum-shadow-sm);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .request-item, .relationship-item, .session-item, .message-thread-item {
+            padding: 1.25rem;
+            border: 1px solid var(--forum-border);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            transition: all 0.15s ease;
+        }
+        
+        .message-thread-item {
+            cursor: pointer;
+        }
+
+        .request-item:hover, .relationship-item:hover, .session-item:hover, .message-thread-item:hover {
+            border-color: var(--forum-primary);
+            box-shadow: var(--forum-shadow);
+        }
+
+        .request-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .request-info h4 {
+            font-size: 1.0625rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .request-meta {
+            font-size: 0.875rem;
+            color: var(--forum-text-muted);
+        }
+
+        .request-message {
+            margin-bottom: 1rem;
+            color: var(--forum-text-secondary);
+            line-height: 1.6;
+        }
+
+        .request-topics {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .topic-tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--forum-hover);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--forum-primary);
+        }
+
+        .request-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            padding: 0.625rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--forum-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--forum-primary-light);
+        }
+
+        .btn-success {
+            background: var(--forum-success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #047857;
+        }
+
+        .btn-danger {
+            background: transparent;
+            color: var(--forum-danger);
+            border: 1px solid var(--forum-danger);
+        }
+
+        .btn-danger:hover {
+            background: var(--forum-danger);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--forum-hover);
+            color: var(--forum-text-secondary);
+            border: 1px solid var(--forum-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--forum-border);
+        }
+
+        .status-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: rgba(217, 119, 6, 0.1);
+            color: var(--forum-warning);
+        }
+
+        .status-scheduled {
+            background: rgba(14, 165, 233, 0.1);
+            color: var(--forum-secondary);
+        }
+
+        .status-completed {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--forum-success);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--forum-text-muted);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: var(--forum-hover);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: var(--forum-text-muted);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9375rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--forum-border);
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            font-family: inherit;
+        }
+
+        .messages-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--forum-border);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column-reverse;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            max-width: 80%;
+        }
+
+        .message-sent {
+            background: var(--forum-primary);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message-received {
+            background: var(--forum-hover);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message-text {
+            margin-bottom: 0.25rem;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+      <div class="header-container">
+        <a href="/" class="brand-link">
+          <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
+        </a>
+        <div class="nav-actions">
+          <div class="auth-buttons-container"></div>
+          <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="expanded-menu" id="expandedMenu">
+      <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+      </button>
+      <div class="menu-items-container">
+          <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
+          <a href="/articleship-guarantee-program/" class="menu-item">Articleship Program</a>
+          <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
+          <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
+          <a href="/" class="menu-item">Discussion Forum</a>
+          <a href="/mentor.html" class="menu-item">Find a Mentor</a>
+          <a href="/mentor-dashboard.html" class="menu-item">Mentorship Dashboard</a>
+          <div class="menu-item-dropdown">
+              <button class="menu-item" id="resourcesDropdownBtn">
+                  Resources
+                  <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+              </button>
+              <div class="dropdown-content" id="resourcesDropdown">
+                  <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
+                  <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
+                  <a href="/articleship.html" class="dropdown-item">Articleship</a>
+              </div>
+          </div>
+      </div>
+    </div>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <h1>Mentorship Dashboard</h1>
+            <div class="tabs">
+                <button class="tab active" data-tab="overview">Overview</button>
+                <button class="tab" data-tab="requests" id="requests-tab" style="display:none;">Requests</button>
+                <button class="tab" data-tab="mentorships">My Mentorships</button>
+                <button class="tab" data-tab="sessions">Sessions</button>
+                <button class="tab" data-tab="messages">Messages</button>
+            </div>
+        </div>
+
+        <div class="tab-content active" id="overview-tab">
+            <div class="stats-grid" id="stats-grid"></div>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Upcoming Sessions</h3>
+                </div>
+                <div id="upcoming-sessions"></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="requests-tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Pending Requests</h3>
+                </div>
+                <div id="pending-requests"></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="mentorships-tab">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Active Mentorships</h3>
+                </div>
+                <div id="active-mentorships"></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="sessions-tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Session History</h3>
+                    <button class="btn btn-primary" onclick="openModal('schedule-modal')">
+                        <i class="fas fa-plus"></i> Schedule Session
+                    </button>
+                </div>
+                <div id="all-sessions"></div>
+            </div>
+        </div>
+
+        <div class="tab-content" id="messages-tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Messages</h3>
+                </div>
+                <div id="message-threads"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="schedule-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Schedule Session</h2>
+                <button class="close-modal" onclick="closeModal('schedule-modal')">&times;</button>
+            </div>
+            <form id="schedule-form">
+                <div class="form-group">
+                    <label>Select Mentorship</label>
+                    <select id="session-relationship" required></select>
+                </div>
+                <div class="form-group">
+                    <label>Date & Time</label>
+                    <input type="datetime-local" id="session-datetime" required>
+                </div>
+                <div class="form-group">
+                    <label>Duration (minutes)</label>
+                    <input type="number" id="session-duration" value="30" min="15" step="15">
+                </div>
+                <div class="form-group">
+                    <label>Topic</label>
+                    <input type="text" id="session-topic" placeholder="What will you discuss?">
+                </div>
+                <div class="form-group">
+                    <label>Meeting Link (optional)</label>
+                    <input type="url" id="session-link" placeholder="Zoom, Meet, etc.">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%;">Schedule</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="chat-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="chat-title">Chat</h2>
+                <button class="close-modal" onclick="closeModal('chat-modal')">&times;</button>
+            </div>
+            <div class="messages-container" id="messages-container"></div>
+            <form id="message-form">
+                <input type="hidden" id="chat-relationship-id">
+                <div class="form-group">
+                    <textarea id="message-input" rows="3" placeholder="Type your message..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        let currentUser = null;
+        let isMentor = false;
+        let mentorProfile = null;
+
+        window.closeModal = (id) => {
+            document.getElementById(id).classList.remove('active');
+        };
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        window.openChat = async (relationshipId, otherUserName) => {
+            document.getElementById('chat-title').textContent = `Chat with ${otherUserName}`;
+            document.getElementById('chat-relationship-id').value = relationshipId;
+            await loadMessages(relationshipId);
+            openModal('chat-modal');
+        }
+        
+        window.viewMilestones = (relationshipId) => {
+            alert(`Milestone feature coming soon for relationship: ${relationshipId}`);
+        }
+
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+            if (seconds < 60) return 'just now';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes}m ago`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours}h ago`;
+            const days = Math.floor(hours / 24);
+            return `${days}d ago`;
+        }
+
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+                tab.classList.add('active');
+                const tabName = tab.dataset.tab;
+                document.getElementById(`${tabName}-tab${tabName === 'overview' ? '' : '-content'}`).classList.add('active');
+            });
+        });
+
+        async function loadAllData() {
+            if (!currentUser) return;
+            await loadStats();
+            await loadRequests();
+            await loadMentorships();
+            await loadSessions();
+            await loadMessageThreads();
+        }
+        
+        async function loadStats() {
+            const stats = { totalRequests: 0, activeMentorships: 0, completedSessions: 0, avgRating: 0 };
+            if (isMentor) {
+                const { count: requests } = await supabaseClient.from('mentorship_requests').select('*', { count: 'exact', head: true }).eq('mentor_id', mentorProfile.id).eq('status', 'pending');
+                stats.totalRequests = requests || 0;
+                const { count: mentorships } = await supabaseClient.from('mentorship_relationships').select('*', { count: 'exact', head: true }).eq('mentor_id', mentorProfile.id).eq('status', 'active');
+                stats.activeMentorships = mentorships || 0;
+                stats.completedSessions = mentorProfile.total_sessions;
+                stats.avgRating = mentorProfile.rating;
+            } else {
+                const { count: mentorships } = await supabaseClient.from('mentorship_relationships').select('*', { count: 'exact', head: true }).eq('mentee_id', currentUser.id).eq('status', 'active');
+                stats.activeMentorships = mentorships || 0;
+                const { data: sessions } = await supabaseClient.from('mentorship_sessions').select('*, mentorship_relationships!inner(*)').eq('mentorship_relationships.mentee_id', currentUser.id).eq('status', 'completed');
+                stats.completedSessions = sessions?.length || 0;
+            }
+            const container = document.getElementById('stats-grid');
+            container.innerHTML = isMentor ? `
+                <div class="stat-card"><div class="stat-card-header"><div class="stat-icon" style="background: rgba(217, 119, 6, 0.1); color: var(--forum-warning);"><i class="fas fa-inbox"></i></div></div><div class="stat-value">${stats.totalRequests}</div><div class="stat-label">Pending Requests</div></div>
+                <div class="stat-card"><div class="stat-card-header"><div class="stat-icon" style="background: rgba(14, 165, 233, 0.1); color: var(--forum-secondary);"><i class="fas fa-users"></i></div></div><div class="stat-value">${stats.activeMentorships}</div><div class="stat-label">Active Mentees</div></div>
+                <div class="stat-card"><div class="stat-card-header"><div class="stat-icon" style="background: rgba(5, 150, 105, 0.1); color: var(--forum-success);"><i class="fas fa-video"></i></div></div><div class="stat-value">${stats.completedSessions}</div><div class="stat-label">Total Sessions</div></div>
+                <div class="stat-card"><div class="stat-card-header"><div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;"><i class="fas fa-star"></i></div></div><div class="stat-value">${stats.avgRating.toFixed(1)}</div><div class="stat-label">Average Rating</div></div>
+            ` : `
+                <div class="stat-card"><div class="stat-card-header"><div class="stat-icon" style="background: rgba(30, 64, 175, 0.1); color: var(--forum-primary);"><i class="fas fa-user-graduate"></i></div></div><div class="stat-value">${stats.activeMentorships}</div><div class="stat-label">Active Mentors</div></div>
+                <div class="stat-card"><div class="stat-card-header"><div class="stat-icon" style="background: rgba(5, 150, 105, 0.1); color: var(--forum-success);"><i class="fas fa-video"></i></div></div><div class="stat-value">${stats.completedSessions}</div><div class="stat-label">Completed Sessions</div></div>
+            `;
+            if (isMentor && stats.totalRequests > 0) {
+                document.getElementById('requests-tab').innerHTML = `Requests <span style="background:var(--forum-danger);color:white;padding:0.125rem 0.5rem;border-radius:10px;margin-left:0.5rem;font-size:0.75rem;">${stats.totalRequests}</span>`;
+            }
+        }
+
+        async function loadRequests() {
+            if (!isMentor) return;
+            const { data: requests } = await supabaseClient.from('mentorship_requests').select(`*, forum_user_profiles!mentorship_requests_mentee_id_fkey(display_name, username)`).eq('mentor_id', mentorProfile.id).eq('status', 'pending').order('created_at', { ascending: false });
+            const container = document.getElementById('pending-requests');
+            if (!requests || requests.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>No pending requests</p></div>';
+                return;
+            }
+            container.innerHTML = requests.map(req => `
+                <div class="request-item">
+                    <div class="request-header"><div class="request-info"><h4>${req.forum_user_profiles?.display_name || req.forum_user_profiles?.username || 'Anonymous'}</h4><div class="request-meta">${timeAgo(req.created_at)}</div></div></div>
+                    <div class="request-message">${req.message}</div>
+                    ${req.topics && req.topics.length ? `<div class="request-topics">${req.topics.map(t => `<span class="topic-tag">${t}</span>`).join('')}</div>` : ''}
+                    <div class="request-actions">
+                        <button class="btn btn-success" onclick="acceptRequest('${req.id}', '${req.mentee_id}')"><i class="fas fa-check"></i> Accept</button>
+                        <button class="btn btn-danger" onclick="rejectRequest('${req.id}')"><i class="fas fa-times"></i> Decline</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        window.acceptRequest = async (requestId, menteeId) => {
+            if (!confirm('Accept this mentorship request?')) return;
+            const { error: relError } = await supabaseClient.from('mentorship_relationships').insert({ mentor_id: mentorProfile.id, mentee_id: menteeId, status: 'active' });
+            if (relError) { alert('Error: ' + relError.message); return; }
+            await supabaseClient.from('mentorship_requests').update({ status: 'accepted', responded_at: new Date().toISOString() }).eq('id', requestId);
+            await loadRequests(); await loadStats(); await loadMentorships();
+        };
+
+        window.rejectRequest = async (requestId) => {
+            if (!confirm('Decline this request?')) return;
+            await supabaseClient.from('mentorship_requests').update({ status: 'rejected', responded_at: new Date().toISOString() }).eq('id', requestId);
+            await loadRequests();
+        };
+
+        async function loadMentorships() {
+            let query = supabaseClient.from('mentorship_relationships').select(`*, mentor:mentor_profiles!inner(*, forum_user_profiles(display_name, username)), mentee_profile:forum_user_profiles!mentorship_relationships_mentee_id_fkey(display_name, username)`).eq('status', 'active');
+            if (isMentor) { query = query.eq('mentor_id', mentorProfile.id); } else { query = query.eq('mentee_id', currentUser.id); }
+            const { data: relationships } = await query;
+            const container = document.getElementById('active-mentorships');
+            if (!relationships || relationships.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><p>No active mentorships</p></div>';
+                return;
+            }
+            container.innerHTML = relationships.map(rel => {
+                const otherUser = isMentor ? rel.mentee_profile : rel.mentor.forum_user_profiles;
+                const displayName = otherUser?.display_name || otherUser?.username || 'Anonymous';
+                return `
+                    <div class="relationship-item">
+                        <div class="request-header"><div class="request-info"><h4>${displayName}</h4><div class="request-meta">Started ${timeAgo(rel.start_date)}</div></div></div>
+                        ${rel.goals && rel.goals.length ? `<div style="margin-bottom: 1rem;"><strong style="font-size: 0.875rem; color: var(--forum-text-muted);">Goals:</strong><div class="request-topics">${rel.goals.map(g => `<span class="topic-tag">${g}</span>`).join('')}</div></div>` : ''}
+                        <div class="request-actions">
+                            <button class="btn btn-primary" onclick="openChat('${rel.id}', '${displayName}')"><i class="fas fa-comment"></i> Chat</button>
+                            <button class="btn btn-secondary" onclick="viewMilestones('${rel.id}')"><i class="fas fa-tasks"></i> Milestones</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            const select = document.getElementById('session-relationship');
+            select.innerHTML = '<option value="">Select mentorship...</option>' + relationships.map(rel => {
+                const otherUser = isMentor ? rel.mentee_profile : rel.mentor.forum_user_profiles;
+                const displayName = otherUser?.display_name || otherUser?.username || 'Anonymous';
+                return `<option value="${rel.id}">${displayName}</option>`;
+            }).join('');
+        }
+
+        async function loadSessions() {
+            let query = supabaseClient.from('mentorship_sessions').select(`*, mentorship_relationships!inner(*, mentor:mentor_profiles(*, forum_user_profiles(display_name)), mentee_profile:forum_user_profiles!mentorship_relationships_mentee_id_fkey(display_name))`).order('scheduled_at', { ascending: false });
+            if (isMentor) { query = query.eq('mentorship_relationships.mentor_id', mentorProfile.id); } else { query = query.eq('mentorship_relationships.mentee_id', currentUser.id); }
+            const { data: sessions } = await query;
+            const upcoming = sessions?.filter(s => s.status === 'scheduled' && new Date(s.scheduled_at) > new Date()).slice(0, 5);
+            const upcomingContainer = document.getElementById('upcoming-sessions');
+            if (!upcoming || upcoming.length === 0) {
+                upcomingContainer.innerHTML = '<div class="empty-state"><i class="fas fa-calendar"></i><p>No upcoming sessions</p></div>';
+            } else {
+                upcomingContainer.innerHTML = upcoming.map(s => {
+                    const other = isMentor ? s.mentorship_relationships.mentee_profile : s.mentorship_relationships.mentor.forum_user_profiles;
+                    return `
+                        <div class="session-item">
+                            <div class="request-header"><div class="request-info"><h4>${s.topic || 'Mentorship Session'}</h4><div class="request-meta">With ${other?.display_name || 'Unknown'} · ${new Date(s.scheduled_at).toLocaleString()} · ${s.duration} mins</div></div><span class="status-badge status-scheduled">Scheduled</span></div>
+                            ${s.meeting_link ? `<div style="margin-top: 1rem;"><a href="${s.meeting_link}" target="_blank" class="btn btn-primary"><i class="fas fa-video"></i> Join Meeting</a></div>` : ''}
+                        </div>
+                    `;
+                }).join('');
+            }
+            const allContainer = document.getElementById('all-sessions');
+            if (!sessions || sessions.length === 0) {
+                allContainer.innerHTML = '<div class="empty-state"><i class="fas fa-calendar-times"></i><p>No sessions yet</p></div>';
+            } else {
+                allContainer.innerHTML = sessions.map(s => {
+                    const other = isMentor ? s.mentorship_relationships.mentee_profile : s.mentorship_relationships.mentor.forum_user_profiles;
+                    return `
+                        <div class="session-item">
+                            <div class="request-header"><div class="request-info"><h4>${s.topic || 'Mentorship Session'}</h4><div class="request-meta">With ${other?.display_name || 'Unknown'} · ${new Date(s.scheduled_at).toLocaleString()}</div></div><span class="status-badge status-${s.status}">${s.status}</span></div>
+                            ${s.notes ? `<div style="margin-top:0.5rem;color:var(--forum-text-secondary);">${s.notes}</div>` : ''}
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        async function loadMessageThreads() {
+            let query = supabaseClient.from('mentorship_relationships').select(`id, mentor:mentor_profiles!inner(*, forum_user_profiles(display_name)), mentee_profile:forum_user_profiles!mentorship_relationships_mentee_id_fkey(display_name)`).eq('status', 'active');
+            if(isMentor) { query = query.eq('mentor_id', mentorProfile.id); } else { query = query.eq('mentee_id', currentUser.id); }
+            const { data: relationships } = await query;
+            const container = document.getElementById('message-threads');
+            if (!relationships || relationships.length === 0) {
+                container.innerHTML = '<div class="empty-state"><i class="fas fa-comments"></i><p>No active mentorships to message</p></div>';
+                return;
+            }
+            container.innerHTML = relationships.map(rel => {
+                const otherUser = isMentor ? rel.mentee_profile : rel.mentor.forum_user_profiles;
+                const displayName = otherUser?.display_name || 'User';
+                return `<div class="message-thread-item" onclick="openChat('${rel.id}', '${displayName}')"><div class="request-info"><h4>${displayName}</h4><div class="request-meta">Click to open chat</div></div></div>`;
+            }).join('');
+        }
+        
+        async function loadMessages(relationshipId) {
+            const container = document.getElementById('messages-container');
+            container.innerHTML = '<p>Loading messages...</p>';
+            const { data: messages } = await supabaseClient.from('mentorship_messages').select('*').eq('relationship_id', relationshipId).order('created_at', { ascending: false });
+            if (!messages || messages.length === 0) {
+                container.innerHTML = '<p>No messages yet.</p>';
+                return;
+            }
+            container.innerHTML = messages.map(msg => `
+                <div class="message ${msg.sender_id === currentUser.id ? 'message-sent' : 'message-received'}">
+                    <div class="message-text">${msg.message}</div>
+                    <div class="message-time">${timeAgo(msg.created_at)}</div>
+                </div>
+            `).join('');
+        }
+
+        document.getElementById('schedule-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const relationshipId = document.getElementById('session-relationship').value;
+            const datetime = document.getElementById('session-datetime').value;
+            const duration = parseInt(document.getElementById('session-duration').value);
+            const topic = document.getElementById('session-topic').value;
+            const link = document.getElementById('session-link').value;
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Scheduling...';
+            const { error } = await supabaseClient.from('mentorship_sessions').insert({ relationship_id: relationshipId, scheduled_at: datetime, duration, topic, meeting_link: link || null });
+            if (error) {
+                alert('Error scheduling session: ' + error.message);
+            } else {
+                alert('Session scheduled successfully!');
+                closeModal('schedule-modal');
+                e.target.reset();
+                await loadSessions();
+            }
+            btn.disabled = false;
+            btn.textContent = 'Schedule';
+        });
+        
+        document.getElementById('message-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const relationshipId = document.getElementById('chat-relationship-id').value;
+            const message = document.getElementById('message-input').value.trim();
+            if (!message) return;
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            const { error } = await supabaseClient.from('mentorship_messages').insert({ relationship_id: relationshipId, sender_id: currentUser.id, message: message });
+            if (error) {
+                alert('Failed to send message: ' + error.message);
+            } else {
+                document.getElementById('message-input').value = '';
+                const container = document.getElementById('messages-container');
+                const newMessageEl = document.createElement('div');
+                newMessageEl.className = 'message message-sent';
+                newMessageEl.innerHTML = `<div class="message-text">${message}</div><div class="message-time">just now</div>`;
+                container.prepend(newMessageEl);
+            }
+            btn.disabled = false;
+        });
+
+        (async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session || !session.user) {
+                window.location.href = '/login.html?redirect=/mentor-dashboard.html';
+                return;
+            }
+            currentUser = session.user;
+            const { data: mentorData } = await supabaseClient.from('mentor_profiles').select('*').eq('user_id', currentUser.id).single();
+            if (mentorData) {
+                isMentor = true;
+                mentorProfile = mentorData;
+                document.getElementById('requests-tab').style.display = 'block';
+            } else {
+                isMentor = false;
+            }
+            await loadAllData();
+        })();
+    </script>
+</body>
+</html>

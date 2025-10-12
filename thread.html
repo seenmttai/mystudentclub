@@ -14,87 +14,102 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root {
-            --forum-primary: #3B82F6;
-            --forum-secondary: #60A5FA;
-            --forum-success: #10B981;
-            --forum-warning: #F59E0B;
-            --forum-danger: #EF4444;
-            --forum-bg: #EFF6FF;
-            --forum-card: #FFFFFF;
-            --forum-border: #DBEAFE;
-            --forum-text: #1E3A8A;
-            --forum-text-muted: #6B7280;
-            --forum-hover: #DBEAFE;
+            --forum-primary: #1e40af;
+            --forum-primary-light: #3b82f6;
+            --forum-secondary: #0ea5e9;
+            --forum-success: #059669;
+            --forum-warning: #d97706;
+            --forum-danger: #dc2626;
+            --forum-bg: #f8fafc;
+            --forum-card: #ffffff;
+            --forum-border: #e2e8f0;
+            --forum-text: #0f172a;
+            --forum-text-secondary: #334155;
+            --forum-text-muted: #64748b;
+            --forum-hover: #f1f5f9;
+            --forum-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --forum-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --forum-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --forum-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
         }
 
-        body { background: var(--forum-bg); font-family: 'Inter', sans-serif; }
+        body { 
+            background: var(--forum-bg); 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--forum-text);
+        }
 
         .thread-container { max-width: 1000px; margin: 2rem auto; padding: 0 1.5rem; }
-        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--forum-text-muted); text-decoration: none; margin-bottom: 1.5rem; font-weight: 600; transition: all 0.2s; }
-        .back-link:hover { color: var(--forum-primary); gap: 0.75rem; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--forum-text-muted); text-decoration: none; margin-bottom: 1.5rem; font-weight: 600; transition: all 0.15s ease; font-size: 0.9375rem; }
+        .back-link:hover { color: var(--forum-primary); }
 
-        .thread-header-section { background: var(--forum-card); border-radius: 16px; padding: 2rem; margin-bottom: 2rem; border: 1px solid var(--forum-border); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
-        .thread-title-main { font-size: 2rem; font-weight: 800; margin-bottom: 1rem; line-height: 1.3; }
-        .thread-meta-section { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-        .thread-author { display: flex; align-items: center; gap: 0.75rem; }
-        .author-avatar { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, var(--forum-primary), var(--forum-secondary)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem; }
+        .thread-header-section { background: var(--forum-card); border-radius: 12px; padding: 2.5rem; margin-bottom: 1.5rem; border: 1px solid var(--forum-border); box-shadow: var(--forum-shadow); }
+        .thread-title-main { font-size: 2rem; font-weight: 800; margin-bottom: 1.25rem; line-height: 1.3; color: var(--forum-text); letter-spacing: -0.025em; }
+        .thread-meta-section { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .thread-author { display: flex; align-items: center; gap: 0.875rem; }
+        .author-avatar { width: 48px; height: 48px; border-radius: 10px; background: linear-gradient(135deg, var(--forum-primary), var(--forum-secondary)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem; box-shadow: var(--forum-shadow); }
         .author-info { display: flex; flex-direction: column; }
-        .author-name { font-weight: 600; }
-        .author-rep { font-size: 0.75rem; color: var(--forum-text-muted); }
+        .author-name { font-weight: 700; color: var(--forum-text); font-size: 0.9375rem; }
+        .author-rep { font-size: 0.8125rem; color: var(--forum-text-muted); margin-top: 0.125rem; }
 
-        .thread-actions { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
-        .action-btn { padding: 0.625rem 1.25rem; border: 2px solid var(--forum-border); background: var(--forum-card); border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.875rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
-        .action-btn:hover { border-color: var(--forum-primary); color: var(--forum-primary); }
+        .thread-actions { display: flex; gap: 0.625rem; margin-top: 1.25rem; flex-wrap: wrap; }
+        .action-btn { padding: 0.75rem 1.25rem; border: 1px solid var(--forum-border); background: var(--forum-card); border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.875rem; transition: all 0.15s ease; display: inline-flex; align-items: center; gap: 0.5rem; color: var(--forum-text-secondary); }
+        .action-btn:hover { border-color: var(--forum-primary); color: var(--forum-primary); background: var(--forum-hover); }
         .action-btn.active { background: var(--forum-primary); color: white; border-color: var(--forum-primary); }
         .action-btn i { font-size: 1rem; }
 
         .vote-section { display: flex; align-items: center; gap: 1rem; }
-        .vote-btn { width: 40px; height: 40px; border: 2px solid var(--forum-border); background: var(--forum-card); border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 1.25rem; }
-        .vote-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .vote-btn { width: 42px; height: 42px; border: 1px solid var(--forum-border); background: var(--forum-card); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease; font-size: 1.125rem; color: var(--forum-text-muted); }
+        .vote-btn:hover { border-color: var(--forum-primary); color: var(--forum-primary); box-shadow: var(--forum-shadow); }
         .vote-btn.upvoted { background: var(--forum-success); color: white; border-color: var(--forum-success); }
         .vote-btn.downvoted { background: var(--forum-danger); color: white; border-color: var(--forum-danger); }
-        .vote-count { font-size: 1.5rem; font-weight: 700; color: var(--forum-primary); min-width: 50px; text-align: center; }
+        .vote-btn:disabled { cursor: not-allowed; background-color: var(--forum-hover); color: var(--forum-text-muted); border-color: var(--forum-border); transform: none; box-shadow: none; }
+        .vote-count { font-size: 1.5rem; font-weight: 800; color: var(--forum-primary); min-width: 50px; text-align: center; letter-spacing: -0.02em; }
 
-        .post-container { background: var(--forum-card); border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; border: 1px solid var(--forum-border); position: relative; }
-        .post-container.accepted-answer { border-left: 4px solid var(--forum-success); background: linear-gradient(to right, rgba(16, 185, 129, 0.05), transparent); }
-        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--forum-border); }
-        .post-author { display: flex; align-items: center; gap: 0.75rem; }
-        .post-avatar { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #F59E0B, #EF4444); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+        .post-container { background: var(--forum-card); border-radius: 12px; padding: 2rem; margin-bottom: 1.25rem; border: 1px solid var(--forum-border); position: relative; box-shadow: var(--forum-shadow-sm); transition: all 0.15s ease; }
+        .post-container:hover { box-shadow: var(--forum-shadow); }
+        .post-container.accepted-answer { border-left: 3px solid var(--forum-success); background: linear-gradient(to right, rgba(5, 150, 105, 0.03), transparent); }
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--forum-border); }
+        .post-author { display: flex; align-items: center; gap: 0.875rem; }
+        .post-avatar { width: 42px; height: 42px; border-radius: 8px; background: var(--forum-hover); display: flex; align-items: center; justify-content: center; color: var(--forum-text-muted); font-weight: 700; font-size: 1.125rem; border: 1px solid var(--forum-border); }
         .post-author-info { display: flex; flex-direction: column; }
-        .post-author-name { font-weight: 600; }
-        .post-date { font-size: 0.75rem; color: var(--forum-text-muted); }
+        .post-author-name { font-weight: 700; color: var(--forum-text); font-size: 0.9375rem; }
+        .post-date { font-size: 0.8125rem; color: var(--forum-text-muted); margin-top: 0.125rem; }
 
-        .post-content { line-height: 1.8; color: var(--forum-text); font-size: 1rem; margin-bottom: 1.5rem; }
-        .post-content img { max-width: 100%; border-radius: 12px; margin: 1rem 0; }
-        .post-content pre { background: var(--forum-hover); padding: 1rem; border-radius: 10px; overflow-x: auto; }
-        .post-content code { background: var(--forum-hover); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.875rem; }
+        .post-content { line-height: 1.8; color: var(--forum-text-secondary); font-size: 1rem; margin-bottom: 1.5rem; }
+        .post-content img { max-width: 100%; border-radius: 8px; margin: 1rem 0; box-shadow: var(--forum-shadow); }
+        .post-content pre { background: var(--forum-hover); padding: 1rem; border-radius: 8px; overflow-x: auto; border: 1px solid var(--forum-border); }
+        .post-content code { background: var(--forum-hover); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.875rem; border: 1px solid var(--forum-border); }
 
         .post-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
         .post-reactions { display: flex; gap: 0.5rem; }
-        .reaction-btn { padding: 0.5rem 1rem; border: 2px solid var(--forum-border); background: var(--forum-card); border-radius: 20px; cursor: pointer; font-size: 0.875rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.375rem; }
-        .reaction-btn:hover { border-color: var(--forum-primary); transform: translateY(-2px); }
+        .reaction-btn { padding: 0.625rem 1rem; border: 1px solid var(--forum-border); background: var(--forum-card); border-radius: 8px; cursor: pointer; font-size: 0.875rem; transition: all 0.15s ease; display: inline-flex; align-items: center; gap: 0.5rem; color: var(--forum-text-secondary); font-weight: 500; }
+        .reaction-btn:hover { border-color: var(--forum-primary); color: var(--forum-primary); background: var(--forum-hover); }
         .reaction-btn.active { background: var(--forum-primary); color: white; border-color: var(--forum-primary); }
 
-        .reply-form-section { background: var(--forum-card); border-radius: 16px; padding: 2rem; margin-top: 2rem; border: 1px solid var(--forum-border); }
-        .reply-form-section h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; }
-        #reply-editor { min-height: 200px; background: var(--forum-card); border: 2px solid var(--forum-border); border-radius: 10px; }
+        .reply-form-section { background: var(--forum-card); border-radius: 12px; padding: 2rem; margin-top: 1.5rem; border: 1px solid var(--forum-border); box-shadow: var(--forum-shadow-sm); }
+        .reply-form-section h3 { font-size: 1.125rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--forum-text); letter-spacing: -0.01em; }
+        #reply-editor { min-height: 200px; background: var(--forum-card); border: 1px solid var(--forum-border); border-radius: 8px; }
 
         .replies-section { margin-top: 2rem; }
-        .replies-header { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+        .replies-header { font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; color: var(--forum-text); letter-spacing: -0.01em; }
 
-        .accept-answer-btn { position: absolute; top: 1rem; right: 1rem; padding: 0.5rem 1rem; background: var(--forum-success); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.875rem; transition: all 0.2s; }
-        .accept-answer-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+        .accept-answer-btn { position: absolute; top: 1.25rem; right: 1.25rem; padding: 0.625rem 1.125rem; background: var(--forum-success); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.875rem; transition: all 0.2s ease; box-shadow: var(--forum-shadow-sm); }
+        .accept-answer-btn:hover { background: #047857; box-shadow: var(--forum-shadow-md); transform: translateY(-1px); }
 
-        .edit-indicator { font-size: 0.75rem; color: var(--forum-text-muted); font-style: italic; }
+        .edit-indicator { font-size: 0.8125rem; color: var(--forum-text-muted); font-style: italic; }
 
-        .related-threads { background: var(--forum-card); border-radius: 16px; padding: 1.5rem; margin-top: 2rem; border: 1px solid var(--forum-border); }
-        .related-threads h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; }
-        .related-thread-item { padding: 0.75rem; border-radius: 10px; margin-bottom: 0.5rem; transition: all 0.2s; text-decoration: none; display: block; color: var(--forum-text); }
-        .related-thread-item:hover { background: var(--forum-hover); }
+        .related-threads { background: var(--forum-card); border-radius: 12px; padding: 1.5rem; margin-top: 2rem; border: 1px solid var(--forum-border); box-shadow: var(--forum-shadow-sm); }
+        .related-threads h3 { font-size: 1.0625rem; font-weight: 700; margin-bottom: 1rem; color: var(--forum-text); }
+        .related-thread-item { padding: 0.875rem 0.75rem; border-radius: 8px; margin-bottom: 0.5rem; transition: all 0.15s ease; text-decoration: none; display: block; color: var(--forum-text-secondary); border: 1px solid transparent; }
+        .related-thread-item:hover { background: var(--forum-hover); border-color: var(--forum-border); }
+
+        .action-button { background: var(--forum-primary); color: white; border: none; padding: 0.875rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease; box-shadow: var(--forum-shadow-sm); text-decoration: none; font-size: 0.9375rem; }
+        .action-button:hover { background: var(--forum-primary-light); box-shadow: var(--forum-shadow-md); transform: translateY(-1px); }
 
         @media (max-width: 768px) {
             .thread-title-main { font-size: 1.5rem; }
-            .post-container { padding: 1.25rem; }
+            .post-container { padding: 1.5rem; }
         }
     </style>
 </head>
@@ -144,7 +159,7 @@
     </div>
 
     <main class="thread-container">
-        <a href="/forum.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Forum</a>
+        <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> Back to Forum</a>
 
         <div id="thread-header-section"></div>
 
@@ -194,11 +209,13 @@
         }
 
         function getAvatar(email) {
-            return email ? email[0].toUpperCase() : '?';
+            if (!email) return '?';
+            const profileName = email.split('@')[0];
+            return profileName ? profileName.charAt(0).toUpperCase() : '?';
         }
 
         async function incrementViews() {
-            await supabaseClient.rpc('increment_thread_views', { thread_id: threadId });
+            await supabaseClient.rpc('increment_thread_views', { thread_id_to_inc: threadId });
         }
 
         async function loadThread() {
@@ -245,6 +262,7 @@
                 .single()).data : null;
 
             const voteScore = thread.upvotes - thread.downvotes;
+            const isAuthor = currentUser && currentUser.id === thread.author_id;
 
             document.getElementById('thread-header-section').innerHTML = `
                 <div class="thread-header-section">
@@ -257,16 +275,16 @@
                                 <div class="author-rep">${thread.forum_user_profiles?.reputation || 0} reputation · ${timeAgo(thread.created_at)}</div>
                             </div>
                         </div>
-                        ${thread.forum_categories ? `<span class="thread-category" style="background:${thread.forum_categories.color}20;color:${thread.forum_categories.color}">${thread.forum_categories.icon} ${thread.forum_categories.name}</span>` : ''}
+                        ${thread.forum_categories ? `<span class="thread-category" style="background:${thread.forum_categories.color}20;color:${thread.forum_categories.color}"><i class="${thread.forum_categories.icon}"></i> ${thread.forum_categories.name}</span>` : ''}
                         <span style="color:var(--forum-text-muted);font-size:0.875rem;"><i class="far fa-eye"></i> ${thread.views} views</span>
                     </div>
                     ${thread.tags && thread.tags.length ? `<div style="display:flex;gap:0.5rem;margin:1rem 0;flex-wrap:wrap;">${thread.tags.map(tag => `<span style="padding:0.25rem 0.75rem;background:var(--forum-hover);border-radius:12px;font-size:0.75rem;">${tag}</span>`).join('')}</div>` : ''}
                     <div class="post-content">${marked.parse(thread.content)}</div>
                     <div class="thread-actions">
                         <div class="vote-section">
-                            <button class="vote-btn ${userVote === 'upvote' ? 'upvoted' : ''}" data-type="upvote" data-target="thread"><i class="fas fa-arrow-up"></i></button>
+                            <button class="vote-btn ${userVote === 'upvote' ? 'upvoted' : ''}" data-type="upvote" data-target="thread" ${isAuthor ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
                             <div class="vote-count">${voteScore}</div>
-                            <button class="vote-btn ${userVote === 'downvote' ? 'downvoted' : ''}" data-type="downvote" data-target="thread"><i class="fas fa-arrow-down"></i></button>
+                            <button class="vote-btn ${userVote === 'downvote' ? 'downvoted' : ''}" data-type="downvote" data-target="thread" ${isAuthor ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
                         </div>
                         ${currentUser ? `
                             <button class="action-btn ${isBookmarked ? 'active' : ''}" id="bookmark-btn"><i class="fas fa-bookmark"></i> ${isBookmarked ? 'Bookmarked' : 'Bookmark'}</button>
@@ -303,6 +321,7 @@
             container.innerHTML = await Promise.all(posts.map(async post => {
                 const voteScore = post.upvotes - post.downvotes;
                 let postVote = null;
+                const isPostAuthor = currentUser && currentUser.id === post.author_id;
 
                 if (currentUser) {
                     const { data: vote } = await supabaseClient
@@ -321,7 +340,7 @@
                 return `
                     <div class="post-container ${post.is_accepted_answer ? 'accepted-answer' : ''}" data-post-id="${post.id}">
                         ${post.is_accepted_answer ? '<div style="color:var(--forum-success);font-weight:700;margin-bottom:1rem;"><i class="fas fa-check-circle"></i> Accepted Answer</div>' : ''}
-                        ${canAcceptAnswer ? `<button class="accept-answer-btn" data-post-id="${post.id}">✓ Accept Answer</button>` : ''}
+                        ${canAcceptAnswer ? `<button class="accept-answer-btn" data-post-id="${post.id}"><i class="fas fa-check"></i> Accept Answer</button>` : ''}
                         <div class="post-header">
                             <div class="post-author">
                                 <div class="post-avatar">${getAvatar(post.author_email)}</div>
@@ -335,14 +354,14 @@
                         <div class="post-content">${marked.parse(post.content)}</div>
                         <div class="post-footer">
                             <div class="vote-section">
-                                <button class="vote-btn ${postVote === 'upvote' ? 'upvoted' : ''}" data-type="upvote" data-target="post" data-post-id="${post.id}"><i class="fas fa-arrow-up"></i></button>
+                                <button class="vote-btn ${postVote === 'upvote' ? 'upvoted' : ''}" data-type="upvote" data-target="post" data-post-id="${post.id}" ${isPostAuthor ? 'disabled' : ''}><i class="fas fa-arrow-up"></i></button>
                                 <div class="vote-count" style="font-size:1.25rem;">${voteScore}</div>
-                                <button class="vote-btn ${postVote === 'downvote' ? 'downvoted' : ''}" data-type="downvote" data-target="post" data-post-id="${post.id}"><i class="fas fa-arrow-down"></i></button>
+                                <button class="vote-btn ${postVote === 'downvote' ? 'downvoted' : ''}" data-type="downvote" data-target="post" data-post-id="${post.id}" ${isPostAuthor ? 'disabled' : ''}><i class="fas fa-arrow-down"></i></button>
                             </div>
                             <div class="post-reactions">
-                                <button class="reaction-btn" data-reaction="like"><span>👍</span> Like</button>
-                                <button class="reaction-btn" data-reaction="helpful"><span>🎯</span> Helpful</button>
-                                <button class="reaction-btn" data-reaction="insightful"><span>💡</span> Insightful</button>
+                                <button class="reaction-btn" data-reaction="like"><i class="fas fa-thumbs-up"></i> Like</button>
+                                <button class="reaction-btn" data-reaction="helpful"><i class="fas fa-bullseye"></i> Helpful</button>
+                                <button class="reaction-btn" data-reaction="insightful"><i class="fas fa-lightbulb"></i> Insightful</button>
                             </div>
                         </div>
                     </div>

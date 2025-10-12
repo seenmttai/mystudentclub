@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Profile - My Student Club</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
+    <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --forum-primary: #1e40af;
+            --forum-primary-light: #3b82f6;
+            --forum-secondary: #0ea5e9;
+            --forum-success: #059669;
+            --forum-bg: #f8fafc;
+            --forum-card: #ffffff;
+            --forum-border: #e2e8f0;
+            --forum-text: #0f172a;
+            --forum-text-secondary: #334155;
+            --forum-text-muted: #64748b;
+            --forum-hover: #f1f5f9;
+            --forum-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --forum-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --forum-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+
+        body { 
+            background: var(--forum-bg); 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--forum-text);
+        }
+
+        .profile-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--forum-text-muted);
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .profile-header {
+            background: var(--forum-card);
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--forum-border);
+            box-shadow: var(--forum-shadow);
+        }
+
+        .profile-main {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, var(--forum-primary), var(--forum-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .profile-name {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-rating {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-size: 1.125rem;
+        }
+
+        .rating-stars {
+            color: #f59e0b;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--forum-primary);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--forum-text-muted);
+        }
+
+        .expertise-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .expertise-tag {
+            padding: 0.5rem 1rem;
+            background: var(--forum-hover);
+            border-radius: 8px;
+            font-weight: 600;
+            color: var(--forum-primary);
+            border: 1px solid var(--forum-border);
+        }
+
+        .action-section {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            flex: 1;
+            min-width: 200px;
+            padding: 1rem 2rem;
+            background: var(--forum-primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1.0625rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary:hover {
+            background: var(--forum-primary-light);
+            transform: translateY(-2px);
+        }
+
+        .content-section {
+            background: var(--forum-card);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--forum-border);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+        }
+
+        .bio-text {
+            line-height: 1.8;
+            color: var(--forum-text-secondary);
+        }
+
+        .review-item {
+            padding: 1.5rem;
+            border: 1px solid var(--forum-border);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .reviewer-name {
+            font-weight: 700;
+        }
+
+        .review-date {
+            font-size: 0.875rem;
+            color: var(--forum-text-muted);
+        }
+
+        @media (max-width: 768px) {
+            .profile-main {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+      <div class="header-container">
+        <a href="/" class="brand-link">
+          <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
+        </a>
+        <div class="nav-actions">
+          <div class="auth-buttons-container"></div>
+          <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="expanded-menu" id="expandedMenu">
+      <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+      </button>
+      <div class="menu-items-container">
+          <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
+          <a href="/articleship-guarantee-program/" class="menu-item">Articleship Program</a>
+          <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
+          <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
+          <a href="/" class="menu-item">Discussion Forum</a>
+          <a href="/mentor.html" class="menu-item">Find a Mentor</a>
+          <a href="/mentor-dashboard.html" class="menu-item" style="display:none;" id="dashboard-link">Mentorship Dashboard</a>
+          <div class="menu-item-dropdown">
+              <button class="menu-item" id="resourcesDropdownBtn">
+                  Resources
+                  <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+              </button>
+              <div class="dropdown-content" id="resourcesDropdown">
+                  <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
+                  <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
+                  <a href="/articleship.html" class="dropdown-item">Articleship</a>
+              </div>
+          </div>
+      </div>
+    </div>
+
+    <div class="profile-container">
+        <a href="/mentor.html" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Mentors
+        </a>
+
+        <div id="profile-content"></div>
+    </div>
+
+    <script type="module">
+        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const mentorId = new URLSearchParams(window.location.search).get('id');
+        let currentUser = null;
+
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+            const days = Math.floor(seconds / 86400);
+            if (days > 30) return `${Math.floor(days/30)}mo ago`;
+            if (days > 0) return `${days}d ago`;
+            return 'Recently';
+        }
+
+        async function loadProfile() {
+            const { data: mentor } = await supabaseClient
+                .from('mentor_profiles')
+                .select(`
+                    *,
+                    forum_user_profiles(username, display_name, avatar_url)
+                `)
+                .eq('id', mentorId)
+                .single();
+
+            if (!mentor) {
+                document.getElementById('profile-content').innerHTML = '<p>Mentor not found</p>';
+                return;
+            }
+
+            const { data: reviews } = await supabaseClient
+                .from('mentor_reviews')
+                .select(`
+                    *,
+                    forum_user_profiles!mentor_reviews_mentee_id_fkey(display_name, username)
+                `)
+                .eq('mentor_id', mentorId)
+                .order('created_at', { ascending: false })
+                .limit(10);
+
+            const displayName = mentor.forum_user_profiles?.display_name || 'Anonymous';
+            const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+            const isAvailable = mentor.current_mentees < mentor.max_mentees;
+
+            document.title = `${displayName} - Mentor Profile`;
+
+            document.getElementById('profile-content').innerHTML = `
+                <div class="profile-header">
+                    <div class="profile-main">
+                        <div class="profile-avatar">${initials}</div>
+                        <div class="profile-info">
+                            <h1 class="profile-name">${displayName}</h1>
+                            <div class="profile-rating">
+                                <span class="rating-stars">${'★'.repeat(Math.round(mentor.rating))}</span>
+                                <span>${mentor.rating.toFixed(1)} (${mentor.total_reviews} reviews)</span>
+                            </div>
+                            <div style="display: flex; gap: 1rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                                ${isAvailable ? 
+                                    '<span style="padding:0.5rem 1rem;background:rgba(5, 150, 105, 0.1);color:var(--forum-success);border-radius:8px;font-weight:600;"><i class="fas fa-check-circle"></i> Available</span>' :
+                                    '<span style="padding:0.5rem 1rem;background:rgba(220, 38, 38, 0.1);color:#dc2626;border-radius:8px;font-weight:600;"><i class="fas fa-users"></i> Full</span>'
+                                }
+                                <span style="padding:0.5rem 1rem;background:var(--forum-hover);border-radius:8px;"><i class="fas fa-briefcase"></i> ${mentor.years_of_experience}+ years</span>
+                                <span style="padding:0.5rem 1rem;background:var(--forum-hover);border-radius:8px;"><i class="fas fa-calendar"></i> ${mentor.availability}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-stats">
+                        <div class="stat-box">
+                            <div class="stat-value">${mentor.current_mentees}/${mentor.max_mentees}</div>
+                            <div class="stat-label">Mentees</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">${mentor.total_sessions}</div>
+                            <div class="stat-label">Sessions</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-value">${mentor.session_duration}m</div>
+                            <div class="stat-label">Session Length</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 2rem;">
+                        <h3 style="font-size: 0.875rem; font-weight: 700; color: var(--forum-text-muted); margin-bottom: 1rem; text-transform: uppercase;">Areas of Expertise</h3>
+                        <div class="expertise-list">
+                            ${mentor.expertise_areas.map(area => `<span class="expertise-tag">${area}</span>`).join('')}
+                        </div>
+                    </div>
+
+                    ${currentUser && isAvailable ? `
+                        <div class="action-section">
+                            <button class="btn-primary" onclick="requestMentorship()">
+                                <i class="fas fa-paper-plane"></i> Request Mentorship
+                            </button>
+                            ${mentor.linkedin_url ? `
+                                <a href="${mentor.linkedin_url}" target="_blank" class="btn-primary" style="background:var(--forum-secondary);text-decoration:none;">
+                                    <i class="fab fa-linkedin"></i> LinkedIn
+                                </a>
+                            ` : ''}
+                        </div>
+                    ` : !currentUser ? `
+                        <div class="action-section">
+                            <a href="/login.html" class="btn-primary" style="text-decoration:none;">
+                                <i class="fas fa-sign-in-alt"></i> Login to Request Mentorship
+                            </a>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <div class="content-section">
+                    <h2 class="section-title">About</h2>
+                    <div class="bio-text">${mentor.bio}</div>
+                </div>
+
+                ${reviews && reviews.length > 0 ? `
+                    <div class="content-section">
+                        <h2 class="section-title">Reviews (${reviews.length})</h2>
+                        ${reviews.map(review => `
+                            <div class="review-item">
+                                <div class="review-header">
+                                    <div>
+                                        <div class="reviewer-name">${review.is_anonymous ? 'Anonymous' : (review.forum_user_profiles?.display_name || 'User')}</div>
+                                        <div class="rating-stars">${'★'.repeat(review.rating)}</div>
+                                    </div>
+                                    <div class="review-date">${timeAgo(review.created_at)}</div>
+                                </div>
+                                ${review.review_text ? `<div class="bio-text">${review.review_text}</div>` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        window.requestMentorship = () => {
+            window.location.href = `/mentor.html?request=${mentorId}`;
+        };
+
+        const menuButton = document.getElementById('menuButton');
+        const menuCloseBtn = document.getElementById('menuCloseBtn');
+        const expandedMenu = document.getElementById('expandedMenu');
+
+        if(menuButton && expandedMenu) {
+            menuButton.addEventListener('click', () => {
+                expandedMenu.style.transform = 'translateX(0)';
+            });
+        }
+
+        if(menuCloseBtn && expandedMenu) {
+            menuCloseBtn.addEventListener('click', () => {
+                expandedMenu.style.transform = 'translateX(100%)';
+            });
+        }
+
+        (async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            currentUser = session?.user || null;
+
+            if (currentUser) {
+                document.getElementById('dashboard-link').style.display = 'block';
+            }
+
+            await loadProfile();
+        })();
+    </script>
+</body>
+</html>

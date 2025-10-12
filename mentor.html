@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find a Mentor - My Student Club</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
+    <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --forum-primary: #1e40af;
+            --forum-primary-light: #3b82f6;
+            --forum-secondary: #0ea5e9;
+            --forum-success: #059669;
+            --forum-warning: #d97706;
+            --forum-bg: #f8fafc;
+            --forum-card: #ffffff;
+            --forum-border: #e2e8f0;
+            --forum-text: #0f172a;
+            --forum-text-secondary: #334155;
+            --forum-text-muted: #64748b;
+            --forum-hover: #f1f5f9;
+            --forum-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --forum-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+            --forum-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+
+        body { 
+            background: var(--forum-bg); 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--forum-text);
+        }
+
+        .mentor-container { 
+            max-width: 1400px; 
+            margin: 2rem auto; 
+            padding: 0 1.5rem;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, var(--forum-primary), var(--forum-secondary));
+            color: white;
+            padding: 3rem 2rem;
+            border-radius: 16px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-section p {
+            font-size: 1.125rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .action-button {
+            background: white;
+            color: var(--forum-primary);
+            border: none;
+            padding: 0.875rem 1.75rem;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            text-decoration: none;
+            font-size: 0.9375rem;
+        }
+
+        .action-button:hover {
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
+
+        .filters-section {
+            background: var(--forum-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--forum-border);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--forum-text-muted);
+        }
+
+        .filter-select {
+            padding: 0.625rem 1rem;
+            border: 1px solid var(--forum-border);
+            border-radius: 8px;
+            background: white;
+            font-size: 0.875rem;
+            color: var(--forum-text);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .search-bar {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.75rem;
+            border: 1px solid var(--forum-border);
+            border-radius: 10px;
+            font-size: 0.9375rem;
+        }
+
+        .search-bar i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--forum-text-muted);
+        }
+
+        .mentors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .mentor-card {
+            background: var(--forum-card);
+            border-radius: 12px;
+            padding: 1.75rem;
+            border: 1px solid var(--forum-border);
+            box-shadow: var(--forum-shadow-sm);
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mentor-card:hover {
+            box-shadow: var(--forum-shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .mentor-header {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .mentor-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--forum-primary), var(--forum-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .mentor-info {
+            flex: 1;
+        }
+
+        .mentor-name {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            color: var(--forum-text);
+        }
+
+        .mentor-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--forum-text-muted);
+        }
+
+        .rating-stars {
+            color: #f59e0b;
+        }
+
+        .mentor-bio {
+            font-size: 0.9375rem;
+            line-height: 1.6;
+            color: var(--forum-text-secondary);
+            margin-bottom: 1.25rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .mentor-expertise {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .expertise-tag {
+            padding: 0.375rem 0.75rem;
+            background: var(--forum-hover);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--forum-primary);
+            border: 1px solid var(--forum-border);
+        }
+
+        .mentor-stats {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.25rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--forum-border);
+            font-size: 0.875rem;
+            color: var(--forum-text-muted);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .mentor-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: auto;
+        }
+
+        .btn-primary {
+            flex: 1;
+            padding: 0.75rem 1.25rem;
+            background: var(--forum-primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary:hover {
+            background: var(--forum-primary-light);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            padding: 0.75rem;
+            background: var(--forum-card);
+            border: 1px solid var(--forum-border);
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--forum-text-secondary);
+            transition: all 0.15s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--forum-hover);
+            border-color: var(--forum-primary);
+            color: var(--forum-primary);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .close-modal {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: var(--forum-hover);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: var(--forum-text-muted);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9375rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--forum-border);
+            border-radius: 8px;
+            font-size: 0.9375rem;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .badge-available {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--forum-success);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-full {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            background: rgba(220, 38, 38, 0.1);
+            color: #dc2626;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section h1 {
+                font-size: 1.75rem;
+            }
+
+            .mentors-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+      <div class="header-container">
+        <a href="/" class="brand-link">
+          <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
+        </a>
+        <div class="nav-actions">
+          <div class="auth-buttons-container"></div>
+          <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="expanded-menu" id="expandedMenu">
+      <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+      </button>
+      <div class="menu-items-container">
+          <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
+          <a href="/articleship-guarantee-program/" class="menu-item">Articleship Program</a>
+          <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
+          <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
+          <a href="/" class="menu-item">Discussion Forum</a>
+          <a href="/mentor.html" class="menu-item">Find a Mentor</a>
+          <a href="/mentor-dashboard.html" class="menu-item" id="mentor-dashboard-link" style="display:none;">Mentorship Dashboard</a>
+          <div class="menu-item-dropdown">
+              <button class="menu-item" id="resourcesDropdownBtn">
+                  Resources
+                  <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                  </svg>
+              </button>
+              <div class="dropdown-content" id="resourcesDropdown">
+                  <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
+                  <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
+                  <a href="/articleship.html" class="dropdown-item">Articleship</a>
+              </div>
+          </div>
+      </div>
+    </div>
+
+    <div class="mentor-container">
+        <div class="hero-section">
+            <h1>Connect with Expert Mentors</h1>
+            <p>Get personalized guidance from experienced professionals in your field. Book sessions, track progress, and accelerate your growth.</p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                <a href="/mentor-dashboard.html" class="action-button" id="dashboard-link" style="display:none;">
+                    <i class="fas fa-tachometer-alt"></i> My Dashboard
+                </a>
+                <button class="action-button" id="become-mentor-btn" style="display:none;">
+                    <i class="fas fa-user-graduate"></i> Become a Mentor
+                </button>
+            </div>
+        </div>
+
+        <div class="filters-section">
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="Search mentors by name or expertise...">
+            </div>
+            <div class="filter-group">
+                <label>Area:</label>
+                <select id="area-filter" class="filter-select">
+                    <option value="">All Areas</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Availability:</label>
+                <select id="availability-filter" class="filter-select">
+                    <option value="">Any</option>
+                    <option value="available">Available</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Sort:</label>
+                <select id="sort-filter" class="filter-select">
+                    <option value="rating">Highest Rated</option>
+                    <option value="reviews">Most Reviews</option>
+                    <option value="sessions">Most Sessions</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="mentors-list" class="mentors-grid"></div>
+    </div>
+
+    <!-- Request Mentorship Modal -->
+    <div id="request-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Request Mentorship</h2>
+                <button class="close-modal" onclick="closeModal('request-modal')">&times;</button>
+            </div>
+            <form id="request-form">
+                <input type="hidden" id="selected-mentor-id">
+                <div class="form-group">
+                    <label>Why do you want this mentor?</label>
+                    <textarea id="request-message" required placeholder="Explain your goals and what you hope to learn..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Topics you'd like to focus on:</label>
+                    <input type="text" id="request-topics" placeholder="e.g. Career planning, Interview prep (comma-separated)">
+                </div>
+                <button type="submit" class="btn-primary" style="width:100%;">Send Request</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Become Mentor Modal -->
+    <div id="mentor-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Become a Mentor</h2>
+                <button class="close-modal" onclick="closeModal('mentor-modal')">&times;</button>
+            </div>
+            <form id="mentor-form">
+                <div class="form-group">
+                    <label>Bio *</label>
+                    <textarea id="mentor-bio" required placeholder="Tell potential mentees about yourself, your experience, and what you can help with..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Areas of Expertise * (select multiple)</label>
+                    <select id="mentor-areas" multiple style="height: 150px;" required></select>
+                    <small style="color: var(--forum-text-muted);">Hold Ctrl/Cmd to select multiple</small>
+                </div>
+                <div class="form-group">
+                    <label>Years of Experience *</label>
+                    <input type="number" id="mentor-experience" required min="0" placeholder="e.g. 5">
+                </div>
+                <div class="form-group">
+                    <label>Availability *</label>
+                    <select id="mentor-availability" required>
+                        <option value="weekdays">Weekdays</option>
+                        <option value="weekends">Weekends</option>
+                        <option value="flexible">Flexible</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Maximum Mentees</label>
+                    <input type="number" id="mentor-max-mentees" value="5" min="1" max="20">
+                </div>
+                <div class="form-group">
+                    <label>Session Duration (minutes)</label>
+                    <input type="number" id="mentor-duration" value="30" min="15" step="15">
+                </div>
+                <div class="form-group">
+                    <label>LinkedIn URL (optional)</label>
+                    <input type="url" id="mentor-linkedin" placeholder="https://linkedin.com/in/yourprofile">
+                </div>
+                <button type="submit" class="btn-primary" style="width:100%;">Create Mentor Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        let currentUser = null;
+        let mentors = [];
+        let areas = [];
+
+        window.closeModal = (id) => {
+            document.getElementById(id).classList.remove('active');
+        };
+
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+        }
+
+        async function loadAreas() {
+            const { data } = await supabaseClient.from('mentor_areas').select('*').order('name');
+            areas = data || [];
+
+            const areaFilter = document.getElementById('area-filter');
+            const mentorAreas = document.getElementById('mentor-areas');
+
+            areas.forEach(area => {
+                areaFilter.innerHTML += `<option value="${area.name}">${area.name}</option>`;
+                mentorAreas.innerHTML += `<option value="${area.name}">${area.name}</option>`;
+            });
+        }
+
+        async function loadMentors() {
+            const searchQuery = document.getElementById('search-input').value.toLowerCase();
+            const areaFilter = document.getElementById('area-filter').value;
+            const availFilter = document.getElementById('availability-filter').value;
+            const sortBy = document.getElementById('sort-filter').value;
+
+            let query = supabaseClient
+                .from('mentor_profiles')
+                .select(`
+                    *,
+                    forum_user_profiles(username, display_name, avatar_url)
+                `)
+                .eq('is_active', true);
+
+            const { data, error } = await query;
+
+            if (error) {
+                console.error('Error loading mentors:', error);
+                return;
+            }
+
+            mentors = data || [];
+
+            // Apply filters
+            let filtered = mentors.filter(m => {
+                const matchesSearch = !searchQuery || 
+                    m.forum_user_profiles?.display_name?.toLowerCase().includes(searchQuery) ||
+                    m.bio?.toLowerCase().includes(searchQuery) ||
+                    m.expertise_areas?.some(e => e.toLowerCase().includes(searchQuery));
+
+                const matchesArea = !areaFilter || m.expertise_areas?.includes(areaFilter);
+                const matchesAvail = !availFilter || (availFilter === 'available' && m.current_mentees < m.max_mentees);
+
+                return matchesSearch && matchesArea && matchesAvail;
+            });
+
+            // Sort
+            filtered.sort((a, b) => {
+                if (sortBy === 'rating') return b.rating - a.rating;
+                if (sortBy === 'reviews') return b.total_reviews - a.total_reviews;
+                if (sortBy === 'sessions') return b.total_sessions - a.total_sessions;
+                return 0;
+            });
+
+            renderMentors(filtered);
+        }
+
+        function renderMentors(mentorsList) {
+            const container = document.getElementById('mentors-list');
+
+            if (mentorsList.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:3rem;grid-column:1/-1;"><p style="color:var(--forum-text-muted);font-size:1.125rem;">No mentors found matching your criteria.</p></div>';
+                return;
+            }
+
+            container.innerHTML = mentorsList.map(mentor => {
+                const isAvailable = mentor.current_mentees < mentor.max_mentees;
+                const displayName = mentor.forum_user_profiles?.display_name || 'Anonymous';
+                const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+                return `
+                    <div class="mentor-card">
+                        <div class="mentor-header">
+                            <div class="mentor-avatar">${initials}</div>
+                            <div class="mentor-info">
+                                <div class="mentor-name">${displayName}</div>
+                                <div class="mentor-rating">
+                                    <span class="rating-stars">${'★'.repeat(Math.round(mentor.rating))}</span>
+                                    <span>${mentor.rating.toFixed(1)} (${mentor.total_reviews} reviews)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mentor-bio">${mentor.bio}</div>
+
+                        <div class="mentor-expertise">
+                            ${mentor.expertise_areas.slice(0, 3).map(area => 
+                                `<span class="expertise-tag">${area}</span>`
+                            ).join('')}
+                            ${mentor.expertise_areas.length > 3 ? `<span class="expertise-tag">+${mentor.expertise_areas.length - 3} more</span>` : ''}
+                        </div>
+
+                        <div class="mentor-stats">
+                            <div class="stat-item">
+                                <i class="fas fa-briefcase"></i>
+                                <span>${mentor.years_of_experience}+ years</span>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-users"></i>
+                                <span>${mentor.current_mentees}/${mentor.max_mentees} mentees</span>
+                            </div>
+                            <div class="stat-item">
+                                <i class="fas fa-video"></i>
+                                <span>${mentor.total_sessions} sessions</span>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 1rem;">
+                            ${isAvailable ? 
+                                '<span class="badge-available"><i class="fas fa-check-circle"></i> Available</span>' : 
+                                '<span class="badge-full"><i class="fas fa-users"></i> Full</span>'
+                            }
+                        </div>
+
+                        <div class="mentor-actions">
+                            <a href="/mentor-profile.html?id=${mentor.id}" class="btn-primary">
+                                View Profile
+                            </a>
+                            ${isAvailable && currentUser ? 
+                                `<button class="btn-secondary" onclick="requestMentor('${mentor.id}')"" title="Request Mentorship">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>` : ''
+                            }
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.requestMentor = (mentorId) => {
+            if (!currentUser) {
+                alert('Please log in to request mentorship');
+                return;
+            }
+            document.getElementById('selected-mentor-id').value = mentorId;
+            openModal('request-modal');
+        };
+
+        document.getElementById('request-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const mentorId = document.getElementById('selected-mentor-id').value;
+            const message = document.getElementById('request-message').value;
+            const topics = document.getElementById('request-topics').value.split(',').map(t => t.trim()).filter(Boolean);
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+
+            const { error } = await supabaseClient.from('mentorship_requests').insert({
+                mentee_id: currentUser.id,
+                mentor_id: mentorId,
+                message,
+                topics
+            });
+
+            if (error) {
+                alert('Error sending request: ' + error.message);
+                btn.disabled = false;
+                btn.textContent = 'Send Request';
+            } else {
+                alert('Request sent successfully! The mentor will be notified.');
+                closeModal('request-modal');
+                e.target.reset();
+                btn.disabled = false;
+                btn.textContent = 'Send Request';
+            }
+        });
+
+        document.getElementById('become-mentor-btn')?.addEventListener('click', () => {
+            if (!currentUser) {
+                alert('Please log in to become a mentor');
+                return;
+            }
+            openModal('mentor-modal');
+        });
+
+        document.getElementById('mentor-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const bio = document.getElementById('mentor-bio').value;
+            const areasSelect = document.getElementById('mentor-areas');
+            const selectedAreas = Array.from(areasSelect.selectedOptions).map(opt => opt.value);
+            const experience = parseInt(document.getElementById('mentor-experience').value);
+            const availability = document.getElementById('mentor-availability').value;
+            const maxMentees = parseInt(document.getElementById('mentor-max-mentees').value);
+            const duration = parseInt(document.getElementById('mentor-duration').value);
+            const linkedin = document.getElementById('mentor-linkedin').value;
+
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Creating Profile...';
+
+            // Ensure user profile exists
+            await supabaseClient.from('forum_user_profiles').upsert({
+                user_id: currentUser.id,
+                username: currentUser.email.split('@')[0],
+                display_name: currentUser.email.split('@')[0]
+            }, { onConflict: 'user_id' });
+
+            const { error } = await supabaseClient.from('mentor_profiles').insert({
+                user_id: currentUser.id,
+                bio,
+                expertise_areas: selectedAreas,
+                years_of_experience: experience,
+                availability,
+                max_mentees: maxMentees,
+                session_duration: duration,
+                linkedin_url: linkedin || null
+            });
+
+            if (error) {
+                alert('Error creating mentor profile: ' + error.message);
+                btn.disabled = false;
+                btn.textContent = 'Create Mentor Profile';
+            } else {
+                alert('Mentor profile created successfully!');
+                window.location.href = '/mentor-dashboard.html';
+            }
+        });
+
+        // Search and filter handlers
+        let searchTimeout;
+        document.getElementById('search-input').addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(loadMentors, 300);
+        });
+
+        document.getElementById('area-filter').addEventListener('change', loadMentors);
+        document.getElementById('availability-filter').addEventListener('change', loadMentors);
+        document.getElementById('sort-filter').addEventListener('change', loadMentors);
+
+        // Menu handlers
+        const menuButton = document.getElementById('menuButton');
+        const menuCloseBtn = document.getElementById('menuCloseBtn');
+        const expandedMenu = document.getElementById('expandedMenu');
+
+        if(menuButton && expandedMenu) {
+            menuButton.addEventListener('click', () => {
+                expandedMenu.style.transform = 'translateX(0)';
+            });
+        }
+
+        if(menuCloseBtn && expandedMenu) {
+            menuCloseBtn.addEventListener('click', () => {
+                expandedMenu.style.transform = 'translateX(100%)';
+            });
+        }
+
+        // Initialize
+        (async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            currentUser = session?.user || null;
+
+            if (currentUser) {
+                document.getElementById('become-mentor-btn').style.display = 'inline-flex';
+                document.getElementById('dashboard-link').style.display = 'inline-flex';
+                document.getElementById('mentor-dashboard-link').style.display = 'block';
+            }
+
+            await loadAreas();
+            await loadMentors();
+        })();
+    </script>
+</body>
+</html>
