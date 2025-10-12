@@ -99,9 +99,10 @@
         .trending-stats { font-size: 0.75rem; color: var(--forum-text-muted); }
         
         .top-user { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 10px; margin-bottom: 0.5rem; }
-        .top-user-avatar { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--forum-primary), var(--forum-secondary)); }
+        .top-user-avatar { width: 36px; height: 36px; border-radius: 10px; background: var(--forum-hover); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: var(--forum-primary); }
         .top-user-info { flex-grow: 1; }
-        .top-user-name { font-weight: 600; font-size: 0.875rem; }
+        .top-user-name { font-weight: 600; font-size: 0.875rem; display: flex; align-items: center; gap: 0.5rem; }
+        .top-user-rank { font-size: 0.75rem; font-weight: 700; color: var(--forum-text-muted); width: 24px; text-align: center; }
         .top-user-rep { font-size: 0.75rem; color: var(--forum-text-muted); }
         
         .empty-state { text-align: center; padding: 4rem 2rem; background: var(--forum-card); border-radius: 16px; border: 2px dashed var(--forum-border); }
@@ -214,6 +215,9 @@
                     <p style="margin-bottom: 1rem; color: var(--forum-text-muted);">Log in to share your thoughts with the community.</p>
                     <a href="/login.html" class="action-button">Login to Post</a>
                 </div>
+                <div id="quick-create-collapsed" style="display: none; cursor: pointer;">
+                    <input type="text" placeholder="Start a new discussion..." readonly style="cursor: pointer; text-align: center; font-weight: 500;">
+                </div>
                 <form id="quick-create-form" style="display: none;">
                     <select id="qc-category" required style="width:100%;padding:.875rem;margin-bottom:1rem;border:2px solid var(--forum-border);border-radius:10px;">
                         <option value="">Select Category</option>
@@ -232,15 +236,15 @@
         
         <aside class="right-sidebar">
             <div class="widget">
-                <h3>🔥 Trending Now</h3>
+                <h3><i class="fas fa-fire"></i> Trending Now</h3>
                 <div id="trending-threads"></div>
             </div>
             <div class="widget">
-                <h3>⭐ Top Contributors</h3>
+                <h3><i class="fas fa-star"></i> Top Contributors</h3>
                 <div id="top-users"></div>
             </div>
             <div class="widget">
-                <h3>📊 Forum Stats</h3>
+                <h3><i class="fas fa-chart-bar"></i> Forum Stats</h3>
                 <div id="forum-stats" style="font-size: 0.875rem; color: var(--forum-text-muted);"></div>
             </div>
         </aside>
@@ -282,13 +286,13 @@
             const container = document.getElementById('categories-list');
             const select = document.getElementById('qc-category');
             
-            container.innerHTML = '<a class="category-item active" data-category="all"><span class="category-icon">📁</span><span class="category-name">All Topics</span></a>';
+            container.innerHTML = '<a class="category-item active" data-category="all"><span class="category-icon"><i class="fas fa-folder"></i></span><span class="category-name">All Topics</span></a>';
             select.innerHTML = '<option value="">Select Category</option>';
             
             data?.forEach(cat => {
                 container.innerHTML += `
                     <a class="category-item" data-category="${cat.id}">
-                        <span class="category-icon">${cat.icon}</span>
+                        <span class="category-icon"><i class="${cat.icon}"></i></span>
                         <span class="category-name">${cat.name}</span>
                         <span class="category-count">${cat.thread_count}</span>
                     </a>
@@ -334,12 +338,12 @@
             const { data, error } = await query;
 
             if (error) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">❌</div><p>Error loading threads</p></div>';
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-exclamation-triangle"></i></div><p>Error loading threads</p></div>';
                 return;
             }
 
             if (!data || data.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💬</div><p>No discussions yet. Be the first!</p></div>';
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-comments"></i></div><p>No discussions yet. Be the first!</p></div>';
                 return;
             }
 
@@ -350,14 +354,14 @@
                         <div class="thread-header">
                             <h2 class="thread-title">${thread.title}</h2>
                             <div class="thread-badges">
-                                ${thread.is_pinned ? '<span class="badge pinned">📌 Pinned</span>' : ''}
-                                ${thread.is_locked ? '<span class="badge locked">🔒 Locked</span>' : ''}
-                                ${thread.has_accepted_answer ? '<span class="badge solved">✓ Solved</span>' : ''}
+                                ${thread.is_pinned ? '<span class="badge pinned"><i class="fas fa-thumbtack"></i> Pinned</span>' : ''}
+                                ${thread.is_locked ? '<span class="badge locked"><i class="fas fa-lock"></i> Locked</span>' : ''}
+                                ${thread.has_accepted_answer ? '<span class="badge solved"><i class="fas fa-check-circle"></i> Solved</span>' : ''}
                             </div>
                         </div>
                         <div class="thread-meta">
                             <span class="thread-meta-item">
-                                ${thread.forum_categories ? `<span class="thread-category" style="background:${thread.forum_categories.color}20;color:${thread.forum_categories.color}">${thread.forum_categories.icon} ${thread.forum_categories.name}</span>` : ''}
+                                ${thread.forum_categories ? `<span class="thread-category" style="background:${thread.forum_categories.color}20;color:${thread.forum_categories.color}"><i class="${thread.forum_categories.icon}"></i> ${thread.forum_categories.name}</span>` : ''}
                             </span>
                             <span class="thread-meta-item"><i class="far fa-user"></i> ${thread.forum_user_profiles?.display_name || thread.author_email?.split('@')[0] || 'Anonymous'}</span>
                             <span class="thread-meta-item"><i class="far fa-clock"></i> ${timeAgo(thread.created_at)}</span>
@@ -407,19 +411,20 @@
             const { data } = await supabaseClient
                 .from('forum_user_profiles')
                 .select('username, display_name, reputation, avatar_url')
+                .gt('reputation', 0)
                 .order('reputation', { ascending: false })
                 .limit(5);
 
             const container = document.getElementById('top-users');
             container.innerHTML = data?.map((u, i) => `
                 <div class="top-user">
-                    <div class="top-user-avatar">${(u.display_name || u.username || '?')[0].toUpperCase()}</div>
+                    <div class="top-user-avatar"><i class="fas fa-user"></i></div>
                     <div class="top-user-info">
-                        <div class="top-user-name">${['🥇','🥈','🥉','4️⃣','5️⃣'][i]} ${u.display_name || u.username}</div>
+                        <div class="top-user-name"><span class="top-user-rank">#${i + 1}</span> ${u.display_name || u.username}</div>
                         <div class="top-user-rep">${u.reputation} reputation</div>
                     </div>
                 </div>
-            `).join('') || '';
+            `).join('') || '<p style="font-size: 0.875rem; color: var(--forum-text-muted);">No contributors yet.</p>';
         }
 
         async function loadStats() {
@@ -513,12 +518,20 @@
 
             quickCreate.style.display = 'block';
             if (currentUser) {
-                qcForm.style.display = 'block';
                 qcLoggedOut.style.display = 'none';
-            } else {
+                document.getElementById('quick-create-collapsed').style.display = 'block';
                 qcForm.style.display = 'none';
+            } else {
                 qcLoggedOut.style.display = 'block';
+                document.getElementById('quick-create-collapsed').style.display = 'none';
+                qcForm.style.display = 'none';
             }
+        });
+        
+        document.getElementById('quick-create-collapsed').addEventListener('click', () => {
+            document.getElementById('quick-create-collapsed').style.display = 'none';
+            document.getElementById('quick-create-form').style.display = 'block';
+            document.getElementById('qc-title').focus();
         });
 
         const menuButton = document.getElementById('menuButton');
