@@ -4,33 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Thread - My Student Club</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
-    <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
+    <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
     <style>
         :root {
-            --surface-bg: #EFF6FF;
-            --text-primary: #1E3A8A;
-            --border-medium: #DBEAFE;
-            --primary-brand: #3B82F6;
-            --radius-xl: 16px;
-            --radius-md: 10px;
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
-            --transition-std: all 0.2s;
+            --forum-primary: #3B82F6;
+            --forum-secondary: #60A5FA;
+            --forum-bg: #EFF6FF;
+            --forum-card: #FFFFFF;
+            --forum-border: #DBEAFE;
+            --forum-text: #1E3A8A;
+            --forum-text-muted: #6B7280;
         }
-        body { background: var(--surface-bg); color: var(--text-primary); }
-        .form-container { max-width: 800px; margin: 2rem auto; padding: 2rem; background: #FFFFFF; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); }
-        .form-container h1 { font-size: 1.75rem; margin-bottom: 2rem; font-weight: 700; color: var(--text-primary); }
+        body { 
+            background: var(--forum-bg); 
+            color: var(--forum-text); 
+            font-family: 'Inter', sans-serif;
+        }
+        .form-container { 
+            max-width: 800px; 
+            margin: 2rem auto; 
+            padding: 2rem; 
+            background: var(--forum-card); 
+            border-radius: 16px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08); 
+            border: 1px solid var(--forum-border);
+        }
+        .form-container h1 { 
+            font-size: 1.75rem; 
+            margin-bottom: 2rem; 
+            font-weight: 700; 
+            color: var(--forum-text); 
+        }
         .form-group { margin-bottom: 1.5rem; }
-        .form-group label { display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary); }
-        .form-group input, .form-group textarea { width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-medium); font-size: 1rem; transition: all var(--transition-std); }
-        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-brand); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
-        .form-group textarea { min-height: 200px; resize: vertical; }
-        .action-button { background: linear-gradient(135deg, #3B82F6, #60A5FA); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); text-decoration: none; }
+        .form-group label { 
+            display: block; 
+            font-weight: 600; 
+            margin-bottom: 0.5rem; 
+            font-size: 0.875rem;
+            color: var(--forum-text); 
+        }
+        .form-group input, .form-group textarea, .form-group select { 
+            width: 100%; 
+            padding: 0.875rem; 
+            border-radius: 10px; 
+            border: 2px solid var(--forum-border); 
+            font-size: 1rem; 
+            transition: all 0.2s; 
+            background-color: #fff;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { 
+            outline: none; 
+            border-color: var(--forum-primary); 
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); 
+        }
+        .form-group textarea { 
+            min-height: 200px; 
+            resize: vertical; 
+        }
+        .action-button { background: linear-gradient(135deg, var(--forum-primary), var(--forum-secondary)); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); text-decoration: none; }
         .action-button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4); }
         .action-button:disabled { background: #9CA3AF; cursor: not-allowed; transform: none; box-shadow: none; }
     </style>
@@ -88,8 +123,18 @@
                 <input type="text" id="title" required placeholder="Enter a clear and concise title">
             </div>
             <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category" required>
+                    <option value="">Select a category...</option>
+                </select>
+            </div>
+            <div class="form-group">
                 <label for="content">Content</label>
                 <textarea id="content" required placeholder="Describe your question or topic in detail here..."></textarea>
+            </div>
+            <div class="form-group">
+                <label for="tags">Tags (comma-separated)</label>
+                <input type="text" id="tags" placeholder="e.g. javascript, react, supabase">
             </div>
             <button type="submit" class="action-button">Post Thread</button>
         </form>
@@ -103,6 +148,14 @@
         const form = document.getElementById('new-thread-form');
         let currentUser = null;
 
+        async function loadCategories() {
+            const select = document.getElementById('category');
+            const { data } = await supabaseClient.from('forum_categories').select('*').order('name');
+            data?.forEach(cat => {
+                select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session || !session.user) {
@@ -110,6 +163,7 @@
                 window.location.href = `/login.html?redirect=${redirectUrl}`;
             } else {
                 currentUser = session.user;
+                await loadCategories();
             }
         });
 
@@ -117,9 +171,15 @@
             e.preventDefault();
             const title = document.getElementById('title').value.trim();
             const content = document.getElementById('content').value.trim();
+            const categoryId = document.getElementById('category').value;
+            const tags = document.getElementById('tags').value.split(',').map(t => t.trim()).filter(Boolean);
+            
             const submitBtn = form.querySelector('button[type="submit"]');
 
-            if (!title || !content || !currentUser) return;
+            if (!title || !content || !categoryId || !currentUser) {
+                alert('Please fill out all required fields.');
+                return;
+            }
 
             submitBtn.disabled = true;
             submitBtn.textContent = 'Posting...';
@@ -129,6 +189,8 @@
                 .insert({
                     title,
                     content,
+                    category_id: categoryId,
+                    tags,
                     author_id: currentUser.id,
                     author_email: currentUser.email
                 })
