@@ -12,13 +12,27 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
     <style>
-        .form-container { max-width: 800px; margin: 2rem auto; padding: 2rem; background: var(--surface-bg); border-radius: var(--radius-xl); box-shadow: var(--shadow-md); }
-        .form-container h1 { font-size: 1.75rem; margin-bottom: 2rem; font-weight: 700; }
+        :root {
+            --surface-bg: #EFF6FF;
+            --text-primary: #1E3A8A;
+            --border-medium: #DBEAFE;
+            --primary-brand: #3B82F6;
+            --radius-xl: 16px;
+            --radius-md: 10px;
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --transition-std: all 0.2s;
+        }
+        body { background: var(--surface-bg); color: var(--text-primary); }
+        .form-container { max-width: 800px; margin: 2rem auto; padding: 2rem; background: #FFFFFF; border-radius: var(--radius-xl); box-shadow: var(--shadow-md); }
+        .form-container h1 { font-size: 1.75rem; margin-bottom: 2rem; font-weight: 700; color: var(--text-primary); }
         .form-group { margin-bottom: 1.5rem; }
         .form-group label { display: block; font-weight: 500; margin-bottom: 0.5rem; color: var(--text-primary); }
         .form-group input, .form-group textarea { width: 100%; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid var(--border-medium); font-size: 1rem; transition: all var(--transition-std); }
         .form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-brand); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
         .form-group textarea { min-height: 200px; resize: vertical; }
+        .action-button { background: linear-gradient(135deg, #3B82F6, #60A5FA); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); text-decoration: none; }
+        .action-button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4); }
+        .action-button:disabled { background: #9CA3AF; cursor: not-allowed; transform: none; box-shadow: none; }
     </style>
 </head>
 <body>
@@ -29,12 +43,6 @@
         </a>
         <div class="nav-actions">
           <div class="auth-buttons-container"></div>
-          <button id="notificationsBtn" class="icon-button notification-icon-btn" aria-label="Manage Notifications">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-            <span class="notification-badge" id="notificationBadge"></span>
-          </button>
           <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
             <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -55,7 +63,7 @@
           <a href="/articleship-guarantee-program/" class="menu-item">Articleship Program</a>
           <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
           <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
-          <a href="/forum.html" class="menu-item">Discussion Forum</a>
+          <a href="/" class="menu-item">Discussion Forum</a>
           <div class="menu-item-dropdown">
               <button class="menu-item" id="resourcesDropdownBtn">
                   Resources
@@ -71,7 +79,7 @@
           </div>
       </div>
     </div>
-    
+
     <main class="form-container">
         <h1>Start a New Discussion</h1>
         <form id="new-thread-form">
@@ -87,27 +95,11 @@
         </form>
     </main>
 
-    <footer class="site-footer-nav">
-      <a href="/" class="footer-tab active">
-        <span>Industrial Training</span>
-      </a>
-      <a href="/articleship.html" class="footer-tab">
-        <span>Articleship</span>
-      </a>
-      <a href="/semi-qualified.html" class="footer-tab">
-        <span>Semi Qualified</span>
-      </a>
-      <a href="/fresher.html" class="footer-tab">
-        <span>Freshers</span>
-      </a>
-    </footer>
-
-    <script type="module" src="https://www.mystudentclub.com/scripts/portal3.js"></script>
     <script type="module">
         const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-        
+
         const form = document.getElementById('new-thread-form');
         let currentUser = null;
 
@@ -128,7 +120,7 @@
             const submitBtn = form.querySelector('button[type="submit"]');
 
             if (!title || !content || !currentUser) return;
-            
+
             submitBtn.disabled = true;
             submitBtn.textContent = 'Posting...';
 
@@ -148,9 +140,30 @@
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Post Thread';
             } else {
+                 await supabaseClient.from('forum_user_profiles').upsert({
+                    user_id: currentUser.id,
+                    username: currentUser.email.split('@')[0],
+                    display_name: currentUser.email.split('@')[0]
+                }, { onConflict: 'user_id' });
                 window.location.href = `/thread.html?id=${data.id}`;
             }
         });
+
+        const menuButton = document.getElementById('menuButton');
+        const menuCloseBtn = document.getElementById('menuCloseBtn');
+        const expandedMenu = document.getElementById('expandedMenu');
+
+        if(menuButton && expandedMenu) {
+            menuButton.addEventListener('click', () => {
+                expandedMenu.style.transform = 'translateX(0)';
+            });
+        }
+
+        if(menuCloseBtn && expandedMenu) {
+            menuCloseBtn.addEventListener('click', () => {
+                expandedMenu.style.transform = 'translateX(100%)';
+            });
+        }
     </script>
 </body>
 </html>

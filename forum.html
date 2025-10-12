@@ -4,44 +4,138 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discussion Forum - My Student Club</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
-    <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
+    <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
     <style>
-        .forum-container { max-width: 1000px; margin: 2rem auto; padding: 1.5rem; }
-        .forum-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border-light); padding-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
-        .forum-header h1 { font-size: 2rem; font-weight: 700; margin: 0; }
+        :root {
+            --forum-primary: #3B82F6;
+            --forum-secondary: #60A5FA;
+            --forum-success: #10B981;
+            --forum-warning: #F59E0B;
+            --forum-danger: #EF4444;
+            --forum-bg: #EFF6FF;
+            --forum-card: #FFFFFF;
+            --forum-border: #DBEAFE;
+            --forum-text: #1E3A8A;
+            --forum-text-muted: #6B7280;
+            --forum-hover: #DBEAFE;
+        }
+        
+        body { background: var(--forum-bg); font-family: 'Inter', sans-serif; }
+        
+        .forum-container { max-width: 1400px; margin: 2rem auto; padding: 0 1.5rem; display: grid; grid-template-columns: 250px 1fr 300px; gap: 2rem; }
+        
+        .sidebar { position: sticky; top: 2rem; height: fit-content; }
+        .sidebar-section { background: var(--forum-card); border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; border: 1px solid var(--forum-border); }
+        .sidebar-section h3 { font-size: 0.875rem; font-weight: 700; text-transform: uppercase; color: var(--forum-text-muted); margin-bottom: 1rem; letter-spacing: 0.5px; }
+        .category-item { display: flex; align-items: center; padding: 0.75rem; border-radius: 10px; margin-bottom: 0.5rem; cursor: pointer; transition: all 0.2s; text-decoration: none; color: var(--forum-text); }
+        .category-item:hover, .category-item.active { background: var(--forum-hover); }
+        .category-icon { font-size: 1.25rem; margin-right: 0.75rem; }
+        .category-name { flex-grow: 1; font-weight: 500; font-size: 0.9rem; }
+        .category-count { font-size: 0.75rem; color: var(--forum-text-muted); background: var(--forum-hover); padding: 0.25rem 0.5rem; border-radius: 12px; }
+        
+        .sort-options { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .sort-btn { padding: 0.5rem 1rem; border: 1px solid var(--forum-border); background: var(--forum-card); border-radius: 8px; cursor: pointer; font-size: 0.875rem; transition: all 0.2s; }
+        .sort-btn:hover, .sort-btn.active { background: var(--forum-primary); color: white; border-color: var(--forum-primary); }
+        
+        .main-content { min-height: 80vh; }
+        .forum-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .forum-header h1 { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, var(--forum-primary), var(--forum-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .search-bar { flex-grow: 1; max-width: 500px; margin: 0 2rem; position: relative; }
+        .search-bar input { width: 100%; padding: 0.75rem 1rem 0.75rem 3rem; border: 2px solid var(--forum-border); border-radius: 12px; font-size: 0.9rem; transition: all 0.2s; }
+        .search-bar input:focus { outline: none; border-color: var(--forum-primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .search-bar i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--forum-text-muted); }
+        
+        .action-button { background: linear-gradient(135deg, var(--forum-primary), var(--forum-secondary)); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 12px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); text-decoration: none; }
+        .action-button:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4); }
+        
+        .quick-create { background: var(--forum-card); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid var(--forum-border); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .quick-create input, .quick-create textarea { width: 100%; padding: 0.875rem; border: 2px solid var(--forum-border); border-radius: 10px; margin-bottom: 1rem; font-size: 0.9rem; transition: all 0.2s; }
+        .quick-create input:focus, .quick-create textarea:focus { outline: none; border-color: var(--forum-primary); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .quick-create textarea { min-height: 100px; resize: vertical; }
+        
         .threads-list { display: flex; flex-direction: column; gap: 1rem; }
-        .thread-item { background: var(--surface-bg); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; border: 1px solid var(--border-light); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; transition: all var(--transition-std); text-decoration: none; color: var(--text-primary); }
-        .thread-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--primary-brand); }
-        .thread-main { flex-grow: 1; padding-right: 1rem; }
-        .thread-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.25rem; color: var(--text-primary); }
-        .thread-meta { font-size: 0.8rem; color: var(--text-secondary); }
-        .thread-stats { text-align: right; flex-shrink: 0; padding-left: 1rem; display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem; }
-        .stat-item { font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem; justify-content: flex-end; }
-        .stat-item .count { font-weight: 600; color: var(--text-primary); }
-        .action-button i { margin-right: 0.5rem; }
-        .empty-state { text-align: center; padding: 3rem; background: var(--surface-bg); border-radius: var(--radius-lg); color: var(--text-secondary); }
+        .thread-item { background: var(--forum-card); border-radius: 16px; padding: 1.5rem; border: 1px solid var(--forum-border); display: flex; gap: 1rem; transition: all 0.3s; text-decoration: none; color: var(--forum-text); position: relative; overflow: hidden; }
+        .thread-item::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--forum-primary), var(--forum-secondary)); opacity: 0; transition: opacity 0.3s; }
+        .thread-item:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); border-color: var(--forum-primary); }
+        .thread-item:hover::before { opacity: 1; }
+        .thread-item.pinned { border-left: 4px solid var(--forum-warning); background: linear-gradient(to right, rgba(245, 158, 11, 0.05), transparent); }
+        .thread-item.locked { opacity: 0.7; }
+        
+        .thread-avatar { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, var(--forum-primary), var(--forum-secondary)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem; flex-shrink: 0; }
+        .thread-main { flex-grow: 1; min-width: 0; }
+        .thread-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; flex-wrap: wrap; }
+        .thread-title { font-size: 1.125rem; font-weight: 700; margin: 0; color: var(--forum-text); }
+        .thread-badges { display: flex; gap: 0.5rem; margin-left: auto; }
+        .badge { padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+        .badge.pinned { background: #FEF3C7; color: #92400E; }
+        .badge.locked { background: #FEE2E2; color: #991B1B; }
+        .badge.solved { background: #D1FAE5; color: #065F46; }
+        
+        .thread-meta { display: flex; align-items: center; gap: 1rem; font-size: 0.875rem; color: var(--forum-text-muted); flex-wrap: wrap; }
+        .thread-meta-item { display: flex; align-items: center; gap: 0.375rem; }
+        .thread-category { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+        .thread-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
+        .tag { padding: 0.25rem 0.75rem; background: var(--forum-hover); border-radius: 12px; font-size: 0.75rem; color: var(--forum-text-muted); font-weight: 500; }
+        
+        .thread-stats { display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem; flex-shrink: 0; }
+        .stat-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; }
+        .stat-count { font-weight: 700; color: var(--forum-text); font-size: 1rem; }
+        .stat-icon { color: var(--forum-text-muted); }
+        
+        .vote-display { display: flex; align-items: center; gap: 0.375rem; padding: 0.375rem 0.75rem; background: var(--forum-hover); border-radius: 12px; }
+        .vote-count { font-weight: 700; color: var(--forum-primary); }
+        
+        .right-sidebar { position: sticky; top: 2rem; height: fit-content; }
+        .widget { background: var(--forum-card); border-radius: 16px; padding: 1.5rem; margin-bottom: 1rem; border: 1px solid var(--forum-border); }
+        .widget h3 { font-size: 1rem; font-weight: 700; margin-bottom: 1rem; }
+        
+        .trending-item { padding: 0.75rem; border-radius: 10px; margin-bottom: 0.5rem; cursor: pointer; transition: all 0.2s; text-decoration: none; display: block; color: var(--forum-text); }
+        .trending-item:hover { background: var(--forum-hover); }
+        .trending-title { font-weight: 600; font-size: 0.875rem; margin-bottom: 0.25rem; }
+        .trending-stats { font-size: 0.75rem; color: var(--forum-text-muted); }
+        
+        .top-user { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; border-radius: 10px; margin-bottom: 0.5rem; }
+        .top-user-avatar { width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, var(--forum-primary), var(--forum-secondary)); }
+        .top-user-info { flex-grow: 1; }
+        .top-user-name { font-weight: 600; font-size: 0.875rem; }
+        .top-user-rep { font-size: 0.75rem; color: var(--forum-text-muted); }
+        
+        .empty-state { text-align: center; padding: 4rem 2rem; background: var(--forum-card); border-radius: 16px; border: 2px dashed var(--forum-border); }
+        .empty-state-icon { font-size: 4rem; margin-bottom: 1rem; opacity: 0.3; }
+        
+        .filter-chips { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .filter-chip { padding: 0.5rem 1rem; background: var(--forum-card); border: 2px solid var(--forum-border); border-radius: 20px; cursor: pointer; font-size: 0.875rem; font-weight: 500; transition: all 0.2s; }
+        .filter-chip:hover, .filter-chip.active { background: var(--forum-primary); color: white; border-color: var(--forum-primary); }
+        
+        @media (max-width: 1200px) {
+            .forum-container { grid-template-columns: 1fr; }
+            .sidebar, .right-sidebar { display: none; }
+        }
+        
+        @media (max-width: 768px) {
+            .forum-header { flex-direction: column; align-items: stretch; gap: 1rem; }
+            .search-bar { margin: 0; max-width: none; }
+            .thread-item { flex-direction: column; }
+            .thread-stats { flex-direction: row; }
+        }
+        
+        .loader-container { display: flex; justify-content: center; padding: 3rem; }
+        .loader-spinner { width: 40px; height: 40px; border: 4px solid var(--forum-border); border-top-color: var(--forum-primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <header class="site-header">
       <div class="header-container">
         <a href="/" class="brand-link">
-          <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
+          <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
         </a>
         <div class="nav-actions">
           <div class="auth-buttons-container"></div>
-          <button id="notificationsBtn" class="icon-button notification-icon-btn" aria-label="Manage Notifications">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-            <span class="notification-badge" id="notificationBadge"></span>
-          </button>
           <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
             <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -62,7 +156,7 @@
           <a href="/articleship-guarantee-program/" class="menu-item">Articleship Program</a>
           <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
           <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
-          <a href="/forum.html" class="menu-item">Discussion Forum</a>
+          <a href="/" class="menu-item">Discussion Forum</a>
           <div class="menu-item-dropdown">
               <button class="menu-item" id="resourcesDropdownBtn">
                   Resources
@@ -79,112 +173,380 @@
       </div>
     </div>
 
-    <main class="forum-container">
-        <div class="forum-header">
-            <h1>Discussion Forum</h1>
-            <a href="/new-thread.html" id="new-thread-btn" class="action-button" style="display: none;">
-                <i class="fas fa-plus"></i> New Thread
-            </a>
-        </div>
+    <div class="forum-container">
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Categories</h3>
+                <div id="categories-list"></div>
+            </div>
+            <div class="sidebar-section">
+                <h3>Sort By</h3>
+                <div class="sort-options">
+                    <button class="sort-btn active" data-sort="recent">Recent</button>
+                    <button class="sort-btn" data-sort="popular">Popular</button>
+                    <button class="sort-btn" data-sort="trending">Hot</button>
+                </div>
+            </div>
+        </aside>
+        
+        <main class="main-content">
+            <div class="forum-header">
+                <h1>Discussions</h1>
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Search discussions...">
+                </div>
+                <a href="/new-thread.html" id="new-thread-btn" class="action-button" style="display: none;">
+                    <i class="fas fa-plus"></i> New Thread
+                </a>
+            </div>
+            
+            <div class="filter-chips">
+                <button class="filter-chip active" data-filter="all">All</button>
+                <button class="filter-chip" data-filter="unanswered">Unanswered</button>
+                <button class="filter-chip" data-filter="solved">Solved</button>
+                <button class="filter-chip" data-filter="following">Following</button>
+            </div>
+            
+            <section id="quick-create" class="quick-create" style="display:none;">
+                <div id="quick-create-logged-out" style="text-align: center; padding: 1rem;">
+                    <h3>Want to start a discussion?</h3>
+                    <p style="margin-bottom: 1rem; color: var(--forum-text-muted);">Log in to share your thoughts with the community.</p>
+                    <a href="/login.html" class="action-button">Login to Post</a>
+                </div>
+                <form id="quick-create-form" style="display: none;">
+                    <select id="qc-category" required style="width:100%;padding:.875rem;margin-bottom:1rem;border:2px solid var(--forum-border);border-radius:10px;">
+                        <option value="">Select Category</option>
+                    </select>
+                    <input id="qc-title" type="text" placeholder="Thread title" required>
+                    <textarea id="qc-content" placeholder="Write your question or topic..." required></textarea>
+                    <input id="qc-tags" type="text" placeholder="Tags (comma separated)">
+                    <button type="submit" class="action-button">Create Thread</button>
+                </form>
+            </section>
+            
+            <div id="threads-list" class="threads-list">
+                <div class="loader-container"><div class="loader-spinner"></div></div>
+            </div>
+        </main>
+        
+        <aside class="right-sidebar">
+            <div class="widget">
+                <h3>🔥 Trending Now</h3>
+                <div id="trending-threads"></div>
+            </div>
+            <div class="widget">
+                <h3>⭐ Top Contributors</h3>
+                <div id="top-users"></div>
+            </div>
+            <div class="widget">
+                <h3>📊 Forum Stats</h3>
+                <div id="forum-stats" style="font-size: 0.875rem; color: var(--forum-text-muted);"></div>
+            </div>
+        </aside>
+    </div>
 
-        <div id="threads-list" class="threads-list">
-            <div id="loader" class="loader-container" style="display: block;"><div class="loader-spinner"></div></div>
-        </div>
-    </main>
-
-    <footer class="site-footer-nav">
-      <a href="/" class="footer-tab active">
-        <span>Industrial Training</span>
-      </a>
-      <a href="/articleship.html" class="footer-tab">
-        <span>Articleship</span>
-      </a>
-      <a href="/semi-qualified.html" class="footer-tab">
-        <span>Semi Qualified</span>
-      </a>
-      <a href="/fresher.html" class="footer-tab">
-        <span>Freshers</span>
-      </a>
-    </footer>
-
-    <script type="module" src="https://www.mystudentclub.com/scripts/portal3.js"></script>
     <script type="module">
         const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        const threadsList = document.getElementById('threads-list');
-        const loader = document.getElementById('loader');
-        const newThreadBtn = document.getElementById('new-thread-btn');
+        let currentUser = null;
+        let currentCategory = null;
+        let currentSort = 'recent';
+        let currentFilter = 'all';
+        let searchQuery = '';
 
         function timeAgo(date) {
             const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-            if (seconds < 60) return "just now";
             let interval = seconds / 31536000;
-            if (interval > 1) return Math.floor(interval) + " years ago";
+            if (interval > 1) return Math.floor(interval) + "y ago";
             interval = seconds / 2592000;
-            if (interval > 1) return Math.floor(interval) + " months ago";
+            if (interval > 1) return Math.floor(interval) + "mo ago";
             interval = seconds / 86400;
-            if (interval > 1) return Math.floor(interval) + " days ago";
+            if (interval > 1) return Math.floor(interval) + "d ago";
             interval = seconds / 3600;
-            if (interval > 1) return Math.floor(interval) + " hours ago";
+            if (interval > 1) return Math.floor(interval) + "h ago";
             interval = seconds / 60;
-            if (interval > 1) return Math.floor(interval) + " minutes ago";
-            return Math.floor(seconds) + " seconds ago";
+            if (interval > 1) return Math.floor(interval) + "m ago";
+            return "just now";
         }
 
-        async function fetchThreads() {
-            loader.style.display = 'block';
-            threadsList.innerHTML = '';
-            threadsList.appendChild(loader);
+        function getAvatar(email) {
+            if (!email) return '?';
+            return email[0].toUpperCase();
+        }
 
-            const { data, error } = await supabaseClient
-                .from('forum_threads')
-                .select('*')
-                .order('last_activity_at', { ascending: false });
-
-            loader.style.display = 'none';
-
-            if (error) {
-                threadsList.innerHTML = '<div class="empty-state"><p>Error loading threads. Please try again later.</p></div>';
-                console.error(error);
-                return;
-            }
-
-            if (data.length === 0) {
-                threadsList.innerHTML = '<div class="empty-state"><p>No discussions yet. Be the first to start one!</p></div>';
-                return;
-            }
-
-            data.forEach(thread => {
-                const threadEl = document.createElement('a');
-                threadEl.href = `/thread.html?id=${thread.id}`;
-                threadEl.className = 'thread-item';
-                const authorName = thread.author_email ? thread.author_email.split('@')[0] : 'Anonymous';
-
-                threadEl.innerHTML = `
-                    <div class="thread-main">
-                        <h2 class="thread-title">${thread.title}</h2>
-                        <p class="thread-meta">Started by ${authorName} &middot; ${timeAgo(thread.created_at)}</p>
-                    </div>
-                    <div class="thread-stats">
-                        <div class="stat-item"><span class="count">${thread.reply_count}</span> Replies</div>
-                        <div class="stat-item">Last activity ${timeAgo(thread.last_activity_at)}</div>
-                    </div>
+        async function loadCategories() {
+            const { data } = await supabaseClient.from('forum_categories').select('*');
+            const container = document.getElementById('categories-list');
+            const select = document.getElementById('qc-category');
+            
+            container.innerHTML = '<a class="category-item active" data-category="all"><span class="category-icon">📁</span><span class="category-name">All Topics</span></a>';
+            select.innerHTML = '<option value="">Select Category</option>';
+            
+            data?.forEach(cat => {
+                container.innerHTML += `
+                    <a class="category-item" data-category="${cat.id}">
+                        <span class="category-icon">${cat.icon}</span>
+                        <span class="category-name">${cat.name}</span>
+                        <span class="category-count">${cat.thread_count}</span>
+                    </a>
                 `;
-                threadsList.appendChild(threadEl);
+                select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
+            });
+            
+            document.querySelectorAll('.category-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    currentCategory = item.dataset.category === 'all' ? null : item.dataset.category;
+                    loadThreads();
+                });
             });
         }
 
-        supabaseClient.auth.onAuthStateChange((_event, session) => {
-            if (session && session.user) {
-                newThreadBtn.style.display = 'inline-flex';
+        async function loadThreads() {
+            const container = document.getElementById('threads-list');
+            container.innerHTML = '<div class="loader-container"><div class="loader-spinner"></div></div>';
+
+            let query = supabaseClient
+                .from('forum_threads')
+                .select(`
+                    *,
+                    forum_categories(name, icon, color),
+                    forum_user_profiles(username, display_name, avatar_url)
+                `)
+                .eq('is_deleted', false);
+
+            if (currentCategory) query = query.eq('category_id', currentCategory);
+            if (currentFilter === 'unanswered') query = query.eq('reply_count', 0);
+            if (currentFilter === 'solved') query = query.eq('has_accepted_answer', true);
+            if (searchQuery) query = query.or(`title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`);
+
+            if (currentSort === 'recent') query = query.order('last_activity_at', { ascending: false });
+            else if (currentSort === 'popular') query = query.order('views', { ascending: false });
+            else if (currentSort === 'trending') query = query.order('upvotes', { ascending: false });
+
+            query = query.order('is_pinned', { ascending: false }).limit(20);
+
+            const { data, error } = await query;
+
+            if (error) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">❌</div><p>Error loading threads</p></div>';
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">💬</div><p>No discussions yet. Be the first!</p></div>';
+                return;
+            }
+
+            container.innerHTML = data.map(thread => `
+                <a href="/thread.html?id=${thread.id}" class="thread-item ${thread.is_pinned ? 'pinned' : ''} ${thread.is_locked ? 'locked' : ''}">
+                    <div class="thread-avatar">${getAvatar(thread.author_email)}</div>
+                    <div class="thread-main">
+                        <div class="thread-header">
+                            <h2 class="thread-title">${thread.title}</h2>
+                            <div class="thread-badges">
+                                ${thread.is_pinned ? '<span class="badge pinned">📌 Pinned</span>' : ''}
+                                ${thread.is_locked ? '<span class="badge locked">🔒 Locked</span>' : ''}
+                                ${thread.has_accepted_answer ? '<span class="badge solved">✓ Solved</span>' : ''}
+                            </div>
+                        </div>
+                        <div class="thread-meta">
+                            <span class="thread-meta-item">
+                                ${thread.forum_categories ? `<span class="thread-category" style="background:${thread.forum_categories.color}20;color:${thread.forum_categories.color}">${thread.forum_categories.icon} ${thread.forum_categories.name}</span>` : ''}
+                            </span>
+                            <span class="thread-meta-item"><i class="far fa-user"></i> ${thread.forum_user_profiles?.display_name || thread.author_email?.split('@')[0] || 'Anonymous'}</span>
+                            <span class="thread-meta-item"><i class="far fa-clock"></i> ${timeAgo(thread.created_at)}</span>
+                            <span class="thread-meta-item"><i class="far fa-eye"></i> ${thread.views} views</span>
+                        </div>
+                        ${thread.tags && thread.tags.length ? `<div class="thread-tags">${thread.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>` : ''}
+                    </div>
+                    <div class="thread-stats">
+                        <div class="vote-display">
+                            <i class="fas fa-arrow-up stat-icon"></i>
+                            <span class="vote-count">${thread.upvotes - thread.downvotes}</span>
+                        </div>
+                        <div class="stat-item">
+                            <i class="far fa-comment stat-icon"></i>
+                            <span class="stat-count">${thread.reply_count}</span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+
+            supabaseClient
+                .channel('forum_threads_changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'forum_threads' }, () => {
+                    loadThreads();
+                })
+                .subscribe();
+        }
+
+        async function loadTrending() {
+            const { data } = await supabaseClient
+                .from('forum_threads')
+                .select('id, title, views, reply_count')
+                .eq('is_deleted', false)
+                .order('views', { ascending: false })
+                .limit(5);
+
+            const container = document.getElementById('trending-threads');
+            container.innerHTML = data?.map(t => `
+                <a href="/thread.html?id=${t.id}" class="trending-item">
+                    <div class="trending-title">${t.title}</div>
+                    <div class="trending-stats">${t.views} views · ${t.reply_count} replies</div>
+                </a>
+            `).join('') || '';
+        }
+
+        async function loadTopUsers() {
+            const { data } = await supabaseClient
+                .from('forum_user_profiles')
+                .select('username, display_name, reputation, avatar_url')
+                .order('reputation', { ascending: false })
+                .limit(5);
+
+            const container = document.getElementById('top-users');
+            container.innerHTML = data?.map((u, i) => `
+                <div class="top-user">
+                    <div class="top-user-avatar">${(u.display_name || u.username || '?')[0].toUpperCase()}</div>
+                    <div class="top-user-info">
+                        <div class="top-user-name">${['🥇','🥈','🥉','4️⃣','5️⃣'][i]} ${u.display_name || u.username}</div>
+                        <div class="top-user-rep">${u.reputation} reputation</div>
+                    </div>
+                </div>
+            `).join('') || '';
+        }
+
+        async function loadStats() {
+            const { count: threadCount } = await supabaseClient.from('forum_threads').select('*', { count: 'exact', head: true });
+            const { count: postCount } = await supabaseClient.from('forum_posts').select('*', { count: 'exact', head: true });
+            const { count: userCount } = await supabaseClient.from('forum_user_profiles').select('*', { count: 'exact', head: true });
+            
+            document.getElementById('forum-stats').innerHTML = `
+                <p><strong>${threadCount || 0}</strong> Threads</p>
+                <p><strong>${postCount || 0}</strong> Posts</p>
+                <p><strong>${userCount || 0}</strong> Members</p>
+            `;
+        }
+
+        document.querySelectorAll('.sort-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentSort = btn.dataset.sort;
+                loadThreads();
+            });
+        });
+
+        document.querySelectorAll('.filter-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                currentFilter = chip.dataset.filter;
+                loadThreads();
+            });
+        });
+
+        let searchTimeout;
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                searchQuery = e.target.value.trim();
+                loadThreads();
+            }, 500);
+        });
+
+        document.getElementById('quick-create-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+            
+            const title = document.getElementById('qc-title').value.trim();
+            const content = document.getElementById('qc-content').value.trim();
+            const categoryId = document.getElementById('qc-category').value;
+            const tags = document.getElementById('qc-tags').value.split(',').map(t => t.trim()).filter(Boolean);
+            
+            const btn = e.target.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.textContent = 'Creating...';
+            
+            const { data, error } = await supabaseClient
+                .from('forum_threads')
+                .insert({
+                    title,
+                    content,
+                    category_id: categoryId || null,
+                    tags,
+                    author_id: currentUser.id,
+                    author_email: currentUser.email
+                })
+                .select()
+                .single();
+
+            if (error) {
+                alert('Error: ' + error.message);
+                btn.disabled = false;
+                btn.textContent = 'Create Thread';
             } else {
-                newThreadBtn.style.display = 'none';
+                await supabaseClient.from('forum_user_profiles').upsert({
+                    user_id: currentUser.id,
+                    username: currentUser.email.split('@')[0],
+                    display_name: currentUser.email.split('@')[0]
+                }, { onConflict: 'user_id' });
+                
+                window.location.href = `/thread.html?id=${data.id}`;
             }
         });
 
-        fetchThreads();
+        supabaseClient.auth.onAuthStateChange((_event, session) => {
+            currentUser = session?.user || null;
+            const btn = document.getElementById('new-thread-btn');
+            const quickCreate = document.getElementById('quick-create');
+            const qcForm = document.getElementById('quick-create-form');
+            const qcLoggedOut = document.getElementById('quick-create-logged-out');
+            
+            btn.style.display = 'inline-flex';
+
+            quickCreate.style.display = 'block';
+            if (currentUser) {
+                qcForm.style.display = 'block';
+                qcLoggedOut.style.display = 'none';
+            } else {
+                qcForm.style.display = 'none';
+                qcLoggedOut.style.display = 'block';
+            }
+        });
+
+        const menuButton = document.getElementById('menuButton');
+        const menuCloseBtn = document.getElementById('menuCloseBtn');
+        const expandedMenu = document.getElementById('expandedMenu');
+
+        if(menuButton && expandedMenu) {
+            menuButton.addEventListener('click', () => {
+                expandedMenu.style.transform = 'translateX(0)';
+            });
+        }
+
+        if(menuCloseBtn && expandedMenu) {
+            menuCloseBtn.addEventListener('click', () => {
+                expandedMenu.style.transform = 'translateX(100%)';
+            });
+        }
+
+        (async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            currentUser = session?.user || null;
+            
+            await loadCategories();
+            await loadThreads();
+            await loadTrending();
+            await loadTopUsers();
+            await loadStats();
+        })();
     </script>
 </body>
 </html>

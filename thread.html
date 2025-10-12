@@ -4,44 +4,108 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discussion - My Student Club</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
-    <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        .thread-container { max-width: 900px; margin: 2rem auto; padding: 1.5rem; }
-        .original-post, .post-item { background: var(--surface-bg); border-radius: var(--radius-lg); padding: 1.5rem; border: 1px solid var(--border-light); margin-bottom: 1.5rem; }
-        .original-post { border-left: 4px solid var(--primary-brand); box-shadow: var(--shadow-sm); }
-        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-light); }
-        .post-author { font-weight: 600; color: var(--text-primary); }
-        .post-date { font-size: 0.8rem; color: var(--text-secondary); }
-        .post-content { line-height: 1.7; color: var(--text-secondary); white-space: pre-wrap; word-wrap: break-word; }
-        .thread-title-main { font-size: 1.75rem; font-weight: 700; margin-bottom: 1.5rem; line-height: 1.3; }
-        #reply-form { margin-top: 2rem; background: var(--surface-bg); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid var(--border-light); }
-        #reply-form h3 { font-size: 1.2rem; margin-bottom: 1rem; font-weight: 600; }
-        #reply-form textarea { width: 100%; min-height: 120px; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-medium); font-size: 1rem; margin-bottom: 1rem; resize: vertical; }
-        #reply-form textarea:focus { outline: none; border-color: var(--primary-brand); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
-        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-secondary); text-decoration: none; margin-bottom: 1.5rem; font-weight: 500; }
-        .back-link:hover { color: var(--primary-brand); }
+        :root {
+            --forum-primary: #3B82F6;
+            --forum-secondary: #60A5FA;
+            --forum-success: #10B981;
+            --forum-warning: #F59E0B;
+            --forum-danger: #EF4444;
+            --forum-bg: #EFF6FF;
+            --forum-card: #FFFFFF;
+            --forum-border: #DBEAFE;
+            --forum-text: #1E3A8A;
+            --forum-text-muted: #6B7280;
+            --forum-hover: #DBEAFE;
+        }
+
+        body { background: var(--forum-bg); font-family: 'Inter', sans-serif; }
+
+        .thread-container { max-width: 1000px; margin: 2rem auto; padding: 0 1.5rem; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--forum-text-muted); text-decoration: none; margin-bottom: 1.5rem; font-weight: 600; transition: all 0.2s; }
+        .back-link:hover { color: var(--forum-primary); gap: 0.75rem; }
+
+        .thread-header-section { background: var(--forum-card); border-radius: 16px; padding: 2rem; margin-bottom: 2rem; border: 1px solid var(--forum-border); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+        .thread-title-main { font-size: 2rem; font-weight: 800; margin-bottom: 1rem; line-height: 1.3; }
+        .thread-meta-section { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        .thread-author { display: flex; align-items: center; gap: 0.75rem; }
+        .author-avatar { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, var(--forum-primary), var(--forum-secondary)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem; }
+        .author-info { display: flex; flex-direction: column; }
+        .author-name { font-weight: 600; }
+        .author-rep { font-size: 0.75rem; color: var(--forum-text-muted); }
+
+        .thread-actions { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+        .action-btn { padding: 0.625rem 1.25rem; border: 2px solid var(--forum-border); background: var(--forum-card); border-radius: 10px; cursor: pointer; font-weight: 600; font-size: 0.875rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .action-btn:hover { border-color: var(--forum-primary); color: var(--forum-primary); }
+        .action-btn.active { background: var(--forum-primary); color: white; border-color: var(--forum-primary); }
+        .action-btn i { font-size: 1rem; }
+
+        .vote-section { display: flex; align-items: center; gap: 1rem; }
+        .vote-btn { width: 40px; height: 40px; border: 2px solid var(--forum-border); background: var(--forum-card); border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; font-size: 1.25rem; }
+        .vote-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .vote-btn.upvoted { background: var(--forum-success); color: white; border-color: var(--forum-success); }
+        .vote-btn.downvoted { background: var(--forum-danger); color: white; border-color: var(--forum-danger); }
+        .vote-count { font-size: 1.5rem; font-weight: 700; color: var(--forum-primary); min-width: 50px; text-align: center; }
+
+        .post-container { background: var(--forum-card); border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; border: 1px solid var(--forum-border); position: relative; }
+        .post-container.accepted-answer { border-left: 4px solid var(--forum-success); background: linear-gradient(to right, rgba(16, 185, 129, 0.05), transparent); }
+        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--forum-border); }
+        .post-author { display: flex; align-items: center; gap: 0.75rem; }
+        .post-avatar { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #F59E0B, #EF4444); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; }
+        .post-author-info { display: flex; flex-direction: column; }
+        .post-author-name { font-weight: 600; }
+        .post-date { font-size: 0.75rem; color: var(--forum-text-muted); }
+
+        .post-content { line-height: 1.8; color: var(--forum-text); font-size: 1rem; margin-bottom: 1.5rem; }
+        .post-content img { max-width: 100%; border-radius: 12px; margin: 1rem 0; }
+        .post-content pre { background: var(--forum-hover); padding: 1rem; border-radius: 10px; overflow-x: auto; }
+        .post-content code { background: var(--forum-hover); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.875rem; }
+
+        .post-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .post-reactions { display: flex; gap: 0.5rem; }
+        .reaction-btn { padding: 0.5rem 1rem; border: 2px solid var(--forum-border); background: var(--forum-card); border-radius: 20px; cursor: pointer; font-size: 0.875rem; transition: all 0.2s; display: inline-flex; align-items: center; gap: 0.375rem; }
+        .reaction-btn:hover { border-color: var(--forum-primary); transform: translateY(-2px); }
+        .reaction-btn.active { background: var(--forum-primary); color: white; border-color: var(--forum-primary); }
+
+        .reply-form-section { background: var(--forum-card); border-radius: 16px; padding: 2rem; margin-top: 2rem; border: 1px solid var(--forum-border); }
+        .reply-form-section h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; }
+        #reply-editor { min-height: 200px; background: var(--forum-card); border: 2px solid var(--forum-border); border-radius: 10px; }
+
+        .replies-section { margin-top: 2rem; }
+        .replies-header { font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; }
+
+        .accept-answer-btn { position: absolute; top: 1rem; right: 1rem; padding: 0.5rem 1rem; background: var(--forum-success); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.875rem; transition: all 0.2s; }
+        .accept-answer-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+
+        .edit-indicator { font-size: 0.75rem; color: var(--forum-text-muted); font-style: italic; }
+
+        .related-threads { background: var(--forum-card); border-radius: 16px; padding: 1.5rem; margin-top: 2rem; border: 1px solid var(--forum-border); }
+        .related-threads h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 1rem; }
+        .related-thread-item { padding: 0.75rem; border-radius: 10px; margin-bottom: 0.5rem; transition: all 0.2s; text-decoration: none; display: block; color: var(--forum-text); }
+        .related-thread-item:hover { background: var(--forum-hover); }
+
+        @media (max-width: 768px) {
+            .thread-title-main { font-size: 1.5rem; }
+            .post-container { padding: 1.25rem; }
+        }
     </style>
 </head>
 <body>
     <header class="site-header">
       <div class="header-container">
         <a href="/" class="brand-link">
-          <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
+          <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
         </a>
         <div class="nav-actions">
           <div class="auth-buttons-container"></div>
-          <button id="notificationsBtn" class="icon-button notification-icon-btn" aria-label="Manage Notifications">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-            </svg>
-            <span class="notification-badge" id="notificationBadge"></span>
-          </button>
           <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
             <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
@@ -62,7 +126,7 @@
           <a href="/articleship-guarantee-program/" class="menu-item">Articleship Program</a>
           <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
           <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
-          <a href="/forum.html" class="menu-item">Discussion Forum</a>
+          <a href="/" class="menu-item">Discussion Forum</a>
           <div class="menu-item-dropdown">
               <button class="menu-item" id="resourcesDropdownBtn">
                   Resources
@@ -78,163 +142,382 @@
           </div>
       </div>
     </div>
-    
+
     <main class="thread-container">
-        <a href="/forum.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Forum</a>
-        <div id="thread-content">
-             <div id="loader" class="loader-container" style="display: block;"><div class="loader-spinner"></div></div>
+        <a href="/" class="back-link"><i class="fas fa-arrow-left"></i> Back to Forum</a>
+
+        <div id="thread-header-section"></div>
+
+        <div class="replies-section">
+            <div class="replies-header">
+                <i class="fas fa-comments"></i> Replies
+            </div>
+            <div id="posts-list"></div>
         </div>
-        <div id="posts-list"></div>
-        
-        <form id="reply-form" style="display: none;">
+
+        <div id="reply-form-section" class="reply-form-section" style="display: none;">
             <h3>Your Reply</h3>
-            <textarea id="reply-content" required placeholder="Write your reply here..."></textarea>
-            <button type="submit" class="action-button">Post Reply</button>
-        </form>
-        <div id="login-prompt" style="display: none; text-align: center; margin-top: 2rem; padding: 1.5rem; background: var(--neutral-bg); border-radius: var(--radius-lg);">
-            <p><a href="/login.html" style="font-weight: 600; text-decoration: underline;">Log in</a> to join the discussion.</p>
+            <div id="reply-editor"></div>
+            <button id="submit-reply-btn" class="action-button" style="margin-top: 1rem;">Post Reply</button>
+        </div>
+
+        <div id="related-threads" class="related-threads" style="display: none;">
+            <h3>🔗 Related Discussions</h3>
+            <div id="related-list"></div>
         </div>
     </main>
-    
-    <footer class="site-footer-nav">
-      <a href="/" class="footer-tab active">
-        <span>Industrial Training</span>
-      </a>
-      <a href="/articleship.html" class="footer-tab">
-        <span>Articleship</span>
-      </a>
-      <a href="/semi-qualified.html" class="footer-tab">
-        <span>Semi Qualified</span>
-      </a>
-      <a href="/fresher.html" class="footer-tab">
-        <span>Freshers</span>
-      </a>
-    </footer>
 
-    <script type="module" src="https://www.mystudentclub.com/scripts/portal3.js"></script>
     <script type="module">
         const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        const threadContentEl = document.getElementById('thread-content');
-        const postsListEl = document.getElementById('posts-list');
-        const replyForm = document.getElementById('reply-form');
-        const loginPrompt = document.getElementById('login-prompt');
         const threadId = new URLSearchParams(window.location.search).get('id');
         let currentUser = null;
+        let currentThread = null;
+        let quillEditor = null;
+        let userVote = null;
 
         function timeAgo(date) {
             const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-            if (seconds < 60) return "just now";
             let interval = seconds / 31536000;
-            if (interval > 1) return Math.floor(interval) + " years ago";
+            if (interval > 1) return Math.floor(interval) + "y ago";
             interval = seconds / 2592000;
-            if (interval > 1) return Math.floor(interval) + " months ago";
+            if (interval > 1) return Math.floor(interval) + "mo ago";
             interval = seconds / 86400;
-            if (interval > 1) return Math.floor(interval) + " days ago";
+            if (interval > 1) return Math.floor(interval) + "d ago";
             interval = seconds / 3600;
-            if (interval > 1) return Math.floor(interval) + " hours ago";
+            if (interval > 1) return Math.floor(interval) + "h ago";
             interval = seconds / 60;
-            if (interval > 1) return Math.floor(interval) + " minutes ago";
-            return Math.floor(seconds) + " seconds ago";
+            if (interval > 1) return Math.floor(interval) + "m ago";
+            return "just now";
         }
 
-        async function fetchThreadAndPosts() {
-            if (!threadId) {
-                threadContentEl.innerHTML = '<h2>Thread not found.</h2>';
-                return;
-            }
+        function getAvatar(email) {
+            return email ? email[0].toUpperCase() : '?';
+        }
 
-            const { data: thread, error: threadError } = await supabaseClient
+        async function incrementViews() {
+            await supabaseClient.rpc('increment_thread_views', { thread_id: threadId });
+        }
+
+        async function loadThread() {
+            if (!threadId) return;
+
+            const { data: thread, error } = await supabaseClient
                 .from('forum_threads')
-                .select('*')
+                .select(`
+                    *,
+                    forum_categories(name, icon, color),
+                    forum_user_profiles(username, display_name, reputation, avatar_url)
+                `)
                 .eq('id', threadId)
                 .single();
 
-            if (threadError || !thread) {
-                threadContentEl.innerHTML = '<h2>Error loading thread.</h2>';
-                return;
+            if (error || !thread) return;
+
+            currentThread = thread;
+            document.title = `${thread.title} - My Student Club`;
+
+            if (currentUser) {
+                const { data: vote } = await supabaseClient
+                    .from('forum_votes')
+                    .select('vote_type')
+                    .eq('target_type', 'thread')
+                    .eq('target_id', threadId)
+                    .eq('user_id', currentUser.id)
+                    .single();
+                userVote = vote?.vote_type || null;
             }
 
-            document.title = `${thread.title} - My Student Club`;
-            const opAuthor = thread.author_email ? thread.author_email.split('@')[0] : 'Anonymous';
-            threadContentEl.innerHTML = `
-                <h1 class="thread-title-main">${thread.title}</h1>
-                <div class="original-post">
-                    <div class="post-header">
-                        <span class="post-author">${opAuthor}</span>
-                        <span class="post-date">${timeAgo(thread.created_at)}</span>
+            const isBookmarked = currentUser ? (await supabaseClient
+                .from('forum_bookmarks')
+                .select('id')
+                .eq('thread_id', threadId)
+                .eq('user_id', currentUser.id)
+                .single()).data : null;
+
+            const isWatching = currentUser ? (await supabaseClient
+                .from('forum_thread_watchers')
+                .select('id')
+                .eq('thread_id', threadId)
+                .eq('user_id', currentUser.id)
+                .single()).data : null;
+
+            const voteScore = thread.upvotes - thread.downvotes;
+
+            document.getElementById('thread-header-section').innerHTML = `
+                <div class="thread-header-section">
+                    <h1 class="thread-title-main">${thread.title}</h1>
+                    <div class="thread-meta-section">
+                        <div class="thread-author">
+                            <div class="author-avatar">${getAvatar(thread.author_email)}</div>
+                            <div class="author-info">
+                                <div class="author-name">${thread.forum_user_profiles?.display_name || thread.author_email?.split('@')[0] || 'Anonymous'}</div>
+                                <div class="author-rep">${thread.forum_user_profiles?.reputation || 0} reputation · ${timeAgo(thread.created_at)}</div>
+                            </div>
+                        </div>
+                        ${thread.forum_categories ? `<span class="thread-category" style="background:${thread.forum_categories.color}20;color:${thread.forum_categories.color}">${thread.forum_categories.icon} ${thread.forum_categories.name}</span>` : ''}
+                        <span style="color:var(--forum-text-muted);font-size:0.875rem;"><i class="far fa-eye"></i> ${thread.views} views</span>
                     </div>
-                    <div class="post-content">${thread.content}</div>
+                    ${thread.tags && thread.tags.length ? `<div style="display:flex;gap:0.5rem;margin:1rem 0;flex-wrap:wrap;">${thread.tags.map(tag => `<span style="padding:0.25rem 0.75rem;background:var(--forum-hover);border-radius:12px;font-size:0.75rem;">${tag}</span>`).join('')}</div>` : ''}
+                    <div class="post-content">${marked.parse(thread.content)}</div>
+                    <div class="thread-actions">
+                        <div class="vote-section">
+                            <button class="vote-btn ${userVote === 'upvote' ? 'upvoted' : ''}" data-type="upvote" data-target="thread"><i class="fas fa-arrow-up"></i></button>
+                            <div class="vote-count">${voteScore}</div>
+                            <button class="vote-btn ${userVote === 'downvote' ? 'downvoted' : ''}" data-type="downvote" data-target="thread"><i class="fas fa-arrow-down"></i></button>
+                        </div>
+                        ${currentUser ? `
+                            <button class="action-btn ${isBookmarked ? 'active' : ''}" id="bookmark-btn"><i class="fas fa-bookmark"></i> ${isBookmarked ? 'Bookmarked' : 'Bookmark'}</button>
+                            <button class="action-btn ${isWatching ? 'active' : ''}" id="watch-btn"><i class="fas fa-eye"></i> ${isWatching ? 'Watching' : 'Watch'}</button>
+                            <button class="action-btn" id="share-btn"><i class="fas fa-share"></i> Share</button>
+                        ` : ''}
+                    </div>
                 </div>
-                <h3 style="margin-bottom: 1.5rem; font-weight: 600;">Replies</h3>
             `;
 
-            const { data: posts, error: postsError } = await supabaseClient
+            setupVoteButtons();
+            setupActionButtons();
+            await incrementViews();
+        }
+
+        async function loadPosts() {
+            const { data: posts } = await supabaseClient
                 .from('forum_posts')
-                .select('*')
+                .select(`
+                    *,
+                    forum_user_profiles(username, display_name, reputation, avatar_url)
+                `)
                 .eq('thread_id', threadId)
+                .eq('is_deleted', false)
                 .order('created_at', { ascending: true });
 
-            if (postsError) {
-                postsListEl.innerHTML = '<p>Error loading replies.</p>';
+            const container = document.getElementById('posts-list');
+
+            if (!posts || posts.length === 0) {
+                container.innerHTML = '<p style="text-align:center;color:var(--forum-text-muted);padding:2rem;">No replies yet. Be the first to respond!</p>';
                 return;
             }
 
-            posts.forEach(post => {
-                const postAuthor = post.author_email ? post.author_email.split('@')[0] : 'Anonymous';
-                const postEl = document.createElement('div');
-                postEl.className = 'post-item';
-                postEl.innerHTML = `
-                    <div class="post-header">
-                        <span class="post-author">${postAuthor}</span>
-                        <span class="post-date">${timeAgo(post.created_at)}</span>
+            container.innerHTML = await Promise.all(posts.map(async post => {
+                const voteScore = post.upvotes - post.downvotes;
+                let postVote = null;
+
+                if (currentUser) {
+                    const { data: vote } = await supabaseClient
+                        .from('forum_votes')
+                        .select('vote_type')
+                        .eq('target_type', 'post')
+                        .eq('target_id', post.id)
+                        .eq('user_id', currentUser.id)
+                        .single();
+                    postVote = vote?.vote_type || null;
+                }
+
+                const isOP = post.author_id === currentThread?.author_id;
+                const canAcceptAnswer = currentUser && currentUser.id === currentThread?.author_id && !currentThread?.has_accepted_answer;
+
+                return `
+                    <div class="post-container ${post.is_accepted_answer ? 'accepted-answer' : ''}" data-post-id="${post.id}">
+                        ${post.is_accepted_answer ? '<div style="color:var(--forum-success);font-weight:700;margin-bottom:1rem;"><i class="fas fa-check-circle"></i> Accepted Answer</div>' : ''}
+                        ${canAcceptAnswer ? `<button class="accept-answer-btn" data-post-id="${post.id}">✓ Accept Answer</button>` : ''}
+                        <div class="post-header">
+                            <div class="post-author">
+                                <div class="post-avatar">${getAvatar(post.author_email)}</div>
+                                <div class="post-author-info">
+                                    <div class="post-author-name">${post.forum_user_profiles?.display_name || post.author_email?.split('@')[0] || 'Anonymous'} ${isOP ? '<span style="background:var(--forum-primary);color:white;padding:0.125rem 0.5rem;border-radius:8px;font-size:0.75rem;margin-left:0.5rem;">OP</span>' : ''}</div>
+                                    <div class="post-date">${post.forum_user_profiles?.reputation || 0} rep · ${timeAgo(post.created_at)}</div>
+                                </div>
+                            </div>
+                            ${post.edited_at ? `<div class="edit-indicator">Edited ${timeAgo(post.edited_at)}</div>` : ''}
+                        </div>
+                        <div class="post-content">${marked.parse(post.content)}</div>
+                        <div class="post-footer">
+                            <div class="vote-section">
+                                <button class="vote-btn ${postVote === 'upvote' ? 'upvoted' : ''}" data-type="upvote" data-target="post" data-post-id="${post.id}"><i class="fas fa-arrow-up"></i></button>
+                                <div class="vote-count" style="font-size:1.25rem;">${voteScore}</div>
+                                <button class="vote-btn ${postVote === 'downvote' ? 'downvoted' : ''}" data-type="downvote" data-target="post" data-post-id="${post.id}"><i class="fas fa-arrow-down"></i></button>
+                            </div>
+                            <div class="post-reactions">
+                                <button class="reaction-btn" data-reaction="like"><span>👍</span> Like</button>
+                                <button class="reaction-btn" data-reaction="helpful"><span>🎯</span> Helpful</button>
+                                <button class="reaction-btn" data-reaction="insightful"><span>💡</span> Insightful</button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="post-content">${post.content}</div>
                 `;
-                postsListEl.appendChild(postEl);
+            })).then(htmlArray => htmlArray.join(''));
+
+            setupVoteButtons();
+            setupReactionButtons();
+            setupAcceptButtons();
+        }
+
+        function setupVoteButtons() {
+            document.querySelectorAll('.vote-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!currentUser) {
+                        alert('Please log in to vote');
+                        return;
+                    }
+
+                    const voteType = btn.dataset.type;
+                    const targetType = btn.dataset.target;
+                    const targetId = targetType === 'thread' ? threadId : btn.dataset.postId;
+
+                    const { error } = await supabaseClient.from('forum_votes').upsert({
+                        user_id: currentUser.id,
+                        target_type: targetType,
+                        target_id: targetId,
+                        vote_type: voteType
+                    }, { onConflict: 'user_id,target_type,target_id' });
+
+                    if (!error) {
+                        await loadThread();
+                        await loadPosts();
+                    }
+                });
             });
         }
 
-        replyForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const content = document.getElementById('reply-content').value.trim();
-            if (!content || !currentUser) return;
+        function setupReactionButtons() {
+            document.querySelectorAll('.reaction-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!currentUser) return alert('Please log in to react');
 
-            const submitBtn = replyForm.querySelector('button[type="submit"]');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Posting...';
+                    const reaction = btn.dataset.reaction;
+                    const postId = btn.closest('.post-container').dataset.postId;
 
-            const { error } = await supabaseClient.from('forum_posts').insert({
-                thread_id: threadId,
-                content: content,
-                author_id: currentUser.id,
-                author_email: currentUser.email
+                    await supabaseClient.from('forum_reactions').upsert({
+                        user_id: currentUser.id,
+                        target_type: 'post',
+                        target_id: postId,
+                        reaction_type: reaction
+                    }, { onConflict: 'user_id,target_type,target_id,reaction_type' });
+
+                    btn.classList.add('active');
+                });
+            });
+        }
+
+        function setupAcceptButtons() {
+            document.querySelectorAll('.accept-answer-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const postId = btn.dataset.postId;
+
+                    await supabaseClient.from('forum_posts').update({ is_accepted_answer: true }).eq('id', postId);
+                    await supabaseClient.from('forum_threads').update({ has_accepted_answer: true, accepted_answer_id: postId }).eq('id', threadId);
+
+                    await loadThread();
+                    await loadPosts();
+                });
+            });
+        }
+
+        function setupActionButtons() {
+            document.getElementById('bookmark-btn')?.addEventListener('click', async () => {
+                const { error } = await supabaseClient.from('forum_bookmarks').upsert({
+                    user_id: currentUser.id,
+                    thread_id: threadId
+                }, { onConflict: 'user_id,thread_id' });
+
+                if (!error) await loadThread();
             });
 
-            if (error) {
-                alert('Failed to post reply: ' + error.message);
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Post Reply';
-            } else {
-                location.reload();
-            }
-        });
+            document.getElementById('watch-btn')?.addEventListener('click', async () => {
+                const { error } = await supabaseClient.from('forum_thread_watchers').upsert({
+                    user_id: currentUser.id,
+                    thread_id: threadId
+                }, { onConflict: 'user_id,thread_id' });
 
-        supabaseClient.auth.onAuthStateChange((_event, session) => {
-            if (session && session.user) {
-                currentUser = session.user;
-                replyForm.style.display = 'block';
-                loginPrompt.style.display = 'none';
-            } else {
-                currentUser = null;
-                replyForm.style.display = 'none';
-                loginPrompt.style.display = 'block';
-            }
-        });
+                if (!error) await loadThread();
+            });
 
-        fetchThreadAndPosts();
+            document.getElementById('share-btn')?.addEventListener('click', () => {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Link copied to clipboard!');
+            });
+        }
+
+        async function initReplyEditor() {
+            if (!currentUser) return;
+
+            document.getElementById('reply-form-section').style.display = 'block';
+
+            quillEditor = new Quill('#reply-editor', {
+                theme: 'snow',
+                placeholder: 'Write your reply here...',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        ['blockquote', 'code-block'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['link', 'image'],
+                        ['clean']
+                    ]
+                }
+            });
+
+            document.getElementById('submit-reply-btn').addEventListener('click', async () => {
+                const content = quillEditor.root.innerHTML;
+                if (!content || content === '<p><br></p>') return;
+
+                const btn = document.getElementById('submit-reply-btn');
+                btn.disabled = true;
+                btn.textContent = 'Posting...';
+
+                const { error } = await supabaseClient.from('forum_posts').insert({
+                    thread_id: threadId,
+                    content,
+                    author_id: currentUser.id,
+                    author_email: currentUser.email
+                });
+
+                if (error) {
+                    alert('Error posting reply');
+                    btn.disabled = false;
+                    btn.textContent = 'Post Reply';
+                } else {
+                    quillEditor.setContents([]);
+                    await loadPosts();
+                    btn.disabled = false;
+                    btn.textContent = 'Post Reply';
+                }
+            });
+        }
+
+        (async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            currentUser = session?.user || null;
+
+            await loadThread();
+            await loadPosts();
+            await initReplyEditor();
+
+            const menuButton = document.getElementById('menuButton');
+            const menuCloseBtn = document.getElementById('menuCloseBtn');
+            const expandedMenu = document.getElementById('expandedMenu');
+
+            if(menuButton && expandedMenu) {
+                menuButton.addEventListener('click', () => {
+                    expandedMenu.style.transform = 'translateX(0)';
+                });
+            }
+
+            if(menuCloseBtn && expandedMenu) {
+                menuCloseBtn.addEventListener('click', () => {
+                    expandedMenu.style.transform = 'translateX(100%)';
+                });
+            }
+
+            supabaseClient
+                .channel('thread_updates')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'forum_posts', filter: `thread_id=eq.${threadId}` }, () => {
+                    loadPosts();
+                })
+                .subscribe();
+        })();
     </script>
 </body>
 </html>
