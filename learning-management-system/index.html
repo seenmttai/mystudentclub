@@ -564,11 +564,12 @@
                     this.menuActive = !this.menuActive;
                 },
                 goToCourse(courseSlug) {
-                    if (!this.user) {
-                        window.location.href = 'https://www.mystudentclub.com/login';
+                     if (!this.user) {
+                        const destination = encodeURIComponent(`/learning-management-system/video.html?course=${courseSlug}`);
+                        window.location.href = `https://www.mystudentclub.com/login.html?redirect=${destination}`;
                         return;
                     }
-                    window.location.href = `course.html?course=${courseSlug}`;
+                    window.location.href = `video.html?course=${courseSlug}`;
                 },
                 setFilter(filterId) {
                     this.currentFilter = filterId;
