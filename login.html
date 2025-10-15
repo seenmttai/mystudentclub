@@ -346,10 +346,12 @@
     const supabaseClient = supabase.createClient('https://izsggdtdiacxdsjjncdq.supabase.co', 
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0');
 
+    const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
+
     window.addEventListener('DOMContentLoaded', async () => {
       const { data: { session }, error } = await supabaseClient.auth.getSession();
       if (session) {
-        window.location.href = '/';
+        window.location.href = redirectUrl || '/';
       }
     });
 
@@ -378,7 +380,7 @@
           throw error;
         }
 
-        window.location.href = '/profile.html';
+        window.location.href = redirectUrl || '/';
 
       } catch (error) {
         errorMessage.textContent = error.message;
@@ -394,7 +396,9 @@
         try {
             const { data, error } = await supabaseClient.auth.signInWithOAuth({
                 provider: 'google',
-                 options: {}
+                 options: {
+                    redirectTo: redirectUrl ? `${window.location.origin}${redirectUrl}` : window.location.origin
+                 }
             });
             if (error) {
                 throw error;
@@ -422,7 +426,7 @@
                 console.error('Supabase sign-in with Google token failed:', error.message);
                 alert('Could not complete Google Sign-In: ' + error.message);
             } else {
-                window.location.href = '/'; 
+                window.location.href = redirectUrl || '/'; 
             }
         } catch (e) {
             console.error("An unexpected error occurred during Google Sign-In:", e);
