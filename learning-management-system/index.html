@@ -332,7 +332,7 @@
                     <div class="courses-container" :class="'view-' + viewMode">
                         <div class="course-card-enhanced-premium" @click="goToCourse('industrial-training-mastery')">
                             <div class="course-image-premium">
-                                <img src="https://mystudentclub.com/assets/it-guarantee-thumbnail.svg" alt="Industrial Training Mastery Program">
+                                <img src="https://mystudentclub.com/assets/" alt="Industrial Training Mastery Program">
                                 <div class="course-overlay-premium">
                                     <div class="premium-badge">
                                         <i class="fas fa-crown"></i>
@@ -564,12 +564,11 @@
                     this.menuActive = !this.menuActive;
                 },
                 goToCourse(courseSlug) {
-                     if (!this.user) {
-                        const destination = encodeURIComponent(`/learning-management-system/course?course=${courseSlug}`);
-                        window.location.href = `https://www.mystudentclub.com/login.html?redirect=${destination}`;
+                    if (!this.user) {
+                        window.location.href = 'https://www.mystudentclub.com/login';
                         return;
                     }
-                    window.location.href = `video.html?course=${courseSlug}`;
+                    window.location.href = `course.html?course=${courseSlug}`;
                 },
                 setFilter(filterId) {
                     this.currentFilter = filterId;
