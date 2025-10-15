@@ -565,7 +565,7 @@
                 },
                 goToCourse(courseSlug) {
                      if (!this.user) {
-                        const destination = encodeURIComponent(`/learning-management-system/video.html?course=${courseSlug}`);
+                        const destination = encodeURIComponent(`/learning-management-system/course?course=${courseSlug}`);
                         window.location.href = `https://www.mystudentclub.com/login.html?redirect=${destination}`;
                         return;
                     }
