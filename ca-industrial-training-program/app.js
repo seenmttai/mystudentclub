@@ -231,17 +231,25 @@ const initializeCarousel = () => {
 
 const initializeCountdown = () => {
   const timerEl = document.getElementById('timer');
+  const registerButtonHero = document.getElementById('registerButtonHero');
+  const registerButtonFooter = document.getElementById('registerButtonFooter');
+  const ctaFooter = document.getElementById('cta-footer');
+
   if (!timerEl) return;
 
-  const targetDate = new Date('2025-08-17T23:59:00');
+  // Target date: October 17, 2025, 12 AM (00:00:00) in Asia/Calcutta (IST, UTC+5:30)
+  const targetDate = new Date('2025-10-17T00:00:00+05:30');
 
   function updateTimer() {
     const now = new Date();
     const diff = targetDate - now;
 
     if (diff <= 0) {
-      timerEl.textContent = "00h 00m 00s";
-      clearInterval(timerInterval); 
+      timerEl.textContent = "00d 00h 00m 00s";
+      clearInterval(timerInterval);
+      if (registerButtonHero) registerButtonHero.style.display = 'none';
+      if (registerButtonFooter) registerButtonFooter.style.display = 'none';
+      if (ctaFooter) ctaFooter.style.display = 'none'; // Hide the entire footer CTA if the timer is expired
       return;
     }
     
@@ -442,6 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
   safe(initializeCarousel, 'carousel');
   safe(initializeCertificate, 'certificate');
   safe(initializeParallax, 'parallax');
+  safe(initializeCountdown, 'countdown'); // Add this line to initialize the countdown
   AOS.init({
     duration: 1000,
     once: true
