@@ -5,14 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CV Reviewer - My Student Club</title>
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-  <script type="importmap">
-    {
-      "imports": {
-        "@supabase/supabase-js": "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.44.4/+esm"
-      }
-    }
-  </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -42,33 +34,13 @@
         border: 1px solid var(--border);
         box-shadow: var(--shadow-sm);
     }
-    .feedback-section .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid var(--border);
-    }
-    .feedback-section .section-header h3 {
+    .feedback-section h3 {
         font-size: 1.2rem;
         font-weight: 600;
         color: var(--primary);
-        margin-bottom: 0;
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-    .feedback-section .section-header .toggle-icon {
-        transition: transform 0.3s ease;
-        width: 20px;
-        height: 20px;
-        color: var(--primary);
-    }
-    .feedback-section .content-area.collapsed {
-        display: none;
-    }
-    .feedback-section .section-header .toggle-icon.collapsed {
-        transform: rotate(-90deg);
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
     }
     .feedback-point { margin-bottom: 0.75rem; }
     .feedback-point h4 { font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem; font-size: 1rem; }
@@ -105,34 +77,6 @@
     .content-area em { font-style: italic; }
     .content-area code { background-color: rgba(100, 116, 139, 0.1); padding: 0.1rem 0.3rem; border-radius: 4px; font-size: 0.85em; color: var(--text-secondary); }
     .content-area h4 { font-size: 1.05rem; font-weight: 600; color: var(--primary); margin-top: 1rem; margin-bottom: 0.5rem; }
-
-    .tabs {
-        display: flex;
-        border-bottom: 1px solid var(--border);
-        margin-bottom: 1.5rem;
-    }
-    .tab-btn {
-        padding: 0.75rem 1.5rem;
-        cursor: pointer;
-        border: none;
-        background: transparent;
-        font-size: 1rem;
-        font-weight: 500;
-        color: var(--text-secondary);
-        border-bottom: 2px solid transparent;
-        margin-bottom: -1px;
-        transition: all 0.2s ease;
-    }
-    .tab-btn.active {
-        color: var(--primary);
-        border-bottom-color: var(--primary);
-    }
-    .tab-content {
-        display: none;
-    }
-    .tab-content.active {
-        display: block;
-    }
 
      @media (max-width: 1024px) {
         .results-grid {
@@ -313,168 +257,76 @@
              <div></div>
         </div>
 
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="analysis">Analysis</button>
-            <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
-            <button class="tab-btn" data-tab="history">My History</button>
-        </div>
-
-        <div id="tab-analysis" class="tab-content active">
-            <div class="results-grid">
-                <div class="results-sidebar">
-                    <h3 class="text-lg font-semibold mb-4 text-center">Overall Score</h3>
-                    <div class="score-card mb-6 justify-center">
-                        <div class="score-circle">
-                          <svg viewBox="0 0 36 36" class="score-chart">
-                            <defs>
-                               <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                 <stop offset="0%" stop-color="#818cf8" />
-                                 <stop offset="100%" stop-color="#4f46e5" />
-                               </linearGradient>
-                             </defs>
-                            <path class="score-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            <path id="scoreProgress" class="score-progress" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            <text x="18" y="20.5" class="score-text" id="scoreText">0</text>
-                          </svg>
-                        </div>
+        <div class="results-grid">
+            <div class="results-sidebar">
+                <h3 class="text-lg font-semibold mb-4 text-center">Overall Score</h3>
+                <div class="score-card mb-6 justify-center">
+                    <div class="score-circle">
+                      <svg viewBox="0 0 36 36" class="score-chart">
+                        <defs>
+                           <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                             <stop offset="0%" stop-color="#818cf8" />
+                             <stop offset="100%" stop-color="#4f46e5" />
+                           </linearGradient>
+                         </defs>
+                        <path class="score-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path id="scoreProgress" class="score-progress" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <text x="18" y="20.35" class="score-text" id="scoreText">0</text>
+                      </svg>
                     </div>
-
-                    <h3 class="text-lg font-semibold mb-4 text-center">Score Breakdown</h3>
-                    <div class="breakdown-categories space-y-3">
-                         <div class="category-item" data-category="structure">
-                           <div class="category-header"><h4>Structure & Completeness</h4><span class="points text-sm font-medium text-primary">0/20 pts</span></div>
-                           <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
-                         </div>
-                         <div class="category-item" data-category="impact">
-                            <div class="category-header"><h4>Impact Demonstration</h4><span class="points text-sm font-medium text-primary">0/25 pts</span></div>
-                            <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
-                          </div>
-                         <div class="category-item" data-category="expertise">
-                           <div class="category-header"><h4>Professional Expertise</h4><span class="points text-sm font-medium text-primary">0/25 pts</span></div>
-                           <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
-                         </div>
-                        <div class="category-item" data-category="experience">
-                            <div class="category-header"><h4>Experience Description</h4><span class="points text-sm font-medium text-primary">0/20 pts</span></div>
-                            <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
-                        </div>
-                        <div class="category-item" data-category="presentation">
-                            <div class="category-header"><h4>Overall Presentation</h4><span class="points text-sm font-medium text-primary">0/10 pts</span></div>
-                            <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
-                        </div>
-                     </div>
-                     <div class="mt-4 pt-4 border-t border-border">
-                         <h4 class="font-semibold text-sm mb-1">Score Justification:</h4>
-                         <p class="text-xs text-text-secondary" id="scoreJustification">Loading...</p>
-                     </div>
                 </div>
 
-                <div class="results-main">
-                     <div class="feedback-section" id="recruiterTipsSection">
-                        <div class="section-header">
-                            <h3>Recruiter Tips</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
+                <h3 class="text-lg font-semibold mb-4 text-center">Score Breakdown</h3>
+                <div class="breakdown-categories space-y-3">
+                     <div class="category-item" data-category="structure">
+                       <div class="category-header"><h4>Structure & Completeness</h4><span class="points text-sm font-medium text-primary">0/20 pts</span></div>
+                       <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
                      </div>
-                     <div class="feedback-section" id="measurableResultsSection">
-                        <div class="section-header">
-                            <h3>Measurable Results</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
+                     <div class="category-item" data-category="impact">
+                        <div class="category-header"><h4>Impact Demonstration</h4><span class="points text-sm font-medium text-primary">0/25 pts</span></div>
+                        <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
+                      </div>
+                     <div class="category-item" data-category="expertise">
+                       <div class="category-header"><h4>Professional Expertise</h4><span class="points text-sm font-medium text-primary">0/25 pts</span></div>
+                       <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
                      </div>
-                     <div class="feedback-section" id="phrasesSuggestionsSection">
-                        <div class="section-header">
-                            <h3>Phrases Suggestions</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="hardSkillsSection">
-                        <div class="section-header">
-                            <h3>Hard Skills Analysis</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="softSkillsSection">
-                        <div class="section-header">
-                            <h3>Soft Skills Analysis</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="actionVerbsSection">
-                        <div class="section-header">
-                            <h3>Action Verbs Usage</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="grammarCheckSection">
-                        <div class="section-header">
-                            <h3>Grammar & Proofreading</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="formattingSection">
-                        <div class="section-header">
-                            <h3>Formatting & Readability</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="educationSection">
-                        <div class="section-header">
-                            <h3>Education & Qualification</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="articleshipSection">
-                        <div class="section-header">
-                            <h3>Articleship Experience</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="interviewQuestionsSection">
-                        <div class="section-header">
-                            <h3>Predicted Interview Questions</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="finalRecommendationsSection">
-                        <div class="section-header">
-                            <h3>Final Recommendations</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-
-                     <div class="action-buttons mt-6">
-                       <button class="primary-btn" id="downloadReportBtn">
-                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>Download Report
-                       </button>
-                       <button class="secondary-btn" id="startOverBtn">
-                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>Analyze Another CV
-                       </button>
-                     </div>
-                </div>
+                    <div class="category-item" data-category="experience">
+                        <div class="category-header"><h4>Experience Description</h4><span class="points text-sm font-medium text-primary">0/20 pts</span></div>
+                        <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
+                    </div>
+                    <div class="category-item" data-category="presentation">
+                        <div class="category-header"><h4>Overall Presentation</h4><span class="points text-sm font-medium text-primary">0/10 pts</span></div>
+                        <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
+                    </div>
+                 </div>
+                 <div class="mt-4 pt-4 border-t border-border">
+                     <h4 class="font-semibold text-sm mb-1">Score Justification:</h4>
+                     <p class="text-xs text-text-secondary" id="scoreJustification">Loading...</p>
+                 </div>
             </div>
-        </div>
 
-        <div id="tab-leaderboard" class="tab-content">
-            <h3 class="text-xl font-semibold text-primary mb-4">Top Resumes</h3>
-            <div id="leaderboardContent" class="space-y-2">Loading...</div>
-        </div>
+            <div class="results-main">
+                 <div class="feedback-section" id="recruiterTipsSection"><h3>Recruiter Tips</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="measurableResultsSection"><h3>Measurable Results</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="phrasesSuggestionsSection"><h3>Phrases Suggestions</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="hardSkillsSection"><h3>Hard Skills Analysis</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="softSkillsSection"><h3>Soft Skills Analysis</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="actionVerbsSection"><h3>Action Verbs Usage</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="grammarCheckSection"><h3>Grammar & Proofreading</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="formattingSection"><h3>Formatting & Readability</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="educationSection"><h3>Education & Qualification</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="articleshipSection"><h3>Articleship Experience</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="finalRecommendationsSection"><h3>Final Recommendations</h3><div class="content-area">Loading...</div></div>
 
-        <div id="tab-history" class="tab-content">
-            <h3 class="text-xl font-semibold text-primary mb-4">My Past Reviews</h3>
-            <div id="historyContent" class="space-y-2">Loading...</div>
-            <div id="historyDetailContent" class="mt-4" style="display:none;"></div>
+                 <div class="action-buttons mt-6">
+                   <button class="primary-btn" id="downloadReportBtn">
+                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>Download Report
+                   </button>
+                   <button class="secondary-btn" id="startOverBtn">
+                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>Analyze Another CV
+                   </button>
+                 </div>
+            </div>
         </div>
     </div>
 
