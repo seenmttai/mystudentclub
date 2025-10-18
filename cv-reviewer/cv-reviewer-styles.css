@@ -400,10 +400,11 @@ body {
 }
 
 .score-text {
-  font-size: 18px; 
+  font-size: 16px;
   font-weight: 700;
   fill: var(--primary);
-  transform: rotate(90deg) translate(0, -36px); 
+  transform: rotate(90deg);
+  transform-origin: 18px 18px;
   text-anchor: middle;
   dominant-baseline: middle;
 }

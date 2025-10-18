@@ -4,9 +4,10 @@ const { jsPDF } = window.jspdf;
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.worker.min.js';
 
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabaseKey = 'eyJhbGciOiJI-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+
 let userId = null;
+let supabase = null;
 
 const heroSection = document.getElementById('heroSection');
 const uploadSection = document.getElementById('uploadSection');
@@ -299,6 +300,19 @@ proceedToReviewBtn.addEventListener('click', () => {
         }
     }
 }*/
+
+// Add this function to initialize Supabase with the user ID header
+function initializeSupabase() {
+    if (!userId) setupUserId();
+    const headers = {
+        'x-msc-user-id': userId
+    };
+    supabase = createClient(supabaseUrl, supabaseKey, {
+        global: {
+            headers: headers
+        }
+    });
+}
 
 proceedToReviewBtn.addEventListener('click', analyzeCv);
 
@@ -795,6 +809,8 @@ function resetToUploadStage() {
     heroSection.style.display = 'block';
     uploadSection.style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Re-initialize supabase client in case user ID was just set.
+    initializeSupabase();
 }
 
 downloadReportBtn.addEventListener('click', () => {
@@ -808,16 +824,98 @@ downloadReportBtn.addEventListener('click', () => {
         unit: 'mm',
         format: 'a4'
     });
-    
+
+    // Add Poppins font
+    // This is a simplified way. For production, you'd host the font file.
+    // jsPDF has limited built-in font support. For full custom fonts, more setup is needed.
+    // We'll stick to helvetica which is standard.
+
+    let yPosition = 20;
+    const leftMargin = 15;
+    const rightMargin = 15;
+    const usableWidth = 210 - leftMargin - rightMargin;
+
+    const checkPageBreak = (height) => {
+        if (yPosition + height > 280) { // 297mm page height minus margin
+            doc.addPage();
+            yPosition = 20; // Reset Y position for new page
+        }
+    };
+
+    const renderMarkdown = (text) => {
+        const lines = text.split('\n');
+        lines.forEach(line => {
+            line = line.trim();
+
+             // Cleanup markers
+            line = line.replace(/\[GOOD\]/g, '(✓)')
+                       .replace(/\[ISSUE\]/g, '(✗)')
+                       .replace(/<</g, '&lt;&lt;').replace(/>>/g, '&gt;&gt;') // escape markers
+                       .replace(/---/g, '');
+
+
+            if (line.startsWith('*   **') || line.startsWith('**')) { // Sub-heading like "**Contact Information:**"
+                checkPageBreak(8);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11);
+                doc.setTextColor(45, 52, 54);
+                const content = line.replace(/\*/g, '').replace(/:$/, '');
+                const splitText = doc.splitTextToSize(content + ':', usableWidth);
+                doc.text(splitText, leftMargin, yPosition);
+                yPosition += (splitText.length * 4) + 2;
+            } else if (line.startsWith('*')) { // List item
+                checkPageBreak(5);
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(45, 52, 54);
+                const content = '• ' + line.substring(1).trim();
+                const splitText = doc.splitTextToSize(content, usableWidth - 3); // Indent for bullet
+                doc.text(splitText, leftMargin + 3, yPosition);
+                yPosition += (splitText.length * 4);
+            } else if (line.trim()) { // Normal paragraph
+                checkPageBreak(5);
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(45, 52, 54);
+                // Handle bold text inside paragraphs
+                const parts = line.split('**');
+                let xPos = leftMargin;
+                for (let i = 0; i < parts.length; i++) {
+                    const part = parts[i];
+                    doc.setFont("helvetica", (i % 2 === 1) ? "bold" : "normal");
+                    const textWidth = doc.getTextWidth(part);
+                    
+                    // Simple word wrap check
+                    if (xPos + textWidth > (210-rightMargin)) {
+                        const splitPart = doc.splitTextToSize(part, (210-rightMargin) - xPos);
+                        doc.text(splitPart[0], xPos, yPosition);
+                        if (splitPart.length > 1) {
+                            // This part is simplified and won't handle complex mid-line wraps perfectly
+                            yPosition += 4;
+                            doc.text(splitPart.slice(1).join(' '), leftMargin, yPosition);
+                        }
+                        xPos = leftMargin + doc.getTextWidth(splitPart[splitPart.length-1]);
+
+                    } else {
+                       doc.text(part, xPos, yPosition);
+                       xPos += textWidth;
+                    }
+                }
+                yPosition += 4; // Move to next line after rendering a multi-part line
+            }
+        });
+    };
+
     doc.setFont("helvetica", "bold");
     doc.setFontSize(20);
-    doc.setTextColor(63, 63, 186);
-    doc.text("My Student Club - CV Analysis Report", 105, 20, { align: 'center' });
-
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "normal");
+    doc.setTextColor(63, 63, 186); // primary color
+    doc.text("My Student Club", 105, yPosition, { align: 'center' });
+    yPosition += 8;
+    doc.setFontSize(16);
     doc.setTextColor(45, 52, 54);
-    
+    doc.text("CV Analysis Report", 105, yPosition, { align: 'center' });
+    yPosition += 15;
+
     const sections = [
         { title: "Overall Score", start: '<<<OVERALL_SCORE>>>', end: '<<<END_OVERALL_SCORE>>>' },
         { title: "Recruiter Tips", start: '<<<RECRUITER_TIPS>>>', end: '<<<END_RECRUITER_TIPS>>>' },
@@ -834,47 +932,23 @@ downloadReportBtn.addEventListener('click', () => {
         { title: "Final Recommendations", start: '<<<FINAL_RECOMMENDATIONS>>>', end: '<<<END_FINAL_RECOMMENDATIONS>>>' }
     ];
 
-    let yPosition = 35;
-    const leftMargin = 15;
-    const rightMargin = 15;
-    const usableWidth = 210 - leftMargin - rightMargin;
-    const checkPageBreak = (height) => {
-        if (yPosition + height > 280) {
-            doc.addPage();
-            yPosition = 20;
-        }
-    };
-    
     sections.forEach(section => {
         const content = extractSectionContent(analysisResultText, section.start, section.end);
         if (content) {
-            const cleanedContent = content
-                .replace(/\[GOOD\]/g, '(+)')
-                .replace(/\[ISSUE\]/g, '(-)')
-                .replace(/\*\*(.*?)\*\*/g, "$1") // Bold to normal for PDF simplicity, handled by setFont
-                .replace(/---/g, '\n-------------------\n')
-                .replace(/<<END_POINT>>/g, '')
-                .replace(/<<POINT>>/g, '');
-
             checkPageBreak(12);
             doc.setFont("helvetica", "bold");
             doc.setFontSize(14);
-            doc.setTextColor(79, 70, 229);
+            doc.setTextColor(79, 70, 229); // primary-dark
             doc.text(section.title, leftMargin, yPosition);
             yPosition += 8;
 
-            doc.setFont("helvetica", "normal");
-            doc.setFontSize(10);
-            doc.setTextColor(45, 52, 54);
-
-            const lines = doc.splitTextToSize(cleanedContent, usableWidth);
-            checkPageBreak(lines.length * 4);
-            doc.text(lines, leftMargin, yPosition);
-            yPosition += (lines.length * 4) + 6;
+            // Render content with basic markdown
+            renderMarkdown(content.replace(/<<POINT>>/g, '').replace(/<<END_POINT>>/g, ''));
+            yPosition += 6; // Space after section
         }
     });
 
-    const safeFileName = selectedFile ? selectedFile.name.replace(/[^a-z0-9_.-]/gi, '_').replace('.pdf', '') : 'CV';
+    const safeFileName = selectedFile ? selectedFile.name.replace(/\.pdf$/i, '').replace(/[^a-z0-9_.-]/gi, '_') : 'CV';
     const filename = `${safeFileName}_Analysis_Report.pdf`;
     doc.save(filename);
 });
