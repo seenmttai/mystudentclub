@@ -602,7 +602,7 @@ function parseAndDisplayEducation(text) {
     educationContent.innerHTML = content ? formatFeedbackText(content) : '<p class="text-text-secondary">No education analysis available.</p>';
 }
 function parseAndDisplayArticleship(text) {
-    const content = extractSectionContent(text, '<<<ARTICLESIP_EXPERIENCE>>>', '<<<END_ARTICLESIP_EXPERIENCE>>>');
+    const content = extractSectionContent(text, '<<<ARTICLESHIP_EXPERIENCE>>>', '<<<END_ARTICLESHIP_EXPERIENCE>>>');
     articleshipContent.innerHTML = content ? formatFeedbackText(content) : '<p class="text-text-secondary">No articleship analysis available.</p>';
 }
 function parseAndDisplayFinalRecommendations(text) {
@@ -830,7 +830,7 @@ downloadReportBtn.addEventListener('click', () => {
         { title: "Grammar & Proofreading", start: '<<<GRAMMAR_CHECK>>>', end: '<<<END_GRAMMAR_CHECK>>>' },
         { title: "Formatting & Readability", start: '<<<FORMATTING_READABILITY>>>', end: '<<<END_FORMATTING_READABILITY>>>' },
         { title: "Education & Qualification", start: '<<<EDUCATION_QUALIFICATION>>>', end: '<<<END_EDUCATION_QUALIFICATION>>>' },
-        { title: "Articleship Experience", start: '<<<ARTICLESIP_EXPERIENCE>>>', end: '<<<END_ARTICLESIP_EXPERIENCE>>>' },
+        { title: "Articleship Experience", start: '<<<ARTICLESHIP_EXPERIENCE>>>', end: '<<<END_ARTICLESHIP_EXPERIENCE>>>' },
         { title: "Final Recommendations", start: '<<<FINAL_RECOMMENDATIONS>>>', end: '<<<END_FINAL_RECOMMENDATIONS>>>' }
     ];
 
@@ -941,14 +941,14 @@ async function loadHistory() {
     
     const { data, error } = await supabase
         .from('msc_cv_ai_resume_reviews')
-        .select('id, score, created_at, file_name, review_data')
+        .select('id, score, created_at, file_name, review_data', { head: false })
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(20);
 
     if (error) {
         console.error('Error fetching history:', error);
-        contentEl.innerHTML = '<p class="text-danger">Could not load history.</p>';
+        contentEl.innerHTML = `<p class="text-danger">Could not load history. ${error.message}</p>`;
         return;
     }
 
