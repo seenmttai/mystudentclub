@@ -1,5 +1,9 @@
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.worker.min.js';
 
+const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
 const heroSection = document.getElementById('heroSection');
 const uploadSection = document.getElementById('uploadSection');
 const dropArea = document.getElementById('dropArea');
@@ -40,12 +44,22 @@ const finalRecommendationsContent = document.querySelector('#finalRecommendation
 const menuButton = document.getElementById('menuButton');
 const expandedMenu = document.getElementById('expandedMenu');
 const menuCloseBtn = document.getElementById('menuCloseBtn');
+const interviewQuestionsContent = document.querySelector('#interviewQuestionsSection .content-area');
+const viewLeaderboardBtn = document.getElementById('viewLeaderboardBtn');
+const viewHistoryBtn = document.getElementById('viewHistoryBtn');
+const leaderboardModal = document.getElementById('leaderboardModal');
+const historyModal = document.getElementById('historyModal');
+const closeLeaderboardBtn = document.getElementById('closeLeaderboardBtn');
+const closeHistoryBtn = document.getElementById('closeHistoryBtn');
+const leaderboardContent = document.getElementById('leaderboardContent');
+const historyContent = document.getElementById('historyContent');
 
 let selectedFile = null;
 let pdfDocument = null;
 let pdfImages = [];
 let analysisResultText = null;
 let currentProgressInterval = null;
+let currentReviewId = null;
 
 const specializationOptions = {
     "Finance & Accounting": ["Accountant", "Financial Analyst", "Statutory Auditor", "Internal Auditor", "Tax Consultant", "AP/AR Specialist", "Corporate Finance", "ESG Analyst", "Forensic Accountant", "Management Accountant", "Bookkeeper", "Equity Research"],
@@ -68,6 +82,43 @@ document.addEventListener('DOMContentLoaded', () => {
       </linearGradient>`;
     svg.insertBefore(defs, svg.firstChild);
   }
+
+  // Setup collapsible sections
+  document.querySelectorAll('.section-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const sectionName = header.dataset.section;
+      const content = document.querySelector(`[data-content="${sectionName}"]`);
+      
+      header.classList.toggle('collapsed');
+      content.classList.toggle('collapsed');
+    });
+  });
+
+  // Setup modal handlers
+  viewLeaderboardBtn.addEventListener('click', showLeaderboard);
+  viewHistoryBtn.addEventListener('click', showHistory);
+  closeLeaderboardBtn.addEventListener('click', () => {
+    leaderboardModal.style.display = 'none';
+    leaderboardModal.classList.add('hidden');
+  });
+  closeHistoryBtn.addEventListener('click', () => {
+    historyModal.style.display = 'none';
+    historyModal.classList.add('hidden');
+  });
+
+  // Close modals on outside click
+  leaderboardModal.addEventListener('click', (e) => {
+    if (e.target === leaderboardModal) {
+      leaderboardModal.style.display = 'none';
+      leaderboardModal.classList.add('hidden');
+    }
+  });
+  historyModal.addEventListener('click', (e) => {
+    if (e.target === historyModal) {
+      historyModal.style.display = 'none';
+      historyModal.classList.add('hidden');
+    }
+  });
 });
 
 menuButton.addEventListener('click', () => {
@@ -297,6 +348,9 @@ async function analyzeCv() {
 
     processStructuredResults(analysisResultText);
 
+    // Save to Supabase
+    await saveReviewToSupabase(analysisResultText);
+
     loadingSection.style.display = 'none';
     resultsSection.style.display = 'block';
     tipsSection.style.display = 'block';
@@ -362,11 +416,12 @@ function parseAndDisplayOverallScore(text) {
     let justification = "Not available.";
 
     if (scoreSection) {
-        const scoreMatch = scoreSection.match(/Score:\s*(\d+)\/100/i);
+        // Match decimal scores like 99.7, 85.3, etc.
+        const scoreMatch = scoreSection.match(/Score:\s*(\d+(?:\.\d+)?)(?:\/100|%)?/i);
         const justMatch = scoreSection.match(/Justification:\s*(.*)/is);
 
         if (scoreMatch) {
-            overallScore = parseInt(scoreMatch[1], 10);
+            overallScore = parseFloat(scoreMatch[1]);
         }
         if (justMatch) {
             justification = justMatch[1].trim();
@@ -520,6 +575,27 @@ function parseAndDisplayFinalRecommendations(text) {
     finalRecommendationsContent.innerHTML = content ? formatFeedbackText(content) : '<p class="text-text-secondary">No final recommendations available.</p>';
 }
 
+function parseAndDisplayInterviewQuestions(text) {
+    const content = extractSectionContent(text, '<<<INTERVIEW_QUESTIONS>>>', '<<<END_INTERVIEW_QUESTIONS>>>');
+    if (!content) {
+        interviewQuestionsContent.innerHTML = '<p class="text-text-secondary">No interview questions available.</p>';
+        return;
+    }
+
+    const questions = content.split('\n').filter(line => line.trim() && !line.startsWith('**') && !line.startsWith('###'));
+    let html = '<ul class="interview-questions-list">';
+    
+    questions.forEach(q => {
+        const cleaned = q.trim().replace(/^\d+\.\s*/, '').replace(/^[\-\*]\s*/, '');
+        if (cleaned) {
+            html += `<li>${cleaned}</li>`;
+        }
+    });
+    
+    html += '</ul>';
+    interviewQuestionsContent.innerHTML = html;
+}
+
 function processStructuredResults(resultsText) {
     clearResultsContent();
 
@@ -536,6 +612,7 @@ function processStructuredResults(resultsText) {
     parseAndDisplayEducation(resultsText);
     parseAndDisplayArticleship(resultsText);
     parseAndDisplayFinalRecommendations(resultsText);
+    parseAndDisplayInterviewQuestions(resultsText);
 
     updateScoreBreakdown(overallScore, resultsText);
 }
@@ -700,102 +777,118 @@ function resetToUploadStage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-downloadReportBtn.addEventListener('click', () => {
+downloadReportBtn.addEventListener('click', async () => {
     if (!analysisResultText) {
         alert("No analysis report available to download.");
         return;
     }
 
-    let reportContent = `My Student Club - CV Analysis Report\n`;
-    reportContent += `=====================================\n\n`;
-    reportContent += `Domain: Financing\n`;
-    reportContent += `Specialization: Accounting\n\n`;
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 15;
+        const maxWidth = pageWidth - (margin * 2);
+        let yPosition = margin;
 
-    const sections = [
-        { title: "Overall Score", start: '<<<OVERALL_SCORE>>>', end: '<<<END_OVERALL_SCORE>>>' },
-        { title: "Recruiter Tips", start: '<<<RECRUITER_TIPS>>>', end: '<<<END_RECRUITER_TIPS>>>' },
-        { title: "Measurable Results Analysis", start: '<<<MEASURABLE_RESULTS>>>', end: '<<<END_MEASURABLE_RESULTS>>>' },
-        { title: "Phrases Suggestions", start: '<<<PHRASES_SUGGESTIONS>>>', end: '<<<END_PHRASES_SUGGESTIONS>>>' },
-        { title: "Hard Skills Analysis", start: '<<<HARD_SKILLS>>>', end: '<<<END_HARD_SKILLS>>>' },
-        { title: "Soft Skills Analysis", start: '<<<SOFT_SKILLS>>>', end: '<<<END_SOFT_SKILLS>>>' },
-        { title: "Action Verbs Usage", start: '<<<ACTION_VERBS>>>', end: '<<<END_ACTION_VERBS>>>' },
-        { title: "Grammar & Proofreading", start: '<<<GRAMMAR_CHECK>>>', end: '<<<END_GRAMMAR_CHECK>>>' },
-        { title: "Formatting & Readability", start: '<<<FORMATTING_READABILITY>>>', end: '<<<END_FORMATTING_READABILITY>>>' },
-        { title: "Education & Qualification", start: '<<<EDUCATION_QUALIFICATION>>>', end: '<<<END_EDUCATION_QUALIFICATION>>>' },
-        { title: "Articleship Experience", start: '<<<ARTICLESIP_EXPERIENCE>>>', end: '<<<END_ARTICLESIP_EXPERIENCE>>>' },
-        { title: "Final Recommendations", start: '<<<FINAL_RECOMMENDATIONS>>>', end: '<<<END_FINAL_RECOMMENDATIONS>>>' }
-    ];
+        // Title
+        doc.setFontSize(20);
+        doc.setTextColor(79, 70, 229);
+        doc.text('CV Analysis Report', margin, yPosition);
+        yPosition += 10;
 
-    sections.forEach(section => {
-        const content = extractSectionContent(analysisResultText, section.start, section.end);
-        if (content) {
-            reportContent += `${section.title}\n`;
-            reportContent += `${'-'.repeat(section.title.length)}\n`;
-            let cleanedContent = content
+        // Metadata
+        doc.setFontSize(10);
+        doc.setTextColor(100, 116, 139);
+        doc.text(`Domain: Financing | Specialization: Accounting`, margin, yPosition);
+        yPosition += 10;
+
+        // Score
+        const overallScore = parseFloat(scoreText.textContent) || 0;
+        doc.setFontSize(16);
+        doc.setTextColor(79, 70, 229);
+        doc.text(`Overall Score: ${overallScore.toFixed(1)}%`, margin, yPosition);
+        yPosition += 12;
+
+        // Helper function to add section
+        const addSection = (title, content) => {
+            if (yPosition > pageHeight - 30) {
+                doc.addPage();
+                yPosition = margin;
+            }
+
+            doc.setFontSize(14);
+            doc.setTextColor(79, 70, 229);
+            doc.text(title, margin, yPosition);
+            yPosition += 7;
+
+            doc.setFontSize(10);
+            doc.setTextColor(51, 51, 51);
+            
+            const cleanContent = content
+                .replace(/<[^>]*>/g, '')
                 .replace(/\[GOOD\]/g, '(+)')
                 .replace(/\[ISSUE\]/g, '(-)')
-                .replace(/<br>/g, '\n')
-                .replace(/<p>/g, '\n')
-                .replace(/<\/p>/g, '')
-                .replace(/<strong>(.*?)<\/strong>/g, '*$1*')
-                .replace(/<em>(.*?)<\/em>/g, '_$1_')
-                .replace(/<code>(.*?)<\/code>/g, '`$1`')
-                .replace(/<ul>/g, '')
-                .replace(/<\/ul>/g, '')
-                .replace(/<ol>/g, '')
-                .replace(/<\/ol>/g, '')
-                .replace(/<li>/g, '\n - ')
-                .replace(/<\/li>/g, '')
-                .replace(/<h[1-6].*?>(.*?)<\/h[1-6]>/g, '\n### $1\n')
-                .replace(/^\s*•\s*/gm, ' - ')
-                .replace(/Original:\s*<code.*?>([\s\S]*?)<\/code>/gi, 'Original: "$1"')
-                .replace(/Critique:\s*/gi, '\nCritique: ')
-                .replace(/Rewrite Suggestions:/gi, '\nRewrite Suggestions:')
-                .replace(/<div class="rewrite-suggestion">([\s\S]*?)<\/div>/gi, '  * Suggestion: $1')
-                .replace(/<span class="highlight-good".*?>✓<\/span>/g,'(+)')
-                .replace(/<span class="highlight-issue".*?>✗<\/span>/g,'(-)')
-                .replace(/&/g, '&')
-                .replace(/</g, '<')
-                .replace(/>/g, '>')
-                .replace(/"/g, '"')
-                .replace(/'/g, "'")
-                .replace(/\n\s*\n/g, '\n\n')
+                .replace(/&nbsp;/g, ' ')
+                .replace(/&amp;/g, '&')
+                .replace(/&lt;/g, '<')
+                .replace(/&gt;/g, '>')
                 .trim();
 
-            reportContent += cleanedContent + '\n\n';
-        } else {
-            reportContent += `${section.title}\n`;
-            reportContent += `${'-'.repeat(section.title.length)}\n`;
-            reportContent += `(No details available for this section)\n\n`;
-        }
-    });
-
-    reportContent += `---------------------------------------------------------------\n`;
-    reportContent += `Generated by My Student Club CV Reviewer\n`;
-
-    const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
-    const safeFileName = selectedFile ? selectedFile.name.replace(/[^a-z0-9_.-]/gi, '_').replace('.pdf', '') : 'CV';
-    const filename = `${safeFileName}_Analysis_Report.txt`;
-
-    if (window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler === 'function') {
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = function() {
-            const base64data = reader.result;
-            const base64Content = base64data.split(',')[1];
-            window.flutter_inappwebview.callHandler('blobToBase64Handler', base64Content, filename);
+            const lines = doc.splitTextToSize(cleanContent, maxWidth);
+            
+            lines.forEach(line => {
+                if (yPosition > pageHeight - 15) {
+                    doc.addPage();
+                    yPosition = margin;
+                }
+                doc.text(line, margin, yPosition);
+                yPosition += 5;
+            });
+            
+            yPosition += 5;
         };
-    } else {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }, 100);
+
+        // Add all sections
+        const sections = [
+            { title: "Recruiter Tips", start: '<<<RECRUITER_TIPS>>>', end: '<<<END_RECRUITER_TIPS>>>' },
+            { title: "Measurable Results", start: '<<<MEASURABLE_RESULTS>>>', end: '<<<END_MEASURABLE_RESULTS>>>' },
+            { title: "Phrases Suggestions", start: '<<<PHRASES_SUGGESTIONS>>>', end: '<<<END_PHRASES_SUGGESTIONS>>>' },
+            { title: "Hard Skills", start: '<<<HARD_SKILLS>>>', end: '<<<END_HARD_SKILLS>>>' },
+            { title: "Soft Skills", start: '<<<SOFT_SKILLS>>>', end: '<<<END_SOFT_SKILLS>>>' },
+            { title: "Action Verbs", start: '<<<ACTION_VERBS>>>', end: '<<<END_ACTION_VERBS>>>' },
+            { title: "Grammar Check", start: '<<<GRAMMAR_CHECK>>>', end: '<<<END_GRAMMAR_CHECK>>>' },
+            { title: "Formatting", start: '<<<FORMATTING_READABILITY>>>', end: '<<<END_FORMATTING_READABILITY>>>' },
+            { title: "Education", start: '<<<EDUCATION_QUALIFICATION>>>', end: '<<<END_EDUCATION_QUALIFICATION>>>' },
+            { title: "Articleship", start: '<<<ARTICLESIP_EXPERIENCE>>>', end: '<<<END_ARTICLESIP_EXPERIENCE>>>' },
+            { title: "Interview Questions", start: '<<<INTERVIEW_QUESTIONS>>>', end: '<<<END_INTERVIEW_QUESTIONS>>>' },
+            { title: "Final Recommendations", start: '<<<FINAL_RECOMMENDATIONS>>>', end: '<<<END_FINAL_RECOMMENDATIONS>>>' }
+        ];
+
+        sections.forEach(section => {
+            const content = extractSectionContent(analysisResultText, section.start, section.end);
+            if (content) {
+                addSection(section.title, content);
+            }
+        });
+
+        // Footer
+        const totalPages = doc.internal.getNumberOfPages();
+        for (let i = 1; i <= totalPages; i++) {
+            doc.setPage(i);
+            doc.setFontSize(8);
+            doc.setTextColor(150);
+            doc.text(`Generated by My Student Club CV Reviewer - Page ${i} of ${totalPages}`, margin, pageHeight - 10);
+        }
+
+        const safeFileName = selectedFile ? selectedFile.name.replace(/[^a-z0-9_.-]/gi, '_').replace('.pdf', '') : 'CV';
+        doc.save(`${safeFileName}_Analysis_Report.pdf`);
+
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        alert('Error generating PDF. Please try again.');
     }
 });
 
@@ -808,4 +901,156 @@ function resetToUploadStageOnError() {
      uploadSection.style.display = 'block';
      heroSection.style.display = 'block';
      uploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function saveReviewToSupabase(reviewText) {
+    try {
+        const overallScore = parseFloat(scoreText.textContent) || 0;
+        
+        // Generate a user session ID (in production, use actual auth)
+        let userId = localStorage.getItem('cv_reviewer_user_id');
+        if (!userId) {
+            userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('cv_reviewer_user_id', userId);
+        }
+
+        const { data, error } = await supabaseClient
+            .from('resume_reviews')
+            .insert([
+                {
+                    user_id: userId,
+                    score: overallScore,
+                    review_text: reviewText,
+                    domain: 'Financing',
+                    specialization: 'Accounting',
+                    file_name: selectedFile ? selectedFile.name : 'Unknown',
+                    created_at: new Date().toISOString()
+                }
+            ])
+            .select();
+
+        if (error) {
+            console.error('Error saving to Supabase:', error);
+        } else if (data && data.length > 0) {
+            currentReviewId = data[0].id;
+            console.log('Review saved successfully:', currentReviewId);
+        }
+    } catch (error) {
+        console.error('Exception saving to Supabase:', error);
+    }
+}
+
+async function showLeaderboard() {
+    leaderboardModal.style.display = 'block';
+    leaderboardModal.classList.remove('hidden');
+    leaderboardContent.innerHTML = '<div class="text-center p-4">Loading leaderboard...</div>';
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('resume_reviews')
+            .select('id, score, domain, specialization, file_name, created_at')
+            .order('score', { ascending: false })
+            .limit(50);
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            leaderboardContent.innerHTML = '<p class="text-center text-text-secondary">No reviews yet. Be the first!</p>';
+            return;
+        }
+
+        let html = '<table class="leaderboard-table"><thead><tr><th>Rank</th><th>Score</th><th>Domain</th><th>Date</th></tr></thead><tbody>';
+        
+        data.forEach((review, index) => {
+            const rank = index + 1;
+            const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-other';
+            const date = new Date(review.created_at).toLocaleDateString();
+            
+            html += `<tr>
+                <td><span class="rank-badge ${rankClass}">${rank}</span></td>
+                <td><strong>${review.score.toFixed(1)}%</strong></td>
+                <td>${review.specialization || 'N/A'}</td>
+                <td>${date}</td>
+            </tr>`;
+        });
+        
+        html += '</tbody></table>';
+        leaderboardContent.innerHTML = html;
+    } catch (error) {
+        console.error('Error loading leaderboard:', error);
+        leaderboardContent.innerHTML = '<p class="text-center text-red-600">Error loading leaderboard. Please try again.</p>';
+    }
+}
+
+async function showHistory() {
+    historyModal.style.display = 'block';
+    historyModal.classList.remove('hidden');
+    historyContent.innerHTML = '<div class="text-center p-4">Loading history...</div>';
+
+    try {
+        let userId = localStorage.getItem('cv_reviewer_user_id');
+        if (!userId) {
+            historyContent.innerHTML = '<p class="text-center text-text-secondary">No history found. Analyze your first resume!</p>';
+            return;
+        }
+
+        const { data, error } = await supabaseClient
+            .from('resume_reviews')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (!data || data.length === 0) {
+            historyContent.innerHTML = '<p class="text-center text-text-secondary">No history found. Analyze your first resume!</p>';
+            return;
+        }
+
+        let html = '';
+        data.forEach(review => {
+            const date = new Date(review.created_at).toLocaleDateString();
+            const time = new Date(review.created_at).toLocaleTimeString();
+            
+            html += `<div class="history-card" data-review-id="${review.id}">
+                <div class="history-card-header">
+                    <div>
+                        <h4 class="font-semibold text-primary">${review.file_name || 'Resume'}</h4>
+                        <p class="text-xs text-text-secondary">${date} at ${time}</p>
+                    </div>
+                    <div class="history-score">${review.score.toFixed(1)}%</div>
+                </div>
+                <p class="text-sm text-text-secondary">${review.specialization || 'N/A'} • ${review.domain || 'N/A'}</p>
+                <button class="mt-2 text-sm text-primary hover:underline view-review-btn" data-review-text="${encodeURIComponent(review.review_text)}">
+                    View Full Review
+                </button>
+            </div>`;
+        });
+        
+        historyContent.innerHTML = html;
+
+        // Add click handlers for viewing reviews
+        document.querySelectorAll('.view-review-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const reviewText = decodeURIComponent(btn.dataset.reviewText);
+                loadHistoricalReview(reviewText);
+                historyModal.style.display = 'none';
+                historyModal.classList.add('hidden');
+            });
+        });
+    } catch (error) {
+        console.error('Error loading history:', error);
+        historyContent.innerHTML = '<p class="text-center text-red-600">Error loading history. Please try again.</p>';
+    }
+}
+
+function loadHistoricalReview(reviewText) {
+    analysisResultText = reviewText;
+    processStructuredResults(reviewText);
+    
+    loadingSection.style.display = 'none';
+    resultsSection.style.display = 'block';
+    tipsSection.style.display = 'block';
+    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
