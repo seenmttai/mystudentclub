@@ -69,6 +69,7 @@ const specializationOptions = {
 document.addEventListener('DOMContentLoaded', () => {
   //populateSpecializations();
   setupUserId();
+  initializeSupabase(); // Initialize Supabase on page load
   const svg = document.querySelector('.score-chart');
   if (svg && !document.getElementById('scoreGradient')) {
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
@@ -738,6 +739,8 @@ function animateScore(score) {
     const steps = duration / stepTime;
     const increment = score / steps;
 
+    const scoreTextEl = document.getElementById('scoreText');
+
     const scoreInterval = setInterval(() => {
         currentScore += increment;
         if (currentScore >= score) {
@@ -746,7 +749,7 @@ function animateScore(score) {
         }
         const roundedScore = Math.round(currentScore);
         const displayScore = currentScore.toFixed(1);
-        scoreText.textContent = displayScore;
+        scoreTextEl.textContent = displayScore;
         scoreProgress.setAttribute('stroke-dasharray', `${roundedScore}, 100`);
     }, stepTime);
 }
@@ -810,7 +813,7 @@ function resetToUploadStage() {
     uploadSection.style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
     // Re-initialize supabase client in case user ID was just set.
-    initializeSupabase();
+    if (!supabase) initializeSupabase();
 }
 
 downloadReportBtn.addEventListener('click', () => {
@@ -843,14 +846,19 @@ downloadReportBtn.addEventListener('click', () => {
     };
 
     const renderMarkdown = (text) => {
-        const lines = text.split('\n');
+        // Decode HTML entities that might have been created
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = text;
+        const decodedText = tempDiv.textContent || tempDiv.innerText || "";
+        
+        const lines = decodedText.split('\n');
         lines.forEach(line => {
             line = line.trim();
 
              // Cleanup markers
             line = line.replace(/\[GOOD\]/g, '(✓)')
                        .replace(/\[ISSUE\]/g, '(✗)')
-                       .replace(/<</g, '&lt;&lt;').replace(/>>/g, '&gt;&gt;') // escape markers
+                       .replace(/<</g, '').replace(/>>/g, '') // remove markers
                        .replace(/---/g, '');
 
 
@@ -877,31 +885,9 @@ downloadReportBtn.addEventListener('click', () => {
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(10);
                 doc.setTextColor(45, 52, 54);
-                // Handle bold text inside paragraphs
-                const parts = line.split('**');
-                let xPos = leftMargin;
-                for (let i = 0; i < parts.length; i++) {
-                    const part = parts[i];
-                    doc.setFont("helvetica", (i % 2 === 1) ? "bold" : "normal");
-                    const textWidth = doc.getTextWidth(part);
-                    
-                    // Simple word wrap check
-                    if (xPos + textWidth > (210-rightMargin)) {
-                        const splitPart = doc.splitTextToSize(part, (210-rightMargin) - xPos);
-                        doc.text(splitPart[0], xPos, yPosition);
-                        if (splitPart.length > 1) {
-                            // This part is simplified and won't handle complex mid-line wraps perfectly
-                            yPosition += 4;
-                            doc.text(splitPart.slice(1).join(' '), leftMargin, yPosition);
-                        }
-                        xPos = leftMargin + doc.getTextWidth(splitPart[splitPart.length-1]);
-
-                    } else {
-                       doc.text(part, xPos, yPosition);
-                       xPos += textWidth;
-                    }
-                }
-                yPosition += 4; // Move to next line after rendering a multi-part line
+                 const splitText = doc.splitTextToSize(line, usableWidth);
+                 doc.text(splitText, leftMargin, yPosition);
+                 yPosition += (splitText.length * 4);
             }
         });
     };

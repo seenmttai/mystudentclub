@@ -400,7 +400,7 @@ body {
 }
 
 .score-text {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   fill: var(--primary);
   transform: rotate(90deg);
