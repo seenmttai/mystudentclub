@@ -5,8 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CV Reviewer - My Student Club</title>
   <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -79,108 +77,6 @@
     .content-area em { font-style: italic; }
     .content-area code { background-color: rgba(100, 116, 139, 0.1); padding: 0.1rem 0.3rem; border-radius: 4px; font-size: 0.85em; color: var(--text-secondary); }
     .content-area h4 { font-size: 1.05rem; font-weight: 600; color: var(--primary); margin-top: 1rem; margin-bottom: 0.5rem; }
-
-    .section-header {
-        cursor: pointer;
-        user-select: none;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        transition: color 0.2s ease;
-    }
-    .section-header:hover {
-        color: var(--primary-dark);
-    }
-    .section-header .toggle-icon {
-        width: 20px;
-        height: 20px;
-        transition: transform 0.3s ease;
-    }
-    .section-header.collapsed .toggle-icon {
-        transform: rotate(-90deg);
-    }
-    .section-content {
-        max-height: 5000px;
-        overflow: hidden;
-        transition: max-height 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
-        opacity: 1;
-        margin-top: 1rem;
-    }
-    .section-content.collapsed {
-        max-height: 0;
-        opacity: 0;
-        margin-top: 0;
-    }
-    .leaderboard-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 1rem;
-    }
-    .leaderboard-table th,
-    .leaderboard-table td {
-        padding: 0.75rem;
-        text-align: left;
-        border-bottom: 1px solid var(--border);
-    }
-    .leaderboard-table th {
-        background: var(--background-light);
-        font-weight: 600;
-        color: var(--primary);
-    }
-    .leaderboard-table tr:hover {
-        background: rgba(79, 70, 229, 0.03);
-    }
-    .rank-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        font-weight: 600;
-        font-size: 0.85rem;
-    }
-    .rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); color: white; }
-    .rank-2 { background: linear-gradient(135deg, #C0C0C0, #808080); color: white; }
-    .rank-3 { background: linear-gradient(135deg, #CD7F32, #8B4513); color: white; }
-    .rank-other { background: var(--background); color: var(--text-secondary); border: 1px solid var(--border); }
-    .history-card {
-        background: var(--background-light);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        transition: all 0.2s ease;
-        cursor: pointer;
-    }
-    .history-card:hover {
-        border-color: var(--primary-light);
-        box-shadow: var(--shadow-sm);
-    }
-    .history-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.5rem;
-    }
-    .history-score {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--primary);
-    }
-    .interview-questions-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    .interview-questions-list li {
-        background: rgba(79, 70, 229, 0.05);
-        border-left: 3px solid var(--primary);
-        padding: 0.75rem 1rem;
-        margin-bottom: 0.75rem;
-        border-radius: 4px;
-        font-weight: 500;
-    }
 
      @media (max-width: 1024px) {
         .results-grid {
@@ -358,16 +254,7 @@
     <div class="results-section" id="resultsSection" style="display: none;">
         <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
              <h2 class="text-2xl font-semibold text-primary">Resume Analysis Report</h2>
-             <div class="flex gap-2">
-                 <button class="action-btn analyze-btn text-sm" id="viewLeaderboardBtn" style="padding: 0.5rem 1rem;">
-                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                     Leaderboard
-                 </button>
-                 <button class="action-btn analyze-btn text-sm" id="viewHistoryBtn" style="padding: 0.5rem 1rem;">
-                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                     History
-                 </button>
-             </div>
+             <div></div>
         </div>
 
         <div class="results-grid">
@@ -419,90 +306,17 @@
             </div>
 
             <div class="results-main">
-                 <div class="feedback-section" id="recruiterTipsSection">
-                     <h3 class="section-header" data-section="recruiterTips">
-                         Recruiter Tips
-                         <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                     </h3>
-                     <div class="content-area section-content" data-content="recruiterTips">Loading...</div>
-                 </div>
-                 <div class="feedback-section" id="measurableResultsSection">
-                     <h3 class="section-header" data-section="measurableResults">
-                         Measurable Results
-                         <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                     </h3>
-                     <div class="content-area section-content" data-content="measurableResults">Loading...</div>
-                 </div>
-                 <div class="feedback-section" id="phrasesSuggestionsSection">
-                     <h3 class="section-header" data-section="phrasesSuggestions">
-                         Phrases Suggestions
-                         <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                     </h3>
-                     <div class="content-area section-content" data-content="phrasesSuggestions">Loading...</div>
-                 </div>
-                 <div class="feedback-section" id="hardSkillsSection">
-                     <h3 class="section-header" data-section="hardSkills">
-                         Hard Skills Analysis
-                         <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                     </h3>
-                     <div class="content-area section-content" data-content="hardSkills">Loading...</div>
-                 </div>
-                 <div class="feedback-section" id="softSkillsSection">
-                     <h3 class="section-header" data-section="softSkills">
-                         Soft Skills Analysis
-                         <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                     </h3>
-                     <div class="content-area section-content" data-content="softSkills">Loading...</div>
-                 </div>
-                 <div class="feedback-section" id="actionVerbsSection">
-                     <h3 class="section-header" data-section="actionVerbs">
-                         Action Verbs Usage
-                         <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                     </h3>
-                     <div class="content-area section-content" data-content="actionVerbs">Loading...</div>
-                 </div>
-                 <div class="feedback-section" id="grammarCheckSection">
-                     <h3 class="section-header" data-section="grammarCheck">
-                         Grammar & Proofreading
-                         <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                     </h3>
-                     <div class="content-area section-content" data-content="grammarCheck">Loading...</div>
-                 </div>
-                 <div class="feedback-section" id="formattingSection">
-                     <h3 class="section-header" data-section="formatting">
-                         Formatting & Readability
-                         <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                     </h3>
-                     <div class="content-area section-content" data-content="formatting">Loading...</div>
-                 </div>
-                 <div class="feedback-section" id="educationSection">
-                     <h3 class="section-header" data-section="education">
-                         Education & Qualification
-                         <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                     </h3>
-                     <div class="content-area section-content" data-content="education">Loading...</div>
-                 </div>
-                 <div class="feedback-section" id="articleshipSection">
-                     <h3 class="section-header" data-section="articleship">
-                         Articleship Experience
-                         <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                     </h3>
-                     <div class="content-area section-content" data-content="articleship">Loading...</div>
-                 </div>
-                 <div class="feedback-section" id="interviewQuestionsSection">
-                     <h3 class="section-header" data-section="interviewQuestions">
-                         Predicted Interview Questions
-                         <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                     </h3>
-                     <div class="content-area section-content" data-content="interviewQuestions">Loading...</div>
-                 </div>
-                 <div class="feedback-section" id="finalRecommendationsSection">
-                     <h3 class="section-header" data-section="finalRecommendations">
-                         Final Recommendations
-                         <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                     </h3>
-                     <div class="content-area section-content" data-content="finalRecommendations">Loading...</div>
-                 </div>
+                 <div class="feedback-section" id="recruiterTipsSection"><h3>Recruiter Tips</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="measurableResultsSection"><h3>Measurable Results</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="phrasesSuggestionsSection"><h3>Phrases Suggestions</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="hardSkillsSection"><h3>Hard Skills Analysis</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="softSkillsSection"><h3>Soft Skills Analysis</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="actionVerbsSection"><h3>Action Verbs Usage</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="grammarCheckSection"><h3>Grammar & Proofreading</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="formattingSection"><h3>Formatting & Readability</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="educationSection"><h3>Education & Qualification</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="articleshipSection"><h3>Articleship Experience</h3><div class="content-area">Loading...</div></div>
+                 <div class="feedback-section" id="finalRecommendationsSection"><h3>Final Recommendations</h3><div class="content-area">Loading...</div></div>
 
                  <div class="action-buttons mt-6">
                    <button class="primary-btn" id="downloadReportBtn">
@@ -542,42 +356,6 @@
       </div>
     </div>
   </main>
-
-  <div id="leaderboardModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden" style="display: none;">
-      <div class="flex items-center justify-center min-h-screen p-4">
-          <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto" style="background: var(--surface); border: 1px solid var(--border);">
-              <div class="p-6 border-b border-border flex justify-between items-center">
-                  <h2 class="text-2xl font-semibold text-primary">Leaderboard - Top Resumes</h2>
-                  <button id="closeLeaderboardBtn" class="text-text-secondary hover:text-primary">
-                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                  </button>
-              </div>
-              <div class="p-6">
-                  <div id="leaderboardContent">
-                      <div class="text-center p-4">Loading...</div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-
-  <div id="historyModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden" style="display: none;">
-      <div class="flex items-center justify-center min-h-screen p-4">
-          <div class="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-y-auto" style="background: var(--surface); border: 1px solid var(--border);">
-              <div class="p-6 border-b border-border flex justify-between items-center">
-                  <h2 class="text-2xl font-semibold text-primary">Your Resume History</h2>
-                  <button id="closeHistoryBtn" class="text-text-secondary hover:text-primary">
-                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                  </button>
-              </div>
-              <div class="p-6">
-                  <div id="historyContent">
-                      <div class="text-center p-4">Loading...</div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
 
   <script type="module" src="cv-reviewer.js"></script>
   <script>
