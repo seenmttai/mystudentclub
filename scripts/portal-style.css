@@ -1358,7 +1358,7 @@ body {
   padding: 1rem;
   width: 240px;
   z-index: 1010;
-  transition: opacity var(--transition-std), transform var(--transition-std);
+  transition: opacity 0.2s ease 0.15s, transform 0.2s ease 0.15s, visibility 0s 0.35s;
   transform: translateY(-10px);
   pointer-events: none;
 }
@@ -1382,6 +1382,7 @@ body {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s 0s;
 }
 
 .user-hover-content {
