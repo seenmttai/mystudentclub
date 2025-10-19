@@ -400,10 +400,12 @@ body {
 }
 
 .score-text {
-  font-size: 18px; 
+  font-size: 12px;
+  letter-spacing: -0.2px;
   font-weight: 700;
   fill: var(--primary);
-  transform: rotate(90deg) translate(0, -36px); 
+  transform: rotate(90deg);
+  transform-origin: 18px 18px;
   text-anchor: middle;
   dominant-baseline: middle;
 }
@@ -668,4 +670,5 @@ body {
   .tip-card { padding: 1rem; }
   .tip-card h3 { font-size: 0.95rem; }
   .tip-card p { font-size: 0.85rem; }
+  .score-text { font-size: 11px; }
 }

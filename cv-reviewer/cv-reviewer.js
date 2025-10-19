@@ -1,4 +1,13 @@
+import { createClient } from '@supabase/supabase-js';
+const { jsPDF } = window.jspdf;
+
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.worker.min.js';
+
+const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+
+let userId = null;
+let supabase = null;
 
 const heroSection = document.getElementById('heroSection');
 const uploadSection = document.getElementById('uploadSection');
@@ -37,6 +46,7 @@ const formattingContent = document.querySelector('#formattingSection .content-ar
 const educationContent = document.querySelector('#educationSection .content-area');
 const articleshipContent = document.querySelector('#articleshipSection .content-area');
 const finalRecommendationsContent = document.querySelector('#finalRecommendationsSection .content-area');
+const interviewQuestionsContent = document.querySelector('#interviewQuestionsSection .content-area');
 const menuButton = document.getElementById('menuButton');
 const expandedMenu = document.getElementById('expandedMenu');
 const menuCloseBtn = document.getElementById('menuCloseBtn');
@@ -58,6 +68,8 @@ const specializationOptions = {
 
 document.addEventListener('DOMContentLoaded', () => {
   //populateSpecializations();
+  setupUserId();
+  initializeSupabase(); // Initialize Supabase on page load
   const svg = document.querySelector('.score-chart');
   if (svg && !document.getElementById('scoreGradient')) {
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
@@ -68,7 +80,52 @@ document.addEventListener('DOMContentLoaded', () => {
       </linearGradient>`;
     svg.insertBefore(defs, svg.firstChild);
   }
+  setupTabs();
+  setupCollapsibleSections();
 });
+
+function setupUserId() {
+    userId = localStorage.getItem('msc_cv_reviewer_uuid');
+    if (!userId) {
+        userId = self.crypto.randomUUID();
+        localStorage.setItem('msc_cv_reviewer_uuid', userId);
+    }
+}
+
+function setupTabs() {
+    const tabContainer = document.querySelector('.tabs');
+    if (!tabContainer) return;
+    tabContainer.addEventListener('click', async (e) => {
+        if (e.target.matches('.tab-btn')) {
+            const tabId = e.target.dataset.tab;
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+
+            if (tabId === 'leaderboard') {
+                await loadLeaderboard();
+            } else if (tabId === 'history') {
+                await loadHistory();
+            }
+        }
+    });
+}
+
+function setupCollapsibleSections() {
+    const resultsSection = document.getElementById('resultsSection');
+    resultsSection.addEventListener('click', (e) => {
+        const header = e.target.closest('.section-header');
+        if (header) {
+            const content = header.nextElementSibling;
+            const icon = header.querySelector('.toggle-icon');
+            content.classList.toggle('collapsed');
+            icon.classList.toggle('collapsed');
+        }
+    });
+}
 
 menuButton.addEventListener('click', () => {
   expandedMenu.classList.toggle('active');
@@ -245,6 +302,19 @@ proceedToReviewBtn.addEventListener('click', () => {
     }
 }*/
 
+// Add this function to initialize Supabase with the user ID header
+function initializeSupabase() {
+    if (!userId) setupUserId();
+    const headers = {
+        'x-msc-user-id': userId
+    };
+    supabase = createClient(supabaseUrl, supabaseKey, {
+        global: {
+            headers: headers
+        }
+    });
+}
+
 proceedToReviewBtn.addEventListener('click', analyzeCv);
 
 async function analyzeCv() {
@@ -296,6 +366,7 @@ async function analyzeCv() {
     console.log(analysisResultText);
 
     processStructuredResults(analysisResultText);
+    await saveReview(analysisResultText);
 
     loadingSection.style.display = 'none';
     resultsSection.style.display = 'block';
@@ -308,6 +379,40 @@ async function analyzeCv() {
     alert(`Error during analysis: ${error.message}. Please try again later.`);
     resetToUploadStageOnError();
   }
+}
+
+async function saveReview(reviewText) {
+    if (!supabase || !userId) return;
+
+    try {
+        const scoreSection = extractSectionContent(reviewText, '<<<OVERALL_SCORE>>>', '<<<END_OVERALL_SCORE>>>');
+        let score = 0;
+        if (scoreSection) {
+            const scoreMatch = scoreSection.match(/Score:\s*([\d.]+)\/100/i);
+            if (scoreMatch) {
+                score = parseFloat(parseFloat(scoreMatch[1]).toFixed(2)); // clamp to 2 decimals
+            }
+        }
+
+        const { data, error } = await supabase
+            .from('msc_cv_ai_resume_reviews')
+            .insert([
+                { 
+                    user_id: userId, 
+                    score: score, 
+                    review_data: { review: reviewText }, 
+                    file_name: selectedFile.name 
+                }
+            ]);
+
+        if (error) {
+            console.error('Error saving review to Supabase:', error);
+        } else {
+            console.log('Review saved successfully:', data);
+        }
+    } catch (e) {
+        console.error('Exception while saving review:', e);
+    }
 }
 
 function startLoadingAnimation() {
@@ -362,19 +467,19 @@ function parseAndDisplayOverallScore(text) {
     let justification = "Not available.";
 
     if (scoreSection) {
-        const scoreMatch = scoreSection.match(/Score:\s*(\d+)\/100/i);
+        const scoreMatch = scoreSection.match(/Score:\s*([\d.]+)\/100/i);
         const justMatch = scoreSection.match(/Justification:\s*(.*)/is);
 
         if (scoreMatch) {
-            overallScore = parseInt(scoreMatch[1], 10);
+            overallScore = parseFloat(scoreMatch[1]);
         }
         if (justMatch) {
             justification = justMatch[1].trim();
         }
     } else {
-         const fallbackScoreMatch = text.match(/<score>(\d+)<\/score>/i) || text.match(/Overall Score:\s*(\d+)\/100/i);
+         const fallbackScoreMatch = text.match(/<score>([\d.]+)<\/score>/i) || text.match(/Overall Score:\s*([\d.]+)\/100/i);
          if (fallbackScoreMatch) {
-            overallScore = parseInt(fallbackScoreMatch[1], 10);
+            overallScore = parseFloat(fallbackScoreMatch[1]);
             justification = "Score extracted via fallback method.";
          }
     }
@@ -512,12 +617,17 @@ function parseAndDisplayEducation(text) {
     educationContent.innerHTML = content ? formatFeedbackText(content) : '<p class="text-text-secondary">No education analysis available.</p>';
 }
 function parseAndDisplayArticleship(text) {
-    const content = extractSectionContent(text, '<<<ARTICLESIP_EXPERIENCE>>>', '<<<END_ARTICLESIP_EXPERIENCE>>>');
+    const content = extractSectionContent(text, '<<<ARTICLESHIP_EXPERIENCE>>>', '<<<END_ARTICLESHIP_EXPERIENCE>>>');
     articleshipContent.innerHTML = content ? formatFeedbackText(content) : '<p class="text-text-secondary">No articleship analysis available.</p>';
 }
 function parseAndDisplayFinalRecommendations(text) {
     const content = extractSectionContent(text, '<<<FINAL_RECOMMENDATIONS>>>', '<<<END_FINAL_RECOMMENDATIONS>>>');
     finalRecommendationsContent.innerHTML = content ? formatFeedbackText(content) : '<p class="text-text-secondary">No final recommendations available.</p>';
+}
+
+function parseAndDisplayInterviewQuestions(text) {
+    const content = extractSectionContent(text, '<<<INTERVIEW_QUESTIONS>>>', '<<<END_INTERVIEW_QUESTIONS>>>');
+    interviewQuestionsContent.innerHTML = content ? formatFeedbackText(content) : '<p class="text-text-secondary">No interview questions available.</p>';
 }
 
 function processStructuredResults(resultsText) {
@@ -536,6 +646,7 @@ function processStructuredResults(resultsText) {
     parseAndDisplayEducation(resultsText);
     parseAndDisplayArticleship(resultsText);
     parseAndDisplayFinalRecommendations(resultsText);
+    parseAndDisplayInterviewQuestions(resultsText);
 
     updateScoreBreakdown(overallScore, resultsText);
 }
@@ -545,7 +656,7 @@ function clearResultsContent() {
         recruiterTipsContent, measurableResultsContent, phrasesSuggestionsContent,
         hardSkillsContent, softSkillsContent, actionVerbsContent, grammarCheckContent,
         formattingContent, educationContent, articleshipContent, finalRecommendationsContent,
-        scoreJustification
+        interviewQuestionsContent, scoreJustification
     ];
     contentAreas.forEach(area => { if(area) area.innerHTML = '<p class="text-sm text-text-secondary italic">Loading...</p>'; });
     scoreText.textContent = '0';
@@ -628,15 +739,18 @@ function animateScore(score) {
     const steps = duration / stepTime;
     const increment = score / steps;
 
+    const scoreTextEl = document.getElementById('scoreText');
+
     const scoreInterval = setInterval(() => {
         currentScore += increment;
         if (currentScore >= score) {
             currentScore = score;
             clearInterval(scoreInterval);
         }
-        const roundedScore = Math.round(currentScore);
-        scoreText.textContent = roundedScore;
-        scoreProgress.setAttribute('stroke-dasharray', `${roundedScore}, 100`);
+        const displayScore = currentScore.toFixed(1).replace(/\.0$/, '');
+        scoreTextEl.textContent = displayScore;
+        const clampedDash = Math.min(currentScore, 100);
+        scoreProgress.setAttribute('stroke-dasharray', `${clampedDash.toFixed(1)}, 100`);
     }, stepTime);
 }
 
@@ -698,6 +812,8 @@ function resetToUploadStage() {
     heroSection.style.display = 'block';
     uploadSection.style.display = 'block';
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Re-initialize supabase client in case user ID was just set.
+    if (!supabase) initializeSupabase();
 }
 
 downloadReportBtn.addEventListener('click', () => {
@@ -706,15 +822,93 @@ downloadReportBtn.addEventListener('click', () => {
         return;
     }
 
-    let reportContent = `My Student Club - CV Analysis Report\n`;
-    reportContent += `=====================================\n\n`;
-    reportContent += `Domain: Financing\n`;
-    reportContent += `Specialization: Accounting\n\n`;
+    const doc = new jsPDF({
+        orientation: 'p',
+        unit: 'mm',
+        format: 'a4'
+    });
+
+    // Add Poppins font
+    // This is a simplified way. For production, you'd host the font file.
+    // jsPDF has limited built-in font support. For full custom fonts, more setup is needed.
+    // We'll stick to helvetica which is standard.
+
+    let yPosition = 20;
+    const leftMargin = 15;
+    const rightMargin = 15;
+    const usableWidth = 210 - leftMargin - rightMargin;
+
+    const checkPageBreak = (height) => {
+        if (yPosition + height > 280) { // 297mm page height minus margin
+            doc.addPage();
+            yPosition = 20; // Reset Y position for new page
+        }
+    };
+
+    const renderMarkdown = (text) => {
+        const src = text
+          .replace(/\[GOOD\]/g, '(✓)')
+          .replace(/\[ISSUE\]/g, '(✗)')
+          .replace(/<<POINT>>|<<END_POINT>>|---/g, '')
+          .replace(/<\/?[^>]+(>|$)/g, ''); // strip any html
+        const lines = src.split(/\r?\n/);
+        lines.forEach(raw => {
+            let line = raw.trim();
+            if (!line) return;
+            if (/^\*\*.+\*\*:?$/.test(line) || /^\*   \*\*.+\*\*:?$/.test(line)) {
+                checkPageBreak(8);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11);
+                doc.setTextColor(45, 52, 54);
+                const content = line.replace(/\*/g, '').replace(/:$/, '');
+                const splitText = doc.splitTextToSize(content + ':', usableWidth);
+                doc.text(splitText, leftMargin, yPosition);
+                yPosition += (splitText.length * 4) + 2;
+            } else if (/^(\*|-)\s+/.test(line)) {
+                checkPageBreak(5);
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(45, 52, 54);
+                const content = '• ' + line.substring(1).trim();
+                const splitText = doc.splitTextToSize(content, usableWidth - 3); // Indent for bullet
+                doc.text(splitText, leftMargin + 3, yPosition);
+                yPosition += (splitText.length * 4);
+            } else if (/^\d+\.\s+/.test(line)) {
+                checkPageBreak(5);
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(45, 52, 54);
+                const content = line.substring(1).trim();
+                const splitText = doc.splitTextToSize(content, usableWidth);
+                doc.text(splitText, leftMargin, yPosition);
+                yPosition += (splitText.length * 4);
+            } else {
+                checkPageBreak(5);
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(10);
+                doc.setTextColor(45, 52, 54);
+                 const splitText = doc.splitTextToSize(line, usableWidth);
+                 doc.text(splitText, leftMargin, yPosition);
+                 yPosition += (splitText.length * 4);
+            }
+        });
+    };
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.setTextColor(63, 63, 186); // primary color
+    doc.text("My Student Club", 105, yPosition, { align: 'center' });
+    yPosition += 8;
+    doc.setFontSize(16);
+    doc.setTextColor(45, 52, 54);
+    doc.text("CV Analysis Report", 105, yPosition, { align: 'center' });
+    yPosition += 15;
 
     const sections = [
         { title: "Overall Score", start: '<<<OVERALL_SCORE>>>', end: '<<<END_OVERALL_SCORE>>>' },
         { title: "Recruiter Tips", start: '<<<RECRUITER_TIPS>>>', end: '<<<END_RECRUITER_TIPS>>>' },
         { title: "Measurable Results Analysis", start: '<<<MEASURABLE_RESULTS>>>', end: '<<<END_MEASURABLE_RESULTS>>>' },
+        { title: "Predicted Interview Questions", start: '<<<INTERVIEW_QUESTIONS>>>', end: '<<<END_INTERVIEW_QUESTIONS>>>' },
         { title: "Phrases Suggestions", start: '<<<PHRASES_SUGGESTIONS>>>', end: '<<<END_PHRASES_SUGGESTIONS>>>' },
         { title: "Hard Skills Analysis", start: '<<<HARD_SKILLS>>>', end: '<<<END_HARD_SKILLS>>>' },
         { title: "Soft Skills Analysis", start: '<<<SOFT_SKILLS>>>', end: '<<<END_SOFT_SKILLS>>>' },
@@ -722,81 +916,29 @@ downloadReportBtn.addEventListener('click', () => {
         { title: "Grammar & Proofreading", start: '<<<GRAMMAR_CHECK>>>', end: '<<<END_GRAMMAR_CHECK>>>' },
         { title: "Formatting & Readability", start: '<<<FORMATTING_READABILITY>>>', end: '<<<END_FORMATTING_READABILITY>>>' },
         { title: "Education & Qualification", start: '<<<EDUCATION_QUALIFICATION>>>', end: '<<<END_EDUCATION_QUALIFICATION>>>' },
-        { title: "Articleship Experience", start: '<<<ARTICLESIP_EXPERIENCE>>>', end: '<<<END_ARTICLESIP_EXPERIENCE>>>' },
+        { title: "Articleship Experience", start: '<<<ARTICLESHIP_EXPERIENCE>>>', end: '<<<END_ARTICLESHIP_EXPERIENCE>>>' },
         { title: "Final Recommendations", start: '<<<FINAL_RECOMMENDATIONS>>>', end: '<<<END_FINAL_RECOMMENDATIONS>>>' }
     ];
 
     sections.forEach(section => {
         const content = extractSectionContent(analysisResultText, section.start, section.end);
         if (content) {
-            reportContent += `${section.title}\n`;
-            reportContent += `${'-'.repeat(section.title.length)}\n`;
-            let cleanedContent = content
-                .replace(/\[GOOD\]/g, '(+)')
-                .replace(/\[ISSUE\]/g, '(-)')
-                .replace(/<br>/g, '\n')
-                .replace(/<p>/g, '\n')
-                .replace(/<\/p>/g, '')
-                .replace(/<strong>(.*?)<\/strong>/g, '*$1*')
-                .replace(/<em>(.*?)<\/em>/g, '_$1_')
-                .replace(/<code>(.*?)<\/code>/g, '`$1`')
-                .replace(/<ul>/g, '')
-                .replace(/<\/ul>/g, '')
-                .replace(/<ol>/g, '')
-                .replace(/<\/ol>/g, '')
-                .replace(/<li>/g, '\n - ')
-                .replace(/<\/li>/g, '')
-                .replace(/<h[1-6].*?>(.*?)<\/h[1-6]>/g, '\n### $1\n')
-                .replace(/^\s*•\s*/gm, ' - ')
-                .replace(/Original:\s*<code.*?>([\s\S]*?)<\/code>/gi, 'Original: "$1"')
-                .replace(/Critique:\s*/gi, '\nCritique: ')
-                .replace(/Rewrite Suggestions:/gi, '\nRewrite Suggestions:')
-                .replace(/<div class="rewrite-suggestion">([\s\S]*?)<\/div>/gi, '  * Suggestion: $1')
-                .replace(/<span class="highlight-good".*?>✓<\/span>/g,'(+)')
-                .replace(/<span class="highlight-issue".*?>✗<\/span>/g,'(-)')
-                .replace(/&/g, '&')
-                .replace(/</g, '<')
-                .replace(/>/g, '>')
-                .replace(/"/g, '"')
-                .replace(/'/g, "'")
-                .replace(/\n\s*\n/g, '\n\n')
-                .trim();
+            checkPageBreak(12);
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(14);
+            doc.setTextColor(79, 70, 229); // primary-dark
+            doc.text(section.title, leftMargin, yPosition);
+            yPosition += 8;
 
-            reportContent += cleanedContent + '\n\n';
-        } else {
-            reportContent += `${section.title}\n`;
-            reportContent += `${'-'.repeat(section.title.length)}\n`;
-            reportContent += `(No details available for this section)\n\n`;
+            // Render content with basic markdown
+            renderMarkdown(content.replace(/<<POINT>>/g, '').replace(/<<END_POINT>>/g, ''));
+            yPosition += 6; // Space after section
         }
     });
 
-    reportContent += `---------------------------------------------------------------\n`;
-    reportContent += `Generated by My Student Club CV Reviewer\n`;
-
-    const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
-    const safeFileName = selectedFile ? selectedFile.name.replace(/[^a-z0-9_.-]/gi, '_').replace('.pdf', '') : 'CV';
-    const filename = `${safeFileName}_Analysis_Report.txt`;
-
-    if (window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler === 'function') {
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = function() {
-            const base64data = reader.result;
-            const base64Content = base64data.split(',')[1];
-            window.flutter_inappwebview.callHandler('blobToBase64Handler', base64Content, filename);
-        };
-    } else {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }, 100);
-    }
+    const safeFileName = selectedFile ? selectedFile.name.replace(/\.pdf$/i, '').replace(/[^a-z0-9_.-]/gi, '_') : 'CV';
+    const filename = `${safeFileName}_Analysis_Report.pdf`;
+    doc.save(filename);
 });
 
 function resetToUploadStageOnError() {
@@ -808,4 +950,104 @@ function resetToUploadStageOnError() {
      uploadSection.style.display = 'block';
      heroSection.style.display = 'block';
      uploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+async function loadLeaderboard() {
+    const contentEl = document.getElementById('leaderboardContent');
+    contentEl.innerHTML = 'Loading...';
+    if (!supabase) {
+        contentEl.innerHTML = 'Database connection not available.';
+        return;
+    }
+
+    const { data, error } = await supabase
+        .from('msc_cv_ai_resume_reviews')
+        .select('score, created_at, file_name')
+        .order('score', { ascending: false })
+        .limit(10);
+
+    if (error) {
+        console.error('Error fetching leaderboard:', error);
+        contentEl.innerHTML = '<p class="text-danger">Could not load leaderboard data.</p>';
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        contentEl.innerHTML = '<p>No entries yet. Be the first!</p>';
+        return;
+    }
+
+    let html = '<ol class="list-decimal list-inside space-y-3">';
+    data.forEach((item, index) => {
+        const date = new Date(item.created_at).toLocaleDateString();
+        html += `<li class="p-3 rounded-lg border border-border bg-background-light">
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold text-primary">${item.score.toFixed(1)}%</span>
+                        <span class="text-sm text-text-secondary">${date}</span>
+                    </div>
+                 </li>`;
+    });
+    html += '</ol>';
+    contentEl.innerHTML = html;
+}
+
+async function loadHistory() {
+    const contentEl = document.getElementById('historyContent');
+    const detailEl = document.getElementById('historyDetailContent');
+    detailEl.style.display = 'none';
+    contentEl.innerHTML = 'Loading...';
+    if (!supabase || !userId) {
+        contentEl.innerHTML = 'Could not retrieve user history.';
+        return;
+    }
+    
+    const { data, error } = await supabase
+        .from('msc_cv_ai_resume_reviews')
+        .select('id, score, created_at, file_name, review_data', { head: false })
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+    if (error) {
+        console.error('Error fetching history:', error);
+        contentEl.innerHTML = `<p class="text-danger">Could not load history. ${error.message}</p>`;
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        contentEl.innerHTML = '<p>You have no past reviews.</p>';
+        return;
+    }
+
+    let html = '<div class="space-y-2">';
+    data.forEach(item => {
+        const date = new Date(item.created_at).toLocaleString();
+        html += `<div class="history-item p-3 rounded-lg border border-border bg-background-light cursor-pointer hover:bg-gray-50" data-review-id="${item.id}">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-semibold">${item.file_name}</p>
+                            <p class="text-sm text-text-secondary">${date}</p>
+                        </div>
+                        <span class="font-bold text-lg text-primary">${item.score.toFixed(1)}%</span>
+                    </div>
+                 </div>`;
+    });
+    html += '</div>';
+    contentEl.innerHTML = html;
+
+    contentEl.addEventListener('click', e => {
+        const itemEl = e.target.closest('.history-item');
+        if (itemEl) {
+            const reviewId = itemEl.dataset.reviewId;
+            const reviewData = data.find(r => r.id == reviewId);
+            if (reviewData) {
+                detailEl.innerHTML = `
+                    <h4 class="text-lg font-semibold mb-2">Details for ${reviewData.file_name}</h4>
+                    <div class="p-4 border rounded-lg bg-white">${formatFeedbackText(reviewData.review_data.review)}</div>
+                `;
+                detailEl.style.display = 'block';
+                detailEl.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    });
 }
