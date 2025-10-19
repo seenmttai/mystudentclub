@@ -18,6 +18,8 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://mystudentclub.pages.dev/scripts/style.css">
   <link rel="stylesheet" href="cv-reviewer-styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.1/marked.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
   <style>
     .results-grid {
         display: grid;
@@ -501,6 +503,19 @@
           <h3>Highlight Certifications</h3>
           <p>Showcase additional certifications like NISM, Excel proficiency, or ICAI achievements</p>
         </div>
+      </div>
+    </div>
+
+    <div id="reportPreview" class="report-preview" style="display:none;">
+      <div class="report-preview-card">
+        <div class="report-preview-header">
+          <h3 class="text-lg font-semibold">Report Preview</h3>
+          <div class="flex gap-2">
+            <button id="reportPreviewDownload" class="primary-btn">Download PDF</button>
+            <button id="reportPreviewClose" class="secondary-btn">Close</button>
+          </div>
+        </div>
+        <div id="reportPreviewContent" class="report-preview-body"></div>
       </div>
     </div>
   </main>

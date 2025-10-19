@@ -51,6 +51,10 @@ const interviewQuestionsContent = document.querySelector('#interviewQuestionsSec
 const menuButton = document.getElementById('menuButton');
 const expandedMenu = document.getElementById('expandedMenu');
 const menuCloseBtn = document.getElementById('menuCloseBtn');
+const reportPreview = document.getElementById('reportPreview');
+const reportPreviewContent = document.getElementById('reportPreviewContent');
+const reportPreviewClose = document.getElementById('reportPreviewClose');
+const reportPreviewDownload = document.getElementById('reportPreviewDownload');
 
 let selectedFile = null;
 let pdfDocument = null;
@@ -804,128 +808,23 @@ function resetToUploadStage() {
 }
 
 downloadReportBtn.addEventListener('click', () => {
-    if (!analysisResultText) {
-        alert("No analysis report available to download.");
-        return;
-    }
+  if (!analysisResultText) { alert("No analysis report available to preview."); return; }
+  reportPreviewContent.innerHTML = buildPreviewHTML();
+  reportPreview.style.display = 'flex';
+});
 
-    const doc = new jsPDF({
-        orientation: 'p',
-        unit: 'mm',
-        format: 'a4'
-    });
+reportPreviewClose.addEventListener('click', ()=>{ reportPreview.style.display='none'; });
 
-    // Add Poppins font
-    // This is a simplified way. For production, you'd host the font file.
-    // jsPDF has limited built-in font support. For full custom fonts, more setup is needed.
-    // We'll stick to helvetica which is standard.
-
-    let yPosition = 20;
-    const leftMargin = 15;
-    const rightMargin = 15;
-    const usableWidth = 210 - leftMargin - rightMargin;
-
-    const checkPageBreak = (height) => {
-        if (yPosition + height > 280) { // 297mm page height minus margin
-            doc.addPage();
-            yPosition = 20; // Reset Y position for new page
-        }
-    };
-
-    const renderMarkdown = (text) => {
-        const src = text
-          .replace(/\[GOOD\]/g, '(✓)')
-          .replace(/\[ISSUE\]/g, '(✗)')
-          .replace(/<<POINT>>|<<END_POINT>>|---/g, '')
-          .replace(/<\/?[^>]+(>|$)/g, ''); // strip any html
-        const lines = src.split(/\r?\n/);
-        lines.forEach(raw => {
-            let line = raw.trim();
-            if (!line) return;
-            if (/^\*\*.+\*\*:?$/.test(line) || /^\*   \*\*.+\*\*:?$/.test(line)) {
-                checkPageBreak(8);
-                doc.setFont("helvetica", "bold");
-                doc.setFontSize(11);
-                doc.setTextColor(45, 52, 54);
-                const content = line.replace(/\*/g, '').replace(/:$/, '');
-                const splitText = doc.splitTextToSize(content + ':', usableWidth);
-                doc.text(splitText, leftMargin, yPosition);
-                yPosition += (splitText.length * 4) + 2;
-            } else if (/^(\*|-)\s+/.test(line)) {
-                checkPageBreak(5);
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
-                doc.setTextColor(45, 52, 54);
-                const content = '• ' + line.substring(1).trim();
-                const splitText = doc.splitTextToSize(content, usableWidth - 3); // Indent for bullet
-                doc.text(splitText, leftMargin + 3, yPosition);
-                yPosition += (splitText.length * 4);
-            } else if (/^\d+\.\s+/.test(line)) {
-                checkPageBreak(5);
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
-                doc.setTextColor(45, 52, 54);
-                const content = line.substring(1).trim();
-                const splitText = doc.splitTextToSize(content, usableWidth);
-                doc.text(splitText, leftMargin, yPosition);
-                yPosition += (splitText.length * 4);
-            } else {
-                checkPageBreak(5);
-                doc.setFont("helvetica", "normal");
-                doc.setFontSize(10);
-                doc.setTextColor(45, 52, 54);
-                 const splitText = doc.splitTextToSize(line, usableWidth);
-                 doc.text(splitText, leftMargin, yPosition);
-                 yPosition += (splitText.length * 4);
-            }
-        });
-    };
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(20);
-    doc.setTextColor(63, 63, 186); // primary color
-    doc.text("My Student Club", 105, yPosition, { align: 'center' });
-    yPosition += 8;
-    doc.setFontSize(16);
-    doc.setTextColor(45, 52, 54);
-    doc.text("CV Analysis Report", 105, yPosition, { align: 'center' });
-    yPosition += 15;
-
-    const sections = [
-        { title: "Overall Score", start: '<<<OVERALL_SCORE>>>', end: '<<<END_OVERALL_SCORE>>>' },
-        { title: "Recruiter Tips", start: '<<<RECRUITER_TIPS>>>', end: '<<<END_RECRUITER_TIPS>>>' },
-        { title: "Measurable Results Analysis", start: '<<<MEASURABLE_RESULTS>>>', end: '<<<END_MEASURABLE_RESULTS>>>' },
-        { title: "Predicted Interview Questions", start: '<<<INTERVIEW_QUESTIONS>>>', end: '<<<END_INTERVIEW_QUESTIONS>>>' },
-        { title: "Phrases Suggestions", start: '<<<PHRASES_SUGGESTIONS>>>', end: '<<<END_PHRASES_SUGGESTIONS>>>' },
-        { title: "Hard Skills Analysis", start: '<<<HARD_SKILLS>>>', end: '<<<END_HARD_SKILLS>>>' },
-        { title: "Soft Skills Analysis", start: '<<<SOFT_SKILLS>>>', end: '<<<END_SOFT_SKILLS>>>' },
-        { title: "Action Verbs Usage", start: '<<<ACTION_VERBS>>>', end: '<<<END_ACTION_VERBS>>>' },
-        { title: "Grammar & Proofreading", start: '<<<GRAMMAR_CHECK>>>', end: '<<<END_GRAMMAR_CHECK>>>' },
-        { title: "Formatting & Readability", start: '<<<FORMATTING_READABILITY>>>', end: '<<<END_FORMATTING_READABILITY>>>' },
-        { title: "Education & Qualification", start: '<<<EDUCATION_QUALIFICATION>>>', end: '<<<END_EDUCATION_QUALIFICATION>>>' },
-        { title: "Articleship Experience", start: '<<<ARTICLESHIP_EXPERIENCE>>>', end: '<<<END_ARTICLESHIP_EXPERIENCE>>>' },
-        { title: "Final Recommendations", start: '<<<FINAL_RECOMMENDATIONS>>>', end: '<<<END_FINAL_RECOMMENDATIONS>>>' }
-    ];
-
-    sections.forEach(section => {
-        const content = extractSectionContent(analysisResultText, section.start, section.end);
-        if (content) {
-            checkPageBreak(12);
-            doc.setFont("helvetica", "bold");
-            doc.setFontSize(14);
-            doc.setTextColor(79, 70, 229); // primary-dark
-            doc.text(section.title, leftMargin, yPosition);
-            yPosition += 8;
-
-            // Render content with basic markdown
-            renderMarkdown(content.replace(/<<POINT>>/g, '').replace(/<<END_POINT>>/g, ''));
-            yPosition += 6; // Space after section
-        }
-    });
-
-    const safeFileName = selectedFile ? selectedFile.name.replace(/\.pdf$/i, '').replace(/[^a-z0-9_.-]/gi, '_') : 'CV';
-    const filename = `${safeFileName}_Analysis_Report.pdf`;
-    doc.save(filename);
+reportPreviewDownload.addEventListener('click', ()=>{
+  const safe = selectedFile ? selectedFile.name.replace(/\.pdf$/i,'').replace(/[^a-z0-9_.-]/gi,'_') : 'CV';
+  html2pdf().set({
+    margin: 10,
+    filename: `${safe}_Analysis_Report.pdf`,
+    image: { type: 'jpeg', quality: 0.95 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['css','legacy'] }
+  }).from(reportPreviewContent).save();
 });
 
 function resetToUploadStageOnError() {
@@ -1013,4 +912,31 @@ async function loadHistory() {
             }
         }
     });
+}
+
+function cleanMarkdown(src){
+  return (src||'').replace(/<<POINT>>|<<END_POINT>>|---/g,'').replace(/<\/?[^>]+>/g,'').trim();
+}
+function buildPreviewHTML(){
+  const sections=[
+    {title:"Overall Score",start:'<<<OVERALL_SCORE>>>',end:'<<<END_OVERALL_SCORE>>>'},
+    {title:"Recruiter Tips",start:'<<<RECRUITER_TIPS>>>',end:'<<<END_RECRUITER_TIPS>>>'},
+    {title:"Measurable Results",start:'<<<MEASURABLE_RESULTS>>>',end:'<<<END_MEASURABLE_RESULTS>>>'},
+    {title:"Interview Questions",start:'<<<INTERVIEW_QUESTIONS>>>',end:'<<<END_INTERVIEW_QUESTIONS>>>'},
+    {title:"Phrases Suggestions",start:'<<<PHRASES_SUGGESTIONS>>>',end:'<<<END_PHRASES_SUGGESTIONS>>>'},
+    {title:"Hard Skills",start:'<<<HARD_SKILLS>>>',end:'<<<END_HARD_SKILLS>>>'},
+    {title:"Soft Skills",start:'<<<SOFT_SKILLS>>>',end:'<<<END_SOFT_SKILLS>>>'},
+    {title:"Action Verbs",start:'<<<ACTION_VERBS>>>',end:'<<<END_ACTION_VERBS>>>'},
+    {title:"Grammar & Proofreading",start:'<<<GRAMMAR_CHECK>>>',end:'<<<END_GRAMMAR_CHECK>>>'},
+    {title:"Formatting & Readability",start:'<<<FORMATTING_READABILITY>>>',end:'<<<END_FORMATTING_READABILITY>>>'},
+    {title:"Education & Qualification",start:'<<<EDUCATION_QUALIFICATION>>>',end:'<<<END_EDUCATION_QUALIFICATION>>>'},
+    {title:"Articleship Experience",start:'<<<ARTICLESHIP_EXPERIENCE>>>',end:'<<<END_ARTICLESHIP_EXPERIENCE>>>'},
+    {title:"Final Recommendations",start:'<<<FINAL_RECOMMENDATIONS>>>',end:'<<<END_FINAL_RECOMMENDATIONS>>>'},
+  ];
+  let html = '<h1>CV Analysis Report</h1>';
+  sections.forEach(s=>{
+    const c = extractSectionContent(analysisResultText, s.start, s.end);
+    if(c){ html += `<h2>${s.title}</h2><div>${marked.parse(cleanMarkdown(c).replace(/\[GOOD\]/g,'✓').replace(/\[ISSUE\]/g,'✗'))}</div><div class="html2pdf__page-break"></div>`; }
+  });
+  return html;
 }

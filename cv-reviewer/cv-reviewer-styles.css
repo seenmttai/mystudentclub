@@ -590,6 +590,13 @@ body {
   flex-grow: 1; 
 }
 
+.report-preview{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.4);z-index:1200}
+.report-preview-card{background:#fff;border:1px solid var(--border);border-radius:12px;width:min(900px,90vw);height:80vh;display:flex;flex-direction:column;box-shadow:var(--shadow-lg)}
+.report-preview-header{padding:1rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.report-preview-body{padding:1rem;overflow:auto;background:#f8fafc}
+.report-preview-body h1,.report-preview-body h2{color:var(--primary)}
+.html2pdf__page-break{height:0;page-break-after:always}
+
 @media (max-width: 768px) {
   .cv-reviewer-container {
     padding: 6rem 1rem 3rem;
