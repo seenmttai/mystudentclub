@@ -51,10 +51,6 @@ const interviewQuestionsContent = document.querySelector('#interviewQuestionsSec
 const menuButton = document.getElementById('menuButton');
 const expandedMenu = document.getElementById('expandedMenu');
 const menuCloseBtn = document.getElementById('menuCloseBtn');
-const reportPreview = document.getElementById('reportPreview');
-const reportPreviewContent = document.getElementById('reportPreviewContent');
-const reportPreviewClose = document.getElementById('reportPreviewClose');
-const reportPreviewDownload = document.getElementById('reportPreviewDownload');
 
 let selectedFile = null;
 let pdfDocument = null;
@@ -701,6 +697,17 @@ function simpleMarkdownToHtml(md) {
          .replace(/<p>\s*<\/p>/g, '');
 }
 
+function cleanRawText(t) {
+    return (t || '')
+        .replace(/<<<.*?>>>/gs, '')          // remove section markers
+        .replace(/<<POINT>>|<<END_POINT>>/g, '')
+        .replace(/---/g, '')
+        .replace(/\*/g, '')                  // remove asterisks
+        .replace(/<\/?[^>]+>/g, '')          // strip any html
+        .replace(/\r?\n\s*\r?\n/g, '\n\n')   // normalize blank lines
+        .trim();
+}
+
 function formatFeedbackText(text) {
     if (!text) return '<p class="text-sm text-text-secondary italic">No details available.</p>';
     let html = simpleMarkdownToHtml(text);
@@ -808,23 +815,53 @@ function resetToUploadStage() {
 }
 
 downloadReportBtn.addEventListener('click', () => {
-  if (!analysisResultText) { alert("No analysis report available to preview."); return; }
-  reportPreviewContent.innerHTML = buildPreviewHTML();
-  reportPreview.style.display = 'flex';
-});
+    if (!analysisResultText) {
+        alert("No analysis report available to download.");
+        return;
+    }
 
-reportPreviewClose.addEventListener('click', ()=>{ reportPreview.style.display='none'; });
+    const doc = new jsPDF({
+        orientation: 'p',
+        unit: 'mm',
+        format: 'a4'
+    });
 
-reportPreviewDownload.addEventListener('click', ()=>{
-  const safe = selectedFile ? selectedFile.name.replace(/\.pdf$/i,'').replace(/[^a-z0-9_.-]/gi,'_') : 'CV';
-  html2pdf().set({
-    margin: 10,
-    filename: `${safe}_Analysis_Report.pdf`,
-    image: { type: 'jpeg', quality: 0.95 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    pagebreak: { mode: ['css','legacy'] }
-  }).from(reportPreviewContent).save();
+    let yPosition = 20;
+    const leftMargin = 15;
+    const rightMargin = 15;
+    const usableWidth = 210 - leftMargin - rightMargin;
+
+    const checkPageBreak = (height) => {
+        if (yPosition + height > 280) { // 297mm page height minus margin
+            doc.addPage();
+            yPosition = 20; // Reset Y position for new page
+        }
+    };
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(20);
+    doc.setTextColor(63, 63, 186); // primary color
+    doc.text("My Student Club", 105, yPosition, { align: 'center' });
+    yPosition += 8;
+    doc.setFontSize(16);
+    doc.setTextColor(45, 52, 54);
+    doc.text("CV Analysis Report", 105, yPosition, { align: 'center' });
+    yPosition += 15;
+
+    // render cleaned raw text (no markers, no asterisks)
+    const cleaned = cleanRawText(analysisResultText);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(45, 52, 54);
+    const lines = doc.splitTextToSize(cleaned, usableWidth);
+    lines.forEach(line => {
+        checkPageBreak(5);
+        doc.text(line, leftMargin, yPosition);
+        yPosition += 4;
+    });
+
+    const safeFileName = selectedFile ? selectedFile.name.replace(/\.pdf$/i, '').replace(/[^a-z0-9_.-]/gi, '_') : 'CV';
+    doc.save(`${safeFileName}_Analysis_Report.pdf`);
 });
 
 function resetToUploadStageOnError() {
@@ -912,31 +949,4 @@ async function loadHistory() {
             }
         }
     });
-}
-
-function cleanMarkdown(src){
-  return (src||'').replace(/<<POINT>>|<<END_POINT>>|---/g,'').replace(/<\/?[^>]+>/g,'').trim();
-}
-function buildPreviewHTML(){
-  const sections=[
-    {title:"Overall Score",start:'<<<OVERALL_SCORE>>>',end:'<<<END_OVERALL_SCORE>>>'},
-    {title:"Recruiter Tips",start:'<<<RECRUITER_TIPS>>>',end:'<<<END_RECRUITER_TIPS>>>'},
-    {title:"Measurable Results",start:'<<<MEASURABLE_RESULTS>>>',end:'<<<END_MEASURABLE_RESULTS>>>'},
-    {title:"Interview Questions",start:'<<<INTERVIEW_QUESTIONS>>>',end:'<<<END_INTERVIEW_QUESTIONS>>>'},
-    {title:"Phrases Suggestions",start:'<<<PHRASES_SUGGESTIONS>>>',end:'<<<END_PHRASES_SUGGESTIONS>>>'},
-    {title:"Hard Skills",start:'<<<HARD_SKILLS>>>',end:'<<<END_HARD_SKILLS>>>'},
-    {title:"Soft Skills",start:'<<<SOFT_SKILLS>>>',end:'<<<END_SOFT_SKILLS>>>'},
-    {title:"Action Verbs",start:'<<<ACTION_VERBS>>>',end:'<<<END_ACTION_VERBS>>>'},
-    {title:"Grammar & Proofreading",start:'<<<GRAMMAR_CHECK>>>',end:'<<<END_GRAMMAR_CHECK>>>'},
-    {title:"Formatting & Readability",start:'<<<FORMATTING_READABILITY>>>',end:'<<<END_FORMATTING_READABILITY>>>'},
-    {title:"Education & Qualification",start:'<<<EDUCATION_QUALIFICATION>>>',end:'<<<END_EDUCATION_QUALIFICATION>>>'},
-    {title:"Articleship Experience",start:'<<<ARTICLESHIP_EXPERIENCE>>>',end:'<<<END_ARTICLESHIP_EXPERIENCE>>>'},
-    {title:"Final Recommendations",start:'<<<FINAL_RECOMMENDATIONS>>>',end:'<<<END_FINAL_RECOMMENDATIONS>>>'},
-  ];
-  let html = '<h1>CV Analysis Report</h1>';
-  sections.forEach(s=>{
-    const c = extractSectionContent(analysisResultText, s.start, s.end);
-    if(c){ html += `<h2>${s.title}</h2><div>${marked.parse(cleanMarkdown(c).replace(/\[GOOD\]/g,'✓').replace(/\[ISSUE\]/g,'✗'))}</div><div class="html2pdf__page-break"></div>`; }
-  });
-  return html;
 }
