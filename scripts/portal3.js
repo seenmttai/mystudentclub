@@ -529,7 +529,15 @@ function updateHeaderAuth(session) {
                     </div>
                 </div>
             </div>`;
-        document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+        const userProfileContainer = dom.authButtonsContainer.querySelector('.user-profile-container');
+        const userIconWrapper = userProfileContainer.querySelector('.user-icon-wrapper');
+        const userHoverCard = userProfileContainer.querySelector('.user-hover-card');
+
+        userIconWrapper.addEventListener('click', (event) => {
+            event.stopPropagation();
+            userHoverCard.classList.toggle('show');
+        });
+        dom.authButtonsContainer.querySelector('#logoutBtn').addEventListener('click', handleLogout);
         checkUserEnrollment();
     } else {
         dom.authButtonsContainer.innerHTML = `<a href="/login.html" class="icon-button" aria-label="Login"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg></a>`;
@@ -1008,6 +1016,15 @@ function setupEventListeners() {
         if (resourcesDropdown && resourcesDropdown.classList.contains('active') && !resourcesDropdown.contains(e.target) && !resourcesBtn.contains(e.target)) {
             resourcesDropdown.classList.remove('active');
             if (resourcesBtn.querySelector('.dropdown-icon')) resourcesBtn.querySelector('.dropdown-icon').classList.remove('open');
+        }
+
+        // Close user profile dropdown on outside click
+        const userProfileContainer = document.querySelector('.user-profile-container');
+        const userHoverCard = document.querySelector('.user-hover-card');
+        if (userProfileContainer && userHoverCard && userHoverCard.classList.contains('show')) {
+            if (!userProfileContainer.contains(e.target)) {
+                userHoverCard.classList.remove('show');
+            }
         }
     });
 }
