@@ -977,6 +977,8 @@ body {
 .action-button .fa-spinner {
   display: none;
   margin-left: 0.5rem;
+  /* Add padding to cover the gap between the icon and the card */
+  padding-bottom: 16px;
 }
 
 .action-button:disabled .fa-spinner {
@@ -1358,7 +1360,7 @@ body {
   padding: 1rem;
   width: 240px;
   z-index: 1010;
-  transition: opacity 0.2s ease 0.15s, transform 0.2s ease 0.15s, visibility 0s 0.35s;
+  transition: opacity 0.25s ease-out, transform 0.25s ease-out, visibility 0s 0.25s;
   transform: translateY(-10px);
   pointer-events: none;
 }
@@ -1376,13 +1378,13 @@ body {
   filter: drop-shadow(0 -1px 0px var(--border-light));
 }
 
-.user-icon-wrapper:hover .user-hover-card,
+.user-profile-container:hover .user-hover-card,
 .user-hover-card:hover {
   visibility: visible;
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
-  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0s 0s;
+  transition: opacity 0.25s ease-out, transform 0.25s ease-out, visibility 0s 0s;
 }
 
 .user-hover-content {
