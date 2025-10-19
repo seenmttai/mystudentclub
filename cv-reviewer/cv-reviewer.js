@@ -8,6 +8,7 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 
 let userId = null;
 let supabase = null;
+let authUser = null;
 
 const heroSection = document.getElementById('heroSection');
 const uploadSection = document.getElementById('uploadSection');
@@ -66,7 +67,7 @@ const specializationOptions = {
     "Technology": ["Software Engineer", "Data Scientist", "Product Manager", "UX/UI Designer", "DevOps Engineer", "Cybersecurity Analyst", "IT Support Specialist"]
 };
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   //populateSpecializations();
   setupUserId();
   initializeSupabase(); // Initialize Supabase on page load
@@ -80,6 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
       </linearGradient>`;
     svg.insertBefore(defs, svg.firstChild);
   }
+  await refreshAuthUser();
   setupTabs();
   setupCollapsibleSections();
 });
@@ -308,11 +310,13 @@ function initializeSupabase() {
     const headers = {
         'x-msc-user-id': userId
     };
-    supabase = createClient(supabaseUrl, supabaseKey, {
-        global: {
-            headers: headers
-        }
-    });
+    supabase = createClient(supabaseUrl, supabaseKey, { global: { headers } });
+}
+
+async function refreshAuthUser() {
+    if (!supabase) initializeSupabase();
+    const { data } = await supabase.auth.getUser();
+    authUser = data?.user || null;
 }
 
 proceedToReviewBtn.addEventListener('click', analyzeCv);
@@ -366,6 +370,7 @@ async function analyzeCv() {
     console.log(analysisResultText);
 
     processStructuredResults(analysisResultText);
+    await refreshAuthUser();
     await saveReview(analysisResultText);
 
     loadingSection.style.display = 'none';
@@ -382,37 +387,19 @@ async function analyzeCv() {
 }
 
 async function saveReview(reviewText) {
-    if (!supabase || !userId) return;
+    if (!supabase) return;
 
-    try {
-        const scoreSection = extractSectionContent(reviewText, '<<<OVERALL_SCORE>>>', '<<<END_OVERALL_SCORE>>>');
-        let score = 0;
-        if (scoreSection) {
-            const scoreMatch = scoreSection.match(/Score:\s*([\d.]+)\/100/i);
-            if (scoreMatch) {
-                score = parseFloat(parseFloat(scoreMatch[1]).toFixed(2)); // clamp to 2 decimals
-            }
-        }
+    const scoreSection = extractSectionContent(reviewText, '<<<OVERALL_SCORE>>>', '<<<END_OVERALL_SCORE>>>');
+    let score = 0; const m = scoreSection?.match(/Score:\s*([\d.]+)\/100/i); if (m) score = parseFloat(parseFloat(m[1]).toFixed(2));
 
-        const { data, error } = await supabase
-            .from('msc_cv_ai_resume_reviews')
-            .insert([
-                { 
-                    user_id: userId, 
-                    score: score, 
-                    review_data: { review: reviewText }, 
-                    file_name: selectedFile.name 
-                }
-            ]);
+    const insertPayload = {
+        user_id: authUser ? authUser.id : userId,
+        user_name: authUser ? (authUser.user_metadata?.full_name || authUser.email || 'User') : null,
+        score, review_data: { review: reviewText }, file_name: selectedFile.name
+    };
 
-        if (error) {
-            console.error('Error saving review to Supabase:', error);
-        } else {
-            console.log('Review saved successfully:', data);
-        }
-    } catch (e) {
-        console.error('Exception while saving review:', e);
-    }
+    const { error } = await supabase.from('msc_cv_ai_resume_reviews').insert([insertPayload]);
+    if (error) console.error('Error saving review to Supabase:', error);
 }
 
 function startLoadingAnimation() {
@@ -955,70 +942,46 @@ function resetToUploadStageOnError() {
 async function loadLeaderboard() {
     const contentEl = document.getElementById('leaderboardContent');
     contentEl.innerHTML = 'Loading...';
-    if (!supabase) {
-        contentEl.innerHTML = 'Database connection not available.';
+    await refreshAuthUser();
+    if (!supabase || !authUser) {
+        contentEl.innerHTML = 'You must be logged in to view and be part of the leaderboard.';
         return;
     }
-
     const { data, error } = await supabase
         .from('msc_cv_ai_resume_reviews')
-        .select('score, created_at, file_name')
+        .select('score, created_at, file_name, user_name')
         .order('score', { ascending: false })
         .limit(10);
-
-    if (error) {
-        console.error('Error fetching leaderboard:', error);
-        contentEl.innerHTML = '<p class="text-danger">Could not load leaderboard data.</p>';
-        return;
-    }
-
-    if (!data || data.length === 0) {
-        contentEl.innerHTML = '<p>No entries yet. Be the first!</p>';
-        return;
-    }
-
+    if (error) { console.error('Error fetching leaderboard:', error); contentEl.innerHTML = '<p class="text-danger">Could not load leaderboard data.</p>'; return; }
+    if (!data?.length) { contentEl.innerHTML = '<p>No entries yet. Be the first!</p>'; return; }
     let html = '<ol class="list-decimal list-inside space-y-3">';
-    data.forEach((item, index) => {
+    data.forEach(item => {
         const date = new Date(item.created_at).toLocaleDateString();
+        const name = item.user_name ? item.user_name : 'Anonymous';
         html += `<li class="p-3 rounded-lg border border-border bg-background-light">
                     <div class="flex justify-between items-center">
                         <span class="font-semibold text-primary">${item.score.toFixed(1)}%</span>
-                        <span class="text-sm text-text-secondary">${date}</span>
+                        <span class="text-sm text-text-secondary">${name} • ${date}</span>
                     </div>
                  </li>`;
     });
-    html += '</ol>';
-    contentEl.innerHTML = html;
+    html += '</ol>'; contentEl.innerHTML = html;
 }
 
 async function loadHistory() {
-    const contentEl = document.getElementById('historyContent');
-    const detailEl = document.getElementById('historyDetailContent');
-    detailEl.style.display = 'none';
-    contentEl.innerHTML = 'Loading...';
-    if (!supabase || !userId) {
-        contentEl.innerHTML = 'Could not retrieve user history.';
-        return;
-    }
-    
+    const contentEl = document.getElementById('historyContent'); const detailEl = document.getElementById('historyDetailContent');
+    detailEl.style.display = 'none'; contentEl.innerHTML = 'Loading...';
+    await refreshAuthUser();
+    if (!supabase) { contentEl.innerHTML = 'Could not retrieve user history.'; return; }
+    const historyUserId = authUser ? authUser.id : userId;
     const { data, error } = await supabase
         .from('msc_cv_ai_resume_reviews')
-        .select('id, score, created_at, file_name, review_data', { head: false })
-        .eq('user_id', userId)
+        .select('id, score, created_at, file_name, review_data')
+        .eq('user_id', historyUserId)
         .order('created_at', { ascending: false })
         .limit(20);
-
-    if (error) {
-        console.error('Error fetching history:', error);
-        contentEl.innerHTML = `<p class="text-danger">Could not load history. ${error.message}</p>`;
-        return;
-    }
-
-    if (!data || data.length === 0) {
-        contentEl.innerHTML = '<p>You have no past reviews.</p>';
-        return;
-    }
-
+    if (error) { console.error('Error fetching history:', error); contentEl.innerHTML = `<p class="text-danger">Could not load history. ${error.message}</p>`; return; }
+    if (!data?.length) { contentEl.innerHTML = '<p>You have no past reviews.</p>'; return; }
     let html = '<div class="space-y-2">';
     data.forEach(item => {
         const date = new Date(item.created_at).toLocaleString();
