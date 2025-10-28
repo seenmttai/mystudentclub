@@ -7,23 +7,23 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #1e40af;
-            --primary-light: #3b82f6;
-            --secondary: #64748b;
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --secondary: #6b7280;
             --success: #10b981;
             --warning: #f59e0b;
             --error: #ef4444;
-            --bg-primary: #0f172a;
-            --bg-secondary: #111827; 
+            --bg-primary: #030712;
+            --bg-secondary: #111827;
             --bg-tertiary: #1f2937;
             --text-primary: #f9fafb;
-            --text-secondary: #e5e7eb;
-            --text-muted: #94a3b8;
+            --text-secondary: #d1d5db;
+            --text-muted: #9ca3af;
             --border: #374151;
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            --border-radius: 12px;
-            --transition: all 0.2s ease;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+            --border-radius: 0.75rem;
+            --transition: all 0.2s ease-in-out;
         }
 
         .hidden { display: none !important; }
@@ -36,7 +36,8 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            background-color: var(--bg-primary);
+            background-image: radial-gradient(ellipse 80% 50% at 50% -20%,rgba(120, 119, 198, 0.3), transparent);
             color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
@@ -49,7 +50,6 @@
             justify-content: center;
             padding: 2rem;
             position: relative;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
         }
 
         .subtitles-overlay {
@@ -72,25 +72,20 @@
 
 
         .setup-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
-            opacity: 0.5;
+            display: none;
         }
 
         .setup-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
+            background: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(24px);
+            border: 1px solid transparent;
+            background-clip: padding-box;
+            border-image: linear-gradient(to bottom right, rgba(255,255,255,0.15), rgba(255,255,255,0.05)) 1;
+            border-radius: 24px;
             padding: 3rem;
             max-width: 600px;
             width: 100%;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
             position: relative;
             z-index: 2;
         }
@@ -101,36 +96,39 @@
         }
 
         .setup-logo {
-            width: 64px;
-            height: 64px;
+            width: 56px;
+            height: 56px;
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
             border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 1.5rem;
+            box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
         }
 
         .setup-title {
-            font-size: 2.5rem;
+            font-size: 2.25rem;
             font-weight: 700;
             background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
 
         .setup-subtitle {
             color: var(--text-muted);
             font-size: 1.1rem;
             line-height: 1.6;
+            max-width: 450px;
+            margin: 0 auto;
         }
 
         .form-grid {
             display: grid;
             gap: 1.5rem;
-            margin-bottom: 2rem;
+            margin-top: 2.5rem;
         }
 
         .form-group {
@@ -139,21 +137,21 @@
         }
 
         .form-label {
-            font-weight: 600;
+            font-weight: 500;
             margin-bottom: 0.5rem;
             color: var(--text-secondary);
+            font-size: 0.9rem;
         }
 
         .form-input, .form-select {
-            padding: 1rem;
-            background: var(--bg-tertiary);
+            padding: 0.875rem 1rem;
+            background: rgba(17, 24, 39, 0.8);
             border: 1px solid var(--border);
             border-radius: var(--border-radius);
             color: var(--text-primary);
             font-size: 1rem;
             transition: var(--transition);
         }
-
         
         .select-wrapper {
             position: relative;
@@ -242,8 +240,8 @@
         .form-input:focus, .form-select:focus {
             outline: none;
             border-color: var(--primary-light);
-            background: rgba(255, 255, 255, 0.12);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background: var(--bg-secondary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
         .btn {
@@ -263,19 +261,23 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            background-image: linear-gradient(to right, #4f46e5 0%, #7c3aed 50%, #4f46e5 100%);
+            background-size: 200% auto;
             color: white;
+            box-shadow: 0 4px 15px 0 rgba(79, 70, 229, 0.35);
         }
 
         .btn-primary:hover {
+            background-position: right center;
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
         }
 
         .btn-primary:disabled {
             opacity: 0.6;
             cursor: not-allowed;
             transform: none;
+            box-shadow: none;
         }
 
         
@@ -392,7 +394,7 @@
         .interview-main {
             flex: 1;
             display: grid;
-            grid-template-columns: 1fr auto;
+            grid-template-columns: 1fr 340px;
             gap: 1rem;
             padding: 1rem;
             overflow: hidden;
@@ -405,6 +407,7 @@
             position: relative;
             overflow: hidden;
             min-height: 400px;
+            border: 1px solid var(--border);
         }
 
         .avatar-container {
@@ -421,6 +424,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
+            pointer-events: none;
         }
 
         .participant-info {
@@ -443,19 +447,22 @@
             height: 8px;
             border-radius: 50%;
             background: var(--success);
+            box-shadow: 0 0 8px var(--success);
         }
 
         .status-indicator.muted {
             background: var(--error);
+            box-shadow: 0 0 8px var(--error);
         }
 
         .sidebar {
-            width: 320px;
+            width: 340px;
             background: var(--bg-secondary);
             border-radius: var(--border-radius);
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            border: 1px solid var(--border);
         }
 
         .user-video {
@@ -463,6 +470,7 @@
             background: var(--bg-tertiary);
             position: relative;
             border-radius: var(--border-radius) var(--border-radius) 0 0;
+            border-bottom: 1px solid var(--border);
         }
 
         .user-video video {
@@ -490,29 +498,40 @@
 
         .message {
             margin-bottom: 1rem;
-            padding: 0.75rem;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.05);
+            max-width: 90%;
         }
 
         .message.ai {
-            border-left: 3px solid var(--primary-light);
+            align-self: flex-start;
         }
-
+        
         .message.user {
-            border-left: 3px solid var(--success);
+            align-self: flex-end;
         }
 
         .message-author {
             font-weight: 600;
             font-size: 0.85rem;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.35rem;
             color: var(--text-secondary);
         }
 
         .message-content {
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            line-height: 1.5;
             color: var(--text-primary);
-            line-height: 1.4;
+        }
+
+        .message.ai .message-content {
+            background: var(--bg-tertiary);
+            border-top-left-radius: 2px;
+        }
+        
+        .message.user .message-content {
+            background: var(--primary);
+            color: white;
+            border-top-right-radius: 2px;
         }
 
         .chat-input-container {
@@ -777,6 +796,25 @@
                 right: 12px;
             }
         }
+/* hide self camera on mobile and simplify sidebar layout */
+@media (max-width: 768px) {
+    .user-video { display: none; }
+    .sidebar { width: 100%; grid-template-columns: 1fr; }
+}
+
+/* Hide mobile chat UI by default (desktop), show only on mobile */
+@media (min-width: 769px) {
+  #mobile-chat-fab,
+  #mobile-chat-sheet { display: none; }
+}
+
+@media (max-width: 768px) {
+  .mobile-chat-fab { position: fixed; right: 16px; bottom: 156px; background:#111827; color:#fff; border:1px solid rgba(255,255,255,.12); padding:.6rem .9rem; border-radius:999px; box-shadow: var(--shadow); z-index:1200; display: inline-flex; align-items: center; }
+  .mobile-chat-sheet { position: fixed; left:0; right:0; bottom:-100%; height:70vh; background:#0f172a; border-top:1px solid var(--border); border-radius:16px 16px 0 0; display:flex; flex-direction:column; transition: transform .25s ease; transform: translateY(100%); z-index:1300; }
+  /* Ensure visibility on mobile */
+  #mobile-chat-fab { display: inline-flex !important; z-index: 2000; }
+  #mobile-chat-sheet { display: flex !important; z-index: 2100; }
+}
     </style>
     <script type="importmap">
     { 
@@ -989,6 +1027,19 @@
                 </button>
                 <div id="speech-status" class="speech-status" role="status" aria-live="polite"></div>
                 <span class="push-to-talk-hint">Hold to speak, release to send</span>
+            </div>
+        </div>
+
+        <div id="mobile-chat-fab" class="mobile-chat-fab" aria-label="Open chat">Chat</div>
+        <div id="mobile-chat-sheet" class="mobile-chat-sheet" aria-hidden="true">
+            <div class="sheet-header">
+                <span>Chat</span>
+                <button id="mobile-chat-close" class="sheet-close" aria-label="Close">×</button>
+            </div>
+            <div id="mobile-chat-messages" class="sheet-messages"></div>
+            <div class="sheet-input">
+                <input id="mobile-chat-input" type="text" placeholder="Type your message..." />
+                <button id="mobile-send-btn" class="btn btn-primary">Send</button>
             </div>
         </div>
     </div>
@@ -1453,7 +1504,6 @@
                     const anim = this.animQueue[i];
                     if (this.animClock >= anim.ts[0]) {
                         Object.entries(anim.vs).forEach(([mt, vs]) => { 
-                            if (mt === 'pose' && this.animClock >= anim.ts[1]) { this.setPoseFromTemplate(vs[1]); anim.ts = [Infinity]; return; }
                             if (vs[0] === null) vs[0] = this.getValue(mt);
                             const vv = this.valueAnimationSeq(anim.ts, vs, this.animClock);
                             const prev = frameMorphAcc.get(mt) ?? -Infinity;
@@ -1712,7 +1762,6 @@
                         "RightForeArm.rotation": {x: 0, y:0, z:-1},
                     }
                 }];
-
                 dt.push(1000 + Math.round(Math.random() * 500));
                 moveto.push({ duration: 2000, props: {} });
                 ["LeftArm", "LeftForeArm", "RightArm", "RightForeArm", "LeftHand", "RightHand"].forEach(x => {
@@ -1787,6 +1836,12 @@
         const endCallBtn = document.getElementById('end-call-btn');
         const allowPermissionsBtn = document.getElementById('allow-permissions');
         const skipPermissionsBtn = document.getElementById('skip-permissions');
+        const mobileChatFab = document.getElementById('mobile-chat-fab');
+        const mobileChatSheet = document.getElementById('mobile-chat-sheet');
+        const mobileChatClose = document.getElementById('mobile-chat-close');
+        const mobileChatMessages = document.getElementById('mobile-chat-messages');
+        const mobileChatInput = document.getElementById('mobile-chat-input');
+        const mobileSendBtn = document.getElementById('mobile-send-btn');
 
         let interimTranscript = '';
         let finalTranscript = '';
@@ -1796,6 +1851,7 @@
             setupSpeechRecognition();
             loadModelInBackground();
             subtitlesBtn.classList.toggle('active', areSubtitlesOn);
+            ensureMobileChatUIVisible();
         }
 
         function setupEventListeners() {
@@ -1819,7 +1875,12 @@
 
             window.addEventListener('resize', () => {
                 if (avatar) avatar.onResize();
+                ensureMobileChatUIVisible();
             });
+            if (mobileChatFab) mobileChatFab.addEventListener('click', () => { mobileChatSheet.classList.add('open'); mobileChatSheet.setAttribute('aria-hidden','false'); });
+            if (mobileChatClose) mobileChatClose.addEventListener('click', () => { mobileChatSheet.classList.remove('open'); mobileChatSheet.setAttribute('aria-hidden','true'); });
+            if (mobileSendBtn) mobileSendBtn.addEventListener('click', sendTypedMessage);
+            if (mobileChatInput) mobileChatInput.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendTypedMessage(); }});
         }
 
         function setupSpeechRecognition() {
@@ -2062,6 +2123,11 @@
             `;
             chatMessages.appendChild(messageEl);
             chatMessages.scrollTop = chatMessages.scrollHeight;
+            if (mobileChatMessages) {
+                const clone = messageEl.cloneNode(true);
+                mobileChatMessages.appendChild(clone);
+                mobileChatMessages.scrollTop = mobileChatMessages.scrollHeight;
+            }
         }
 
         async function sendToAI(message) {
@@ -2181,28 +2247,21 @@
 
         function scheduleAISubtitles(sortedTP, totalDurationSec, audioStartAt) {
             if (!areSubtitlesOn || !sortedTP || !sortedTP.length) return;
-            if (subtitlesOverlay._sched) {
-                subtitlesOverlay._sched.forEach(id => clearTimeout(id));
-            }
-            const ids = [];
-            const words = [];
-            const startEpoch = performance.now();
+            if (subtitlesOverlay._sched) { subtitlesOverlay._sched.forEach(id => clearTimeout(id)); }
+            const ids = []; const startEpoch = performance.now();
             const offsetMs = (audioStartAt - avatar.audioCtx.currentTime) * 1000;
-
-            sortedTP.forEach((tp, idx) => {
+            let currentSentence = [];
+            sortedTP.forEach((tp, i) => {
                 const atMs = tp.time_seconds * 1000 + offsetMs;
-                const when = Math.max(0, atMs);
-                words.push(tp.word);
-                const textAtIdx = `${timestampNow()} Alex: ${words.join(' ')}`;
-                const id = setTimeout(() => {
-                    showSubtitles(textAtIdx);
-                }, when);
-                ids.push(id);
+                if (currentSentence.length === 0) ids.push(setTimeout(()=>subtitlesOverlay.classList.add('hidden'), Math.max(0, atMs - 10)));
+                currentSentence.push(tp.word);
+                const slice = currentSentence.length > 6 ? currentSentence.slice(-6) : currentSentence;
+                const text = `${timestampNow()} Alex: ${slice.join(' ')}`;
+                ids.push(setTimeout(() => showSubtitles(text), Math.max(0, atMs)));
+                if (/[.!?]$/.test(tp.word)) { currentSentence = []; ids.push(setTimeout(()=>subtitlesOverlay.classList.add('hidden'), Math.max(0, atMs + 200))); }
             });
             const totalMs = totalDurationSec * 1000 + offsetMs + 400;
-            ids.push(setTimeout(() => {
-                subtitlesOverlay.classList.add('hidden');
-            }, Math.max(0, totalMs)));
+            ids.push(setTimeout(() => { subtitlesOverlay.classList.add('hidden'); }, Math.max(0, totalMs)));
             subtitlesOverlay._sched = ids;
         }
 
@@ -2277,7 +2336,25 @@
             }
         }
 
+        function sendTypedMessage() {
+            const text = (mobileChatInput?.value || '').trim();
+            if (!text || isWaitingForAIResponse) return;
+            mobileChatInput.value = '';
+            addChatMessage('user', 'You', text);
+            sendToAI(text);
+            if (!mobileChatSheet.classList.contains('open')) {
+                mobileChatSheet.classList.add('open');
+                mobileChatSheet.setAttribute('aria-hidden','false');
+            }
+        }
+
+        function ensureMobileChatUIVisible(){
+            if (window.innerWidth <= 768) {
+                if (mobileChatFab) mobileChatFab.style.display = 'inline-flex';
+                if (mobileChatSheet) mobileChatSheet.style.display = 'flex';
+            }
+        }
+
         init();
-    </script>
-</body>
+    </script><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "9ecf6f49919940acb2efcc833483cd5f"}'></script></body>
 </html>
