@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
     <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://www.mystudentclub.com/scripts/supabase.js"></script>
     <style>
         :root {
             --forum-primary: #1e40af;
@@ -956,7 +956,6 @@
                 document.getElementById('quick-create-collapsed').style.display = 'block';
                 qcForm.style.display = 'none';
                 
-                // Show mentor dashboard link if user has mentor profile
                 const { data: mentorProfile } = await supabaseClient
                     .from('mentor_profiles')
                     .select('id')

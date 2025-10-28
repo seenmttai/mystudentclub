@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
     <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://www.mystudentclub.com/scripts/supabase.js"></script>
     <style>
         :root {
             --forum-primary: #1e40af;
@@ -508,7 +508,6 @@
         <div id="mentors-list" class="mentors-grid"></div>
     </div>
 
-    <!-- Request Mentorship Modal -->
     <div id="request-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -530,7 +529,6 @@
         </div>
     </div>
 
-    <!-- Become Mentor Modal -->
     <div id="mentor-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -629,7 +627,6 @@
 
             mentors = data || [];
 
-            // Apply filters
             let filtered = mentors.filter(m => {
                 const matchesSearch = !searchQuery || 
                     m.forum_user_profiles?.display_name?.toLowerCase().includes(searchQuery) ||
@@ -642,7 +639,6 @@
                 return matchesSearch && matchesArea && matchesAvail;
             });
 
-            // Sort
             filtered.sort((a, b) => {
                 if (sortBy === 'rating') return b.rating - a.rating;
                 if (sortBy === 'reviews') return b.total_reviews - a.total_reviews;
@@ -789,7 +785,6 @@
             btn.disabled = true;
             btn.textContent = 'Creating Profile...';
 
-            // Ensure user profile exists
             await supabaseClient.from('forum_user_profiles').upsert({
                 user_id: currentUser.id,
                 username: currentUser.email.split('@')[0],
@@ -817,7 +812,6 @@
             }
         });
 
-        // Search and filter handlers
         let searchTimeout;
         document.getElementById('search-input').addEventListener('input', () => {
             clearTimeout(searchTimeout);
@@ -828,7 +822,6 @@
         document.getElementById('availability-filter').addEventListener('change', loadMentors);
         document.getElementById('sort-filter').addEventListener('change', loadMentors);
 
-        // Menu handlers
         const menuButton = document.getElementById('menuButton');
         const menuCloseBtn = document.getElementById('menuCloseBtn');
         const expandedMenu = document.getElementById('expandedMenu');
@@ -845,7 +838,6 @@
             });
         }
 
-        // Initialize
         (async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
             currentUser = session?.user || null;
