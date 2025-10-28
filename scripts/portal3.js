@@ -1018,7 +1018,6 @@ function setupEventListeners() {
             if (resourcesBtn.querySelector('.dropdown-icon')) resourcesBtn.querySelector('.dropdown-icon').classList.remove('open');
         }
 
-        // Close user profile dropdown on outside click
         const userProfileContainer = document.querySelector('.user-profile-container');
         const userHoverCard = document.querySelector('.user-hover-card');
         if (userProfileContainer && userHoverCard && userHoverCard.classList.contains('show')) {
