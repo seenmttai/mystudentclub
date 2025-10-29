@@ -18,53 +18,57 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://mystudentclub.pages.dev/scripts/style.css">
   <link rel="stylesheet" href="cv-reviewer-styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.1/marked.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.2/html2pdf.bundle.min.js"></script>
   <style>
     .results-grid {
         display: grid;
-        grid-template-columns: 300px 1fr;
-        gap: 2rem;
+        grid-template-columns: 320px 1fr;
+        gap: 2.5rem;
     }
     .results-sidebar {
-        background-color: var(--background-light, #f8fafc);
-        padding: 1.5rem;
-        border-radius: 12px;
+        background: linear-gradient(to bottom, #ffffff, #fafbfc);
+        padding: 2rem;
+        border-radius: 16px;
         border: 1px solid var(--border);
         align-self: start;
         position: sticky;
         top: 100px;
+        box-shadow: var(--shadow-md);
     }
     .results-main { }
     .feedback-section {
         background: var(--surface);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-bottom: 1.5rem;
+        border-radius: 16px;
+        padding: 2rem;
+        margin-bottom: 2rem;
         border: 1px solid var(--border);
-        box-shadow: var(--shadow-sm);
+        box-shadow: var(--shadow-md);
+        transition: box-shadow 0.3s ease;
+    }
+    .feedback-section:hover {
+        box-shadow: var(--shadow-lg);
     }
     .feedback-section .section-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         cursor: pointer;
-        padding-bottom: 0.5rem;
+        padding-bottom: 1rem;
         border-bottom: 1px solid var(--border);
     }
     .feedback-section .section-header h3 {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: var(--primary);
+        font-size: 1.375rem;
+        font-weight: 700;
+        color: var(--text-primary);
         margin-bottom: 0;
         border-bottom: none;
         padding-bottom: 0;
+        letter-spacing: -0.02em;
     }
     .feedback-section .section-header .toggle-icon {
         transition: transform 0.3s ease;
-        width: 20px;
-        height: 20px;
-        color: var(--primary);
+        width: 24px;
+        height: 24px;
+        color: var(--text-secondary);
     }
     .feedback-section .content-area.collapsed {
         display: none;
@@ -72,62 +76,70 @@
     .feedback-section .section-header .toggle-icon.collapsed {
         transform: rotate(-90deg);
     }
-    .feedback-point { margin-bottom: 0.75rem; }
-    .feedback-point h4 { font-weight: 500; color: var(--text-primary); margin-bottom: 0.25rem; font-size: 1rem; }
-    .feedback-point p, .feedback-point ul { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-left: 0; padding-left: 0;}
-    .feedback-point ul li { margin-bottom: 0.25rem; list-style: disc; margin-left: 1.25rem;}
-    .rewrite-suggestion { margin-left: 1rem; margin-top: 0.5rem; border-left: 3px solid var(--primary-light); padding-left: 0.75rem; font-style: italic; background-color: rgba(79, 70, 229, 0.03); border-radius: 4px; padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .feedback-point { margin-bottom: 1rem; }
+    .feedback-point h4 { font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; font-size: 1.0625rem; letter-spacing: -0.01em; }
+    .feedback-point p, .feedback-point ul { color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.7; margin-left: 0; padding-left: 0;}
+    .feedback-point ul li { margin-bottom: 0.375rem; list-style: disc; margin-left: 1.5rem;}
+    .rewrite-suggestion { margin-left: 1.25rem; margin-top: 0.75rem; border-left: 3px solid var(--primary); padding-left: 1rem; font-style: italic; background-color: rgba(37, 99, 235, 0.04); border-radius: 6px; padding-top: 0.5rem; padding-bottom: 0.5rem; }
     .rewrite-btn {
-        background-color: rgba(79, 70, 229, 0.1);
+        background-color: rgba(37, 99, 235, 0.1);
         color: var(--primary);
-        padding: 0.25rem 0.6rem;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        font-weight: 500;
-        margin-left: 0.5rem;
+        padding: 0.375rem 0.875rem;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-left: 0.75rem;
         cursor: pointer;
-        transition: background-color 0.2s ease;
+        transition: all 0.2s ease;
         border: none;
     }
-    .rewrite-btn:hover { background-color: rgba(79, 70, 229, 0.2); }
-    .highlight-good { color: var(--success); font-weight: 500; display: inline-block; margin-left: 4px; }
-    .highlight-issue { color: var(--danger); font-weight: 500; display: inline-block; margin-left: 4px;}
+    .rewrite-btn:hover { background-color: rgba(37, 99, 235, 0.2); transform: translateY(-1px); }
+    .highlight-good { color: var(--success); font-weight: 600; display: inline-block; margin-left: 4px; }
+    .highlight-issue { color: var(--danger); font-weight: 600; display: inline-block; margin-left: 4px;}
     .original-text { text-decoration: line-through; color: var(--danger); margin-right: 0.5rem;}
     .corrected-text { color: var(--success); }
-    .grammar-correction { background-color: rgba(239, 68, 68, 0.05); padding: 0.5rem; border-radius: 4px; border-left: 3px solid var(--danger);}
-    .grammar-correction .corrected-text { font-weight: 500; }
+    .grammar-correction { background-color: rgba(220, 38, 38, 0.05); padding: 0.75rem; border-radius: 6px; border-left: 3px solid var(--danger);}
+    .grammar-correction .corrected-text { font-weight: 600; }
     .tooltip { position: relative; display: inline-block; cursor: help; border-bottom: 1px dotted var(--text-light); }
     .tooltip .tooltiptext { visibility: hidden; width: 220px; background-color: #555; color: #fff; text-align: center; border-radius: 6px; padding: 5px 10px; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -110px; opacity: 0; transition: opacity 0.3s; font-size: 0.8rem; font-weight: 400; }
     .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
     #domainSpecializationSection { display: none; }
-    .content-area ul { list-style: disc; margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem; }
-    .content-area ol { list-style: decimal; margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0.5rem;}
-    .content-area li { margin-bottom: 0.3rem; }
-    .content-area strong { font-weight: 600; color: var(--text-primary); }
+    .content-area ul { list-style: disc; margin-left: 1.75rem; margin-top: 0.75rem; margin-bottom: 0.75rem; }
+    .content-area ol { list-style: decimal; margin-left: 1.75rem; margin-top: 0.75rem; margin-bottom: 0.75rem;}
+    .content-area li { margin-bottom: 0.5rem; line-height: 1.6; }
+    .content-area strong { font-weight: 700; color: var(--text-primary); }
     .content-area em { font-style: italic; }
     .content-area code { background-color: rgba(100, 116, 139, 0.1); padding: 0.1rem 0.3rem; border-radius: 4px; font-size: 0.85em; color: var(--text-secondary); }
-    .content-area h4 { font-size: 1.05rem; font-weight: 600; color: var(--primary); margin-top: 1rem; margin-bottom: 0.5rem; }
+    .content-area h4 { font-size: 1.125rem; font-weight: 700; color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem; letter-spacing: -0.01em; }
 
     .tabs {
         display: flex;
-        border-bottom: 1px solid var(--border);
-        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border);
+        margin-bottom: 2rem;
+        gap: 0.5rem;
     }
     .tab-btn {
-        padding: 0.75rem 1.5rem;
+        padding: 1rem 2rem;
         cursor: pointer;
         border: none;
         background: transparent;
-        font-size: 1rem;
-        font-weight: 500;
+        font-size: 1.0625rem;
+        font-weight: 600;
         color: var(--text-secondary);
-        border-bottom: 2px solid transparent;
-        margin-bottom: -1px;
-        transition: all 0.2s ease;
+        border-bottom: 3px solid transparent;
+        margin-bottom: -2px;
+        transition: all 0.3s ease;
+        border-radius: 8px 8px 0 0;
+        letter-spacing: -0.01em;
+    }
+    .tab-btn:hover {
+        color: var(--primary);
+        background: rgba(37, 99, 235, 0.04);
     }
     .tab-btn.active {
         color: var(--primary);
         border-bottom-color: var(--primary);
+        background: rgba(37, 99, 235, 0.04);
     }
     .tab-content {
         display: none;
@@ -142,16 +154,38 @@
         }
         .results-sidebar {
              position: static;
-             margin-bottom: 2rem;
+             margin-bottom: 2.5rem;
         }
      }
      @media (max-width: 768px) {
-        .results-sidebar { padding: 1rem; }
-        .feedback-section { padding: 1rem; }
-        .results-grid { gap: 1.5rem; }
+        .results-sidebar { padding: 1.5rem; }
+        .feedback-section { padding: 1.5rem; }
+        .results-grid { gap: 2rem; }
+
+        /* Mobile-friendly tabs */
+        .tabs {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            gap: 0.25rem;
+            padding-bottom: 0.5rem;
+            scrollbar-width: none; /* Firefox */
+        }
+        .tabs::-webkit-scrollbar { display: none; } /* WebKit */
+
+        .tab-btn {
+            flex: 0 0 auto;
+            white-space: nowrap;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0;
+            border-radius: 8px;
+        }
+        .tab-btn.active {
+            border-bottom-color: transparent;
+            background: rgba(37, 99, 235, 0.08);
+        }
      }
      @media (max-width: 480px) {
-        .feedback-section h3 { font-size: 1.1rem; }
+        .feedback-section h3 { font-size: 1.25rem; }
         .feedback-point p, .feedback-point ul { font-size: 0.85rem; }
         .score-circle { width: 70px; height: 70px; }
      }
@@ -505,21 +539,9 @@
         </div>
       </div>
     </div>
-
-    <div id="reportPreview" class="report-preview" style="display:none;">
-      <div class="report-preview-card">
-        <div class="report-preview-header">
-          <h3 class="text-lg font-semibold">Report Preview</h3>
-          <div class="flex gap-2">
-            <button id="reportPreviewDownload" class="primary-btn">Download PDF</button>
-            <button id="reportPreviewClose" class="secondary-btn">Close</button>
-          </div>
-        </div>
-        <div id="reportPreviewContent" class="report-preview-body"></div>
-      </div>
-    </div>
   </main>
 
+  <script src="https://unpkg.com/markdown-pdfjs@1.0.1/dist/markdown-pdf.umd.js"></script>
   <script type="module" src="cv-reviewer.js"></script>
   <script>
     const resourcesBtn = document.getElementById('resourcesDropdownBtn');
@@ -538,6 +560,31 @@
             dropdownIcon.classList.remove('open');
         }
     });
+
+    const pdfPreviewModal = document.getElementById('pdfPreviewModal');
+    const pdfPreviewCloseBtn = document.getElementById('pdfPreviewCloseBtn');
+    const pdfPreviewContainer = document.getElementById('pdfPreviewContainer');
+    const pdfPreviewDownloadBtn = document.getElementById('pdfPreviewDownloadBtn');
+
+    pdfPreviewCloseBtn.addEventListener('click', () => {
+        pdfPreviewModal.style.display = 'none';
+    });
+
+    pdfPreviewDownloadBtn.addEventListener('click', () => {
+    });
   </script>
+
+  <div id="pdfPreviewModal" style="display:none; position:fixed; inset:0; z-index:1200; background:rgba(0,0,0,0.35);">
+    <div style="max-width:900px; width:90%; margin:60px auto; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 12px 24px rgba(0,0,0,0.12);">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #e5e7eb;">
+        <h3 style="margin:0; font-weight:700; color:#0f172a;">Preview: CV Analysis Report</h3>
+        <button id="pdfPreviewCloseBtn" style="border:none; background:#f3f4f6; color:#475569; padding:8px 12px; border-radius:8px; cursor:pointer;">Close</button>
+      </div>
+      <div id="pdfPreviewContainer" style="max-height:65vh; overflow:auto; padding:20px;"></div>
+      <div style="display:flex; justify-content:flex-end; gap:10px; padding:16px 20px; border-top:1px solid #e5e7eb;">
+        <button id="pdfPreviewDownloadBtn" style="background:#2563eb; color:#fff; border:1px solid #2563eb; padding:10px 16px; border-radius:10px; font-weight:600; cursor:pointer;">Download PDF</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

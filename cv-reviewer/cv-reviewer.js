@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
-const { jsPDF } = window.jspdf;
+// Using markdown-pdfjs(Created by Manan Bhansali, which is me :-) ) for PDF generation. 
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.worker.min.js';
 
@@ -51,6 +51,11 @@ const interviewQuestionsContent = document.querySelector('#interviewQuestionsSec
 const menuButton = document.getElementById('menuButton');
 const expandedMenu = document.getElementById('expandedMenu');
 const menuCloseBtn = document.getElementById('menuCloseBtn');
+
+const pdfPreviewModal = document.getElementById('pdfPreviewModal');
+const pdfPreviewContainer = document.getElementById('pdfPreviewContainer');
+const pdfPreviewCloseBtn = document.getElementById('pdfPreviewCloseBtn');
+const pdfPreviewDownloadBtn = document.getElementById('pdfPreviewDownloadBtn');
 
 let selectedFile = null;
 let pdfDocument = null;
@@ -304,7 +309,6 @@ proceedToReviewBtn.addEventListener('click', () => {
     }
 }*/
 
-// Add this function to initialize Supabase with the user ID header
 function initializeSupabase() {
     if (!userId) setupUserId();
     const headers = {
@@ -330,7 +334,6 @@ async function analyzeCv() {
   const selectedDomain = 'Financing';
   const selectedSpecialization = 'Accounting';
 
-  //domainSpecializationSection.style.display = 'none';
   heroSection.style.display = 'none';
   loadingSection.style.display = 'block';
   resultsSection.style.display = 'none';
@@ -700,11 +703,7 @@ function simpleMarkdownToHtml(md) {
 function cleanRawText(t) {
     return (t || '')
         .replace(/<<<.*?>>>/gs, '')          // remove section markers
-        .replace(/<<POINT>>|<<END_POINT>>/g, '')
-        .replace(/---/g, '')
-        .replace(/\*/g, '')                  // remove asterisks
-        .replace(/<\/?[^>]+>/g, '')          // strip any html
-        .replace(/\r?\n\s*\r?\n/g, '\n\n')   // normalize blank lines
+        .replace(/<<POINT>>|<<END_POINT>>/g, '') // remove point delimiters. 
         .trim();
 }
 
@@ -816,52 +815,67 @@ function resetToUploadStage() {
 
 downloadReportBtn.addEventListener('click', () => {
     if (!analysisResultText) {
-        alert("No analysis report available to download.");
+        alert("No analysis report available to preview.");
         return;
     }
-
-    const doc = new jsPDF({
-        orientation: 'p',
-        unit: 'mm',
-        format: 'a4'
-    });
-
-    let yPosition = 20;
-    const leftMargin = 15;
-    const rightMargin = 15;
-    const usableWidth = 210 - leftMargin - rightMargin;
-
-    const checkPageBreak = (height) => {
-        if (yPosition + height > 280) { // 297mm page height minus margin
-            doc.addPage();
-            yPosition = 20; // Reset Y position for new page
-        }
-    };
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(20);
-    doc.setTextColor(63, 63, 186); // primary color
-    doc.text("My Student Club", 105, yPosition, { align: 'center' });
-    yPosition += 8;
-    doc.setFontSize(16);
-    doc.setTextColor(45, 52, 54);
-    doc.text("CV Analysis Report", 105, yPosition, { align: 'center' });
-    yPosition += 15;
-
-    // render cleaned raw text (no markers, no asterisks)
+    if (!window.MarkdownPDF) {
+        alert("PDF generator not available. Please reload the page.");
+        return;
+    }
     const cleaned = cleanRawText(analysisResultText);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    doc.setTextColor(45, 52, 54);
-    const lines = doc.splitTextToSize(cleaned, usableWidth);
-    lines.forEach(line => {
-        checkPageBreak(5);
-        doc.text(line, leftMargin, yPosition);
-        yPosition += 4;
+    const safeFileName = (selectedFile ? selectedFile.name.replace(/\.pdf$/i, '') : 'CV')
+        .replace(/[^a-z0-9_.-]/gi, '_');
+    const headerHtml = `
+      <div style="text-align:center;padding:8px 0;font-family:'Poppins',sans-serif;color:#111827;font-weight:600;">
+        My Student Club · CV Analysis Report
+      </div>`;
+    const footerHtml = `
+      <div style="text-align:center;padding:6px 0;font-size:10px;color:#6b7280;font-family:'Poppins',sans-serif;">
+        Generated ${new Date().toLocaleDateString()}
+      </div>`;
+    const pdfCss = `
+      * { box-sizing: border-box; }
+      body { font-family: 'Poppins', sans-serif; color: #0f172a; }
+      h1, h2, h3 { color: #111827; font-weight:700; }
+      p, li { color: #374151; line-height: 1.6; font-size: 12px; }
+      ul, ol { margin: 0 0 10px 18px; padding: 0; }
+    `;
+    const markdown = `# CV Analysis Report\n\n${fixInlineCodeMarkdown(cleaned)}`;
+
+    pdfPreviewContainer.innerHTML = '';
+    MarkdownPDF.render(markdown, pdfPreviewContainer, {
+        css: pdfCss,
+        header: headerHtml,
+        footer: footerHtml
     });
 
-    const safeFileName = selectedFile ? selectedFile.name.replace(/\.pdf$/i, '').replace(/[^a-z0-9_.-]/gi, '_') : 'CV';
-    doc.save(`${safeFileName}_Analysis_Report.pdf`);
+    pdfPreviewModal.style.display = 'block';
+
+    const onDownload = () => {
+        MarkdownPDF.download(markdown, {
+            filename: `${safeFileName}_Analysis_Report.pdf`,
+            format: 'a4',
+            orientation: 'portrait',
+            margin: 12,
+            css: pdfCss,
+            header: headerHtml,
+            footer: footerHtml
+        }).finally(() => {
+            pdfPreviewModal.style.display = 'none';
+            pdfPreviewDownloadBtn.removeEventListener('click', onDownload);
+        });
+    };
+    pdfPreviewDownloadBtn.addEventListener('click', onDownload);
+});
+
+pdfPreviewCloseBtn.addEventListener('click', () => {
+    pdfPreviewModal.style.display = 'none';
+});
+
+pdfPreviewModal.addEventListener('click', (e) => {
+    if (e.target === pdfPreviewModal) {
+        pdfPreviewModal.style.display = 'none';
+    }
 });
 
 function resetToUploadStageOnError() {
@@ -873,6 +887,16 @@ function resetToUploadStageOnError() {
      uploadSection.style.display = 'block';
      heroSection.style.display = 'block';
      uploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function fixInlineCodeMarkdown(md) {
+    if (!md) return md;
+    let out = md.replace(/```[\s\S]*?```/g, '');          // remove fenced code blocks
+    out = out.replace(/`([^`\n]+)`/g, '$1');               // strip inline code markers
+    out = out.replace(/^\s*> ?(.*)$/gm, '$1');             // remove blockquote markers
+    out = out.replace(/^\s*[-*_]{3,}\s*$/gm, '');          // remove horizontal rules
+    out = out.replace(/^\|.*\|$/gm, m => m.replace(/\|/g, ' ').replace(/-+/g, ' ')); // flatten tables
+    return out;
 }
 
 async function loadLeaderboard() {
