@@ -570,11 +570,11 @@ async function checkUserEnrollment() {
 function isProfileComplete() { return !!localStorage.getItem('userCVText'); }
 
 async function handleApplyClick(job, buttonElement, isAiApply = false) {
-    if (!currentSession) { window.location.href = '/login.html'; return; }
 
     markJobAsApplied(job);
 
     if (isAiApply) {
+        if (!currentSession) { window.location.href = '/login.html'; return; }
         if (!isProfileComplete()) {
             alert("Your profile is incomplete. Please upload your resume to use the AI Apply feature.");
             window.location.href = `/profile.html?redirect=${encodeURIComponent(window.location.href)}`;
