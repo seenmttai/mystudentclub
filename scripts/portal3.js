@@ -66,6 +66,13 @@ const JOB_TITLE_MAP = {
     "Articleship Jobs": "Articleship Trainee"
 };
 
+const EMAIL_SUBJECT_MAP = {
+    "Industrial Training Job Portal": "Application for CA Industrial Training Position for your organisation",
+    "Fresher Jobs": "Application for CA Fresher Position for your organisation",
+    "Semi Qualified Jobs": "Application for Semi Qualified CA Position for your organisation",
+    "Articleship Jobs": "Application for CA Articleship Role for your organisation"
+};
+
 function setActivePortalTab() {
     const path = window.location.pathname;
     document.querySelectorAll('.portal-nav-bar .footer-tab, .site-footer-nav .footer-tab').forEach(tab => tab.classList.remove('active'));
@@ -671,7 +678,8 @@ function constructMailto(job, body = "") {
     const emailMatch = rawLink.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
     if (!emailMatch) return '#';
     const email = emailMatch[0];
-    const subject = `Application for ${JOB_TITLE_MAP[currentTable]} at ${job.Company} (Ref: My Student Club)`;
+    const subjectBase = EMAIL_SUBJECT_MAP[currentTable] || `Application for the role for your organisation`;
+    const subject = `${subjectBase} (Ref: My Student Club)`;
     return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
