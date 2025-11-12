@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div id="app">
+    <div class="tabs">
+      <button class="tab active" data-tab="profile">Profile</button>
+      <button class="tab" data-tab="results">Results</button>
+    </div>
+    <div class="panel" id="profile-panel">
+      <form id="profile-form">
+        <div class="field">
+          <label>City</label>
+          <select id="city">
+            <option value="">Select city</option>
+            <option value="Mumbai">Mumbai</option>
+            <option value="Delhi">Delhi</option>
+            <option value="Bengaluru">Bengaluru</option>
+            <option value="Hyderabad">Hyderabad</option>
+            <option value="Chennai">Chennai</option>
+            <option value="Pune">Pune</option>
+            <option value="Kolkata">Kolkata</option>
+            <option value="Ahmedabad">Ahmedabad</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Articleship Tier</label>
+          <select id="tier">
+            <option>Big4</option>
+            <option>Big6</option>
+            <option>Mid Size</option>
+            <option>Small Size</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Domain</label>
+          <select id="domain">
+            <option value="">Any (optional)</option>
+            <option>Statutory Audit</option>
+            <option>Internal Audit</option>
+            <option>Direct Taxation</option>
+            <option>Indirect Taxation</option>
+            <option>Mixed Exposure</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>CA Final % (bucket)</label>
+          <select id="score">
+            <option>50-55</option>
+            <option>55-60</option>
+            <option>60-65</option>
+            <option>65-70</option>
+            <option>70+</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Attempts</label>
+          <select id="attempts">
+            <option>1</option><option>2</option><option>3</option>
+            <option>4</option><option>5+</option>
+          </select>
+        </div>
+        <div class="row">
+          <div class="field" style="flex:1;min-width:120px">
+            <label>Industrial Training</label>
+            <select id="it_present">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+          </div>
+          <div class="field" style="flex:1;min-width:120px">
+            <label>Rank Holder</label>
+            <select id="rank_present">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="primary">Generate My Shortlist Prediction</button>
+        <button type="button" id="batch-export" class="primary" style="margin-top:8px;background:#1a73e8">Batch Export Permutation Results</button>
+      </form>
+    </div>
+    <div class="panel hidden" id="results-panel">
+      <div id="city-tabs" class="city-tabs"></div>
+      <div id="results-content"></div>
+    </div>
+  </div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
+
