@@ -135,9 +135,10 @@ function predictForCity(profile, city){
   const highSimilarityGroup = scored.filter(s => (1 - s.dist) > 0.9).map(s => s.d.shortlist_count);
   
   if (highSimilarityGroup.length >= 3) {
-      p50 = trimmedMean(highSimilarityGroup, 0.1);
-      p10 = Math.min(...highSimilarityGroup);
-      p90 = Math.max(...highSimilarityGroup);
+      const sortedGroup = highSimilarityGroup.sort((a,b) => a - b);
+      p50 = sortedGroup.reduce((a, b) => a + b, 0) / sortedGroup.length;
+      p10 = Math.min(...sortedGroup);
+      p90 = Math.max(...sortedGroup);
   } else {
     const counts = nbrs.map(n=>n.d.shortlist_count).sort((a,b)=>a-b);
     p50 = quantile(counts, 0.5); p10 = quantile(counts, 0.1); p90 = quantile(counts, 0.9);
@@ -180,7 +181,7 @@ function renderTabularMode() {
     
     controlsContainer.appendChild(createPivotControls(state, (newState) => { state = newState; updateView(); }));
     resultsContainer.appendChild(pivotTableContainer);
-    resultsContainer.appendChild(document.createElement('div')); // Placeholder for details table
+    resultsContainer.appendChild(document.createElement('div'));
   }
   updateView();
 }
@@ -228,16 +229,17 @@ function generatePivotData(data, rowField, colField, valueField) {
   for (const item of data) {
     const r = item[rowField]; const c = item[colField];
     if (!grouped[r]) grouped[r] = {};
-    if (!grouped[r][c]) grouped[r][c] = [];
-    grouped[r][c].push(item[valueField]);
+    if (!grouped[r][c]) grouped[r][c] = { sum: 0, count: 0 };
+    grouped[r][c].sum += item[valueField]; grouped[r][c].count++;
   }
 
   const values = {};
   for (const r of rowKeys) {
     values[r] = {};
     for (const c of colKeys) {
-      if (grouped[r] && grouped[r][c]) {
-        values[r][c] = Math.round(trimmedMean(grouped[r][c], 0.1));
+      if (grouped[r] && grouped[r][c] && grouped[r][c].count > 0) {
+        // Corrected logic: standard average, then round.
+        values[r][c] = Math.round(grouped[r][c].sum / grouped[r][c].count);
       } else { values[r][c] = 'NA'; }
     }
   }
