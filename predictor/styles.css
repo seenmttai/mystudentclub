@@ -78,6 +78,10 @@ main#app {
   margin-bottom: 1.5rem;
   text-align: center;
 }
+.panel h3 {
+  margin-top: 0;
+  text-align: center;
+}
 
 .hidden {
   display: none;
@@ -165,8 +169,8 @@ button.primary:hover {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
   border-radius: 12px;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
   text-align: center;
 }
 
@@ -184,19 +188,8 @@ button.primary:hover {
 .list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 1rem;
   text-align: left;
-  margin-top: 1rem;
-}
-
-.item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  border-radius: 8px;
-  background: var(--bg);
-  border: 1px solid #e9ecef;
 }
 
 .item-profile {
@@ -205,21 +198,12 @@ button.primary:hover {
 }
 .item-profile:last-child {
   border-bottom: none;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0;
+  margin-bottom: -0.5rem;
 }
 .item-profile .muted {
   font-size: 0.8rem;
-}
-
-.badge {
-  background: #e9ecef;
-  border: 1px solid #ced4da;
-  color: var(--text-dark);
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-  white-space: nowrap;
+  line-height: 1.4;
 }
 
 .tags {
@@ -236,5 +220,55 @@ button.primary:hover {
   padding: 4px 10px;
   border-radius: 6px;
   font-size: 12px;
+  font-weight: 500;
+}
+
+/* NEW Styles for Ranked Company List */
+.ranked-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  counter-reset: company-counter;
+}
+.ranked-list li {
+  counter-increment: company-counter;
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+.ranked-list li::before {
+  content: counter(company-counter);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--primary);
+  background-color: #e7f0ff;
+  min-width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+.company-item {
+  display: flex;
+  flex-direction: column;
+}
+.company-name {
+  font-weight: 600;
+}
+.reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.reason-tag {
+  background: #f1f3f5;
+  color: #495057;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
   font-weight: 500;
 }
