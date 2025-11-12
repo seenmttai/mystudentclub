@@ -5,7 +5,6 @@ const DATA = raw.map(r => {
   return {
     id: r.id,
     city: r.features.city,
-    // Unify Mid Size, Small Size, and Other into a single 'Other' category for logic
     tier: ['Mid Size', 'Small Size'].includes(tier) ? 'Other' : tier,
     domain: r.features.domain || 'N/A',
     attempts: r.features.attempts === '5+' ? 5 : parseInt(r.features.attempts, 10),
@@ -20,7 +19,6 @@ const COMPANY_PRIOR_BY_CITY = buildCityCompanyPrior(DATA);
 
 // --- UI ELEMENTS & STATE ---
 const profileForm = document.getElementById('profile-form');
-const resultsPanel = document.getElementById('results-panel');
 const tabularModeBtn = document.getElementById('tabular-mode-btn');
 const aiModeBtn = document.getElementById('ai-mode-btn');
 const tabularContentEl = document.getElementById('tabular-content');
@@ -36,8 +34,8 @@ function setMode(mode) {
     tabularContentEl.classList.add('hidden');
     aiContentEl.classList.remove('hidden');
     profilePanel.classList.remove('hidden');
-    aiResultsContainer.innerHTML = ''; // Clear previous AI results
-  } else { // 'tabular'
+    aiResultsContainer.innerHTML = '';
+  } else {
     aiModeBtn.classList.remove('active');
     tabularModeBtn.classList.add('active');
     aiContentEl.classList.add('hidden');
@@ -46,8 +44,7 @@ function setMode(mode) {
 }
 tabularModeBtn.onclick = () => setMode('tabular');
 aiModeBtn.onclick = () => setMode('ai');
-
-renderTabularMode(); // Initialize with Tabular View
+renderTabularMode();
 
 // --- AI MODE FORM SUBMISSION ---
 profileForm.onsubmit = (e) => {
@@ -155,20 +152,22 @@ function predictForCity(profile, city) {
 // --- TABULAR MODE LOGIC & RENDERING ---
 function renderTabularMode() {
   let state = {
-    filters: {}, rowField: 'score_bucket', colField: 'city',
+    filters: {},
+    rowField: 'score_bucket',
+    colField: 'city',
   };
   const container = tabularContentEl;
   container.innerHTML = `
     <div class="tabular-section">
       <h3>Explore Average Shortlists</h3>
-      <p class="muted" style="text-align: center; margin-top: -1rem; margin-bottom: 1.5rem;">Cross-reference different profile attributes to see historical averages. Click any number to see the most frequent companies for that segment.</p>
+      <p class="muted" style="text-align: center; margin-top: 0.25rem; margin-bottom: 1.5rem;">Cross-reference different profile attributes to see historical averages. Click any number to see the most frequent companies for that segment.</p>
       <div id="tabular-controls-container"></div>
       <div id="pivot-table-container"></div>
       <div id="pivot-details-container" class="details-container"></div>
     </div>
     <div class="tabular-section">
       <h3>Profile Explorer</h3>
-      <p class="muted" style="text-align: center; margin-top: -1rem; margin-bottom: 1.5rem;">Filter our entire database to find students with a specific profile and see their outcomes.</p>
+      <p class="muted" style="text-align: center; margin-top: 0.25rem; margin-bottom: 1.5rem;">Filter our entire database to find students with a specific profile and see their outcomes.</p>
       <div id="explorer-controls-container"></div>
       <div id="explorer-details-container" class="details-container"></div>
     </div>
@@ -184,9 +183,9 @@ function renderTabularMode() {
     const pivotData = generatePivotData(filteredData, state.rowField, state.colField);
     renderInteractivePivot(pivotData, pivotTableContainer, state, pivotDetailsContainer);
     pivotControlsContainer.innerHTML = '';
-    pivotControlsContainer.appendChild(createPivotControls(state, (newState) => { 
-      state = newState; 
-      updatePivotView(); 
+    pivotControlsContainer.appendChild(createPivotControls(state, (newState) => {
+      state = newState;
+      updatePivotView();
       pivotDetailsContainer.innerHTML = '';
     }));
   }
@@ -197,7 +196,7 @@ function renderTabularMode() {
     const explorerData = DATA.filter(d => Object.keys(filters).every(key => d[key] == filters[key]));
     renderDetailsTable(explorerData, explorerDetailsContainer);
   }
-  
+
   updatePivotView();
   updateExplorerView();
 }
@@ -217,12 +216,12 @@ function createPivotControls(state, onUpdate) {
   container.innerHTML += createSelect('pivot-cols', 'Columns', fieldOptions, state.colField);
   container.innerHTML += createSelect('filter-tier-pivot', 'Filter by Tier', { '': 'All Tiers', ...Object.fromEntries([...new Set(DATA.map(d => d.tier))].sort().map(t => [t, t])) }, state.filters.tier || '');
   setTimeout(() => {
-    document.getElementById('pivot-rows').onchange = (e) => onUpdate({...state, rowField: e.target.value});
-    document.getElementById('pivot-cols').onchange = (e) => onUpdate({...state, colField: e.target.value});
+    document.getElementById('pivot-rows').onchange = (e) => onUpdate({ ...state, rowField: e.target.value });
+    document.getElementById('pivot-cols').onchange = (e) => onUpdate({ ...state, colField: e.target.value });
     document.getElementById('filter-tier-pivot').onchange = (e) => {
-      const newFilters = {...state.filters, tier: e.target.value};
+      const newFilters = { ...state.filters, tier: e.target.value };
       if (!e.target.value) delete newFilters.tier;
-      onUpdate({...state, filters: newFilters});
+      onUpdate({ ...state, filters: newFilters });
     };
   }, 0);
   return container;
@@ -242,7 +241,7 @@ function generatePivotData(data, rowField, colField) {
   for (const r of rowKeys) {
     values[r] = {};
     for (const c of colKeys) {
-      values[r][c] = (grouped[r] && grouped[r][c]) ? Math.round(trimmedMean(grouped[r][c], 0.1)) : 'NA';
+      values[r][c] = (grouped[r] && grouped[r][c] && grouped[r][c].length > 0) ? Math.round(trimmedMean(grouped[r][c], 0.1)) : 'NA';
     }
   }
   return { rows: rowKeys, cols: colKeys, values };
@@ -262,13 +261,15 @@ function renderInteractivePivot(pivotData, container, state, detailsContainer) {
   });
   tableHTML += '</tbody></table></div>';
   container.innerHTML = tableHTML;
-  container.onclick = (e) => {
-    if (e.target.tagName !== 'BUTTON') return;
-    const { row, col } = e.target.dataset;
-    const filters = {...state.filters, [state.rowField]: row, [state.colField]: col};
+
+  container.addEventListener('click', (e) => {
+    const button = e.target.closest('button');
+    if (!button) return;
+    const { row, col } = button.dataset;
+    const filters = { ...state.filters, [state.rowField]: row, [state.colField]: col };
     const matchingData = DATA.filter(d => Object.keys(filters).every(key => d[key] == filters[key]));
     renderCompanyFrequencyTable(matchingData, detailsContainer, row, col);
-  };
+  });
 }
 
 function renderCompanyFrequencyTable(data, container, row, col) {
@@ -287,50 +288,45 @@ function renderCompanyFrequencyTable(data, container, row, col) {
 }
 
 function createExplorerControls(filters, onUpdate) {
-    const container = document.createElement('div');
-    container.className = 'pivot-controls';
-    const createSelect = (id, label, options, selected) => {
-        let selectHTML = `<div class="field"><label for="${id}">${label}</label><select id="${id}">`;
-        for (const [value, text] of Object.entries(options)) {
-            selectHTML += `<option value="${value}" ${value === selected ? 'selected' : ''}>${text}</option>`;
-        }
-        return selectHTML + '</select></div>';
-    };
-
-    const allTiers = [...new Set(DATA.map(d=>d.tier))].sort();
-    const allDomains = [...new Set(DATA.map(d=>d.domain))].sort();
-    const allCities = [...new Set(DATA.map(d=>d.city))].sort();
-
-    container.innerHTML += createSelect('explorer-tier', 'Tier', {'': 'All', ...Object.fromEntries(allTiers.map(v=>[v,v]))}, filters.tier || '');
-    container.innerHTML += createSelect('explorer-domain', 'Domain', {'': 'All', ...Object.fromEntries(allDomains.map(v=>[v,v]))}, filters.domain || '');
-    container.innerHTML += createSelect('explorer-city', 'City', {'': 'All', ...Object.fromEntries(allCities.map(v=>[v,v]))}, filters.city || '');
-    container.innerHTML += createSelect('explorer-attempts', 'Attempts', {'': 'All', '1':'1','2':'2','3':'3','4':'4','5':'5+'}, filters.attempts || '');
-    
-    setTimeout(() => {
-        ['tier', 'domain', 'city', 'attempts'].forEach(field => {
-            document.getElementById(`explorer-${field}`).onchange = (e) => {
-                const newFilters = {...filters, [field]: e.target.value};
-                if (!e.target.value) delete newFilters[field];
-                onUpdate(newFilters);
-            };
-        });
-    }, 0);
-
-    return container;
+  const container = document.createElement('div');
+  container.className = 'pivot-controls';
+  const createSelect = (id, label, options, selected) => {
+    let selectHTML = `<div class="field"><label for="${id}">${label}</label><select id="${id}">`;
+    for (const [value, text] of Object.entries(options)) {
+      selectHTML += `<option value="${value}" ${value === selected ? 'selected' : ''}>${text}</option>`;
+    }
+    return selectHTML + '</select></div>';
+  };
+  const allTiers = [...new Set(DATA.map(d => d.tier))].sort();
+  const allDomains = [...new Set(DATA.map(d => d.domain))].sort();
+  const allCities = [...new Set(DATA.map(d => d.city))].sort();
+  container.innerHTML += createSelect('explorer-tier', 'Tier', { '': 'All', ...Object.fromEntries(allTiers.map(v => [v, v])) }, filters.tier || '');
+  container.innerHTML += createSelect('explorer-domain', 'Domain', { '': 'All', ...Object.fromEntries(allDomains.map(v => [v, v])) }, filters.domain || '');
+  container.innerHTML += createSelect('explorer-city', 'City', { '': 'All', ...Object.fromEntries(allCities.map(v => [v, v])) }, filters.city || '');
+  container.innerHTML += createSelect('explorer-attempts', 'Attempts', { '': 'All', '1': '1', '2': '2', '3': '3', '4': '4', '5': '5+' }, filters.attempts || '');
+  setTimeout(() => {
+    ['tier', 'domain', 'city', 'attempts'].forEach(field => {
+      document.getElementById(`explorer-${field}`).addEventListener('change', (e) => {
+        const newFilters = { ...filters, [field]: e.target.value };
+        if (!e.target.value) delete newFilters[field];
+        onUpdate(newFilters);
+      });
+    });
+  }, 0);
+  return container;
 }
 
 function renderDetailsTable(data, container) {
-    container.innerHTML = `
+  container.innerHTML = `
     <h3>Matching Profiles (${data.length} found)</h3>
     <div class="table-container"><table class="pivot-table"><thead><tr>
         <th>Shortlists</th><th>City</th><th>Tier</th><th>Domain</th><th>Score</th><th>Attempts</th><th>IT</th><th>Rank</th>
     </tr></thead><tbody>
     ${data.slice(0, 20).map(d => `<tr>
         <td>${d.shortlist_count}</td><td>${d.city}</td><td>${d.tier}</td><td>${d.domain}</td>
-        <td>${d.score_bucket}</td><td>${d.attempts}</td><td>${d.it_present?'Yes':'No'}</td><td>${d.rank_present?'Yes':'No'}</td>
+        <td>${d.score_bucket}</td><td>${d.attempts}</td><td>${d.it_present ? 'Yes' : 'No'}</td><td>${d.rank_present ? 'Yes' : 'No'}</td>
     </tr>`).join('')}
-    </tbody></table></div>
-  `;
+    </tbody></table></div>`;
 }
 
 // --- UI RENDERING FOR AI MODE ---
@@ -340,11 +336,11 @@ function renderAiMode(c) {
     <h3>Learning from ${c.similar_profiles.examples.length} Profiles Like Yours</h3>
     <div class="muted">Our AI found these candidates who most closely match your profile.</div>
     <div class="list" style="margin-top: 1rem;">
-      ${c.similar_profiles.examples.map(ex=>`
+      ${c.similar_profiles.examples.map(ex => `
         <div class="item-profile">
-            <div style="font-weight:600; font-size: 1.1rem; color: var(--primary);">${(ex.similarity*100).toFixed(0)}% Profile Match</div>
+            <div style="font-weight:600; font-size: 1.1rem; color: var(--primary);">${(ex.similarity * 100).toFixed(0)}% Profile Match</div>
             <div class="muted">${ex.profile.tier} · ${ex.profile.score_bucket}% · ${ex.profile.attempts} Attempt(s)</div>
-            <div class="muted">IT: ${ex.profile.it_present?'Yes':'No'} · Rank: ${ex.profile.rank_present?'Yes':'No'}</div>
+            <div class="muted">IT: ${ex.profile.it_present ? 'Yes' : 'No'} · Rank: ${ex.profile.rank_present ? 'Yes' : 'No'}</div>
             <div class="muted" style="margin-top: 8px;"><b>Was shortlisted by:</b> ${ex.shortlisted_by.join(', ') || 'None'}</div>
         </div>`).join('') || '<p class="muted">No highly similar profiles found in this city.</p>'}
     </div>
@@ -357,7 +353,7 @@ function renderAiMode(c) {
   aiResultsContainer.appendChild(card(`
     <div class="muted">Your Top 10 Company Matches</div>
     <div class="list">
-      <ol class="ranked-list">${c.companies.map(co=>`<li><div class="company-item"><span class="company-name">${co.name}</span></div></li>`).join('')}</ol>
+      <ol class="ranked-list">${c.companies.map(co => `<li><div class="company-item"><span class="company-name">${co.name}</span></div></li>`).join('')}</ol>
     </div>
   `));
 }
@@ -374,23 +370,23 @@ function trimmedMean(arr, percent) {
   return trimmedArr.reduce((a, b) => a + b, 0) / trimmedArr.length;
 }
 
-function quantile(arr, q){
+function quantile(arr, q) {
   if (!arr.length) return 0;
   const pos = (arr.length - 1) * q;
   const base = Math.floor(pos);
   const rest = pos - base;
-  return arr[base] + (arr[base+1] !== undefined ? rest * (arr[base+1]-arr[base]) : 0);
+  return arr[base] + (arr[base + 1] !== undefined ? rest * (arr[base + 1] - arr[base]) : 0);
 }
 
-function buildCityCompanyPrior(data){
+function buildCityCompanyPrior(data) {
   const byCity = new Map();
   data.forEach(d => {
     if (!byCity.has(d.city)) byCity.set(d.city, new Map());
-    (d.shortlisted_by||[]).forEach(c => byCity.get(d.city).set(c, (byCity.get(d.city).get(c)||0)+1));
+    (d.shortlisted_by || []).forEach(c => byCity.get(d.city).set(c, (byCity.get(d.city).get(c) || 0) + 1));
   });
-  for (const m of byCity.values()){
-    let total = Array.from(m.values()).reduce((a,b)=>a+b, 0) || 1;
-    for (const [k,v] of m.entries()) m.set(k, v/total);
+  for (const m of byCity.values()) {
+    let total = Array.from(m.values()).reduce((a, b) => a + b, 0) || 1;
+    for (const [k, v] of m.entries()) m.set(k, v / total);
   }
   return byCity;
 }
