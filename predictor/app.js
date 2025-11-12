@@ -383,7 +383,6 @@ function renderResults(perCity, aggregated){
         `).join('')}
       </div>
     `));
-    // NOTE: Peer Group card removed as requested
   }
 
   function mountAggregated(agg){
