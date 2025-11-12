@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Placement Predictor - My Student Club</title>
+  <title>Placement Insights - My Student Club</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,96 +20,57 @@
 
   <main id="app" class="container">
     <div class="hero">
-      <h1>Unlock Your Placement Potential</h1>
-      <p>Our tool analyzes thousands of real student profiles to predict your placement chances. <br>Choose your view: explore raw data averages or get a personalized AI prediction.</p>
+      <h1>Placement Insights Dashboard</h1>
+      <p>Explore placement data with two powerful views: a dynamic Tabular analysis of averages, or our personalized AI Predictor.</p>
     </div>
 
-    <div class="panel" id="profile-panel">
-      <h2>Create Your Profile</h2>
-      <form id="profile-form">
-        <div class="field">
-          <label>Preferred City for Placement</label>
-          <select id="city">
-            <option value="">Select city</option>
-            <option value="Mumbai">Mumbai</option>
-            <option value="Delhi">Delhi</option>
-            <option value="Bengaluru">Bengaluru</option>
-            <option value="Hyderabad">Hyderabad</option>
-            <option value="Chennai">Chennai</option>
-            <option value="Pune">Pune</option>
-            <option value="Kolkata">Kolkata</option>
-            <option value="Ahmedabad">Ahmedabad</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Articleship Firm Tier</label>
-          <select id="tier">
-            <option>Big4</option>
-            <option>Big6</option>
-            <option>Mid Size</option>
-            <option>Small Size</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Articleship Domain</label>
-          <select id="domain">
-            <option value="">Any Domain (Optional)</option>
-            <option>Statutory Audit</option>
-            <option>Internal Audit</option>
-            <option>Direct Taxation</option>
-            <option>Indirect Taxation</option>
-            <option>Mixed Exposure</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>CA Final Score (%)</label>
-          <select id="score">
-            <option>50-55</option>
-            <option>55-60</option>
-            <option>60-65</option>
-            <option>65-70</option>
-            <option>70+</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>CA Final Attempts</label>
-          <select id="attempts">
-            <option>1</option><option>2</option><option>3</option>
-            <option>4</option><option>5+</option>
-          </select>
-        </div>
-        <div class="row">
-          <div class="field">
-            <label>Completed Industrial Training?</label>
-            <select id="it_present">
-              <option value="false">No</option>
-              <option value="true">Yes</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Are you a Rank Holder?</label>
-            <select id="rank_present">
-              <option value="false">No</option>
-              <option value="true">Yes</option>
-            </select>
-          </div>
-        </div>
-        <button type="submit" class="primary">Analyze My Profile</button>
-      </form>
-    </div>
-    
-    <div class="panel hidden" id="results-panel">
+    <div class="panel" id="main-panel">
       <div class="mode-switcher">
         <button id="tabular-mode-btn" class="active">Tabular View</button>
         <button id="ai-mode-btn">AI Predictor</button>
       </div>
+
+      <!-- Tabular Mode Content (Visible by Default) -->
       <div id="tabular-content">
-        <!-- Tabular view content will be injected here -->
+        <div id="tabular-controls-container"></div>
+        <div id="tabular-results-container"></div>
       </div>
+
+      <!-- AI Mode Content (Hidden by Default) -->
       <div id="ai-content" class="hidden">
-        <!-- AI Predictor content will be injected here -->
+        <div class="panel" id="profile-panel">
+          <h2>Create Your Profile for a Personalized Prediction</h2>
+          <form id="profile-form">
+            <!-- Form fields remain the same -->
+            <div class="field">
+              <label>Preferred City for Placement</label>
+              <select id="city">
+                <option value="">Select city</option>
+                <option value="Mumbai">Mumbai</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Bengaluru">Bengaluru</option>
+                <option value="Hyderabad">Hyderabad</option>
+                <option value="Chennai">Chennai</option>
+                <option value="Pune">Pune</option>
+                <option value="Kolkata">Kolkata</option>
+                <option value="Ahmedabad">Ahmedabad</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="field"><label>Articleship Firm Tier</label><select id="tier"><option>Big4</option><option>Big6</option><option>Mid Size</option><option>Small Size</option><option>Other</option></select></div>
+            <div class="field"><label>Articleship Domain</label><select id="domain"><option value="">Any Domain (Optional)</option><option>Statutory Audit</option><option>Internal Audit</option><option>Direct Taxation</option><option>Indirect Taxation</option><option>Mixed Exposure</option></select></div>
+            <div class="field"><label>CA Final Score (%)</label><select id="score"><option>50-55</option><option>55-60</option><option>60-65</option><option>65-70</option><option>70+</option></select></div>
+            <div class="field"><label>CA Final Attempts</label><select id="attempts"><option>1</option><option>2</option><option>3</option><option>4</option><option>5+</option></select></div>
+            <div class="row">
+              <div class="field"><label>Completed Industrial Training?</label><select id="it_present"><option value="false">No</option><option value="true">Yes</option></select></div>
+              <div class="field"><label>Are you a Rank Holder?</label><select id="rank_present"><option value="false">No</option><option value="true">Yes</option></select></div>
+            </div>
+            <button type="submit" class="primary">Reveal My Placement Chances</button>
+          </form>
+        </div>
+        <div id="ai-results-container">
+          <!-- AI Predictor results will be injected here -->
+        </div>
       </div>
     </div>
   </main>
