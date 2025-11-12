@@ -1,19 +1,34 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Placement Predictor - My Student Club</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <div id="app">
-    <div class="tabs">
-      <button class="tab active" data-tab="profile">Profile</button>
-      <button class="tab" data-tab="results">Results</button>
+  <header>
+    <div class="container">
+      <a href="https://mystudentclub.com" class="logo-link">
+        <img src="https://mystudentclub.com/assets/logo.png" alt="My Student Club Logo">
+      </a>
     </div>
+  </header>
+
+  <main id="app" class="container">
+    <div class="hero">
+      <h1>Unlock Your Placement Potential</h1>
+      <p>Our AI-powered tool analyzes thousands of real student profiles to predict your placement chances. <br>Fill in your details below to see which companies are likely to shortlist a profile like yours.</p>
+    </div>
+
     <div class="panel" id="profile-panel">
+      <h2>Create Your Profile</h2>
       <form id="profile-form">
         <div class="field">
-          <label>City</label>
+          <label>Preferred City for Placement</label>
           <select id="city">
             <option value="">Select city</option>
             <option value="Mumbai">Mumbai</option>
@@ -28,7 +43,7 @@
           </select>
         </div>
         <div class="field">
-          <label>Articleship Tier</label>
+          <label>Articleship Firm Tier</label>
           <select id="tier">
             <option>Big4</option>
             <option>Big6</option>
@@ -38,9 +53,9 @@
           </select>
         </div>
         <div class="field">
-          <label>Domain</label>
+          <label>Articleship Domain</label>
           <select id="domain">
-            <option value="">Any (optional)</option>
+            <option value="">Any Domain (Optional)</option>
             <option>Statutory Audit</option>
             <option>Internal Audit</option>
             <option>Direct Taxation</option>
@@ -49,7 +64,7 @@
           </select>
         </div>
         <div class="field">
-          <label>CA Final % (bucket)</label>
+          <label>CA Final Score (%)</label>
           <select id="score">
             <option>50-55</option>
             <option>55-60</option>
@@ -59,38 +74,39 @@
           </select>
         </div>
         <div class="field">
-          <label>Attempts</label>
+          <label>CA Final Attempts</label>
           <select id="attempts">
             <option>1</option><option>2</option><option>3</option>
             <option>4</option><option>5+</option>
           </select>
         </div>
         <div class="row">
-          <div class="field" style="flex:1;min-width:120px">
-            <label>Industrial Training</label>
+          <div class="field">
+            <label>Completed Industrial Training?</label>
             <select id="it_present">
               <option value="false">No</option>
               <option value="true">Yes</option>
             </select>
           </div>
-          <div class="field" style="flex:1;min-width:120px">
-            <label>Rank Holder</label>
+          <div class="field">
+            <label>Are you a Rank Holder?</label>
             <select id="rank_present">
               <option value="false">No</option>
               <option value="true">Yes</option>
             </select>
           </div>
         </div>
-        <button type="submit" class="primary">Generate My Shortlist Prediction</button>
-        <button type="button" id="batch-export" class="primary" style="margin-top:8px;background:#1a73e8">Batch Export Permutation Results</button>
+        <button type="submit" class="primary">Reveal My Placement Chances</button>
       </form>
     </div>
+    
     <div class="panel hidden" id="results-panel">
+      <h2>Your AI-Powered Prediction</h2>
       <div id="city-tabs" class="city-tabs"></div>
       <div id="results-content"></div>
     </div>
-  </div>
+  </main>
+
   <script type="module" src="./app.js"></script>
 </body>
 </html>
-
