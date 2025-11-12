@@ -32,33 +32,17 @@
 
       <!-- Tabular Mode Content (Visible by Default) -->
       <div id="tabular-content">
-        <div id="tabular-controls-container"></div>
-        <div id="tabular-results-container"></div>
+        <!-- Tabular controls and results will be injected here by JS -->
       </div>
 
       <!-- AI Mode Content (Hidden by Default) -->
       <div id="ai-content" class="hidden">
-        <div class="panel" id="profile-panel">
+        <div id="profile-panel">
           <h2>Create Your Profile for a Personalized Prediction</h2>
           <form id="profile-form">
-            <!-- Form fields remain the same -->
-            <div class="field">
-              <label>Preferred City for Placement</label>
-              <select id="city">
-                <option value="">Select city</option>
-                <option value="Mumbai">Mumbai</option>
-                <option value="Delhi">Delhi</option>
-                <option value="Bengaluru">Bengaluru</option>
-                <option value="Hyderabad">Hyderabad</option>
-                <option value="Chennai">Chennai</option>
-                <option value="Pune">Pune</option>
-                <option value="Kolkata">Kolkata</option>
-                <option value="Ahmedabad">Ahmedabad</option>
-                <option value="Other">Other</option>
-              </select>
-            </div>
+            <div class="field"><label>Preferred City for Placement</label><select id="city"><option value="">Select city</option><option>Mumbai</option><option>Delhi</option><option>Bengaluru</option><option>Hyderabad</option><option>Chennai</option><option>Pune</option><option>Kolkata</option><option>Ahmedabad</option><option>Other</option></select></div>
             <div class="field"><label>Articleship Firm Tier</label><select id="tier"><option>Big4</option><option>Big6</option><option>Mid Size</option><option>Small Size</option><option>Other</option></select></div>
-            <div class="field"><label>Articleship Domain</label><select id="domain"><option value="">Any Domain (Optional)</option><option>Statutory Audit</option><option>Internal Audit</option><option>Direct Taxation</option><option>Indirect Taxation</option><option>Mixed Exposure</option></select></div>
+            <div class="field"><label>Articleship Domain</label><select id="domain"><option value="">Any Domain</option><option>Statutory Audit</option><option>Internal Audit</option><option>Direct Taxation</option><option>Indirect Taxation</option><option>Mixed Exposure</option></select></div>
             <div class="field"><label>CA Final Score (%)</label><select id="score"><option>50-55</option><option>55-60</option><option>60-65</option><option>65-70</option><option>70+</option></select></div>
             <div class="field"><label>CA Final Attempts</label><select id="attempts"><option>1</option><option>2</option><option>3</option><option>4</option><option>5+</option></select></div>
             <div class="row">

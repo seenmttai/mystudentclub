@@ -15,7 +15,7 @@ main#app { padding: 2rem 1rem; }
 #profile-panel { padding: 1.5rem; border: none; box-shadow: none; }
 #main-panel { padding-top: 1rem; }
 .panel h2 { margin-top: 0; margin-bottom: 1.5rem; text-align: center; }
-.panel h3 { margin-top: 0; margin-bottom: 1rem; text-align: center; font-size: 1.2rem; }
+.panel h3 { margin-top: 0; margin-bottom: 0.5rem; text-align: center; font-size: 1.3rem; }
 .hidden { display: none !important; }
 .field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.25rem; }
 .field label { color: var(--text-dark); font-size: 0.9rem; font-weight: 500; }
@@ -31,20 +31,20 @@ button.primary:hover { background-color: #1a58d6; }
 .item-profile:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: -0.5rem; }
 .item-profile .muted { font-size: 0.8rem; line-height: 1.4; }
 .ranked-list { list-style: none; padding-left: 0; margin: 0; counter-reset: company-counter; }
-.ranked-list li { counter-increment: company-counter; display: flex; align-items: flex-start; margin-bottom: 1rem; }
+.ranked-list li { counter-increment: company-counter; display: flex; align-items: center; margin-bottom: 0.75rem; }
 .ranked-list li::before { content: counter(company-counter); font-weight: 600; font-size: 1rem; color: var(--primary); background-color: #e7f0ff; min-width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0; }
-.company-item { display: flex; flex-direction: column; }
 .company-name { font-weight: 600; }
 .mode-switcher { display: flex; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 1.5rem; overflow: hidden; }
 .mode-switcher button { width: 50%; border-radius: 0; border: none; background: var(--card-bg); font-weight: 500; font-size: 1rem; padding: 12px; cursor: pointer; color: var(--text-muted); border-bottom: 3px solid transparent; transition: all 0.2s; }
 .mode-switcher button.active { color: var(--primary); font-weight: 600; border-color: var(--primary); }
-.table-container { overflow-x: auto; margin-top: 1.5rem; }
+.table-container { overflow-x: auto; margin-top: 1.5rem; border: 1px solid var(--border-color); border-radius: 8px;}
 .pivot-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 .pivot-table th, .pivot-table td { padding: 10px 12px; border: 1px solid var(--border-color); text-align: center; white-space: nowrap; }
+.pivot-table th:first-child { text-align: left; }
 .pivot-table th { background-color: #f8f9fa; font-weight: 600; }
 .pivot-table td.row-header { text-align: left; font-weight: 500; }
-.pivot-table td button { all: unset; cursor: pointer; font-weight: 500; color: var(--primary); text-decoration: underline; }
-.pivot-table td button:hover { color: #1a58d6; }
-.pivot-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; align-items: end; background-color: #f0f3f5; padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color); }
+.pivot-table td button { all: unset; cursor: pointer; font-weight: 600; color: var(--primary); text-decoration: underline; padding: 2px 4px; }
+.pivot-table td button:hover { background-color: #e7f0ff; border-radius: 4px; }
+.pivot-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; align-items: end; background-color: var(--card-bg); padding: 1rem; border-radius: 8px; border: 1px solid var(--border-color); }
 .tabular-section { margin-bottom: 2.5rem; }
-.details-table-container { margin-top: 1.5rem; }
+.details-container { margin-top: 2rem; }
