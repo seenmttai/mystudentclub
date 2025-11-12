@@ -21,7 +21,7 @@
   <main id="app" class="container">
     <div class="hero">
       <h1>Unlock Your Placement Potential</h1>
-      <p>Our AI-powered tool analyzes thousands of real student profiles to predict your placement chances. <br>Fill in your details below to see which companies are likely to shortlist a profile like yours.</p>
+      <p>Our tool analyzes thousands of real student profiles to predict your placement chances. <br>Choose your view: explore raw data averages or get a personalized AI prediction.</p>
     </div>
 
     <div class="panel" id="profile-panel">
@@ -96,14 +96,21 @@
             </select>
           </div>
         </div>
-        <button type="submit" class="primary">Reveal My Placement Chances</button>
+        <button type="submit" class="primary">Analyze My Profile</button>
       </form>
     </div>
     
     <div class="panel hidden" id="results-panel">
-      <h2>Your AI-Powered Prediction</h2>
-      <div id="city-tabs" class="city-tabs"></div>
-      <div id="results-content"></div>
+      <div class="mode-switcher">
+        <button id="tabular-mode-btn" class="active">Tabular View</button>
+        <button id="ai-mode-btn">AI Predictor</button>
+      </div>
+      <div id="tabular-content">
+        <!-- Tabular view content will be injected here -->
+      </div>
+      <div id="ai-content" class="hidden">
+        <!-- AI Predictor content will be injected here -->
+      </div>
     </div>
   </main>
 
