@@ -33,7 +33,7 @@ function setMode(mode) {
     tabularContentEl.classList.add('hidden');
     aiContentEl.classList.remove('hidden');
     profilePanel.classList.remove('hidden');
-    aiResultsContainer.innerHTML = '';
+    aiResultsContainer.innerHTML = ''; // Clear previous AI results
   } else { // 'tabular'
     aiModeBtn.classList.remove('active');
     tabularModeBtn.classList.add('active');
@@ -53,7 +53,6 @@ profileForm.onsubmit = (e) => {
   if (!city) { alert('Please select a city for the AI prediction.'); return; }
   
   let userTier = document.getElementById('tier').value;
-  // Group Mid Size and Small Size into 'Other' to match the data logic
   if (['Mid Size', 'Small Size'].includes(userTier)) {
     userTier = 'Other';
   }
@@ -181,12 +180,46 @@ function renderTabularMode() {
     
     controlsContainer.appendChild(createPivotControls(state, (newState) => { state = newState; updateView(); }));
     resultsContainer.appendChild(pivotTableContainer);
-    resultsContainer.appendChild(document.createElement('div'));
+    resultsContainer.appendChild(document.createElement('div')); // Placeholder for details table
   }
   updateView();
 }
 
-function createPivotControls(state, onUpdate) { /* ... same as before ... */ }
+function createPivotControls(state, onUpdate) {
+  const container = document.createElement('div');
+  container.className = 'pivot-controls';
+  
+  const createSelect = (id, label, options, selected) => {
+    let selectHTML = `<div class="field"><label for="${id}">${label}</label><select id="${id}">`;
+    for (const [value, text] of Object.entries(options)) {
+      selectHTML += `<option value="${value}" ${value === selected ? 'selected' : ''}>${text}</option>`;
+    }
+    selectHTML += '</select></div>';
+    return selectHTML;
+  };
+  
+  const fieldOptions = { score_bucket: 'CA Final %', attempts: 'Attempts', tier: 'Articleship Tier', domain: 'Domain', city: 'City' };
+  
+  container.innerHTML += createSelect('pivot-rows', 'Rows', fieldOptions, state.rowField);
+  container.innerHTML += createSelect('pivot-cols', 'Columns', fieldOptions, state.colField);
+  
+  const tierOptions = { '': 'All Tiers' };
+  [...new Set(DATA.map(d=>d.tier))].sort().forEach(t => tierOptions[t] = t);
+  container.innerHTML += createSelect('filter-tier', 'Filter by Tier', tierOptions, state.filters.tier || '');
+
+  setTimeout(() => {
+    document.getElementById('pivot-rows').onchange = (e) => onUpdate({...state, rowField: e.target.value});
+    document.getElementById('pivot-cols').onchange = (e) => onUpdate({...state, colField: e.target.value});
+    document.getElementById('filter-tier').onchange = (e) => {
+      const newFilters = {...state.filters, tier: e.target.value};
+      if (!e.target.value) delete newFilters.tier;
+      onUpdate({...state, filters: newFilters});
+    };
+  }, 0);
+
+  return container;
+}
+
 function generatePivotData(data, rowField, colField, valueField) {
   const rowKeys = [...new Set(data.map(d => d[rowField]))].sort();
   const colKeys = [...new Set(data.map(d => d[colField]))].sort();
@@ -195,8 +228,8 @@ function generatePivotData(data, rowField, colField, valueField) {
   for (const item of data) {
     const r = item[rowField]; const c = item[colField];
     if (!grouped[r]) grouped[r] = {};
-    if (!grouped[r][c]) grouped[r][c] = { sum: 0, count: 0 };
-    grouped[r][c].sum += item[valueField]; grouped[r][c].count++;
+    if (!grouped[r][c]) grouped[r][c] = [];
+    grouped[r][c].push(item[valueField]);
   }
 
   const values = {};
@@ -204,8 +237,7 @@ function generatePivotData(data, rowField, colField, valueField) {
     values[r] = {};
     for (const c of colKeys) {
       if (grouped[r] && grouped[r][c]) {
-        // Round to nearest whole number
-        values[r][c] = Math.round(grouped[r][c].sum / grouped[r][c].count);
+        values[r][c] = Math.round(trimmedMean(grouped[r][c], 0.1));
       } else { values[r][c] = 'NA'; }
     }
   }
@@ -326,40 +358,4 @@ function buildCityCompanyPrior(data){
     for (const [k,v] of m.entries()) m.set(k, v/total);
   }
   return byCity;
-}
-
-// Copied from previous implementation to avoid missing function error
-function createPivotControls(state, onUpdate) {
-  const container = document.createElement('div');
-  container.className = 'pivot-controls';
-  
-  const createSelect = (id, label, options, selected) => {
-    let selectHTML = `<div class="field"><label for="${id}">${label}</label><select id="${id}">`;
-    for (const [value, text] of Object.entries(options)) {
-      selectHTML += `<option value="${value}" ${value === selected ? 'selected' : ''}>${text}</option>`;
-    }
-    selectHTML += '</select></div>';
-    return selectHTML;
-  };
-  
-  const fieldOptions = { score_bucket: 'CA Final %', attempts: 'Attempts', tier: 'Articleship Tier', domain: 'Domain', city: 'City' };
-  
-  container.innerHTML += createSelect('pivot-rows', 'Rows', fieldOptions, state.rowField);
-  container.innerHTML += createSelect('pivot-cols', 'Columns', fieldOptions, state.colField);
-  
-  const tierOptions = { '': 'All Tiers' };
-  [...new Set(DATA.map(d=>d.tier))].sort().forEach(t => tierOptions[t] = t);
-  container.innerHTML += createSelect('filter-tier', 'Filter by Tier', tierOptions, state.filters.tier || '');
-
-  setTimeout(() => {
-    document.getElementById('pivot-rows').onchange = (e) => onUpdate({...state, rowField: e.target.value});
-    document.getElementById('pivot-cols').onchange = (e) => onUpdate({...state, colField: e.target.value});
-    document.getElementById('filter-tier').onchange = (e) => {
-      const newFilters = {...state.filters, tier: e.target.value};
-      if (!e.target.value) delete newFilters.tier;
-      onUpdate({...state, filters: newFilters});
-    };
-  }, 0);
-
-  return container;
 }
