@@ -141,15 +141,16 @@ document.getElementById('batch-export').onclick = async () => {
 // Helpers
 function parseAttempts(v){ return v==='5+'?5:parseInt(v,10); }
 const SCORE_MAP = {'50-55':1,'55-60':2,'60-65':3,'65-70':4,'70+':5};
-const SCORE_BOOST = { '50-55': -0.6, '55-60': -0.3, '60-65': 0, '65-70': 0.3, '70+': 0.6 };
-const ATTEMPT_PENALTY = { 1: 0, 2: -0.3, 3: -0.6, 4: -0.9, 5: -1.2 };
+// HYBRID FIX: Adopted slightly stronger score boosts and softer attempt penalties
+const SCORE_BOOST = { '50-55': -0.8, '55-60': -0.4, '60-65': 0.0, '65-70': 0.4, '70+': 0.8 };
+const ATTEMPT_PENALTY = { 1: 0, 2: -0.25, 3: -0.5, 4: -0.8, 5: -1.0 };
 function catDist(a,b){ return a===b?0:1; }
 function boolDist(a,b){ return a===b?0:1; }
 function norm(a,min,max){ return max===min?0: (a-min)/(max-min); }
 
 // Gower distance with weights (subset as available)
-// Tuned to avoid cliffs and reduce boolean dominance
-const WEIGHTS = { attempts:1.5, score:1.2, tier:1.5, city:2.0, domain:1.2, it:0.5, rank:0.5 };
+// HYBRID FIX (SYSTEMIC): Use aggressive weights for rank/IT to fix "similar profiles" and improve neighbor selection
+const WEIGHTS = { attempts:1.5, score:1.8, tier:1.5, city:1.5, domain:1.2, it:2.0, rank:3.0 };
 const ATT_MIN = 1, ATT_MAX = 5;
 
 function distance(p, q){
@@ -171,6 +172,20 @@ function distance(p, q){
   return den ? num/den : 1;
 }
 
+// HYBRID FIX (SURGICAL): New function to create an "affinity" multiplier for companies
+// This guarantees that strong profiles get a direct boost for top companies.
+function companyAffinity(company, p){
+  const name = company.toLowerCase();
+  const isElite = /pwc|ey|kpmg|deloitte|grant|icici|axis|kotak|goldman|bank of|nabfid|nse|barclays|hsbc/.test(name);
+  const scoreFactor = (SCORE_MAP[p.score_bucket]-3) * 0.15; // -0.30 .. +0.30
+  const attemptsFactor = - (p.attempts - 1) * 0.06;          // 0 .. -0.24
+  const rankFactor = p.rank_present ? (isElite ? 0.30 : 0.12) : 0;
+  const itFactor = p.it_present ? (isElite ? 0.06 : 0.04) : 0;
+  let base = 1 + scoreFactor + attemptsFactor + rankFactor + itFactor;
+  if (isElite && (p.rank_present || SCORE_MAP[p.score_bucket] > 3)) base += 0.05;
+  return Math.max(0.6, Math.min(1.5, base));
+}
+
 // Gaussian kernel to avoid 1/(dist) blow-ups and bipolar scores
 const SIGMA = 0.6;
 const kernel = (d) => Math.exp(-(d*d)/(2*SIGMA*SIGMA));
@@ -182,7 +197,8 @@ function predictForCity(profile, city){
 
   // neighbors
   const scored = pool.map(d => ({ d, dist: distance(seed, d) })).sort((a,b)=>a.dist-b.dist);
-  const K = Math.min(40, scored.length);
+  // HYBRID FIX (SYSTEMIC): Increase neighborhood size for more stable predictions
+  const K = Math.min(75, scored.length);
   const nbrs = scored.slice(0, K);
   const weights = nbrs.map(n => kernel(n.dist));
   const wSum = weights.reduce((a,b)=>a+b,0) || 1;
@@ -200,7 +216,8 @@ function predictForCity(profile, city){
   });
   if (totalCompWeight === 0) totalCompWeight = wSum; // fallback
 
-  const alpha = 1.0; // strength of prior (mixing factor)
+  // HYBRID FIX (SYSTEMIC): Use a stronger prior to stabilize company recommendations
+  const alpha = 4.0; // strength of prior (mixing factor)
   // union of companies from neighbors and city prior
   const unionCompanies = new Set([...compWeight.keys(), ...prior.keys()]);
 
@@ -209,7 +226,9 @@ function predictForCity(profile, city){
     const pr = (prior.get(name) || 0);
     // posterior mixture normalized; prevents zeros and extremes
     const post = (emp + alpha * pr * totalCompWeight) / ((1+alpha) * totalCompWeight);
-    return { name, score: post };
+    // HYBRID FIX (SURGICAL): Apply profile-company affinity so rank/score/attempts affect which companies rise
+    const affinity = companyAffinity(name, seed);
+    return { name, score: post * affinity };
   })
   .sort((a,b)=>b.score-a.score)
   .slice(0,10)
@@ -226,7 +245,16 @@ function predictForCity(profile, city){
   const totalDelta = uplift + scoreBoost + attemptPenalty;
   p50 = Math.max(0, p50 + totalDelta); p10 = Math.max(0, p10 + totalDelta); p90 = Math.max(0, p90 + totalDelta);
 
-  const pZero = 0; // MVP: not from Poisson-binomial
+  // HYBRID FIX (SURGICAL): Adopt the more sophisticated p_zero calculation
+  const zeroRate = counts.length ? (counts.filter(c=>c===0).length / counts.length) : 0;
+  let pZero = zeroRate;
+  pZero = pZero
+    - 0.10 * (seed.rank_present ? 1 : 0)
+    - 0.06 * (seed.it_present ? 1 : 0)
+    - 0.08 * ((SCORE_MAP[seed.score_bucket] || 3)-3) // higher score -> lower zero prob
+    + 0.08 * (seed.attempts-1);                 // more attempts -> higher zero prob
+  pZero = Math.max(0, Math.min(1, pZero));
+
   const cohortSize = nbrs.length;
   const allCompanies = [];
   nbrs.forEach(n => allCompanies.push(...n.d.shortlisted_by));
@@ -236,13 +264,13 @@ function predictForCity(profile, city){
     const sim = +(1 - n.dist).toFixed(2);
     return {
       similarity: sim,
-      profile: { attempts: n.d.attempts, score_bucket: n.d.score_bucket, tier: n.d.tier, domain: n.d.domain, city: n.d.city },
+      profile: { attempts: n.d.attempts, score_bucket: n.d.score_bucket, tier: n.d.tier, domain: n.d.domain, city: n.d.city, it_present: n.d.it_present, rank_present: n.d.rank_present },
       shortlisted_by: n.d.shortlisted_by.slice(0,5)
     };
   });
 
   return {
-    shortlist_count: { p50, p10, p90, p_zero: 0, drivers: buildDrivers(seed, { uplift, scoreBoost, attemptPenalty }) },
+    shortlist_count: { p50, p10, p90, p_zero: pZero, drivers: buildDrivers(seed, { uplift, scoreBoost, attemptPenalty }) },
     companies,
     similar_profiles: {
       cohort_size: cohortSize,
@@ -306,6 +334,11 @@ function inferReasons(p, city, company){
   if (['Mumbai','Delhi','Bengaluru'].includes(city)) r.push('Metro city prior');
   if (p.tier==='Big4' && p.domain==='Statutory Audit') r.push('Big4 Stat Audit fit');
   if (p.attempts<=2) r.push('Low attempts');
+  // HYBRID FIX (SURGICAL): Add more specific reasons for better user feedback
+  if (/pwc|ey|kpmg|deloitte/i.test(company)) {
+    if (p.rank_present) r.push('Rank preference');
+    if (p.score_bucket==='70+') r.push('High score fit');
+  }
   return r.slice(0,3);
 }
 
@@ -351,6 +384,7 @@ function renderResults(perCity, aggregated){
     resultsEl.appendChild(card(`
       <div class="big">${c.shortlist_count.p50.toFixed(0)}</div>
       <div class="muted">Expected Shortlists (Range: ${c.shortlist_count.p10.toFixed(1)}–${c.shortlist_count.p90.toFixed(1)})</div>
+      <div class="muted" style="margin-top:4px">Chance of 0 shortlists: ${(c.shortlist_count.p_zero * 100).toFixed(0)}%</div>
       <div class="tags">${c.shortlist_count.drivers.map(x=>`<span class="tag">${x}</span>`).join('')}</div>
     `));
     // Card 2: Companies
@@ -376,8 +410,9 @@ function renderResults(perCity, aggregated){
           <div class="item">
             <div>
               <div>${(ex.similarity*100).toFixed(0)}% match</div>
-              <div class="muted">${ex.profile.tier} · ${ex.profile.domain} · ${ex.profile.score_bucket}% · Attempts ${ex.profile.attempts}</div>
-              <div class="muted">Shortlisted by: ${ex.shortlisted_by.join(', ')}</div>
+              <div class="muted">${ex.profile.tier} · ${ex.profile.domain||'N/A'} · ${ex.profile.score_bucket}% · Attempts ${ex.profile.attempts}</div>
+              <div class="muted">IT: ${ex.profile.it_present?'Yes':'No'} · Rank: ${ex.profile.rank_present?'Yes':'No'}</div>
+              <div class="muted">Shortlisted by: ${ex.shortlisted_by.join(', ') || 'None'}</div>
             </div>
           </div>
         `).join('')}
