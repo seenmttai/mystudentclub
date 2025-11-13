@@ -1,4 +1,4 @@
-// --- INITIALIZATION ---
+
 const raw = await fetch('./database.json').then(r=>r.json());
 const DATA = raw.map(r => {
   let tier = r.features.articleship_tier || 'Other';

@@ -1,3 +1,4 @@
+
 :root {
   --bg: #f8f9fa; --card-bg: #ffffff; --primary: #2d6ff7; --text-dark: #212529;
   --text-muted: #6c757d; --border-color: #dee2e6; --font-family: 'Poppins', system-ui, sans-serif;
@@ -11,6 +12,23 @@ main#app { padding: 2rem 1rem; }
 .hero { text-align: center; margin-bottom: 2rem; }
 .hero h1 { font-size: 2.25rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-dark); }
 .hero p { font-size: 1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; }
+.hero-cta-button {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 10px 20px;
+  border: 1px solid var(--primary);
+  border-radius: 8px;
+  color: var(--primary);
+  background-color: transparent;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+  cursor: pointer;
+}
+.hero-cta-button:hover {
+  background-color: var(--primary);
+  color: white;
+}
 .panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 #profile-panel { padding: 1.5rem; border: none; box-shadow: none; }
 #main-panel { padding-top: 1rem; }
