@@ -223,9 +223,9 @@
                             </div>
                              <div class="no-video-selected" v-else>
                                 <div class="empty-state">
-                                    <i class="fas fa-video-slash"></i>
+                                    <i class="fas fa-book-open"></i>
                                     <h2>No Video Available</h2>
-                                    <p>There is no primary video for this session. Please check the resources below.</p>
+                                    <p>There is no video for this session. Please check the description and resources below.</p>
                                 </div>
                             </div>
                             
@@ -243,6 +243,10 @@
                                     <span>Next Day</span>
                                     <i class="fas fa-arrow-right"></i>
                                 </button>
+                            </div>
+                             <div class="video-description-premium" v-if="currentVideo && currentVideo.description">
+                                <h3>Summary</h3>
+                                <p v-html="formattedDescription"></p>
                             </div>
                             <div class="video-resources-premium" v-if="currentVideo && Object.keys(groupedResources).length > 0">
                                 <h3>Resources</h3>
@@ -266,10 +270,6 @@
                                         </li>
                                     </ul>
                                 </div>
-                            </div>
-                             <div class="video-description-premium" v-if="currentVideo && currentVideo.description">
-                                <h3>Summary</h3>
-                                <p v-html="formattedDescription"></p>
                             </div>
                         </div>
                         
@@ -395,6 +395,11 @@
                         'industrial-training-mastery': {
                             title: 'CA Industrial Training Program',
                             description: 'Master industrial training requirements for CA candidates with real-world case studies.',
+                            thumbnail: 'https://mystudentclub.com/assets/it-guarantee-thumbnail.svg'
+                        },
+                        'msc-ca-freshers-program': {
+                            title: 'MSC CA Freshers Program',
+                            description: 'A comprehensive program for CA freshers to kickstart their career.',
                             thumbnail: 'https://mystudentclub.com/assets/it-guarantee-thumbnail.svg'
                         }
                     },
@@ -532,6 +537,39 @@
                 },
                 async loadCourseVideos() {
                     this.loadingVideos = true;
+                    if (this.courseSlug === 'msc-ca-freshers-program') {
+                        const fresherResources = [
+                            { title: 'Resume Templates', type: 'archive', view_storage_path: 'None', download_storage_path: 'ca-freshers/day1/resume-templates.zip' },
+                            { title: 'Cover Letter Templates', type: 'archive', view_storage_path: 'None', download_storage_path: 'ca-freshers/day1/cover-letters.zip' },
+                            { title: 'Additional CV Points', type: 'pdf', view_storage_path: 'ca-freshers/day1/Additional CV Points.pdf', download_storage_path: 'ca-freshers/day1/Additional CV Points.pdf' },
+                            { title: 'Company-wise Selected CVs', type: 'pdf', view_storage_path: 'ca-freshers/day1/Companywise Selected CVs.pdf', download_storage_path: 'ca-freshers/day1/Companywise Selected CVs.pdf' },
+                            { title: 'Define Firm Guide', type: 'pdf', view_storage_path: 'ca-freshers/day1/Define Firm.pdf', download_storage_path: 'ca-freshers/day1/Define Firm.pdf' },
+                            { title: 'Resume Checklist', type: 'pdf', view_storage_path: 'ca-freshers/day1/Resume Checklist.pdf', download_storage_path: 'ca-freshers/day1/Resume Checklist.pdf' },
+                            { title: 'Sample Resume (View PDF, Download Word)', type: 'docx', view_storage_path: 'ca-freshers/day1/Sample Resume Template_VIEW.pdf', download_storage_path: 'ca-freshers/day1/Sample Resume Template.docx' }
+                        ];
+
+                        const day1Video = {
+                            id: 101,
+                            fileName: null,
+                            title: 'Day 1: CV & Career Kickstart',
+                            description: 'Welcome to the MSC CA Freshers Program! Day 1 is all about equipping you with the essential tools to build a compelling CV and understand the landscape of opportunities. There is no video for today. Please go through all the provided resources carefully.',
+                            resources: fresherResources,
+                            completed: false
+                        };
+
+                        this.courseSections = [{
+                            day_number: 1,
+                            title: 'Day 1: CV & Career Kickstart',
+                            expanded: true,
+                            videos: [day1Video],
+                            mainVideo: day1Video
+                        }];
+
+                        this.totalVideos = 1;
+                        this.loadVideoProgress();
+                        this.loadingVideos = false;
+                        return;
+                    }
                     try {
                         const { data: videoMetadata, error: metadataError } = await supabase
                             .from('videos')

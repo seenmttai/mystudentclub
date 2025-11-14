@@ -299,8 +299,8 @@
             <section class="courses-section-enhanced">
                 <div class="section-container">
                     <div class="section-header-enhanced">
-                        <h2>Professional Course</h2>
-                        <p>Comprehensive learning path designed by industry experts</p>
+                        <h2>Professional Courses</h2>
+                        <p>Comprehensive learning paths designed by industry experts</p>
                         <div class="view-controls">
                             <div class="sort-dropdown">
                                 <select v-model="sortBy" @change="sortCoursesVue">
@@ -330,9 +330,9 @@
                     </div>
 
                     <div class="courses-container" :class="'view-' + viewMode">
-                        <div class="course-card-enhanced-premium" @click="goToCourse('industrial-training-mastery')">
+                        <div v-for="course in sortedAndFilteredCourses" :key="course.id" class="course-card-enhanced-premium" @click="goToCourse(course.slug)">
                             <div class="course-image-premium">
-                                <img src="https://mystudentclub.com/assets/it-guarantee-thumbnail.svg" alt="Industrial Training Mastery Program">
+                                <img :src="course.thumbnail" :alt="course.title">
                                 <div class="course-overlay-premium">
                                     <div class="premium-badge">
                                         <i class="fas fa-crown"></i>
@@ -347,16 +347,16 @@
                             </div>
                             <div class="course-content-premium">
                                 <div class="course-header-premium">
-                                    <h3>Industrial Training Mastery Program</h3>
+                                    <h3>{{ course.title }}</h3>
                                 </div>
-                                <p class="course-description">Master industrial training requirements for CA candidates with real-world case studies and expert guidance. For students eligible to join till January 15 only!</p>
+                                <p class="course-description">{{ course.description }}</p>
                                 <div class="course-progress-container-premium">
                                     <div class="progress-info-row">
                                         <span class="progress-label">Progress</span>
-                                        <span class="progress-percentage">{{ getIndustrialCourseProgress() }}%</span>
+                                        <span class="progress-percentage">{{ course.progress }}%</span>
                                     </div>
                                     <div class="progress-bar-premium">
-                                        <div class="progress-fill-animated" :style="{ width: getIndustrialCourseProgress() + '%' }"></div>
+                                        <div class="progress-fill-animated" :style="{ width: course.progress + '%' }"></div>
                                     </div>
                                 </div>
                                 <div class="course-footer-premium">
@@ -478,7 +478,7 @@
                     viewMode: 'grid',
                     user: null,
                     totalCoursesCompleted: 0,
-                    totalCourses: 1,
+                    totalCourses: 0,
                     totalHoursLearned: 0,
                     weeklyTime: 0,
                     learningStreak: 0,
@@ -499,9 +499,18 @@
                             id: 1,
                             slug: 'industrial-training-mastery',
                             title: 'Industrial Training Mastery Program',
-                            description: 'Master industrial training requirements for CA candidates with real-world case studies and expert guidance.',
+                            description: 'Master industrial training requirements for CA candidates with real-world case studies and expert guidance. For students eligible to join till January 15 only!',
                             category: 'ca',
-                            thumbnail: 'https://mystudentclub.com/assets/industrial-course-main.png',
+                            thumbnail: 'https://mystudentclub.com/assets/it-guarantee-thumbnail.svg',
+                            progress: 0
+                        },
+                        {
+                            id: 2,
+                            slug: 'msc-ca-freshers-program',
+                            title: 'MSC CA Freshers Program',
+                            description: 'A comprehensive program for CA freshers to kickstart their career with expert guidance on CVs, interviews, and more.',
+                            category: 'ca',
+                            thumbnail: 'https://mystudentclub.com/assets/it-guarantee-thumbnail.svg',
                             progress: 0
                         }
                     ]
@@ -661,16 +670,6 @@
                     ];
                     return positions[index - 1];
                 },
-                getIndustrialCourseProgress() {
-                    const courseData = localStorage.getItem('courseVideos_industrial-training-mastery');
-                    if (courseData) {
-                        const videos = JSON.parse(courseData);
-                        const totalVideos = Object.keys(videos).length;
-                        const completedVideos = Object.values(videos).filter(v => v).length;
-                        return totalVideos > 0 ? Math.round((completedVideos / totalVideos) * 100) : 0;
-                    }
-                    return 0;
-                },
                 loadProgressData() {
                     this.courses.forEach(course => {
                         const courseData = localStorage.getItem(`courseVideos_${course.slug}`);
@@ -732,6 +731,7 @@
                 await this.checkAuth();
                 this.loadProgressData();
                 this.checkWelcomePopup();
+                this.totalCourses = this.courses.length;
 
                 supabase.auth.onAuthStateChange((_event, session) => {
                     if (session && session.user) {
