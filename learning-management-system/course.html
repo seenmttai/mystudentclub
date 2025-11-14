@@ -537,39 +537,6 @@
                 },
                 async loadCourseVideos() {
                     this.loadingVideos = true;
-                    if (this.courseSlug === 'msc-ca-freshers-program') {
-                        const fresherResources = [
-                            { title: 'Resume Templates', type: 'archive', view_storage_path: 'None', download_storage_path: 'ca-freshers/day1/resume-templates.zip' },
-                            { title: 'Cover Letter Templates', type: 'archive', view_storage_path: 'None', download_storage_path: 'ca-freshers/day1/cover-letters.zip' },
-                            { title: 'Additional CV Points', type: 'pdf', view_storage_path: 'ca-freshers/day1/Additional CV Points.pdf', download_storage_path: 'ca-freshers/day1/Additional CV Points.pdf' },
-                            { title: 'Company-wise Selected CVs', type: 'pdf', view_storage_path: 'ca-freshers/day1/Companywise Selected CVs.pdf', download_storage_path: 'ca-freshers/day1/Companywise Selected CVs.pdf' },
-                            { title: 'Define Firm Guide', type: 'pdf', view_storage_path: 'ca-freshers/day1/Define Firm.pdf', download_storage_path: 'ca-freshers/day1/Define Firm.pdf' },
-                            { title: 'Resume Checklist', type: 'pdf', view_storage_path: 'ca-freshers/day1/Resume Checklist.pdf', download_storage_path: 'ca-freshers/day1/Resume Checklist.pdf' },
-                            { title: 'Sample Resume (View PDF, Download Word)', type: 'docx', view_storage_path: 'ca-freshers/day1/Sample Resume Template_VIEW.pdf', download_storage_path: 'ca-freshers/day1/Sample Resume Template.docx' }
-                        ];
-
-                        const day1Video = {
-                            id: 101,
-                            fileName: null,
-                            title: 'Day 1: CV & Career Kickstart',
-                            description: 'Welcome to the MSC CA Freshers Program! Day 1 is all about equipping you with the essential tools to build a compelling CV and understand the landscape of opportunities. There is no video for today. Please go through all the provided resources carefully.',
-                            resources: fresherResources,
-                            completed: false
-                        };
-
-                        this.courseSections = [{
-                            day_number: 1,
-                            title: 'Day 1: CV & Career Kickstart',
-                            expanded: true,
-                            videos: [day1Video],
-                            mainVideo: day1Video
-                        }];
-
-                        this.totalVideos = 1;
-                        this.loadVideoProgress();
-                        this.loadingVideos = false;
-                        return;
-                    }
                     try {
                         const { data: videoMetadata, error: metadataError } = await supabase
                             .from('videos')
