@@ -1887,56 +1887,67 @@
             if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 speechRecognition = new SpeechRecognition();
-                speechRecognition.continuous = false;
+                speechRecognition.continuous = true;
                 speechRecognition.interimResults = true;
                 speechRecognition.lang = 'en-US';
 
                 speechRecognition.onstart = () => {
-                    interimTranscript = '';
-                    finalTranscript = '';
                     updateSpeechStatus('Listening...', true);
                 };
 
                 speechRecognition.onresult = (event) => {
-                    let combined = '';
-                    for (let i = event.resultIndex; i < event.results.length; i++) {
-                        const text = event.results[i][0].transcript;
+                    interimTranscript = '';
+                    finalTranscript = '';
+                    
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
                         if (event.results[i].isFinal) {
-                            finalTranscript += text;
+                            finalTranscript += event.results[i][0].transcript;
                         } else {
-                            interimTranscript += text;
+                            interimTranscript += event.results[i][0].transcript;
                         }
-                        combined += text + ' ';
                     }
-                    const seen = combined.trim();
-                    updateSpeechStatus(seen ? `You said: ${seen}` : 'Listening...', true);
-                    if (areSubtitlesOn && seen) {
-                        showSubtitles(`${timestampNow()} You: ${seen}`);
+
+                    const display = (finalTranscript + ' ' + interimTranscript).trim();
+                    updateSpeechStatus(display ? `You said: ${display}` : 'Listening...', true);
+                    
+                    if (areSubtitlesOn && display) {
+                        showSubtitles(`${timestampNow()} You: ${display}`);
                     }
                 };
 
                 speechRecognition.onend = () => {
-                    const toSend = (finalTranscript || interimTranscript).trim();
+                    const toSend = (finalTranscript + ' ' + interimTranscript).trim();
+                    
                     if (toSend && !isWaitingForAIResponse) {
                         if (areSubtitlesOn) showSubtitles(`${timestampNow()} You: ${toSend}`);
                         handleSpeechInput(toSend);
                     }
+                    
+                    isRecording = false;
+                    pushToTalkBtn.classList.remove('recording');
                     updateSpeechStatus('', false);
                 };
 
                 speechRecognition.onerror = (event) => {
                     console.error('Speech recognition error:', event.error);
-                    updateSpeechStatus('Speech recognition error', false);
+                    if (event.error === 'no-speech') {
+                        updateSpeechStatus('No speech detected', true);
+                    } else {
+                        updateSpeechStatus('Error: ' + event.error, true);
+                        isRecording = false;
+                        pushToTalkBtn.classList.remove('recording');
+                    }
                 };
             }
         }
 
         function startRecording(event) {
-            event.preventDefault();
+            if(event) event.preventDefault();
             if (isRecording || isWaitingForAIResponse) return;
 
             isRecording = true;
             pushToTalkBtn.classList.add('recording');
+            
             interimTranscript = '';
             finalTranscript = '';
             
@@ -1944,8 +1955,11 @@
                 try {
                     speechRecognition.start();
                 } catch (error) {
-                    console.error('Failed to start speech recognition:', error);
-                    updateSpeechStatus('Speech recognition not available', false);
+                    if(error.name !== 'InvalidStateError') {
+                        updateSpeechStatus('Error starting mic', false);
+                        isRecording = false;
+                        pushToTalkBtn.classList.remove('recording');
+                    }
                 }
             } else {
                 updateSpeechStatus('Speech recognition not supported', false);
@@ -1953,27 +1967,13 @@
         }
 
         function stopRecording(event) {
-            event.preventDefault();
+            if(event) event.preventDefault();
             if (!isRecording) return;
 
-            isRecording = false;
-            pushToTalkBtn.classList.remove('recording');
-            
             if (speechRecognition) {
                 try {
                     speechRecognition.stop();
                 } catch (e) {
-                    const toSend = (finalTranscript || interimTranscript).trim();
-                    if (toSend && !isWaitingForAIResponse) {
-                        if (areSubtitlesOn) showSubtitles(`${timestampNow()} You: ${toSend}`);
-                        handleSpeechInput(toSend);
-                    }
-                }
-            } else {
-                const toSend = (finalTranscript || interimTranscript).trim();
-                if (toSend && !isWaitingForAIResponse) {
-                    if (areSubtitlesOn) showSubtitles(`${timestampNow()} You: ${toSend}`);
-                    handleSpeechInput(toSend);
                 }
             }
         }
@@ -2163,7 +2163,7 @@
                         const m = aiMessage.match(/<<<SCORE\s+(\d+(?:\.\d+)?)\/10>>>/i);
                         if (m) {
                             score = parseFloat(m[1]);
-                            aiMessage = aiMessage.replace(/<<<SCORE\s+\d+(?:\.\d+)?\/10>>>/i, '').trim();
+                            aiMessage = aiMessage.replace(/<<<SCORE\s+\d+(?:\.\d+)?\/10>>>/i, '', '').trim();
                         }
                     }
 
@@ -2356,5 +2356,5 @@
         }
 
         init();
-    </script><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "9ecf6f49919940acb2efcc833483cd5f"}'></script></body>
+    </script><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "9ecf6f49919940acb2efcc833483cd5f"}'></script><!-- Cloudflare Pages Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "9ecf6f49919940acb2efcc833483cd5f"}'></script><!-- Cloudflare Pages Analytics --></body>
 </html>
