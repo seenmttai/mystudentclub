@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CA Skill Check - My Student Club</title>
+
+    <!-- Import Map for Supabase -->
+    <script type="importmap">
+        {
+            "imports": {
+                "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
+            }
+        }
+    </script>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="floating-header">
+        <div class="header-container">
+            <a href="/" class="brand-link">
+                <div class="brand-logo">CA</div>
+                <span class="brand-text">ProSkill Check</span>
+            </a>
+            <div id="status-indicator" class="status-indicator">Ready</div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="app-container">
+        <!-- Views will be injected here via JS -->
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loader-overlay" class="loader-overlay hidden">
+        <div class="loader"></div>
+        <h3 id="loader-text" class="loader-text">Processing...</h3>
+    </div>
+
+    <!-- Application Script -->
+    <script type="module" src="./app.js"></script>
+</body>
+
+</html>
