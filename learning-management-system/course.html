@@ -16,13 +16,192 @@
         }
     }
     </script>
+    <style>
+        .logo-enhanced {
+            width: 140px;
+            height: auto;
+            object-fit: contain;
+            transition: transform 0.2s;
+        }
+        .logo-enhanced:hover {
+            transform: scale(1.05);
+        }
+        .profile-dropdown-container {
+            position: relative;
+            cursor: pointer;
+        }
+        .profile-dropdown-menu {
+            position: absolute;
+            top: 110%;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border-color, #e2e8f0);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 220px;
+            display: none;
+            flex-direction: column;
+            z-index: 10000;
+            overflow: hidden;
+            animation: fadeIn 0.2s ease-out;
+        }
+        .profile-dropdown-container:hover .profile-dropdown-menu {
+            display: flex;
+        }
+        .profile-header {
+            padding: 1rem;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .profile-name {
+            font-weight: 700;
+            color: #1e293b;
+            display: block;
+        }
+        .profile-email {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            color: #475569;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+        .dropdown-item:hover {
+            background: #f1f5f9;
+            color: #2563eb;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .course-tabs {
+            display: flex;
+            gap: 1rem;
+            padding: 0 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: white;
+            overflow-x: auto;
+        }
+        .tab-btn {
+            padding: 1rem;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .tab-btn.active {
+            color: #2563eb;
+            border-bottom-color: #2563eb;
+        }
+        .tab-content {
+            padding: 1.5rem;
+            background: white;
+            min-height: 200px;
+        }
+        .discussion-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .comment-input-area {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .comment-input {
+            flex-grow: 1;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            resize: vertical;
+            min-height: 80px;
+        }
+        .post-btn {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            height: fit-content;
+        }
+        .post-btn:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .comment-item {
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+        .comment-author {
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .comment-date {
+            color: #64748b;
+        }
+        .report-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 600px;
+        }
+        .report-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        .report-submit-btn {
+            background-color: #dc2626;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            align-self: flex-start;
+        }
+    </style>
 </head>
 <body>
     <div id="app">
         <header class="glass-header">
             <div class="header-container">
                 <div class="logo-container">
-                    <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo">
+                    <a href="index.html">
+                        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo-enhanced">
+                    </a>
                 </div>
                 <nav>
                     <div class="hamburger-menu" @click="toggleMenu">
@@ -33,9 +212,9 @@
                     <ul class="nav-links" :class="{ 'active': menuActive }">
                         <li><a href="index.html" class="nav-item">
                             <i class="fas fa-graduation-cap"></i>
-                            <span>Courses</span>
+                            <span>My Courses</span>
                         </a></li>
-                        <li><a href="https://mystudentclub.com/learning-management-system/lms-resources.html" class="nav-item">
+                        <li><a href="lms-resources.html" class="nav-item">
                             <i class="fas fa-book-open"></i>
                             <span>Resources</span>
                         </a></li>
@@ -43,14 +222,26 @@
                             <i class="fas fa-file-alt"></i>
                             <span>CV Review</span>
                         </a></li>
-                        <li class="profile-link">
-                            <a href="#" class="nav-item profile-nav" @click="handleProfileClick">
+                        <li class="profile-link profile-dropdown-container">
+                            <a href="#" class="nav-item profile-nav" @click.prevent>
                                 <div class="profile-avatar">
                                     <i class="fas fa-user"></i>
                                 </div>
-                                <span v-if="user">{{ user.email.split('@')[0] }}</span>
+                                <span v-if="user">{{ getUserDisplayName() }}</span>
                                 <span v-else>Login</span>
                             </a>
+                            <div class="profile-dropdown-menu" v-if="user">
+                                <div class="profile-header">
+                                    <span class="profile-name">{{ getUserDisplayName() }}</span>
+                                    <span class="profile-email">{{ user.email }}</span>
+                                </div>
+                                <a href="https://mystudentclub.com/profile" class="dropdown-item">
+                                    <i class="fas fa-user-circle"></i> My Profile
+                                </a>
+                                <button class="dropdown-item" @click="logout">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </button>
+                            </div>
                         </li>
                     </ul>
                 </nav>
@@ -244,33 +435,82 @@
                                     <i class="fas fa-arrow-right"></i>
                                 </button>
                             </div>
-                             <div class="video-description-premium" v-if="currentVideo && currentVideo.description">
-                                <h3>Summary</h3>
-                                <p v-html="formattedDescription"></p>
+
+                            <div class="course-tabs">
+                                <button class="tab-btn" :class="{ active: activeTab === 'overview' }" @click="activeTab = 'overview'">Overview</button>
+                                <button class="tab-btn" :class="{ active: activeTab === 'resources' }" @click="activeTab = 'resources'" v-if="currentVideo && Object.keys(groupedResources).length > 0">Resources</button>
+                                <button class="tab-btn" :class="{ active: activeTab === 'discussion' }" @click="activeTab = 'discussion'">Discussion</button>
+                                <button class="tab-btn" :class="{ active: activeTab === 'report' }" @click="activeTab = 'report'">Report Problem</button>
                             </div>
-                            <div class="video-resources-premium" v-if="currentVideo && Object.keys(groupedResources).length > 0">
-                                <h3>Resources</h3>
-                                <div v-for="(resourcesInGroup, groupName) in groupedResources" :key="groupName" class="resource-group">
-                                    <h4 class="resource-group-title" v-if="groupName !== 'General Resources' || Object.keys(groupedResources).length > 1">{{ groupName }}</h4>
-                                    <ul class="resource-list">
-                                        <li v-for="resource in resourcesInGroup" :key="resource.title" class="resource-item">
-                                            <span class="resource-icon"><i :class="getResourceIcon(resource.type)"></i></span>
-                                            <span class="resource-title">{{ resource.title }}</span>
-                                            <div class="resource-actions">
-                                                <button @click="handleResourceClick(resource)" class="resource-btn resource-btn-view">
-                                                    <i class="fas fa-eye"></i> View
-                                                </button>
-                                                <button v-if="resource.download_storage_path && resource.download_storage_path !== 'None'" @click.stop="downloadResource(resource)" class="resource-btn resource-btn-download">
-                                                    <i class="fas fa-download"></i> Download
-                                                </button>
-                                                <span v-else class="resource-btn resource-btn-download disabled">
-                                                    <i class="fas fa-download"></i> Download
-                                                </span>
-                                            </div>
-                                        </li>
-                                    </ul>
+
+                            <div class="tab-content" v-if="activeTab === 'overview'">
+                                <div class="video-description-premium" v-if="currentVideo && currentVideo.description">
+                                    <h3>Summary</h3>
+                                    <p v-html="formattedDescription"></p>
+                                </div>
+                                <div v-else>
+                                    <p>No description available for this session.</p>
                                 </div>
                             </div>
+
+                            <div class="tab-content" v-if="activeTab === 'resources'">
+                                <div v-if="currentVideo && Object.keys(groupedResources).length > 0">
+                                    <div v-for="(resourcesInGroup, groupName) in groupedResources" :key="groupName" class="resource-group">
+                                        <h4 class="resource-group-title" v-if="groupName !== 'General Resources' || Object.keys(groupedResources).length > 1">{{ groupName }}</h4>
+                                        <ul class="resource-list">
+                                            <li v-for="resource in resourcesInGroup" :key="resource.title" class="resource-item">
+                                                <span class="resource-icon"><i :class="getResourceIcon(resource.type)"></i></span>
+                                                <span class="resource-title">{{ resource.title }}</span>
+                                                <div class="resource-actions">
+                                                    <button @click="handleResourceClick(resource)" class="resource-btn resource-btn-view">
+                                                        <i class="fas fa-eye"></i> View
+                                                    </button>
+                                                    <button v-if="resource.download_storage_path && resource.download_storage_path !== 'None'" @click.stop="downloadResource(resource)" class="resource-btn resource-btn-download">
+                                                        <i class="fas fa-download"></i> Download
+                                                    </button>
+                                                    <span v-else class="resource-btn resource-btn-download disabled">
+                                                        <i class="fas fa-download"></i> Download
+                                                    </span>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-content" v-if="activeTab === 'discussion'">
+                                <div class="discussion-container">
+                                    <div class="comment-input-area">
+                                        <textarea v-model="newComment" class="comment-input" placeholder="Ask a question or share your thoughts about this lecture..."></textarea>
+                                        <button class="post-btn" @click="postComment" :disabled="!newComment.trim() || submittingComment">
+                                            {{ submittingComment ? 'Posting...' : 'Post' }}
+                                        </button>
+                                    </div>
+                                    <div v-if="loadingComments" class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
+                                    <div v-else-if="comments.length === 0" style="color: #64748b; font-style: italic;">No comments yet. Be the first to start the discussion!</div>
+                                    <div v-else class="comment-list">
+                                        <div v-for="comment in comments" :key="comment.id" class="comment-item">
+                                            <div class="comment-header">
+                                                <span class="comment-author">{{ comment.user_email.split('@')[0] }}</span>
+                                                <span class="comment-date">{{ new Date(comment.created_at).toLocaleDateString() }}</span>
+                                            </div>
+                                            <div class="comment-body">{{ comment.content }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-content" v-if="activeTab === 'report'">
+                                <div class="report-form">
+                                    <h3>Report a Problem</h3>
+                                    <p>Encountered an issue with this video or content? Let us know.</p>
+                                    <textarea v-model="reportDescription" class="report-textarea" placeholder="Describe the issue you are facing..."></textarea>
+                                    <button class="report-submit-btn" @click="submitReport" :disabled="!reportDescription.trim() || submittingReport">
+                                        {{ submittingReport ? 'Submitting...' : 'Submit Report' }}
+                                    </button>
+                                </div>
+                            </div>
+
                         </div>
                         
                         <div class="no-video-selected" v-else>
@@ -332,7 +572,7 @@
             <div class="footer-content">
                 <div class="footer-main">
                     <div class="footer-brand">
-                        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo">
+                        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo-enhanced">
                         <h4>My Student Club</h4>
                         <p>Empowering the next generation of Chartered Accountants with world-class education and resources.</p>
                         <div class="social-links">
@@ -345,20 +585,23 @@
                         <div class="footer-column">
                             <h5>Learning</h5>
                             <ul>
-                                <li><a href="index.html">All Courses</a></li>
-                                <li><a href="resources.html">Resources</a></li>
-                                <li><a href="#">Certifications</a></li>
-                                <li><a href="#">Contact Us</a></li>
+                                <li><a href="index.html">My Dashboard</a></li>
+                                <li><a href="lms-resources.html">Resources Hub</a></li>
+                                <li><a href="https://mystudentclub.com/cv-reviewer/">CV Review</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-column">
+                            <h5>Support</h5>
+                            <ul>
+                                <li><a href="mailto:support@mystudentclub.com">Contact Us</a></li>
+                                <li><a href="https://mystudentclub.com/privacy-policy">Privacy Policy</a></li>
+                                <li><a href="https://mystudentclub.com/terms">Terms of Service</a></li>
                             </ul>
                         </div>
                     </div>
                 </div>
                 <div class="footer-bottom">
-                    <p> 2025 My Student Club LMS. All rights reserved.</p>
-                    <div class="footer-badges">
-                        <span class="badge"> Top Rated Platform</span>
-                        <span class="badge"> 100% Placement</span>
-                    </div>
+                    <p>© 2025 My Student Club LMS. All rights reserved.</p>
                 </div>
             </div>
         </footer>
@@ -391,6 +634,14 @@
                     },
                     courseSections: [],
                     currentVideoId: null,
+                    activeTab: 'overview',
+                    comments: [],
+                    newComment: '',
+                    loadingComments: false,
+                    submittingComment: false,
+                    reportDescription: '',
+                    submittingReport: false,
+                    errorLogCount: 0,
                     courses: {
                         'industrial-training-mastery': {
                             title: 'CA Industrial Training Program',
@@ -523,15 +774,31 @@
                         window.location.href = 'https://www.mystudentclub.com/login';
                     }
                 },
+                getUserDisplayName() {
+                    if (!this.user) return 'Student';
+                    return this.user.user_metadata?.full_name || this.user.email.split('@')[0];
+                },
+                async logout() {
+                    await supabase.auth.signOut();
+                    window.location.href = 'https://www.mystudentclub.com/login';
+                },
                 async checkEnrollment() {
                     try {
-                        this.isEnrolled = true;
-                        this.loadingEnrollment = false;
-                        if (this.isEnrolled) {
+                        const { data: enrollments, error } = await supabase
+                            .from('enrollment')
+                            .select('course')
+                            .eq('uuid', this.user.id)
+                            .eq('course', this.courseSlug);
+
+                        if (error || !enrollments || enrollments.length === 0) {
+                            this.isEnrolled = false;
+                        } else {
+                            this.isEnrolled = true;
                             await this.loadCourseVideos();
                         }
                     } catch (error) {
                         this.isEnrolled = false;
+                    } finally {
                         this.loadingEnrollment = false;
                     }
                 },
@@ -588,6 +855,7 @@
                         this.totalVideos = videoMetadata ? videoMetadata.length : 0;
                         this.loadVideoProgress();
                     } catch (error) {
+                        this.logFrontendError(error.message, error.stack, 'loadCourseVideos');
                     } finally {
                         this.loadingVideos = false;
                     }
@@ -606,7 +874,7 @@
                         xlsx: 'fas fa-file-excel',
                         csv: 'fas fa-file-csv'
                     };
-                    return iconMap[type.toLowerCase()] || 'fas fa-file';
+                    return iconMap[type ? type.toLowerCase() : ''] || 'fas fa-file';
                 },
                 groupResourcesForSidebar(resources) {
                     if (!resources || resources.length === 0) return {};
@@ -642,10 +910,13 @@
                     this.isLoading = true;
                     this.currentVideoId = videoId;
                     this.virtualStartTime = this.videoStartTimes[videoId] || 0;
+                    this.activeTab = 'overview'; 
+                    this.comments = []; 
                     if (window.innerWidth < 768) {
                         this.sidebarActive = false;
                     }
                     localStorage.setItem(`lastVideoId_${this.courseSlug}`, videoId);
+                    this.fetchComments();
                 },
                 getAdjacentVideo(direction) {
                     if (!this.currentVideoId) return null;
@@ -692,22 +963,36 @@
                     const completedVideos = {};
                     this.courseSections.forEach(section => {
                         section.videos.forEach(video => {
-                            completedVideos[video.id] = video.completed;
+                            if (video.completed) {
+                                completedVideos[video.id] = true;
+                            }
                         });
                     });
-                    localStorage.setItem(`courseVideos_${this.courseSlug}`, JSON.stringify(completedVideos));
+                    const existingData = localStorage.getItem(`courseVideos_${this.courseSlug}`);
+                    let mergedData = {};
+                    if (existingData) {
+                        try {
+                            mergedData = JSON.parse(existingData);
+                        } catch (e) {}
+                    }
+                    const newData = { ...mergedData, ...completedVideos };
+                    localStorage.setItem(`courseVideos_${this.courseSlug}`, JSON.stringify(newData));
                 },
                 loadVideoProgress() {
                     const savedVideos = localStorage.getItem(`courseVideos_${this.courseSlug}`);
                     if (savedVideos) {
-                        const completedVideos = JSON.parse(savedVideos);
-                        this.courseSections.forEach(section => {
-                            section.videos.forEach(video => {
-                                if (completedVideos[video.id] !== undefined) {
-                                     video.completed = completedVideos[video.id];
-                                }
+                        try {
+                            const completedVideos = JSON.parse(savedVideos);
+                            this.courseSections.forEach(section => {
+                                section.videos.forEach(video => {
+                                    if (completedVideos[video.id] === true) {
+                                        video.completed = true;
+                                    }
+                                });
                             });
-                        });
+                        } catch(e) {
+                            console.error("Error parsing progress", e);
+                        }
                     }
                     this.updateCourseProgress(); 
                     const lastVideoId = localStorage.getItem(`lastVideoId_${this.courseSlug}`);
@@ -750,9 +1035,6 @@
                     if (!this.currentVideoId) return 0;
                     const section = this.courseSections.find(s => s.videos.some(v => v.id === this.currentVideoId));
                     return section ? section.day_number : 0;
-                },
-                getTotalVideos() {
-                    return this.courseSections.length;
                 },
                 isDaySelected(day) {
                     return day.videos.some(v => v.id === this.currentVideoId);
@@ -1097,12 +1379,106 @@
                         this.currentPlaybackRate = rate;
                         this.showSpeedMenu = false;
                     }
+                },
+                async fetchComments() {
+                    if (!this.currentVideoId) return;
+                    this.loadingComments = true;
+                    try {
+                        const { data, error } = await supabase
+                            .from('video_comments')
+                            .select('*')
+                            .eq('course_slug', this.courseSlug)
+                            .eq('video_id', this.currentVideoId.toString())
+                            .order('created_at', { ascending: false });
+                        
+                        if (error) throw error;
+                        this.comments = data || [];
+                    } catch (error) {
+                        console.error('Error fetching comments:', error);
+                    } finally {
+                        this.loadingComments = false;
+                    }
+                },
+                async postComment() {
+                    if (!this.newComment.trim() || !this.user) return;
+                    this.submittingComment = true;
+                    try {
+                        const { data, error } = await supabase
+                            .from('video_comments')
+                            .insert({
+                                course_slug: this.courseSlug,
+                                video_id: this.currentVideoId.toString(),
+                                user_id: this.user.id,
+                                user_email: this.user.email,
+                                content: this.newComment.trim()
+                            })
+                            .select();
+                        
+                        if (error) throw error;
+                        if (data && data.length > 0) {
+                            this.comments.unshift(data[0]);
+                            this.newComment = '';
+                        }
+                    } catch (error) {
+                        alert('Failed to post comment. Please try again.');
+                        console.error(error);
+                    } finally {
+                        this.submittingComment = false;
+                    }
+                },
+                async submitReport() {
+                    if (!this.reportDescription.trim() || !this.user) return;
+                    this.submittingReport = true;
+                    try {
+                        const { error } = await supabase
+                            .from('course_reports')
+                            .insert({
+                                user_id: this.user.id,
+                                course_slug: this.courseSlug,
+                                description: this.reportDescription,
+                                page_url: window.location.href
+                            });
+                        
+                        if (error) throw error;
+                        alert('Report submitted successfully. We will look into it.');
+                        this.reportDescription = '';
+                        this.activeTab = 'overview';
+                    } catch (error) {
+                        alert('Failed to submit report.');
+                        console.error(error);
+                    } finally {
+                        this.submittingReport = false;
+                    }
+                },
+                async logFrontendError(message, stack, source) {
+                    if (this.errorLogCount >= 6) return;
+                    this.errorLogCount++;
+                    try {
+                        const { error } = await supabase
+                            .from('frontend_errors')
+                            .insert({
+                                user_id: this.user ? this.user.id : null,
+                                error_message: message,
+                                stack_trace: stack,
+                                url: window.location.href,
+                                user_agent: navigator.userAgent
+                            });
+                    } catch (e) {
+                        console.error("Failed to log error to DB", e);
+                    }
                 }
             },
             async mounted() {
+                const self = this;
+                window.onerror = function(msg, url, line, col, error) {
+                    self.logFrontendError(msg, error ? error.stack : `Line: ${line}, Col: ${col}`, url);
+                    return false;
+                };
+
                 this.pdfDoc = null; 
                 this.loadCourseData();
                 await this.checkAuth();
+                
                 supabase.auth.onAuthStateChange(async (_event, session) => {
                     if (session && session.user) {
                         this.user = session.user;
@@ -1114,6 +1490,7 @@
                         window.location.href = 'https://www.mystudentclub.com/login';
                     }
                 });
+                
                 document.addEventListener('fullscreenchange', () => {
                     this.isFullscreen = !!document.fullscreenElement;
                 });
