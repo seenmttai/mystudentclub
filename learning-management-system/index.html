@@ -16,11 +16,8 @@
     }
     </script>
     <style>
-        /* INLINE STYLES FOR SPECIFIC FIXES */
-
-        /* 1. Logo Fix - Make it visible and proper size */
         .logo-enhanced {
-            width: 140px;
+            width: 180px;
             height: auto;
             object-fit: contain;
             transition: transform 0.2s;
@@ -29,7 +26,6 @@
             transform: scale(1.05);
         }
 
-        /* 2. Profile Dropdown Styles */
         .profile-dropdown-container {
             position: relative;
             cursor: pointer;
@@ -94,7 +90,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 3. Loading State Overrides */
         .loading-container {
             min-height: 400px;
             display: flex;
@@ -103,15 +98,70 @@
             justify-content: center;
             color: #64748b;
         }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-form textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin: 1rem 0;
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn-cancel {
+            background: #f1f5f9;
+            color: #64748b;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <div id="app">
-        <!-- HEADER -->
         <header class="glass-header">
             <div class="header-container">
                 <div class="logo-container">
-                    <a href="index.html">
+                    <a href="https://mystudentclub.com/profile">
                         <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo-enhanced">
                     </a>
                 </div>
@@ -135,23 +185,25 @@
                             <span>CV Review</span>
                         </a></li>
                         
-                        <!-- PROFILE DROPDOWN -->
                         <li class="profile-link profile-dropdown-container">
                             <a href="#" class="nav-item profile-nav" @click.prevent>
                                 <div class="profile-avatar">
                                     <i class="fas fa-user"></i>
                                 </div>
-                                <span v-if="user">{{ getUserDisplayName() }}</span>
+                                <span v-if="user">{{ getUserName() }}</span>
                                 <span v-else>Login</span>
                             </a>
                             <div class="profile-dropdown-menu" v-if="user">
                                 <div class="profile-header">
-                                    <span class="profile-name">{{ getUserDisplayName() }}</span>
+                                    <span class="profile-name">{{ getUserName() }}</span>
                                     <span class="profile-email">{{ user.email }}</span>
                                 </div>
                                 <a href="https://mystudentclub.com/profile" class="dropdown-item">
                                     <i class="fas fa-user-circle"></i> My Profile
                                 </a>
+                                <button class="dropdown-item" @click="openReportModal">
+                                    <i class="fas fa-bug"></i> Report a Problem
+                                </button>
                                 <button class="dropdown-item" @click="logout">
                                     <i class="fas fa-sign-out-alt"></i> Logout
                                 </button>
@@ -163,7 +215,6 @@
         </header>
 
         <main>
-            <!-- HERO SECTION (Restored visuals + Dynamic Logic) -->
             <section class="hero-enhanced">
                 <div class="hero-background">
                     <div class="floating-elements">
@@ -173,11 +224,10 @@
                 <div class="hero-content">
                     <div class="hero-text">
                         <h1 class="hero-title">
-                            Welcome Back, <span class="gradient-text">{{ getUserDisplayName() }}</span>
+                            Welcome Back, <span class="gradient-text">{{ getUserName() }}</span>
                         </h1>
                         <p class="hero-subtitle">Your journey to CA excellence continues here. Track your progress and master your skills.</p>
                         
-                        <!-- ANALYTICS DASHBOARD -->
                         <div class="hero-stats">
                             <div class="stat-item">
                                 <div class="stat-number" v-if="!loading">{{ enrolledCourses.length }}</div>
@@ -190,14 +240,13 @@
                                 <div class="stat-label">Videos Completed</div>
                             </div>
                             <div class="stat-item">
-                                <div class="stat-number" v-if="!loading">{{ analytics.hoursLearned }}h</div>
+                                <div class="stat-number" v-if="!loading">{{ analytics.streak }}</div>
                                 <div class="stat-number" v-else><i class="fas fa-spinner fa-spin"></i></div>
-                                <div class="stat-label">Learning Time</div>
+                                <div class="stat-label">Day Streak</div>
                             </div>
                         </div>
                     </div>
                     
-                    <!-- SEARCH (Functional) -->
                     <div class="search-enhanced">
                         <div class="search-wrapper">
                             <i class="fas fa-search search-icon"></i>
@@ -212,13 +261,11 @@
                 </div>
             </section>
 
-            <!-- LOADING STATE -->
             <div v-if="loading" class="loading-container">
                 <i class="fas fa-spinner fa-spin fa-3x" style="color: var(--primary-500); margin-bottom: 1rem;"></i>
                 <p>Loading your dashboard...</p>
             </div>
 
-            <!-- EMPTY STATE (No Enrollments) -->
             <section v-else-if="enrolledCourses.length === 0" class="progress-dashboard">
                 <div class="section-container" style="text-align: center;">
                     <i class="fas fa-folder-open fa-4x" style="color: #cbd5e1; margin-bottom: 1rem;"></i>
@@ -230,14 +277,12 @@
                 </div>
             </section>
 
-            <!-- MAIN CONTENT (Enrolled Courses) -->
             <section v-else class="courses-section-enhanced">
                 <div class="section-container">
                     <div class="section-header-enhanced">
                         <h2>My Learning Path</h2>
                         <p>Pick up where you left off</p>
                         
-                        <!-- VIEW TOGGLE -->
                         <div class="view-controls">
                             <div class="view-toggle">
                                 <button class="view-btn" :class="{ 'active': viewMode === 'grid' }" @click="viewMode = 'grid'">
@@ -250,7 +295,6 @@
                         </div>
                     </div>
 
-                    <!-- COURSE GRID -->
                     <div class="courses-container" :class="'view-' + viewMode">
                         <div v-for="course in filteredEnrolledCourses" :key="course.id" class="course-card-enhanced-premium" @click="goToCourse(course.slug)">
                             <div class="course-image-premium">
@@ -270,7 +314,6 @@
                                 </div>
                                 <p class="course-description">{{ course.description }}</p>
                                 
-                                <!-- PROGRESS BAR -->
                                 <div class="course-progress-container-premium">
                                     <div class="progress-info-row">
                                         <span class="progress-label">Progress</span>
@@ -293,7 +336,6 @@
                 </div>
             </section>
 
-            <!-- LEARNING STREAK & STATS -->
             <section class="analytics-section" v-if="enrolledCourses.length > 0">
                 <div class="section-container">
                     <div class="section-header-enhanced">
@@ -321,7 +363,20 @@
             </section>
         </main>
 
-        <!-- FOOTER -->
+        <div v-if="showReportModal" class="modal-overlay" @click.self="showReportModal = false">
+            <div class="modal-content">
+                <h2>Report a Problem</h2>
+                <p style="color: #64748b; font-size: 0.9rem;">Describe the issue you are facing. We will look into it shortly.</p>
+                <div class="report-form">
+                    <textarea v-model="reportText" placeholder="E.g., The video on Day 2 isn't loading..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-cancel" @click="showReportModal = false">Cancel</button>
+                    <button class="btn-submit" @click="submitReport">Submit Report</button>
+                </div>
+            </div>
+        </div>
+
         <footer class="footer-enhanced">
             <div class="footer-content">
                 <div class="footer-main">
@@ -364,10 +419,36 @@
     <script type="module">
         import { createApp } from 'vue';
 
-        // Supabase Configuration
         const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        const MAX_ERRORS = 6;
+        let errorCount = 0;
+
+        window.onerror = function(message, source, lineno, colno, error) {
+            if (errorCount < MAX_ERRORS) {
+                logFrontendError(message, source, lineno, colno, error ? error.stack : null);
+                errorCount++;
+            }
+        };
+
+        async function logFrontendError(message, source, lineno, colno, stack) {
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                const userId = session?.user?.id || null;
+                
+                await supabase.from('frontend_errors').insert({
+                    user_id: userId,
+                    error_message: message,
+                    stack_trace: stack || `${source}:${lineno}:${colno}`,
+                    url: window.location.href,
+                    user_agent: navigator.userAgent
+                });
+            } catch (e) {
+                console.warn("Failed to log error to Supabase", e);
+            }
+        }
 
         createApp({
             data() {
@@ -377,6 +458,8 @@
                     viewMode: 'grid',
                     user: null,
                     loading: true,
+                    showReportModal: false,
+                    reportText: '',
                     masterCatalog: [
                         {
                             id: 1,
@@ -384,7 +467,7 @@
                             title: 'Industrial Training Mastery Program',
                             description: 'Master industrial training requirements for CA candidates with real-world case studies.',
                             thumbnail: 'https://mystudentclub.com/assets/courseimg-industrial.png',
-                            videoCountEstimate: 7 // 
+                            videoCountEstimate: 7
                         },
                         {
                             id: 2,
@@ -395,10 +478,9 @@
                             videoCountEstimate: 7
                         }
                     ],
-                    enrolledCourses: [], // This will be populated based on Supabase
+                    enrolledCourses: [],
                     analytics: {
                         totalVideosCompleted: 0,
-                        hoursLearned: 0,
                         streak: 0,
                         completionRate: 0
                     }
@@ -424,14 +506,12 @@
                         this.user = session.user;
                         await this.fetchUserEnrollments();
                     } else {
-                        // Redirect to login if not authenticated
                         window.location.href = 'https://www.mystudentclub.com/login';
                     }
                 },
 
-                getUserDisplayName() {
+                getUserName() {
                     if (!this.user) return 'Student';
-                    // Prioritize Meta name, then Email name
                     return this.user.user_metadata?.full_name || this.user.email.split('@')[0];
                 },
 
@@ -440,9 +520,31 @@
                     window.location.href = 'https://www.mystudentclub.com/login';
                 },
 
+                openReportModal() {
+                    this.showReportModal = true;
+                },
+
+                async submitReport() {
+                    if (!this.reportText.trim()) return;
+                    try {
+                        const { error } = await supabase.from('course_reports').insert({
+                            user_id: this.user.id,
+                            description: this.reportText,
+                            page_url: window.location.href,
+                            course_slug: 'dashboard'
+                        });
+                        if (error) throw error;
+                        alert('Report submitted successfully.');
+                        this.showReportModal = false;
+                        this.reportText = '';
+                    } catch (e) {
+                        alert('Error submitting report. Please try again.');
+                        console.error(e);
+                    }
+                },
+
                 async fetchUserEnrollments() {
                     try {
-                        // 1. Fetch valid enrollments from DB
                         const { data: enrollments, error } = await supabase
                             .from('enrollment')
                             .select('course')
@@ -456,13 +558,11 @@
                             return;
                         }
 
-                        // 2. Map DB enrollments to Master Catalog to get metadata (images, titles)
                         const enrolledSlugs = enrollments.map(e => e.course);
                         
                         this.enrolledCourses = this.masterCatalog
                             .filter(course => enrolledSlugs.includes(course.slug))
                             .map(course => {
-                                // 3. Calculate Progress from Local Storage
                                 const progress = this.calculateCourseProgress(course.slug, course.videoCountEstimate);
                                 return {
                                     ...course,
@@ -471,18 +571,17 @@
                                 };
                             });
 
-                        // 4. Update Global Analytics
                         this.updateGlobalAnalytics();
                     
                     } catch (err) {
                         console.error("Error loading dashboard:", err);
+                        logFrontendError(err.message, 'index.html', 0, 0, err.stack);
                     } finally {
                         this.loading = false;
                     }
                 },
 
                 calculateCourseProgress(slug, totalEstimate) {
-                    // Check LocalStorage for "courseVideos_{slug}"
                     const storageKey = `courseVideos_${slug}`;
                     const storedData = localStorage.getItem(storageKey);
                     
@@ -490,12 +589,10 @@
                     if (storedData) {
                         try {
                             const videoMap = JSON.parse(storedData);
-                            // Count keys with value 'true'
                             completed = Object.values(videoMap).filter(val => val === true).length;
                         } catch (e) { console.error("LS parse error", e); }
                     }
 
-                    // Avoid division by zero
                     const percentage = totalEstimate > 0 ? Math.round((completed / totalEstimate) * 100) : 0;
                     
                     return {
@@ -514,13 +611,10 @@
                     });
 
                     this.analytics.totalVideosCompleted = totalVideos;
-                    // Estimate: 30 mins (0.5h) per video
-                    this.analytics.hoursLearned = Math.round(totalVideos * 0.5); 
                     this.analytics.completionRate = this.enrolledCourses.length > 0 
                         ? Math.round(sumProgress / this.enrolledCourses.length) 
                         : 0;
                     
-                    // Streak Logic (Read from LS)
                     const streak = localStorage.getItem('learningStreak');
                     this.analytics.streak = streak ? parseInt(streak) : 0;
                 },
@@ -542,10 +636,8 @@
                 }
             },
             mounted() {
-                // Initialize
                 this.checkAuth();
                 
-                // Real-time Auth Listener
                 supabase.auth.onAuthStateChange((event, session) => {
                     if (event === 'SIGNED_OUT') {
                         window.location.href = 'https://www.mystudentclub.com/login';
