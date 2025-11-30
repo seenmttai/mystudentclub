@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Student Club LMS</title>
+    <title>Dashboard | My Student Club LMS</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="importmap">
     {
@@ -16,159 +16,746 @@
     }
     </script>
     <style>
-        .popup-overlay {
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a0ca3;
+            --secondary: #4cc9f0;
+            --accent: #f72585;
+            --surface: #ffffff;
+            --background: #f8f9fa;
+            --text-main: #2b2d42;
+            --text-light: #8d99ae;
+            --border: #e9ecef;
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+            --shadow-lg: 0 16px 48px rgba(0,0,0,0.12);
+            --radius-md: 12px;
+            --radius-lg: 20px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        header {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding: 0.75rem 0;
+        }
+
+        .header-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-enhanced {
+            height: 40px;
+            width: auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .profile-dropdown-container {
+            position: relative;
+        }
+
+        .profile-nav {
+            padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+            border: 1px solid var(--border);
+            border-radius: 30px;
+            padding-right: 1rem;
+        }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 3000;
-            padding: 1rem;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
+            font-size: 0.8rem;
         }
-        .popup-overlay.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-        .popup-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            max-width: 550px;
-            width: 100%;
-            position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            animation: popup-fade-in 0.3s ease-out;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        @keyframes popup-fade-in {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        .popup-close {
+
+        .profile-dropdown-menu {
             position: absolute;
-            top: 0.75rem;
-            right: 0.75rem;
-            background: #f1f5f9;
+            top: 120%;
+            right: 0;
+            width: 240px;
+            background: white;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            animation: slideDown 0.2s ease;
+        }
+
+        .profile-dropdown-container:hover .profile-dropdown-menu {
+            display: flex;
+        }
+
+        .profile-header {
+            padding: 1.25rem;
+            background: #f8faff;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .profile-name {
+            font-weight: 700;
+            display: block;
+            color: var(--text-main);
+        }
+
+        .profile-email {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .dropdown-item {
+            padding: 0.85rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-main);
+            font-weight: 500;
+            cursor: pointer;
             border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+            color: var(--primary);
+        }
+
+        main {
+            padding-top: 80px;
+            min-height: 100vh;
+        }
+
+        .hero-enhanced {
+            position: relative;
+            background: linear-gradient(135deg, #1a1c2e 0%, #3a0ca3 100%);
+            padding: 4rem 2rem 6rem;
+            color: white;
+            overflow: hidden;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            margin-bottom: 4rem;
+        }
+
+        .hero-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+        }
+
+        .float-element {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 20px;
+            filter: blur(40px);
+            animation: float 6s infinite ease-in-out;
+        }
+
+        .hero-content {
+            position: relative;
+            max-width: 1280px;
+            margin: 0 auto;
+            z-index: 2;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            letter-spacing: -1px;
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #4cc9f0, #f72585);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.8);
+            max-width: 600px;
+            margin: 0 auto 3rem;
+        }
+
+        .hero-stats-floating {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: -2rem; 
+            position: relative;
+            z-index: 10;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 1.5rem 2.5rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+            min-width: 200px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .search-wrapper {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 1.25rem 1.25rem 1.25rem 3.5rem;
+            border-radius: 50px;
+            border: none;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-size: 1rem;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s;
+        }
+
+        .search-input::placeholder {
+            color: rgba(255,255,255,0.6);
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: rgba(255,255,255,0.25);
+            box-shadow: 0 0 0 4px rgba(255,255,255,0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255,255,255,0.6);
+        }
+
+        .section-container {
+            max-width: 1280px;
+            margin: 0 auto 4rem;
+            padding: 0 2rem;
+        }
+
+        .section-header-enhanced {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+        }
+
+        .section-header-enhanced h2 {
+            font-size: 2rem;
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        .section-header-enhanced p {
+            color: var(--text-light);
+        }
+
+        .view-toggle {
+            background: white;
+            padding: 0.25rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .view-btn {
+            padding: 0.5rem 0.75rem;
+            border: none;
+            background: none;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: all 0.2s;
+        }
+
+        .view-btn.active {
+            background: var(--background);
+            color: var(--primary);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .courses-container {
+            display: grid;
+            gap: 2rem;
+        }
+
+        .courses-container.view-grid {
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        }
+
+        .courses-container.view-list {
+            grid-template-columns: 1fr;
+        }
+
+        .course-card-enhanced-premium {
+            background: white;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .view-list .course-card-enhanced-premium {
+            flex-direction: row;
+            height: 220px;
+        }
+
+        .course-card-enhanced-premium:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .course-image-premium {
+            position: relative;
+            padding-top: 56.25%;
+            overflow: hidden;
+        }
+
+        .view-list .course-image-premium {
+            padding-top: 0;
+            width: 350px;
+            height: 100%;
+        }
+
+        .course-image-premium img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s;
+        }
+
+        .course-card-enhanced-premium:hover .course-image-premium img {
+            transform: scale(1.05);
+        }
+
+        .course-overlay-premium {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .course-card-enhanced-premium:hover .course-overlay-premium {
+            opacity: 1;
+        }
+
+        .premium-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: rgba(255,255,255,0.9);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .play-btn-premium {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            color: var(--primary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: scale(0.8);
+            transition: transform 0.3s;
+        }
+
+        .course-card-enhanced-premium:hover .play-btn-premium {
+            transform: scale(1);
+        }
+
+        .course-content-premium {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .course-header-premium h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .course-description {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .progress-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .progress-label {
+            color: var(--text-light);
+        }
+
+        .progress-percentage {
+            color: var(--primary);
+        }
+
+        .progress-bar-premium {
+            height: 8px;
+            background: #edf2f7;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-fill-animated {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .course-footer-premium {
+            margin-top: auto;
+            display: flex;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            padding-top: 1rem;
+        }
+
+        .instructor {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .instructor img {
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            font-size: 1.5rem;
-            font-weight: 300;
-            line-height: 1;
-            cursor: pointer;
-            color: #64748b;
-            transition: all 0.2s ease;
-            z-index: 10;
-        }
-        .popup-close:hover {
-            background: #e2e8f0;
-            transform: rotate(90deg);
-            color: #1e293b;
-        }
-        .popup-content h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1e40af;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            padding-right: 2rem;
-        }
-        .popup-content ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .popup-content li {
-            background-color: #f8fafc;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 0.75rem;
-            border-left: 4px solid #3b82f6;
-        }
-        .popup-content li p {
-            margin: 0;
-            color: #475569;
-            line-height: 1.5;
-            font-size: 0.95rem;
-        }
-        .popup-content a {
-            color: #2563eb;
-            font-weight: 600;
-            text-decoration: underline;
-        }
-        .popup-content a:hover {
-            color: #1d4ed8;
+            object-fit: cover;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        @media (max-width: 600px) {
-            .popup-content {
-                padding: 2rem 1.5rem 1.5rem 1.5rem;
-            }
-            .popup-content h2 {
-                font-size: 1.25rem;
-            }
-            .popup-content li {
-                padding: 0.75rem;
-            }
-            .popup-content li p {
-                font-size: 0.9rem;
-            }
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .analytics-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(0,0,0,0.02);
+            transition: transform 0.3s;
+        }
+
+        .analytics-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .analytics-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .analytics-content h4 {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.25rem;
+        }
+
+        .analytics-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.2;
+        }
+
+        .loading-container {
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+        }
+
+        .enroll-btn {
+            background: var(--primary);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+        .enroll-btn:hover {
+            transform: translateY(-2px);
+            background: var(--primary-dark);
+            box-shadow: 0 6px 16px rgba(67, 97, 238, 0.4);
+        }
+
+        .footer-enhanced {
+            background: #1e293b;
+            color: #cbd5e1;
+            padding: 4rem 0 0;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .footer-main {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4rem;
+            padding-bottom: 3rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .footer-brand {
+            flex: 2;
+            min-width: 300px;
+        }
+
+        .footer-brand h4 {
+            color: white;
+            margin: 1rem 0;
+            font-size: 1.25rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .footer-links {
+            flex: 3;
+            display: flex;
+            gap: 4rem;
+        }
+
+        .footer-column h5 {
+            color: white;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+
+        .footer-column ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-column a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            padding: 2rem 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.5rem; }
+            .hero-stats-floating { flex-direction: column; align-items: center; }
+            .stat-item { width: 100%; max-width: 300px; }
+            .analytics-grid { grid-template-columns: 1fr; }
+            .view-list .course-card-enhanced-premium { flex-direction: column; height: auto; }
+            .view-list .course-image-premium { width: 100%; height: auto; padding-top: 56.25%; }
+            .footer-main { flex-direction: column; gap: 2rem; }
+            .footer-links { flex-direction: column; gap: 2rem; }
         }
     </style>
 </head>
 <body>
     <div id="app">
-        <div class="popup-overlay" :class="{ 'visible': showWelcomePopup }" @click.self="closeWelcomePopup">
-            <div class="popup-content">
-                <button class="popup-close" @click="closeWelcomePopup">×</button>
-                <h2>Important Information</h2>
-                <ul>
-                    <li>
-                        <p>Live sessions will begin from 17th Oct Daily 9 PM. Prefer watching them over the recorded lectures.</p>
-                    </li>
-                    <li>
-                        <p>Join this Whatsapp Group for further communication: <a href="https://chat.whatsapp.com/CUrZBuHgqmqFLE7E8BxmOF?mode=wwt" target="_blank" rel="noopener noreferrer">Click Here to Join</a></p>
-                    </li>
-                    <li>
-                        <p>Fill this form as soon as possible with your details: <a href="https://forms.gle/SfzHWBmRmMSkooRq9" target="_blank" rel="noopener noreferrer">Click Here to Fill Form</a></p>
-                    </li>
-                    <li>
-                        <p>Post Day 1 lecture, make a revised CV as per provided resources and checklist and upload it here for my review: <a href="https://forms.gle/2bea7qcsBwUtYQvH8" target="_blank" rel="noopener noreferrer">Click Here to Upload CV</a></p>
-                    </li>
-                    <li>
-                        <p>Also, below each lecture, there are various resources attached. Ensure you refer to them.</p>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <header class="glass-header">
+        <header>
             <div class="header-container">
                 <div class="logo-container">
-                    <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo-enhanced">
+                    <a href="index.html">
+                        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo-enhanced">
+                    </a>
                 </div>
                 <nav>
-                    <div class="hamburger-menu" @click="toggleMenu">
-                        <div class="bar"></div>
-                        <div class="bar"></div>
-                        <div class="bar"></div>
+                    <div class="hamburger-menu" @click="toggleMenu" style="cursor: pointer; display: none;">
+                        <i class="fas fa-bars fa-lg"></i>
                     </div>
                     <ul class="nav-links" :class="{ 'active': menuActive }">
                         <li><a href="index.html" class="active nav-item">
                             <i class="fas fa-graduation-cap"></i>
-                            <span>Courses</span>
+                            <span>My Courses</span>
                         </a></li>
-                        <li><a href="https://mystudentclub.com/learning-management-system/lms-resources.html" class="nav-item">
+                        <li><a href="lms-resources.html" class="nav-item">
                             <i class="fas fa-book-open"></i>
                             <span>Resources</span>
                         </a></li>
@@ -176,14 +763,27 @@
                             <i class="fas fa-file-alt"></i>
                             <span>CV Review</span>
                         </a></li>
-                        <li class="profile-link">
-                            <a href="#" class="nav-item profile-nav" @click="handleProfileClick">
+                        
+                        <li class="profile-link profile-dropdown-container">
+                            <a href="#" class="nav-item profile-nav" @click.prevent>
                                 <div class="profile-avatar">
                                     <i class="fas fa-user"></i>
                                 </div>
-                                <span v-if="user">{{ user.email.split('@')[0] }}</span>
+                                <span v-if="user">{{ getUserDisplayName() }}</span>
                                 <span v-else>Login</span>
                             </a>
+                            <div class="profile-dropdown-menu" v-if="user">
+                                <div class="profile-header">
+                                    <span class="profile-name">{{ getUserDisplayName() }}</span>
+                                    <span class="profile-email">{{ user.email }}</span>
+                                </div>
+                                <a href="https://mystudentclub.com/profile" class="dropdown-item">
+                                    <i class="fas fa-user-circle"></i> My Profile
+                                </a>
+                                <button class="dropdown-item" @click="logout">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </button>
+                            </div>
                         </li>
                     </ul>
                 </nav>
@@ -191,7 +791,6 @@
         </header>
 
         <main>
-
             <section class="hero-enhanced">
                 <div class="hero-background">
                     <div class="floating-elements">
@@ -201,128 +800,70 @@
                 <div class="hero-content">
                     <div class="hero-text">
                         <h1 class="hero-title">
-                            Elevate Your <span class="gradient-text">Professional Journey</span>
+                            Welcome Back, <span class="gradient-text">{{ getUserDisplayName() }}</span>
                         </h1>
-                        <p class="hero-subtitle">Master the art of Chartered Accountancy with expert-led courses designed for success</p>
-                        <div class="hero-stats">
-                            <div class="stat-item">
-                                <div class="stat-number" v-if="totalCoursesCompleted !== undefined">{{ totalCoursesCompleted }}</div>
-                                <div class="stat-number" v-else><i class="fas fa-spinner fa-spin"></i></div>
-                                <div class="stat-label">Completed</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-number" v-if="totalCourses !== undefined">{{ totalCourses }}</div>
-                                <div class="stat-number" v-else><i class="fas fa-spinner fa-spin"></i></div>
-                                <div class="stat-label">Courses</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-number" v-if="totalHoursLearned !== undefined">{{ totalHoursLearned }}h</div>
-                                <div class="stat-number" v-else><i class="fas fa-spinner fa-spin"></i></div>
-                                <div class="stat-label">Learning Time</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="search-enhanced">
+                        <p class="hero-subtitle">Your journey to CA excellence continues here. Track your progress and master your skills with our premium learning resources.</p>
+                        
                         <div class="search-wrapper">
                             <i class="fas fa-search search-icon"></i>
                             <input 
                                 type="text" 
-                                placeholder="Search for courses, topics, or skills..." 
+                                placeholder="Search your enrolled courses..." 
                                 v-model="searchQuery"
-                                @input="handleSearch"
                                 class="search-input"
                             >
-                            <div class="search-suggestions" v-if="searchSuggestions.length > 0 && searchQuery">
-                                <div 
-                                    v-for="suggestion in searchSuggestions" 
-                                    :key="suggestion.id"
-                                    class="suggestion-item"
-                                    @click="selectSuggestion(suggestion)"
-                                >
-                                    <i :class="suggestion.icon"></i>
-                                    <span>{{ suggestion.text }}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="quick-filters">
-                            <button 
-                                v-for="filter in quickFilters" 
-                                :key="filter.id"
-                                class="filter-chip"
-                                :class="{ 'active': currentFilter === filter.id }"
-                                @click="setFilter(filter.id)"
-                            >
-                                <i :class="filter.icon"></i>
-                                {{ filter.name }}
-                            </button>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section class="progress-dashboard" v-if="inProgressCourses.length > 0">
-                <div class="section-container">
-                    <div class="section-header-enhanced">
-                        <h2>Continue Learning</h2>
-                        <p>Pick up where you left off</p>
+            <div class="section-container" style="position: relative;">
+                <div class="hero-stats-floating">
+                    <div class="stat-item">
+                        <div class="stat-number" v-if="!loading">{{ enrolledCourses.length }}</div>
+                        <div class="stat-number" v-else><i class="fas fa-spinner fa-spin"></i></div>
+                        <div class="stat-label">Active Courses</div>
                     </div>
-                    <div class="progress-grid">
-                        <div 
-                            v-for="course in inProgressCourses" 
-                            :key="course.id"
-                            class="progress-card-enhanced"
-                            @click="goToCourse(course.slug)"
-                        >
-                            <div class="course-thumbnail-small">
-                                <img :src="course.thumbnail" :alt="course.title">
-                                <div class="play-overlay">
-                                    <i class="fas fa-play"></i>
-                                </div>
-                            </div>
-                            <div class="progress-info">
-                                <h4>{{ course.title }}</h4>
-                                <div class="progress-visual">
-                                    <div class="progress-track">
-                                        <div class="progress-fill" :style="{ width: course.progress + '%' }"></div>
-                                    </div>
-                                    <span class="progress-text">{{ course.progress }}%</span>
-                                </div>
-                                <div class="course-meta-small">
-                                    <span><i class="fas fa-clock"></i> {{ getTimeRemaining(course) }}</span>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="stat-item">
+                        <div class="stat-number" v-if="!loading">{{ analytics.totalVideosCompleted }}</div>
+                        <div class="stat-number" v-else><i class="fas fa-spinner fa-spin"></i></div>
+                        <div class="stat-label">Videos Completed</div>
                     </div>
+                </div>
+            </div>
+
+            <div v-if="loading" class="loading-container">
+                <i class="fas fa-circle-notch fa-spin fa-3x" style="color: var(--primary); margin-bottom: 1.5rem;"></i>
+                <p>Loading your dashboard...</p>
+            </div>
+
+            <section v-else-if="enrolledCourses.length === 0" class="progress-dashboard">
+                <div class="section-container" style="text-align: center; padding: 4rem 0;">
+                    <div style="background: white; width: 100px; height: 100px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem; box-shadow: var(--shadow-sm);">
+                        <i class="fas fa-folder-open fa-3x" style="color: #cbd5e1;"></i>
+                    </div>
+                    <h2 style="margin-bottom: 1rem; color: var(--text-main);">No Enrolled Courses Found</h2>
+                    <p style="color: var(--text-light); margin-bottom: 2rem;">It looks like you haven't enrolled in any courses yet.</p>
+                    <a href="https://www.mystudentclub.com/#courses" class="enroll-btn">
+                        Browse Courses
+                    </a>
                 </div>
             </section>
 
-            <section class="courses-section-enhanced">
+            <section v-else class="courses-section-enhanced">
                 <div class="section-container">
                     <div class="section-header-enhanced">
-                        <h2>Professional Courses</h2>
-                        <p>Comprehensive learning paths designed by industry experts</p>
+                        <div>
+                            <h2>My Learning Path</h2>
+                            <p>Pick up where you left off</p>
+                        </div>
+                        
                         <div class="view-controls">
-                            <div class="sort-dropdown">
-                                <select v-model="sortBy" @change="sortCoursesVue">
-                                    <option value="recommended">Recommended</option>
-                                    <option value="newest">Newest First</option>
-                                    <option value="popular">Most Popular</option>
-                                    <option value="progress">By Progress</option>
-                                </select>
-                            </div>
                             <div class="view-toggle">
-                                <button 
-                                    class="view-btn" 
-                                    :class="{ 'active': viewMode === 'grid' }"
-                                    @click="viewMode = 'grid'"
-                                >
+                                <button class="view-btn" :class="{ 'active': viewMode === 'grid' }" @click="viewMode = 'grid'">
                                     <i class="fas fa-th-large"></i>
                                 </button>
-                                <button 
-                                    class="view-btn" 
-                                    :class="{ 'active': viewMode === 'list' }"
-                                    @click="viewMode = 'list'"
-                                >
+                                <button class="view-btn" :class="{ 'active': viewMode === 'list' }" @click="viewMode = 'list'">
                                     <i class="fas fa-list"></i>
                                 </button>
                             </div>
@@ -330,18 +871,15 @@
                     </div>
 
                     <div class="courses-container" :class="'view-' + viewMode">
-                        <div v-for="course in sortedAndFilteredCourses" :key="course.id" class="course-card-enhanced-premium" @click="goToCourse(course.slug)">
+                        <div v-for="course in filteredEnrolledCourses" :key="course.id" class="course-card-enhanced-premium" @click="goToCourse(course.slug)">
                             <div class="course-image-premium">
                                 <img :src="course.thumbnail" :alt="course.title">
                                 <div class="course-overlay-premium">
                                     <div class="premium-badge">
-                                        <i class="fas fa-crown"></i>
-                                        Premium Course
+                                        <i class="fas fa-check-circle"></i> Active
                                     </div>
                                     <button class="play-btn-premium">
-                                        <div class="play-icon">
-                                            <i class="fas fa-play"></i>
-                                        </div>
+                                        <div class="play-icon"><i class="fas fa-play"></i></div>
                                     </button>
                                 </div>
                             </div>
@@ -350,15 +888,17 @@
                                     <h3>{{ course.title }}</h3>
                                 </div>
                                 <p class="course-description">{{ course.description }}</p>
+                                
                                 <div class="course-progress-container-premium">
                                     <div class="progress-info-row">
-                                        <span class="progress-label">Progress</span>
-                                        <span class="progress-percentage">{{ course.progress }}%</span>
+                                        <span class="progress-label">Completion</span>
+                                        <span class="progress-percentage">{{ course.calculatedProgress }}%</span>
                                     </div>
                                     <div class="progress-bar-premium">
-                                        <div class="progress-fill-animated" :style="{ width: course.progress + '%' }"></div>
+                                        <div class="progress-fill-animated" :style="{ width: course.calculatedProgress + '%' }"></div>
                                     </div>
                                 </div>
+                                
                                 <div class="course-footer-premium">
                                     <div class="instructor">
                                         <img src="https://mystudentclub.com/assets/mentor_transparent.png" alt="Padam Bhansali">
@@ -371,53 +911,26 @@
                 </div>
             </section>
 
-            <section class="analytics-section">
+            <section class="analytics-section" v-if="enrolledCourses.length > 0">
                 <div class="section-container">
                     <div class="section-header-enhanced">
-                        <h2>Your Learning Analytics</h2>
-                        <p>Track your progress and achievements</p>
+                        <h2>Your Achievement Stats</h2>
                     </div>
                     <div class="analytics-grid">
                         <div class="analytics-card">
-                            <div class="analytics-icon">
-                                <i class="fas fa-chart-line"></i>
-                            </div>
+                            <div class="analytics-icon"><i class="fas fa-fire"></i></div>
                             <div class="analytics-content">
                                 <h4>Learning Streak</h4>
-                                <div class="analytics-value">{{ learningStreak }} days</div>
-                                <p>{{ getStreakMessage() }}</p>
+                                <div class="analytics-value">{{ analytics.streak }} Days</div>
+                                <p>Keep the momentum going!</p>
                             </div>
                         </div>
                         <div class="analytics-card">
-                            <div class="analytics-icon">
-                                <i class="fas fa-trophy"></i>
-                            </div>
+                            <div class="analytics-icon"><i class="fas fa-trophy"></i></div>
                             <div class="analytics-content">
-                                <h4>Videos Completed</h4>
-                                <div class="analytics-value">{{ totalVideosCompleted }}</div>
-                                <p>{{ getNextMilestone() }}</p>
-                            </div>
-                        </div>
-                        <div class="analytics-card">
-                            <div class="analytics-icon">
-                                <i class="fas fa-clock"></i>
-                            </div>
-                            <div class="analytics-content">
-                                <h4>Time Invested</h4>
-                                <div class="analytics-value">{{ totalHoursLearned }}h</div>
-                                <p>This week: {{ weeklyTime }}h</p>
-                            </div>
-                        </div>
-                        <div class="analytics-card">
-                            <div class="analytics-icon">
-                                <i class="fas fa-star"></i>
-                            </div>
-                            <div class="analytics-content">
-                                <h4>Skill Level</h4>
-                                <div class="analytics-value">{{ skillLevel }}</div>
-                                <div class="skill-progress">
-                                    <div class="skill-bar" :style="{ width: skillProgress + '%' }"></div>
-                                </div>
+                                <h4>Overall Completion</h4>
+                                <div class="analytics-value">{{ analytics.completionRate }}%</div>
+                                <p>Average across all courses</p>
                             </div>
                         </div>
                     </div>
@@ -429,33 +942,36 @@
             <div class="footer-content">
                 <div class="footer-main">
                     <div class="footer-brand">
-                        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo">
+                        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo-enhanced">
                         <h4>My Student Club</h4>
                         <p>Empowering the next generation of Chartered Accountants with world-class education and resources.</p>
                         <div class="social-links">
-                            <a href="https://www.linkedin.com/company/mystudentclub" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin"></i></a>
-                            <a href="https://www.instagram.com/mystudentclub/" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>
-                            <a href="https://www.youtube.com/@MyStudentClub" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>
+                            <a href="https://www.linkedin.com/company/mystudentclub" target="_blank"><i class="fab fa-linkedin"></i></a>
+                            <a href="https://www.instagram.com/mystudentclub/" target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a href="https://www.youtube.com/@MyStudentClub" target="_blank"><i class="fab fa-youtube"></i></a>
                         </div>
                     </div>
                     <div class="footer-links">
                         <div class="footer-column">
                             <h5>Learning</h5>
                             <ul>
-                                <li><a href="index.html">All Courses</a></li>
-                                <li><a href="resources.html">Resources</a></li>
-                                <li><a href="#">Certifications</a></li>
-                                <li><a href="#">Contact Us</a></li>
+                                <li><a href="index.html">My Dashboard</a></li>
+                                <li><a href="lms-resources.html">Resources Hub</a></li>
+                                <li><a href="https://mystudentclub.com/cv-reviewer/">CV Review</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-column">
+                            <h5>Support</h5>
+                            <ul>
+                                <li><a href="mailto:support@mystudentclub.com">Contact Us</a></li>
+                                <li><a href="https://mystudentclub.com/privacy-policy">Privacy Policy</a></li>
+                                <li><a href="https://mystudentclub.com/terms">Terms of Service</a></li>
                             </ul>
                         </div>
                     </div>
                 </div>
                 <div class="footer-bottom">
                     <p>© 2025 My Student Club LMS. All rights reserved.</p>
-                    <div class="footer-badges">
-                        <span class="badge"> Top Rated Platform</span>
-                        <span class="badge"> 100% Placement</span>
-                    </div>
                 </div>
             </div>
         </footer>
@@ -473,192 +989,149 @@
                 return {
                     menuActive: false,
                     searchQuery: '',
-                    currentFilter: 'all',
-                    sortBy: 'recommended',
                     viewMode: 'grid',
                     user: null,
-                    totalCoursesCompleted: 0,
-                    totalCourses: 0,
-                    totalHoursLearned: 0,
-                    weeklyTime: 0,
-                    learningStreak: 0,
-                    totalVideosCompleted: 0,
-                    skillLevel: 'Beginner',
-                    skillProgress: 0,
-                    searchSuggestions: [],
-                    showWelcomePopup: false,
-                    quickFilters: [
-                        { id: 'all', name: 'All Courses', icon: 'fas fa-graduation-cap' },
-                        { id: 'ca', name: 'CA Prep', icon: 'fas fa-calculator' },
-                        { id: 'finance', name: 'Finance', icon: 'fas fa-chart-line' },
-                        { id: 'data', name: 'Data Analysis', icon: 'fas fa-database' },
-                        { id: 'audit', name: 'Audit', icon: 'fas fa-search' }
-                    ],
-                    courses: [
+                    loading: true,
+                    masterCatalog: [
                         {
                             id: 1,
                             slug: 'industrial-training-mastery',
                             title: 'Industrial Training Mastery Program',
-                            description: 'Master industrial training requirements for CA candidates with real-world case studies and expert guidance. For students eligible to join till January 15 only!',
-                            category: 'ca',
+                            description: 'Master industrial training requirements for CA candidates with real-world case studies.',
                             thumbnail: 'https://mystudentclub.com/assets/courseimg-industrial.png',
-                            progress: 0
+                            videoCountEstimate: 7
                         },
                         {
                             id: 2,
                             slug: 'msc-ca-freshers-program',
                             title: 'MSC CA Freshers Program',
-                            description: 'A comprehensive program for CA freshers to kickstart their career with expert guidance on CVs, interviews, and more.',
-                            category: 'ca',
+                            description: 'A comprehensive program for CA freshers to kickstart their career.',
                             thumbnail: 'https://mystudentclub.com/assets/courseimg-fresher.png',
-                            progress: 0
+                            videoCountEstimate: 6
                         }
-                    ]
+                    ],
+                    enrolledCourses: [],
+                    analytics: {
+                        totalVideosCompleted: 0,
+                        streak: 0,
+                        completionRate: 0
+                    }
                 }
             },
             computed: {
-                filteredCourses() {
-                    return this.courses.filter(course => {
-                        const matchesSearch = course.title.toLowerCase().includes(this.searchQuery.toLowerCase()) || 
-                                            course.description.toLowerCase().includes(this.searchQuery.toLowerCase());
-                        const matchesFilter = this.currentFilter === 'all' || course.category === this.currentFilter;
-                        return matchesSearch && matchesFilter;
-                    });
-                },
-                sortedAndFilteredCourses() {
-                    const coursesToSort = [...this.filteredCourses]; 
-                    switch (this.sortBy) {
-                        case 'newest':
-                            return coursesToSort.sort((a, b) => b.id - a.id); 
-                        case 'popular':
-                            return coursesToSort.sort((a, b) => (b.progress || 0) - (a.progress || 0));
-                        case 'progress':
-                            return coursesToSort.sort((a, b) => (b.progress || 0) - (a.progress || 0));
-                        default: 
-                            return coursesToSort;
-                    }
-                },
-                inProgressCourses() {
-                    return this.courses.filter(course => (course.progress || 0) > 0 && (course.progress || 0) < 100)
-                                      .sort((a, b) => b.progress - a.progress)
-                                      .slice(0, 3);
+                filteredEnrolledCourses() {
+                    if (!this.searchQuery) return this.enrolledCourses;
+                    return this.enrolledCourses.filter(course => 
+                        course.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
+                        course.description.toLowerCase().includes(this.searchQuery.toLowerCase())
+                    );
                 }
             },
             methods: {
-                checkWelcomePopup() {
-                    if (!localStorage.getItem('lmsWelcomePopupViewed')) {
-                        this.showWelcomePopup = true;
-                        document.body.style.overflow = 'hidden'; 
-                    }
+                toggleMenu() {
+                    this.menuActive = !this.menuActive;
                 },
-                closeWelcomePopup() {
-                    this.showWelcomePopup = false;
-                    localStorage.setItem('lmsWelcomePopupViewed', 'true');
-                    document.body.style.overflow = '';
-                },
+                
                 async checkAuth() {
                     const { data: { session }, error } = await supabase.auth.getSession();
                     if (session && session.user) {
                         this.user = session.user;
+                        await this.fetchUserEnrollments();
                     } else {
-                        this.user = null;
-                    }
-                },
-                handleProfileClick() {
-                    if (!this.user) {
                         window.location.href = 'https://www.mystudentclub.com/login';
                     }
                 },
-                toggleMenu() {
-                    this.menuActive = !this.menuActive;
-                },
-                goToCourse(courseSlug) {
-                     if (!this.user) {
-                        const destination = encodeURIComponent(`/learning-management-system/course?course=${courseSlug}`);
-                        window.location.href = `https://www.mystudentclub.com/login.html?redirect=${destination}`;
-                        return;
-                    }
-                    window.location.href = `/learning-management-system/course?course=${courseSlug}`;
-                },
-                setFilter(filterId) {
-                    this.currentFilter = filterId;
-                    this.searchQuery = ''; 
-                },
-                handleSearch() {
-                    if (this.searchQuery.length > 0) {
-                        this.generateSearchSuggestions();
-                    } else {
-                        this.searchSuggestions = [];
-                    }
-                },
-                generateSearchSuggestions() {
-                    const suggestions = [];
-                    const query = this.searchQuery.toLowerCase();
 
-                    this.courses.forEach(course => {
-                        if (course.title.toLowerCase().includes(query)) {
-                            suggestions.push({
-                                id: `course-${course.id}`,
-                                text: course.title,
-                                icon: 'fas fa-play-circle',
-                                type: 'course',
-                                data: course
-                            });
+                getUserDisplayName() {
+                    if (!this.user) return 'Student';
+                    return this.user.user_metadata?.full_name || this.user.email.split('@')[0];
+                },
+
+                async logout() {
+                    await supabase.auth.signOut();
+                    window.location.href = 'https://www.mystudentclub.com/login';
+                },
+
+                async fetchUserEnrollments() {
+                    try {
+                        const { data: enrollments, error } = await supabase
+                            .from('enrollment')
+                            .select('course')
+                            .eq('uuid', this.user.id);
+
+                        if (error) throw error;
+
+                        if (!enrollments || enrollments.length === 0) {
+                            this.enrolledCourses = [];
+                            this.loading = false;
+                            return;
                         }
-                    });
 
-                    const topics = ['audit', 'taxation', 'financial reporting', 'excel', 'power bi'];
-                    topics.forEach(topic => {
-                        if (topic.includes(query)) {
-                            suggestions.push({
-                                id: `topic-${topic}`,
-                                text: `Learn ${topic}`,
-                                icon: 'fas fa-book',
-                                type: 'topic'
+                        const enrolledSlugs = enrollments.map(e => e.course);
+                        
+                        this.enrolledCourses = this.masterCatalog
+                            .filter(course => enrolledSlugs.includes(course.slug))
+                            .map(course => {
+                                const progress = this.calculateCourseProgress(course.slug, course.videoCountEstimate);
+                                return {
+                                    ...course,
+                                    calculatedProgress: progress.percentage,
+                                    completedVideos: progress.completed
+                                };
                             });
-                        }
-                    });
 
-                    this.searchSuggestions = suggestions.slice(0, 5);
-                },
-                selectSuggestion(suggestion) {
-                    if (suggestion.type === 'course') {
-                        this.goToCourse(suggestion.data.slug);
-                    } else {
-                        this.searchQuery = suggestion.text.replace('Learn ', ''); 
-                        this.currentFilter = 'all'; 
-                        this.searchSuggestions = [];
+                        this.updateGlobalAnalytics();
+                    
+                    } catch (err) {
+                        console.error("Error loading dashboard:", err);
+                    } finally {
+                        this.loading = false;
                     }
-                    this.searchSuggestions = []; 
                 },
-                sortCoursesVue() {
-                },
-                getBadgeClass(badge) {
-                    const badgeClasses = {
-                        'Bestseller': 'badge-bestseller',
-                        'New': 'badge-new',
-                        'Popular': 'badge-popular',
-                        'Advanced': 'badge-advanced'
+
+                calculateCourseProgress(slug, totalEstimate) {
+                    const storageKey = `courseVideos_${slug}`;
+                    const storedData = localStorage.getItem(storageKey);
+                    
+                    let completed = 0;
+                    if (storedData) {
+                        try {
+                            const videoMap = JSON.parse(storedData);
+                            completed = Object.values(videoMap).filter(val => val === true).length;
+                        } catch (e) { console.error("LS parse error", e); }
+                    }
+
+                    const percentage = totalEstimate > 0 ? Math.round((completed / totalEstimate) * 100) : 0;
+                    
+                    return {
+                        completed: completed,
+                        percentage: Math.min(percentage, 100)
                     };
-                    return badgeClasses[badge] || 'badge-default';
                 },
-                getTimeRemaining(course) {
-                    if ((course.progress || 0) === 100) return 'Completed';
-                    return 'Continue learning';
+
+                updateGlobalAnalytics() {
+                    let totalVideos = 0;
+                    let sumProgress = 0;
+
+                    this.enrolledCourses.forEach(c => {
+                        totalVideos += c.completedVideos;
+                        sumProgress += c.calculatedProgress;
+                    });
+
+                    this.analytics.totalVideosCompleted = totalVideos;
+                    
+                    this.analytics.completionRate = this.enrolledCourses.length > 0 
+                        ? Math.round(sumProgress / this.enrolledCourses.length) 
+                        : 0;
+                    
+                    const streak = localStorage.getItem('learningStreak');
+                    this.analytics.streak = streak ? parseInt(streak) : 0;
                 },
-                getStreakMessage() {
-                    if (this.learningStreak === 0) return 'Start your learning streak today!';
-                    if (this.learningStreak < 7) return 'Keep it up! ';
-                    return 'Amazing streak! ';
+
+                goToCourse(slug) {
+                    window.location.href = `course.html?course=${slug}`;
                 },
-                getNextMilestone() {
-                    const milestones = [10, 25, 50, 100, 200];
-                    const nextMilestone = milestones.find(m => m > this.totalVideosCompleted);
-                    if (nextMilestone) {
-                        return `${nextMilestone - this.totalVideosCompleted} videos to next milestone`;
-                    }
-                    return 'Milestone master! ';
-                },
+
                 getFloatingStyle(index) {
                     const positions = [
                         { top: '10%', left: '10%', animationDelay: '0s' },
@@ -668,83 +1141,15 @@
                         { bottom: '20%', left: '20%', animationDelay: '3s' },
                         { top: '40%', right: '25%', animationDelay: '5s' }
                     ];
-                    return positions[index - 1];
-                },
-                loadProgressData() {
-                    this.courses.forEach(course => {
-                        const courseData = localStorage.getItem(`courseVideos_${course.slug}`);
-                        if (courseData) {
-                            const videos = JSON.parse(courseData);
-                            const totalVideos = Object.keys(videos).length;
-                            const completedVideos = Object.values(videos).filter(v => v).length;
-                            course.progress = totalVideos > 0 ? Math.round((completedVideos / totalVideos) * 100) : 0;
-                        }
-                    });
-
-                    this.calculateAnalytics();
-                },
-                calculateAnalytics() {
-                    let totalCompleted = 0;
-                    let totalTime = 0;
-                    let coursesCompleted = 0;
-
-                    this.courses.forEach(course => {
-                        const courseData = localStorage.getItem(`courseVideos_${course.slug}`);
-                        if (courseData) {
-                            const videos = JSON.parse(courseData);
-                            const completed = Object.values(videos).filter(v => v).length;
-                            totalCompleted += completed;
-
-                            if (course.progress === 100) {
-                                coursesCompleted++;
-                            }
-                        }
-                    });
-
-                    this.totalVideosCompleted = totalCompleted;
-                    this.totalCoursesCompleted = coursesCompleted;
-                    this.totalHoursLearned = Math.round(totalCompleted * 0.5); 
-
-                    if (totalCompleted < 10) {
-                        this.skillLevel = 'Beginner';
-                        this.skillProgress = (totalCompleted / 10) * 100;
-                    } else if (totalCompleted < 50) {
-                        this.skillLevel = 'Intermediate';
-                        this.skillProgress = ((totalCompleted - 10) / 40) * 100;
-                    } else {
-                        this.skillLevel = 'Advanced';
-                        this.skillProgress = Math.min(100, ((totalCompleted - 50) / 50) * 100);
-                    }
-
-                    const lastActivity = localStorage.getItem('lastLearningActivity');
-                    const today = new Date().toDateString();
-                    if (lastActivity === today) {
-                        this.learningStreak = parseInt(localStorage.getItem('learningStreak') || '1');
-                    } else {
-                        this.learningStreak = 0;
-                    }
-
-                    this.weeklyTime = Math.min(this.totalHoursLearned, Math.round(this.totalHoursLearned * 0.3));
+                    return positions[index - 1] || {};
                 }
             },
-            async mounted() {
-                await this.checkAuth();
-                this.loadProgressData();
-                this.checkWelcomePopup();
-                this.totalCourses = this.courses.length;
-
-                supabase.auth.onAuthStateChange((_event, session) => {
-                    if (session && session.user) {
-                        this.user = session.user;
-                    } else {
-                        this.user = null;
-                    }
-                });
-
-                document.addEventListener('click', (e) => {
-                    const searchEnhanced = e.target.closest('.search-enhanced');
-                    if (!searchEnhanced) {
-                        this.searchSuggestions = [];
+            mounted() {
+                this.checkAuth();
+                
+                supabase.auth.onAuthStateChange((event, session) => {
+                    if (event === 'SIGNED_OUT') {
+                        window.location.href = 'https://www.mystudentclub.com/login';
                     }
                 });
             }
