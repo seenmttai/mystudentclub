@@ -1453,27 +1453,47 @@
                 async logFrontendError(message, stack, source) {
                     if (this.errorLogCount >= 6) return;
                     this.errorLogCount++;
+                    
+                    if (!this.user) return; // Prevent logging if user is not authenticated (RLS policy limitation)
+                    
                     try {
                         const { error } = await supabase
                             .from('frontend_errors')
                             .insert({
-                                user_id: this.user ? this.user.id : null,
-                                error_message: message,
-                                stack_trace: stack,
+                                user_id: this.user.id,
+                                error_message: message || 'Unknown Error',
+                                stack_trace: stack || 'No Stack Trace',
                                 url: window.location.href,
                                 user_agent: navigator.userAgent
                             });
                     } catch (e) {
-                        console.error("Failed to log error to DB", e);
+                        // Silent fail to prevent recursion
                     }
                 }
             },
             async mounted() {
                 const self = this;
+                
+                // 1. Capture Syntax/Runtime Errors
                 window.onerror = function(msg, url, line, col, error) {
                     self.logFrontendError(msg, error ? error.stack : `Line: ${line}, Col: ${col}`, url);
                     return false;
                 };
+
+                // 2. Capture Promise Rejections (Async/Supabase Errors)
+                window.addEventListener('unhandledrejection', function(event) {
+                    let errorMessage = 'Unhandled Promise Rejection';
+                    let errorStack = '';
+                    
+                    if (event.reason) {
+                        if (event.reason.message) errorMessage = event.reason.message;
+                        if (event.reason.stack) errorStack = event.reason.stack;
+                        else if (typeof event.reason === 'string') errorMessage = event.reason;
+                        else errorMessage = JSON.stringify(event.reason);
+                    }
+
+                    self.logFrontendError(errorMessage, errorStack, 'Promise Rejection');
+                });
 
                 this.pdfDoc = null; 
                 this.loadCourseData();
@@ -1501,5 +1521,6 @@
             }
         }).mount('#app');
     </script>
+    
 </body>
 </html>
