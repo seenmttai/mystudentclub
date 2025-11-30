@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Player | My Student Club</title>
+    <title>Course Details | My Student Club LMS</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="course-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -16,92 +16,6 @@
         }
     }
     </script>
-    <script>
-        (function() {
-            const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-            const sb = window.supabase.createClient(supabaseUrl, supabaseKey);
-            let errorCount = 0;
-            const MAX_ERRORS = 6; 
-
-            window.onerror = function(msg, url, line, col, error) {
-                if (errorCount >= MAX_ERRORS) return;
-                errorCount++;
-                
-                sb.auth.getSession().then(({ data }) => {
-                    sb.from('frontend_errors').insert({
-                        user_id: data.session?.user?.id || null,
-                        error_message: msg,
-                        stack_trace: error ? error.stack : `Line: ${line}, Col: ${col}`,
-                        url: window.location.href,
-                        user_agent: navigator.userAgent
-                    });
-                });
-            };
-        })();
-    </script>
-    <style>
-        .course-tabs {
-            display: flex;
-            gap: 1.5rem;
-            border-bottom: 1px solid var(--border-color, #e2e8f0);
-            margin: 1.5rem 0;
-            padding: 0 1rem;
-        }
-        .course-tab {
-            background: none;
-            border: none;
-            padding: 0.8rem 0.5rem;
-            font-weight: 600;
-            color: #64748b;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-            transition: all 0.2s;
-        }
-        .course-tab.active {
-            color: var(--primary-color, #2563eb);
-            border-bottom-color: var(--primary-color, #2563eb);
-        }
-        .comments-container { padding: 1rem; }
-        .comment-input-wrapper { margin-bottom: 2rem; }
-        .comment-box {
-            width: 100%; padding: 1rem;
-            border: 1px solid #cbd5e1; border-radius: 8px;
-            margin-bottom: 0.5rem; resize: vertical; min-height: 80px;
-        }
-        .post-btn {
-            background: #2563eb; color: white; border: none;
-            padding: 0.5rem 1.2rem; border-radius: 6px; cursor: pointer;
-        }
-        .post-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-        .comment-item { 
-            background: #f8fafc; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; 
-            border: 1px solid #f1f5f9;
-        }
-        .comment-meta { 
-            font-size: 0.8rem; color: #64748b; margin-bottom: 0.4rem; 
-            display: flex; justify-content: space-between;
-        }
-        .report-container { padding: 1.5rem; background: #fff1f2; border-radius: 12px; border: 1px solid #fecdd3; }
-        .report-input { width: 100%; padding: 0.8rem; margin: 1rem 0; border: 1px solid #fda4af; border-radius: 6px; }
-        
-        .video-player-wrapper {
-            position: relative;
-            background: #000;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .custom-video-controls {
-            z-index: 2147483647 !important; 
-            transition: opacity 0.3s ease;
-            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
-            padding-bottom: env(safe-area-inset-bottom); 
-        }
-        .loading-overlay { background: rgba(0,0,0,0.7); color: white; z-index: 50; }
-    </style>
 </head>
 <body>
     <div id="app">
@@ -330,77 +244,40 @@
                                     <i class="fas fa-arrow-right"></i>
                                 </button>
                             </div>
+                             <div class="video-description-premium" v-if="currentVideo && currentVideo.description">
+                                <h3>Summary</h3>
+                                <p v-html="formattedDescription"></p>
+                            </div>
+                            <div class="video-resources-premium" v-if="currentVideo && Object.keys(groupedResources).length > 0">
+                                <h3>Resources</h3>
+                                <div v-for="(resourcesInGroup, groupName) in groupedResources" :key="groupName" class="resource-group">
+                                    <h4 class="resource-group-title" v-if="groupName !== 'General Resources' || Object.keys(groupedResources).length > 1">{{ groupName }}</h4>
+                                    <ul class="resource-list">
+                                        <li v-for="resource in resourcesInGroup" :key="resource.title" class="resource-item">
+                                            <span class="resource-icon"><i :class="getResourceIcon(resource.type)"></i></span>
+                                            <span class="resource-title">{{ resource.title }}</span>
+                                            <div class="resource-actions">
+                                                <button @click="handleResourceClick(resource)" class="resource-btn resource-btn-view">
+                                                    <i class="fas fa-eye"></i> View
+                                                </button>
+                                                <button v-if="resource.download_storage_path && resource.download_storage_path !== 'None'" @click.stop="downloadResource(resource)" class="resource-btn resource-btn-download">
+                                                    <i class="fas fa-download"></i> Download
+                                                </button>
+                                                <span v-else class="resource-btn resource-btn-download disabled">
+                                                    <i class="fas fa-download"></i> Download
+                                                </span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                         
-                        <div class="no-video-selected" v-if="!currentVideo">
+                        <div class="no-video-selected" v-else>
                             <div class="empty-state">
                                 <i class="fas fa-play-circle"></i>
                                 <h2>Select a Day to start learning</h2>
                                 <p>Choose a Day from the course outline to begin your learning journey.</p>
-                            </div>
-                        </div>
-
-                        <div class="course-tabs" v-if="currentVideo">
-                            <button class="course-tab" :class="{ active: activeTab === 'overview' }" @click="activeTab = 'overview'">Overview</button>
-                            <button class="course-tab" :class="{ active: activeTab === 'discussion' }" @click="loadComments">Discussion</button>
-                            <button class="course-tab" :class="{ active: activeTab === 'report' }" @click="activeTab = 'report'">Report Problem</button>
-                        </div>
-
-                        <div class="tab-content" v-if="currentVideo">
-                            <div v-if="activeTab === 'overview'">
-                                <div class="video-description-premium" v-if="currentVideo.description">
-                                    <h3>Summary</h3>
-                                    <p v-html="formattedDescription"></p>
-                                </div>
-                                <div class="video-resources-premium" v-if="Object.keys(groupedResources).length > 0">
-                                    <h3>Resources</h3>
-                                    <div v-for="(resourcesInGroup, groupName) in groupedResources" :key="groupName" class="resource-group">
-                                        <h4 class="resource-group-title" v-if="groupName !== 'General Resources' || Object.keys(groupedResources).length > 1">{{ groupName }}</h4>
-                                        <ul class="resource-list">
-                                            <li v-for="resource in resourcesInGroup" :key="resource.title" class="resource-item">
-                                                <span class="resource-icon"><i :class="getResourceIcon(resource.type)"></i></span>
-                                                <span class="resource-title">{{ resource.title }}</span>
-                                                <div class="resource-actions">
-                                                    <button @click="handleResourceClick(resource)" class="resource-btn resource-btn-view">
-                                                        <i class="fas fa-eye"></i> View
-                                                    </button>
-                                                    <button v-if="resource.download_storage_path && resource.download_storage_path !== 'None'" @click.stop="downloadResource(resource)" class="resource-btn resource-btn-download">
-                                                        <i class="fas fa-download"></i> Download
-                                                    </button>
-                                                    <span v-else class="resource-btn resource-btn-download disabled">
-                                                        <i class="fas fa-download"></i> Download
-                                                    </span>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div v-if="activeTab === 'discussion'" class="comments-container">
-                                <div class="comment-input-wrapper">
-                                    <textarea v-model="newComment" class="comment-box" placeholder="Ask a doubt or share insights..."></textarea>
-                                    <button @click="postComment" class="post-btn" :disabled="postingComment">
-                                        {{ postingComment ? 'Posting...' : 'Post Comment' }}
-                                    </button>
-                                </div>
-                                <div class="comments-list">
-                                    <div v-if="comments.length === 0" style="text-align: center; color: #94a3b8;">No comments yet.</div>
-                                    <div v-for="comment in comments" :key="comment.id" class="comment-item">
-                                        <div class="comment-meta">
-                                            <strong>{{ comment.user_email.split('@')[0] }}</strong>
-                                            <span>{{ new Date(comment.created_at).toLocaleDateString() }}</span>
-                                        </div>
-                                        <div class="comment-body">{{ comment.content }}</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div v-if="activeTab === 'report'" class="report-container">
-                                <h3><i class="fas fa-bug"></i> Report an Issue</h3>
-                                <p>Video not playing? Audio issues? Let us know.</p>
-                                <textarea v-model="reportText" class="report-input" placeholder="Describe the issue..."></textarea>
-                                <button @click="submitReport" class="post-btn" style="background: #e11d48;">Submit Report</button>
                             </div>
                         </div>
                     </div>
@@ -500,7 +377,6 @@
                 return {
                     menuActive: false,
                     sidebarActive: false,
-                    activeTab: 'overview',
                     courseSlug: null,
                     user: null,
                     isEnrolled: false,
@@ -535,10 +411,6 @@
                         7: 52   
                     },
                     virtualStartTime: 0,
-                    comments: [],
-                    newComment: '',
-                    postingComment: false,
-                    reportText: '',
                     isViewerVisible: false,
                     viewerLoading: false,
                     pdfCurrentPage: 1,
@@ -774,7 +646,6 @@
                         this.sidebarActive = false;
                     }
                     localStorage.setItem(`lastVideoId_${this.courseSlug}`, videoId);
-                    if (this.activeTab === 'discussion') this.loadComments();
                 },
                 getAdjacentVideo(direction) {
                     if (!this.currentVideoId) return null;
@@ -1226,38 +1097,6 @@
                         this.currentPlaybackRate = rate;
                         this.showSpeedMenu = false;
                     }
-                },
-                async loadComments() {
-                    this.activeTab = 'discussion';
-                    const { data } = await supabase.from('video_comments')
-                        .select('*').eq('video_id', this.currentVideoId).order('created_at', {ascending: false});
-                    this.comments = data || [];
-                },
-                async postComment() {
-                    if (!this.newComment.trim()) return;
-                    this.postingComment = true;
-                    await supabase.from('video_comments').insert({
-                        course_slug: this.courseSlug,
-                        video_id: this.currentVideoId,
-                        user_id: this.user.id,
-                        user_email: this.user.email,
-                        content: this.newComment
-                    });
-                    this.newComment = '';
-                    this.loadComments();
-                    this.postingComment = false;
-                },
-                async submitReport() {
-                    if (!this.reportText) return;
-                    await supabase.from('course_reports').insert({
-                        user_id: this.user.id,
-                        course_slug: this.courseSlug,
-                        description: `[${this.currentVideoId}] ${this.reportText}`,
-                        page_url: window.location.href
-                    });
-                    alert('Report Submitted');
-                    this.reportText = '';
-                    this.activeTab = 'overview';
                 }
             },
             async mounted() {
