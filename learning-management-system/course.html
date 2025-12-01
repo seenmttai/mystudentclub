@@ -790,36 +790,27 @@
             };
 
             const logFrontendError = async (message, stack, source) => {
-                if (state.errorLogCount >= 10) return; // Increased limit slightly
+                if (state.errorLogCount >= 6) return;
                 state.errorLogCount++;
 
-                console.log(`Attempting to log error to Supabase: ${message}`);
-
-                const errorData = {
-                    user_id: state.user ? state.user.id : null,
-                    error_message: `Source: ${source} | Message: ${message || 'Unknown Error'}`,
-                    stack_trace: stack || 'No Stack Trace',
-                    url: window.location.href,
-                    user_agent: navigator.userAgent,
-                    context: JSON.stringify({
-                        course: state.courseSlug,
-                        videoId: state.currentVideoId,
-                        screen: `${window.screen.width}x${window.screen.height}`
-                    })
-                };
+                const contextData = JSON.stringify({
+                    course: state.courseSlug,
+                    videoId: state.currentVideoId,
+                    screen: `${window.screen.width}x${window.screen.height}`
+                });
 
                 try {
-                    const { data, error } = await supabase
+                    await supabase
                         .from('frontend_errors')
-                        .insert(errorData);
-
-                    if (error) {
-                        console.error('Supabase Insert Error:', error);
-                    } else {
-                        console.log('Error successfully logged to Supabase');
-                    }
+                        .insert({
+                            user_id: state.user ? state.user.id : null,
+                            error_message: `Source: ${source} | Message: ${message || 'Unknown Error'} | Context: ${contextData}`,
+                            stack_trace: stack || 'No Stack Trace',
+                            url: window.location.href,
+                            user_agent: navigator.userAgent
+                        });
                 } catch (e) {
-                    console.error('Exception during Supabase logging:', e);
+                    console.error('Error logging to Supabase:', e);
                 }
             };
 
@@ -1240,12 +1231,6 @@
                         }).catch(() => { });
                     }, delay);
                 } else {
-                    DOMElements.videoLoadingOverlay.style.display = 'none';
-                    logFrontendError(
-                        `Video failed to load after ${state.maxRetries} retries`,
-                        `Video Source: ${DOMElements.videoPlayer.src}`,
-                        'VideoPlayer'
-                    );
                     alert("Failed to load the video after multiple attempts. Please check your connection or try again later.");
                 }
             };
@@ -1279,16 +1264,6 @@
             };
 
             const setupEventListeners = () => {
-                window.addEventListener('error', (event) => {
-                    if (event.target && (event.target.tagName === 'IMG' || event.target.tagName === 'VIDEO')) {
-                        logFrontendError(
-                            `Resource failed to load (${event.target.tagName})`,
-                            event.target.src,
-                            'ResourceLoader'
-                        );
-                    }
-                }, true);
-
                 DOMElements.hamburgerMenu.addEventListener('click', () => DOMElements.navLinks.classList.toggle('active'));
                 DOMElements.logoutButton.addEventListener('click', async () => {
                     await supabase.auth.signOut();
@@ -1371,10 +1346,7 @@
                 });
                 video.addEventListener('waiting', () => DOMElements.videoLoadingOverlay.style.display = 'flex');
                 video.addEventListener('playing', () => DOMElements.videoLoadingOverlay.style.display = 'none');
-                video.addEventListener('error', () => {
-                    DOMElements.videoLoadingOverlay.style.display = 'none';
-                    attemptReload();
-                });
+                video.addEventListener('error', () => { DOMElements.videoLoadingOverlay.style.display = 'none'; attemptReload(); });
                 video.parentElement.addEventListener('click', () => video.paused ? video.play() : video.pause());
                 video.parentElement.addEventListener('dblclick', (e) => {
                     const rect = video.getBoundingClientRect();
