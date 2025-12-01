@@ -784,19 +784,21 @@
                 const lastVideoId = localStorage.getItem(`lastVideoId_${state.courseSlug}`);
                 if (lastVideoId && findVideoById(parseInt(lastVideoId))) {
                     selectVideo(parseInt(lastVideoId));
-                } else if (state.courseSections.length > 0 && state.courseSections.videos.length > 0) {
-                    selectVideo(state.courseSections.videos.id);
+                } else if (state.courseSections.length > 0 && state.courseSections[0].videos.length > 0) {
+                    selectVideo(state.courseSections[0].videos[0].id);
                 }
             };
 
             const logFrontendError = async (message, stack, source) => {
                 if (state.errorLogCount >= 6) return;
                 state.errorLogCount++;
+                if (!state.user) return;
+
                 try {
                     await supabase
                         .from('frontend_errors')
                         .insert({
-                            user_id: state.user ? state.user.id : null,
+                            user_id: state.user.id,
                             error_message: `Source: ${source} | Message: ${message || 'Unknown Error'}`,
                             stack_trace: stack || 'No Stack Trace',
                             url: window.location.href,
@@ -807,9 +809,7 @@
                                 screen: `${window.screen.width}x${window.screen.height}`
                             })
                         });
-                } catch (loggingError) {
-                    console.error('Failed to log frontend error to Supabase:', loggingError);
-                }
+                } catch (e) { }
             };
 
             const loadCourseVideos = async () => {
@@ -845,7 +845,7 @@
 
                     state.courseSections = Object.keys(videosByDay).map(dayNum => {
                         const dayVideos = videosByDay[dayNum];
-                        const mainVideo = dayVideos || {};
+                        const mainVideo = dayVideos[0] || {};
                         return {
                             day_number: parseInt(dayNum), title: mainVideo.title || `Day ${dayNum}`,
                             expanded: parseInt(dayNum) === 1, videos: dayVideos, mainVideo: mainVideo
@@ -1041,7 +1041,7 @@
 
             const getAdjacentVideo = (direction) => {
                 if (!state.currentVideoId) return null;
-                const allVideos = state.courseSections.map(section => section.videos).filter(Boolean);
+                const allVideos = state.courseSections.map(section => section.videos[0]).filter(Boolean);
                 const currentIndex = allVideos.findIndex(video => video.id === state.currentVideoId);
                 if (currentIndex === -1) return null;
                 if (direction === 'previous' && currentIndex > 0) return allVideos[currentIndex - 1];
@@ -1096,7 +1096,7 @@
                         const reader = new FileReader();
                         reader.readAsDataURL(blob);
                         reader.onloadend = function () {
-                            const base64Content = reader.result.split(',');
+                            const base64Content = reader.result.split(',')[1];
                             window.flutter_inappwebview.callHandler('blobToBase64Handler', base64Content, filename);
                         };
                     } else {
@@ -1141,7 +1141,7 @@
                     } else if (type === 'csv') {
                         const csvText = await response.text();
                         const lines = csvText.split('\n').filter(line => line.trim() !== '');
-                        const header = lines.length > 0 ? lines.split(',').map(h => h.trim()) : [];
+                        const header = lines.length > 0 ? lines[0].split(',').map(h => h.trim()) : [];
                         const rows = lines.length > 1 ? lines.slice(1).map(line => line.split(',').map(cell => cell.trim())) : [];
 
                         const table = DOMElements.csvViewerContainer.querySelector('table');
