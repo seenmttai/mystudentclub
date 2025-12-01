@@ -10,13 +10,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="importmap">
-    {
-        "imports": {
-            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
-        }
-    }
-    </script>
     <style>
         .logo-enhanced {
             width: 140px;
@@ -134,6 +127,11 @@
             padding: 1.5rem;
             background: white;
             min-height: 200px;
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         .discussion-container {
@@ -241,43 +239,32 @@
                     </a>
                 </div>
                 <nav>
-                    <div class="hamburger-menu" @click="toggleMenu">
+                    <div class="hamburger-menu" id="hamburger-menu">
                         <div class="bar"></div>
                         <div class="bar"></div>
                         <div class="bar"></div>
                     </div>
-                    <ul class="nav-links" :class="{ 'active': menuActive }">
-                        <li><a href="index.html" class="nav-item">
-                                <i class="fas fa-graduation-cap"></i>
-                                <span>My Courses</span>
-                            </a></li>
-                        <li><a href="lms-resources.html" class="nav-item">
-                                <i class="fas fa-book-open"></i>
-                                <span>Resources</span>
-                            </a></li>
-                        <li><a href="https://mystudentclub.com/cv-reviewer/" class="nav-item">
-                                <i class="fas fa-file-alt"></i>
-                                <span>CV Review</span>
-                            </a></li>
+                    <ul class="nav-links" id="nav-links">
+                        <li><a href="index.html" class="nav-item"><i class="fas fa-graduation-cap"></i><span>My
+                                    Courses</span></a></li>
+                        <li><a href="lms-resources.html" class="nav-item"><i
+                                    class="fas fa-book-open"></i><span>Resources</span></a></li>
+                        <li><a href="https://mystudentclub.com/cv-reviewer/" class="nav-item"><i
+                                    class="fas fa-file-alt"></i><span>CV Review</span></a></li>
                         <li class="profile-link profile-dropdown-container">
-                            <a href="#" class="nav-item profile-nav" @click.prevent>
-                                <div class="profile-avatar">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <span v-if="user">{{ getUserDisplayName() }}</span>
-                                <span v-else>Login</span>
+                            <a href="#" class="nav-item profile-nav">
+                                <div class="profile-avatar"><i class="fas fa-user"></i></div>
+                                <span id="user-display-name">Login</span>
                             </a>
-                            <div class="profile-dropdown-menu" v-if="user">
+                            <div class="profile-dropdown-menu" id="profile-dropdown">
                                 <div class="profile-header">
-                                    <span class="profile-name">{{ getUserDisplayName() }}</span>
-                                    <span class="profile-email">{{ user.email }}</span>
+                                    <span class="profile-name" id="profile-dropdown-name"></span>
+                                    <span class="profile-email" id="profile-dropdown-email"></span>
                                 </div>
-                                <a href="https://mystudentclub.com/profile" class="dropdown-item">
-                                    <i class="fas fa-user-circle"></i> My Profile
-                                </a>
-                                <button class="dropdown-item" @click="logout">
-                                    <i class="fas fa-sign-out-alt"></i> Logout
-                                </button>
+                                <a href="https://mystudentclub.com/profile" class="dropdown-item"><i
+                                        class="fas fa-user-circle"></i> My Profile</a>
+                                <button class="dropdown-item" id="logout-button"><i class="fas fa-sign-out-alt"></i>
+                                    Logout</button>
                             </div>
                         </li>
                     </ul>
@@ -286,177 +273,105 @@
         </header>
 
         <main>
-            <div v-if="!isEnrolled" class="enrollment-modal">
+            <div id="enrollment-modal" class="enrollment-modal" style="display: none;">
                 <div class="enrollment-content">
-                    <div class="enrollment-icon">
-                        <i class="fas fa-lock"></i>
-                    </div>
+                    <div class="enrollment-icon"><i class="fas fa-lock"></i></div>
                     <h2>You Are Not Enrolled</h2>
                     <p>You need to be enrolled in this course to access the content.</p>
                     <div class="course-preview">
-                        <img :src="course.thumbnail" :alt="course.title">
-                        <h3>{{ course.title }}</h3>
+                        <img id="enroll-course-thumbnail" src="" alt="">
+                        <h3 id="enroll-course-title"></h3>
                     </div>
-                    <button class="enroll-btn" @click="redirectToEnroll">
-                        <i class="fas fa-graduation-cap"></i>
-                        Enroll Now
-                    </button>
+                    <button class="enroll-btn" id="enroll-redirect-btn"><i class="fas fa-graduation-cap"></i> Enroll
+                        Now</button>
                 </div>
             </div>
 
-            <div v-else-if="loadingEnrollment" class="loading-screen">
-                <div class="loading-spinner">
-                    <i class="fas fa-spinner fa-spin"></i>
-                </div>
+            <div id="loading-enrollment-screen" class="loading-screen">
+                <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
                 <p>Checking enrollment status...</p>
             </div>
 
-            <template v-else>
-                <div class="course-header" :style="{
-                    background: `linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('${course.thumbnail}')`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center'
-                }">
+            <div id="course-page-content" style="display: none;">
+                <div class="course-header" id="course-header-banner">
                     <div class="course-header-content" style="color: white; text-shadow: 0px 1px 4px rgba(0,0,0,0.7);">
-                        <h1 style="font-weight: bold;">{{ course.title }}</h1>
-                        <p>{{ course.description }}</p>
+                        <h1 style="font-weight: bold;" id="course-title"></h1>
+                        <p id="course-description"></p>
                         <div class="course-meta-info">
-                            <div class="meta-item" v-if="totalVideos > 0">
+                            <div class="meta-item" id="total-videos-meta" style="display: none;">
                                 <i class="fas fa-video"></i>
-                                <span>{{ totalVideos }} Sessions</span>
+                                <span id="total-videos-count"></span>
                             </div>
-                            <div class="meta-item" v-if="loadingVideos">
+                            <div class="meta-item" id="loading-videos-meta">
                                 <i class="fas fa-spinner fa-spin"></i>
                                 <span>Loading content...</span>
                             </div>
                             <div class="meta-item">
                                 <i class="fas fa-chart-bar"></i>
-                                <span>{{ course.progress }}% Complete</span>
+                                <span id="course-progress-meta">0% Complete</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="course-container">
-                    <aside class="course-sidebar" :class="{ 'active': sidebarActive }">
+                    <aside class="course-sidebar" id="course-sidebar">
                         <div class="sidebar-header">
                             <h3>Course Content</h3>
-                            <button class="sidebar-close" @click="toggleSidebar"><i class="fas fa-times"></i></button>
+                            <button class="sidebar-close" id="sidebar-close-btn"><i class="fas fa-times"></i></button>
                         </div>
                         <div class="course-progress-container">
-                            <div class="progress-bar" :style="{ width: course.progress + '%' }"></div>
-                            <span>{{ course.progress }}% Complete</span>
+                            <div class="progress-bar" id="sidebar-progress-bar" style="width: 0%;"></div>
+                            <span id="sidebar-progress-text">0% Complete</span>
                         </div>
-                        <div class="course-modules">
-                            <div v-if="loadingVideos" class="loading-content">
+                        <div class="course-modules" id="course-modules-container">
+                            <div id="loading-videos-sidebar" class="loading-content">
                                 <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
                                 <p>Loading course content...</p>
-                            </div>
-                            <div v-else-if="courseSections.length === 0" class="empty-content">
-                                <i class="fas fa-video-slash"></i>
-                                <p>No content available for this course yet.</p>
-                            </div>
-                            <div v-else v-for="(day, dayIndex) in courseSections" :key="day.day_number"
-                                class="course-module">
-                                <div class="module-header" @click="selectVideo(day.mainVideo.id)"
-                                    :class="{ 'active': isDaySelected(day), 'completed': isDayCompleted(day) }">
-                                    <div class="module-title-container">
-                                        <i
-                                            :class="['fas', isDayCompleted(day) ? 'fa-check-circle' : 'fa-play-circle']"></i>
-                                        <h4>{{ day.title }}</h4>
-                                    </div>
-                                    <div class="module-info" @click.stop="toggleModule(dayIndex)">
-                                        <span v-if="day.mainVideo && day.mainVideo.resources.length > 0">{{
-                                            day.mainVideo.resources.length }} Resource<span
-                                                v-if="day.mainVideo.resources.length !== 1">s</span></span>
-                                        <i :class="['fas', day.expanded ? 'fa-chevron-up' : 'fa-chevron-down']"></i>
-                                    </div>
-                                </div>
-                                <div class="module-content" :class="{ 'expanded': day.expanded }">
-                                    <div v-if="day.mainVideo && day.mainVideo.resources.length > 0"
-                                        class="sidebar-resource-list">
-                                        <div v-for="(resourcesInGroup, groupName) in groupResourcesForSidebar(day.mainVideo.resources)"
-                                            :key="groupName" class="sidebar-resource-group">
-                                            <h5 class="sidebar-resource-group-title"
-                                                v-if="groupName !== 'General Resources'">{{ groupName }}</h5>
-                                            <div v-for="resource in resourcesInGroup" :key="resource.title"
-                                                class="resource-item-sidebar" @click="handleResourceClick(resource)">
-                                                <span class="resource-icon-sidebar"><i
-                                                        :class="getResourceIcon(resource.type)"></i></span>
-                                                <span class="resource-title-sidebar">{{ resource.title }}</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </aside>
 
                     <div class="course-content">
                         <div class="content-header">
-                            <button class="sidebar-toggle" @click="toggleSidebar">
-                                <i class="fas fa-bars"></i> Course Content
-                            </button>
+                            <button class="sidebar-toggle" id="sidebar-toggle-btn"><i class="fas fa-bars"></i> Course
+                                Content</button>
                         </div>
 
-                        <div class="video-container-premium" v-if="currentVideo" @mousemove="showControlsOnMove">
-                            <div class="video-player-premium" v-if="videoUrl">
-                                <div class="video-player-wrapper" @dblclick="handleDblClick">
-                                    <video ref="videoPlayer" :key="videoUrl" preload="auto" @play="isPlaying = true"
-                                        @pause="isPlaying = false" @ended="markVideoCompleted"
-                                        @timeupdate="handleTimeUpdate" @loadedmetadata="handleLoadedMetadata"
-                                        @waiting="handleWaiting" @playing="handlePlaying" @error="handleVideoError"
-                                        @click="togglePlay" :src="videoUrl" class="custom-video-player">
-                                        Your browser does not support the video tag.
-                                    </video>
-                                    <div class="loading-overlay" v-if="isLoading || isBuffering">
-                                        <i class="fas fa-spinner fa-spin"></i>
-                                    </div>
-                                    <div class="seek-indicator" ref="seekIndicator">
-                                        <i></i>
-                                    </div>
+                        <div id="video-section-container" class="video-container-premium" style="display: none;">
+                            <div id="video-player-container" class="video-player-premium">
+                                <div class="video-player-wrapper">
+                                    <video id="video-player" preload="auto" class="custom-video-player">Your browser
+                                        does not support the video tag.</video>
+                                    <div class="loading-overlay" id="video-loading-overlay"><i
+                                            class="fas fa-spinner fa-spin"></i></div>
+                                    <div class="seek-indicator" id="seek-indicator"><i></i></div>
                                 </div>
-                                <div class="custom-video-controls" :class="{ visible: showControls || !isPlaying }">
-                                    <button @click.stop="togglePlay" class="control-btn">
-                                        <i :class="['fas', isPlaying ? 'fa-pause' : 'fa-play']"></i>
-                                    </button>
+                                <div class="custom-video-controls" id="video-controls">
+                                    <button id="play-pause-btn" class="control-btn"><i class="fas fa-play"></i></button>
                                     <div class="seek-bar-container">
                                         <div class="seek-bar-track">
-                                            <div class="seek-bar-fill" :style="{ width: progressPercentage + '%' }">
-                                            </div>
+                                            <div id="seek-bar-fill" class="seek-bar-fill"></div>
                                         </div>
-                                        <input type="range" class="seek-bar" min="0" :max="displayDuration"
-                                            :value="displayCurrentTime" @mousedown="isDraggingSeekBar = true"
-                                            @input="handleSeekInput" @change="applySeek"
-                                            @mouseup="isDraggingSeekBar = false">
+                                        <input type="range" id="seek-bar" class="seek-bar" min="0" value="0">
                                     </div>
-                                    <div class="time-display">{{ formattedDisplayCurrentTime }} / {{
-                                        formattedDisplayDuration }}</div>
+                                    <div id="time-display" class="time-display">00:00 / 00:00</div>
                                     <div class="volume-control">
-                                        <button @click.stop="toggleMute" class="control-btn">
-                                            <i :class="['fas', volumeIcon]"></i>
-                                        </button>
-                                        <input type="range" class="volume-slider" min="0" max="1" step="0.1"
-                                            :value="volume" @input="handleVolumeChange">
+                                        <button id="mute-btn" class="control-btn"><i id="volume-icon"
+                                                class="fas fa-volume-up"></i></button>
+                                        <input type="range" id="volume-slider" class="volume-slider" min="0" max="1"
+                                            step="0.1" value="1">
                                     </div>
                                     <div class="settings-control">
-                                        <button @click.stop="showSpeedMenu = !showSpeedMenu" class="control-btn">
-                                            <i class="fas fa-cog"></i>
-                                        </button>
-                                        <div class="speed-menu" v-if="showSpeedMenu">
-                                            <div v-for="rate in playbackRates" :key="rate"
-                                                @click="setPlaybackRate(rate)"
-                                                :class="{ active: currentPlaybackRate === rate }">
-                                                {{ rate }}x
-                                            </div>
-                                        </div>
+                                        <button id="settings-btn" class="control-btn"><i
+                                                class="fas fa-cog"></i></button>
+                                        <div class="speed-menu" id="speed-menu" style="display: none;"></div>
                                     </div>
-                                    <button @click.stop="toggleFullscreenVideo" class="control-btn">
-                                        <i class="fas fa-expand"></i>
-                                    </button>
+                                    <button id="fullscreen-btn" class="control-btn"><i
+                                            class="fas fa-expand"></i></button>
                                 </div>
                             </div>
-                            <div class="no-video-selected" v-else>
+                            <div class="no-video-selected" id="no-video-message-player" style="display: none;">
                                 <div class="empty-state">
                                     <i class="fas fa-book-open"></i>
                                     <h2>No Video Available</h2>
@@ -466,123 +381,44 @@
                             </div>
 
                             <div class="video-navigation-premium">
-                                <button class="nav-button-premium prev" @click="playPreviousVideo"
-                                    :disabled="!hasPreviousVideo">
-                                    <i class="fas fa-arrow-left"></i>
-                                    <span>Previous Day</span>
-                                </button>
+                                <button class="nav-button-premium prev" id="prev-video-btn"><i
+                                        class="fas fa-arrow-left"></i> <span>Previous Day</span></button>
                                 <div class="video-progress-center">
-                                    <div class="video-counter">
-                                        Day {{ getCurrentDayNumber() }} of {{ courseSections.length }}
-                                    </div>
+                                    <div class="video-counter" id="video-counter"></div>
                                 </div>
-                                <button class="nav-button-premium next" @click="playNextVideo"
-                                    :disabled="!hasNextVideo">
-                                    <span>Next Day</span>
-                                    <i class="fas fa-arrow-right"></i>
-                                </button>
+                                <button class="nav-button-premium next" id="next-video-btn"><span>Next Day</span> <i
+                                        class="fas fa-arrow-right"></i></button>
                             </div>
 
-                            <div class="course-tabs">
-                                <button class="tab-btn" :class="{ active: activeTab === 'overview' }"
-                                    @click="activeTab = 'overview'">Overview</button>
-                                <button class="tab-btn" :class="{ active: activeTab === 'resources' }"
-                                    @click="activeTab = 'resources'"
-                                    v-if="currentVideo && Object.keys(groupedResources).length > 0">Resources</button>
-                                <button class="tab-btn" :class="{ active: activeTab === 'discussion' }"
-                                    @click="activeTab = 'discussion'">Discussion</button>
-                                <button class="tab-btn" :class="{ active: activeTab === 'report' }"
-                                    @click="activeTab = 'report'">Report Problem</button>
-                            </div>
+                            <div class="course-tabs" id="course-tabs-container"></div>
 
-                            <div class="tab-content" v-if="activeTab === 'overview'">
-                                <div class="video-description-premium" v-if="currentVideo && currentVideo.description">
-                                    <h3>Summary</h3>
-                                    <p v-html="formattedDescription"></p>
-                                </div>
-                                <div v-else>
-                                    <p>No description available for this session.</p>
-                                </div>
-                            </div>
-
-                            <div class="tab-content" v-if="activeTab === 'resources'">
-                                <div v-if="currentVideo && Object.keys(groupedResources).length > 0">
-                                    <div v-for="(resourcesInGroup, groupName) in groupedResources" :key="groupName"
-                                        class="resource-group">
-                                        <h4 class="resource-group-title"
-                                            v-if="groupName !== 'General Resources' || Object.keys(groupedResources).length > 1">
-                                            {{ groupName }}</h4>
-                                        <ul class="resource-list">
-                                            <li v-for="resource in resourcesInGroup" :key="resource.title"
-                                                class="resource-item">
-                                                <span class="resource-icon"><i
-                                                        :class="getResourceIcon(resource.type)"></i></span>
-                                                <span class="resource-title">{{ resource.title }}</span>
-                                                <div class="resource-actions">
-                                                    <button @click="handleResourceClick(resource)"
-                                                        class="resource-btn resource-btn-view">
-                                                        <i class="fas fa-eye"></i> View
-                                                    </button>
-                                                    <button
-                                                        v-if="resource.download_storage_path && resource.download_storage_path !== 'None'"
-                                                        @click.stop="downloadResource(resource)"
-                                                        class="resource-btn resource-btn-download">
-                                                        <i class="fas fa-download"></i> Download
-                                                    </button>
-                                                    <span v-else class="resource-btn resource-btn-download disabled">
-                                                        <i class="fas fa-download"></i> Download
-                                                    </span>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="tab-content" v-if="activeTab === 'discussion'">
+                            <div id="tab-content-overview" class="tab-content"></div>
+                            <div id="tab-content-resources" class="tab-content"></div>
+                            <div id="tab-content-discussion" class="tab-content">
                                 <div class="discussion-container">
                                     <div class="comment-input-area">
-                                        <textarea v-model="newComment" class="comment-input"
+                                        <textarea id="new-comment-input" class="comment-input"
                                             placeholder="Ask a question or share your thoughts about this lecture..."></textarea>
-                                        <button class="post-btn" @click="postComment"
-                                            :disabled="!newComment.trim() || submittingComment">
-                                            {{ submittingComment ? 'Posting...' : 'Post' }}
-                                        </button>
+                                        <button class="post-btn" id="post-comment-btn">Post</button>
                                     </div>
-                                    <div v-if="loadingComments" class="loading-spinner"><i
+                                    <div id="comments-loader" class="loading-spinner" style="display: none;"><i
                                             class="fas fa-spinner fa-spin"></i></div>
-                                    <div v-else-if="comments.length === 0" style="color: #64748b; font-style: italic;">
-                                        No comments yet. Be the first to start the discussion!</div>
-                                    <div v-else class="comment-list">
-                                        <div v-for="comment in comments" :key="comment.id" class="comment-item">
-                                            <div class="comment-header">
-                                                <span class="comment-author">{{ comment.user_email.split('@')[0]
-                                                    }}</span>
-                                                <span class="comment-date">{{ new
-                                                    Date(comment.created_at).toLocaleDateString() }}</span>
-                                            </div>
-                                            <div class="comment-body">{{ comment.content }}</div>
-                                        </div>
-                                    </div>
+                                    <div id="comment-list-container" class="comment-list"></div>
                                 </div>
                             </div>
-
-                            <div class="tab-content" v-if="activeTab === 'report'">
+                            <div id="tab-content-report" class="tab-content">
                                 <div class="report-form">
                                     <h3>Report a Problem</h3>
                                     <p>Encountered an issue with this video or content? Let us know.</p>
-                                    <textarea v-model="reportDescription" class="report-textarea"
+                                    <textarea id="report-description-input" class="report-textarea"
                                         placeholder="Describe the issue you are facing..."></textarea>
-                                    <button class="report-submit-btn" @click="submitReport"
-                                        :disabled="!reportDescription.trim() || submittingReport">
-                                        {{ submittingReport ? 'Submitting...' : 'Submit Report' }}
-                                    </button>
+                                    <button class="report-submit-btn" id="submit-report-btn">Submit Report</button>
                                 </div>
                             </div>
 
                         </div>
 
-                        <div class="no-video-selected" v-else>
+                        <div class="no-video-selected" id="no-video-selected-placeholder">
                             <div class="empty-state">
                                 <i class="fas fa-play-circle"></i>
                                 <h2>Select a Day to start learning</h2>
@@ -591,58 +427,40 @@
                         </div>
                     </div>
                 </div>
-            </template>
+            </div>
         </main>
 
-        <div id="resource-viewer-modal" :class="{ 'visible': isViewerVisible }">
-            <div class="resource-viewer-content" ref="viewerContent">
+        <div id="resource-viewer-modal">
+            <div class="resource-viewer-content" id="viewer-content">
                 <div class="resource-viewer-header">
-                    <h2 class="resource-viewer-title">{{ currentResource ? currentResource.title : 'Resource Preview' }}
-                    </h2>
+                    <h2 class="resource-viewer-title" id="resource-viewer-title">Resource Preview</h2>
                     <div>
-                        <button class="resource-viewer-fullscreen-button" @click="toggleFullscreen">
-                            <i :class="['fas', isFullscreen ? 'fa-compress' : 'fa-expand']"></i>
-                        </button>
-                        <button class="resource-viewer-close-button" @click="closeResourceViewer">×</button>
+                        <button class="resource-viewer-fullscreen-button" id="viewer-fullscreen-btn"><i
+                                class="fas fa-expand"></i></button>
+                        <button class="resource-viewer-close-button" id="viewer-close-btn">×</button>
                     </div>
                 </div>
                 <div class="viewer-main-content">
-                    <div v-if="viewerLoading" class="loading-screen">
+                    <div id="viewer-loading-screen" class="loading-screen" style="display: none;">
                         <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
                         <p>Loading Document...</p>
                     </div>
-                    <div v-if="previewType === 'pdf'" class="pdf-canvas-container">
-                        <canvas id="pdf-canvas"></canvas>
-                    </div>
-                    <div v-if="previewType === 'csv'" class="csv-preview-container">
-                        <table class="csv-preview-table">
-                            <thead v-if="csvData && csvData.header.length > 0">
-                                <tr>
-                                    <th v-for="(col, index) in csvData.header" :key="index">{{ col }}</th>
-                                </tr>
-                            </thead>
-                            <tbody v-if="csvData && csvData.rows.length > 0">
-                                <tr v-for="(row, rowIndex) in csvData.rows" :key="rowIndex">
-                                    <td v-for="(cell, cellIndex) in row" :key="cellIndex" :title="cell">{{ cell }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div id="pdf-viewer-container" class="pdf-canvas-container" style="display: none;"><canvas
+                            id="pdf-canvas"></canvas></div>
+                    <div id="csv-viewer-container" class="csv-preview-container" style="display: none;">
+                        <table class="csv-preview-table"></table>
                     </div>
                 </div>
                 <div class="resource-viewer-controls">
-                    <button v-if="previewType === 'pdf'" id="pdf-prev-page" class="viewer-nav-button"
-                        @click="goToPrevPage" :disabled="pdfCurrentPage <= 1">Previous</button>
-                    <span v-if="previewType === 'pdf'" id="pdf-page-info">Page {{ pdfCurrentPage }} of {{ pdfTotalPages
-                        }}</span>
-                    <button @click="downloadResource(currentResource)" class="viewer-nav-button viewer-download-btn"
-                        :disabled="!currentResource || !currentResource.download_storage_path || currentResource.download_storage_path === 'None'">Download</button>
-                    <button v-if="previewType === 'pdf'" id="pdf-next-page" class="viewer-nav-button"
-                        @click="goToNextPage" :disabled="pdfCurrentPage >= pdfTotalPages">Next</button>
+                    <button id="pdf-prev-page" class="viewer-nav-button">Previous</button>
+                    <span id="pdf-page-info"></span>
+                    <button id="viewer-download-btn" class="viewer-nav-button viewer-download-btn">Download</button>
+                    <button id="pdf-next-page" class="viewer-nav-button">Next</button>
                 </div>
             </div>
         </div>
 
-        <footer class="footer-enhanced" v-if="isEnrolled">
+        <footer id="footer" class="footer-enhanced" style="display: none;">
             <div class="footer-content">
                 <div class="footer-main">
                     <div class="footer-brand">
@@ -686,921 +504,944 @@
         </footer>
     </div>
 
-    <script type="module">
-        import { createApp } from 'vue';
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+            const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+            pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
 
-        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
+            let state = {
+                menuActive: false, sidebarActive: false, courseSlug: null, user: null, isEnrolled: false,
+                course: { title: '', description: '', thumbnail: '', progress: 0 }, courseSections: [],
+                currentVideoId: null, activeTab: 'overview', comments: [],
+                errorLogCount: 0,
+                videoStartTimes: { 1: 170, 2: 119, 4: 26, 6: 39, 7: 52 },
+                currentResource: null, previewType: null, isViewerVisible: false, pdfDoc: null,
+                pdfCurrentPage: 1, pdfTotalPages: 1, isFullscreen: false, isPlaying: false,
+                controlsTimeout: null, seekIndicatorTimeout: null, retryCount: 0, maxRetries: 5, isDraggingSeekBar: false
+            };
 
-        createApp({
-            data() {
-                return {
-                    menuActive: false,
-                    sidebarActive: false,
-                    courseSlug: null,
-                    user: null,
-                    isEnrolled: false,
-                    loadingEnrollment: true,
-                    loadingVideos: false,
-                    totalVideos: 0,
-                    course: {
-                        title: '',
-                        description: '',
-                        thumbnail: '',
-                        progress: 0
-                    },
-                    courseSections: [],
-                    currentVideoId: null,
-                    activeTab: 'overview',
-                    comments: [],
-                    newComment: '',
-                    loadingComments: false,
-                    submittingComment: false,
-                    reportDescription: '',
-                    submittingReport: false,
-                    errorLogCount: 0,
-                    courses: {
-                        'industrial-training-mastery': {
-                            title: 'CA Industrial Training Program',
-                            description: 'Master industrial training requirements for CA candidates with real-world case studies.',
-                            thumbnail: 'https://mystudentclub.com/assets/courseimg-industrial.png'
-                        },
-                        'msc-ca-freshers-program': {
-                            title: 'MSC CA Freshers Program',
-                            description: 'A comprehensive program for CA freshers to kickstart their career.',
-                            thumbnail: 'https://mystudentclub.com/assets/courseimg-fresher.png'
-                        }
-                    },
-                    videoStartTimes: {
-                        1: 170,
-                        2: 119,
-                        4: 26,
-                        6: 39,
-                        7: 52
-                    },
-                    virtualStartTime: 0,
-                    isViewerVisible: false,
-                    viewerLoading: false,
-                    pdfCurrentPage: 1,
-                    pdfTotalPages: 1,
-                    currentResource: null,
-                    previewType: null,
-                    csvData: null,
-                    isFullscreen: false,
-                    isPlaying: false,
-                    currentTime: 0,
-                    duration: 0,
-                    volume: 1,
-                    isMuted: false,
-                    showControls: false,
-                    controlsTimeout: null,
-                    seekIndicatorTimeout: null,
-                    isLoading: false,
-                    isBuffering: false,
-                    isDraggingSeekBar: false,
-                    playbackRates: [0.5, 0.75, 1, 1.25, 1.5, 2],
-                    currentPlaybackRate: 1,
-                    showSpeedMenu: false,
-                    retryCount: 0,
-                    maxRetries: 5
+            const courses = {
+                'industrial-training-mastery': {
+                    title: 'CA Industrial Training Program',
+                    description: 'Master industrial training requirements for CA candidates with real-world case studies.',
+                    thumbnail: 'https://mystudentclub.com/assets/courseimg-industrial.png'
+                },
+                'msc-ca-freshers-program': {
+                    title: 'MSC CA Freshers Program',
+                    description: 'A comprehensive program for CA freshers to kickstart their career.',
+                    thumbnail: 'https://mystudentclub.com/assets/courseimg-fresher.png'
                 }
-            },
-            computed: {
-                currentVideo() {
-                    if (!this.currentVideoId) return null;
-                    for (const section of this.courseSections) {
-                        const video = section.videos.find(v => v.id === this.currentVideoId);
-                        if (video) return video;
-                    }
-                    return null;
+            };
+
+            const DOMElements = {
+                app: document.getElementById('app'),
+                hamburgerMenu: document.getElementById('hamburger-menu'),
+                navLinks: document.getElementById('nav-links'),
+                userDisplayName: document.getElementById('user-display-name'),
+                profileDropdown: document.getElementById('profile-dropdown'),
+                profileDropdownName: document.getElementById('profile-dropdown-name'),
+                profileDropdownEmail: document.getElementById('profile-dropdown-email'),
+                logoutButton: document.getElementById('logout-button'),
+                enrollmentModal: document.getElementById('enrollment-modal'),
+                enrollCourseThumbnail: document.getElementById('enroll-course-thumbnail'),
+                enrollCourseTitle: document.getElementById('enroll-course-title'),
+                enrollRedirectBtn: document.getElementById('enroll-redirect-btn'),
+                loadingEnrollmentScreen: document.getElementById('loading-enrollment-screen'),
+                coursePageContent: document.getElementById('course-page-content'),
+                courseHeaderBanner: document.getElementById('course-header-banner'),
+                courseTitle: document.getElementById('course-title'),
+                courseDescription: document.getElementById('course-description'),
+                totalVideosMeta: document.getElementById('total-videos-meta'),
+                totalVideosCount: document.getElementById('total-videos-count'),
+                loadingVideosMeta: document.getElementById('loading-videos-meta'),
+                courseProgressMeta: document.getElementById('course-progress-meta'),
+                courseSidebar: document.getElementById('course-sidebar'),
+                sidebarCloseBtn: document.getElementById('sidebar-close-btn'),
+                sidebarProgressBar: document.getElementById('sidebar-progress-bar'),
+                sidebarProgressText: document.getElementById('sidebar-progress-text'),
+                courseModulesContainer: document.getElementById('course-modules-container'),
+                loadingVideosSidebar: document.getElementById('loading-videos-sidebar'),
+                sidebarToggleBtn: document.getElementById('sidebar-toggle-btn'),
+                videoSectionContainer: document.getElementById('video-section-container'),
+                noVideoSelectedPlaceholder: document.getElementById('no-video-selected-placeholder'),
+                videoPlayerContainer: document.getElementById('video-player-container'),
+                videoPlayer: document.getElementById('video-player'),
+                videoLoadingOverlay: document.getElementById('video-loading-overlay'),
+                seekIndicator: document.getElementById('seek-indicator'),
+                videoControls: document.getElementById('video-controls'),
+                playPauseBtn: document.getElementById('play-pause-btn'),
+                seekBar: document.getElementById('seek-bar'),
+                seekBarFill: document.getElementById('seek-bar-fill'),
+                timeDisplay: document.getElementById('time-display'),
+                muteBtn: document.getElementById('mute-btn'),
+                volumeIcon: document.getElementById('volume-icon'),
+                volumeSlider: document.getElementById('volume-slider'),
+                settingsBtn: document.getElementById('settings-btn'),
+                speedMenu: document.getElementById('speed-menu'),
+                fullscreenBtn: document.getElementById('fullscreen-btn'),
+                noVideoMessagePlayer: document.getElementById('no-video-message-player'),
+                prevVideoBtn: document.getElementById('prev-video-btn'),
+                nextVideoBtn: document.getElementById('next-video-btn'),
+                videoCounter: document.getElementById('video-counter'),
+                courseTabsContainer: document.getElementById('course-tabs-container'),
+                tabContents: {
+                    overview: document.getElementById('tab-content-overview'),
+                    resources: document.getElementById('tab-content-resources'),
+                    discussion: document.getElementById('tab-content-discussion'),
+                    report: document.getElementById('tab-content-report')
                 },
-                videoUrl() {
-                    if (!this.currentVideo || !this.isEnrolled || !this.currentVideo.fileName) return '';
-                    return `https://advertisement.bhansalimanan55.workers.dev/stream/${encodeURIComponent(this.currentVideo.fileName)}`;
-                },
-                hasPreviousVideo() {
-                    return this.getAdjacentVideo('previous') !== null;
-                },
-                hasNextVideo() {
-                    return this.getAdjacentVideo('next') !== null;
-                },
-                formattedDescription() {
-                    if (this.currentVideo && this.currentVideo.description) {
-                        return this.currentVideo.description.replace(/\n/g, '<br>');
-                    }
-                    return '';
-                },
-                groupedResources() {
-                    if (!this.currentVideo || !this.currentVideo.resources || this.currentVideo.resources.length === 0) return {};
-                    const groups = {};
-                    this.currentVideo.resources.forEach(res => {
-                        const groupKey = res.group || 'General Resources';
-                        if (!groups[groupKey]) {
-                            groups[groupKey] = [];
+                newCommentInput: document.getElementById('new-comment-input'),
+                postCommentBtn: document.getElementById('post-comment-btn'),
+                commentsLoader: document.getElementById('comments-loader'),
+                commentListContainer: document.getElementById('comment-list-container'),
+                reportDescriptionInput: document.getElementById('report-description-input'),
+                submitReportBtn: document.getElementById('submit-report-btn'),
+                resourceViewerModal: document.getElementById('resource-viewer-modal'),
+                viewerContent: document.getElementById('viewer-content'),
+                resourceViewerTitle: document.getElementById('resource-viewer-title'),
+                viewerFullscreenBtn: document.getElementById('viewer-fullscreen-btn'),
+                viewerCloseBtn: document.getElementById('viewer-close-btn'),
+                viewerLoadingScreen: document.getElementById('viewer-loading-screen'),
+                pdfViewerContainer: document.getElementById('pdf-viewer-container'),
+                csvViewerContainer: document.getElementById('csv-viewer-container'),
+                pdfCanvas: document.getElementById('pdf-canvas'),
+                pdfPrevPage: document.getElementById('pdf-prev-page'),
+                pdfNextPage: document.getElementById('pdf-next-page'),
+                pdfPageInfo: document.getElementById('pdf-page-info'),
+                viewerDownloadBtn: document.getElementById('viewer-download-btn'),
+                footer: document.getElementById('footer')
+            };
+
+            const getResourceIcon = (type) => {
+                const iconMap = {
+                    pdf: 'fas fa-file-pdf', image: 'fas fa-file-image', doc: 'fas fa-file-word',
+                    docx: 'fas fa-file-word', txt: 'fas fa-file-alt', external_link: 'fas fa-external-link-alt',
+                    video: 'fas fa-file-video', archive: 'fas fa-file-archive', spreadsheet: 'fas fa-file-excel',
+                    xlsx: 'fas fa-file-excel', csv: 'fas fa-file-csv'
+                };
+                return iconMap[type ? type.toLowerCase() : ''] || 'fas fa-file';
+            };
+
+            const updateLearningStreak = () => {
+                const today = new Date().toDateString();
+                const lastActivity = localStorage.getItem('lastLearningActivity');
+                if (lastActivity !== today) {
+                    localStorage.setItem('lastLearningActivity', today);
+                    const currentStreak = parseInt(localStorage.getItem('learningStreak') || '0');
+                    localStorage.setItem('learningStreak', (currentStreak + 1).toString());
+                }
+            };
+
+            const findVideoById = (videoId) => {
+                for (const section of state.courseSections) {
+                    const foundVideo = section.videos.find(v => v.id === videoId);
+                    if (foundVideo) return foundVideo;
+                }
+                return null;
+            };
+
+            const updateCourseProgress = () => {
+                let totalCount = 0;
+                let completedCount = 0;
+                state.courseSections.forEach(section => {
+                    section.videos.forEach(video => {
+                        totalCount++;
+                        if (video.completed) completedCount++;
+                    });
+                });
+                const progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+                state.course.progress = progress;
+                DOMElements.courseProgressMeta.textContent = `${progress}% Complete`;
+                DOMElements.sidebarProgressText.textContent = `${progress}% Complete`;
+                DOMElements.sidebarProgressBar.style.width = `${progress}%`;
+            };
+
+            const saveVideoProgress = () => {
+                const completedVideos = {};
+                state.courseSections.forEach(section => {
+                    section.videos.forEach(video => {
+                        if (video.completed) {
+                            completedVideos[video.id] = true;
                         }
+                    });
+                });
+                const existingData = localStorage.getItem(`courseVideos_${state.courseSlug}`);
+                let mergedData = {};
+                if (existingData) {
+                    try {
+                        mergedData = JSON.parse(existingData);
+                    } catch (e) { }
+                }
+                const newData = { ...mergedData, ...completedVideos };
+                localStorage.setItem(`courseVideos_${state.courseSlug}`, JSON.stringify(newData));
+            };
+
+            const markVideoCompleted = () => {
+                if (!state.currentVideoId) return;
+                const videoToMark = findVideoById(state.currentVideoId);
+                if (videoToMark && !videoToMark.completed) {
+                    videoToMark.completed = true;
+                    saveVideoProgress();
+                    updateCourseProgress();
+                    updateLearningStreak();
+                    renderCourseModules();
+                }
+            };
+
+            const renderCourseModules = () => {
+                DOMElements.courseModulesContainer.innerHTML = '';
+                if (state.courseSections.length === 0) {
+                    DOMElements.courseModulesContainer.innerHTML = `
+                        <div class="empty-content">
+                            <i class="fas fa-video-slash"></i>
+                            <p>No content available for this course yet.</p>
+                        </div>`;
+                    return;
+                }
+
+                state.courseSections.forEach((day, dayIndex) => {
+                    const isDayCompleted = day.videos.every(v => v.completed);
+                    const isDaySelected = day.videos.some(v => v.id === state.currentVideoId);
+                    const moduleDiv = document.createElement('div');
+                    moduleDiv.className = 'course-module';
+
+                    let resourcesHTML = '';
+                    if (day.mainVideo && day.mainVideo.resources.length > 0) {
+                        const groups = {};
+                        day.mainVideo.resources.forEach(res => {
+                            const groupKey = res.group || 'General Resources';
+                            if (!groups[groupKey]) groups[groupKey] = [];
+                            groups[groupKey].push(res);
+                        });
+
+                        for (const groupName in groups) {
+                            if (groupName !== 'General Resources') {
+                                resourcesHTML += `<h5 class="sidebar-resource-group-title">${groupName}</h5>`;
+                            }
+                            groups[groupName].forEach(resource => {
+                                resourcesHTML += `
+                                    <div class="resource-item-sidebar" data-resource='${JSON.stringify(resource)}'>
+                                        <span class="resource-icon-sidebar"><i class="${getResourceIcon(resource.type)}"></i></span>
+                                        <span class="resource-title-sidebar">${resource.title}</span>
+                                    </div>`;
+                            });
+                        }
+                    }
+
+                    moduleDiv.innerHTML = `
+                        <div class="module-header ${isDaySelected ? 'active' : ''} ${isDayCompleted ? 'completed' : ''}" data-video-id="${day.mainVideo.id}">
+                            <div class="module-title-container">
+                                <i class="fas ${isDayCompleted ? 'fa-check-circle' : 'fa-play-circle'}"></i>
+                                <h4>${day.title}</h4>
+                            </div>
+                            <div class="module-info" data-day-index="${dayIndex}">
+                                ${day.mainVideo && day.mainVideo.resources.length > 0 ? `<span>${day.mainVideo.resources.length} Resource${day.mainVideo.resources.length !== 1 ? 's' : ''}</span>` : ''}
+                                <i class="fas ${day.expanded ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>
+                            </div>
+                        </div>
+                        <div class="module-content ${day.expanded ? 'expanded' : ''}">
+                            <div class="sidebar-resource-list">${resourcesHTML}</div>
+                        </div>
+                    `;
+                    DOMElements.courseModulesContainer.appendChild(moduleDiv);
+                });
+
+                DOMElements.courseModulesContainer.querySelectorAll('.module-header').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        selectVideo(parseInt(el.dataset.videoId));
+                    });
+                });
+
+                DOMElements.courseModulesContainer.querySelectorAll('.module-info').forEach(el => {
+                    el.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const dayIndex = parseInt(el.dataset.dayIndex);
+                        state.courseSections[dayIndex].expanded = !state.courseSections[dayIndex].expanded;
+                        renderCourseModules();
+                    });
+                });
+
+                DOMElements.courseModulesContainer.querySelectorAll('.resource-item-sidebar').forEach(el => {
+                    el.addEventListener('click', () => handleResourceClick(JSON.parse(el.dataset.resource)));
+                });
+            };
+
+            const loadVideoProgress = () => {
+                const savedVideos = localStorage.getItem(`courseVideos_${state.courseSlug}`);
+                if (savedVideos) {
+                    try {
+                        const completedVideos = JSON.parse(savedVideos);
+                        state.courseSections.forEach(section => {
+                            section.videos.forEach(video => {
+                                if (completedVideos[video.id] === true) video.completed = true;
+                            });
+                        });
+                    } catch (e) { console.error("Error parsing progress", e); }
+                }
+                updateCourseProgress();
+                const lastVideoId = localStorage.getItem(`lastVideoId_${state.courseSlug}`);
+                if (lastVideoId && findVideoById(parseInt(lastVideoId))) {
+                    selectVideo(parseInt(lastVideoId));
+                } else if (state.courseSections.length > 0 && state.courseSections[0].videos.length > 0) {
+                    selectVideo(state.courseSections[0].videos[0].id);
+                }
+            };
+
+            const logFrontendError = async (message, stack, source) => {
+                if (state.errorLogCount >= 6) return;
+                state.errorLogCount++;
+                if (!state.user) return;
+
+                try {
+                    await supabase
+                        .from('frontend_errors')
+                        .insert({
+                            user_id: state.user.id,
+                            error_message: `Source: ${source} | Message: ${message || 'Unknown Error'}`,
+                            stack_trace: stack || 'No Stack Trace',
+                            url: window.location.href,
+                            user_agent: navigator.userAgent,
+                            context: JSON.stringify({
+                                course: state.courseSlug,
+                                videoId: state.currentVideoId,
+                                screen: `${window.screen.width}x${window.screen.height}`
+                            })
+                        });
+                } catch (e) { }
+            };
+
+            const loadCourseVideos = async () => {
+                DOMElements.loadingVideosMeta.style.display = 'flex';
+                DOMElements.loadingVideosSidebar.style.display = 'block';
+                try {
+                    const { data: videoMetadata, error: metadataError } = await supabase
+                        .from('videos').select('video_number, title, description, day_number, resources')
+                        .eq('course', state.courseSlug).order('day_number', { ascending: true })
+                        .order('video_number', { ascending: true });
+
+                    if (metadataError) throw metadataError;
+
+                    const videosByDay = {};
+                    if (videoMetadata && videoMetadata.length > 0) {
+                        for (const meta of videoMetadata) {
+                            try {
+                                const { data: rpcData, error: rpcError } = await supabase.rpc('get_video_link', {
+                                    course_name_param: state.courseSlug,
+                                    video_number_param: meta.video_number
+                                });
+
+                                const day = meta.day_number || 1;
+                                if (!videosByDay[day]) videosByDay[day] = [];
+                                videosByDay[day].push({
+                                    id: meta.video_number, fileName: rpcData || null,
+                                    title: meta.title || `Content for Day ${day}`,
+                                    description: meta.description || '', resources: meta.resources || [], completed: false
+                                });
+                            } catch (err) { }
+                        }
+                    }
+
+                    state.courseSections = Object.keys(videosByDay).map(dayNum => {
+                        const dayVideos = videosByDay[dayNum];
+                        const mainVideo = dayVideos[0] || {};
+                        return {
+                            day_number: parseInt(dayNum), title: mainVideo.title || `Day ${dayNum}`,
+                            expanded: parseInt(dayNum) === 1, videos: dayVideos, mainVideo: mainVideo
+                        };
+                    }).sort((a, b) => a.day_number - b.day_number);
+
+                    const totalVideos = videoMetadata ? videoMetadata.length : 0;
+                    if (totalVideos > 0) {
+                        DOMElements.totalVideosCount.textContent = `${totalVideos} Sessions`;
+                        DOMElements.totalVideosMeta.style.display = 'flex';
+                    }
+                    loadVideoProgress();
+                    renderCourseModules();
+                } catch (error) {
+                    logFrontendError(error.message, error.stack, 'loadCourseVideos');
+                } finally {
+                    DOMElements.loadingVideosMeta.style.display = 'none';
+                    DOMElements.loadingVideosSidebar.style.display = 'none';
+                }
+            };
+
+            const checkEnrollment = async () => {
+                try {
+                    const { data: enrollments, error } = await supabase
+                        .from('enrollment').select('course').eq('uuid', state.user.id).eq('course', state.courseSlug);
+                    if (error || !enrollments || enrollments.length === 0) {
+                        state.isEnrolled = false;
+                        DOMElements.enrollmentModal.style.display = 'flex';
+                    } else {
+                        state.isEnrolled = true;
+                        DOMElements.coursePageContent.style.display = 'block';
+                        DOMElements.footer.style.display = 'block';
+                        await loadCourseVideos();
+                    }
+                } catch (error) {
+                    state.isEnrolled = false;
+                    DOMElements.enrollmentModal.style.display = 'flex';
+                } finally {
+                    DOMElements.loadingEnrollmentScreen.style.display = 'none';
+                }
+            };
+
+            const checkAuth = async () => {
+                const { data: { session } } = await supabase.auth.getSession();
+            };
+
+            const fetchComments = async () => {
+                if (!state.currentVideoId) return;
+                DOMElements.commentsLoader.style.display = 'block';
+                DOMElements.commentListContainer.innerHTML = '';
+                try {
+                    const { data, error } = await supabase.from('video_comments').select('*')
+                        .eq('course_slug', state.courseSlug).eq('video_id', state.currentVideoId.toString())
+                        .order('created_at', { ascending: false });
+
+                    if (error) throw error;
+                    state.comments = data || [];
+                    if (state.comments.length === 0) {
+                        DOMElements.commentListContainer.innerHTML = `<div style="color: #64748b; font-style: italic;">No comments yet. Be the first to start the discussion!</div>`;
+                    } else {
+                        state.comments.forEach(comment => {
+                            const commentEl = document.createElement('div');
+                            commentEl.className = 'comment-item';
+                            commentEl.innerHTML = `
+                                <div class="comment-header">
+                                    <span class="comment-author">${comment.user_email.split('@')[0]}</span>
+                                    <span class="comment-date">${new Date(comment.created_at).toLocaleDateString()}</span>
+                                </div>
+                                <div class="comment-body">${comment.content}</div>`;
+                            DOMElements.commentListContainer.appendChild(commentEl);
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error fetching comments:', error);
+                } finally {
+                    DOMElements.commentsLoader.style.display = 'none';
+                }
+            };
+
+            const selectVideo = (videoId) => {
+                state.retryCount = 0;
+                DOMElements.videoLoadingOverlay.style.display = 'flex';
+                state.currentVideoId = videoId;
+
+                DOMElements.noVideoSelectedPlaceholder.style.display = 'none';
+                DOMElements.videoSectionContainer.style.display = 'block';
+
+                const currentVideo = findVideoById(videoId);
+
+                if (currentVideo && currentVideo.fileName) {
+                    DOMElements.videoPlayerContainer.style.display = 'block';
+                    DOMElements.noVideoMessagePlayer.style.display = 'none';
+                    DOMElements.videoPlayer.src = `https://advertisement.bhansalimanan55.workers.dev/stream/${encodeURIComponent(currentVideo.fileName)}`;
+                    DOMElements.videoPlayer.load();
+                } else {
+                    DOMElements.videoPlayerContainer.style.display = 'none';
+                    DOMElements.noVideoMessagePlayer.style.display = 'block';
+                }
+
+                setActiveTab('overview');
+                renderTabsAndContent();
+
+                if (window.innerWidth < 768) {
+                    DOMElements.courseSidebar.classList.remove('active');
+                }
+                localStorage.setItem(`lastVideoId_${state.courseSlug}`, videoId);
+                fetchComments();
+                updateNavButtons();
+                updateVideoCounter();
+                renderCourseModules();
+            };
+
+            const renderTabsAndContent = () => {
+                const currentVideo = findVideoById(state.currentVideoId);
+                if (!currentVideo) return;
+
+                DOMElements.courseTabsContainer.innerHTML = '';
+                const tabs = ['overview', 'resources', 'discussion', 'report'];
+                tabs.forEach(tabId => {
+                    const btn = document.createElement('button');
+                    btn.className = 'tab-btn';
+                    btn.textContent = tabId.charAt(0).toUpperCase() + tabId.slice(1);
+                    btn.dataset.tab = tabId;
+
+                    if (tabId === 'resources' && (!currentVideo.resources || currentVideo.resources.length === 0)) {
+                        return;
+                    }
+
+                    if (tabId === state.activeTab) {
+                        btn.classList.add('active');
+                    }
+                    btn.addEventListener('click', () => setActiveTab(tabId));
+                    DOMElements.courseTabsContainer.appendChild(btn);
+                });
+
+                DOMElements.tabContents.overview.innerHTML = currentVideo.description ? `<h3>Summary</h3><p>${currentVideo.description.replace(/\n/g, '<br>')}</p>` : '<p>No description available for this session.</p>';
+
+                DOMElements.tabContents.resources.innerHTML = '';
+                if (currentVideo.resources && currentVideo.resources.length > 0) {
+                    const groups = {};
+                    currentVideo.resources.forEach(res => {
+                        const groupKey = res.group || 'General Resources';
+                        if (!groups[groupKey]) groups[groupKey] = [];
                         groups[groupKey].push(res);
                     });
-                    return groups;
-                },
-                displayCurrentTime() {
-                    return Math.max(0, this.currentTime - this.virtualStartTime);
-                },
-                displayDuration() {
-                    return Math.max(0, this.duration - this.virtualStartTime);
-                },
-                formattedDisplayCurrentTime() {
-                    const time = this.displayCurrentTime;
-                    if (isNaN(time)) return '0:00';
-                    const hours = Math.floor(time / 3600);
-                    const minutes = Math.floor((time % 3600) / 60).toString().padStart(2, '0');
-                    const seconds = Math.floor(time % 60).toString().padStart(2, '0');
-                    if (hours > 0) {
-                        return `${hours}:${minutes}:${seconds}`;
+
+                    let resourcesHTML = '';
+                    for (const groupName in groups) {
+                        resourcesHTML += `<div class="resource-group">`;
+                        if (groupName !== 'General Resources' || Object.keys(groups).length > 1) {
+                            resourcesHTML += `<h4 class="resource-group-title">${groupName}</h4>`;
+                        }
+                        resourcesHTML += `<ul class="resource-list">`;
+                        groups[groupName].forEach(resource => {
+                            resourcesHTML += `
+                                <li class="resource-item">
+                                    <span class="resource-icon"><i class="${getResourceIcon(resource.type)}"></i></span>
+                                    <span class="resource-title">${resource.title}</span>
+                                    <div class="resource-actions">
+                                        <button class="resource-btn resource-btn-view" data-resource='${JSON.stringify(resource)}'><i class="fas fa-eye"></i> View</button>
+                                        ${resource.download_storage_path && resource.download_storage_path !== 'None' ?
+                                    `<button class="resource-btn resource-btn-download" data-resource='${JSON.stringify(resource)}'><i class="fas fa-download"></i> Download</button>` :
+                                    `<span class="resource-btn resource-btn-download disabled"><i class="fas fa-download"></i> Download</span>`
+                                }
+                                    </div>
+                                </li>`;
+                        });
+                        resourcesHTML += `</ul></div>`;
                     }
-                    return `${minutes}:${seconds}`;
-                },
-                formattedDisplayDuration() {
-                    const time = this.displayDuration;
-                    if (isNaN(time) || time <= 0) return '0:00';
-                    const hours = Math.floor(time / 3600);
-                    const minutes = Math.floor((time % 3600) / 60).toString().padStart(2, '0');
-                    const seconds = Math.floor(time % 60).toString().padStart(2, '0');
-                    if (hours > 0) {
-                        return `${hours}:${minutes}:${seconds}`;
-                    }
-                    return `${minutes}:${seconds}`;
-                },
-                volumeIcon() {
-                    if (this.isMuted || this.volume === 0) return 'fa-volume-mute';
-                    if (this.volume < 0.5) return 'fa-volume-down';
-                    return 'fa-volume-up';
-                },
-                progressPercentage() {
-                    if (this.displayDuration <= 0) return 0;
-                    return (this.displayCurrentTime / this.displayDuration) * 100;
+                    DOMElements.tabContents.resources.innerHTML = resourcesHTML;
+
+                    DOMElements.tabContents.resources.querySelectorAll('.resource-btn-view').forEach(btn => {
+                        btn.addEventListener('click', () => handleResourceClick(JSON.parse(btn.dataset.resource)));
+                    });
+                    DOMElements.tabContents.resources.querySelectorAll('.resource-btn-download').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            downloadResource(JSON.parse(btn.dataset.resource));
+                        });
+                    });
                 }
-            },
-            methods: {
-                async checkAuth() {
-                    const { data: { session }, error } = await supabase.auth.getSession();
-                    if (session && session.user) {
-                        this.user = session.user;
-                        await this.checkEnrollment();
+            };
+
+            const setActiveTab = (tabId) => {
+                state.activeTab = tabId;
+                DOMElements.courseTabsContainer.querySelectorAll('.tab-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.tab === tabId);
+                });
+                Object.keys(DOMElements.tabContents).forEach(key => {
+                    DOMElements.tabContents[key].style.display = key === tabId ? 'block' : 'none';
+                });
+            };
+
+            const getAdjacentVideo = (direction) => {
+                if (!state.currentVideoId) return null;
+                const allVideos = state.courseSections.map(section => section.videos[0]).filter(Boolean);
+                const currentIndex = allVideos.findIndex(video => video.id === state.currentVideoId);
+                if (currentIndex === -1) return null;
+                if (direction === 'previous' && currentIndex > 0) return allVideos[currentIndex - 1];
+                if (direction === 'next' && currentIndex < allVideos.length - 1) return allVideos[currentIndex + 1];
+                return null;
+            };
+
+            const updateNavButtons = () => {
+                DOMElements.prevVideoBtn.disabled = getAdjacentVideo('previous') === null;
+                DOMElements.nextVideoBtn.disabled = getAdjacentVideo('next') === null;
+            };
+
+            const updateVideoCounter = () => {
+                if (!state.currentVideoId) {
+                    DOMElements.videoCounter.textContent = '';
+                    return;
+                }
+                const section = state.courseSections.find(s => s.videos.some(v => v.id === state.currentVideoId));
+                if (section) {
+                    DOMElements.videoCounter.textContent = `Day ${section.day_number} of ${state.courseSections.length}`;
+                }
+            };
+
+            const handleResourceClick = async (resource) => {
+                if (resource.type === 'external_link' && resource.url) {
+                    window.open(resource.url, '_blank');
+                    return;
+                }
+                if (resource.view_storage_path && resource.view_storage_path !== 'None') {
+                    const path = resource.view_storage_path.toLowerCase();
+                    if (path.endsWith('.csv')) await openResourceViewer(resource, 'csv');
+                    else await openResourceViewer(resource, 'pdf');
+                    return;
+                }
+                downloadResource(resource);
+            };
+
+            const downloadResource = async (resource) => {
+                const path = resource.download_storage_path;
+                if (!path || path === 'None') {
+                    alert('No downloadable file available for this resource.');
+                    return;
+                }
+                try {
+                    const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(path, 300);
+                    if (error) throw error;
+                    const response = await fetch(data.signedUrl);
+                    if (!response.ok) throw new Error('Network response was not ok.');
+                    const blob = await response.blob();
+                    const filename = path.split('/').pop() || 'download';
+                    if (window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler === 'function') {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(blob);
+                        reader.onloadend = function () {
+                            const base64Content = reader.result.split(',')[1];
+                            window.flutter_inappwebview.callHandler('blobToBase64Handler', base64Content, filename);
+                        };
                     } else {
-                        this.user = null;
-                        window.location.href = 'https://www.mystudentclub.com/login';
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url; a.download = filename;
+                        document.body.appendChild(a); a.click();
+                        window.URL.revokeObjectURL(url); a.remove();
                     }
-                },
-                getUserDisplayName() {
-                    if (!this.user) return 'Student';
-                    return this.user.user_metadata?.full_name || this.user.email.split('@')[0];
-                },
-                async logout() {
+                } catch (err) {
+                    console.error('Download error:', err);
+                    alert('Could not download the file. Please try again.');
+                }
+            };
+
+            const openResourceViewer = async (resource, type) => {
+                state.pdfDoc = null; state.csvData = null; state.pdfCurrentPage = 1; state.pdfTotalPages = 1;
+                const ctx = DOMElements.pdfCanvas.getContext('2d');
+                ctx.clearRect(0, 0, DOMElements.pdfCanvas.width, DOMElements.pdfCanvas.height);
+
+                DOMElements.viewerLoadingScreen.style.display = 'flex';
+                DOMElements.resourceViewerModal.classList.add('visible');
+                state.currentResource = resource;
+                state.previewType = type;
+                DOMElements.resourceViewerTitle.textContent = resource.title;
+
+                DOMElements.pdfViewerContainer.style.display = 'none';
+                DOMElements.csvViewerContainer.style.display = 'none';
+
+                try {
+                    const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
+                    if (error) throw error;
+                    const response = await fetch(`https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`);
+                    if (!response.ok) throw new Error(`Failed to fetch from proxy: ${response.status}`);
+
+                    if (type === 'pdf') {
+                        const pdfData = await response.arrayBuffer();
+                        state.pdfDoc = await pdfjsLib.getDocument(pdfData).promise;
+                        state.pdfTotalPages = state.pdfDoc.numPages;
+                        DOMElements.pdfViewerContainer.style.display = 'block';
+                        await renderPdfPage(1);
+                    } else if (type === 'csv') {
+                        const csvText = await response.text();
+                        const lines = csvText.split('\n').filter(line => line.trim() !== '');
+                        const header = lines.length > 0 ? lines[0].split(',').map(h => h.trim()) : [];
+                        const rows = lines.length > 1 ? lines.slice(1).map(line => line.split(',').map(cell => cell.trim())) : [];
+
+                        const table = DOMElements.csvViewerContainer.querySelector('table');
+                        table.innerHTML = `
+                            <thead><tr>${header.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+                            <tbody>${rows.map(row => `<tr>${row.map(cell => `<td title="${cell}">${cell}</td>`).join('')}</tr>`).join('')}</tbody>
+                        `;
+                        DOMElements.csvViewerContainer.style.display = 'block';
+                    }
+                } catch (err) {
+                    alert("Could not load the resource for viewing.");
+                    closeResourceViewer();
+                } finally {
+                    DOMElements.viewerLoadingScreen.style.display = 'none';
+                }
+            };
+
+            const renderPdfPage = async (num) => {
+                if (!state.pdfDoc) return;
+                state.pdfCurrentPage = num;
+                const page = await state.pdfDoc.getPage(num);
+                const canvas = DOMElements.pdfCanvas;
+                const ctx = canvas.getContext('2d');
+                const viewport = page.getViewport({ scale: 1.5 });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+                drawWatermark(canvas, ctx);
+
+                DOMElements.pdfPageInfo.textContent = `Page ${state.pdfCurrentPage} of ${state.pdfTotalPages}`;
+                DOMElements.pdfPrevPage.disabled = state.pdfCurrentPage <= 1;
+                DOMElements.pdfNextPage.disabled = state.pdfCurrentPage >= state.pdfTotalPages;
+            };
+
+            const drawWatermark = (canvas, ctx) => {
+                const watermarkText = state.user ? state.user.email : 'MyStudentClub';
+                ctx.font = '20px Arial'; ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                const x_step = 250, y_step = 150;
+                ctx.save();
+                for (let y = y_step / 2; y < canvas.height; y += y_step) {
+                    for (let x = x_step / 2; x < canvas.width; x += x_step) {
+                        ctx.save(); ctx.translate(x, y); ctx.rotate(-Math.PI / 4);
+                        ctx.fillText(watermarkText, 0, 0); ctx.restore();
+                    }
+                }
+                ctx.restore();
+            };
+
+            const closeResourceViewer = () => {
+                if (state.isFullscreen) toggleFullscreen();
+                DOMElements.resourceViewerModal.classList.remove('visible');
+                state.pdfDoc = null; state.currentResource = null; state.previewType = null;
+            };
+
+            const toggleFullscreen = () => {
+                if (!document.fullscreenElement) {
+                    DOMElements.viewerContent.requestFullscreen().catch(err => {
+                        alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            };
+
+            const formatTime = (timeInSeconds) => {
+                if (isNaN(timeInSeconds)) return '00:00';
+                const time = Math.max(0, timeInSeconds);
+                const hours = Math.floor(time / 3600);
+                const minutes = Math.floor((time % 3600) / 60).toString().padStart(2, '0');
+                const seconds = Math.floor(time % 60).toString().padStart(2, '0');
+                return hours > 0 ? `${hours}:${minutes}:${seconds}` : `${minutes}:${seconds}`;
+            };
+
+            const attemptReload = () => {
+                if (state.retryCount < state.maxRetries) {
+                    state.retryCount++;
+                    const delay = Math.pow(2, state.retryCount) * 1000;
+                    setTimeout(() => {
+                        DOMElements.videoLoadingOverlay.style.display = 'flex';
+                        const currentTime = DOMElements.videoPlayer.currentTime;
+                        DOMElements.videoPlayer.load();
+                        DOMElements.videoPlayer.play().then(() => {
+                            DOMElements.videoPlayer.currentTime = currentTime;
+                        }).catch(() => { });
+                    }, delay);
+                } else {
+                    alert("Failed to load the video after multiple attempts. Please check your connection or try again later.");
+                }
+            };
+
+            const showSeekIndicator = (direction) => {
+                const icon = DOMElements.seekIndicator.querySelector('i');
+                if (!icon) return;
+                icon.className = `fas fa-fast-${direction}`;
+                DOMElements.seekIndicator.classList.add('show', direction);
+                if (state.seekIndicatorTimeout) clearTimeout(state.seekIndicatorTimeout);
+                state.seekIndicatorTimeout = setTimeout(() => {
+                    DOMElements.seekIndicator.classList.remove('show', 'forward', 'backward');
+                }, 500);
+            };
+
+            const showControlsOnMove = () => {
+                DOMElements.videoControls.classList.add('visible');
+                if (state.controlsTimeout) clearTimeout(state.controlsTimeout);
+                if (state.isPlaying) {
+                    state.controlsTimeout = setTimeout(() => {
+                        DOMElements.videoControls.classList.remove('visible');
+                    }, 3000);
+                }
+            };
+
+            const updateVolumeIcon = () => {
+                const video = DOMElements.videoPlayer;
+                if (video.muted || video.volume === 0) DOMElements.volumeIcon.className = 'fas fa-volume-mute';
+                else if (video.volume < 0.5) DOMElements.volumeIcon.className = 'fas fa-volume-down';
+                else DOMElements.volumeIcon.className = 'fas fa-volume-up';
+            };
+
+            const setupEventListeners = () => {
+                DOMElements.hamburgerMenu.addEventListener('click', () => DOMElements.navLinks.classList.toggle('active'));
+                DOMElements.logoutButton.addEventListener('click', async () => {
                     await supabase.auth.signOut();
                     window.location.href = 'https://www.mystudentclub.com/login';
-                },
-                async checkEnrollment() {
+                });
+                DOMElements.enrollRedirectBtn.addEventListener('click', () => window.location.href = 'https://www.mystudentclub.com/login');
+                DOMElements.sidebarToggleBtn.addEventListener('click', () => DOMElements.courseSidebar.classList.add('active'));
+                DOMElements.sidebarCloseBtn.addEventListener('click', () => DOMElements.courseSidebar.classList.remove('active'));
+
+                DOMElements.prevVideoBtn.addEventListener('click', () => { const v = getAdjacentVideo('previous'); if (v) selectVideo(v.id); });
+                DOMElements.nextVideoBtn.addEventListener('click', () => { const v = getAdjacentVideo('next'); if (v) selectVideo(v.id); });
+
+                DOMElements.postCommentBtn.addEventListener('click', async () => {
+                    const content = DOMElements.newCommentInput.value.trim();
+                    if (!content || !state.user) return;
+                    DOMElements.postCommentBtn.disabled = true; DOMElements.postCommentBtn.textContent = 'Posting...';
                     try {
-                        const { data: enrollments, error } = await supabase
-                            .from('enrollment')
-                            .select('course')
-                            .eq('uuid', this.user.id)
-                            .eq('course', this.courseSlug);
-
-                        if (error || !enrollments || enrollments.length === 0) {
-                            this.isEnrolled = false;
-                        } else {
-                            this.isEnrolled = true;
-                            await this.loadCourseVideos();
-                        }
-                    } catch (error) {
-                        this.isEnrolled = false;
-                    } finally {
-                        this.loadingEnrollment = false;
-                    }
-                },
-                async loadCourseVideos() {
-                    this.loadingVideos = true;
-                    try {
-                        const { data: videoMetadata, error: metadataError } = await supabase
-                            .from('videos')
-                            .select('video_number, title, description, day_number, resources')
-                            .eq('course', this.courseSlug)
-                            .order('day_number', { ascending: true })
-                            .order('video_number', { ascending: true });
-
-                        if (metadataError) throw metadataError;
-
-                        const videosByDay = {};
-                        if (videoMetadata && videoMetadata.length > 0) {
-                            for (const meta of videoMetadata) {
-                                try {
-                                    const { data: rpcData, error: rpcError } = await supabase.rpc('get_video_link', {
-                                        course_name_param: this.courseSlug,
-                                        video_number_param: meta.video_number
-                                    });
-
-                                    const day = meta.day_number || 1;
-                                    if (!videosByDay[day]) {
-                                        videosByDay[day] = [];
-                                    }
-                                    videosByDay[day].push({
-                                        id: meta.video_number,
-                                        fileName: rpcData || null,
-                                        title: meta.title || `Content for Day ${day}`,
-                                        description: meta.description || '',
-                                        resources: meta.resources || [],
-                                        completed: false
-                                    });
-                                } catch (err) {
-                                }
-                            }
-                        }
-
-                        this.courseSections = Object.keys(videosByDay).map(dayNum => {
-                            const dayVideos = videosByDay[dayNum];
-                            const mainVideo = dayVideos[0] || {};
-                            return {
-                                day_number: parseInt(dayNum),
-                                title: mainVideo.title || `Day ${dayNum}`,
-                                expanded: parseInt(dayNum) === 1,
-                                videos: dayVideos,
-                                mainVideo: mainVideo
-                            };
-                        }).sort((a, b) => a.day_number - b.day_number);
-
-                        this.totalVideos = videoMetadata ? videoMetadata.length : 0;
-                        this.loadVideoProgress();
-                    } catch (error) {
-                        this.logFrontendError(error.message, error.stack, 'loadCourseVideos');
-                    } finally {
-                        this.loadingVideos = false;
-                    }
-                },
-                getResourceIcon(type) {
-                    const iconMap = {
-                        pdf: 'fas fa-file-pdf',
-                        image: 'fas fa-file-image',
-                        doc: 'fas fa-file-word',
-                        docx: 'fas fa-file-word',
-                        txt: 'fas fa-file-alt',
-                        external_link: 'fas fa-external-link-alt',
-                        video: 'fas fa-file-video',
-                        archive: 'fas fa-file-archive',
-                        spreadsheet: 'fas fa-file-excel',
-                        xlsx: 'fas fa-file-excel',
-                        csv: 'fas fa-file-csv'
-                    };
-                    return iconMap[type ? type.toLowerCase() : ''] || 'fas fa-file';
-                },
-                groupResourcesForSidebar(resources) {
-                    if (!resources || resources.length === 0) return {};
-                    const groups = {};
-                    resources.forEach(res => {
-                        const groupKey = res.group || 'General Resources';
-                        if (!groups[groupKey]) {
-                            groups[groupKey] = [];
-                        }
-                        groups[groupKey].push(res);
-                    });
-                    return groups;
-                },
-                handleProfileClick() {
-                    if (!this.user) {
-                        window.location.href = 'https://www.mystudentclub.com/login';
-                    }
-                },
-                redirectToEnroll() {
-                    window.location.href = 'https://www.mystudentclub.com/login';
-                },
-                toggleMenu() {
-                    this.menuActive = !this.menuActive;
-                },
-                toggleSidebar() {
-                    this.sidebarActive = !this.sidebarActive;
-                },
-                toggleModule(dayIndex) {
-                    this.courseSections[dayIndex].expanded = !this.courseSections[dayIndex].expanded;
-                },
-                selectVideo(videoId) {
-                    this.retryCount = 0;
-                    this.isLoading = true;
-                    this.currentVideoId = videoId;
-                    this.virtualStartTime = this.videoStartTimes[videoId] || 0;
-                    this.activeTab = 'overview';
-                    this.comments = [];
-                    if (window.innerWidth < 768) {
-                        this.sidebarActive = false;
-                    }
-                    localStorage.setItem(`lastVideoId_${this.courseSlug}`, videoId);
-                    this.fetchComments();
-                },
-                getAdjacentVideo(direction) {
-                    if (!this.currentVideoId) return null;
-                    const allVideos = this.courseSections.map(section => section.videos[0]).filter(Boolean);
-                    const currentIndex = allVideos.findIndex(video => video.id === this.currentVideoId);
-                    if (currentIndex === -1) return null;
-                    if (direction === 'previous' && currentIndex > 0) {
-                        return allVideos[currentIndex - 1];
-                    } else if (direction === 'next' && currentIndex < allVideos.length - 1) {
-                        return allVideos[currentIndex + 1];
-                    }
-                    return null;
-                },
-                playPreviousVideo() {
-                    const prevVideo = this.getAdjacentVideo('previous');
-                    if (prevVideo) {
-                        this.selectVideo(prevVideo.id);
-                    }
-                },
-                playNextVideo() {
-                    const nextVideo = this.getAdjacentVideo('next');
-                    if (nextVideo) {
-                        this.selectVideo(nextVideo.id);
-                    }
-                },
-                markVideoCompleted() {
-                    if (!this.currentVideoId) return;
-                    const videoToMark = this.findVideoById(this.currentVideoId);
-                    if (videoToMark && !videoToMark.completed) {
-                        videoToMark.completed = true;
-                        this.saveVideoProgress();
-                        this.updateCourseProgress();
-                        this.updateLearningStreak();
-                    }
-                },
-                findVideoById(videoId) {
-                    for (const section of this.courseSections) {
-                        const foundVideo = section.videos.find(v => v.id === videoId);
-                        if (foundVideo) return foundVideo;
-                    }
-                    return null;
-                },
-                saveVideoProgress() {
-                    const completedVideos = {};
-                    this.courseSections.forEach(section => {
-                        section.videos.forEach(video => {
-                            if (video.completed) {
-                                completedVideos[video.id] = true;
-                            }
-                        });
-                    });
-                    const existingData = localStorage.getItem(`courseVideos_${this.courseSlug}`);
-                    let mergedData = {};
-                    if (existingData) {
-                        try {
-                            mergedData = JSON.parse(existingData);
-                        } catch (e) { }
-                    }
-                    const newData = { ...mergedData, ...completedVideos };
-                    localStorage.setItem(`courseVideos_${this.courseSlug}`, JSON.stringify(newData));
-                },
-                loadVideoProgress() {
-                    const savedVideos = localStorage.getItem(`courseVideos_${this.courseSlug}`);
-                    if (savedVideos) {
-                        try {
-                            const completedVideos = JSON.parse(savedVideos);
-                            this.courseSections.forEach(section => {
-                                section.videos.forEach(video => {
-                                    if (completedVideos[video.id] === true) {
-                                        video.completed = true;
-                                    }
-                                });
-                            });
-                        } catch (e) {
-                            console.error("Error parsing progress", e);
-                        }
-                    }
-                    this.updateCourseProgress();
-                    const lastVideoId = localStorage.getItem(`lastVideoId_${this.courseSlug}`);
-                    if (lastVideoId && this.findVideoById(parseInt(lastVideoId))) {
-                        this.selectVideo(parseInt(lastVideoId));
-                    } else if (this.courseSections.length > 0 && this.courseSections[0].videos.length > 0) {
-                        this.selectVideo(this.courseSections[0].videos[0].id);
-                    }
-                },
-                updateCourseProgress() {
-                    let totalCount = 0;
-                    let completedCount = 0;
-                    this.courseSections.forEach(section => {
-                        section.videos.forEach(video => {
-                            totalCount++;
-                            if (video.completed) completedCount++;
-                        });
-                    });
-                    this.course.progress = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
-                },
-                updateLearningStreak() {
-                    const today = new Date().toDateString();
-                    const lastActivity = localStorage.getItem('lastLearningActivity');
-                    if (lastActivity !== today) {
-                        localStorage.setItem('lastLearningActivity', today);
-                        const currentStreak = parseInt(localStorage.getItem('learningStreak') || '0');
-                        localStorage.setItem('learningStreak', (currentStreak + 1).toString());
-                    }
-                },
-                loadCourseData() {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    this.courseSlug = urlParams.get('course');
-                    if (!this.courseSlug || !this.courses[this.courseSlug]) {
-                        window.location.href = 'index.html';
-                        return;
-                    }
-                    this.course = { ...this.courses[this.courseSlug], progress: 0 };
-                },
-                getCurrentDayNumber() {
-                    if (!this.currentVideoId) return 0;
-                    const section = this.courseSections.find(s => s.videos.some(v => v.id === this.currentVideoId));
-                    return section ? section.day_number : 0;
-                },
-                isDaySelected(day) {
-                    return day.videos.some(v => v.id === this.currentVideoId);
-                },
-                isDayCompleted(day) {
-                    return day.videos.every(v => v.completed);
-                },
-                async handleResourceClick(resource) {
-                    if (resource.type === 'external_link' && resource.url) {
-                        window.open(resource.url, '_blank');
-                        return;
-                    }
-
-                    if (resource.view_storage_path && resource.view_storage_path !== 'None') {
-                        const path = resource.view_storage_path.toLowerCase();
-                        if (path.endsWith('.csv')) {
-                            await this.openResourceViewer(resource, 'csv');
-                        } else {
-                            await this.openResourceViewer(resource, 'pdf');
-                        }
-                        return;
-                    }
-
-                    this.downloadResource(resource);
-                },
-                async downloadResource(resource) {
-                    const path = resource.download_storage_path;
-                    if (!path || path === 'None') {
-                        alert('No downloadable file available for this resource.');
-                        return;
-                    }
-
-                    try {
-                        const { data, error } = await supabase.storage
-                            .from('industrial-training-mastery-resources')
-                            .createSignedUrl(path, 300);
-
+                        const { data, error } = await supabase.from('video_comments').insert({
+                            course_slug: state.courseSlug, video_id: state.currentVideoId.toString(),
+                            user_id: state.user.id, user_email: state.user.email, content: content
+                        }).select();
                         if (error) throw error;
-
-                        const response = await fetch(data.signedUrl);
-                        if (!response.ok) throw new Error('Network response was not ok.');
-                        const blob = await response.blob();
-                        const filename = path.split('/').pop() || 'download';
-
-                        if (window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler === 'function') {
-                            const reader = new FileReader();
-                            reader.readAsDataURL(blob);
-                            reader.onloadend = function () {
-                                const base64data = reader.result;
-                                const base64Content = base64data.split(',')[1];
-                                window.flutter_inappwebview.callHandler('blobToBase64Handler', base64Content, filename);
-                            };
-                        } else {
-                            const url = window.URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = filename;
-                            document.body.appendChild(a);
-                            a.click();
-                            window.URL.revokeObjectURL(url);
-                            a.remove();
-                        }
-                    } catch (err) {
-                        console.error('Download error:', err);
-                        alert('Could not download the file. Please try again.');
-                    }
-                },
-                async openResourceViewer(resource, type) {
-                    this.pdfDoc = null;
-                    this.csvData = null;
-                    this.pdfCurrentPage = 1;
-                    this.pdfTotalPages = 1;
-                    const canvas = document.getElementById('pdf-canvas');
-                    if (canvas) {
-                        const ctx = canvas.getContext('2d');
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    }
-
-                    this.viewerLoading = true;
-                    this.isViewerVisible = true;
-                    this.currentResource = resource;
-                    this.previewType = type;
-
-                    try {
-                        const { data, error } = await supabase.storage
-                            .from('industrial-training-mastery-resources')
-                            .createSignedUrl(resource.view_storage_path, 300);
-
-                        if (error) throw error;
-
-                        const workerUrl = 'https://pdf-proxy-viewer.bhansalimanan55.workers.dev/';
-                        const proxiedUrl = `${workerUrl}?url=${encodeURIComponent(data.signedUrl)}`;
-
-                        const response = await fetch(proxiedUrl);
-                        if (!response.ok) throw new Error(`Failed to fetch from proxy: ${response.status}`);
-
-                        if (type === 'pdf') {
-                            const pdfData = await response.arrayBuffer();
-                            this.pdfDoc = await pdfjsLib.getDocument(pdfData).promise;
-                            this.pdfTotalPages = this.pdfDoc.numPages;
-                            await this.renderPdfPage(1);
-                        } else if (type === 'csv') {
-                            const csvText = await response.text();
-                            const lines = csvText.split('\n').filter(line => line.trim() !== '');
-                            const header = lines.length > 0 ? lines[0].split(',').map(h => h.trim()) : [];
-                            const rows = lines.length > 1 ? lines.slice(1).map(line => line.split(',').map(cell => cell.trim())) : [];
-                            this.csvData = { header, rows };
-                        }
-                    } catch (err) {
-                        alert("Could not load the resource for viewing.");
-                        this.closeResourceViewer();
-                    } finally {
-                        this.viewerLoading = false;
-                    }
-                },
-                async renderPdfPage(num) {
-                    if (!this.pdfDoc) return;
-                    this.pdfCurrentPage = num;
-                    const page = await this.pdfDoc.getPage(num);
-                    const canvas = document.getElementById('pdf-canvas');
-                    const ctx = canvas.getContext('2d');
-                    const viewport = page.getViewport({ scale: 1.5 });
-                    canvas.height = viewport.height;
-                    canvas.width = viewport.width;
-                    const renderContext = { canvasContext: ctx, viewport: viewport };
-                    await page.render(renderContext).promise;
-                    this.drawWatermark(canvas, ctx);
-                },
-                drawWatermark(canvas, ctx) {
-                    const watermarkText = this.user ? this.user.email : 'MyStudentClub';
-                    ctx.font = '20px Arial';
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-
-                    const x_step = 250;
-                    const y_step = 150;
-
-                    ctx.save();
-                    for (let y = y_step / 2; y < canvas.height; y += y_step) {
-                        for (let x = x_step / 2; x < canvas.width; x += x_step) {
-                            ctx.save();
-                            ctx.translate(x, y);
-                            ctx.rotate(-Math.PI / 4);
-                            ctx.fillText(watermarkText, 0, 0);
-                            ctx.restore();
-                        }
-                    }
-                    ctx.restore();
-                },
-                closeResourceViewer() {
-                    if (this.isFullscreen) {
-                        this.toggleFullscreen();
-                    }
-                    this.isViewerVisible = false;
-                    this.pdfDoc = null;
-                    this.currentResource = null;
-                    this.previewType = null;
-                    this.csvData = null;
-                },
-                goToPrevPage() {
-                    if (this.pdfCurrentPage > 1) {
-                        this.renderPdfPage(this.pdfCurrentPage - 1);
-                    }
-                },
-                goToNextPage() {
-                    if (this.pdfCurrentPage < this.pdfTotalPages) {
-                        this.renderPdfPage(this.pdfCurrentPage + 1);
-                    }
-                },
-                toggleFullscreen() {
-                    const elem = this.$refs.viewerContent;
-                    if (!document.fullscreenElement) {
-                        elem.requestFullscreen().catch(err => {
-                            alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-                        });
-                    } else {
-                        document.exitFullscreen();
-                    }
-                },
-                togglePlay() {
-                    const video = this.$refs.videoPlayer;
-                    if (video) {
-                        video.paused ? video.play() : video.pause();
-                    }
-                },
-                handleTimeUpdate() {
-                    const video = this.$refs.videoPlayer;
-                    if (video && !this.isDraggingSeekBar) {
-                        this.currentTime = video.currentTime;
-                    }
-                },
-                handleLoadedMetadata() {
-                    const video = this.$refs.videoPlayer;
-                    if (video) {
-                        this.duration = video.duration;
-                        this.isLoading = false;
-                        this.isBuffering = false;
-                        this.retryCount = 0;
-
-                        if (this.virtualStartTime > 0 && video.currentTime < this.virtualStartTime) {
-                            video.currentTime = this.virtualStartTime;
-                        }
-                    }
-                },
-                handleWaiting() {
-                    this.isBuffering = true;
-                },
-                handlePlaying() {
-                    this.isBuffering = false;
-                },
-                handleVideoError() {
-                    this.isLoading = false;
-                    this.isBuffering = false;
-                    this.attemptReload();
-                },
-                attemptReload() {
-                    if (this.retryCount < this.maxRetries) {
-                        this.retryCount++;
-                        const delay = Math.pow(2, this.retryCount) * 1000;
-                        setTimeout(() => {
-                            const video = this.$refs.videoPlayer;
-                            if (video) {
-                                this.isLoading = true;
-                                const currentTime = video.currentTime;
-                                video.load();
-                                video.play().then(() => {
-                                    video.currentTime = currentTime;
-                                }).catch(() => { });
-                            }
-                        }, delay);
-                    } else {
-                        alert("Failed to load the video after multiple attempts. Please check your connection or try again later.");
-                    }
-                },
-                handleSeekInput(event) {
-                    this.isDraggingSeekBar = true;
-                    const displayTime = parseFloat(event.target.value);
-                    this.currentTime = displayTime + this.virtualStartTime;
-                },
-                applySeek(event) {
-                    const video = this.$refs.videoPlayer;
-                    if (video) {
-                        const seekTime = parseFloat(event.target.value);
-                        video.currentTime = seekTime + this.virtualStartTime;
-                    }
-                    this.isDraggingSeekBar = false;
-                },
-                toggleMute() {
-                    const video = this.$refs.videoPlayer;
-                    if (video) {
-                        video.muted = !video.muted;
-                        this.isMuted = video.muted;
-                    }
-                },
-                handleVolumeChange(event) {
-                    const video = this.$refs.videoPlayer;
-                    if (video) {
-                        const newVolume = event.target.value;
-                        video.volume = newVolume;
-                        this.volume = newVolume;
-                        if (newVolume > 0) {
-                            video.muted = false;
-                            this.isMuted = false;
-                        }
-                    }
-                },
-                toggleFullscreenVideo() {
-                    const playerContainer = this.$refs.videoPlayer.parentElement.parentElement;
-                    if (!document.fullscreenElement) {
-                        playerContainer.requestFullscreen().catch(err => {
-                            alert(`Error enabling full-screen mode: ${err.message}`);
-                        });
-                    } else {
-                        document.exitFullscreen();
-                    }
-                },
-                handleDblClick(event) {
-                    const video = this.$refs.videoPlayer;
-                    if (!video) return;
-                    const rect = video.getBoundingClientRect();
-                    const clickX = event.clientX - rect.left;
-                    if (clickX < rect.width * 0.4) {
-                        video.currentTime = Math.max(0, video.currentTime - 10);
-                        this.showSeekIndicator('backward');
-                    } else if (clickX > rect.width * 0.6) {
-                        video.currentTime = Math.min(video.duration, video.currentTime + 10);
-                        this.showSeekIndicator('forward');
-                    }
-                },
-                handleKeydown(event) {
-                    if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
-                        return;
-                    }
-                    const video = this.$refs.videoPlayer;
-                    if (!video) return;
-                    switch (event.key) {
-                        case 'ArrowLeft':
-                            event.preventDefault();
-                            video.currentTime = Math.max(0, video.currentTime - 10);
-                            this.showSeekIndicator('backward');
-                            break;
-                        case 'ArrowRight':
-                            event.preventDefault();
-                            video.currentTime = Math.min(video.duration, video.currentTime + 10);
-                            this.showSeekIndicator('forward');
-                            break;
-                        case ' ':
-                            event.preventDefault();
-                            this.togglePlay();
-                            break;
-                    }
-                },
-                showSeekIndicator(direction) {
-                    const indicator = this.$refs.seekIndicator;
-                    const icon = indicator.querySelector('i');
-                    if (!indicator || !icon) return;
-                    icon.className = `fas fa-fast-${direction}`;
-                    indicator.classList.add('show', direction);
-                    if (this.seekIndicatorTimeout) {
-                        clearTimeout(this.seekIndicatorTimeout);
-                    }
-                    this.seekIndicatorTimeout = setTimeout(() => {
-                        indicator.classList.remove('show', 'forward', 'backward');
-                    }, 500);
-                },
-                showControlsOnMove() {
-                    this.showControls = true;
-                    if (this.controlsTimeout) {
-                        clearTimeout(this.controlsTimeout);
-                    }
-                    if (this.isPlaying) {
-                        this.controlsTimeout = setTimeout(() => {
-                            this.showControls = false;
-                        }, 3000);
-                    }
-                },
-                setPlaybackRate(rate) {
-                    const video = this.$refs.videoPlayer;
-                    if (video) {
-                        video.playbackRate = rate;
-                        this.currentPlaybackRate = rate;
-                        this.showSpeedMenu = false;
-                    }
-                },
-                async fetchComments() {
-                    if (!this.currentVideoId) return;
-                    this.loadingComments = true;
-                    try {
-                        const { data, error } = await supabase
-                            .from('video_comments')
-                            .select('*')
-                            .eq('course_slug', this.courseSlug)
-                            .eq('video_id', this.currentVideoId.toString())
-                            .order('created_at', { ascending: false });
-
-                        if (error) throw error;
-                        this.comments = data || [];
-                    } catch (error) {
-                        console.error('Error fetching comments:', error);
-                    } finally {
-                        this.loadingComments = false;
-                    }
-                },
-                async postComment() {
-                    if (!this.newComment.trim() || !this.user) return;
-                    this.submittingComment = true;
-                    try {
-                        const { data, error } = await supabase
-                            .from('video_comments')
-                            .insert({
-                                course_slug: this.courseSlug,
-                                video_id: this.currentVideoId.toString(),
-                                user_id: this.user.id,
-                                user_email: this.user.email,
-                                content: this.newComment.trim()
-                            })
-                            .select();
-
-                        if (error) throw error;
-                        if (data && data.length > 0) {
-                            this.comments.unshift(data[0]);
-                            this.newComment = '';
-                        }
+                        DOMElements.newCommentInput.value = '';
+                        await fetchComments();
                     } catch (error) {
                         alert('Failed to post comment. Please try again.');
-                        console.error(error);
                     } finally {
-                        this.submittingComment = false;
+                        DOMElements.postCommentBtn.disabled = false; DOMElements.postCommentBtn.textContent = 'Post';
                     }
-                },
-                async submitReport() {
-                    if (!this.reportDescription.trim() || !this.user) return;
-                    this.submittingReport = true;
-                    try {
-                        const { error } = await supabase
-                            .from('course_reports')
-                            .insert({
-                                user_id: this.user.id,
-                                course_slug: this.courseSlug,
-                                description: this.reportDescription,
-                                page_url: window.location.href
-                            });
+                });
 
+                DOMElements.submitReportBtn.addEventListener('click', async () => {
+                    const description = DOMElements.reportDescriptionInput.value.trim();
+                    if (!description || !state.user) return;
+                    DOMElements.submitReportBtn.disabled = true; DOMElements.submitReportBtn.textContent = 'Submitting...';
+                    try {
+                        const { error } = await supabase.from('course_reports').insert({
+                            user_id: state.user.id, course_slug: state.courseSlug, description, page_url: window.location.href
+                        });
                         if (error) throw error;
                         alert('Report submitted successfully. We will look into it.');
-                        this.reportDescription = '';
-                        this.activeTab = 'overview';
+                        DOMElements.reportDescriptionInput.value = '';
+                        setActiveTab('overview');
                     } catch (error) {
                         alert('Failed to submit report.');
-                        console.error(error);
                     } finally {
-                        this.submittingReport = false;
+                        DOMElements.submitReportBtn.disabled = false; DOMElements.submitReportBtn.textContent = 'Submit Report';
                     }
-                },
-                async logFrontendError(message, stack, source) {
-                    if (this.errorLogCount >= 6) return;
-                    this.errorLogCount++;
+                });
 
-                    if (!this.user) return; // Prevent logging if user is not authenticated (RLS policy limitation)
+                DOMElements.viewerCloseBtn.addEventListener('click', closeResourceViewer);
+                DOMElements.viewerFullscreenBtn.addEventListener('click', toggleFullscreen);
+                DOMElements.pdfPrevPage.addEventListener('click', () => { if (state.pdfCurrentPage > 1) renderPdfPage(state.pdfCurrentPage - 1); });
+                DOMElements.pdfNextPage.addEventListener('click', () => { if (state.pdfCurrentPage < state.pdfTotalPages) renderPdfPage(state.pdfCurrentPage + 1); });
+                DOMElements.viewerDownloadBtn.addEventListener('click', () => { if (state.currentResource) downloadResource(state.currentResource) });
 
-                    try {
-                        const { error } = await supabase
-                            .from('frontend_errors')
-                            .insert({
-                                user_id: this.user.id,
-                                error_message: message || 'Unknown Error',
-                                stack_trace: stack || 'No Stack Trace',
-                                url: window.location.href,
-                                user_agent: navigator.userAgent
-                            });
-                    } catch (e) {
-                        // Silent fail to prevent recursion
+                const video = DOMElements.videoPlayer;
+                video.addEventListener('play', () => { state.isPlaying = true; DOMElements.playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>'; });
+                video.addEventListener('pause', () => { state.isPlaying = false; DOMElements.playPauseBtn.innerHTML = '<i class="fas fa-play"></i>'; DOMElements.videoControls.classList.add('visible'); });
+                video.addEventListener('ended', markVideoCompleted);
+                video.addEventListener('timeupdate', () => {
+                    if (state.isDraggingSeekBar) return;
+                    const virtualStartTime = state.videoStartTimes[state.currentVideoId] || 0;
+                    const displayCurrentTime = Math.max(0, video.currentTime - virtualStartTime);
+                    const displayDuration = Math.max(0, video.duration - virtualStartTime);
+                    if (displayDuration > 0) {
+                        const progressPercentage = (displayCurrentTime / displayDuration) * 100;
+                        DOMElements.seekBar.value = displayCurrentTime;
+                        DOMElements.seekBarFill.style.width = `${progressPercentage}%`;
                     }
-                }
-            },
-            async mounted() {
-                const self = this;
+                    DOMElements.timeDisplay.textContent = `${formatTime(displayCurrentTime)} / ${formatTime(displayDuration)}`;
+                });
+                video.addEventListener('loadedmetadata', () => {
+                    DOMElements.videoLoadingOverlay.style.display = 'none';
+                    state.retryCount = 0;
+                    const virtualStartTime = state.videoStartTimes[state.currentVideoId] || 0;
+                    const displayDuration = Math.max(0, video.duration - virtualStartTime);
+                    DOMElements.seekBar.max = displayDuration;
+                    if (virtualStartTime > 0 && video.currentTime < virtualStartTime) video.currentTime = virtualStartTime;
+                });
+                video.addEventListener('waiting', () => DOMElements.videoLoadingOverlay.style.display = 'flex');
+                video.addEventListener('playing', () => DOMElements.videoLoadingOverlay.style.display = 'none');
+                video.addEventListener('error', () => { DOMElements.videoLoadingOverlay.style.display = 'none'; attemptReload(); });
+                video.parentElement.addEventListener('click', () => video.paused ? video.play() : video.pause());
+                video.parentElement.addEventListener('dblclick', (e) => {
+                    const rect = video.getBoundingClientRect();
+                    const clickX = e.clientX - rect.left;
+                    if (clickX < rect.width * 0.4) { video.currentTime -= 10; showSeekIndicator('backward'); }
+                    else if (clickX > rect.width * 0.6) { video.currentTime += 10; showSeekIndicator('forward'); }
+                });
 
-                // 1. Capture Syntax/Runtime Errors
-                window.onerror = function (msg, url, line, col, error) {
-                    self.logFrontendError(msg, error ? error.stack : `Line: ${line}, Col: ${col}`, url);
-                    return false;
+                DOMElements.playPauseBtn.addEventListener('click', (e) => { e.stopPropagation(); video.paused ? video.play() : video.pause(); });
+                DOMElements.seekBar.addEventListener('input', (e) => {
+                    state.isDraggingSeekBar = true;
+                    const virtualStartTime = state.videoStartTimes[state.currentVideoId] || 0;
+                    const displayTime = parseFloat(e.target.value);
+                    const displayDuration = parseFloat(DOMElements.seekBar.max);
+                    if (displayDuration > 0) DOMElements.seekBarFill.style.width = `${(displayTime / displayDuration) * 100}%`;
+                    DOMElements.timeDisplay.textContent = `${formatTime(displayTime)} / ${formatTime(displayDuration)}`;
+                });
+                DOMElements.seekBar.addEventListener('change', (e) => {
+                    const virtualStartTime = state.videoStartTimes[state.currentVideoId] || 0;
+                    video.currentTime = parseFloat(e.target.value) + virtualStartTime;
+                    state.isDraggingSeekBar = false;
+                });
+                DOMElements.muteBtn.addEventListener('click', (e) => { e.stopPropagation(); video.muted = !video.muted; updateVolumeIcon(); });
+                DOMElements.volumeSlider.addEventListener('input', (e) => { video.volume = e.target.value; video.muted = e.target.value == 0; updateVolumeIcon(); });
+                DOMElements.fullscreenBtn.addEventListener('click', (e) => { e.stopPropagation(); DOMElements.videoPlayerContainer.requestFullscreen(); });
+                DOMElements.settingsBtn.addEventListener('click', (e) => { e.stopPropagation(); DOMElements.speedMenu.style.display = DOMElements.speedMenu.style.display === 'none' ? 'block' : 'none'; });
+                DOMElements.videoPlayerContainer.addEventListener('mousemove', showControlsOnMove);
+
+                const playbackRates = [0.5, 0.75, 1, 1.25, 1.5, 2];
+                playbackRates.forEach(rate => {
+                    const div = document.createElement('div');
+                    div.textContent = `${rate}x`;
+                    div.addEventListener('click', () => { video.playbackRate = rate; DOMElements.speedMenu.style.display = 'none'; renderSpeedMenu(rate); });
+                    DOMElements.speedMenu.appendChild(div);
+                });
+                const renderSpeedMenu = (activeRate) => {
+                    DOMElements.speedMenu.querySelectorAll('div').forEach(el => el.classList.toggle('active', parseFloat(el.textContent) === activeRate));
                 };
+                renderSpeedMenu(1);
 
-                // 2. Capture Promise Rejections (Async/Supabase Errors)
-                window.addEventListener('unhandledrejection', function (event) {
+                document.addEventListener('fullscreenchange', () => { state.isFullscreen = !!document.fullscreenElement; });
+                document.addEventListener('keydown', (e) => {
+                    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+                    if (!state.currentVideoId) return;
+                    switch (e.key) {
+                        case ' ': e.preventDefault(); video.paused ? video.play() : video.pause(); break;
+                        case 'ArrowLeft': e.preventDefault(); video.currentTime -= 10; showSeekIndicator('backward'); break;
+                        case 'ArrowRight': e.preventDefault(); video.currentTime += 10; showSeekIndicator('forward'); break;
+                    }
+                });
+
+                window.onerror = (msg, url, line, col, error) => logFrontendError(msg, error ? error.stack : `Line: ${line}, Col: ${col}`, url);
+                window.addEventListener('unhandledrejection', (event) => {
                     let errorMessage = 'Unhandled Promise Rejection';
                     let errorStack = '';
-
                     if (event.reason) {
-                        if (event.reason.message) errorMessage = event.reason.message;
-                        if (event.reason.stack) errorStack = event.reason.stack;
-                        else if (typeof event.reason === 'string') errorMessage = event.reason;
-                        else errorMessage = JSON.stringify(event.reason);
+                        errorMessage = event.reason.message || (typeof event.reason === 'string' ? event.reason : JSON.stringify(event.reason));
+                        errorStack = event.reason.stack || '';
                     }
-
-                    self.logFrontendError(errorMessage, errorStack, 'Promise Rejection');
+                    logFrontendError(errorMessage, errorStack, 'Promise Rejection');
                 });
+            };
 
-                this.pdfDoc = null;
-                this.loadCourseData();
-                await this.checkAuth();
+            const init = async () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                state.courseSlug = urlParams.get('course');
+                if (!state.courseSlug || !courses[state.courseSlug]) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+                state.course = { ...courses[state.courseSlug], progress: 0 };
+
+                DOMElements.courseTitle.textContent = state.course.title;
+                DOMElements.courseDescription.textContent = state.course.description;
+                DOMElements.courseHeaderBanner.style.background = `linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)), url('${state.course.thumbnail}')`;
+                DOMElements.courseHeaderBanner.style.backgroundSize = 'cover';
+                DOMElements.courseHeaderBanner.style.backgroundPosition = 'center';
+
+                DOMElements.enrollCourseTitle.textContent = state.course.title;
+                DOMElements.enrollCourseThumbnail.src = state.course.thumbnail;
+
+                setupEventListeners();
+                await checkAuth();
 
                 supabase.auth.onAuthStateChange(async (_event, session) => {
-                    if (session && session.user) {
-                        this.user = session.user;
-                        if (!this.isEnrolled) {
-                            await this.checkEnrollment();
-                        }
-                    } else {
-                        this.user = null;
+                    if (!session || !session.user) {
                         window.location.href = 'https://www.mystudentclub.com/login';
+                    } else if (state.user?.id !== session.user.id) {
+                        state.user = session.user;
+                        if (!state.isEnrolled) await checkEnrollment();
                     }
                 });
+            };
 
-                document.addEventListener('fullscreenchange', () => {
-                    this.isFullscreen = !!document.fullscreenElement;
-                });
-                document.addEventListener('keydown', this.handleKeydown);
-            },
-            beforeUnmount() {
-                document.removeEventListener('keydown', this.handleKeydown);
-            }
-        }).mount('#app');
+            init();
+        });
     </script>
-
 </body>
 
 </html>
