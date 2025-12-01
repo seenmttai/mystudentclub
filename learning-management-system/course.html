@@ -792,13 +792,12 @@
             const logFrontendError = async (message, stack, source) => {
                 if (state.errorLogCount >= 6) return;
                 state.errorLogCount++;
-                if (!state.user) return;
 
                 try {
                     await supabase
                         .from('frontend_errors')
                         .insert({
-                            user_id: state.user.id,
+                            user_id: state.user ? state.user.id : null,
                             error_message: `Source: ${source} | Message: ${message || 'Unknown Error'}`,
                             stack_trace: stack || 'No Stack Trace',
                             url: window.location.href,
@@ -809,7 +808,9 @@
                                 screen: `${window.screen.width}x${window.screen.height}`
                             })
                         });
-                } catch (e) { }
+                } catch (e) {
+                    console.error('Error logging to Supabase:', e);
+                }
             };
 
             const loadCourseVideos = async () => {
