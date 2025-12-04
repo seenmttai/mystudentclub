@@ -109,70 +109,17 @@ function renderJobCard(job) {
 
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
-
-    // Use Posted_Date preferentially, fallback to Created_At
-    const dateToUse = job.Posted_Date || job.Created_At;
-    const postedDate = dateToUse ? getDaysAgo(dateToUse) : 'N/A';
-
+    const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     const isApplied = appliedJobIds.has(job.id);
     const buttonText = isApplied ? 'Applied' : 'View Details';
     const buttonClass = isApplied ? 'applied' : '';
 
-    // Job title (use Job_Title if available, fallback to table-based default)
-    const jobTitle = job.Job_Title || JOB_TITLE_MAP[currentTable] || 'Job Position';
-
-    // Company logo HTML (with lazy loading)
-    let logoHtml = '';
-    if (job.Company_Logo_URL) {
-        logoHtml = `<img src="${job.Company_Logo_URL}" alt="${companyName}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="job-card-logo-fallback" style="display:none;">${companyInitial}</div>`;
-    } else {
-        logoHtml = companyInitial;
-    }
-
-    // Build badges HTML
-    let badgesHtml = '';
-
-    // Easy Apply badge
-    if (job.Is_Easy_Apply) {
-        badgesHtml += `<span class="job-badge easy-apply-badge">
-            <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
-            Easy Apply
-        </span>`;
-    }
-
-    // Employment Type badge
-    if (job.Employment_Type) {
-        badgesHtml += `<span class="job-badge employment-badge">${job.Employment_Type}</span>`;
-    }
-
-    // Seniority Level badge
-    if (job.Seniority_Level) {
-        badgesHtml += `<span class="job-badge seniority-badge">${job.Seniority_Level}</span>`;
-    }
-
-    // Applicant count
-    let applicantHtml = '';
-    if (job.Applicant_Count && job.Applicant_Count > 0) {
-        applicantHtml = `<span class="job-applicants">
-            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-            ${job.Applicant_Count} applicant${job.Applicant_Count !== 1 ? 's' : ''}
-        </span>`;
-    }
-
     jobCard.innerHTML = `
-        <div class="job-card-logo">${logoHtml}</div>
+        <div class="job-card-logo">${companyInitial}</div>
         <div class="job-card-details">
             <div class="job-card-header">
-                <h3 class="job-card-title">${jobTitle}</h3>
-                <p class="job-card-company">${job.Company || 'N/A'}</p>
-                <div class="job-card-meta-row">
-                    ${postedDate !== 'N/A' ? `<span class="job-meta-item"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>${postedDate}</span>` : ''}
-                    ${applicantHtml}
-                </div>
-            </div>
-            <div class="job-card-badges">
-                ${badgesHtml}
+                <h3 class="job-card-company">${job.Company || 'N/A'}</h3>
+                <p class="job-card-posted">Posted ${postedDate}</p>
             </div>
             <div class="job-card-meta">
                 <span class="job-tag">
@@ -180,7 +127,6 @@ function renderJobCard(job) {
                     ${job.Location || 'N/A'}
                 </span>
                 ${job.Salary ? `<span class="job-tag"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>₹${job.Salary}</span>` : ''}
-                ${job.Industry ? `<span class="job-tag"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>${job.Industry}</span>` : ''}
                 ${job.Category ? `<span class="job-tag">${job.Category}</span>` : ''}
             </div>
         </div>
@@ -190,7 +136,6 @@ function renderJobCard(job) {
 
     return jobCard;
 }
-
 
 function showModal(job) {
     const companyName = (job.Company || '').trim();
@@ -291,15 +236,7 @@ async function fetchJobs() {
     dom.loadMoreButton.style.display = 'none';
 
     try {
-        // Base columns that all tables have
         let selectColumns = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID"';
-
-        // New columns added to all tables
-        selectColumns += ', "Job_Title", "Company_Logo_URL", "Posted_Date", "Description_HTML"';
-        selectColumns += ', "Employment_Type", "Seniority_Level", "Industry"';
-        selectColumns += ', "Applicant_Count", "Is_Easy_Apply", "Apply_Link", connect_link';
-
-        // Table-specific columns
         if (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs") {
             selectColumns += ', Experience';
         }
@@ -336,14 +273,10 @@ async function fetchJobs() {
 
         const [sortCol, sortDir] = state.sortBy.split('_');
         const isAsc = sortDir === 'asc';
-        // Use Posted_Date for newest sorting (with nullsLast to fallback to Created_At)
-        if (sortCol === 'newest') {
-            query = query.order('Posted_Date', { ascending: isAsc, nullsLast: true })
-                .order('Created_At', { ascending: isAsc, nullsFirst: false });
-        } else {
-            query = query.order('Salary', { ascending: isAsc, nullsFirst: false });
-        }
-        query = query.order('id', { ascending: false });
+        query = query.order(sortCol === 'newest' ? 'Created_At' : 'Salary', {
+            ascending: isAsc,
+            nullsFirst: false
+        }).order('id', { ascending: false });
 
         query = query.range(page * limit, (page + 1) * limit - 1);
         const { data, error } = await query;
