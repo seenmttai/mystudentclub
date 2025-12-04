@@ -5,10 +5,10 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 window.flutter_app = {
-    isReady: false, 
+    isReady: false,
     fcmToken: null
 };
-window.setFcmToken = function(token) {
+window.setFcmToken = function (token) {
     window.flutter_app.fcmToken = token;
     const topicSelectionArea = document.getElementById('topic-selection-area');
     if (topicSelectionArea && topicSelectionArea.style.display !== 'block') {
@@ -30,22 +30,22 @@ let currentFcmToken = null;
 let firebaseMessaging;
 
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
-  authDomain: "msc-notif.firebaseapp.com",
-  projectId: "msc-notif",
-  storageBucket: "msc-notif.appspot.com",
-  messagingSenderId: "228639798414",
-  appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
-  measurementId: "G-X4M23TB936"
+    apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
+    authDomain: "msc-notif.firebaseapp.com",
+    projectId: "msc-notif",
+    storageBucket: "msc-notif.appspot.com",
+    messagingSenderId: "228639798414",
+    appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
+    measurementId: "G-X4M23TB936"
 };
 const VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
 const JOB_TYPES_NOTIF = [
-  { value: "industrial", label: "Industrial Training" },
-  { value: "semi", label: "Semi Qualified" },
-  { value: "fresher", label: "Fresher" },
-  { value: "articleship", label: "Articleship" }
+    { value: "industrial", label: "Industrial Training" },
+    { value: "semi", label: "Semi Qualified" },
+    { value: "fresher", label: "Fresher" },
+    { value: "articleship", label: "Articleship" }
 ];
-const LOCATIONS_NOTIF = [ "mumbai", "bangalore", "gurgaon", "pune", "kolkata", "delhi", "noida", "hyderabad", "ahmedabad", "chennai", "jaipur" ];
+const LOCATIONS_NOTIF = ["mumbai", "bangalore", "gurgaon", "pune", "kolkata", "delhi", "noida", "hyderabad", "ahmedabad", "chennai", "jaipur"];
 
 const state = {
     keywords: [],
@@ -76,7 +76,7 @@ const EMAIL_SUBJECT_MAP = {
 function setActivePortalTab() {
     const path = window.location.pathname;
     document.querySelectorAll('.portal-nav-bar .footer-tab, .site-footer-nav .footer-tab').forEach(tab => tab.classList.remove('active'));
-    
+
     let activeSelector;
     const experienceFilterGroups = document.querySelectorAll('.experience-filter-group');
 
@@ -93,7 +93,7 @@ function setActivePortalTab() {
         currentTable = 'Fresher Jobs';
         activeSelector = 'a[href="/fresher.html"]';
         experienceFilterGroups.forEach(el => el.style.display = 'block');
-    } else { 
+    } else {
         currentTable = 'Industrial Training Job Portal';
         activeSelector = 'a[href="/"]';
     }
@@ -106,20 +106,73 @@ function renderJobCard(job) {
     jobCard.className = 'job-card';
     jobCard.dataset.jobId = job.id;
     jobCard.addEventListener('click', () => showModal(job));
-    
+
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
-    const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
+
+    // Use Posted_Date preferentially, fallback to Created_At
+    const dateToUse = job.Posted_Date || job.Created_At;
+    const postedDate = dateToUse ? getDaysAgo(dateToUse) : 'N/A';
+
     const isApplied = appliedJobIds.has(job.id);
     const buttonText = isApplied ? 'Applied' : 'View Details';
     const buttonClass = isApplied ? 'applied' : '';
 
+    // Job title (use Job_Title if available, fallback to table-based default)
+    const jobTitle = job.Job_Title || JOB_TITLE_MAP[currentTable] || 'Job Position';
+
+    // Company logo HTML (with lazy loading)
+    let logoHtml = '';
+    if (job.Company_Logo_URL) {
+        logoHtml = `<img src="${job.Company_Logo_URL}" alt="${companyName}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="job-card-logo-fallback" style="display:none;">${companyInitial}</div>`;
+    } else {
+        logoHtml = companyInitial;
+    }
+
+    // Build badges HTML
+    let badgesHtml = '';
+
+    // Easy Apply badge
+    if (job.Is_Easy_Apply) {
+        badgesHtml += `<span class="job-badge easy-apply-badge">
+            <svg width="14" height="14" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm9.707 5.707a1 1 0 00-1.414-1.414L9 12.586l-1.293-1.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"/></svg>
+            Easy Apply
+        </span>`;
+    }
+
+    // Employment Type badge
+    if (job.Employment_Type) {
+        badgesHtml += `<span class="job-badge employment-badge">${job.Employment_Type}</span>`;
+    }
+
+    // Seniority Level badge
+    if (job.Seniority_Level) {
+        badgesHtml += `<span class="job-badge seniority-badge">${job.Seniority_Level}</span>`;
+    }
+
+    // Applicant count
+    let applicantHtml = '';
+    if (job.Applicant_Count && job.Applicant_Count > 0) {
+        applicantHtml = `<span class="job-applicants">
+            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            ${job.Applicant_Count} applicant${job.Applicant_Count !== 1 ? 's' : ''}
+        </span>`;
+    }
+
     jobCard.innerHTML = `
-        <div class="job-card-logo">${companyInitial}</div>
+        <div class="job-card-logo">${logoHtml}</div>
         <div class="job-card-details">
             <div class="job-card-header">
-                <h3 class="job-card-company">${job.Company || 'N/A'}</h3>
-                <p class="job-card-posted">Posted ${postedDate}</p>
+                <h3 class="job-card-title">${jobTitle}</h3>
+                <p class="job-card-company">${job.Company || 'N/A'}</p>
+                <div class="job-card-meta-row">
+                    ${postedDate !== 'N/A' ? `<span class="job-meta-item"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>${postedDate}</span>` : ''}
+                    ${applicantHtml}
+                </div>
+            </div>
+            <div class="job-card-badges">
+                ${badgesHtml}
             </div>
             <div class="job-card-meta">
                 <span class="job-tag">
@@ -127,6 +180,7 @@ function renderJobCard(job) {
                     ${job.Location || 'N/A'}
                 </span>
                 ${job.Salary ? `<span class="job-tag"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>₹${job.Salary}</span>` : ''}
+                ${job.Industry ? `<span class="job-tag"><svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>${job.Industry}</span>` : ''}
                 ${job.Category ? `<span class="job-tag">${job.Category}</span>` : ''}
             </div>
         </div>
@@ -136,6 +190,7 @@ function renderJobCard(job) {
 
     return jobCard;
 }
+
 
 function showModal(job) {
     const companyName = (job.Company || '').trim();
@@ -191,7 +246,7 @@ function showModal(job) {
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Job Description</h3>
             <p class="modal-description">${job.Description || 'No description available.'}</p>
         </div>`;
-        
+
     dom.modalOverlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
@@ -236,13 +291,21 @@ async function fetchJobs() {
     dom.loadMoreButton.style.display = 'none';
 
     try {
+        // Base columns that all tables have
         let selectColumns = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID"';
+
+        // New columns added to all tables
+        selectColumns += ', "Job_Title", "Company_Logo_URL", "Posted_Date", "Description_HTML"';
+        selectColumns += ', "Employment_Type", "Seniority_Level", "Industry"';
+        selectColumns += ', "Applicant_Count", "Is_Easy_Apply", "Apply_Link", connect_link';
+
+        // Table-specific columns
         if (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs") {
             selectColumns += ', Experience';
         }
-        
+
         let query = supabaseClient.from(currentTable).select(selectColumns);
-        
+
         if (state.keywords.length > 0) {
             const keywordOrs = state.keywords.map(k => `Company.ilike.%${k}%,Description.ilike.%${k}%,Category.ilike.%${k}%,Location.ilike.%${k}%`).join(',');
             query = query.or(keywordOrs);
@@ -273,10 +336,14 @@ async function fetchJobs() {
 
         const [sortCol, sortDir] = state.sortBy.split('_');
         const isAsc = sortDir === 'asc';
-        query = query.order(sortCol === 'newest' ? 'Created_At' : 'Salary', {
-            ascending: isAsc,
-            nullsFirst: false
-        }).order('id', { ascending: false });
+        // Use Posted_Date for newest sorting (with nullsLast to fallback to Created_At)
+        if (sortCol === 'newest') {
+            query = query.order('Posted_Date', { ascending: isAsc, nullsLast: true })
+                .order('Created_At', { ascending: isAsc, nullsFirst: false });
+        } else {
+            query = query.order('Salary', { ascending: isAsc, nullsFirst: false });
+        }
+        query = query.order('id', { ascending: false });
 
         query = query.range(page * limit, (page + 1) * limit - 1);
         const { data, error } = await query;
@@ -321,29 +388,29 @@ function populateSalaryFilter() {
     const salaryFilters = [dom.salaryFilterDesktop, dom.salaryFilterMobile];
     let options = [];
     if (currentTable === "Industrial Training Job Portal") options = [
-        { value: '', text: 'Any Stipend' }, 
-        { value: '10000-20000', text: '₹10k - ₹20k' }, 
-        { value: '20000-40000', text: '₹20k - ₹40k' }, 
+        { value: '', text: 'Any Stipend' },
+        { value: '10000-20000', text: '₹10k - ₹20k' },
+        { value: '20000-40000', text: '₹20k - ₹40k' },
         { value: '40000+', text: '₹40k+' }
     ];
     else if (currentTable === "Articleship Jobs") options = [
-        { value: '', text: 'Any Stipend' }, 
-        { value: '0-5000', text: 'Below ₹5k' }, 
-        { value: '5000-10000', text: '₹5k - ₹10k' }, 
-        { value: '10000-15000', text: '₹10k - ₹15k' }, 
+        { value: '', text: 'Any Stipend' },
+        { value: '0-5000', text: 'Below ₹5k' },
+        { value: '5000-10000', text: '₹5k - ₹10k' },
+        { value: '10000-15000', text: '₹10k - ₹15k' },
         { value: '15000+', text: '₹15k+' }
     ];
     else if (currentTable === "Semi Qualified Jobs") options = [
-        { value: '', text: 'Any Salary' }, 
-        { value: '0-25000', text: 'Below ₹25k' }, 
-        { value: '25000-35000', text: '₹25k - ₹35k' }, 
-        { value: '35000-50000', text: '₹35k - ₹50k' }, 
+        { value: '', text: 'Any Salary' },
+        { value: '0-25000', text: 'Below ₹25k' },
+        { value: '25000-35000', text: '₹25k - ₹35k' },
+        { value: '35000-50000', text: '₹35k - ₹50k' },
         { value: '50000+', text: 'Above ₹50k' }
     ];
     else if (currentTable === "Fresher Jobs") options = [
-        { value: '', text: 'Any Salary' }, 
-        { value: '0-1200000', text: '< 12 LPA' }, 
-        { value: '1200000-1800000', text: '12-18 LPA' }, 
+        { value: '', text: 'Any Salary' },
+        { value: '0-1200000', text: '< 12 LPA' },
+        { value: '1200000-1800000', text: '12-18 LPA' },
         { value: '1800000+', text: '> 18 LPA' }
     ];
 
@@ -435,14 +502,14 @@ function setupMultiSelect(container) {
     const renderOptions = (filter = '') => {
         const source = type === 'location' ? allLocations : (allCategories[currentTable] || []);
         const stateKey = type === 'location' ? 'locations' : 'categories';
-        
-        const filteredSource = source.filter(item => 
-            item.toLowerCase().includes(filter.toLowerCase()) && 
+
+        const filteredSource = source.filter(item =>
+            item.toLowerCase().includes(filter.toLowerCase()) &&
             !state[stateKey].includes(item)
         );
-        
+
         optionsContainer.innerHTML = '';
-        
+
         filteredSource.forEach(item => {
             const optionEl = document.createElement('div');
             optionEl.className = 'multi-select-option';
@@ -495,7 +562,7 @@ function processAndApplySearch(inputElement) {
 
     terms.forEach(term => {
         const lowerTerm = term.toLowerCase();
-        
+
         const isLocation = allLocations.some(loc => loc.toLowerCase() === lowerTerm);
         const isCategory = currentCategories.some(cat => cat.toLowerCase() === lowerTerm);
 
@@ -602,7 +669,7 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
             window.location.href = constructMailto(job, emailBody);
         } catch (e) {
             alert("Could not generate AI email. Opening a standard email draft.");
-            window.location.href = constructMailto(job, ""); 
+            window.location.href = constructMailto(job, "");
         } finally {
             btnText.textContent = originalText;
             if (spinner) spinner.style.display = 'none';
@@ -628,7 +695,7 @@ async function markJobAsApplied(job) {
             if (textEl) textEl.textContent = 'Applied';
         }
     });
-    
+
     const card = document.querySelector(`.job-card[data-job-id='${job.id}']`);
     if (card) {
         const cardButton = card.querySelector('.apply-now-card-btn');
@@ -668,7 +735,7 @@ async function generateEmailBody(profile, job) {
         const data = await response.json();
         return data.email_body || "";
     } catch (error) {
-        return ""; 
+        return "";
     }
 }
 
@@ -713,7 +780,7 @@ async function loadBanners() {
 
         if (relevantBanners.length === 0) { bannerSection.style.display = 'none'; return; }
         bannerSection.style.display = 'block';
-        
+
         relevantBanners.forEach((banner, i) => {
             const a = document.createElement('a');
             a.href = banner.Hyperlink;
@@ -737,7 +804,7 @@ async function loadBanners() {
     }
 }
 
-function showNotifStatus(message, type = 'info') { if(dom.notificationStatusEl) { dom.notificationStatusEl.textContent = message; dom.notificationStatusEl.className = `notification-status status-${type}`; dom.notificationStatusEl.style.display = 'block'; if(type!=='error') setTimeout(() => { dom.notificationStatusEl.style.display = 'none'; }, 3000); } }
+function showNotifStatus(message, type = 'info') { if (dom.notificationStatusEl) { dom.notificationStatusEl.textContent = message; dom.notificationStatusEl.className = `notification-status status-${type}`; dom.notificationStatusEl.style.display = 'block'; if (type !== 'error') setTimeout(() => { dom.notificationStatusEl.style.display = 'none'; }, 3000); } }
 function getSubscribedTopics() { return JSON.parse(localStorage.getItem('subscribedTopics') || '[]'); }
 function saveSubscribedTopics(topics) { localStorage.setItem('subscribedTopics', JSON.stringify(topics)); updateNotificationBadge(); }
 function updateNotificationBadge() { if (dom.notificationBadge) dom.notificationBadge.style.visibility = getSubscribedTopics().length > 0 ? 'visible' : 'hidden'; }
@@ -753,7 +820,7 @@ function renderSubscribedTopics() {
             const { location, jobType } = formatTopicForDisplay(topic);
             const tag = document.createElement('div');
             tag.className = 'topic-tag';
-            tag.innerHTML = `<span>${location}${jobType ? ` - ${jobType}`: ''}</span><button class="topic-remove" data-topic="${topic}">×</button>`;
+            tag.innerHTML = `<span>${location}${jobType ? ` - ${jobType}` : ''}</span><button class="topic-remove" data-topic="${topic}">×</button>`;
             dom.subscribedTopicsListEl.appendChild(tag);
         });
         dom.subscribedTopicsListEl.querySelectorAll('.topic-remove').forEach(btn => btn.addEventListener('click', async (e) => {
@@ -777,14 +844,14 @@ function formatTopicForDisplay(topic) {
 }
 
 function updateSpecificTopicAreaVisibility() { if (dom.specificSubscriptionForm) dom.specificSubscriptionForm.style.display = dom.topicAllCheckbox.checked ? 'none' : 'block'; }
-async function manageTopicSubscription(topic, action) { 
+async function manageTopicSubscription(topic, action) {
     currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
-    let retries = 3; 
+    let retries = 3;
     while (!currentFcmToken && retries > 0) {
         currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
-        
+
         if (currentFcmToken) {
-            break; 
+            break;
         }
 
         retries--;
@@ -796,26 +863,26 @@ async function manageTopicSubscription(topic, action) {
         showNotifStatus('Token not available. Please refresh the page.', 'error');
         return false;
     }
-    try { 
-        const response = await fetch('https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ token: currentFcmToken, topic, action }) }); 
-        if (!response.ok) throw new Error(await response.text()); 
-        let topics = getSubscribedTopics(); 
-        if (action === 'subscribe' && !topics.includes(topic)) topics.push(topic); 
-        else if (action === 'unsubscribe') topics = topics.filter(t => t !== topic); 
-        saveSubscribedTopics(topics); 
-        renderSubscribedTopics(); 
-        return true; 
-    } catch (err) { 
-        showNotifStatus(`Failed to ${action}`, 'error'); 
-        return false; 
-    } 
+    try {
+        const response = await fetch('https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: currentFcmToken, topic, action }) });
+        if (!response.ok) throw new Error(await response.text());
+        let topics = getSubscribedTopics();
+        if (action === 'subscribe' && !topics.includes(topic)) topics.push(topic);
+        else if (action === 'unsubscribe') topics = topics.filter(t => t !== topic);
+        saveSubscribedTopics(topics);
+        renderSubscribedTopics();
+        return true;
+    } catch (err) {
+        showNotifStatus(`Failed to ${action}`, 'error');
+        return false;
+    }
 }
 async function subscribeToTopic(topic) { return manageTopicSubscription(topic, 'subscribe'); }
 async function unsubscribeFromTopic(topic) { return manageTopicSubscription(topic, 'unsubscribe'); }
 
-function updatePermissionStatusUI() { 
+function updatePermissionStatusUI() {
     if (!dom.permissionStatusDiv) return;
-    
+
     if (window.flutter_app.isReady) {
         dom.enableNotificationsBtn.style.display = 'none';
         dom.topicSelectionArea.style.display = 'block';
@@ -825,22 +892,22 @@ function updatePermissionStatusUI() {
         return;
     }
 
-    const permission = Notification.permission; 
-    dom.enableNotificationsBtn.style.display = permission === 'default' ? 'block' : 'none'; 
-    dom.topicSelectionArea.style.display = permission === 'granted' ? 'block' : 'none'; 
-    if (permission === 'granted') { 
-        dom.permissionStatusDiv.textContent = 'Notifications are enabled.'; 
-        dom.permissionStatusDiv.className = 'notification-status status-success'; 
-    } else if (permission === 'denied') { 
-        dom.permissionStatusDiv.textContent = 'Notifications are blocked in browser settings.'; 
-        dom.permissionStatusDiv.className = 'notification-status status-error'; 
-    } else { 
-        dom.permissionStatusDiv.textContent = 'Enable notifications for job alerts.'; 
-        dom.permissionStatusDiv.className = 'notification-status status-info'; 
-    } 
-    dom.permissionStatusDiv.style.display = 'block'; 
+    const permission = Notification.permission;
+    dom.enableNotificationsBtn.style.display = permission === 'default' ? 'block' : 'none';
+    dom.topicSelectionArea.style.display = permission === 'granted' ? 'block' : 'none';
+    if (permission === 'granted') {
+        dom.permissionStatusDiv.textContent = 'Notifications are enabled.';
+        dom.permissionStatusDiv.className = 'notification-status status-success';
+    } else if (permission === 'denied') {
+        dom.permissionStatusDiv.textContent = 'Notifications are blocked in browser settings.';
+        dom.permissionStatusDiv.className = 'notification-status status-error';
+    } else {
+        dom.permissionStatusDiv.textContent = 'Enable notifications for job alerts.';
+        dom.permissionStatusDiv.className = 'notification-status status-info';
+    }
+    dom.permissionStatusDiv.style.display = 'block';
 }
-function populateNotificationDropdowns() { if (dom.locationSelectEl) { dom.locationSelectEl.innerHTML = '<option value="" disabled selected>Select Location</option>'; LOCATIONS_NOTIF.sort().forEach(loc => { const opt=document.createElement('option'); opt.value=loc; opt.textContent=loc.charAt(0).toUpperCase()+loc.slice(1); dom.locationSelectEl.appendChild(opt); }); } if (dom.jobTypeSelectEl) { dom.jobTypeSelectEl.innerHTML = '<option value="" disabled selected>Select Job Type</option>'; JOB_TYPES_NOTIF.forEach(type => { const opt=document.createElement('option'); opt.value=type.value; opt.textContent=type.label; dom.jobTypeSelectEl.appendChild(opt); }); } }
+function populateNotificationDropdowns() { if (dom.locationSelectEl) { dom.locationSelectEl.innerHTML = '<option value="" disabled selected>Select Location</option>'; LOCATIONS_NOTIF.sort().forEach(loc => { const opt = document.createElement('option'); opt.value = loc; opt.textContent = loc.charAt(0).toUpperCase() + loc.slice(1); dom.locationSelectEl.appendChild(opt); }); } if (dom.jobTypeSelectEl) { dom.jobTypeSelectEl.innerHTML = '<option value="" disabled selected>Select Job Type</option>'; JOB_TYPES_NOTIF.forEach(type => { const opt = document.createElement('option'); opt.value = type.value; opt.textContent = type.label; dom.jobTypeSelectEl.appendChild(opt); }); } }
 
 async function initializeFCM() {
     if (window.flutter_app.isReady) {
@@ -849,30 +916,30 @@ async function initializeFCM() {
         return;
     }
 
-    try { 
-        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG); 
-        firebaseMessaging = firebase.messaging(); 
-        firebaseMessaging.onMessage(payload => {}); 
-        if ('serviceWorker' in navigator) await navigator.serviceWorker.register('/firebase-messaging-sw.js'); 
-        if (Notification.permission === 'granted') await requestTokenAndSync(); 
-    } catch(err) {} 
+    try {
+        if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+        firebaseMessaging = firebase.messaging();
+        firebaseMessaging.onMessage(payload => { });
+        if ('serviceWorker' in navigator) await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+        if (Notification.permission === 'granted') await requestTokenAndSync();
+    } catch (err) { }
 }
 
-async function requestTokenAndSync() { 
-    if (window.flutter_app.isReady) return; 
-    if (!firebaseMessaging) return; 
-    try { 
-        const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY }); 
-        if (token) { currentFcmToken = token; await syncNotificationTopics(); } 
+async function requestTokenAndSync() {
+    if (window.flutter_app.isReady) return;
+    if (!firebaseMessaging) return;
+    try {
+        const token = await firebaseMessaging.getToken({ vapidKey: VAPID_KEY });
+        if (token) { currentFcmToken = token; await syncNotificationTopics(); }
     } catch (err) {
-    } 
+    }
 }
 function shouldSync() { const lastSync = localStorage.getItem('notificationSyncTimestamp'); if (!lastSync) return true; return new Date(parseInt(lastSync)).toDateString() !== new Date().toDateString(); }
-async function syncNotificationTopics() { 
+async function syncNotificationTopics() {
     currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
-    if (!currentFcmToken || !shouldSync()) return; 
-    await Promise.all(getSubscribedTopics().map(topic => manageTopicSubscription(topic, 'subscribe'))); 
-    localStorage.setItem('notificationSyncTimestamp', Date.now().toString()); 
+    if (!currentFcmToken || !shouldSync()) return;
+    await Promise.all(getSubscribedTopics().map(topic => manageTopicSubscription(topic, 'subscribe')));
+    localStorage.setItem('notificationSyncTimestamp', Date.now().toString());
 }
 
 async function initializeUserFeatures() {
@@ -905,7 +972,7 @@ function setupEventListeners() {
                 }
             });
             const searchButton = input.parentElement.querySelector('.search-button');
-            if(searchButton) {
+            if (searchButton) {
                 searchButton.addEventListener('click', () => processAndApplySearch(input));
             }
         }
@@ -922,17 +989,17 @@ function setupEventListeners() {
             }
         }
     };
-    
+
     if (dom.sortBySelect) dom.sortBySelect.addEventListener('change', handleSortChange);
     if (dom.sortBySelectMobile) dom.sortBySelectMobile.addEventListener('change', handleSortChange);
-    
+
     dom.menuButton.addEventListener('click', () => dom.expandedMenu.classList.add('active'));
     dom.menuCloseBtn.addEventListener('click', () => dom.expandedMenu.classList.remove('active'));
 
     dom.openFilterModalBtn.addEventListener('click', () => dom.filterModalOverlay.classList.add('show'));
     dom.closeFilterModalBtn.addEventListener('click', () => dom.filterModalOverlay.classList.remove('show'));
     dom.filterModalOverlay.addEventListener('click', (e) => { if (e.target === dom.filterModalOverlay) dom.filterModalOverlay.classList.remove('show'); });
-    
+
     dom.applyFiltersBtn.addEventListener('click', () => {
         state.salary = dom.salaryFilterMobile.value;
         syncAndFetch();
@@ -940,11 +1007,11 @@ function setupEventListeners() {
     });
 
     [dom.desktopResetBtn, dom.mobileResetBtn].forEach(btn => {
-        if(btn) btn.addEventListener('click', () => {
+        if (btn) btn.addEventListener('click', () => {
             state.keywords = [];
-            state.locations = []; 
-            state.categories = []; 
-            state.salary = ''; 
+            state.locations = [];
+            state.categories = [];
+            state.salary = '';
             state.experience = '';
             state.sortBy = 'newest';
             state.applicationStatus = 'all';
@@ -958,7 +1025,7 @@ function setupEventListeners() {
         });
     });
 
-    if(dom.salaryFilterDesktop) dom.salaryFilterDesktop.addEventListener('change', () => updateState({ salary: dom.salaryFilterDesktop.value }));
+    if (dom.salaryFilterDesktop) dom.salaryFilterDesktop.addEventListener('change', () => updateState({ salary: dom.salaryFilterDesktop.value }));
 
     document.querySelectorAll('.experience-filter-group .pill-options').forEach(group => {
         group.addEventListener('click', (e) => {
@@ -981,25 +1048,25 @@ function setupEventListeners() {
     });
 
     document.querySelectorAll('.multi-select-container').forEach(setupMultiSelect);
-    
-    if(dom.notificationsBtn) dom.notificationsBtn.addEventListener('click', (e) => {
+
+    if (dom.notificationsBtn) dom.notificationsBtn.addEventListener('click', (e) => {
         e.stopPropagation(); dom.notificationPopup.style.display = dom.notificationPopup.style.display === 'flex' ? 'none' : 'flex';
-        if (dom.notificationPopup.style.display === 'flex') { 
-            updatePermissionStatusUI(); 
-            if (window.flutter_app.isReady || Notification.permission === 'granted') { 
-                if (!firebaseMessaging && !window.flutter_app.isReady) initializeFCM().then(renderSubscribedTopics); 
-                else renderSubscribedTopics(); 
-            } else { 
-                renderSubscribedTopics(); 
-            } 
+        if (dom.notificationPopup.style.display === 'flex') {
+            updatePermissionStatusUI();
+            if (window.flutter_app.isReady || Notification.permission === 'granted') {
+                if (!firebaseMessaging && !window.flutter_app.isReady) initializeFCM().then(renderSubscribedTopics);
+                else renderSubscribedTopics();
+            } else {
+                renderSubscribedTopics();
+            }
         }
     });
 
-    if(dom.closeNotificationPopup) dom.closeNotificationPopup.addEventListener('click', () => dom.notificationPopup.style.display = 'none');
-    if(dom.enableNotificationsBtn) dom.enableNotificationsBtn.addEventListener('click', async () => { try { const permission = await Notification.requestPermission(); updatePermissionStatusUI(); if (permission === 'granted') await initializeFCM(); } catch (err) {} });
-    if(dom.topicAllCheckbox) dom.topicAllCheckbox.addEventListener('change', (e) => e.target.checked ? subscribeToTopic('all') : unsubscribeFromTopic('all'));
-    if(dom.subscribeBtnEl) dom.subscribeBtnEl.addEventListener('click', async () => { const location = dom.locationSelectEl.value; const jobType = dom.jobTypeSelectEl.value; if (!location || !jobType) return; const topicName = `${location}-${jobType}`; if (await subscribeToTopic(topicName)) { dom.locationSelectEl.selectedIndex = 0; dom.jobTypeSelectEl.selectedIndex = 0; dom.subscribeBtnEl.disabled = true; } });
-    if(dom.locationSelectEl && dom.jobTypeSelectEl && dom.subscribeBtnEl) {
+    if (dom.closeNotificationPopup) dom.closeNotificationPopup.addEventListener('click', () => dom.notificationPopup.style.display = 'none');
+    if (dom.enableNotificationsBtn) dom.enableNotificationsBtn.addEventListener('click', async () => { try { const permission = await Notification.requestPermission(); updatePermissionStatusUI(); if (permission === 'granted') await initializeFCM(); } catch (err) { } });
+    if (dom.topicAllCheckbox) dom.topicAllCheckbox.addEventListener('change', (e) => e.target.checked ? subscribeToTopic('all') : unsubscribeFromTopic('all'));
+    if (dom.subscribeBtnEl) dom.subscribeBtnEl.addEventListener('click', async () => { const location = dom.locationSelectEl.value; const jobType = dom.jobTypeSelectEl.value; if (!location || !jobType) return; const topicName = `${location}-${jobType}`; if (await subscribeToTopic(topicName)) { dom.locationSelectEl.selectedIndex = 0; dom.jobTypeSelectEl.selectedIndex = 0; dom.subscribeBtnEl.disabled = true; } });
+    if (dom.locationSelectEl && dom.jobTypeSelectEl && dom.subscribeBtnEl) {
         const updateSubBtn = () => { dom.subscribeBtnEl.disabled = !(dom.locationSelectEl.value && dom.jobTypeSelectEl.value); };
         dom.locationSelectEl.addEventListener('change', updateSubBtn);
         dom.jobTypeSelectEl.addEventListener('change', updateSubBtn);
@@ -1078,7 +1145,7 @@ async function initializePage() {
     dom.jobTypeSelectEl = document.getElementById('jobTypeSelect');
     dom.subscribeBtnEl = document.getElementById('subscribeBtn');
     dom.specificSubscriptionForm = document.getElementById('specific-subscription-form');
-    
+
     setActivePortalTab();
 
     const session = await checkAuth();
@@ -1102,15 +1169,15 @@ async function initializePage() {
     if (currentTable === 'Fresher Jobs') {
         state.experience = 'Freshers';
     }
-    
+
     await fetchFilterOptions();
-    
+
     populateSalaryFilter();
     setupEventListeners();
     syncFiltersUI();
-    
+
     await Promise.all([fetchJobs(), loadBanners()]);
-    
+
     populateNotificationDropdowns();
     updateNotificationBadge();
     if (Notification.permission === 'granted' || window.flutter_app.isReady) {

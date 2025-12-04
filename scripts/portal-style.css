@@ -1650,3 +1650,278 @@ body {
     width: 100%;
   }
 }
+/* Enhanced Job Card Styles for New Fields */
+
+/* Company Logo Enhancements */
+.job-card-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, var(--primary-brand) 0%, var(--primary-hover) 100%);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.job-card-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.job-card-logo-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-brand) 0%, var(--primary-hover) 100%);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: white;
+}
+
+/* Job Card Title Updates */
+.job-card-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    line-height: 1.4;
+}
+
+.job-card-company {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+/* Meta Row for Posted Date and Applicants */
+.job-card-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.job-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.job-meta-item svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.job-applicants {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.job-applicants svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+/* Badge Styles */
+.job-card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 0.75rem 0;
+}
+
+.job-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+}
+
+.job-badge svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+.employment-badge {
+    background-color: #DBEAFE;
+    color: #1E40AF;
+}
+
+.seniority-badge {
+    background-color: #FEF3C7;
+    color: #92400E;
+}
+
+.easy-apply-badge {
+    background-color: #D1FAE5;
+    color: #065F46;
+}
+
+/* Improved Job Tags */
+.job-tag {
+    background-color: var(--neutral-bg);
+    padding: 0.35rem 0.65rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-weight: 500;
+}
+
+.job-tag svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+/* Modal Logo Enhancements */
+.modal-logo {
+    width: 70px;
+    height: 70px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, var(--primary-brand) 0%, var(--primary-hover) 100%);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+
+.modal-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.modal-logo-fallback {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--primary-brand) 0%, var(--primary-hover) 100%);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: white;
+}
+
+.modal-company-name {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
+
+/* Easy Apply Tag in Modal */
+.easy-apply-tag {
+    background-color: #D1FAE5 !important;
+    color: #065F46 !important;
+    font-weight: 600;
+}
+
+/* Enhanced Description Rendering */
+.modal-description {
+    line-height: 1.7;
+    color: var(--text-secondary);
+}
+
+.modal-description h1,
+.modal-description h2,
+.modal-description h3,
+.modal-description h4,
+.modal-description h5,
+.modal-description h6 {
+    color: var(--text-primary);
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.modal-description ul,
+.modal-description ol {
+    margin-left: 1.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.modal-description li {
+    margin-bottom: 0.35rem;
+}
+
+.modal-description strong {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.modal-description a {
+    color: var(--primary-brand);
+    text-decoration: underline;
+}
+
+/* Improved Card Hover Effect */
+.job-card {
+    transition: all var(--transition-std);
+    cursor: pointer;
+}
+
+.job-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--border-medium);
+}
+
+/* Better visual hierarchy in cards */
+.job-card-details {
+    flex-grow: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.job-card-header {
+    margin-bottom: 0.75rem;
+}
+
+.job-card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: auto;
+}
