@@ -722,7 +722,7 @@
                             }
                             groups[groupName].forEach(resource => {
                                 resourcesHTML += `
-                                    <div class="resource-item-sidebar" data-resource='${JSON.stringify(resource)}'>
+                                    <div class="resource-item-sidebar" data-resource='${JSON.stringify(resource).replace(/'/g, "&apos;")}'>
                                         <span class="resource-icon-sidebar"><i class="${getResourceIcon(resource.type)}"></i></span>
                                         <span class="resource-title-sidebar">${resource.title}</span>
                                     </div>`;
@@ -1007,9 +1007,9 @@
                                     <span class="resource-icon"><i class="${getResourceIcon(resource.type)}"></i></span>
                                     <span class="resource-title">${resource.title}</span>
                                     <div class="resource-actions">
-                                        <button class="resource-btn resource-btn-view" data-resource='${JSON.stringify(resource)}'><i class="fas fa-eye"></i> View</button>
+                                        <button class="resource-btn resource-btn-view" data-resource='${JSON.stringify(resource).replace(/'/g, "&apos;")}'><i class="fas fa-eye"></i> View</button>
                                         ${resource.download_storage_path && resource.download_storage_path !== 'None' ?
-                                    `<button class="resource-btn resource-btn-download" data-resource='${JSON.stringify(resource)}'><i class="fas fa-download"></i> Download</button>` :
+                                    `<button class="resource-btn resource-btn-download" data-resource='${JSON.stringify(resource).replace(/'/g, "&apos;")}'><i class="fas fa-download"></i> Download</button>` :
                                     `<span class="resource-btn resource-btn-download disabled"><i class="fas fa-download"></i> Download</span>`
                                 }
                                     </div>
@@ -1099,7 +1099,12 @@
                         reader.readAsDataURL(blob);
                         reader.onloadend = function () {
                             const base64Content = reader.result.split(',')[1];
-                            window.flutter_inappwebview.callHandler('blobToBase64Handler', base64Content, filename);
+                            window.flutter_inappwebview.callHandler('blobToBase64Handler', base64Content, filename)
+                                .then(result => console.log("Saved to app"))
+                                .catch(err => {
+                                    console.error("App save failed:", err);
+                                    alert("The app could not save the file to your device storage.");
+                                });
                         };
                     } else {
                         const url = window.URL.createObjectURL(blob);
@@ -1226,9 +1231,12 @@
                         DOMElements.videoLoadingOverlay.style.display = 'flex';
                         const currentTime = DOMElements.videoPlayer.currentTime;
                         DOMElements.videoPlayer.load();
-                        DOMElements.videoPlayer.play().then(() => {
-                            DOMElements.videoPlayer.currentTime = currentTime;
-                        }).catch(() => { });
+                        const p = DOMElements.videoPlayer.play();
+                        if (p !== undefined) {
+                            p.then(() => {
+                                DOMElements.videoPlayer.currentTime = currentTime;
+                            }).catch(() => { });
+                        }
                     }, delay);
                 } else {
                     alert("Failed to load the video after multiple attempts. Please check your connection or try again later.");
@@ -1347,7 +1355,14 @@
                 video.addEventListener('waiting', () => DOMElements.videoLoadingOverlay.style.display = 'flex');
                 video.addEventListener('playing', () => DOMElements.videoLoadingOverlay.style.display = 'none');
                 video.addEventListener('error', () => { DOMElements.videoLoadingOverlay.style.display = 'none'; attemptReload(); });
-                video.parentElement.addEventListener('click', () => video.paused ? video.play() : video.pause());
+                video.parentElement.addEventListener('click', () => {
+                    if (video.paused) {
+                        const p = video.play();
+                        if (p !== undefined) p.catch(() => { });
+                    } else {
+                        video.pause();
+                    }
+                });
                 video.parentElement.addEventListener('dblclick', (e) => {
                     const rect = video.getBoundingClientRect();
                     const clickX = e.clientX - rect.left;
@@ -1355,7 +1370,15 @@
                     else if (clickX > rect.width * 0.6) { video.currentTime += 10; showSeekIndicator('forward'); }
                 });
 
-                DOMElements.playPauseBtn.addEventListener('click', (e) => { e.stopPropagation(); video.paused ? video.play() : video.pause(); });
+                DOMElements.playPauseBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if (video.paused) {
+                        const p = video.play();
+                        if (p !== undefined) p.catch(() => { });
+                    } else {
+                        video.pause();
+                    }
+                });
                 DOMElements.seekBar.addEventListener('input', (e) => {
                     state.isDraggingSeekBar = true;
                     const virtualStartTime = state.videoStartTimes[state.currentVideoId] || 0;
@@ -1392,7 +1415,15 @@
                     if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
                     if (!state.currentVideoId) return;
                     switch (e.key) {
-                        case ' ': e.preventDefault(); video.paused ? video.play() : video.pause(); break;
+                        case ' ':
+                            e.preventDefault();
+                            if (video.paused) {
+                                const p = video.play();
+                                if (p !== undefined) p.catch(() => { });
+                            } else {
+                                video.pause();
+                            }
+                            break;
                         case 'ArrowLeft': e.preventDefault(); video.currentTime -= 10; showSeekIndicator('backward'); break;
                         case 'ArrowRight': e.preventDefault(); video.currentTime += 10; showSeekIndicator('forward'); break;
                     }
