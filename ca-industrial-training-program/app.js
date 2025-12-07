@@ -2,6 +2,8 @@ const generateData = () => {
   const baseURL = "https://www.mystudentclub.com/assets/";
 
   const allAvailableStudents = [
+    { name: "Rohit Varma", course: "CA Industrial Training Program", linkedin: "https://www.linkedin.com/in/rohit-varma-0bb4792b8/?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", image: baseURL + "varma.jpg", company: "Cummins" },
+    { name: "Ishaan Isham", course: "CA Industrial Training Program", linkedin: "https://www.linkedin.com/in/ishaanisham/", image: baseURL + "ishaan.jpg", company: "UBS" },
     { name: "Simran Singh", course: "CA Industrial Training Program", linkedin: "https://www.linkedin.com/in/simransingh-ca-aspirant/", image: baseURL + "simran.jpg", company: "Amazon" },
     { name: "Ananya Gupta", course: "CA Industrial Training Program", linkedin: "https://www.linkedin.com/in/ananyagupta-ca", image: baseURL + "ananya.jpg", company: "Amazon" },
     { name: "Virali Doshi", course: "CA Industrial Training Program", linkedin: "https://www.linkedin.com/in/virali-doshi1905", image: baseURL + "virali.jpg", company: "Deutsche Bank" },
@@ -64,6 +66,8 @@ const generateData = () => {
 
 
   const prioritizedStudentsOrder = [
+    { name: "Rohit Varma", company: "Cummins" },
+    { name: "Ishaan Isham", company: "UBS" },
     { name: "Simran Singh", company: "Amazon" },
     { name: "Ananya Gupta", company: "Amazon" },
     { name: "Virali Doshi", company: "Deutsche Bank" },
@@ -83,7 +87,7 @@ const generateData = () => {
   ];
 
   const students = [];
-  const addedStudentKeys = new Set(); 
+  const addedStudentKeys = new Set();
 
   prioritizedStudentsOrder.forEach(pStudent => {
     const foundStudent = allAvailableStudents.find(
@@ -153,7 +157,7 @@ const initializeCarousel = () => {
 
     if (true) {
       position -= speed * (delta / 16);
-      if (position <= -(getCardWidth() * cards.length / 2)) { 
+      if (position <= -(getCardWidth() * cards.length / 2)) {
         position = 0;
       }
       carousel.style.transform = `translateX(${position}px)`;
@@ -210,10 +214,10 @@ const initializeCountdown = () => {
 
     if (diff <= 0) {
       timerEl.textContent = "00h 00m 00s";
-      clearInterval(timerInterval); 
+      clearInterval(timerInterval);
       return;
     }
-    
+
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
     const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -379,23 +383,23 @@ const initializeCertificate = () => {
   }
 };
 
-function initializeParallax(){
+function initializeParallax() {
   const layers = document.querySelectorAll('.layer');
-  if(!layers.length) return;
-  const move = (x=0,y=0)=>layers.forEach(el=>{
-    const d = parseFloat(el.dataset.depth||0.05);
-    el.style.transform = `translate3d(${x*d}px, ${y*d}px, 0)`;
+  if (!layers.length) return;
+  const move = (x = 0, y = 0) => layers.forEach(el => {
+    const d = parseFloat(el.dataset.depth || 0.05);
+    el.style.transform = `translate3d(${x * d}px, ${y * d}px, 0)`;
   });
-  window.addEventListener('mousemove', e=>{
-    const cx = window.innerWidth/2, cy = window.innerHeight/2;
-    move((e.clientX-cx)*0.04, (e.clientY-cy)*0.06);
+  window.addEventListener('mousemove', e => {
+    const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+    move((e.clientX - cx) * 0.04, (e.clientY - cy) * 0.06);
   });
-  window.addEventListener('scroll', ()=>{
-    const y = window.scrollY*0.08; layers.forEach(el=>{
-      const d = parseFloat(el.dataset.depth||0.05);
-      el.style.transform = `translate3d(0, ${y*d}px, 0)`;
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY * 0.08; layers.forEach(el => {
+      const d = parseFloat(el.dataset.depth || 0.05);
+      el.style.transform = `translate3d(0, ${y * d}px, 0)`;
     });
-  }, {passive:true});
+  }, { passive: true });
 }
 
 function adjustDaysGrid() {
@@ -405,6 +409,8 @@ function adjustDaysGrid() {
 function initializeCurriculumCenter() {
 
 }
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
   safe(initializeTestimonials, 'testimonials');
@@ -416,6 +422,7 @@ document.addEventListener('DOMContentLoaded', () => {
     once: true
   });
 });
+
 
 function safe(fn, label) {
   try {

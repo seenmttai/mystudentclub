@@ -433,6 +433,7 @@
 }
 
 @media (max-width: 480px) {
+
   .success-stories h2,
   .pain-points h2,
   .benefits h2,
@@ -479,6 +480,7 @@
 }
 
 @media (hover: none) {
+
   .student-card:active,
   .benefit-card:active,
   .struggle-item:active,
@@ -640,9 +642,9 @@
   }
 }
 
-@media(min-width:500px){
-  .mobile-testimonial-title{
-    display:none
+@media(min-width:500px) {
+  .mobile-testimonial-title {
+    display: none
   }
 }
 
@@ -731,7 +733,7 @@
   position: absolute;
   width: 80%;
   height: 30px;
-  background: rgba(0,0,0,0.2);
+  background: rgba(0, 0, 0, 0.2);
   bottom: -40px;
   left: 10%;
   border-radius: 50%;
@@ -750,7 +752,7 @@
   border-radius: 20px;
   transform-style: preserve-3d;
   pointer-events: none;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   background-color: #333;
 }
 
@@ -777,9 +779,9 @@
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow:
-    0 15px 35px rgba(0,0,0,0.2),
-    0 5px 15px rgba(0,0,0,0.05),
-    inset 0 0 0 1px rgba(255,255,255, 0.3);
+    0 15px 35px rgba(0, 0, 0, 0.2),
+    0 5px 15px rgba(0, 0, 0, 0.05),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3);
   overflow: hidden;
   transform-style: preserve-3d;
   backface-visibility: hidden;
@@ -792,7 +794,7 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
   transform: rotate(30deg);
   pointer-events: none;
 }
@@ -822,12 +824,10 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    45deg,
-    rgba(255,255,255,0.1) 0%,
-    rgba(255,255,255,0.3) 50%,
-    rgba(255,255,255,0.1) 100%
-  );
+  background: linear-gradient(45deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.3) 50%,
+      rgba(255, 255, 255, 0.1) 100%);
   border-radius: 15px;
   transform: translateZ(20px);
   pointer-events: none;
@@ -839,12 +839,10 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(
-    120deg,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,0.5) 50%,
-    rgba(255,255,255,0) 100%
-  );
+  background: linear-gradient(120deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0) 100%);
   transform: translateZ(30px);
   opacity: 0;
   transition: opacity 0.5s ease;
@@ -860,16 +858,31 @@
   position: absolute;
   width: 30px;
   height: 30px;
-  background: rgba(255,255,255,0.8);
+  background: rgba(255, 255, 255, 0.8);
   transform: translateZ(25px);
   border-radius: 50%;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.corner-tl { top: 15px; left: 15px; }
-.corner-tr { top: 15px; right: 15px; }
-.corner-bl { bottom: 15px; left: 15px; }
-.corner-br { bottom: 15px; right: 15px; }
+.corner-tl {
+  top: 15px;
+  left: 15px;
+}
+
+.corner-tr {
+  top: 15px;
+  right: 15px;
+}
+
+.corner-bl {
+  bottom: 15px;
+  left: 15px;
+}
+
+.corner-br {
+  bottom: 15px;
+  right: 15px;
+}
 
 .floating-emblem {
   position: absolute;
@@ -878,14 +891,14 @@
   transform: translate(-50%, -50%) translateZ(40px);
   width: 120px;
   height: 120px;
-  background: rgba(255,255,255,0.15);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
   backdrop-filter: blur(5px);
-  border: 1px solid rgba(255,255,255,0.18);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   pointer-events: none;
   opacity: 0.5;
   animation: rotateEmblem 10s infinite linear;
@@ -894,29 +907,39 @@
 .award-icon {
   width: 60px;
   height: 60px;
-  fill: rgba(255,255,255,0.8);
+  fill: rgba(255, 255, 255, 0.8);
 }
 
 @keyframes rotateEmblem {
-  from { transform: translate(-50%, -50%) translateZ(40px) rotate(0deg); }
-  to { transform: translate(-50%, -50%) translateZ(40px) rotate(360deg); }
+  from {
+    transform: translate(-50%, -50%) translateZ(40px) rotate(0deg);
+  }
+
+  to {
+    transform: translate(-50%, -50%) translateZ(40px) rotate(360deg);
+  }
 }
 
 @keyframes shine {
-  0% { background-position: -300% center; }
-  100% { background-position: 300% center; }
+  0% {
+    background-position: -300% center;
+  }
+
+  100% {
+    background-position: 300% center;
+  }
 }
 
 @media (max-width: 768px) {
   .certificate-frame {
     height: 400px;
   }
-  
+
   .floating-emblem {
     width: 80px;
     height: 80px;
   }
-  
+
   .award-icon {
     width: 40px;
     height: 40px;
