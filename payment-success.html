@@ -131,18 +131,32 @@
 
     .date-input {
       width: 100%;
+      display: block;
       padding: 0.75rem;
       border: 2px solid #e5e7eb;
       border-radius: 8px;
       font-size: 1rem;
       margin-top: 0.5rem;
       transition: all 0.3s ease;
+      background-color: white;
+      min-height: 52px;
+      /* Improve touch target for mobile */
+      -webkit-appearance: none;
+      /* remove iOS default styles */
+      appearance: none;
     }
 
     .date-input:focus {
       outline: none;
       border-color: #0284c7;
       box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+    }
+
+    .date-input:disabled {
+      background-color: #f3f4f6;
+      cursor: not-allowed;
+      border-color: #e5e7eb;
+      color: #6b7280;
     }
 
     .login-status {
@@ -219,7 +233,7 @@
     </div>
     <h1 class="text-2xl font-bold text-gray-800 mb-2">Registration Successful!</h1>
     <p class="text-gray-600 mb-6">
-      Your account has been created. Live classes will start from 17th Oct daily 9 PM.
+      Your account has been created. Live classes will start from 16th Oct daily 9 PM.
     </p>
 
     <div id="login-status" class="login-status"></div>
@@ -324,6 +338,9 @@ All the best!! Let's crack it❤️`
         }
         whatsappSection.classList.add('show');
         messageBox.classList.add('show');
+
+        // Disable the input to prevent changing it again
+        dateInput.disabled = true;
       } else {
         whatsappSection.classList.remove('show');
         messageBox.classList.remove('show');
