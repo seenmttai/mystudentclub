@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Registration Successful - My Student Club</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Poppins', sans-serif; }
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+
     .success-card {
       background: white;
       padding: 2rem 3rem 3rem;
@@ -18,6 +23,7 @@
       width: 90%;
       border-top: 5px solid #10b981;
     }
+
     .success-icon {
       width: 80px;
       height: 80px;
@@ -29,59 +35,166 @@
       justify-content: center;
       margin: 0 auto 1.5rem;
     }
+
     .btn-primary {
       background-color: #4f46e5;
       color: white;
       transition: all 0.3s ease;
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 1.125rem;
+      margin-bottom: 1rem;
     }
+
     .btn-primary:hover {
       background-color: #4338ca;
       transform: translateY(-2px);
     }
+
+    .btn-whatsapp {
+      background-color: #10b981;
+      color: white;
+      transition: all 0.3s ease;
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 1.125rem;
+      margin-bottom: 1rem;
+    }
+
+    .btn-whatsapp:hover {
+      background-color: #059669;
+      transform: translateY(-2px);
+    }
+
     .credentials-box {
-        display: none;
-        background-color: #fffbeb;
-        border: 1px solid #fef3c7;
-        border-left: 4px solid #f59e0b;
-        padding: 1.5rem;
-        margin: 2rem 0;
-        border-radius: 8px;
-        text-align: left;
+      display: none;
+      background-color: #fffbeb;
+      border: 1px solid #fef3c7;
+      border-left: 4px solid #f59e0b;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      border-radius: 8px;
+      text-align: left;
     }
+
     .credentials-box h3 {
-        color: #b45309;
-        font-weight: 600;
-        margin-bottom: 1rem;
+      color: #b45309;
+      font-weight: 600;
+      margin-bottom: 1rem;
     }
+
     .credentials-box p {
-        margin-bottom: 0.5rem;
-        font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
     }
+
     .credentials-box code {
-        background-color: #fefce8;
-        padding: 0.2rem 0.5rem;
-        border-radius: 4px;
-        font-weight: 500;
-        word-break: break-all;
-        overflow-wrap: anywhere;
-        white-space: normal;
+      background-color: #fefce8;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-weight: 500;
+      word-break: break-all;
+      overflow-wrap: anywhere;
+      white-space: normal;
     }
+
     .warning-text {
-        color: #c2410c;
-        font-weight: 600;
-        margin-top: 1rem;
+      color: #c2410c;
+      font-weight: 600;
+      margin-top: 1rem;
     }
+
+    .date-selector {
+      background-color: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-left: 4px solid #0284c7;
+      padding: 1.5rem;
+      margin: 2rem 0;
+      border-radius: 8px;
+      text-align: left;
+    }
+
+    .date-selector h3 {
+      color: #075985;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+
+    .date-input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-top: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .date-input:focus {
+      outline: none;
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+    }
+
+    .login-status {
+      display: none;
+      background-color: #d1fae5;
+      border: 1px solid #a7f3d0;
+      border-left: 4px solid #10b981;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+      color: #065f46;
+      font-size: 0.9rem;
+    }
+
+    .login-status.show {
+      display: block;
+    }
+
+    .login-status.error {
+      background-color: #fee2e2;
+      border-color: #fecaca;
+      border-left-color: #dc2626;
+      color: #991b1b;
+    }
+
+    .whatsapp-section {
+      display: none;
+    }
+
+    .whatsapp-section.show {
+      display: block;
+    }
+
     @media (max-width: 420px) {
-      .success-card { padding: 1.25rem 1rem 1.75rem; }
-      .success-icon { width: 64px; height: 64px; }
+      .success-card {
+        padding: 1.25rem 1rem 1.75rem;
+      }
+
+      .success-icon {
+        width: 64px;
+        height: 64px;
+      }
     }
   </style>
 </head>
+
 <body class="bg-gray-50 flex items-center justify-center min-h-screen">
 
   <div class="success-card">
     <div class="success-icon">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+        stroke-width="2">
         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
       </svg>
     </div>
@@ -90,37 +203,110 @@
       Your account has been created. Live classes will start from 17th Oct daily 9 PM.
     </p>
 
+    <div id="login-status" class="login-status"></div>
+
     <div id="credentials-box" class="credentials-box">
-        <h3>Your Login Credentials</h3>
-        <p><strong>Email:</strong> <code id="user-email"></code></p>
-        <p><strong>Password:</strong> <code id="user-password"></code></p>
-        <p class="warning-text">
-            Please copy and save these details in a safe place. This is the only time your password will be shown.
-        </p>
+      <h3>Your Login Credentials</h3>
+      <p><strong>Email:</strong> <code id="user-email"></code></p>
+      <p><strong>Password:</strong> <code id="user-password"></code></p>
+      <p class="warning-text">
+        Please copy and save these details in a safe place. This is the only time your password will be shown.
+      </p>
     </div>
 
-    <a href="https://www.mystudentclub.com/learning-management-system/" class="block w-full text-center px-6 py-3 rounded-lg font-semibold text-lg btn-primary mb-4">
+    <div class="date-selector">
+      <h3>When are you completing your 1-year articleship?</h3>
+      <p style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.75rem;">
+        Select your expected completion date to join the appropriate WhatsApp group.
+      </p>
+      <input type="date" id="completion-date" class="date-input" onchange="updateWhatsAppLink()">
+    </div>
+
+    <div id="whatsapp-section" class="whatsapp-section">
+      <a id="whatsapp-link" href="#" target="_blank" rel="noopener" class="btn-whatsapp">
+        Join the WhatsApp Group for Updates
+      </a>
+    </div>
+
+    <a href="https://www.mystudentclub.com/learning-management-system/" class="btn-primary">
       Go to Learning Portal
     </a>
-    <a href="https://chat.whatsapp.com/CUrZBuHgqmqFLE7E8BxmOF?mode=wwt" target="_blank" rel="noopener" class="block w-full text-center px-6 py-3 rounded-lg font-semibold text-lg bg-green-600 text-white hover:bg-green-700 transition mb-4">
-      Join the WhatsApp Group for Updates
-    </a>
+
     <a href="/" class="text-sm text-gray-500 hover:text-gray-700">Back to Homepage</a>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const params = new URLSearchParams(window.location.search);
-        const email = params.get('email');
-        const password = params.get('password');
+    const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-        if (email && password) {
-            document.getElementById('user-email').textContent = email;
-            document.getElementById('user-password').textContent = password;
-            document.getElementById('credentials-box').style.display = 'block';
+    const whatsAppLinks = {
+      before2026: 'https://chat.whatsapp.com/KCpmIpxXIHw76Thxj3nzxx?mode=hqrt3',
+      from2026: 'https://chat.whatsapp.com/LxZ71AySaIvLE7bXRG6TfC?mode=hqrt3'
+    };
+
+    function updateWhatsAppLink() {
+      const dateInput = document.getElementById('completion-date');
+      const selectedDate = new Date(dateInput.value);
+      const cutoffDate = new Date('2025-12-31');
+
+      const whatsappSection = document.getElementById('whatsapp-section');
+      const whatsappLink = document.getElementById('whatsapp-link');
+
+      if (dateInput.value) {
+        if (selectedDate <= cutoffDate) {
+          whatsappLink.href = whatsAppLinks.before2026;
+        } else {
+          whatsappLink.href = whatsAppLinks.from2026;
         }
+        whatsappSection.classList.add('show');
+      } else {
+        whatsappSection.classList.remove('show');
+      }
+    }
+
+    async function attemptAutoLogin(email, password) {
+      const loginStatus = document.getElementById('login-status');
+
+      try {
+        loginStatus.textContent = 'Logging you in automatically...';
+        loginStatus.classList.add('show');
+
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        loginStatus.textContent = '✓ Successfully logged in! You can now access the Learning Portal.';
+        loginStatus.classList.remove('error');
+
+      } catch (error) {
+        console.error('Auto-login error:', error);
+        loginStatus.textContent = '⚠ Could not log you in automatically. Please use the credentials above to log in manually.';
+        loginStatus.classList.add('error');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const email = params.get('email');
+      const password = params.get('password');
+
+      if (email && password) {
+        document.getElementById('user-email').textContent = email;
+        document.getElementById('user-password').textContent = password;
+        document.getElementById('credentials-box').style.display = 'block';
+
+        // Attempt automatic login
+        attemptAutoLogin(email, password);
+      }
     });
   </script>
 
 </body>
+
 </html>
