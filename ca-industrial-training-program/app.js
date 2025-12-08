@@ -2,6 +2,11 @@ const generateData = () => {
   const baseURL = "https://www.mystudentclub.com/assets/";
 
   const allAvailableStudents = [
+    { name: "Vedang Sawant", course: "CA Industrial Training Program", linkedin: "https://www.linkedin.com/in/vedangsawant/", image: baseURL + "vedang.jpg", company: "Flipkart" },
+    { name: "Gaurav Jaat", course: "CA Industrial Training Program", linkedin: "https://www.linkedin.com/in/gauravjaat/", image: baseURL + "gaurav.jpg", company: "DE Shaw" },
+    { name: "Kanchan Kulhria", course: "CA Industrial Training Program", linkedin: "https://www.linkedin.com/in/kanchankulhria/", image: baseURL + "kanchan.jpg", company: "Amazon" },
+    { name: "Anisha Joshi", course: "CA Industrial Training Program", linkedin: "https://www.linkedin.com/in/anishajoshi76/", image: baseURL + "joshi.jpg", company: "Godrej Agrovet" },
+    { name: "Khushi Gandhi", course: "CA Industrial Training Program", linkedin: "https://www.linkedin.com/in/khushi-gandhi-40a37a242/", image: baseURL + "khushi.jpeg", company: "Morgan Stanley" },
     { name: "Rohit Varma", course: "CA Industrial Training Program", linkedin: "https://www.linkedin.com/in/rohit-varma-0bb4792b8/?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app", image: baseURL + "varma.jpg", company: "Cummins" },
     { name: "Ishaan Isham", course: "CA Industrial Training Program", linkedin: "https://www.linkedin.com/in/ishaanisham/", image: baseURL + "ishaan.jpg", company: "UBS" },
     { name: "Simran Singh", course: "CA Industrial Training Program", linkedin: "https://www.linkedin.com/in/simransingh-ca-aspirant/", image: baseURL + "simran.jpg", company: "Amazon" },
@@ -66,6 +71,11 @@ const generateData = () => {
 
 
   const prioritizedStudentsOrder = [
+    { name: "Vedang Sawant", company: "Flipkart" },
+    { name: "Gaurav Jaat", company: "DE Shaw" },
+    { name: "Kanchan Kulhria", company: "Amazon" },
+    { name: "Anisha Joshi", company: "Godrej Agrovet" },
+    { name: "Khushi Gandhi", company: "Morgan Stanley" },
     { name: "Rohit Varma", company: "Cummins" },
     { name: "Ishaan Isham", company: "UBS" },
     { name: "Simran Singh", company: "Amazon" },
