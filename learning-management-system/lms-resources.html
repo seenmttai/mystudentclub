@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,27 +20,32 @@
             padding-top: 100px;
             padding-bottom: 4rem;
         }
+
         .resources-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 var(--space-6);
         }
+
         .page-header {
             text-align: center;
             margin-bottom: 3rem;
         }
+
         .page-header h1 {
             font-size: var(--text-4xl);
             font-weight: 800;
             color: var(--primary-700);
             margin-bottom: var(--space-3);
         }
+
         .page-header p {
             font-size: var(--text-lg);
             color: var(--text-secondary);
             max-width: 700px;
             margin: 0 auto;
         }
+
         .info-box {
             background-color: var(--surface-elevated);
             border-radius: var(--radius-xl);
@@ -48,6 +54,7 @@
             border: 1px solid var(--border);
             box-shadow: var(--shadow-lg);
         }
+
         .info-box h2 {
             font-size: var(--text-2xl);
             font-weight: 700;
@@ -55,11 +62,13 @@
             margin-bottom: var(--space-6);
             text-align: center;
         }
+
         .info-box ul {
             list-style: none;
             display: grid;
             gap: var(--space-4);
         }
+
         .info-box li {
             background: var(--surface);
             padding: var(--space-4);
@@ -69,25 +78,29 @@
             align-items: center;
             gap: var(--space-4);
         }
+
         .info-box li p {
             margin: 0;
             color: var(--text-secondary);
             flex-grow: 1;
         }
+
         .info-box a {
             color: var(--secondary-500);
             font-weight: 600;
             text-decoration: underline;
         }
+
         .info-box a:hover {
             color: var(--secondary-600);
         }
-        
+
         .resources-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: var(--space-6);
         }
+
         .resource-card {
             background-color: var(--surface-elevated);
             border-radius: var(--radius-xl);
@@ -98,17 +111,20 @@
             display: flex;
             flex-direction: column;
         }
+
         .resource-card:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-xl);
             border-color: var(--secondary-400);
         }
+
         .resource-header {
             display: flex;
             align-items: center;
             gap: var(--space-4);
             margin-bottom: var(--space-3);
         }
+
         .resource-icon {
             width: 48px;
             height: 48px;
@@ -121,23 +137,27 @@
             font-size: var(--text-xl);
             flex-shrink: 0;
         }
+
         .resource-title {
             font-size: var(--text-lg);
             font-weight: 600;
             color: var(--text-primary);
         }
+
         .resource-description {
             color: var(--text-secondary);
             font-size: var(--text-sm);
             margin-bottom: var(--space-4);
             flex-grow: 1;
         }
+
         .resource-actions {
             display: flex;
             gap: 0.5rem;
             flex-shrink: 0;
             margin-top: auto;
         }
+
         .resource-btn {
             padding: 0.4rem 0.8rem;
             font-size: 0.8rem;
@@ -151,15 +171,24 @@
             gap: 0.3rem;
             cursor: pointer;
         }
-        .resource-btn i { font-size: 0.9em; }
+
+        .resource-btn i {
+            font-size: 0.9em;
+        }
+
         .resource-btn-download {
             background-color: var(--success-500, #059669);
             color: white;
             width: 100%;
             justify-content: center;
         }
-        .resource-btn-download:hover { background-color: var(--success-600, #047857); }
-        .loading-state, .empty-state {
+
+        .resource-btn-download:hover {
+            background-color: var(--success-600, #047857);
+        }
+
+        .loading-state,
+        .empty-state {
             grid-column: 1 / -1;
             text-align: center;
             padding: var(--space-12);
@@ -167,6 +196,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="app">
         <header class="glass-header">
@@ -182,17 +212,17 @@
                     </div>
                     <ul class="nav-links" :class="{ 'active': menuActive }">
                         <li><a href="index.html" class="nav-item">
-                            <i class="fas fa-graduation-cap"></i>
-                            <span>Courses</span>
-                        </a></li>
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Courses</span>
+                            </a></li>
                         <li><a href="lms-resources.html" class="active nav-item">
-                            <i class="fas fa-book-open"></i>
-                            <span>Resources</span>
-                        </a></li>
+                                <i class="fas fa-book-open"></i>
+                                <span>Resources</span>
+                            </a></li>
                         <li><a href="cv-reviewer.html" class="nav-item">
-                            <i class="fas fa-file-alt"></i>
-                            <span>CV Review</span>
-                        </a></li>
+                                <i class="fas fa-file-alt"></i>
+                                <span>CV Review</span>
+                            </a></li>
                         <li class="profile-link">
                             <a href="#" class="nav-item profile-nav" @click.prevent="handleProfileClick">
                                 <div class="profile-avatar">
@@ -211,18 +241,10 @@
             <div class="resources-container">
                 <div class="page-header">
                     <h1>LMS Resources Hub</h1>
-                    <p>A centralized place for all important links and materials related to your courses. Bookmark this page for easy access!</p>
+                    <p>A centralized place for all important links and materials related to your courses. Bookmark this
+                        page for easy access!</p>
                 </div>
 
-                <div class="info-box">
-                    <h2>Important Links</h2>
-                    <ul>
-                        <li><p>Join the WhatsApp Group for updates: <a href="https://chat.whatsapp.com/CUrZBuHgqmqFLE7E8BxmOF?mode=wwt" target="_blank" rel="noopener noreferrer">Click Here to Join</a></p></li>
-                        <li><p>Fill out your details in this form: <a href="https://forms.gle/SfzHWBmRmMSkooRq9" target="_blank" rel="noopener noreferrer">Click Here to Fill Form</a></p></li>
-                        <li><p>Upload your revised CV for review after Day 1: <a href="https://forms.gle/2bea7qcsBwUtYQvH8" target="_blank" rel="noopener noreferrer">Click Here to Upload CV</a></p></li>
-                        <li><p>Remember to check the resources attached under each lecture in the course player.</p></li>
-                    </ul>
-                </div>
 
                 <div class="page-header" style="margin-top: 4rem;">
                     <h2>Course Materials</h2>
@@ -242,7 +264,8 @@
                             <div class="resource-icon"><i :class="getResourceIcon(resource.type)"></i></div>
                             <h3 class="resource-title">{{ resource.title }}</h3>
                         </div>
-                        <p class="resource-description">{{ resource.description || 'Click to download this resource.' }}</p>
+                        <p class="resource-description">{{ resource.description || 'Click to download this resource.' }}
+                        </p>
                         <div class="resource-actions">
                             <button @click.stop="downloadResource(resource)" class="resource-btn resource-btn-download">
                                 <i class="fas fa-download"></i> Download
@@ -252,13 +275,14 @@
                 </div>
             </div>
         </main>
-        
+
         <footer class="footer-enhanced">
             <div class="footer-content">
                 <div class="footer-brand">
                     <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo">
                     <h4>My Student Club</h4>
-                    <p>Empowering the next generation of Chartered Accountants with world-class education and resources.</p>
+                    <p>Empowering the next generation of Chartered Accountants with world-class education and resources.
+                    </p>
                 </div>
                 <div class="footer-links">
                     <div class="footer-column">
@@ -278,7 +302,7 @@
     </div>
     <script type="module">
         import { createApp } from 'vue';
-        
+
         const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -300,7 +324,7 @@
                         this.user = session.user;
                         const { data: enrollments, error } = await supabase.from('enrollment').select('course').eq('uuid', this.user.id);
                         if (error || enrollments.length === 0) {
-                             window.location.href = 'index.html';
+                            window.location.href = 'index.html';
                         }
                     } else {
                         window.location.href = 'https://www.mystudentclub.com/login.html';
@@ -352,16 +376,16 @@
                     try {
                         const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(path, 300);
                         if (error) throw error;
-                        
+
                         const response = await fetch(data.signedUrl);
                         if (!response.ok) throw new Error('Network response was not ok.');
                         const blob = await response.blob();
                         const filename = path.split('/').pop() || 'download';
-                
+
                         if (window.flutter_inappwebview) {
                             const reader = new FileReader();
                             reader.readAsDataURL(blob);
-                            reader.onloadend = function() {
+                            reader.onloadend = function () {
                                 const base64data = reader.result;
                                 const base64Content = base64data.split(',')[1];
                                 window.flutter_inappwebview.callHandler('blobToBase64Handler', base64Content, filename);
@@ -388,4 +412,5 @@
         }).mount('#app');
     </script>
 </body>
+
 </html>
