@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI CV Builder - Full Suite</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Calibri:wght@400;700&family=Times+New+Roman&family=Arial&family=Roboto:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #1e293b;
+            --accent: #3b82f6;
+            --bg: #f8fafc;
+            --border: #e2e8f0;
+            --surface: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* --- UI COMPONENTS --- */
+        .editor {
+            width: 450px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.05);
+        }
+
+        .header {
+            height: 64px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            justify-content: space-between;
+            background: var(--surface);
+            color: var(--primary);
+        }
+
+        .logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .logo i {
+            color: var(--accent);
+        }
+
+        .scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            scrollbar-width: thin;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--surface);
+            overflow: hidden;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: box-shadow 0.2s;
+        }
+
+        .section:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .sec-head {
+            padding: 14px 20px;
+            background: #f8fafc;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            color: #475569;
+        }
+
+        .sec-head i {
+            transition: transform 0.2s;
+            color: #94a3b8;
+        }
+
+        .sec-head.collapsed i {
+            transform: rotate(-90deg);
+        }
+
+        .sec-body {
+            padding: 20px;
+            border-top: 1px solid var(--border);
+            display: block;
+            animation: slideDown 0.2s ease-out;
+        }
+
+        .sec-body.hidden {
+            display: none;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            margin-bottom: 16px;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        label {
+            display: block;
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .ai-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: #eff6ff;
+            color: var(--accent);
+            border: 1px solid #dbeafe;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .ai-btn:hover {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--border);
+            color: #475569;
+        }
+
+        .btn-outline:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .btn-add {
+            border: 1px dashed #cbd5e1;
+            color: var(--accent);
+            background: #f8fafc;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .btn-add:hover {
+            background: #eff6ff;
+            border-color: var(--accent);
+        }
+
+        .repeater {
+            position: relative;
+            padding: 20px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .del-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            color: #ef4444;
+            background: white;
+            border: 1px solid #fecaca;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .del-btn:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .preview {
+            flex: 1;
+            background: #334155;
+            padding: 40px;
+            overflow: auto;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            background: white;
+            box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.3);
+            transform-origin: top center;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .floating-actions {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .fab {
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+        }
+
+        .fab.secondary {
+            width: 48px;
+            height: 48px;
+            background: white;
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #e2e8f0;
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 16px;
+            border-top: 1px solid var(--border);
+            background: #f8fafc;
+        }
+
+        .t-thumb {
+            height: 60px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+            transition: all 0.2s;
+            text-align: center;
+            line-height: 1.2;
+            padding: 4px;
+        }
+
+        .t-thumb:hover {
+            border-color: #cbd5e1;
+            transform: translateY(-2px);
+        }
+
+        .t-thumb.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: #eff6ff;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        @media (max-width: 1024px) {
+            .editor {
+                width: 380px;
+            }
+
+            .preview {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .editor {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                transform: translateX(-100%);
+                padding-top: 60px;
+            }
+
+            .editor.active {
+                transform: translateX(0);
+            }
+
+            .header {
+                position: fixed;
+                top: 0;
+                width: 100%;
+                z-index: 30;
+                justify-content: space-between;
+            }
+
+            .preview {
+                width: 100%;
+                height: 100vh;
+                padding: 80px 10px 100px 10px;
+                align-items: flex-start;
+            }
+
+            .template-grid {
+                overflow-x: auto;
+                display: flex;
+                padding-bottom: 20px;
+            }
+
+            .t-thumb {
+                min-width: 80px;
+            }
+
+            .page {
+                transform: scale(0.45);
+                transform-origin: top center;
+                margin-bottom: -150mm;
+            }
+
+            .mobile-toggle {
+                display: block;
+            }
+        }
+
+        /* --- TEMPLATE CSS (ALL 7) --- */
+        /* Print Resets */
+        .page * {
+            box-sizing: border-box;
+        }
+
+        .page table {
+            width: 100%;
+            border-collapse: collapse;
+            page-break-inside: avoid;
+        }
+
+        .page tr,
+        .page li,
+        .page div {
+            page-break-inside: avoid;
+        }
+
+        /* 1. Pro Black */
+        .t1 {
+            padding: 40pt;
+            font-family: 'Arial', sans-serif;
+            color: #000;
+            line-height: 1.35;
+        }
+
+        .t1 .h-name {
+            font-size: 24pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .t1 .h-contact {
+            font-size: 10pt;
+            text-align: center;
+            margin-bottom: 15pt;
+        }
+
+        .t1 .sec-title {
+            background: #000;
+            color: #fff;
+            padding: 3pt 6pt;
+            font-weight: 700;
+            font-size: 11pt;
+            text-transform: uppercase;
+            margin: 12pt 0 8pt 0;
+            border: 1.5pt solid #000;
+        }
+
+        .t1 table,
+        .t1 th,
+        .t1 td {
+            border: 1pt solid #000;
+            font-size: 10pt;
+        }
+
+        .t1 th {
+            background: #e5e5e5;
+            font-weight: 700;
+            padding: 4pt;
+            text-align: center;
+        }
+
+        .t1 td {
+            padding: 4pt;
+        }
+
+        .t1 .job-bar {
+            background: #e5e5e5;
+            border: 1.5pt solid #000;
+            border-top: none;
+            padding: 3pt 6pt;
+            font-weight: 700;
+            font-size: 10pt;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .t1 .job-content {
+            border: 1.5pt solid #000;
+            border-top: none;
+            padding: 6pt 12pt;
+            font-size: 10pt;
+        }
+
+        .t1 ul {
+            margin: 0;
+            padding-left: 15pt;
+        }
+
+        /* 2. Corporate Blue */
+        .t2 {
+            padding: 35pt;
+            font-family: 'Calibri', sans-serif;
+            color: #000;
+        }
+
+        .t2 .h-name {
+            font-size: 26pt;
+            font-weight: 700;
+            text-align: center;
+            color: #1e3a8a;
+        }
+
+        .t2 .h-contact {
+            font-size: 10pt;
+            text-align: center;
+            margin-bottom: 15pt;
+            color: #333;
+        }
+
+        .t2 .sec-title {
+            background: #1e3a8a;
+            color: white;
+            padding: 3pt 8pt;
+            font-weight: 700;
+            font-size: 11pt;
+            text-transform: uppercase;
+            margin-top: 12pt;
+            border-bottom: 2pt solid #000;
+        }
+
+        .t2 table {
+            font-size: 10pt;
+            margin-top: 5pt;
+            border: 1pt solid #000;
+        }
+
+        .t2 th {
+            background: #dbeafe;
+            font-weight: 700;
+            border: 1pt solid #000;
+            padding: 4pt;
+        }
+
+        .t2 td {
+            border: 1pt solid #000;
+            padding: 4pt;
+            text-align: center;
+        }
+
+        .t2 .job-wrap {
+            margin-top: 8pt;
+            border: 1pt solid #9ca3af;
+            padding: 0;
+        }
+
+        .t2 .job-head {
+            background: #dbeafe;
+            padding: 4pt 8pt;
+            font-weight: 700;
+            font-size: 10.5pt;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1pt solid #9ca3af;
+        }
+
+        .t2 .job-content {
+            padding: 6pt 10pt;
+        }
+
+        .t2 ul {
+            margin: 0;
+            padding-left: 15pt;
+            font-size: 10pt;
+        }
+
+        /* 3. Grid Layout */
+        .t3 {
+            padding: 30pt;
+            font-family: 'Calibri', sans-serif;
+            color: #1f2937;
+        }
+
+        .t3 .h-wrap {
+            display: flex;
+            border-bottom: 2pt solid #374151;
+            padding-bottom: 10pt;
+            margin-bottom: 10pt;
+        }
+
+        .t3 .h-name {
+            font-size: 28pt;
+            font-weight: 700;
+            flex: 1;
+        }
+
+        .t3 .h-contact {
+            width: 35%;
+            font-size: 9pt;
+            border-left: 1pt solid #374151;
+            padding-left: 10pt;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .t3 .sec-title {
+            background: #93c5fd;
+            padding: 3pt 8pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 11pt;
+            margin-top: 15pt;
+            border: 1pt solid #374151;
+        }
+
+        .t3 .job-head {
+            display: flex;
+            justify-content: space-between;
+            background: #f3f4f6;
+            border: 1pt solid #e5e7eb;
+            padding: 3pt 6pt;
+            font-weight: 700;
+            font-size: 10.5pt;
+            margin-top: 8pt;
+        }
+
+        .t3 ul {
+            margin: 5pt 0;
+            padding-left: 18pt;
+            font-size: 10pt;
+        }
+
+        .t3 table {
+            font-size: 10pt;
+            margin-top: 5pt;
+            border: 1pt solid #e5e7eb;
+        }
+
+        .t3 th {
+            background: #eff6ff;
+            border: 1pt solid #e5e7eb;
+            padding: 4pt;
+            font-weight: 700;
+        }
+
+        .t3 td {
+            border: 1pt solid #e5e7eb;
+            padding: 4pt;
+        }
+
+        /* 4. Modern Blue/Grey */
+        .t4 {
+            padding: 35pt;
+            font-family: 'Calibri', sans-serif;
+        }
+
+        .t4 .h-name {
+            font-size: 30pt;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 5pt;
+        }
+
+        .t4 .h-contact {
+            font-size: 10pt;
+            text-align: center;
+            color: #4b5563;
+        }
+
+        .t4 .sec-title {
+            background: #60a5fa;
+            color: white;
+            padding: 4pt 8pt;
+            font-weight: 700;
+            font-size: 11pt;
+            text-transform: uppercase;
+            margin-top: 15pt;
+        }
+
+        .t4 .job-row {
+            background: #e0f2fe;
+            display: flex;
+            justify-content: space-between;
+            padding: 4pt 8pt;
+            font-weight: 700;
+            font-size: 10.5pt;
+            margin-top: 8pt;
+            border: 1pt solid #bfdbfe;
+        }
+
+        .t4 .job-content {
+            border: 1pt solid #bfdbfe;
+            border-top: none;
+            padding: 8pt;
+            font-size: 10pt;
+        }
+
+        .t4 table {
+            font-size: 10pt;
+            margin-top: 5pt;
+            border: 1pt solid #bfdbfe;
+        }
+
+        .t4 th {
+            background: #eff6ff;
+            font-weight: 700;
+            padding: 4pt;
+            border: 1pt solid #bfdbfe;
+        }
+
+        .t4 td {
+            padding: 4pt;
+            border: 1pt solid #bfdbfe;
+            text-align: center;
+        }
+
+        /* 5. Times Serif */
+        .t5 {
+            padding: 40pt;
+            font-family: 'Times New Roman', serif;
+            color: #000;
+        }
+
+        .t5 .h-name {
+            font-size: 26pt;
+            font-weight: 700;
+        }
+
+        .t5 .h-contact {
+            font-size: 11pt;
+            margin-bottom: 10pt;
+            border-bottom: 1pt solid #000;
+            padding-bottom: 10pt;
+        }
+
+        .t5 .sec-title {
+            background: #1e293b;
+            color: white;
+            padding: 4pt 8pt;
+            font-weight: 700;
+            font-size: 11pt;
+            text-transform: uppercase;
+            margin-top: 15pt;
+        }
+
+        .t5 table {
+            font-size: 11pt;
+            margin-top: 0;
+            border: 2pt solid #000;
+        }
+
+        .t5 td {
+            border: 1pt solid #000;
+            padding: 4pt;
+            vertical-align: top;
+        }
+
+        .t5 .gray-lbl {
+            background: #e2e8f0;
+            font-weight: 700;
+            width: 25%;
+        }
+
+        .t5 .job-head {
+            background: #e2e8f0;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1pt solid #000;
+            padding: 4pt;
+            font-size: 11pt;
+        }
+
+        .t5 ul {
+            margin: 4pt 0;
+            padding-left: 18pt;
+            font-size: 11pt;
+        }
+
+        /* 6. Header Blocks */
+        .t6 {
+            padding: 35pt;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .t6 .h-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 1pt solid #ccc;
+            padding-bottom: 8pt;
+        }
+
+        .t6 .h-name {
+            font-size: 32pt;
+            font-weight: 900;
+        }
+
+        .t6 .h-tag {
+            font-size: 14pt;
+            color: #666;
+            font-weight: 700;
+        }
+
+        .t6 .c-bar {
+            background: #f3f4f6;
+            padding: 6pt 30pt;
+            margin: 10pt -30pt;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10pt;
+        }
+
+        .t6 .sec-title {
+            background: #1e3a8a;
+            color: white;
+            padding: 4pt 8pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 15pt;
+            font-size: 11pt;
+        }
+
+        .t6 .job-head {
+            background: #f3f4f6;
+            padding: 4pt 8pt;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            border: 1pt solid #d1d5db;
+            font-size: 10.5pt;
+            margin-top: 8pt;
+        }
+
+        .t6 table {
+            width: 100%;
+            border: 1pt solid #d1d5db;
+            border-top: none;
+            font-size: 10pt;
+        }
+
+        .t6 .lbl-col {
+            background: #f9fafb;
+            width: 20%;
+            font-weight: 700;
+            text-align: center;
+            vertical-align: middle;
+            padding: 5pt;
+            border-right: 1pt solid #d1d5db;
+        }
+
+        .t6 .dat-col {
+            padding: 6pt;
+        }
+
+        .t6 ul {
+            margin: 0;
+            padding-left: 15pt;
+        }
+
+        /* 7. SPS Clean (Default Strict) */
+        .t7 {
+            padding: 30pt 35pt;
+            font-family: 'Times New Roman', serif;
+            color: #000;
+            line-height: 1.25;
+        }
+
+        .t7 .h-name {
+            font-size: 28pt;
+            font-weight: 700;
+            text-align: center;
+            text-decoration: underline;
+            margin-bottom: 4pt;
+        }
+
+        .t7 .h-contact {
+            font-size: 11pt;
+            text-align: center;
+            margin-bottom: 15pt;
+        }
+
+        .t7 .sec-title {
+            background: #4f81bc;
+            color: #fff;
+            border: 1pt solid #1f3855;
+            padding: 2pt 5pt;
+            font-weight: 700;
+            font-size: 11pt;
+            text-transform: uppercase;
+            margin: 12pt 0 6pt 0;
+        }
+
+        .t7 p {
+            font-size: 11pt;
+            text-align: justify;
+            margin-bottom: 4pt;
+        }
+
+        .t7 table {
+            border: 1pt solid #000;
+            font-size: 11pt;
+            margin-bottom: 5pt;
+        }
+
+        .t7 th,
+        .t7 td {
+            border: 1pt solid #000;
+            padding: 3pt 4pt;
+            vertical-align: top;
+        }
+
+        .t7 th {
+            text-align: center;
+            font-weight: 700;
+            background: #fff;
+        }
+
+        .t7 td {
+            text-align: center;
+        }
+
+        .t7 .job-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 11pt;
+            margin-top: 8pt;
+            border-bottom: 1pt solid #000;
+            padding-bottom: 1pt;
+            margin-bottom: 3pt;
+        }
+
+        .t7 ul {
+            margin: 0;
+            padding-left: 15pt;
+        }
+
+        .t7 li {
+            font-size: 11pt;
+            margin-bottom: 2pt;
+            text-align: justify;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="loader" id="loader">
+        <div class="spinner"></div>
+        <div id="loader-text" style="font-size: 1.1rem;">AI Working...</div>
+    </div>
+
+    <div class="header">
+        <div class="logo"><i class="fas fa-layer-group"></i> StrictCV</div>
+        <button class="btn btn-outline mobile-toggle" style="display:none;" onclick="toggleEditor()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div style="display: flex; gap:10px;">
+            <label for="file-upload" class="btn btn-outline" style="font-size:0.85rem; padding:8px 12px;">
+                <i class="fas fa-cloud-upload-alt"></i> Import
+            </label>
+            <input type="file" id="file-upload" style="display:none" accept="image/jpeg,image/png,application/pdf">
+        </div>
+    </div>
+
+    <div class="editor" id="editor-panel">
+        <div class="scroll-area">
+            <!-- Personal Info -->
+            <div class="section">
+                <div class="sec-head" onclick="toggleSec(this)">Personal Details <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="sec-body">
+                    <label>Full Name</label><input id="p-name" oninput="render()">
+                    <label>Contact (Phone | Email | LinkedIn)</label><input id="p-contact" oninput="render()">
+                    <label>Role / Tagline (Templates 6 & 3)</label><input id="p-tagline" oninput="render()">
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="section">
+                <div class="sec-head" onclick="toggleSec(this)">Career Objective <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="sec-body">
+                    <div class="input-wrapper">
+                        <textarea id="summary" oninput="render()"
+                            placeholder="Short professional summary..."></textarea>
+                        <button class="ai-btn" onclick="refine('summary', 'summary')" title="AI Shorten"><i
+                                class="fas fa-magic"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Education -->
+            <div class="section">
+                <div class="sec-head" onclick="toggleSec(this)">Education <i class="fas fa-chevron-down"></i></div>
+                <div class="sec-body" id="edu-list"></div>
+                <div style="padding:0 20px 20px 20px;">
+                    <button class="btn btn-add" onclick="addEdu()">+ Add Qualification</button>
+                </div>
+            </div>
+
+            <!-- Experience -->
+            <div class="section">
+                <div class="sec-head" onclick="toggleSec(this)">Experience <i class="fas fa-chevron-down"></i></div>
+                <div class="sec-body" id="exp-list"></div>
+                <div style="padding:0 20px 20px 20px;">
+                    <button class="btn btn-add" onclick="addExp()">+ Add Job</button>
+                </div>
+            </div>
+
+            <!-- Skills -->
+            <div class="section">
+                <div class="sec-head" onclick="toggleSec(this)">Skills <i class="fas fa-chevron-down"></i></div>
+                <div class="sec-body">
+                    <textarea id="skills" oninput="render()" placeholder="List skills..."></textarea>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="sec-head" onclick="toggleSec(this)">Template Style <i class="fas fa-chevron-down"></i></div>
+                <div class="sec-body open" style="padding:0;">
+                    <div class="template-grid">
+                        <div id="t7-thumb" class="t-thumb active" onclick="setTemplate('template_7')">Strict<br>Minimal
+                        </div>
+                        <div id="t1-thumb" class="t-thumb" onclick="setTemplate('template_1')">Pro<br>Black</div>
+                        <div id="t2-thumb" class="t-thumb" onclick="setTemplate('template_2')">Corp<br>Blue</div>
+                        <div id="t3-thumb" class="t-thumb" onclick="setTemplate('template_3')">Grid<br>Layout</div>
+                        <div id="t4-thumb" class="t-thumb" onclick="setTemplate('template_4')">Modern<br>Blue</div>
+                        <div id="t5-thumb" class="t-thumb" onclick="setTemplate('template_5')">Times<br>Serif</div>
+                        <div id="t6-thumb" class="t-thumb" onclick="setTemplate('template_6')">Header<br>Blocks</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="preview">
+        <div class="page t7" id="cv-page"></div>
+    </div>
+
+    <div class="floating-actions">
+        <button class="fab secondary" onclick="optimizeCV()" title="AI Optimize Layout"><i
+                class="fas fa-wand-magic-sparkles"></i></button>
+        <button class="fab" onclick="downloadPDF()" title="Download PDF"><i class="fas fa-download"></i></button>
+    </div>
+
+    <script>
+        const WORKER_URL = "https://cv-maker.bhansalimanan55.workers.dev";
+        let currTemplate = 'template_7';
+        let cvData = {
+            personal: { name: "Padam Bhansali", contact: "+91 7228881182 | capadambhansali@gmail.com | Bengaluru", tagline: "Chartered Accountant" },
+            summary: "Aspiring finance professional seeking industrial training to leverage audit experience and analytical skills for organizational growth.",
+            education: [
+                { degree: "CA Final", institute: "ICAI", year: "Nov 2024", remarks: "State Rank 1" },
+                { degree: "B.Com", institute: "Mithibai College", year: "2023", remarks: "CGPA 8.11" }
+            ],
+            experience: [
+                { role: "Article Trainee", company: "JMMK & Co.", dates: "Feb 2024 - Present", bullets: ["Led statutory audit process for multiple clients across various industries.", "Assisted in restatement of financial statements and consolidated reports.", "Detected significant duplicate vouchers amounting to 70 Lakhs."] }
+            ],
+            skills: "Financial Modeling, MS Excel, Tally Prime, Statutory Audit, GST Compliance"
+        };
+
+        // --- RENDERERS FOR ALL 7 TEMPLATES ---
+        function render() {
+            // Scrape data
+            cvData.personal = {
+                name: document.getElementById('p-name').value,
+                contact: document.getElementById('p-contact').value,
+                tagline: document.getElementById('p-tagline').value
+            };
+            cvData.summary = document.getElementById('summary').value;
+            cvData.skills = document.getElementById('skills').value;
+            cvData.education = Array.from(document.querySelectorAll('.edu-item')).map(el => ({ degree: el.querySelector('.d').value, institute: el.querySelector('.i').value, year: el.querySelector('.y').value, remarks: el.querySelector('.r').value }));
+            cvData.experience = Array.from(document.querySelectorAll('.exp-item')).map(el => ({ role: el.querySelector('.r').value, company: el.querySelector('.c').value, dates: el.querySelector('.d').value, bullets: el.querySelector('.b').value.split('\n').filter(x => x.trim()) }));
+
+            const page = document.getElementById('cv-page');
+            page.className = `page ${currTemplate.replace('template_', 't')}`;
+            let h = '';
+
+            const t = currTemplate;
+            const p = cvData.personal;
+
+            // HEADER VARIATIONS
+            if (t === 'template_1') h += `<div class="h-name">${p.name}</div><div class="h-contact">${p.contact}</div>`;
+            else if (t === 'template_2') h += `<div class="header-main"><div class="h-name">${p.name}</div><div class="h-contact">${p.contact}</div></div>`;
+            else if (t === 'template_3') h += `<div class="h-wrap"><div class="h-name">${p.name}</div><div class="h-contact">${p.contact.replace(/\|/g, '<br>')}</div></div>`;
+            else if (t === 'template_4') h += `<div class="h-name">${p.name}</div><div class="h-contact">${p.contact}</div>`;
+            else if (t === 'template_5') h += `<div class="h-name">${p.name}</div><div class="h-contact">${p.contact}</div>`;
+            else if (t === 'template_6') h += `<div class="h-wrap"><div class="h-name">${p.name}</div><div class="h-tag">${p.tagline}</div></div><div class="c-bar">${p.contact.split('|').map(s => `<span>${s}</span>`).join('')}</div>`;
+            else h += `<div class="h-name">${p.name}</div><div class="h-contact">${p.contact}</div>`; // T7
+
+            // SUMMARY
+            if (cvData.summary) {
+                if (t === 'template_5') h += `<div class="sec-title">Career Objective</div><table><tr><td class="gray-lbl">Summary</td><td>${cvData.summary}</td></tr></table>`;
+                else {
+                    h += `<div class="sec-title">Career Objective</div>`;
+                    if (t === 'template_7') h += `<p>${cvData.summary}</p>`;
+                    else h += `<div style="font-size:10pt; margin-top:5pt;">${cvData.summary}</div>`;
+                }
+            }
+
+            // EDUCATION
+            if (cvData.education.length) {
+                const head = `<thead><tr><th>Degree</th><th>Institute</th><th>Year</th><th>Remarks</th></tr></thead>`;
+                const rows = cvData.education.map(e => `<tr><td>${e.degree}</td><td>${e.institute}</td><td>${e.year}</td><td>${e.remarks}</td></tr>`).join('');
+                h += `<div class="sec-title">Education</div><table>${head}<tbody>${rows}</tbody></table>`;
+            }
+
+            // EXPERIENCE
+            if (cvData.experience.length) {
+                h += `<div class="sec-title">Work Experience</div>`;
+                cvData.experience.forEach(e => {
+                    const bulls = `<ul>${e.bullets.map(b => `<li>${b}</li>`).join('')}</ul>`;
+
+                    if (t === 'template_1') h += `<div class="job-bar"><span>${e.role} | ${e.company}</span><span>${e.dates}</span></div><div class="job-content">${bulls}</div>`;
+                    else if (t === 'template_2') h += `<div class="job-wrap"><div class="job-head"><span>${e.role} | ${e.company}</span><span>${e.dates}</span></div><div class="job-content">${bulls}</div></div>`;
+                    else if (t === 'template_3') h += `<div class="job-head"><span>${e.role} | ${e.company}</span><span>${e.dates}</span></div>${bulls}`;
+                    else if (t === 'template_4') h += `<div class="job-row"><span>${e.role} | ${e.company}</span><span>${e.dates}</span></div><div class="job-content">${bulls}</div>`;
+                    else if (t === 'template_5') h += `<div class="job-head"><span>${e.role} - ${e.company}</span><span>${e.dates}</span></div>${bulls}`;
+                    else if (t === 'template_6') h += `<div class="job-head"><span>${e.company} - ${e.role}</span><span>${e.dates}</span></div><table><tr><td class="lbl-col">Details</td><td class="dat-col">${bulls}</td></tr></table>`;
+                    else h += `<div class="job-row"><span>${e.role} | ${e.company}</span><span>${e.dates}</span></div>${bulls}`; // T7
+                });
+            }
+
+            // SKILLS
+            if (cvData.skills) {
+                h += `<div class="sec-title">Skills</div>`;
+                if (t === 'template_1') h += `<table><tr><td style="font-weight:700; width:15%">Skills</td><td>${cvData.skills}</td></tr></table>`;
+                else h += `<p style="margin-top:5pt;">${cvData.skills}</p>`;
+            }
+
+            page.innerHTML = h;
+        }
+
+        // --- FORM MANAGEMENT ---
+        function fillForm(data) {
+            document.getElementById('p-name').value = data.personal?.name || '';
+            document.getElementById('p-contact').value = data.personal?.contact || '';
+            document.getElementById('p-tagline').value = data.personal?.tagline || '';
+            document.getElementById('summary').value = data.summary || '';
+            document.getElementById('skills').value = data.skills || '';
+
+            const eduList = document.getElementById('edu-list'); eduList.innerHTML = '';
+            (data.education || []).forEach(e => addEdu(e));
+
+            const expList = document.getElementById('exp-list'); expList.innerHTML = '';
+            (data.experience || []).forEach(e => addExp(e));
+            render();
+        }
+
+        function addEdu(d = {}) {
+            const div = document.createElement('div'); div.className = 'repeater edu-item';
+            div.innerHTML = `<button class="del-btn" onclick="this.parentElement.remove(); render()"><i class="fas fa-times"></i></button>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div><label>Degree</label><input class="d" value="${d.degree || ''}" oninput="render()"></div>
+                <div><label>Institute</label><input class="i" value="${d.institute || ''}" oninput="render()"></div>
+                <div><label>Year</label><input class="y" value="${d.year || ''}" oninput="render()"></div>
+                <div><label>Remarks</label><input class="r" value="${d.remarks || ''}" oninput="render()"></div>
+            </div>`;
+            document.getElementById('edu-list').appendChild(div);
+        }
+
+        function addExp(d = {}) {
+            const div = document.createElement('div'); div.className = 'repeater exp-item';
+            div.innerHTML = `<button class="del-btn" onclick="this.parentElement.remove(); render()"><i class="fas fa-times"></i></button>
+            <label>Role</label><input class="r" value="${d.role || ''}" oninput="render()">
+            <label>Company</label><input class="c" value="${d.company || ''}" oninput="render()">
+            <label>Dates</label><input class="d" value="${d.dates || ''}" oninput="render()">
+            <label>Bullets</label>
+            <div class="input-wrapper">
+                <textarea class="b" oninput="render()">${(d.bullets || []).join('\n')}</textarea>
+                <button class="ai-btn" onclick="refine(this.previousElementSibling, 'bullets')" title="AI Refine"><i class="fas fa-magic"></i></button>
+            </div>`;
+            document.getElementById('exp-list').appendChild(div);
+        }
+
+        // --- INTERACTION ---
+        function setTemplate(t) {
+            currTemplate = t;
+            document.querySelectorAll('.t-thumb').forEach(el => el.classList.remove('active'));
+            document.getElementById(t.replace('template_', 't') + '-thumb').classList.add('active');
+            render();
+        }
+        function toggleSec(el) { el.classList.toggle('collapsed'); el.nextElementSibling.classList.toggle('hidden'); }
+        function toggleEditor() { document.getElementById('editor-panel').classList.toggle('active'); }
+
+        // --- API & EXPORT ---
+        async function apiCall(endpoint, body, loadingText) {
+            document.getElementById('loader').style.display = 'flex';
+            document.querySelector('#loader div:last-child').innerText = loadingText;
+            try {
+                const res = await fetch(`${WORKER_URL}${endpoint}`, { method: 'POST', body: JSON.stringify(body) });
+                if (!res.ok) throw new Error(`Status ${res.status}`);
+                const r = await res.json();
+                if (r.ok) return r;
+                else throw new Error(r.error);
+            } catch (e) {
+                alert(`Error: ${e.message}`);
+                return null;
+            } finally {
+                document.getElementById('loader').style.display = 'none';
+            }
+        }
+
+        async function optimizeCV() {
+            const res = await apiCall('/generate', { user_data: cvData, template_id: currTemplate }, "Enforcing Strict Limits...");
+            if (res) fillForm(res.data);
+        }
+
+        async function refine(el, type) {
+            const res = await apiCall('/refine-section', { text: el.value, field_type: type, template_id: currTemplate }, `Refining ${type}...`);
+            if (res) { el.value = res.refined_text; render(); }
+        }
+
+        document.getElementById('file-upload').addEventListener('change', async (e) => {
+            if (!e.target.files.length) return;
+            const reader = new FileReader();
+            reader.onload = async () => {
+                const b64 = reader.result.split(',')[1];
+                const res = await apiCall('/convert', { images: [b64], target_template_id: currTemplate }, "Extracting CV Data...");
+                if (res) fillForm(res.data);
+            };
+            reader.readAsDataURL(e.target.files[0]);
+            e.target.value = '';
+        });
+
+        function downloadPDF() {
+            const el = document.getElementById('cv-page');
+            const opt = {
+                margin: 0,
+                filename: `CV_${cvData.personal.name.replace(/\s/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 1.0 },
+                html2canvas: { scale: 3, useCORS: true, letterRendering: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(el).save();
+        }
+
+        // --- INIT ---
+        if (window.innerWidth <= 768) { document.querySelector('.mobile-toggle').style.display = 'block'; }
+        fillForm(cvData);
+        setTemplate('template_7');
+
+        // Auto-Scale Logic
+        function autoScale() {
+            const mw = document.querySelector('.preview').clientWidth;
+            const s = Math.min(1, (mw - 40) / 794);
+            document.getElementById('cv-page').style.transform = `scale(${s})`;
+            document.getElementById('cv-page').style.marginBottom = `-${(1 - s) * 1123}px`;
+        }
+        window.onresize = autoScale;
+        setTimeout(autoScale, 100);
+
+    </script>
+</body>
+
+</html>
