@@ -28,6 +28,9 @@ let allLocations = [];
 let allCategories = {};
 let currentFcmToken = null;
 let firebaseMessaging;
+// Cache sorted locations/categories for performance
+let cachedSortedLocations = null;
+let cachedSortedCategories = null;
 
 const FIREBASE_CONFIG = {
     apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
@@ -99,6 +102,11 @@ function setActivePortalTab() {
     }
 
     document.querySelectorAll(activeSelector).forEach(el => el.classList.add('active'));
+    
+    // Update cache when table changes (categories are table-specific)
+    if (allLocations.length > 0 || Object.keys(allCategories).length > 0) {
+        updateFilterCache();
+    }
 }
 
 function renderJobCard(job) {
@@ -208,6 +216,20 @@ function closeModal() {
     document.body.style.overflow = 'auto';
 }
 
+// Update cache when filter options change
+function updateFilterCache() {
+    cachedSortedLocations = allLocations.length > 0 
+        ? [...allLocations].sort((a, b) => b.length - a.length) 
+        : [];
+
+    
+    const currentCategories = allCategories[currentTable] || [];
+    cachedSortedCategories = currentCategories.length > 0
+        ? [...currentCategories].sort((a, b) => b.length - a.length)
+        : [];
+
+}
+
 async function fetchFilterOptions() {
     try {
         const [locationsResponse, categoriesResponse] = await Promise.all([
@@ -221,21 +243,24 @@ async function fetchFilterOptions() {
 
         allLocations = await locationsResponse.json();
         allCategories = await categoriesResponse.json();
+        updateFilterCache();
 
     } catch (error) {
         console.error("Error fetching filter options from JSON:", error);
         allLocations = [];
         allCategories = {};
+        updateFilterCache();
     }
 }
 
 async function fetchJobs() {
     if (isFetching) return;
     isFetching = true;
-    dom.loader.style.display = 'block';
-    dom.loadMoreButton.style.display = 'none';
+    if (dom.loader) dom.loader.style.display = 'block';
+    if (dom.loadMoreButton) dom.loadMoreButton.style.display = 'none';
 
     try {
+        // Cache select columns string
         let selectColumns = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID"';
         if (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs") {
             selectColumns += ', Experience';
@@ -243,18 +268,33 @@ async function fetchJobs() {
 
         let query = supabaseClient.from(currentTable).select(selectColumns);
 
+        // Optimize keyword query building - pre-process terms once
         if (state.keywords.length > 0) {
-            const keywordOrs = state.keywords.map(k => `Company.ilike.%${k}%,Description.ilike.%${k}%,Category.ilike.%${k}%,Location.ilike.%${k}%`).join(',');
-            query = query.or(keywordOrs);
+            const keywordOrs = [];
+            for (let i = 0; i < state.keywords.length; i++) {
+                // wildcard matching for spaces to find "PhonePe" from "Phone Pe"
+                const flexibleTerm = state.keywords[i].trim().replace(/\s+/g, '%');
+                keywordOrs.push(`Company.ilike.%${flexibleTerm}%,Description.ilike.%${flexibleTerm}%,Category.ilike.%${flexibleTerm}%,Location.ilike.%${flexibleTerm}%`);
+            }
+            query = query.or(keywordOrs.join(','));
         }
+        
         if (state.locations.length > 0) {
-            const locationOr = state.locations.map(loc => `Location.ilike.%${loc}%`).join(',');
-            query = query.or(locationOr);
+            const locationOr = [];
+            for (let i = 0; i < state.locations.length; i++) {
+                locationOr.push(`Location.ilike.%${state.locations[i]}%`);
+            }
+            query = query.or(locationOr.join(','));
         }
+        
         if (state.categories.length > 0) {
-            const categoryOr = state.categories.map(cat => `Category.ilike.%${cat}%`).join(',');
-            query = query.or(categoryOr);
+            const categoryOr = [];
+            for (let i = 0; i < state.categories.length; i++) {
+                categoryOr.push(`Category.ilike.%${state.categories[i]}%`);
+            }
+            query = query.or(categoryOr.join(','));
         }
+        
         if (state.salary) {
             if (state.salary.endsWith('+')) {
                 const minValue = parseInt(state.salary);
@@ -264,11 +304,15 @@ async function fetchJobs() {
                 if (!isNaN(min) && !isNaN(max)) query = query.gte('Salary', min).lte('Salary', max);
             }
         }
+        
         if (state.experience && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
             query = query.eq('Experience', state.experience);
         }
+        
         if (state.applicationStatus === 'not_applied' && currentSession && appliedJobIds.size > 0) {
-            query = query.not('id', 'in', `(${[...appliedJobIds].join(',')})`);
+            // Optimize: use array directly instead of spread operator for large sets
+            const appliedIds = Array.from(appliedJobIds);
+            query = query.not('id', 'in', appliedIds);  // Use array, not string
         }
 
         const [sortCol, sortDir] = state.sortBy.split('_');
@@ -284,21 +328,44 @@ async function fetchJobs() {
         if (error) throw error;
 
         if (data && data.length > 0) {
-            data.forEach(job => dom.jobsContainer.appendChild(renderJobCard(job)));
+            // Batch DOM operations using DocumentFragment for better performance
+            const fragment = document.createDocumentFragment();
+            for (let i = 0; i < data.length; i++) {
+                fragment.appendChild(renderJobCard(data[i]));
+            }
+            if (dom.jobsContainer) {
+                dom.jobsContainer.appendChild(fragment);
+            }
+            
             page++;
             hasMoreData = data.length === limit;
-            if (hasMoreData) dom.loadMoreButton.style.display = 'block';
+            if (hasMoreData && dom.loadMoreButton) {
+                dom.loadMoreButton.style.display = 'block';
+            }
         } else {
             hasMoreData = false;
-            if (page === 0) dom.jobsContainer.innerHTML = '<p class="no-jobs-found">No jobs found matching your criteria.</p>';
+            if (page === 0 && dom.jobsContainer) {
+                dom.jobsContainer.innerHTML = '<p class="no-jobs-found">No jobs found matching your criteria.</p>';
+            }
         }
     } catch (error) {
-        dom.jobsContainer.innerHTML = `<p class="no-jobs-found" style="color:red;">Failed to load jobs: ${error.message}</p>`;
+        if (dom.jobsContainer) {
+            dom.jobsContainer.innerHTML = `<p class="no-jobs-found" style="color:red;">Failed to load jobs: ${error.message}</p>`;
+        }
     } finally {
         isFetching = false;
-        dom.loader.style.display = 'none';
-        renderActiveFilterPills();
-        syncFiltersUI();
+        if (dom.loader) dom.loader.style.display = 'none';
+        // Defer UI updates to avoid blocking render
+        const updateUI = () => {
+            renderActiveFilterPills();
+            syncFiltersUI();
+        };
+        if (typeof requestAnimationFrame !== 'undefined') {
+            requestAnimationFrame(updateUI);
+        } else {
+            // Fallback for very old browsers
+            setTimeout(updateUI, 0);
+        }
     }
 }
 
@@ -306,7 +373,7 @@ function resetAndFetch() {
     clearTimeout(debounceTimeout);
     debounceTimeout = setTimeout(() => {
         page = 0;
-        dom.jobsContainer.innerHTML = '';
+        if (dom.jobsContainer) dom.jobsContainer.innerHTML = '';
         hasMoreData = true;
         fetchJobs();
     }, 350);
@@ -487,26 +554,65 @@ function setupMultiSelect(container) {
 }
 
 function processAndApplySearch(inputElement) {
-    const value = inputElement.value.trim();
+    let value = inputElement.value.trim();
     if (!value) return;
 
-    const terms = value.split(/[\s,]+/).filter(Boolean);
-    const currentCategories = allCategories[currentTable] || [];
+    // Use cached sorted arrays and Sets for O(1) lookups
+    if (!cachedSortedLocations || !cachedSortedCategories) {
+        updateFilterCache();
+    }
 
-    terms.forEach(term => {
-        const lowerTerm = term.toLowerCase();
+    const sortedLocations = cachedSortedLocations || [];
+    const sortedCategories = cachedSortedCategories || [];
 
-        const isLocation = allLocations.some(loc => loc.toLowerCase() === lowerTerm);
-        const isCategory = currentCategories.some(cat => cat.toLowerCase() === lowerTerm);
+    // Pre-compile regex escape function (moved outside loop)
+    const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    
+    // Use Sets for O(1) duplicate checking instead of array.some()
+    const existingLocations = new Set(state.locations.map(l => l.toLowerCase()));
+    const existingCategories = new Set(state.categories.map(c => c.toLowerCase()));
+    const existingKeywords = new Set(state.keywords);
 
-        if (isLocation && !state.locations.includes(term)) {
-            state.locations.push(term);
-        } else if (isCategory && !state.categories.includes(term)) {
-            state.categories.push(term);
-        } else if (!isLocation && !isCategory && !state.keywords.includes(term)) {
-            state.keywords.push(term);
+    // Optimized extraction with single regex compilation per item
+    const extractTerms = (list, existingSet, targetArray) => {
+        for (let i = 0; i < list.length; i++) {
+            const item = list[i];
+            const itemLower = item.toLowerCase();
+            
+            // Skip if already exists
+            if (existingSet.has(itemLower)) continue;
+            
+            // Match whole words/phrases bounded by start/end or delimiters
+            const escaped = escapeRegExp(item);
+            const regex = new RegExp(`(^|[\\s,])${escaped}(?=$|[\\s,])`, 'gi');
+            
+            if (regex.test(value)) {
+                targetArray.push(item);
+                existingSet.add(itemLower);
+                // Remove matched term from input string
+                value = value.replace(regex, ' ');
+            }
         }
-    });
+    };
+
+    extractTerms(sortedLocations, existingLocations, state.locations);
+    extractTerms(sortedCategories, existingCategories, state.categories);
+
+    // Remaining text is treated as keywords, split by comma (not space)
+    // This allows "Phone Pe" to be treated as a single keyword phrase
+    const remainingValue = value.trim();
+    if (remainingValue) {
+        const terms = remainingValue.split(',').map(t => t.trim()).filter(Boolean);
+        
+        for (let i = 0; i < terms.length; i++) {
+            // Normalize internal spaces (e.g. "Phone   Pe" -> "Phone Pe")
+            const cleanTerm = terms[i].replace(/\s+/g, ' ');
+            if (cleanTerm && !existingKeywords.has(cleanTerm)) {
+                state.keywords.push(cleanTerm);
+                existingKeywords.add(cleanTerm);
+            }
+        }
+    }
 
     inputElement.value = '';
     syncAndFetch();
