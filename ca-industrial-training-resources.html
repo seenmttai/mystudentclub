@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CA Industrial Training Resources - My Student Club</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <style>
         body {
             font-family: 'Poppins', sans-serif;
@@ -14,18 +16,20 @@
             padding-top: 70px;
             padding-bottom: 70px;
         }
+
         .floating-header {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
-            background: rgba(255,255,255,0.95);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             z-index: 1000;
-            border-bottom: 1px solid rgba(229,231,235,0.5);
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
+
         .header-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -34,21 +38,46 @@
             justify-content: space-between;
             align-items: center;
         }
-        .brand-link { display: inline-block; flex-shrink: 0; }
-        .brand-logo { height: 36px; width: auto; display: block; }
-        .header-actions { display: flex; align-items: center; gap: 0.75rem; }
-        .auth-icon-btn, .menu-button-style {
+
+        .brand-link {
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .brand-logo {
+            height: 36px;
+            width: auto;
+            display: block;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .auth-icon-btn,
+        .menu-button-style {
             display: flex;
             padding: 0.5rem;
             border-radius: 8px;
             color: #4f46e5;
-            background: rgba(79,70,229,0.1);
+            background: rgba(79, 70, 229, 0.1);
             border: none;
             cursor: pointer;
             transition: background-color 0.2s ease;
         }
-        .auth-icon-btn:hover, .menu-button-style:hover { background: rgba(79,70,229,0.15); }
-        .auth-icon-btn svg, .menu-button-style svg { width: 20px; height: 20px; }
+
+        .auth-icon-btn:hover,
+        .menu-button-style:hover {
+            background: rgba(79, 70, 229, 0.15);
+        }
+
+        .auth-icon-btn svg,
+        .menu-button-style svg {
+            width: 20px;
+            height: 20px;
+        }
 
         .expanded-menu {
             position: fixed;
@@ -59,7 +88,7 @@
             height: 100vh;
             background: white;
             padding: 1rem;
-            box-shadow: -4px 0 12px rgba(0,0,0,0.1);
+            box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
             transform: translateX(100%);
             opacity: 0;
             transition: transform 0.3s ease, opacity 0.3s ease;
@@ -67,11 +96,13 @@
             overflow-y: auto;
             z-index: 1100;
         }
+
         .expanded-menu.active {
             transform: translateX(0);
             opacity: 1;
             pointer-events: auto;
         }
+
         .menu-close-btn {
             position: absolute;
             top: 1rem;
@@ -82,8 +113,16 @@
             cursor: pointer;
             color: #64748b;
         }
-        .menu-close-btn:hover { color: #1e293b; }
-        .menu-close-btn svg { width: 24px; height: 24px; }
+
+        .menu-close-btn:hover {
+            color: #1e293b;
+        }
+
+        .menu-close-btn svg {
+            width: 24px;
+            height: 24px;
+        }
+
         .menu-items {
             display: flex;
             flex-direction: column;
@@ -91,6 +130,7 @@
             padding: 0.5rem;
             margin-top: 3rem;
         }
+
         .menu-item {
             display: flex;
             align-items: center;
@@ -103,14 +143,25 @@
             font-size: 0.95rem;
             font-weight: 500;
         }
-        .menu-item:hover { background: #f3f4f6; color: #4f46e5; }
-        .menu-icon { width: 20px; height: 20px; opacity: 0.7; flex-shrink: 0; }
+
+        .menu-item:hover {
+            background: #f3f4f6;
+            color: #4f46e5;
+        }
+
+        .menu-icon {
+            width: 20px;
+            height: 20px;
+            opacity: 0.7;
+            flex-shrink: 0;
+        }
 
         .main-container {
             max-width: 1200px;
             margin: 2rem auto;
             padding: 1.5rem;
         }
+
         .page-title {
             font-size: 2.25rem;
             font-weight: 600;
@@ -118,47 +169,55 @@
             text-align: center;
             margin-bottom: 2.5rem;
         }
+
         .resources-list {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 1.5rem;
         }
+
         .resource-card {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             border: 1px solid #e2e8f0;
             padding: 1.5rem;
             display: flex;
             flex-direction: column;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
+
         .resource-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
         }
+
         .resource-card-header {
             display: flex;
             align-items: center;
             gap: 0.75rem;
             margin-bottom: 0.75rem;
         }
+
         .resource-icon {
             width: 24px;
             height: 24px;
             color: #4f46e5;
             flex-shrink: 0;
         }
+
         .resource-title {
             font-size: 1.1rem;
             font-weight: 600;
             color: #1e293b;
             flex-grow: 1;
         }
+
         .resource-actions {
             margin-top: 1.5rem;
             display: flex;
         }
+
         .action-button {
             display: inline-flex;
             align-items: center;
@@ -171,12 +230,16 @@
             font-size: 0.875rem;
             border: 1px solid transparent;
         }
+
         .primary-action {
             background-color: #4f46e5;
             color: white;
         }
-        .primary-action:hover { background-color: #4338ca; }
-        
+
+        .primary-action:hover {
+            background-color: #4338ca;
+        }
+
         .footer-nav {
             position: fixed;
             bottom: 0;
@@ -186,10 +249,11 @@
             display: flex;
             justify-content: space-around;
             padding: 0.5rem 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
             z-index: 1000;
             border-top: 1px solid #e2e8f0;
         }
+
         .footer-tab {
             display: flex;
             flex-direction: column;
@@ -206,10 +270,27 @@
             text-decoration: none;
             gap: 0.25rem;
         }
-        .footer-tab span { font-size: 0.7rem; font-weight: 500; text-align: center; line-height: 1.2; }
-        .footer-tab .tab-icon { width: 20px; height: 20px; }
-        .footer-tab.active { color: #4f46e5; }
-        .footer-tab:hover { color: #4f46e5; background: rgba(79,70,229,0.05); }
+
+        .footer-tab span {
+            font-size: 0.7rem;
+            font-weight: 500;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .footer-tab .tab-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .footer-tab.active {
+            color: #4f46e5;
+        }
+
+        .footer-tab:hover {
+            color: #4f46e5;
+            background: rgba(79, 70, 229, 0.05);
+        }
 
         .whatsapp-button {
             position: fixed;
@@ -225,26 +306,56 @@
             align-items: center;
             justify-content: center;
             padding: 0 16px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
             z-index: 999;
             transition: all 0.3s ease;
             text-decoration: none;
             font-weight: 500;
             font-size: 0.9rem;
         }
-        .whatsapp-button span { display: none; margin-left: 8px; }
-        .whatsapp-button:hover { transform: translateY(-2px); box-shadow: 0 5px 12px rgba(0,0,0,0.3); }
-        .whatsapp-button:hover span { display: inline; }
-        .whatsapp-button svg { width: 24px; height: 24px; }
+
+        .whatsapp-button span {
+            display: none;
+            margin-left: 8px;
+        }
+
+        .whatsapp-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .whatsapp-button:hover span {
+            display: inline;
+        }
+
+        .whatsapp-button svg {
+            width: 24px;
+            height: 24px;
+        }
 
         @media (max-width: 768px) {
-            .page-title { font-size: 1.75rem; margin-bottom: 2rem; }
-            .resources-list { grid-template-columns: 1fr; }
-            .main-container { padding: 1rem; margin-top: 1rem; }
-            .whatsapp-button { bottom: 70px; right: 15px; }
+            .page-title {
+                font-size: 1.75rem;
+                margin-bottom: 2rem;
+            }
+
+            .resources-list {
+                grid-template-columns: 1fr;
+            }
+
+            .main-container {
+                padding: 1rem;
+                margin-top: 1rem;
+            }
+
+            .whatsapp-button {
+                bottom: 70px;
+                right: 15px;
+            }
         }
     </style>
 </head>
+
 <body>
     <header class="floating-header">
         <div class="header-container">
@@ -253,13 +364,16 @@
             </a>
             <div class="header-actions">
                 <a href="/login.html" class="auth-icon-btn" aria-label="Login">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                 </a>
                 <button class="menu-button-style" aria-label="Open menu" id="menuButton">
                     <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
             </div>
@@ -269,24 +383,36 @@
     <div class="expanded-menu" id="expandedMenu">
         <button class="menu-close-btn" id="menuCloseBtn">
             <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
         </button>
         <div class="menu-items">
             <a href="/ca-industrial-training-program/" class="menu-item">
-                <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
                 Industrial Training Program
             </a>
             <a href="/articleship-guarantee-program/" class="menu-item">
-                <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
                 Articleship Program
             </a>
             <a href="/cv-reviewer/" class="menu-item">
-                <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
                 CV Reviewer
             </a>
-             <a href="/ca-industrial-training-resources.html" class="menu-item">
-                <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+            <a href="/ca-industrial-training-resources.html" class="menu-item">
+                <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
                 Resources
             </a>
         </div>
@@ -300,32 +426,48 @@
 
     <footer class="footer-nav">
         <a href="/" class="footer-tab">
-            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
             <span>Industrial Training</span>
         </a>
         <a href="/articleship.html" class="footer-tab">
-            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
             <span>Articleship</span>
         </a>
         <a href="/semi-qualified.html" class="footer-tab">
-            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
             <span>Semi Qualified</span>
         </a>
         <a href="/fresher.html" class="footer-tab">
-            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
             <span>Freshers</span>
         </a>
     </footer>
 
-    <a href="https://api.whatsapp.com/send/?phone=919313148303" target="_blank" class="whatsapp-button" aria-label="Contact us on WhatsApp">
-        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M20.463 3.488C18.217 1.24 15.231 0 12.05 0 5.495 0 0.165 5.33 0.157 11.885c0 2.096.548 4.139 1.595 5.942L0 24l6.335-1.661a11.88 11.88 0 005.683 1.458c6.548 0 11.877-5.33 11.882-11.885.008-3.173-1.231-6.161-3.487-8.422zm-8.413 18.26h-.004a9.88 9.88 0 01-5.042-1.382l-.36-.215-3.735.978.998-3.648-.236-.374a9.883 9.883 0 01-1.518-5.221c.005-5.467 4.458-9.92 9.93-9.92 2.65.004 5.142 1.032 7.018 2.908 1.872 1.88 2.902 4.374 2.9 7.026-.008 5.467-4.457 9.92-9.931 9.92zm5.43-7.424c-.299-.149-1.772-.875-2.048-.974-.277-.099-.478-.148-.678.149-.2.298-.774.975-.95 1.174-.173.199-.347.224-.647.075-.3-.15-1.263-.465-2.408-1.483-.89-.795-1.49-1.777-1.663-2.076-.174-.298-.018-.46.13-.608.135-.133.3-.349.45-.522.15-.174.2-.298.3-.497.099-.199.05-.374-.026-.524-.075-.149-.677-1.631-.927-2.233-.244-.584-.492-.505-.676-.513-.173-.010-.374-.01-.574-.01-.2 0-.523.075-.797.374-.273.298-1.047.974-1.047 2.38 0 1.406 1.022 2.763 1.172 2.962.15.199 2.15 3.284 5.164 4.6.55.24 1.173.5 1.574.639.661.21 1.262.18 1.736.11.53-.08 1.633-.668 1.863-1.314.23-.645.23-1.2.16-1.315-.075-.15-.274-.238-.574-.397z"/></svg>
+    <a href="https://api.whatsapp.com/send/?phone=919313148303" target="_blank" class="whatsapp-button"
+        aria-label="Contact us on WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M20.463 3.488C18.217 1.24 15.231 0 12.05 0 5.495 0 0.165 5.33 0.157 11.885c0 2.096.548 4.139 1.595 5.942L0 24l6.335-1.661a11.88 11.88 0 005.683 1.458c6.548 0 11.877-5.33 11.882-11.885.008-3.173-1.231-6.161-3.487-8.422zm-8.413 18.26h-.004a9.88 9.88 0 01-5.042-1.382l-.36-.215-3.735.978.998-3.648-.236-.374a9.883 9.883 0 01-1.518-5.221c.005-5.467 4.458-9.92 9.93-9.92 2.65.004 5.142 1.032 7.018 2.908 1.872 1.88 2.902 4.374 2.9 7.026-.008 5.467-4.457 9.92-9.931 9.92zm5.43-7.424c-.299-.149-1.772-.875-2.048-.974-.277-.099-.478-.148-.678.149-.2.298-.774.975-.95 1.174-.173.199-.347.224-.647.075-.3-.15-1.263-.465-2.408-1.483-.89-.795-1.49-1.777-1.663-2.076-.174-.298-.018-.46.13-.608.135-.133.3-.349.45-.522.15-.174.2-.298.3-.497.099-.199.05-.374-.026-.524-.075-.149-.677-1.631-.927-2.233-.244-.584-.492-.505-.676-.513-.173-.010-.374-.01-.574-.01-.2 0-.523.075-.797.374-.273.298-1.047.974-1.047 2.38 0 1.406 1.022 2.763 1.172 2.962.15.199 2.15 3.284 5.164 4.6.55.24 1.173.5 1.574.639.661.21 1.262.18 1.736.11.53-.08 1.633-.668 1.863-1.314.23-.645.23-1.2.16-1.315-.075-.15-.274-.238-.574-.397z" />
+        </svg>
         <span>Contact Us</span>
     </a>
 
     <script>
         const resourcesData = [
             {
-                title: "CV Template 1",
+                title: "Cover Letter 1",
                 url: "https://docs.google.com/document/d/1itFc8oE-tcvZoDxm9WCLipemFJ5Ja4Yt/edit?usp=drive_link&ouid=116729218327060367168&rtpof=true&sd=true"
             },
             {
@@ -356,13 +498,13 @@
         function isPDFLink(url) {
             const lowerUrl = url.toLowerCase();
             if (lowerUrl.includes('drive.google.com/file/d/')) {
-                 return !isGoogleDocLink(url) && !isGoogleSheetLink(url) && !isGoogleSlidesLink(url);
+                return !isGoogleDocLink(url) && !isGoogleSheetLink(url) && !isGoogleSlidesLink(url);
             }
             if (lowerUrl.endsWith('.pdf')) return true;
             if (lowerUrl.includes('docs.google.com') && (lowerUrl.includes('/export?format=pdf') || lowerUrl.includes('/export/pdf'))) return true;
             return false;
         }
-        
+
         function getFileType(url) {
             if (isGoogleDocLink(url)) return 'Google Doc';
             if (isGoogleSheetLink(url)) return 'Google Sheet';
@@ -404,7 +546,7 @@
         function renderAllResources() {
             const container = document.getElementById('resources-container');
             container.innerHTML = '';
-            
+
             if (resourcesData.length === 0) {
                 const emptyMessage = document.createElement('p');
                 emptyMessage.textContent = 'No resources available at the moment.';
@@ -443,4 +585,5 @@
         });
     </script>
 </body>
+
 </html>
