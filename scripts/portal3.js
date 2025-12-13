@@ -274,7 +274,9 @@ async function fetchJobs() {
             for (let i = 0; i < state.keywords.length; i++) {
                 // wildcard matching for spaces to find "PhonePe" from "Phone Pe"
                 const flexibleTerm = state.keywords[i].trim().replace(/\s+/g, '%');
-                keywordOrs.push(`Company.ilike.%${flexibleTerm}%,Description.ilike.%${flexibleTerm}%,Category.ilike.%${flexibleTerm}%,Location.ilike.%${flexibleTerm}%`);
+                keywordOrs.push(
+                  `Company.ilike."%${flexibleTerm}%",Description.ilike."%${flexibleTerm}%",Category.ilike."%${flexibleTerm}%",Location.ilike."%${flexibleTerm}%"`
+);
             }
             query = query.or(keywordOrs.join(','));
         }
@@ -282,7 +284,7 @@ async function fetchJobs() {
         if (state.locations.length > 0) {
             const locationOr = [];
             for (let i = 0; i < state.locations.length; i++) {
-                locationOr.push(`Location.ilike.%${state.locations[i]}%`);
+                locationOr.push(`Location.ilike."%${state.locations[i]}%"`);
             }
             query = query.or(locationOr.join(','));
         }
@@ -290,7 +292,7 @@ async function fetchJobs() {
         if (state.categories.length > 0) {
             const categoryOr = [];
             for (let i = 0; i < state.categories.length; i++) {
-                categoryOr.push(`Category.ilike.%${state.categories[i]}%`);
+                categoryOr.push(`Category.ilike."%${state.categories[i]}%"`);
             }
             query = query.or(categoryOr.join(','));
         }
@@ -884,37 +886,51 @@ function formatTopicForDisplay(topic) {
 
 function updateSpecificTopicAreaVisibility() { if (dom.specificSubscriptionForm) dom.specificSubscriptionForm.style.display = dom.topicAllCheckbox.checked ? 'none' : 'block'; }
 async function manageTopicSubscription(topic, action) {
-    currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
-    let retries = 3;
-    while (!currentFcmToken && retries > 0) {
-        currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
-
-        if (currentFcmToken) {
-            break;
-        }
-
-        retries--;
-        showNotifStatus(`Loading...`, 'info');
-        await new Promise(resolve => setTimeout(resolve, 10000));
+  // Actively try to get token if missing
+  if (!currentFcmToken) {
+    // Prioritize App token if available
+    if (window.flutter_app.fcmToken) {
+      currentFcmToken = window.flutter_app.fcmToken;
     }
-
-    if (!currentFcmToken) {
-        showNotifStatus('Token not available. Please refresh the page.', 'error');
+    else if (window.flutter_app.isReady) {
+    } else {
+      if (Notification.permission === 'granted') {
+        showNotifStatus('Connecting to notification service...', 'info');
+        await requestTokenAndSync();
+      } else {
+        showNotifStatus('Please enable notifications first.', 'error');
         return false;
+      }
     }
-    try {
-        const response = await fetch('https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token: currentFcmToken, topic, action }) });
-        if (!response.ok) throw new Error(await response.text());
-        let topics = getSubscribedTopics();
-        if (action === 'subscribe' && !topics.includes(topic)) topics.push(topic);
-        else if (action === 'unsubscribe') topics = topics.filter(t => t !== topic);
-        saveSubscribedTopics(topics);
-        renderSubscribedTopics();
-        return true;
-    } catch (err) {
-        showNotifStatus(`Failed to ${action}`, 'error');
-        return false;
-    }
+  }
+
+  currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
+
+  if (!currentFcmToken) {
+     showNotifStatus('Notification service unavailable. Please refresh or check permissions.','error');
+    return false;
+  }
+  try {
+    const response = await fetch(
+      'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: currentFcmToken, topic, action }),
+      }
+    );
+    if (!response.ok) throw new Error(await response.text());
+    let topics = getSubscribedTopics();
+    if (action === 'subscribe' && !topics.includes(topic)) topics.push(topic);
+    else if (action === 'unsubscribe')
+      topics = topics.filter((t) => t !== topic);
+    saveSubscribedTopics(topics);
+    renderSubscribedTopics();
+    return true;
+  } catch (err) {
+    showNotifStatus(`Failed to ${action}`, 'error');
+    return false;
+  }
 }
 async function subscribeToTopic(topic) { return manageTopicSubscription(topic, 'subscribe'); }
 async function unsubscribeFromTopic(topic) { return manageTopicSubscription(topic, 'unsubscribe'); }
@@ -1103,7 +1119,23 @@ function setupEventListeners() {
 
     if (dom.closeNotificationPopup) dom.closeNotificationPopup.addEventListener('click', () => dom.notificationPopup.style.display = 'none');
     if (dom.enableNotificationsBtn) dom.enableNotificationsBtn.addEventListener('click', async () => { try { const permission = await Notification.requestPermission(); updatePermissionStatusUI(); if (permission === 'granted') await initializeFCM(); } catch (err) { } });
-    if (dom.topicAllCheckbox) dom.topicAllCheckbox.addEventListener('change', (e) => e.target.checked ? subscribeToTopic('all') : unsubscribeFromTopic('all'));
+    if (dom.topicAllCheckbox) {
+        dom.topicAllCheckbox.addEventListener('change', async (e) => {
+            const isChecked = e.target.checked;
+            e.target.disabled = true; // Disable to prevent multi-clicks
+            try {
+                const success = isChecked ? await subscribeToTopic('all') : await unsubscribeFromTopic('all');
+                if (!success) {
+                    e.target.checked = !isChecked; // Revert if failed
+                }
+            } catch (err) {
+                console.error('Subscription error:', err);
+                e.target.checked = !isChecked; 
+            } finally {
+                e.target.disabled = false; // Re-enable
+            }
+        });
+    }
     if (dom.subscribeBtnEl) dom.subscribeBtnEl.addEventListener('click', async () => { const location = dom.locationSelectEl.value; const jobType = dom.jobTypeSelectEl.value; if (!location || !jobType) return; const topicName = `${location}-${jobType}`; if (await subscribeToTopic(topicName)) { dom.locationSelectEl.selectedIndex = 0; dom.jobTypeSelectEl.selectedIndex = 0; dom.subscribeBtnEl.disabled = true; } });
     if (dom.locationSelectEl && dom.jobTypeSelectEl && dom.subscribeBtnEl) {
         const updateSubBtn = () => { dom.subscribeBtnEl.disabled = !(dom.locationSelectEl.value && dom.jobTypeSelectEl.value); };
