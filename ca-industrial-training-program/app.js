@@ -216,8 +216,8 @@ const initializeCountdown = () => {
   const timerEl = document.getElementById('timer');
   if (!timerEl) return;
 
-  // Target date: Dec 15, 2025 12:00 AM IST (Starts of 15th)
-  const targetDate = new Date('2025-12-15T00:00:00+05:30');
+  // Target date: Dec 15, 2025 12:00 AM IST (Starts of 16th)
+  const targetDate = new Date('2025-12-16T00:00:00+05:30');
 
   function updateTimer() {
     const now = new Date();
