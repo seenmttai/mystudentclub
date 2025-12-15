@@ -338,6 +338,38 @@
             background: #e2e8f0;
             color: #475569;
         }
+
+        /* EDIT: Added styles for the iframe container and the non-copy overlay */
+        .iframe-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #fff;
+            /* A background color while the iframe loads */
+        }
+
+        #resource-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .iframe-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            cursor: default;
+            /* Prevents text selection cursor */
+            /* Makes the element unselectable */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
     </style>
 </head>
 
@@ -581,6 +613,12 @@
                     <div id="csv-viewer-container" class="csv-preview-container" style="display: none;">
                         <table class="csv-preview-table"></table>
                     </div>
+                    <!-- EDIT: Added a container for the embedded iframe -->
+                    <div id="iframe-viewer-container" class="iframe-container" style="display: none;">
+                        <!-- This overlay prevents copying and interaction with the iframe content -->
+                        <div class="iframe-overlay"></div>
+                        <iframe id="resource-iframe" title="Embedded Resource"></iframe>
+                    </div>
                 </div>
                 <div class="resource-viewer-controls">
                     <button id="pdf-prev-page" class="viewer-nav-button">Previous</button>
@@ -742,6 +780,9 @@
                 pdfNextPage: document.getElementById('pdf-next-page'),
                 pdfPageInfo: document.getElementById('pdf-page-info'),
                 viewerDownloadBtn: document.getElementById('viewer-download-btn'),
+                // EDIT: Added new elements for the iframe viewer
+                iframeViewerContainer: document.getElementById('iframe-viewer-container'),
+                resourceIframe: document.getElementById('resource-iframe'),
                 footer: document.getElementById('footer')
             };
 
@@ -1222,7 +1263,15 @@
                 }
             };
 
+            // EDIT: Modified function to handle the special Google Sheet URL
             const handleResourceClick = async (resource) => {
+                // Check if the resource is the specific Google Sheet
+                const specialSheetUrl = 'https://docs.google.com/spreadsheets/d/1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y/edit?gid=1269177841#gid=1269177841';
+                if (resource.url === specialSheetUrl) {
+                    await openResourceViewer(resource, 'iframe');
+                    return;
+                }
+
                 if (resource.type === 'external_link' && resource.url) {
                     window.open(resource.url, '_blank');
                     return;
@@ -1274,6 +1323,7 @@
                 }
             };
 
+            // EDIT: Modified function to handle the new 'iframe' viewer type
             const openResourceViewer = async (resource, type) => {
                 state.pdfDoc = null; state.csvData = null; state.pdfCurrentPage = 1; state.pdfTotalPages = 1;
                 const ctx = DOMElements.pdfCanvas.getContext('2d');
@@ -1287,8 +1337,21 @@
 
                 DOMElements.pdfViewerContainer.style.display = 'none';
                 DOMElements.csvViewerContainer.style.display = 'none';
+                DOMElements.iframeViewerContainer.style.display = 'none';
+
+                // Hide controls for iframe view since they don't apply, otherwise show them.
+                DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = type === 'iframe' ? 'none' : 'flex';
 
                 try {
+                    if (type === 'iframe') {
+                        const sheetId = '1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y';
+                        const embedUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/pubhtml?widget=true&headers=false&chrome=false`;
+                        DOMElements.resourceIframe.src = embedUrl;
+                        DOMElements.iframeViewerContainer.style.display = 'block';
+                        DOMElements.viewerLoadingScreen.style.display = 'none';
+                        return; // Exit early for iframe
+                    }
+
                     const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
                     if (error) throw error;
                     const response = await fetch(`https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`);
@@ -1353,9 +1416,13 @@
                 ctx.restore();
             };
 
+            // EDIT: Modified to properly clear the iframe and reset controls
             const closeResourceViewer = () => {
                 if (state.isFullscreen) toggleFullscreen();
                 DOMElements.resourceViewerModal.classList.remove('visible');
+                DOMElements.resourceIframe.src = 'about:blank'; // Important to stop loading/activity
+                // Ensure controls are visible for the next time a non-iframe resource is opened
+                DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = 'flex';
                 state.pdfDoc = null; state.currentResource = null; state.previewType = null;
             };
 
@@ -1623,11 +1690,14 @@
                 await checkAuth();
 
                 supabase.auth.onAuthStateChange(async (_event, session) => {
-                    if (!session || !session.user) {
-                        window.location.href = 'https://www.mystudentclub.com/login';
-                    } else if (state.user?.id !== session.user.id) {
+                    if (session && session.user) {
                         state.user = session.user;
+                        DOMElements.userDisplayName.textContent = session.user.user_metadata?.first_name || session.user.email.split('@')[0];
+                        DOMElements.profileDropdownName.textContent = session.user.user_metadata?.full_name || session.user.email;
+                        DOMElements.profileDropdownEmail.textContent = session.user.email;
                         if (!state.isEnrolled) await checkEnrollment();
+                    } else {
+                        window.location.href = 'https://www.mystudentclub.com/login';
                     }
                 });
             };
