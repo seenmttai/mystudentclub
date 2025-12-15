@@ -216,7 +216,8 @@ const initializeCountdown = () => {
   const timerEl = document.getElementById('timer');
   if (!timerEl) return;
 
-  const targetDate = new Date('2025-08-17T23:59:00');
+  // Target date: Dec 16, 2025 IST (Indian Standard Time)
+  const targetDate = new Date('2025-12-16T23:59:59+05:30');
 
   function updateTimer() {
     const now = new Date();
@@ -224,7 +225,7 @@ const initializeCountdown = () => {
 
     if (diff <= 0) {
       timerEl.textContent = "00h 00m 00s";
-      clearInterval(timerInterval);
+      // Optional: hide or change message when expired
       return;
     }
 
@@ -233,7 +234,14 @@ const initializeCountdown = () => {
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    timerEl.textContent = `${String(days).padStart(2, '0')}d ${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
+    // Format: d h m s (or just h m s if desired, but retaining d is safer for >24h)
+    let timeString = "";
+    if (days > 0) {
+      timeString += `${String(days).padStart(2, '0')}d `;
+    }
+    timeString += `${String(hours).padStart(2, '0')}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`;
+
+    timerEl.textContent = timeString;
   }
 
   updateTimer();
@@ -426,6 +434,7 @@ document.addEventListener('DOMContentLoaded', () => {
   safe(initializeTestimonials, 'testimonials');
   safe(initializeCarousel, 'carousel');
   safe(initializeCertificate, 'certificate');
+  safe(initializeCountdown, 'countdown');
   safe(initializeParallax, 'parallax');
   AOS.init({
     duration: 1000,
