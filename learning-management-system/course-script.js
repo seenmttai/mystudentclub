@@ -939,7 +939,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         video.addEventListener('waiting', () => DOMElements.videoLoadingOverlay.style.display = 'flex');
         video.addEventListener('playing', () => DOMElements.videoLoadingOverlay.style.display = 'none');
-        video.addEventListener('error', () => { DOMElements.videoLoadingOverlay.style.display = 'none'; attemptReload(); });
+
+        video.addEventListener('error', () => {
+            if (video.error && (video.error.code === 2 || video.error.code === 3 || video.error.code === 4)) {
+                DOMElements.videoLoadingOverlay.style.display = 'flex';
+                setTimeout(() => {
+                    attemptReload();
+                }, 2000);
+            } else {
+                DOMElements.videoLoadingOverlay.style.display = 'none';
+            }
+        });
+
         video.parentElement.addEventListener('click', () => {
             if (video.paused) {
                 const p = video.play();
