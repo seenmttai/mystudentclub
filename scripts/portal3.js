@@ -1174,6 +1174,141 @@ function setupEventListeners() {
     });
 }
 
+// Optimal Custom Dropdown Implementation
+function initCustomSelects() {
+    const selectorIds = ['sortBySelect', 'salaryFilterDesktop', 'sortBySelectMobile', 'salaryFilterMobile', 'locationSelect', 'jobTypeSelect'];
+    
+    // Close dropdowns on outside click
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.custom-select-wrapper')) {
+            document.querySelectorAll('.custom-select-wrapper.open').forEach(wrapper => {
+                wrapper.classList.remove('open');
+                const opts = wrapper.querySelector('.custom-options');
+                if (opts) {
+                    opts.style.opacity = '0';
+                    setTimeout(() => opts.style.display = 'none', 200);
+                }
+            });
+        }
+    });
+
+    selectorIds.forEach(id => {
+        const select = document.getElementById(id);
+        if (!select) return;
+
+        // Ensure we don't double-wrap if re-run
+        if (select.parentNode.classList.contains('custom-select-wrapper')) return;
+
+        // Create Custom UI
+        const wrapper = document.createElement('div');
+        wrapper.className = 'custom-select-wrapper';
+        
+        const trigger = document.createElement('div');
+        trigger.className = 'custom-select-trigger';
+        trigger.innerHTML = `<span>${select.options[select.selectedIndex]?.text || 'Select'}</span><div class="custom-arrow"></div>`;
+        
+        const optionsList = document.createElement('div');
+        optionsList.className = 'custom-options';
+
+        // Function to rebuild options
+        const buildOptions = () => {
+            optionsList.innerHTML = '';
+            Array.from(select.options).forEach(opt => {
+                const div = document.createElement('div');
+                div.className = `custom-option ${opt.selected ? 'selected' : ''}`;
+                div.textContent = opt.text;
+                div.dataset.value = opt.value;
+                div.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    select.value = opt.value;
+                    trigger.querySelector('span').textContent = opt.text;
+                    wrapper.classList.remove('open');
+                    optionsList.style.display = 'none'; // Instant hide
+                    
+                    // Visual update
+                    optionsList.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+                    div.classList.add('selected');
+                    
+                    // Trigger native event
+                    select.dispatchEvent(new Event('change'));
+                });
+                optionsList.appendChild(div);
+            });
+        };
+
+        // Initial build
+        buildOptions();
+
+        // Assemble
+        select.style.display = 'none';
+        select.parentNode.insertBefore(wrapper, select);
+        wrapper.appendChild(select); // Move select inside to keep DOM clean-ish
+        wrapper.appendChild(trigger);
+        wrapper.appendChild(optionsList);
+
+        // Toggle Event
+        trigger.addEventListener('click', () => {
+            const isOpen = wrapper.classList.contains('open');
+            // Close others
+            document.querySelectorAll('.custom-select-wrapper.open').forEach(w => {
+                 if(w !== wrapper) {
+                    w.classList.remove('open');
+                    w.querySelector('.custom-options').style.display = 'none';
+                 }
+            });
+
+            if (!isOpen) {
+                wrapper.classList.add('open');
+                optionsList.style.display = 'block';
+                // Trigger reflow
+                optionsList.offsetHeight; 
+                optionsList.style.opacity = '1';
+            } else {
+                wrapper.classList.remove('open');
+                optionsList.style.opacity = '0';
+                setTimeout(() => optionsList.style.display = 'none', 200);
+            }
+        });
+
+        // REACTIVITY: Watch for Native Changes (JS updates, Resets)
+        // 1. MutationObserver for option changes (dynamic loading)
+        const observer = new MutationObserver(() => {
+             buildOptions();
+             const sel = select.options[select.selectedIndex];
+             if(sel) trigger.querySelector('span').textContent = sel.text;
+        });
+        observer.observe(select, { childList: true, subtree: true });
+
+        // 2. Intercept programmatic .value changes (e.g. Reset Button)
+        const descriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+        Object.defineProperty(select, 'value', {
+            get: function() { return descriptor.get.call(this); },
+            set: function(val) {
+                descriptor.set.call(this, val);
+                // Update UI
+                const sel = this.options[this.selectedIndex];
+                if(sel) {
+                    trigger.querySelector('span').textContent = sel.text;
+                    optionsList.querySelectorAll('.custom-option').forEach(o => {
+                        o.classList.toggle('selected', o.dataset.value === val);
+                    });
+                }
+            }
+        });
+
+        // 3. Listen for internal value changes (standard change event)
+        select.addEventListener('change', () => {
+             const sel = select.options[select.selectedIndex];
+             if(sel) {
+                 trigger.querySelector('span').textContent = sel.text;
+                 optionsList.querySelectorAll('.custom-option').forEach(o => {
+                     o.classList.toggle('selected', o.dataset.value === select.value);
+                 });
+             }
+        });
+    });
+}
+
 async function initializePage() {
     dom.jobsContainer = document.getElementById('jobs');
     dom.loader = document.getElementById('loader');
@@ -1218,6 +1353,7 @@ async function initializePage() {
     dom.specificSubscriptionForm = document.getElementById('specific-subscription-form');
 
     setActivePortalTab();
+    initCustomSelects();
 
     const session = await checkAuth();
     updateHeaderAuth(session);
