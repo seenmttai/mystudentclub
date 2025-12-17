@@ -701,30 +701,118 @@ function simpleMarkdownToHtml(md) {
 }
 
 function cleanRawText(t) {
-    return (t || '')
-        .replace(/<<<.*?>>>/gs, '')          // remove section markers
-        .replace(/<<POINT>>|<<END_POINT>>/g, '') // remove point delimiters. 
+    let out = (t || '');
+
+    // 1) Turn section markers into human-readable headings (to match UI sections)
+    const sectionMap = {
+        OVERALL_SCORE: 'Overall Score',
+        RECRUITER_TIPS: 'Recruiter Tips',
+        MEASURABLE_RESULTS: 'Measurable Results',
+        PHRASES_SUGGESTIONS: 'Phrases Suggestions',
+        HARD_SKILLS: 'Hard Skills Analysis',
+        SOFT_SKILLS: 'Soft Skills Analysis',
+        ACTION_VERBS: 'Action Verbs Usage',
+        GRAMMAR_CHECK: 'Grammar & Proofreading',
+        FORMATTING_READABILITY: 'Formatting & Readability',
+        EDUCATION_QUALIFICATION: 'Education & Qualification',
+        ARTICLESHIP_EXPERIENCE: 'Articleship Experience',
+        INTERVIEW_QUESTIONS: 'Predicted Interview Questions',
+        FINAL_RECOMMENDATIONS: 'Final Recommendations'
+    };
+
+    Object.entries(sectionMap).forEach(([marker, title]) => {
+        const startRe = new RegExp(`\\*?\\*?<<<${marker}>>>`, 'g');
+        const endRe = new RegExp(`\\*?\\*?<<<END_${marker}>>>`, 'g');
+        out = out.replace(startRe, `\n\n## ${title}\n\n`);
+        out = out.replace(endRe, '\n\n');
+    });
+
+    // Remove any leftover markers / point delimiters
+    out = out
+        .replace(/<<<.*?>>>/gs, '')
+        .replace(/<<POINT>>|<<END_POINT>>/g, '')
         .trim();
+    
+    // Remove stray ** (bold markers) that appear after section headings or standalone
+    out = out.replace(/^##\s+([^\n]+)\n\*\*\s*$/gm, '## $1\n');  // After section headings
+    out = out.replace(/^\*\*\s*$/gm, '');  // Standalone ** on their own line
+    out = out.replace(/\n\*\*\n/g, '\n');  // ** between newlines
+
+    // 2) Mirror the bullet splitting used for on-page formatting
+    // After sentence boundaries followed by a capital letter → start a new markdown bullet
+    out = out.replace(/([.!?])\s+(?=[A-Z])/g, '$1\n- ');
+
+    // After ISSUE markers when explanation continues
+    out = out.replace(
+        /(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\.?\s+([A-Z])/gi,
+        '$1\n- $2'
+    );
+
+    // Ensure inline numbered items become separate lines
+    out = out.replace(/(\d)\.\s+([A-Z])/g, '\n$1. $2');
+
+    // 3) Special handling for "Priority X (...):" items that often appear inline
+    // Turn each new Priority into its own bullet so the PDF matches visual grouping
+    out = out.replace(/\s+(Priority\s+\d+\s*\([^)]*\):)/g, '\n- $1');
+
+    return out;
 }
 
 function formatFeedbackText(text) {
     if (!text) return '<p class="text-sm text-text-secondary italic">No details available.</p>';
-    let html = simpleMarkdownToHtml(text);
+    
+    // STEP 1: Pre-process raw text before HTML conversion
+    let processedText = text;
+    
+    // The model often returns long paragraphs. Break them into bullet-friendly lines:
+    // 1) After sentence boundaries (., ?, !) followed by a capital letter → new bullet
+    processedText = processedText.replace(/([.!?])\s+(?=[A-Z])/g, '$1\n• ');
+    // 2) After ISSUE markers when explanation continues
+    processedText = processedText.replace(/(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\.?\s+([A-Z])/gi, '$1\n• $2');
+    // 3) Ensure inline numbered items become separate lines
+    processedText = processedText.replace(/(\d)\.\s+([A-Z])/g, '\n$1. $2');
+    
+    // STEP 2: Convert to HTML
+    let html = simpleMarkdownToHtml(processedText);
 
+    // Replace [GOOD] with simple ✓ symbol  
     html = html.replace(/\[GOOD\]/g, '<span class="highlight-good" title="Good point">✓</span>');
-    html = html.replace(/\[ISSUE\]/g, '<span class="highlight-issue" title="Area for improvement">✗</span>');
+    
+    // Replace [ISSUE] with simple ✗ symbol (without severity)
+    html = html.replace(/\[ISSUE\](?!\s*-\s*SEVERITY)/g, '<span class="highlight-issue" title="Area for improvement">✗</span>');
+    
+    // Replace [ISSUE - SEVERITY: Level] with compact severity badges
+    html = html.replace(/\[ISSUE\s*-\s*SEVERITY:\s*(Critical|High|Moderate|Low)(?:[^\]]*)\]/gi, (match, severity) => {
+        const level = severity.toLowerCase();
+        return `<span class="highlight-issue" title="Issue">✗</span><span class="severity-badge severity-${level}">${severity}</span>`;
+    });
 
-    html = html.replace(/<br>\s*\*   \*\*(.*?):\*\*/g, '<br><strong class="block mt-3 mb-1 text-base text-primary">$1:</strong>');
-    html = html.replace(/^   \*\*(.*?):\*\*/g, '<strong class="block mt-3 mb-1 text-base text-primary">$1:</strong>');
+    // Format section labels: "*   *Label:*" pattern from prompt
+    html = html.replace(/<br>\s*\*\s+\*\*([^*:]+):\*\*/g, '</p><h4 class="feedback-label">$1:</h4><p>');
+    html = html.replace(/^\*\s+\*\*([^*:]+):\*\*/gm, '<h4 class="feedback-label">$1:</h4>');
+    
+    // Also handle simpler bold labels: "**Label:**"
+    html = html.replace(/<br>\s*\*\*([^*:]+):\*\*/g, '</p><h4 class="feedback-label">$1:</h4><p>');
+    
+    // Convert bullet markers (• ) to styled paragraphs - strip the • since CSS adds it via ::before
+    html = html.replace(/<br>\s*•\s*/g, '</p><p class="feedback-bullet">');
+    html = html.replace(/<p>•\s*/g, '<p class="feedback-bullet">');
+    html = html.replace(/^•\s*/gm, '');
+    
+    // Convert numbered items to styled format (remove ::before bullet for numbered items)
+    html = html.replace(/<br>\s*(\d+)\.\s+/g, '</p><p class="feedback-numbered"><strong>$1.</strong> ');
+    
+    // Also convert <br><br> to separate paragraphs for better spacing
+    html = html.replace(/<br>\s*<br>/g, '</p><p>');
 
-     html = html.replace(/<br>\s*[\-\*]\s+/g, '<br><li>');
-     html = html.replace(/<\/li><br>/g, '</li>');
-
-     html = html.replace(/(<li>.*?<\/li>)/gs, (match) => {
-         if (match.includes('<ul>') || match.includes('<ol>')) return match;
-         return `<ul>${match}</ul>`;
-     });
-     html = html.replace(/<\/ul>\s*<ul>/g, '');
+    // Convert hyphen list markers to feedback-bullet paragraphs (NOT ul/li to avoid double bullets)
+    html = html.replace(/<br>\s*-\s+/g, '</p><p class="feedback-bullet">');
+    html = html.replace(/<br>\s*\*\s+/g, '</p><p class="feedback-bullet">');
+    
+    // Clean up empty paragraphs
+    html = html.replace(/<p>\s*<\/p>/g, '');
+    html = html.replace(/<\/p>\s*<\/p>/g, '</p>');
+    html = html.replace(/<p>\s*<p/g, '<p');
 
     return html;
 }
@@ -839,6 +927,13 @@ downloadReportBtn.addEventListener('click', () => {
       h1, h2, h3 { color: #111827; font-weight:700; }
       p, li { color: #374151; line-height: 1.6; font-size: 12px; }
       ul, ol { margin: 0 0 10px 18px; padding: 0; }
+      .good-marker { color: #059669; font-weight: 700; }
+      .issue-marker { color: #dc2626; font-weight: 700; }
+      .sev-badge { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; margin-left: 4px; }
+      .sev-critical { background: #fee2e2; color: #991b1b; }
+      .sev-high { background: #ffedd5; color: #9a3412; }
+      .sev-moderate { background: #fef3c7; color: #92400e; }
+      .sev-low { background: #f0fdf4; color: #065f46; }
     `;
     const markdown = `# CV Analysis Report\n\n${fixInlineCodeMarkdown(cleaned)}`;
 
@@ -896,6 +991,18 @@ function fixInlineCodeMarkdown(md) {
     out = out.replace(/^\s*> ?(.*)$/gm, '$1');             // remove blockquote markers
     out = out.replace(/^\s*[-*_]{3,}\s*$/gm, '');          // remove horizontal rules
     out = out.replace(/^\|.*\|$/gm, m => m.replace(/\|/g, ' ').replace(/-+/g, ' ')); // flatten tables
+    
+    // Format markers for PDF output with HTML styling
+    out = out.replace(/\[GOOD\]/g, '<span class="good-marker">✓</span>');
+    out = out.replace(/\[ISSUE\](?!\s*-\s*SEVERITY)/g, '<span class="issue-marker">✗</span>');
+    out = out.replace(/\[ISSUE\s*-\s*SEVERITY:\s*(Critical|High|Moderate|Low)(?:[^\]]*)\]/gi, (match, severity) => {
+        const level = severity.toLowerCase();
+        return `<span class="issue-marker">✗</span><span class="sev-badge sev-${level}">${severity}</span>`;
+    });
+    
+    // Split sentences for better readability in PDF
+    out = out.replace(/([.!?])\s{2,}([A-Z])/g, '$1\n\n$2');
+    
     return out;
 }
 
