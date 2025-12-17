@@ -643,7 +643,7 @@
                 <button class="filter-chip" data-filter="following">Following</button>
             </div>
             
-            <section id="quick-create" class="quick-create" style="display:none;">
+            <section id="quick-create" class="quick-create">
                 <div id="quick-create-logged-out" style="text-align: center; padding: 1rem;">
                     <h3>Want to start a discussion?</h3>
                     <p style="margin-bottom: 1rem; color: var(--forum-text-muted);">Log in to share your thoughts with the community.</p>
@@ -689,12 +689,16 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
+   
+        // STATE VARIABLES
         let currentUser = null;
         let currentCategory = null;
         let currentSort = 'recent';
         let currentFilter = 'all';
         let searchQuery = '';
+        let realtimeChannel = null;
 
+        // UTILITY FUNCTIONS
         function timeAgo(date) {
             const seconds = Math.floor((new Date() - new Date(date)) / 1000);
             let interval = seconds / 31536000;
@@ -715,164 +719,291 @@
             return email[0].toUpperCase();
         }
 
+        // PUBLIC DATA LOADING (No auth required)
         async function loadCategories() {
-            const { data } = await supabaseClient.from('forum_categories').select('*');
-            const container = document.getElementById('categories-list');
-            const select = document.getElementById('qc-category');
-            
-            container.innerHTML = '<a class="category-item active" data-category="all"><span class="category-icon"><i class="fas fa-folder"></i></span><span class="category-name">All Topics</span></a>';
-            select.innerHTML = '<option value="">Select Category</option>';
-            
-            data?.forEach(cat => {
-                container.innerHTML += `
-                    <a class="category-item" data-category="${cat.id}">
-                        <span class="category-icon"><i class="${cat.icon}"></i></span>
-                        <span class="category-name">${cat.name}</span>
-                        <span class="category-count">${cat.thread_count}</span>
-                    </a>
-                `;
-                select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
-            });
-            
-            document.querySelectorAll('.category-item').forEach(item => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
-                    item.classList.add('active');
-                    currentCategory = item.dataset.category === 'all' ? null : item.dataset.category;
-                    loadThreads();
+            try {
+                const { data, error } = await supabaseClient.from('forum_categories').select('*');
+                if (error) throw error;
+                
+                const container = document.getElementById('categories-list');
+                const select = document.getElementById('qc-category');
+                
+                container.innerHTML = '<a class="category-item active" data-category="all"><span class="category-icon"><i class="fas fa-folder"></i></span><span class="category-name">All Topics</span></a>';
+                select.innerHTML = '<option value="">Select Category</option>';
+                
+                data?.forEach(cat => {
+                    container.innerHTML += `
+                        <a class="category-item" data-category="${cat.id}">
+                            <span class="category-icon"><i class="${cat.icon}"></i></span>
+                            <span class="category-name">${cat.name}</span>
+                            <span class="category-count">${cat.thread_count}</span>
+                        </a>
+                    `;
+                    select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
                 });
-            });
+                
+                // Attach click handlers
+                document.querySelectorAll('.category-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
+                        item.classList.add('active');
+                        currentCategory = item.dataset.category === 'all' ? null : item.dataset.category;
+                        loadThreads();
+                    });
+                });
+            } catch (e) {
+                console.error('Failed to load categories (non-fatal):', e);
+                document.getElementById('categories-list').innerHTML = '<p style="color: var(--forum-text-muted); font-size: 0.875rem;">Could not load categories</p>';
+            }
         }
 
         async function loadThreads() {
             const container = document.getElementById('threads-list');
             container.innerHTML = '<div class="loader-container"><div class="loader-spinner"></div></div>';
 
-            let query = supabaseClient
-                .from('forum_threads')
-                .select(`
-                    *,
-                    forum_categories(name, icon, color),
-                    forum_user_profiles(username, display_name, avatar_url)
-                `)
-                .eq('is_deleted', false);
+            try {
+                let query = supabaseClient
+                    .from('forum_threads')
+                    .select(`
+                        *,
+                        forum_categories(name, icon, color),
+                        forum_user_profiles(username, display_name, avatar_url)
+                    `)
+                    .eq('is_deleted', false);
 
-            if (currentCategory) query = query.eq('category_id', currentCategory);
-            if (currentFilter === 'unanswered') query = query.eq('reply_count', 0);
-            if (currentFilter === 'solved') query = query.eq('has_accepted_answer', true);
-            if (searchQuery) query = query.or(`title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`);
+                if (currentCategory) query = query.eq('category_id', currentCategory);
+                if (currentFilter === 'unanswered') query = query.eq('reply_count', 0);
+                if (currentFilter === 'solved') query = query.eq('has_accepted_answer', true);
+                if (searchQuery) query = query.or(`title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%`);
 
-            if (currentSort === 'recent') query = query.order('last_activity_at', { ascending: false });
-            else if (currentSort === 'popular') query = query.order('views', { ascending: false });
-            else if (currentSort === 'trending') query = query.order('upvotes', { ascending: false });
+                if (currentSort === 'recent') query = query.order('last_activity_at', { ascending: false });
+                else if (currentSort === 'popular') query = query.order('views', { ascending: false });
+                else if (currentSort === 'trending') query = query.order('upvotes', { ascending: false });
 
-            query = query.order('is_pinned', { ascending: false }).limit(20);
+                query = query.order('is_pinned', { ascending: false }).limit(20);
 
-            const { data, error } = await query;
+                const { data, error } = await query;
 
-            if (error) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-exclamation-triangle"></i></div><p>Error loading threads</p></div>';
-                return;
-            }
+                if (error) throw error;
 
-            if (!data || data.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-comments"></i></div><p>No discussions yet. Be the first!</p></div>';
-                return;
-            }
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-comments"></i></div><p>No discussions yet. Be the first!</p></div>';
+                    return;
+                }
 
-            container.innerHTML = data.map(thread => `
-                <a href="/thread.html?id=${thread.id}" class="thread-item ${thread.is_pinned ? 'pinned' : ''} ${thread.is_locked ? 'locked' : ''}">
-                    <div class="thread-avatar">${getAvatar(thread.author_email)}</div>
-                    <div class="thread-main">
-                        <div class="thread-header">
-                            <h2 class="thread-title">${thread.title}</h2>
-                            <div class="thread-badges">
-                                ${thread.is_pinned ? '<span class="badge pinned"><i class="fas fa-thumbtack"></i> Pinned</span>' : ''}
-                                ${thread.is_locked ? '<span class="badge locked"><i class="fas fa-lock"></i> Locked</span>' : ''}
-                                ${thread.has_accepted_answer ? '<span class="badge solved"><i class="fas fa-check-circle"></i> Solved</span>' : ''}
+                container.innerHTML = data.map(thread => `
+                    <a href="/thread.html?id=${thread.id}" class="thread-item ${thread.is_pinned ? 'pinned' : ''} ${thread.is_locked ? 'locked' : ''}">
+                        <div class="thread-avatar">${getAvatar(thread.author_email)}</div>
+                        <div class="thread-main">
+                            <div class="thread-header">
+                                <h2 class="thread-title">${thread.title}</h2>
+                                <div class="thread-badges">
+                                    ${thread.is_pinned ? '<span class="badge pinned"><i class="fas fa-thumbtack"></i> Pinned</span>' : ''}
+                                    ${thread.is_locked ? '<span class="badge locked"><i class="fas fa-lock"></i> Locked</span>' : ''}
+                                    ${thread.has_accepted_answer ? '<span class="badge solved"><i class="fas fa-check-circle"></i> Solved</span>' : ''}
+                                </div>
+                            </div>
+                            <div class="thread-meta">
+                                <span class="thread-meta-item">
+                                    ${thread.forum_categories ? `<span class="thread-category" style="background:${thread.forum_categories.color}20;color:${thread.forum_categories.color}"><i class="${thread.forum_categories.icon}"></i> ${thread.forum_categories.name}</span>` : ''}
+                                </span>
+                                <span class="thread-meta-item"><i class="far fa-user"></i> ${thread.forum_user_profiles?.display_name || thread.author_email?.split('@')[0] || 'Anonymous'}</span>
+                                <span class="thread-meta-item"><i class="far fa-clock"></i> ${timeAgo(thread.created_at)}</span>
+                                <span class="thread-meta-item"><i class="far fa-eye"></i> ${thread.views} views</span>
+                            </div>
+                            ${thread.tags && thread.tags.length ? `<div class="thread-tags">${thread.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>` : ''}
+                        </div>
+                        <div class="thread-stats">
+                            <div class="vote-display">
+                                <i class="fas fa-arrow-up stat-icon"></i>
+                                <span class="vote-count">${thread.upvotes - thread.downvotes}</span>
+                            </div>
+                            <div class="stat-item">
+                                <i class="far fa-comment stat-icon"></i>
+                                <span class="stat-count">${thread.reply_count}</span>
                             </div>
                         </div>
-                        <div class="thread-meta">
-                            <span class="thread-meta-item">
-                                ${thread.forum_categories ? `<span class="thread-category" style="background:${thread.forum_categories.color}20;color:${thread.forum_categories.color}"><i class="${thread.forum_categories.icon}"></i> ${thread.forum_categories.name}</span>` : ''}
-                            </span>
-                            <span class="thread-meta-item"><i class="far fa-user"></i> ${thread.forum_user_profiles?.display_name || thread.author_email?.split('@')[0] || 'Anonymous'}</span>
-                            <span class="thread-meta-item"><i class="far fa-clock"></i> ${timeAgo(thread.created_at)}</span>
-                            <span class="thread-meta-item"><i class="far fa-eye"></i> ${thread.views} views</span>
-                        </div>
-                        ${thread.tags && thread.tags.length ? `<div class="thread-tags">${thread.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>` : ''}
-                    </div>
-                    <div class="thread-stats">
-                        <div class="vote-display">
-                            <i class="fas fa-arrow-up stat-icon"></i>
-                            <span class="vote-count">${thread.upvotes - thread.downvotes}</span>
-                        </div>
-                        <div class="stat-item">
-                            <i class="far fa-comment stat-icon"></i>
-                            <span class="stat-count">${thread.reply_count}</span>
-                        </div>
-                    </div>
-                </a>
-            `).join('');
-
-            supabaseClient
-                .channel('forum_threads_changes')
-                .on('postgres_changes', { event: '*', schema: 'public', table: 'forum_threads' }, () => {
-                    loadThreads();
-                })
-                .subscribe();
+                    </a>
+                `).join('');
+            } catch (e) {
+                console.error('Failed to load threads:', e);
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"><i class="fas fa-exclamation-triangle"></i></div><p>Error loading threads. Please refresh the page.</p></div>';
+            }
         }
 
         async function loadTrending() {
-            const { data } = await supabaseClient
-                .from('forum_threads')
-                .select('id, title, views, reply_count')
-                .eq('is_deleted', false)
-                .order('views', { ascending: false })
-                .limit(5);
+            try {
+                const { data, error } = await supabaseClient
+                    .from('forum_threads')
+                    .select('id, title, views, reply_count')
+                    .eq('is_deleted', false)
+                    .order('views', { ascending: false })
+                    .limit(5);
 
-            const container = document.getElementById('trending-threads');
-            container.innerHTML = data?.map(t => `
-                <a href="/thread.html?id=${t.id}" class="trending-item">
-                    <div class="trending-title">${t.title}</div>
-                    <div class="trending-stats">${t.views} views · ${t.reply_count} replies</div>
-                </a>
-            `).join('') || '';
+                if (error) throw error;
+
+                const container = document.getElementById('trending-threads');
+                container.innerHTML = data?.map(t => `
+                    <a href="/thread.html?id=${t.id}" class="trending-item">
+                        <div class="trending-title">${t.title}</div>
+                        <div class="trending-stats">${t.views} views · ${t.reply_count} replies</div>
+                    </a>
+                `).join('') || '<p style="font-size: 0.875rem; color: var(--forum-text-muted);">No trending threads yet.</p>';
+            } catch (e) {
+                console.error('Failed to load trending (non-fatal):', e);
+                document.getElementById('trending-threads').innerHTML = '<p style="font-size: 0.875rem; color: var(--forum-text-muted);">Could not load trending</p>';
+            }
         }
 
         async function loadTopUsers() {
-            const { data } = await supabaseClient
-                .from('forum_user_profiles')
-                .select('username, display_name, reputation, avatar_url')
-                .gt('reputation', 0)
-                .order('reputation', { ascending: false })
-                .limit(5);
+            try {
+                const { data, error } = await supabaseClient
+                    .from('forum_user_profiles')
+                    .select('username, display_name, reputation, avatar_url')
+                    .gt('reputation', 0)
+                    .order('reputation', { ascending: false })
+                    .limit(5);
 
-            const container = document.getElementById('top-users');
-            container.innerHTML = data?.map((u, i) => `
-                <div class="top-user">
-                    <div class="top-user-avatar"><i class="fas fa-user"></i></div>
-                    <div class="top-user-info">
-                        <div class="top-user-name"><span class="top-user-rank">#${i + 1}</span> ${u.display_name || u.username}</div>
-                        <div class="top-user-rep">${u.reputation} reputation</div>
+                if (error) throw error;
+
+                const container = document.getElementById('top-users');
+                container.innerHTML = data?.map((u, i) => `
+                    <div class="top-user">
+                        <div class="top-user-avatar"><i class="fas fa-user"></i></div>
+                        <div class="top-user-info">
+                            <div class="top-user-name"><span class="top-user-rank">#${i + 1}</span> ${u.display_name || u.username}</div>
+                            <div class="top-user-rep">${u.reputation} reputation</div>
+                        </div>
                     </div>
-                </div>
-            `).join('') || '<p style="font-size: 0.875rem; color: var(--forum-text-muted);">No contributors yet.</p>';
+                `).join('') || '<p style="font-size: 0.875rem; color: var(--forum-text-muted);">No contributors yet.</p>';
+            } catch (e) {
+                console.error('Failed to load top users (non-fatal):', e);
+                document.getElementById('top-users').innerHTML = '<p style="font-size: 0.875rem; color: var(--forum-text-muted);">Could not load contributors</p>';
+            }
         }
 
         async function loadStats() {
-            const { count: threadCount } = await supabaseClient.from('forum_threads').select('*', { count: 'exact', head: true });
-            const { count: postCount } = await supabaseClient.from('forum_posts').select('*', { count: 'exact', head: true });
-            const { count: userCount } = await supabaseClient.from('forum_user_profiles').select('*', { count: 'exact', head: true });
-            
-            document.getElementById('forum-stats').innerHTML = `
-                <p><strong>${threadCount || 0}</strong> Threads</p>
-                <p><strong>${postCount || 0}</strong> Posts</p>
-                <p><strong>${userCount || 0}</strong> Members</p>
-            `;
+            try {
+                const [threadRes, postRes, userRes] = await Promise.allSettled([
+                    supabaseClient.from('forum_threads').select('*', { count: 'exact', head: true }),
+                    supabaseClient.from('forum_posts').select('*', { count: 'exact', head: true }),
+                    supabaseClient.from('forum_user_profiles').select('*', { count: 'exact', head: true })
+                ]);
+                
+                const threadCount = threadRes.status === 'fulfilled' ? threadRes.value.count : 0;
+                const postCount = postRes.status === 'fulfilled' ? postRes.value.count : 0;
+                const userCount = userRes.status === 'fulfilled' ? userRes.value.count : 0;
+                
+                document.getElementById('forum-stats').innerHTML = `
+                    <p><strong>${threadCount || 0}</strong> Threads</p>
+                    <p><strong>${postCount || 0}</strong> Posts</p>
+                    <p><strong>${userCount || 0}</strong> Members</p>
+                `;
+            } catch (e) {
+                console.error('Failed to load stats (non-fatal):', e);
+                document.getElementById('forum-stats').innerHTML = '<p style="color: var(--forum-text-muted);">Stats unavailable</p>';
+            }
         }
 
+        // AUTHENTICATION (Background, non-blocking)
+        async function initAuth() {
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                if (error) {
+                    console.error('Auth session error (non-fatal):', error);
+                    return;
+                }
+                if (session?.user) {
+                    currentUser = session.user;
+                    enhanceUIForUser();
+                    startRealtimeSubscriptions();
+                    checkMentorStatus();
+                }
+            } catch (e) {
+                console.error('Auth init failed (non-fatal):', e);
+            }
+        }
+
+        async function checkMentorStatus() {
+            if (!currentUser) return;
+            try {
+                const { data: mentorProfile } = await supabaseClient
+                    .from('mentor_profiles')
+                    .select('id')
+                    .eq('user_id', currentUser.id)
+                    .single();
+                
+                if (mentorProfile) {
+                    const dashboardLink = document.getElementById('mentor-dashboard-link');
+                    if (dashboardLink) dashboardLink.style.display = 'block';
+                }
+            } catch (e) {
+                console.error('Mentor status check failed (non-fatal):', e);
+            }
+        }
+
+        // PROGRESSIVE UI ENHANCEMENT (After auth)
+        function enhanceUIForUser() {
+            const qcLoggedOut = document.getElementById('quick-create-logged-out');
+            const qcCollapsed = document.getElementById('quick-create-collapsed');
+            const newThreadBtn = document.getElementById('new-thread-btn');
+            const followingFilter = document.querySelector('[data-filter="following"]');
+            
+            // Switch quick-create to logged-in state
+            if (qcLoggedOut) qcLoggedOut.style.display = 'none';
+            if (qcCollapsed) qcCollapsed.style.display = 'block';
+            
+            // Show New Thread button
+            if (newThreadBtn) newThreadBtn.style.display = 'inline-flex';
+            
+            // Enable Following filter (will be functional with user-specific query)
+            if (followingFilter) followingFilter.style.opacity = '1';
+        }
+
+        function resetUIForAnonymous() {
+            const qcLoggedOut = document.getElementById('quick-create-logged-out');
+            const qcCollapsed = document.getElementById('quick-create-collapsed');
+            const qcForm = document.getElementById('quick-create-form');
+            const newThreadBtn = document.getElementById('new-thread-btn');
+            
+            // Reset quick-create to logged-out state
+            if (qcLoggedOut) qcLoggedOut.style.display = 'block';
+            if (qcCollapsed) qcCollapsed.style.display = 'none';
+            if (qcForm) qcForm.style.display = 'none';
+            
+            // Hide New Thread button
+            if (newThreadBtn) newThreadBtn.style.display = 'none';
+            
+            // Stop realtime if active
+            if (realtimeChannel) {
+                supabaseClient.removeChannel(realtimeChannel);
+                realtimeChannel = null;
+            }
+        }
+
+        // REALTIME SUBSCRIPTIONS (Only after auth confirmed)
+        function startRealtimeSubscriptions() {
+            if (!currentUser || realtimeChannel) return;
+            
+            try {
+                realtimeChannel = supabaseClient
+                    .channel('forum_threads_changes')
+                    .on('postgres_changes', { event: '*', schema: 'public', table: 'forum_threads' }, () => {
+                        loadThreads();
+                    })
+                    .subscribe((status) => {
+                        if (status === 'CHANNEL_ERROR') {
+                            console.error('Realtime subscription failed (non-fatal)');
+                        }
+                    });
+            } catch (e) {
+                console.error('Realtime setup failed (non-fatal):', e);
+            }
+        }
+
+        // EVENT HANDLERS
+        // Sort buttons
         document.querySelectorAll('.sort-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
@@ -882,8 +1013,14 @@
             });
         });
 
+        // Filter chips
         document.querySelectorAll('.filter-chip').forEach(chip => {
             chip.addEventListener('click', () => {
+                // Following filter requires login
+                if (chip.dataset.filter === 'following' && !currentUser) {
+                    alert('Please log in to see threads you follow.');
+                    return;
+                }
                 document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
                 chip.classList.add('active');
                 currentFilter = chip.dataset.filter;
@@ -891,6 +1028,7 @@
             });
         });
 
+        // Search input with debounce
         let searchTimeout;
         document.getElementById('search-input').addEventListener('input', (e) => {
             clearTimeout(searchTimeout);
@@ -900,9 +1038,20 @@
             }, 500);
         });
 
+        // Quick-create collapsed state click handler
+        document.getElementById('quick-create-collapsed')?.addEventListener('click', () => {
+            document.getElementById('quick-create-collapsed').style.display = 'none';
+            document.getElementById('quick-create-form').style.display = 'block';
+            document.getElementById('qc-title').focus();
+        });
+
+        // Quick-create form submission (write protected by RLS)
         document.getElementById('quick-create-form')?.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (!currentUser) return;
+            if (!currentUser) {
+                alert('Please log in to create a thread.');
+                return;
+            }
             
             const title = document.getElementById('qc-title').value.trim();
             const content = document.getElementById('qc-content').value.trim();
@@ -913,24 +1062,23 @@
             btn.disabled = true;
             btn.textContent = 'Creating...';
             
-            const { data, error } = await supabaseClient
-                .from('forum_threads')
-                .insert({
-                    title,
-                    content,
-                    category_id: categoryId || null,
-                    tags,
-                    author_id: currentUser.id,
-                    author_email: currentUser.email
-                })
-                .select()
-                .single();
+            try {
+                const { data, error } = await supabaseClient
+                    .from('forum_threads')
+                    .insert({
+                        title,
+                        content,
+                        category_id: categoryId || null,
+                        tags,
+                        author_id: currentUser.id,
+                        author_email: currentUser.email
+                    })
+                    .select()
+                    .single();
 
-            if (error) {
-                alert('Error: ' + error.message);
-                btn.disabled = false;
-                btn.textContent = 'Create Thread';
-            } else {
+                if (error) throw error;
+
+                // Create/update user profile
                 await supabaseClient.from('forum_user_profiles').upsert({
                     user_id: currentUser.id,
                     username: currentUser.email.split('@')[0],
@@ -938,72 +1086,65 @@
                 }, { onConflict: 'user_id' });
                 
                 window.location.href = `/thread.html?id=${data.id}`;
+            } catch (error) {
+                console.error('Thread creation failed:', error);
+                alert('Error: ' + error.message);
+                btn.disabled = false;
+                btn.textContent = 'Create Thread';
             }
         });
 
+        // Auth state change listener (for login/logout during page session)
         supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-            currentUser = session?.user || null;
-            const btn = document.getElementById('new-thread-btn');
-            const quickCreate = document.getElementById('quick-create');
-            const qcForm = document.getElementById('quick-create-form');
-            const qcLoggedOut = document.getElementById('quick-create-logged-out');
-            
-            btn.style.display = 'inline-flex';
-
-            quickCreate.style.display = 'block';
-            if (currentUser) {
-                qcLoggedOut.style.display = 'none';
-                document.getElementById('quick-create-collapsed').style.display = 'block';
-                qcForm.style.display = 'none';
-                
-                const { data: mentorProfile } = await supabaseClient
-                    .from('mentor_profiles')
-                    .select('id')
-                    .eq('user_id', currentUser.id)
-                    .single();
-                
-                if (mentorProfile) {
-                    document.getElementById('mentor-dashboard-link').style.display = 'block';
+            try {
+                currentUser = session?.user || null;
+                if (currentUser) {
+                    enhanceUIForUser();
+                    startRealtimeSubscriptions();
+                    checkMentorStatus();
+                } else {
+                    resetUIForAnonymous();
                 }
-            } else {
-                qcLoggedOut.style.display = 'block';
-                document.getElementById('quick-create-collapsed').style.display = 'none';
-                qcForm.style.display = 'none';
+            } catch (e) {
+                console.error('Auth state change handler error (non-fatal):', e);
             }
         });
-        
-        document.getElementById('quick-create-collapsed').addEventListener('click', () => {
-            document.getElementById('quick-create-collapsed').style.display = 'none';
-            document.getElementById('quick-create-form').style.display = 'block';
-            document.getElementById('qc-title').focus();
-        });
 
+        // Mobile menu handlers
         const menuButton = document.getElementById('menuButton');
         const menuCloseBtn = document.getElementById('menuCloseBtn');
         const expandedMenu = document.getElementById('expandedMenu');
 
-        if(menuButton && expandedMenu) {
+        if (menuButton && expandedMenu) {
             menuButton.addEventListener('click', () => {
                 expandedMenu.style.transform = 'translateX(0)';
             });
         }
 
-        if(menuCloseBtn && expandedMenu) {
+        if (menuCloseBtn && expandedMenu) {
             menuCloseBtn.addEventListener('click', () => {
                 expandedMenu.style.transform = 'translateX(100%)';
             });
         }
 
-        (async () => {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            currentUser = session?.user || null;
-            
-            await loadCategories();
-            await loadThreads();
-            await loadTrending();
-            await loadTopUsers();
-            await loadStats();
-        })();
+        // INITIALIZATION (Public data loads immediately, auth in background)
+        // Load all public data in parallel immediately
+        Promise.allSettled([
+            loadCategories(),
+            loadThreads(),
+            loadTrending(),
+            loadTopUsers(),
+            loadStats()
+        ]).then(results => {
+            results.forEach((result, i) => {
+                if (result.status === 'rejected') {
+                    console.error(`Public data load ${i} failed:`, result.reason);
+                }
+            });
+        });
+
+        // Initialize auth in background
+        initAuth();
     </script>
 </body>
 </html>
