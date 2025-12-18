@@ -1047,7 +1047,7 @@
                 </div>
                 <div class="video-overlay">
                     <div class="participant-info">
-                        Alex Johnson - AI Interviewer
+                        Aditya Chourasia - AI Interviewer
                     </div>
                     <div class="video-status">
                         <div class="status-indicator" id="ai-audio-status"></div>
@@ -1521,10 +1521,10 @@
 
             setTimeout(() => avatar && avatar.onResize(), 50);
 
-            const welcome = "Hello, I'm Alex. Let's get started. Please walk me through your background.";
-            addChatMessage('ai', 'Alex Johnson', welcome);
+            const welcome = "Hello, I'm Aditya. Let's get started. Please walk me through your background.";
+            addChatMessage('ai', 'Aditya Chourasia', welcome);
             if (avatar) avatar.speakText(welcome);
-            if (areSubtitlesOn) scheduleAISubtitles([{ word: "Hello,", time_seconds: 0 }, { word: "I'm", time_seconds: 0.3 }, { word: "Alex.", time_seconds: 0.5 }, { word: "Let's", time_seconds: 1.0 }, { word: "get", time_seconds: 1.2 }, { word: "started.", time_seconds: 1.5 }], 3.0, 0);
+            if (areSubtitlesOn) scheduleAISubtitles([{ word: "Hello,", time_seconds: 0 }, { word: "I'm", time_seconds: 0.3 }, { word: "Aditya.", time_seconds: 0.5 }, { word: "Let's", time_seconds: 1.0 }, { word: "get", time_seconds: 1.2 }, { word: "started.", time_seconds: 1.5 }], 3.0, 0);
         }
 
         function addChatMessage(type, author, content) {
@@ -1548,12 +1548,12 @@
                         messages.push({ role: 'assistant', content: aiMessage });
                         addChatMessage('ai', 'System', `<b>Interview Report Generated</b><div style="font-size:0.85em; margin-top:5px; white-space:pre-wrap; opacity:0.9">${report}</div>`);
                         if (clean.length > 2) {
-                            addChatMessage('ai', 'Alex Johnson', clean);
+                            addChatMessage('ai', 'Aditya Chourasia', clean);
                             if (avatar && isModelLoaded) avatar.speakText(clean);
                         }
                     } else {
                         messages.push({ role: 'assistant', content: aiMessage });
-                        addChatMessage('ai', 'Alex Johnson', clean);
+                        addChatMessage('ai', 'Aditya Chourasia', clean);
                         if (avatar && isModelLoaded) {
                             emojis.forEach((e, i) => setTimeout(() => avatar.speakEmoji(e), i * 500));
                             avatar.speakText(clean);
