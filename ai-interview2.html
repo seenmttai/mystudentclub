@@ -1125,7 +1125,7 @@
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
     import { LipsyncEn } from 'lipsync-en';
-    // Import new extended animations
+    // Import your hosted animations file
     import { poses, moods, emojis, gestures } from 'https://www.mystudentclub.com/scripts/animations.js';
 
     // --- CONFIGURATION ---
@@ -1138,78 +1138,52 @@
       constructor(node, opt = {}) {
         this.nodeAvatar = node;
         this.opt = { ttsEndpoint: null, lipsyncLang: 'en', cameraView: 'upper', ...opt };
-
-        // Three.js Setup
         this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         this.renderer.setPixelRatio(window.devicePixelRatio);
         this.renderer.setSize(node.clientWidth, node.clientHeight);
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
         this.nodeAvatar.appendChild(this.renderer.domElement);
-
         this.camera = new THREE.PerspectiveCamera(25, node.clientWidth / node.clientHeight, 0.1, 100);
         this.scene = new THREE.Scene();
 
         // Lighting
-        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.7);
-        hemiLight.position.set(0, 20, 0);
-        this.scene.add(hemiLight);
+        this.scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.7));
         const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
         dirLight.position.set(0.5, 2, 2);
         dirLight.castShadow = true;
         this.scene.add(dirLight);
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        this.controls.enableZoom = false;
-        this.controls.enablePan = false;
-        this.controls.target.set(0, 1.58, 0);
-        this.controls.enableDamping = true;
+        this.controls.enableZoom = false; this.controls.enablePan = false;
+        this.controls.target.set(0, 1.58, 0); this.controls.enableDamping = true;
 
-        // State
-        this.animClock = 0;
-        this.animTimeLast = 0;
-        this.avatar = null;
-        this.armature = null;
-        this.morphs = [];
-        this.mixer = null;
-        this.speechQueue = [];
-        this.isSpeaking = false;
-        this.isRunning = false;
-        this.stateName = 'idle';
-        this.currentAudioDuration = 0;
-
-        this.audioCtx = new AudioContext();
-        this.audioSpeechSource = null;
+        this.animClock = 0; this.animTimeLast = 0;
+        this.avatar = null; this.armature = null; this.morphs = []; this.mixer = null;
+        this.speechQueue = []; this.isSpeaking = false; this.isRunning = false;
+        this.audioCtx = new AudioContext(); this.audioSpeechSource = null;
         this.lipsync = {};
         this.visemeNames = ['viseme_sil', 'viseme_PP', 'viseme_FF', 'viseme_TH', 'viseme_DD', 'viseme_kk', 'viseme_CH', 'viseme_SS', 'viseme_nn', 'viseme_RR', 'viseme_aa', 'viseme_E', 'viseme_I', 'viseme_O', 'viseme_U'];
 
-        // Animation Data
-        this.poseTemplates = poses;
-        this.animMoods = moods;
-        this.animEmojis = emojis;
-        this.gestureTemplates = gestures || {};
+        // Load Animations
+        this.poseTemplates = poses; this.animMoods = moods; this.animEmojis = emojis; this.gestureTemplates = gestures || {};
 
-        this.animQueue = [];
+        this.animQueue = []; this.poseBase = { props: {} }; this.poseTarget = { props: {} }; this.poseAvatar = { props: {} }; this.poseDelta = { props: {} }; this.animBaseline = {};
+        this.currentPoseName = 'straight';
         this.easing = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
-        // Transform Objects
-        this.poseBase = { props: {} };
-        this.poseTarget = { props: {} };
-        this.poseAvatar = { props: {} };
-        this.poseDelta = { props: {} };
-        this.animBaseline = {};
-        this.currentPoseName = 'straight';
+        // Echo Cancellation State
+        this.ignoreSTTUntil = 0;
 
         window.addEventListener('resize', this.onResize.bind(this));
       }
 
       async init() {
         this.lipsync[this.opt.lipsyncLang] = new LipsyncEn();
-        const rgbe = new RGBELoader();
         try {
+          const rgbe = new RGBELoader();
           const tex = await new Promise((res, rej) => rgbe.load('https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr', res, undefined, rej));
-          tex.mapping = THREE.EquirectangularReflectionMapping;
-          this.scene.environment = tex;
+          tex.mapping = THREE.EquirectangularReflectionMapping; this.scene.environment = tex;
         } catch (e) { }
       }
 
@@ -1217,32 +1191,23 @@
         const loader = new GLTFLoader();
         const gltf = await loader.loadAsync(avatar.url);
         this.armature = gltf.scene;
-
         this.armature.traverse(node => {
           if (node.isMesh) {
             node.castShadow = true; node.receiveShadow = true; node.frustumCulled = false;
-            if (node.material) {
-              node.material.transparent = false; node.material.alphaTest = 0.5; node.material.side = THREE.FrontSide;
-              if (node.name.toLowerCase().includes('eye')) { node.material.roughness = 0.2; node.material.metalness = 0.1; }
-            }
+            if (node.material) { node.material.transparent = false; node.material.alphaTest = 0.5; node.material.side = THREE.FrontSide; if (node.name.toLowerCase().includes('eye')) { node.material.roughness = 0.2; node.material.metalness = 0.1; } }
             if (node.morphTargetDictionary) this.morphs.push(node);
           }
         });
 
-        // Init Bones
-        this.poseAvatar = { props: {} };
-        this.poseDelta = { props: {} };
-        if (!this.poseTemplates.straight) this.poseTemplates.straight = { props: {} }; // Safety
-
-        // Setup Initial Pose
+        this.poseAvatar = { props: {} }; this.poseDelta = { props: {} };
+        if (!this.poseTemplates.straight) this.poseTemplates.straight = { props: {} };
         this.poseBase = this.poseFactory(this.poseTemplates.straight);
         this.poseTarget = this.poseFactory(this.poseTemplates.straight);
 
-        // Map all potential bones
         const usedBones = new Set();
         [...Object.values(this.poseTemplates), ...Object.values(this.gestureTemplates)].forEach(t => {
           if (t.props) Object.keys(t.props).forEach(k => usedBones.add(k));
-          else Object.keys(t).forEach(k => usedBones.add(k)); // Gestures might be flat
+          else Object.keys(t).forEach(k => usedBones.add(k));
         });
 
         usedBones.forEach(key => {
@@ -1252,7 +1217,6 @@
             this.poseAvatar.props[key] = bone[prop];
             if (!this.poseBase.props[key]) this.poseBase.props[key] = bone[prop].clone();
             if (!this.poseTarget.props[key]) this.poseTarget.props[key] = bone[prop].clone();
-
             if (prop === 'rotation' || prop === 'quaternion') this.poseDelta.props[key] = new THREE.Euler();
             else this.poseDelta.props[key] = new THREE.Vector3();
           }
@@ -1264,187 +1228,75 @@
         this.start();
       }
 
-      // --- ANIMATION CORE ---
-      start() {
-        if (this.isRunning) return;
-        this.isRunning = true;
-        this.animTimeLast = performance.now();
-        this.setMood('stern'); // Default to stern
-        this.renderer.setAnimationLoop(this.animate.bind(this));
-      }
-
-      setMood(moodName) {
-        if (!this.animMoods[moodName]) return;
-        this.animQueue = this.animQueue.filter(a => a.loop !== -1); // Clear old idle
-        this.animMoods[moodName].anims.forEach(anim => {
-          this.animQueue.push(this.animFactory(anim));
-        });
-        // Set baseline morphs
-        if (this.animMoods[moodName].baseline) {
-          Object.entries(this.animMoods[moodName].baseline).forEach(([k, v]) => {
-            this.animBaseline[k] = { target: v, t0: this.animClock, v0: this.getValue(k) };
-          });
-        }
-      }
+      start() { if (this.isRunning) return; this.isRunning = true; this.animTimeLast = performance.now(); this.setMood('stern'); this.renderer.setAnimationLoop(this.animate.bind(this)); }
+      setMood(n) { if (!this.animMoods[n]) return; this.animQueue = this.animQueue.filter(a => a.loop !== -1); this.animMoods[n].anims.forEach(a => this.animQueue.push(this.animFactory(a))); if (this.animMoods[n].baseline) Object.entries(this.animMoods[n].baseline).forEach(([k, v]) => this.animBaseline[k] = { target: v, t0: this.animClock, v0: this.getValue(k) }); }
 
       animate() {
-        const now = performance.now();
-        const dt = now - this.animTimeLast;
-        this.animClock += dt;
-        this.animTimeLast = now;
-        this.controls.update();
-
-        const currentValues = new Map();
-
-        // Baselines
+        const now = performance.now(); const dt = now - this.animTimeLast; this.animClock += dt; this.animTimeLast = now; this.controls.update();
+        const cv = new Map();
         for (let [mt, x] of Object.entries(this.animBaseline)) {
           if (x.t0 === undefined) { x.t0 = this.animClock; x.v0 = this.getValue(mt); }
-          const val = this.valueAnimationSeq([x.t0, x.t0 + 1000], [x.v0, x.target], this.animClock);
-          currentValues.set(mt, val);
+          cv.set(mt, this.valueAnimationSeq([x.t0, x.t0 + 1000], [x.v0, x.target], this.animClock));
         }
-
-        // Queue
         for (let i = 0; i < this.animQueue.length; i++) {
           const anim = this.animQueue[i];
           if (this.animClock < anim.ts[0]) continue;
-
           Object.entries(anim.vs).forEach(([mt, vs]) => {
             if (vs[0] === null) vs[0] = this.getValue(mt) || 0;
             const val = this.valueAnimationSeq(anim.ts, vs, this.animClock);
-
             if (mt === 'pose') {
-              // Pose Switching
-              const segmentIdx = anim.ts.findIndex(t => t > this.animClock) - 1;
-              const poseName = vs[Math.max(0, segmentIdx)];
-              if (poseName && poseName !== this.currentPoseName && typeof poseName === 'string') {
-                this.setPose(poseName);
-              }
+              const pName = vs[Math.max(0, anim.ts.findIndex(t => t > this.animClock) - 1)];
+              if (pName && pName !== this.currentPoseName) this.setPose(pName);
             } else if (mt === 'gesture') {
-              // Complex Gestures
-              const segmentIdx = anim.ts.findIndex(t => t > this.animClock) - 1;
-              const gData = vs[Math.max(0, segmentIdx)];
-              if (Array.isArray(gData) && !anim._triggered) {
-                this.playGesture(gData[0], gData[1]);
-                anim._triggered = true; // prevent re-triggering in loop
-              }
+              const gData = vs[Math.max(0, anim.ts.findIndex(t => t > this.animClock) - 1)];
+              if (Array.isArray(gData) && !anim._triggered) { this.playGesture(gData[0], gData[1]); anim._triggered = true; }
             } else {
-              const prev = currentValues.get(mt) || 0;
-              if (Math.abs(val) >= Math.abs(prev)) currentValues.set(mt, val);
+              if (Math.abs(val) >= Math.abs(cv.get(mt) || 0)) cv.set(mt, val);
             }
           });
-
-          if (this.animClock >= anim.ts.at(-1)) {
-            if (anim.loop === -1) {
-              this.animQueue[i] = this.animFactory(anim.template); // Reset loop
-            } else {
-              this.animQueue.splice(i--, 1);
-            }
-          }
+          if (this.animClock >= anim.ts.at(-1)) { if (anim.loop === -1) this.animQueue[i] = this.animFactory(anim.template); else this.animQueue.splice(i--, 1); }
         }
-
-        this.applyValues(currentValues);
-        this.updatePoseBase();
-        this.renderer.render(this.scene, this.camera);
+        this.applyValues(cv); this.updatePoseBase(); this.renderer.render(this.scene, this.camera);
       }
 
       applyValues(values) {
-        // Morphs
         for (const mesh of this.morphs) {
           for (const name in mesh.morphTargetDictionary) {
             const idx = mesh.morphTargetDictionary[name];
             let val = values.get(name);
-            if (val === undefined) {
-              const curr = mesh.morphTargetInfluences[idx] || 0;
-              // Fast decay for visemes, slow for others
-              val = name.startsWith('viseme_') ? 0 : curr * 0.9;
-            }
+            if (val === undefined) { const c = mesh.morphTargetInfluences[idx] || 0; val = name.startsWith('viseme_') ? 0 : c * 0.9; }
             mesh.morphTargetInfluences[idx] = Math.max(0, Math.min(1, val));
           }
         }
-
-        // Bone Deltas
-        const headX = values.get('headRotateX') || 0;
-        const headY = values.get('headRotateY') || 0;
-        const headZ = values.get('headRotateZ') || 0;
-        const chest = values.get('chestInhale') || 0;
-        const eyeX = values.get('eyesRotateX') || 0;
-        const eyeY = values.get('eyesRotateY') || 0;
-
-        if (this.poseDelta.props['Head.rotation']) this.poseDelta.props['Head.rotation'].set(headX, headY, headZ);
+        const hX = values.get('headRotateX') || 0, hY = values.get('headRotateY') || 0, hZ = values.get('headRotateZ') || 0, chest = values.get('chestInhale') || 0;
+        if (this.poseDelta.props['Head.rotation']) this.poseDelta.props['Head.rotation'].set(hX, hY, hZ);
         if (this.poseDelta.props['Spine1.rotation']) this.poseDelta.props['Spine1.rotation'].set(-chest * 0.05, 0, 0);
-
-        Object.keys(this.poseAvatar.props).forEach(key => {
-          const boneObj = this.poseAvatar.props[key];
-          const baseObj = this.poseBase.props[key];
-          if (!boneObj || !baseObj) return;
-
-          if (boneObj.isQuaternion) {
-            boneObj.copy(baseObj);
-            const [bName] = key.split('.');
-            const deltaEuler = this.poseDelta.props[`${bName}.rotation`];
-            if (deltaEuler) boneObj.multiply(new THREE.Quaternion().setFromEuler(deltaEuler));
-          } else if (boneObj.isVector3) {
-            boneObj.copy(baseObj);
-            if (key === 'Spine1.scale' && chest > 0) boneObj.set(1 + (chest * 0.1), 1 + (chest * 0.1), 1 + (chest * 0.1));
-          }
+        Object.keys(this.poseAvatar.props).forEach(k => {
+          const b = this.poseAvatar.props[k], base = this.poseBase.props[k]; if (!b || !base) return;
+          if (b.isQuaternion) { b.copy(base); const [n] = k.split('.'); const d = this.poseDelta.props[`${n}.rotation`]; if (d) b.multiply(new THREE.Quaternion().setFromEuler(d)); }
+          else if (b.isVector3) { b.copy(base); if (k === 'Spine1.scale' && chest > 0) b.set(1 + (chest * 0.1), 1 + (chest * 0.1), 1 + (chest * 0.1)); }
         });
-
-        // Eyes
-        const lEye = this.armature.getObjectByName('LeftEye');
-        const rEye = this.armature.getObjectByName('RightEye');
-        if (lEye && rEye) { lEye.rotation.set(eyeX, eyeY, 0); rEye.rotation.set(eyeX, eyeY, 0); }
+        const lEye = this.armature.getObjectByName('LeftEye'), rEye = this.armature.getObjectByName('RightEye');
+        if (lEye && rEye) { const eX = values.get('eyesRotateX') || 0, eY = values.get('eyesRotateY') || 0; lEye.rotation.set(eX, eY, 0); rEye.rotation.set(eX, eY, 0); }
       }
 
-      // --- ANIMATION HELPERS ---
       setPose(name, ms = 2000) {
-        if (!this.poseTemplates[name]) return;
-        this.currentPoseName = name;
-        const template = this.poseTemplates[name];
-        const newTargetProps = {};
-        Object.keys(template.props).forEach(k => {
-          const val = template.props[k];
-          if (k.includes('rotation')) newTargetProps[k] = new THREE.Quaternion().setFromEuler(new THREE.Euler(val.x, val.y, val.z));
-          else newTargetProps[k] = new THREE.Vector3(val.x, val.y, val.z);
-        });
-        this.poseTarget.props = newTargetProps;
-        Object.values(this.poseTarget.props).forEach(v => { v.t = this.animClock; v.d = ms; });
+        if (!this.poseTemplates[name]) return; this.currentPoseName = name; const t = this.poseTemplates[name], p = {};
+        Object.keys(t.props).forEach(k => { const v = t.props[k]; if (k.includes('rotation')) p[k] = new THREE.Quaternion().setFromEuler(new THREE.Euler(v.x, v.y, v.z)); else p[k] = new THREE.Vector3(v.x, v.y, v.z); });
+        this.poseTarget.props = p; Object.values(this.poseTarget.props).forEach(v => { v.t = this.animClock; v.d = ms; });
       }
-
       playGesture(name, dur = 1) {
-        const g = this.gestureTemplates[name];
-        if (!g) return;
-        // Temporarily override target pose with gesture
-        Object.keys(g).forEach(k => {
-          const val = g[k];
-          const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(val.x, val.y, val.z));
-          if (this.poseTarget.props[k]) {
-            this.poseTarget.props[k].copy(q);
-            this.poseTarget.props[k].t = this.animClock;
-            this.poseTarget.props[k].d = 500; // Fast in
-          }
-        });
-        // Reset after duration
-        setTimeout(() => {
-          this.setPose(this.currentPoseName, 1000);
-        }, dur * 1000);
+        const g = this.gestureTemplates[name]; if (!g) return;
+        Object.keys(g).forEach(k => { const v = g[k]; if (this.poseTarget.props[k]) { this.poseTarget.props[k].copy(new THREE.Quaternion().setFromEuler(new THREE.Euler(v.x, v.y, v.z))); this.poseTarget.props[k].t = this.animClock; this.poseTarget.props[k].d = 500; } });
+        setTimeout(() => this.setPose(this.currentPoseName, 1000), dur * 1000);
       }
+      updatePoseBase() { for (const [k, t] of Object.entries(this.poseTarget.props)) { const b = this.poseBase.props[k]; if (!b) continue; const a = Math.min(1, (this.animClock - t.t) / t.d); if (a >= 1) b.copy(t); else { if (b.isQuaternion) b.slerp(t, this.easing(a)); else b.lerp(t, this.easing(a)); } } }
 
-      updatePoseBase() {
-        for (const [key, targetVal] of Object.entries(this.poseTarget.props)) {
-          const baseVal = this.poseBase.props[key];
-          if (!baseVal) continue;
-          const alpha = Math.min(1, (this.animClock - targetVal.t) / targetVal.d);
-          if (alpha >= 1) baseVal.copy(targetVal);
-          else {
-            if (baseVal.isQuaternion) baseVal.slerp(targetVal, this.easing(alpha));
-            else baseVal.lerp(targetVal, this.easing(alpha));
-          }
-        }
-      }
-
-      // --- SPEECH & AUDIO ---
       async processSpeechItem(item) {
         this.isSpeaking = true;
+        // ECHO CANCELLATION LOCK: Ignore STT for the next 2.5 seconds (covers greeting/short sentences)
+        this.ignoreSTTUntil = Date.now() + 2500;
+
         if (item.type === 'text') {
           try {
             const pre = this.lipsync.en.preProcessText(item.content);
@@ -1462,82 +1314,54 @@
 
       async playAudioWithVisemes(base64, timepoints) {
         if (this.audioCtx.state === 'suspended') await this.audioCtx.resume();
-
-        // Clean queue of old visemes
         this.animQueue = this.animQueue.filter(a => !Object.keys(a.vs)[0].startsWith('viseme_'));
 
         const audioData = Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer;
         const buffer = await this.audioCtx.decodeAudioData(audioData);
-        this.currentAudioDuration = buffer.duration;
+        const duration = buffer.duration * 1000;
 
-        // 1. Strict Lip Sync (No Flapping)
+        // Update ignore lock for full duration of speech + 200ms buffer
+        this.ignoreSTTUntil = Date.now() + duration + 200;
+
         const audioStart = this.animClock + 50;
         timepoints.forEach((tp, idx) => {
-          const nextTp = timepoints[idx + 1];
-          const wordStart = tp.time_seconds * 1000;
-          // Strict bounding: Word ends when next word begins
-          const wordEnd = nextTp ? (nextTp.time_seconds * 1000) : (buffer.duration * 1000);
-          const duration = wordEnd - wordStart;
-
+          const next = timepoints[idx + 1];
+          const wordDur = next ? (next.time_seconds - tp.time_seconds) * 1000 : 200;
           const vis = this.lipsync.en.wordsToVisemes(tp.word);
           if (vis.visemes.length) {
             const totalRel = vis.durations.reduce((a, b) => a + b, 0);
             vis.visemes.forEach((v, i) => {
-              // Map relative viseme time to absolute audio time
-              const absStart = wordStart + (vis.times[i] / totalRel * duration);
-              const absDur = (vis.durations[i] / totalRel * duration);
-
-              // Clamp minimum duration for visibility, but don't overlap too much
-              const finalDur = Math.max(50, absDur);
+              const absStart = (tp.time_seconds * 1000) + (vis.times[i] / totalRel * wordDur);
+              const absDur = Math.max(50, (vis.durations[i] / totalRel * wordDur));
               const t = audioStart + absStart;
-
-              this.animQueue.push({
-                ts: [t, t + (finalDur * 0.2), t + finalDur], // Attack, Sustain, Decay
-                vs: { [`viseme_${v}`]: [0, 1, 0] } // Full intensity (1), then 0. No lingering.
-              });
+              this.animQueue.push({ ts: [t, t + (absDur * 0.2), t + absDur], vs: { [`viseme_${v}`]: [0, 1, 0] } });
             });
           }
         });
 
-        // 2. Play Audio
         if (this.audioSpeechSource) this.audioSpeechSource.stop();
         this.audioSpeechSource = this.audioCtx.createBufferSource();
         this.audioSpeechSource.buffer = buffer;
         this.audioSpeechSource.connect(this.audioCtx.destination);
         this.audioSpeechSource.start(this.audioCtx.currentTime + 0.05);
-
-        // 3. Subtitles
         if (typeof scheduleAISubtitles === 'function') scheduleAISubtitles(timepoints, buffer.duration, this.audioCtx.currentTime + 0.05);
-
         this.audioSpeechSource.onended = () => this.finishSpeaking();
       }
 
-      // Interrupt Handling
       interrupt() {
         if (!this.isSpeaking) return;
-        if (this.audioSpeechSource) {
-          this.audioSpeechSource.stop();
-          this.audioSpeechSource = null;
-        }
-        // Clear visemes immediately
+        if (this.audioSpeechSource) { this.audioSpeechSource.stop(); this.audioSpeechSource = null; }
         this.animQueue = this.animQueue.filter(a => !Object.keys(a.vs)[0].startsWith('viseme_'));
-        // Clear subtitle timers
         if (window.clearAISubtitles) window.clearAISubtitles();
-
-        this.speechQueue = [];
-        this.isSpeaking = false;
-        this.stateName = 'idle';
-
-        // Visually react to interruption
+        this.speechQueue = []; this.isSpeaking = false; this.ignoreSTTUntil = 0; // Unlock mic immediately
         this.speakEmoji('😤');
       }
 
       speakText(t) { if (this.isSpeaking) { this.speechQueue.push({ type: 'text', content: t }); return; } this.processSpeechItem({ type: 'text', content: t }); }
       speakEmoji(e) { if (this.isSpeaking) { this.speechQueue.push({ type: 'emoji', content: e }); return; } this.processSpeechItem({ type: 'emoji', content: this.animEmojis[e] }); }
-      finishSpeaking() { this.isSpeaking = false; this.startIdleBehavior(); if (this.speechQueue.length) this.processSpeechItem(this.speechQueue.shift()); }
+      finishSpeaking() { this.isSpeaking = false; this.start(); if (this.speechQueue.length) this.processSpeechItem(this.speechQueue.shift()); }
       stopSpeaking() { this.interrupt(); }
 
-      // Boilerplate
       getValue(n) { if (n.startsWith('headRotate')) return this.poseDelta.props['Head.rotation']?.[n.slice(-1).toLowerCase()] || 0; const m = this.morphs[0]; return (m && m.morphTargetDictionary[n] !== undefined) ? m.morphTargetInfluences[m.morphTargetDictionary[n]] : 0; }
       poseFactory(t, ms = 2000) { const p = {}; if (t.props) Object.keys(t.props).forEach(k => { const v = t.props[k]; if (k.includes('rotation')) p[k] = new THREE.Quaternion().setFromEuler(new THREE.Euler(v.x, v.y, v.z)); else p[k] = new THREE.Vector3(v.x, v.y, v.z); }); return { props: p }; }
       animFactory(t) { const i = { template: t, ts: [], vs: {}, loop: t.loop }; let c = this.animClock + (Array.isArray(t.delay) ? (t.delay[0] + Math.random() * (t.delay[1] - t.delay[0])) : (t.delay || 0)); i.ts.push(c); (t.dt || [1000]).forEach(d => { c += Array.isArray(d) ? (d[0] + Math.random() * (d[1] - d[0])) : d; i.ts.push(c); }); Object.keys(t.vs).forEach(k => { i.vs[k] = t.vs[k].map(v => Array.isArray(v) ? v[0] + Math.random() * (v[1] - v[0]) : v); while (i.vs[k].length < i.ts.length) i.vs[k].push(i.vs[k].at(-1)); }); return i; }
@@ -1548,19 +1372,26 @@
 
     // --- GLOBAL LOGIC ---
     let avatar, userStream, isModelLoaded = false, areSubtitlesOn = true, interviewConfig = {}, messages = [], speechRecognition, isWaitingForAIResponse = false;
-    let finalTranscript = '';
 
-    // Report/Sanitizer
+    // Report Sanitizer (Updated Regex)
     const EMOJI_CHAR = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
     function extractEmojisAndSanitize(text = "") {
-      const chars = Array.from(text), emojis = [];
-      const clean = chars.map(ch => EMOJI_CHAR.test(ch) ? (emojis.push(ch), "") : ch).join("").replace(/<<<FINAL_INTERVIEW_REPORT>>>[\s\S]*?<<<END_FINAL_INTERVIEW_REPORT>>>/, "").trim();
-      const reportMatch = text.match(/<<<FINAL_INTERVIEW_REPORT>>>([\s\S]*?)<<<END_FINAL_INTERVIEW_REPORT>>>/);
-      return { clean, emojis, report: reportMatch ? reportMatch[1] : null };
+      // 1. Remove report completely from clean text
+      const reportRegex = /<<<FINAL_INTERVIEW_REPORT>>>([\s\S]*?)<<<END_FINAL_INTERVIEW_REPORT>>>/;
+      const reportMatch = text.match(reportRegex);
+      const report = reportMatch ? reportMatch[1] : null;
+
+      let clean = text.replace(reportRegex, ""); // Strip report
+      clean = clean.replace(/\*/g, ""); // Strip markdown stars
+
+      // 2. Extract Emojis
+      const chars = Array.from(clean), emojis = [];
+      clean = chars.map(ch => EMOJI_CHAR.test(ch) ? (emojis.push(ch), "") : ch).join("").trim();
+
+      return { clean, emojis, report };
     }
 
     const setupScreen = document.getElementById('setup-screen'), loadingScreen = document.getElementById('loading-screen'), permissionsModal = document.getElementById('permissions-modal'), interviewScreen = document.getElementById('interview-screen'), setupForm = document.getElementById('setup-form'), avatarContainer = document.getElementById('avatar-container'), modelLoadingOverlay = document.getElementById('model-loading-overlay'), chatMessages = document.getElementById('chat-messages'), userVideo = document.getElementById('user-video'), subtitlesOverlay = document.getElementById('subtitles-overlay'), currentRoleSpan = document.getElementById('current-role'), loadingProgressBar = document.getElementById('loading-progress-bar'), speechStatus = document.getElementById('speech-status'), subtitlesBtn = document.getElementById('subtitles-btn'), endCallBtn = document.getElementById('end-call-btn'), allowPermissionsBtn = document.getElementById('allow-permissions'), skipPermissionsBtn = document.getElementById('skip-permissions');
-    // Hide push to talk - we are always listening
     document.getElementById('push-to-talk-btn').style.display = 'none';
 
     async function init() {
@@ -1579,7 +1410,6 @@
       window.addEventListener('resize', () => { if (avatar) avatar.onResize(); });
     }
 
-    // --- CONTINUOUS SPEECH (VAD logic) ---
     function setupContinuousSpeechRecognition() {
       if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1589,61 +1419,44 @@
         speechRecognition.lang = 'en-US';
 
         speechRecognition.onresult = (event) => {
-          let interim = '';
-          finalTranscript = ''; // Reset final to accumulation of this session? No, browser handles it.
+          // ECHO GATE: If AI is speaking and we are in the "Echo Window" (first 2.5s), ignore everything.
+          if (avatar && avatar.isSpeaking && Date.now() < avatar.ignoreSTTUntil) {
+            console.log("Echo blocked");
+            return;
+          }
 
-          // 1. INTERRUPT LOGIC
-          // If we detect speech and AI is speaking, cut it off.
+          // INTERRUPT LOGIC: Only triggered after the "Echo Window" passes
           if (avatar && avatar.isSpeaking && event.results.length > 0) {
-            const latestResult = event.results[event.results.length - 1];
-            if (latestResult[0].transcript.trim().length > 0) {
+            const latest = event.results[event.results.length - 1][0].transcript.trim();
+            // Heuristic: If meaningful speech detected > 2 chars
+            if (latest.length > 2) {
               avatar.interrupt();
-              updateSpeechStatus("Interruption detected...", true);
-              // Add marker to history
-              if (messages.length && messages[messages.length - 1].role === 'assistant') {
-                messages[messages.length - 1].content += " [Interrupted]";
-              }
+              if (messages.length && messages[messages.length - 1].role === 'assistant') messages[messages.length - 1].content += " [Interrupted]";
             }
           }
 
+          let finalTranscript = '';
           for (let i = event.resultIndex; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
               const spoken = event.results[i][0].transcript.trim();
               if (spoken) handleSpeechInput(spoken);
-            } else {
-              interim += event.results[i][0].transcript;
             }
           }
-          if (interim) updateSpeechStatus(`Listening: ${interim}`, true);
         };
-
-        speechRecognition.onend = () => {
-          // Restart automatically (Continuous listening)
-          if (interviewScreen.classList.contains('hidden') === false) {
-            try { speechRecognition.start(); } catch (e) { }
-          }
-        };
-
-        // Start initially silently
+        speechRecognition.onend = () => { if (!interviewScreen.classList.contains('hidden')) try { speechRecognition.start(); } catch (e) { } };
       }
     }
 
     function handleSpeechInput(text) {
       if (!text.trim() || isWaitingForAIResponse) return;
-
-      // Filter short noise (optional, but requested)
-      const words = text.split(' ');
-      if (words.length < 2 && !['stop', 'wait', 'no', 'yes'].includes(text.toLowerCase().replace(/[^\w]/g, ''))) {
-        return; // Ignore coughs or short noise
-      }
-
+      // Ignore short fillers during interruption handling
+      if (text.length < 3 && !['no', 'yes', 'ok'].includes(text.toLowerCase())) return;
       addChatMessage('user', 'You', text);
       sendToAI(text);
     }
 
     function updateSpeechStatus(t, v) { speechStatus.textContent = t; speechStatus.classList.toggle('visible', v); }
 
-    // --- LOADING ---
     async function loadModelInBackground() {
       try {
         avatar = new TalkingHead(avatarContainer, { ttsEndpoint: TTS_ENDPOINT, cameraView: 'head' });
@@ -1654,7 +1467,7 @@
         isModelLoaded = true;
         modelLoadingOverlay.classList.add('hidden');
         loadingScreen.classList.add('hidden');
-      } catch (error) { console.error(error); updateLoadingProgress(0, 'Failed to load.'); }
+      } catch (error) { console.error(error); updateLoadingProgress(0, 'Failed.'); }
     }
     function updateLoadingProgress(p, t) { loadingProgressBar.style.width = `${p}%`; const lt = document.querySelector('.loading-text'); if (lt) lt.textContent = t; }
 
@@ -1664,25 +1477,27 @@
       currentRoleSpan.textContent = interviewConfig.specialization;
       setupScreen.classList.add('hidden');
       if (!isModelLoaded) { loadingScreen.classList.remove('hidden'); while (!isModelLoaded) await new Promise(r => setTimeout(r, 100)); loadingScreen.classList.add('hidden'); }
-      try { await navigator.mediaDevices.getUserMedia({ audio: true }); skipPermissions(); } catch (error) { permissionsModal.classList.remove('hidden'); }
+      // Request Echo Cancellation
+      try { await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); skipPermissions(); } catch (error) { permissionsModal.classList.remove('hidden'); }
     }
     function skipPermissions() { permissionsModal.classList.add('hidden'); startInterview(); }
-    async function requestPermissions() { try { await navigator.mediaDevices.getUserMedia({ audio: true }); skipPermissions(); } catch (e) { skipPermissions(); } }
+    async function requestPermissions() { try { await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true } }); skipPermissions(); } catch (e) { skipPermissions(); } }
 
     async function startInterview() {
       interviewScreen.classList.remove('hidden');
       messages = []; isWaitingForAIResponse = false;
-      await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: true })
+      // Enable Cam + Mic with Echo Cancellation
+      await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: { echoCancellation: true, noiseSuppression: true } })
         .then(stream => { userStream = stream; if (userVideo) { userVideo.srcObject = stream; userVideo.play(); } })
         .catch(e => console.log(e));
 
       setTimeout(() => avatar && avatar.onResize(), 50);
-      try { speechRecognition.start(); } catch (e) { } // Start listening
+      try { speechRecognition.start(); } catch (e) { }
 
       const welcome = "I'm Alex. Let's not waste time. Tell me about your background.";
       addChatMessage('ai', 'Alex Johnson', welcome);
       if (avatar) avatar.speakText(welcome);
-      if (areSubtitlesOn) showSubtitles(`Alex: ${welcome}`);
+      if (areSubtitlesOn) scheduleAISubtitles([{ word: "I'm", time_seconds: 0 }, { word: "Alex.", time_seconds: 0.5 }, { word: "Let's", time_seconds: 1.0 }, { word: "not", time_seconds: 1.2 }, { word: "waste", time_seconds: 1.4 }, { word: "time.", time_seconds: 1.8 }, { word: "Tell", time_seconds: 2.0 }, { word: "me", time_seconds: 2.2 }, { word: "about", time_seconds: 2.4 }, { word: "your", time_seconds: 2.6 }, { word: "background.", time_seconds: 3.0 }], 3.5, 0); // Mock timing for intro
     }
 
     function addChatMessage(type, author, content) {
@@ -1703,13 +1518,17 @@
           const { clean, emojis, report } = extractEmojisAndSanitize(aiMessage);
 
           if (report) {
-            // Render report specially
-            addChatMessage('ai', 'System', '<b>Interview Report Generated</b><br><pre style="white-space:pre-wrap; font-size:0.8em">' + report + '</pre>');
-            messages.push({ role: 'assistant', content: aiMessage }); // Save full context
+            // Separate Report Message
+            messages.push({ role: 'assistant', content: aiMessage });
+            addChatMessage('ai', 'System', `<b>Interview Report Generated</b><div style="font-size:0.85em; margin-top:5px; white-space:pre-wrap; opacity:0.9">${report}</div>`);
+            // Also speak the goodbye part if any
+            if (clean.length > 2) {
+              addChatMessage('ai', 'Alex Johnson', clean);
+              if (avatar && isModelLoaded) avatar.speakText(clean);
+            }
           } else {
             messages.push({ role: 'assistant', content: aiMessage });
-            addChatMessage('ai', 'Alex Johnson', clean); // Show clean text in chat
-
+            addChatMessage('ai', 'Alex Johnson', clean);
             if (avatar && isModelLoaded) {
               emojis.forEach((e, i) => setTimeout(() => avatar.speakEmoji(e), i * 500));
               avatar.speakText(clean);
@@ -1719,7 +1538,6 @@
       } catch (error) { console.error(error); addChatMessage('ai', 'System', 'Connection error.'); } finally { isWaitingForAIResponse = false; }
     }
 
-    // --- SUBTITLES ---
     function showSubtitles(text) { subtitlesOverlay.textContent = text; subtitlesOverlay.classList.remove('hidden'); }
     window.clearAISubtitles = function () {
       if (subtitlesOverlay._sched) subtitlesOverlay._sched.forEach(id => clearTimeout(id));
@@ -1729,23 +1547,15 @@
     window.scheduleAISubtitles = function (timepoints, duration, startTime) {
       if (!areSubtitlesOn) return;
       window.clearAISubtitles();
-
-      const now = new Date(); const timeStr = `[${now.getHours()}:${now.getMinutes()}]`;
       let currentLine = "";
-
-      timepoints.forEach((tp, i) => {
+      timepoints.forEach((tp) => {
         const delay = (tp.time_seconds * 1000);
         subtitlesOverlay._sched.push(setTimeout(() => {
-          // Typewriter / Line-by-line effect
-          if (currentLine.length > 50 || /[.!?]/.test(tp.word)) {
-            // Reset if line too long or sentence ends, but keep last few words for continuity if needed
-            if (/[.!?]/.test(tp.word)) currentLine = "";
-          }
+          if (currentLine.length > 60 || /[.!?]/.test(tp.word)) if (/[.!?]/.test(tp.word)) currentLine = "";
           currentLine += " " + tp.word;
-          showSubtitles(`Alex: ${currentLine.trim()}`);
+          showSubtitles(currentLine.trim());
         }, delay));
       });
-      // Hide after audio
       subtitlesOverlay._sched.push(setTimeout(() => subtitlesOverlay.classList.add('hidden'), duration * 1000 + 1000));
     };
 
