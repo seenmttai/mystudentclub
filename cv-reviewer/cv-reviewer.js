@@ -73,22 +73,22 @@ const specializationOptions = {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-  //populateSpecializations();
-  setupUserId();
-  initializeSupabase(); // Initialize Supabase on page load
-  const svg = document.querySelector('.score-chart');
-  if (svg && !document.getElementById('scoreGradient')) {
-    const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
-    defs.innerHTML = `
+    //populateSpecializations();
+    setupUserId();
+    initializeSupabase(); // Initialize Supabase on page load
+    const svg = document.querySelector('.score-chart');
+    if (svg && !document.getElementById('scoreGradient')) {
+        const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+        defs.innerHTML = `
       <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
          <stop offset="0%" stop-color="#818cf8" />
          <stop offset="100%" stop-color="#4f46e5" />
       </linearGradient>`;
-    svg.insertBefore(defs, svg.firstChild);
-  }
-  await refreshAuthUser();
-  setupTabs();
-  setupCollapsibleSections();
+        svg.insertBefore(defs, svg.firstChild);
+    }
+    await refreshAuthUser();
+    setupTabs();
+    setupCollapsibleSections();
 });
 
 function setupUserId() {
@@ -105,7 +105,7 @@ function setupTabs() {
     tabContainer.addEventListener('click', async (e) => {
         if (e.target.matches('.tab-btn')) {
             const tabId = e.target.dataset.tab;
-            
+
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             e.target.classList.add('active');
 
@@ -135,17 +135,17 @@ function setupCollapsibleSections() {
 }
 
 menuButton.addEventListener('click', () => {
-  expandedMenu.classList.toggle('active');
+    expandedMenu.classList.toggle('active');
 });
 
 menuCloseBtn.addEventListener('click', () => {
-  expandedMenu.classList.remove('active');
+    expandedMenu.classList.remove('active');
 });
 
 document.addEventListener('click', (e) => {
-  if (!expandedMenu.contains(e.target) && !menuButton.contains(e.target) && expandedMenu.classList.contains('active')) {
-    expandedMenu.classList.remove('active');
-  }
+    if (!expandedMenu.contains(e.target) && !menuButton.contains(e.target) && expandedMenu.classList.contains('active')) {
+        expandedMenu.classList.remove('active');
+    }
 });
 
 browseButton.addEventListener('click', () => fileInput.click());
@@ -160,121 +160,121 @@ function highlight() { dropArea.classList.add('dragover'); }
 function unhighlight() { dropArea.classList.remove('dragover'); }
 
 function handleDrop(e) {
-  const file = e.dataTransfer.files[0];
-  if (file && file.type === 'application/pdf') handleFile(file);
-  else alert('Please upload a PDF file');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') handleFile(file);
+    else alert('Please upload a PDF file');
 }
 
 function handleFileSelect(e) {
-  const file = e.target.files[0];
-  if (file && file.type === 'application/pdf') handleFile(file);
-  else alert('Please upload a PDF file');
+    const file = e.target.files[0];
+    if (file && file.type === 'application/pdf') handleFile(file);
+    else alert('Please upload a PDF file');
 }
 
 async function handleFile(file) {
-  selectedFile = file;
-  fileName.textContent = file.name;
-  fileSize.textContent = formatFileSize(file.size);
-  dropArea.style.display = 'none';
-  previewArea.style.display = 'flex';
-  previewArea.classList.add('flex-col', 'gap-4');
+    selectedFile = file;
+    fileName.textContent = file.name;
+    fileSize.textContent = formatFileSize(file.size);
+    dropArea.style.display = 'none';
+    previewArea.style.display = 'flex';
+    previewArea.classList.add('flex-col', 'gap-4');
 
-  proceedToReviewBtn.disabled = true;
-  proceedToReviewBtn.classList.add('opacity-50', 'cursor-not-allowed');
-  removeFileBtn.disabled = true;
+    proceedToReviewBtn.disabled = true;
+    proceedToReviewBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    removeFileBtn.disabled = true;
 
-  try {
-    await generatePdfPreview(file);
-    proceedToReviewBtn.disabled = false;
-    proceedToReviewBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-  } catch (error) {
-     alert(`Error processing PDF: ${error.message}. Please try another file.`);
-     resetUpload();
-  } finally {
-      removeFileBtn.disabled = false;
-  }
+    try {
+        await generatePdfPreview(file);
+        proceedToReviewBtn.disabled = false;
+        proceedToReviewBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+    } catch (error) {
+        alert(`Error processing PDF: ${error.message}. Please try another file.`);
+        resetUpload();
+    } finally {
+        removeFileBtn.disabled = false;
+    }
 }
 
 function formatFileSize(bytes) {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
 
 async function generatePdfPreview(file) {
-  previewThumbnail.innerHTML = '<div class="text-center p-4 text-text-secondary">Generating preview...</div>';
-  pdfImages = [];
+    previewThumbnail.innerHTML = '<div class="text-center p-4 text-text-secondary">Generating preview...</div>';
+    pdfImages = [];
 
-  try {
-    const arrayBuffer = await file.arrayBuffer();
-    pdfDocument = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    try {
+        const arrayBuffer = await file.arrayBuffer();
+        pdfDocument = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 
-    const page = await pdfDocument.getPage(1);
-    const viewport = page.getViewport({ scale: 0.5 });
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    canvas.height = viewport.height;
-    canvas.width = viewport.width;
-    await page.render({ canvasContext: context, viewport: viewport }).promise;
+        const page = await pdfDocument.getPage(1);
+        const viewport = page.getViewport({ scale: 0.5 });
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        await page.render({ canvasContext: context, viewport: viewport }).promise;
 
-    previewThumbnail.innerHTML = '';
-    previewThumbnail.appendChild(canvas);
+        previewThumbnail.innerHTML = '';
+        previewThumbnail.appendChild(canvas);
 
-    await convertPdfToImages();
+        await convertPdfToImages();
 
-  } catch (error) {
-    previewThumbnail.innerHTML = '<div class="text-center p-4 text-red-600">Error loading preview.</div>';
-    throw error;
-  }
+    } catch (error) {
+        previewThumbnail.innerHTML = '<div class="text-center p-4 text-red-600">Error loading preview.</div>';
+        throw error;
+    }
 }
 
 async function convertPdfToImages() {
-  pdfImages = [];
-  if (!pdfDocument) return;
-
-  try {
-    const scale = 1.5;
-    for (let i = 1; i <= pdfDocument.numPages; i++) {
-      const page = await pdfDocument.getPage(i);
-      const viewport = page.getViewport({ scale: scale });
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
-
-      await page.render({ canvasContext: context, viewport: viewport }).promise;
-      const imageDataUrl = canvas.toDataURL('image/jpeg', 0.9);
-      pdfImages.push(imageDataUrl.split(',')[1]);
-    }
-  } catch (error) {
     pdfImages = [];
-    throw error;
-  }
+    if (!pdfDocument) return;
+
+    try {
+        const scale = 1.5;
+        for (let i = 1; i <= pdfDocument.numPages; i++) {
+            const page = await pdfDocument.getPage(i);
+            const viewport = page.getViewport({ scale: scale });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            await page.render({ canvasContext: context, viewport: viewport }).promise;
+            const imageDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            pdfImages.push(imageDataUrl.split(',')[1]);
+        }
+    } catch (error) {
+        pdfImages = [];
+        throw error;
+    }
 }
 
 removeFileBtn.addEventListener('click', resetUpload);
 
 function resetUpload() {
-  selectedFile = null;
-  pdfDocument = null;
-  pdfImages = [];
-  fileInput.value = '';
-  previewArea.style.display = 'none';
-  dropArea.style.display = 'block';
-  fileName.textContent = 'document.pdf';
-  fileSize.textContent = '0 KB';
-  previewThumbnail.innerHTML = '';
-  proceedToReviewBtn.disabled = true;
-  proceedToReviewBtn.classList.add('opacity-50', 'cursor-not-allowed');
+    selectedFile = null;
+    pdfDocument = null;
+    pdfImages = [];
+    fileInput.value = '';
+    previewArea.style.display = 'none';
+    dropArea.style.display = 'block';
+    fileName.textContent = 'document.pdf';
+    fileSize.textContent = '0 KB';
+    previewThumbnail.innerHTML = '';
+    proceedToReviewBtn.disabled = true;
+    proceedToReviewBtn.classList.add('opacity-50', 'cursor-not-allowed');
 }
 
 proceedToReviewBtn.addEventListener('click', () => {
     if (!selectedFile || pdfImages.length === 0) {
-         alert("Please wait for the PDF preview and processing to complete.");
-         return;
-     }
+        alert("Please wait for the PDF preview and processing to complete.");
+        return;
+    }
     uploadSection.style.display = 'none';
     //domainSpecializationSection.style.display = 'block';
     //domainSpecializationSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -326,67 +326,67 @@ async function refreshAuthUser() {
 proceedToReviewBtn.addEventListener('click', analyzeCv);
 
 async function analyzeCv() {
-  if (!selectedFile || pdfImages.length === 0) {
-    alert('PDF not processed correctly. Please re-upload.');
-    return;
-  }
-
-  const selectedDomain = 'Financing';
-  const selectedSpecialization = 'Accounting';
-
-  heroSection.style.display = 'none';
-  loadingSection.style.display = 'block';
-  resultsSection.style.display = 'none';
-  tipsSection.style.display = 'none';
-
-  loadingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
-  startLoadingAnimation();
-  clearResultsContent();
-
-  try {
-    const response = await fetch('https://cv-reviewer.bhansalimanan55.workers.dev/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Domain': 'Financing',
-        'X-Specialization': 'Accounting',
-        'Origin': window.location.origin
-      },
-      body: JSON.stringify({ images: pdfImages })
-    });
-
-    stopLoadingAnimation();
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: 'Failed to parse error response.' }));
-      throw new Error(`Analysis failed: ${response.status} - ${errorData.error || response.statusText}`);
+    if (!selectedFile || pdfImages.length === 0) {
+        alert('PDF not processed correctly. Please re-upload.');
+        return;
     }
 
-    const data = await response.json();
+    const selectedDomain = 'Financing';
+    const selectedSpecialization = 'Accounting';
 
-    if (!data.ok || !data.response) {
-        throw new Error(`Analysis unsuccessful: ${data.error || 'Received invalid data from server.'}`);
+    heroSection.style.display = 'none';
+    loadingSection.style.display = 'block';
+    resultsSection.style.display = 'none';
+    tipsSection.style.display = 'none';
+
+    loadingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    startLoadingAnimation();
+    clearResultsContent();
+
+    try {
+        const response = await fetch('https://cv-reviewer.bhansalimanan55.workers.dev/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Domain': 'Financing',
+                'X-Specialization': 'Accounting',
+                'Origin': window.location.origin
+            },
+            body: JSON.stringify({ images: pdfImages })
+        });
+
+        stopLoadingAnimation();
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: 'Failed to parse error response.' }));
+            throw new Error(`Analysis failed: ${response.status} - ${errorData.error || response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        if (!data.ok || !data.response) {
+            throw new Error(`Analysis unsuccessful: ${data.error || 'Received invalid data from server.'}`);
+        }
+
+        analysisResultText = data.response;
+        console.log(analysisResultText);
+
+        processStructuredResults(analysisResultText);
+        await refreshAuthUser();
+        await saveReview(analysisResultText);
+
+        loadingSection.style.display = 'none';
+        resultsSection.style.display = 'block';
+        tipsSection.style.display = 'block';
+        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    } catch (error) {
+        stopLoadingAnimation();
+        loadingSection.style.display = 'none';
+        alert(`Error during analysis: ${error.message}. Please try again later.`);
+        resetToUploadStageOnError();
     }
-
-    analysisResultText = data.response;
-    console.log(analysisResultText);
-
-    processStructuredResults(analysisResultText);
-    await refreshAuthUser();
-    await saveReview(analysisResultText);
-
-    loadingSection.style.display = 'none';
-    resultsSection.style.display = 'block';
-    tipsSection.style.display = 'block';
-    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-  } catch (error) {
-    stopLoadingAnimation();
-    loadingSection.style.display = 'none';
-    alert(`Error during analysis: ${error.message}. Please try again later.`);
-    resetToUploadStageOnError();
-  }
 }
 
 async function saveReview(reviewText) {
@@ -412,7 +412,7 @@ function startLoadingAnimation() {
         "Uploading resume securely...",
         "Analyzing document structure...",
         "Extracting key skills and experience...",
-        "Evaluating alignment with "+ "Financing" + " standards...",
+        "Evaluating alignment with " + "Financing" + " standards...",
         "Assessing impact and achievements...",
         "Checking grammar and readability...",
         "Generating tailored recommendations for " + "Domain" + "...",
@@ -432,7 +432,7 @@ function stopLoadingAnimation() {
         clearInterval(currentProgressInterval);
         currentProgressInterval = null;
     }
-     loadingProgressText.textContent = "Processing complete!";
+    loadingProgressText.textContent = "Processing complete!";
 }
 
 function extractSectionContent(text, startMarker, endMarker) {
@@ -444,8 +444,8 @@ function extractSectionContent(text, startMarker, endMarker) {
     const endIndex = text.indexOf(endMarker, contentStartIndex);
 
     if (endIndex === -1) {
-         const nextMarkerIndex = text.indexOf('<<<', contentStartIndex);
-         return nextMarkerIndex !== -1 ? text.substring(contentStartIndex, nextMarkerIndex).trim() : text.substring(contentStartIndex).trim();
+        const nextMarkerIndex = text.indexOf('<<<', contentStartIndex);
+        return nextMarkerIndex !== -1 ? text.substring(contentStartIndex, nextMarkerIndex).trim() : text.substring(contentStartIndex).trim();
     }
 
     return text.substring(contentStartIndex, endIndex).trim();
@@ -467,11 +467,11 @@ function parseAndDisplayOverallScore(text) {
             justification = justMatch[1].trim();
         }
     } else {
-         const fallbackScoreMatch = text.match(/<score>([\d.]+)<\/score>/i) || text.match(/Overall Score:\s*([\d.]+)\/100/i);
-         if (fallbackScoreMatch) {
+        const fallbackScoreMatch = text.match(/<score>([\d.]+)<\/score>/i) || text.match(/Overall Score:\s*([\d.]+)\/100/i);
+        if (fallbackScoreMatch) {
             overallScore = parseFloat(fallbackScoreMatch[1]);
             justification = "Score extracted via fallback method.";
-         }
+        }
     }
 
     animateScore(overallScore);
@@ -498,15 +498,15 @@ function parseAndDisplayMeasurableResults(text) {
 
         const originalMatch = point.match(/Original:\s*"([\s\S]+?)"/i);
         const critiqueMatch = point.match(/Critique:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/i);
-        
+
         html += `<div class="feedback-point border-b border-border pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0">`;
         if (originalMatch && originalMatch[1]) {
-             html += `<p class="mb-1 text-sm"><strong>Original:</strong> <code class="text-xs">${originalMatch[1].trim()}</code></p>`;
+            html += `<p class="mb-1 text-sm"><strong>Original:</strong> <code class="text-xs">${originalMatch[1].trim()}</code></p>`;
         }
         if (critiqueMatch && critiqueMatch[1]) {
-             html += `<p class="mb-2 text-sm"><strong>Critique:</strong> ${formatFeedbackText(critiqueMatch[1].trim())}</p>`;
+            html += `<p class="mb-2 text-sm"><strong>Critique:</strong> ${formatFeedbackText(critiqueMatch[1].trim())}</p>`;
         }
-        
+
         const allSuggestions = [...point.matchAll(/Rewrite Suggestion \d+:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/gi)];
 
         if (allSuggestions.length > 0) {
@@ -526,15 +526,15 @@ function parseAndDisplayMeasurableResults(text) {
 }
 
 function parseAndDisplayPhrasesSuggestions(text) {
-     const content = extractSectionContent(text, '<<<PHRASES_SUGGESTIONS>>>', '<<<END_PHRASES_SUGGESTIONS>>>');
-     if (!content) {
-         phrasesSuggestionsContent.innerHTML = '<p class="text-text-secondary">No phrase suggestions available.</p>';
-         return;
-     }
-     
-     const points = content.split(/<<END_POINT>>|---/);
-     let html = '';
-     points.forEach((point) => {
+    const content = extractSectionContent(text, '<<<PHRASES_SUGGESTIONS>>>', '<<<END_PHRASES_SUGGESTIONS>>>');
+    if (!content) {
+        phrasesSuggestionsContent.innerHTML = '<p class="text-text-secondary">No phrase suggestions available.</p>';
+        return;
+    }
+
+    const points = content.split(/<<END_POINT>>|---/);
+    let html = '';
+    points.forEach((point) => {
         if (!point.trim()) return;
 
         const originalMatch = point.match(/Original:\s*"([\s\S]+?)"/i);
@@ -547,7 +547,7 @@ function parseAndDisplayPhrasesSuggestions(text) {
         if (critiqueMatch && critiqueMatch[1]) {
             html += `<p class="mb-2 text-sm"><strong>Critique:</strong> ${formatFeedbackText(critiqueMatch[1].trim())}</p>`;
         }
-        
+
         const allSuggestions = [...point.matchAll(/Rewrite Suggestion \d+:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/gi)];
 
         if (allSuggestions.length > 0) {
@@ -562,8 +562,8 @@ function parseAndDisplayPhrasesSuggestions(text) {
             html += `</ul></div>`;
         }
         html += `</div>`;
-     });
-     phrasesSuggestionsContent.innerHTML = html || '<p class="text-text-secondary">Could not parse phrase suggestions.</p>';
+    });
+    phrasesSuggestionsContent.innerHTML = html || '<p class="text-text-secondary">Could not parse phrase suggestions.</p>';
 }
 
 function parseAndDisplayHardSkills(text) {
@@ -591,11 +591,11 @@ function parseAndDisplayGrammarCheck(text) {
     let html = formatFeedbackText(content);
 
     html = html.replace(/Original:\s*"([^"]+?)"\s*->\s*Corrected:\s*"([^"]+?)"(\s*<span class="highlight-issue.*?<\/span>)?/gi, (match, original, corrected, issueMarker) => {
-         const issueHtml = issueMarker || '';
-         return `<div class="grammar-correction mb-2"><span class="original-text">${original}</span> <span class="text-lg mx-1 text-gray-400">→</span> <span class="corrected-text">${corrected}</span> ${issueHtml}</div>`;
-     });
+        const issueHtml = issueMarker || '';
+        return `<div class="grammar-correction mb-2"><span class="original-text">${original}</span> <span class="text-lg mx-1 text-gray-400">â†’</span> <span class="corrected-text">${corrected}</span> ${issueHtml}</div>`;
+    });
 
-      grammarCheckContent.innerHTML = html;
+    grammarCheckContent.innerHTML = html;
 }
 
 function parseAndDisplayFormatting(text) {
@@ -648,15 +648,15 @@ function clearResultsContent() {
         formattingContent, educationContent, articleshipContent, finalRecommendationsContent,
         interviewQuestionsContent, scoreJustification
     ];
-    contentAreas.forEach(area => { if(area) area.innerHTML = '<p class="text-sm text-text-secondary italic">Loading...</p>'; });
+    contentAreas.forEach(area => { if (area) area.innerHTML = '<p class="text-sm text-text-secondary italic">Loading...</p>'; });
     scoreText.textContent = '0';
     scoreProgress.setAttribute('stroke-dasharray', `0, 100`);
-     categoryItems.forEach(item => {
+    categoryItems.forEach(item => {
         const pointsEl = item.querySelector('.points');
         const fillBar = item.querySelector('.category-fill');
         const maxPoints = pointsEl.textContent.split('/')[1] || '0';
         pointsEl.textContent = `0/${maxPoints}`;
-        if(fillBar) fillBar.style.width = `0%`;
+        if (fillBar) fillBar.style.width = `0%`;
     });
 }
 
@@ -675,17 +675,17 @@ function simpleMarkdownToHtml(md) {
         .replace(/`([^`]+)`/g, '<code class="bg-gray-200 dark:bg-gray-700 px-1 rounded text-sm">$1</code>')
         .replace(/^#{1,6}\s+(.*$)/gm, (match, content) => {
             const level = match.indexOf(' ');
-            return `<h${level+1} class="font-semibold mt-4 mb-2 text-lg">${content}</h${level+1}>`;
+            return `<h${level + 1} class="font-semibold mt-4 mb-2 text-lg">${content}</h${level + 1}>`;
         })
         .replace(/^\s*[\-\*]\s+(.*$)/gm, '<li>$1</li>')
         .replace(/^\s*\d+\.\s+(.*$)/gm, '<li>$1</li>')
         .replace(/<\/li>\s*<li>/g, '</li><li>')
         .replace(/(<li>.*?<\/li>)/gs, (match, content) => {
 
-             if (match.includes('<ul>') || match.includes('<ol>')) return match;
+            if (match.includes('<ul>') || match.includes('<ol>')) return match;
 
-             const listType = /^\s*[\-\*]/.test(md) ? 'ul' : 'ol';
-             return `<${listType}>${content}</${listType}>`;
+            const listType = /^\s*[\-\*]/.test(md) ? 'ul' : 'ol';
+            return `<${listType}>${content}</${listType}>`;
         })
         .replace(/<\/(ul|ol)>\s*<\1>/g, '')
         .replace(/(\r\n|\n|\r)/g, '<br>')
@@ -693,11 +693,11 @@ function simpleMarkdownToHtml(md) {
         .replace(/^<p>|<\/p>$/g, '')
         .replace(/^(.+?)$/gm, (match) => {
             if (match.trim().startsWith('<') || match.trim().startsWith('<') || /^\s*(<li>|<ul>|<ol>)/.test(match)) {
-                 return match;
+                return match;
             }
             return `<p>${match}</p>`;
         })
-         .replace(/<p>\s*<\/p>/g, '');
+        .replace(/<p>\s*<\/p>/g, '');
 }
 
 function cleanRawText(t) {
@@ -732,14 +732,14 @@ function cleanRawText(t) {
         .replace(/<<<.*?>>>/gs, '')
         .replace(/<<POINT>>|<<END_POINT>>/g, '')
         .trim();
-    
+
     // Remove stray ** (bold markers) that appear after section headings or standalone
     out = out.replace(/^##\s+([^\n]+)\n\*\*\s*$/gm, '## $1\n');  // After section headings
     out = out.replace(/^\*\*\s*$/gm, '');  // Standalone ** on their own line
     out = out.replace(/\n\*\*\n/g, '\n');  // ** between newlines
 
     // 2) Mirror the bullet splitting used for on-page formatting
-    // After sentence boundaries followed by a capital letter → start a new markdown bullet
+    // After sentence boundaries followed by a capital letter â†’ start a new markdown bullet
     out = out.replace(/([.!?])\s+(?=[A-Z])/g, '$1\n- ');
 
     // After ISSUE markers when explanation continues
@@ -760,55 +760,55 @@ function cleanRawText(t) {
 
 function formatFeedbackText(text) {
     if (!text) return '<p class="text-sm text-text-secondary italic">No details available.</p>';
-    
+
     // STEP 1: Pre-process raw text before HTML conversion
     let processedText = text;
-    
+
     // The model often returns long paragraphs. Break them into bullet-friendly lines:
-    // 1) After sentence boundaries (., ?, !) followed by a capital letter → new bullet
-    processedText = processedText.replace(/([.!?])\s+(?=[A-Z])/g, '$1\n• ');
+    // 1) After sentence boundaries (., ?, !) followed by a capital letter â†’ new bullet
+    processedText = processedText.replace(/([.!?])\s+(?=[A-Z])/g, '$1\nâ€¢ ');
     // 2) After ISSUE markers when explanation continues
-    processedText = processedText.replace(/(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\.?\s+([A-Z])/gi, '$1\n• $2');
+    processedText = processedText.replace(/(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\.?\s+([A-Z])/gi, '$1\nâ€¢ $2');
     // 3) Ensure inline numbered items become separate lines
     processedText = processedText.replace(/(\d)\.\s+([A-Z])/g, '\n$1. $2');
-    
+
     // STEP 2: Convert to HTML
     let html = simpleMarkdownToHtml(processedText);
 
-    // Replace [GOOD] with simple ✓ symbol  
-    html = html.replace(/\[GOOD\]/g, '<span class="highlight-good" title="Good point">✓</span>');
-    
-    // Replace [ISSUE] with simple ✗ symbol (without severity)
-    html = html.replace(/\[ISSUE\](?!\s*-\s*SEVERITY)/g, '<span class="highlight-issue" title="Area for improvement">✗</span>');
-    
+    // Replace [GOOD] with simple âœ“ symbol  
+    html = html.replace(/\[GOOD\]/g, '<span class="highlight-good" title="Good point">âœ“</span>');
+
+    // Replace [ISSUE] with simple âœ— symbol (without severity)
+    html = html.replace(/\[ISSUE\](?!\s*-\s*SEVERITY)/g, '<span class="highlight-issue" title="Area for improvement">âœ—</span>');
+
     // Replace [ISSUE - SEVERITY: Level] with compact severity badges
     html = html.replace(/\[ISSUE\s*-\s*SEVERITY:\s*(Critical|High|Moderate|Low)(?:[^\]]*)\]/gi, (match, severity) => {
         const level = severity.toLowerCase();
-        return `<span class="highlight-issue" title="Issue">✗</span><span class="severity-badge severity-${level}">${severity}</span>`;
+        return `<span class="highlight-issue" title="Issue">âœ—</span><span class="severity-badge severity-${level}">${severity}</span>`;
     });
 
     // Format section labels: "*   *Label:*" pattern from prompt
     html = html.replace(/<br>\s*\*\s+\*\*([^*:]+):\*\*/g, '</p><h4 class="feedback-label">$1:</h4><p>');
     html = html.replace(/^\*\s+\*\*([^*:]+):\*\*/gm, '<h4 class="feedback-label">$1:</h4>');
-    
+
     // Also handle simpler bold labels: "**Label:**"
     html = html.replace(/<br>\s*\*\*([^*:]+):\*\*/g, '</p><h4 class="feedback-label">$1:</h4><p>');
-    
-    // Convert bullet markers (• ) to styled paragraphs - strip the • since CSS adds it via ::before
-    html = html.replace(/<br>\s*•\s*/g, '</p><p class="feedback-bullet">');
-    html = html.replace(/<p>•\s*/g, '<p class="feedback-bullet">');
-    html = html.replace(/^•\s*/gm, '');
-    
+
+    // Convert bullet markers (â€¢ ) to styled paragraphs - strip the â€¢ since CSS adds it via ::before
+    html = html.replace(/<br>\s*â€¢\s*/g, '</p><p class="feedback-bullet">');
+    html = html.replace(/<p>â€¢\s*/g, '<p class="feedback-bullet">');
+    html = html.replace(/^â€¢\s*/gm, '');
+
     // Convert numbered items to styled format (remove ::before bullet for numbered items)
     html = html.replace(/<br>\s*(\d+)\.\s+/g, '</p><p class="feedback-numbered"><strong>$1.</strong> ');
-    
+
     // Also convert <br><br> to separate paragraphs for better spacing
     html = html.replace(/<br>\s*<br>/g, '</p><p>');
 
     // Convert hyphen list markers to feedback-bullet paragraphs (NOT ul/li to avoid double bullets)
     html = html.replace(/<br>\s*-\s+/g, '</p><p class="feedback-bullet">');
     html = html.replace(/<br>\s*\*\s+/g, '</p><p class="feedback-bullet">');
-    
+
     // Clean up empty paragraphs
     html = html.replace(/<p>\s*<\/p>/g, '');
     html = html.replace(/<\/p>\s*<\/p>/g, '</p>');
@@ -850,7 +850,7 @@ function updateScoreBreakdown(overallScore, resultsText) {
         presentation: /Overall.*?Presentation.*?(\d+)\s*\/\s*10/i
     };
 
-     let foundSpecificScores = true;
+    let foundSpecificScores = true;
     for (const [key, pattern] of Object.entries(scorePatterns)) {
         const match = resultsText.match(pattern);
         if (match && match[1]) {
@@ -872,17 +872,17 @@ function updateScoreBreakdown(overallScore, resultsText) {
         let calculatedPoints = 0;
         let percentage = 0;
 
-         if (foundSpecificScores && categoryScores[categoryKey] !== undefined) {
+        if (foundSpecificScores && categoryScores[categoryKey] !== undefined) {
             calculatedPoints = Math.min(categoryScores[categoryKey], maxPoints);
             percentage = (calculatedPoints / maxPoints) * 100;
         } else {
 
-             calculatedPoints = Math.round((overallScore / 100) * maxPoints);
-             percentage = overallScore;
-         }
+            calculatedPoints = Math.round((overallScore / 100) * maxPoints);
+            percentage = overallScore;
+        }
 
         pointsEl.textContent = `${calculatedPoints}/${maxPoints} pts`;
-        if(fillBar) fillBar.style.width = `${Math.min(percentage, 100)}%`;
+        if (fillBar) fillBar.style.width = `${Math.min(percentage, 100)}%`;
     });
 }
 
@@ -915,7 +915,7 @@ downloadReportBtn.addEventListener('click', () => {
         .replace(/[^a-z0-9_.-]/gi, '_');
     const headerHtml = `
       <div style="text-align:center;padding:8px 0;font-family:'Poppins',sans-serif;color:#111827;font-weight:600;">
-        My Student Club · CV Analysis Report
+        My Student Club Â· CV Analysis Report
       </div>`;
     const footerHtml = `
       <div style="text-align:center;padding:6px 0;font-size:10px;color:#6b7280;font-family:'Poppins',sans-serif;">
@@ -974,14 +974,14 @@ pdfPreviewModal.addEventListener('click', (e) => {
 });
 
 function resetToUploadStageOnError() {
-     loadingSection.style.display = 'none';
-     resultsSection.style.display = 'none';
-     tipsSection.style.display = 'none';
-     //domainSpecializationSection.style.display = 'none';
-     resetUpload();
-     uploadSection.style.display = 'block';
-     heroSection.style.display = 'block';
-     uploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    loadingSection.style.display = 'none';
+    resultsSection.style.display = 'none';
+    tipsSection.style.display = 'none';
+    //domainSpecializationSection.style.display = 'none';
+    resetUpload();
+    uploadSection.style.display = 'block';
+    heroSection.style.display = 'block';
+    uploadSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 function fixInlineCodeMarkdown(md) {
@@ -991,18 +991,18 @@ function fixInlineCodeMarkdown(md) {
     out = out.replace(/^\s*> ?(.*)$/gm, '$1');             // remove blockquote markers
     out = out.replace(/^\s*[-*_]{3,}\s*$/gm, '');          // remove horizontal rules
     out = out.replace(/^\|.*\|$/gm, m => m.replace(/\|/g, ' ').replace(/-+/g, ' ')); // flatten tables
-    
+
     // Format markers for PDF output with HTML styling
-    out = out.replace(/\[GOOD\]/g, '<span class="good-marker">✓</span>');
-    out = out.replace(/\[ISSUE\](?!\s*-\s*SEVERITY)/g, '<span class="issue-marker">✗</span>');
+    out = out.replace(/\[GOOD\]/g, '<span class="good-marker">âœ“</span>');
+    out = out.replace(/\[ISSUE\](?!\s*-\s*SEVERITY)/g, '<span class="issue-marker">âœ—</span>');
     out = out.replace(/\[ISSUE\s*-\s*SEVERITY:\s*(Critical|High|Moderate|Low)(?:[^\]]*)\]/gi, (match, severity) => {
         const level = severity.toLowerCase();
-        return `<span class="issue-marker">✗</span><span class="sev-badge sev-${level}">${severity}</span>`;
+        return `<span class="issue-marker">âœ—</span><span class="sev-badge sev-${level}">${severity}</span>`;
     });
-    
+
     // Split sentences for better readability in PDF
     out = out.replace(/([.!?])\s{2,}([A-Z])/g, '$1\n\n$2');
-    
+
     return out;
 }
 
@@ -1028,7 +1028,7 @@ async function loadLeaderboard() {
         html += `<li class="p-3 rounded-lg border border-border bg-background-light">
                     <div class="flex justify-between items-center">
                         <span class="font-semibold text-primary">${item.score.toFixed(1)}%</span>
-                        <span class="text-sm text-text-secondary">${name} • ${date}</span>
+                        <span class="text-sm text-text-secondary">${name} â€¢ ${date}</span>
                     </div>
                  </li>`;
     });
