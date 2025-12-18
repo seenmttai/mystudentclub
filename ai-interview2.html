@@ -1132,6 +1132,11 @@
     const WORKER_URL = 'https://interviewme.bhansalimanan55.workers.dev/';
     const TTS_ENDPOINT = 'https://us-central1-msc-notif.cloudfunctions.net/gcp-tts-rate-limited';
 
+    // --- GLOBAL STATE FOR ECHO CANCELLATION ---
+    // This is the master switch. If true, the mic ignores EVERYTHING.
+    window.isAIProcessing = false;
+
+    // --- TALKING HEAD CLASS ---
     class TalkingHead {
       constructor(node, opt = {}) {
         this.nodeAvatar = node;
@@ -1145,6 +1150,7 @@
         this.camera = new THREE.PerspectiveCamera(25, node.clientWidth / node.clientHeight, 0.1, 100);
         this.scene = new THREE.Scene();
 
+        // Lighting
         this.scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.7));
         const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
         dirLight.position.set(0.5, 2, 2);
@@ -1167,9 +1173,6 @@
         this.animQueue = []; this.poseBase = { props: {} }; this.poseTarget = { props: {} }; this.poseAvatar = { props: {} }; this.poseDelta = { props: {} }; this.animBaseline = {};
         this.currentPoseName = 'straight';
         this.easing = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-
-        // ECHO FIX: Timestamp until which STT is ignored
-        this.ignoreSTTUntil = 0;
 
         window.addEventListener('resize', this.onResize.bind(this));
       }
@@ -1224,7 +1227,7 @@
         this.start();
       }
 
-      start() { if (this.isRunning) return; this.isRunning = true; this.animTimeLast = performance.now(); this.setMood('stern'); this.renderer.setAnimationLoop(this.animate.bind(this)); }
+      start() { if (this.isRunning) return; this.isRunning = true; this.animTimeLast = performance.now(); this.setMood('neutral'); this.renderer.setAnimationLoop(this.animate.bind(this)); }
       setMood(n) { if (!this.animMoods[n]) return; this.animQueue = this.animQueue.filter(a => a.loop !== -1); this.animMoods[n].anims.forEach(a => this.animQueue.push(this.animFactory(a))); if (this.animMoods[n].baseline) Object.entries(this.animMoods[n].baseline).forEach(([k, v]) => this.animBaseline[k] = { target: v, t0: this.animClock, v0: this.getValue(k) }); }
 
       animate() {
@@ -1260,7 +1263,11 @@
           for (const name in mesh.morphTargetDictionary) {
             const idx = mesh.morphTargetDictionary[name];
             let val = values.get(name);
-            if (val === undefined) { const c = mesh.morphTargetInfluences[idx] || 0; val = name.startsWith('viseme_') ? 0 : c * 0.9; }
+            if (val === undefined) {
+              const c = mesh.morphTargetInfluences[idx] || 0;
+              // FLAP FIX: Faster decay for visemes so mouth doesn't get stuck open
+              val = name.startsWith('viseme_') ? c * 0.6 : c * 0.95;
+            }
             mesh.morphTargetInfluences[idx] = Math.max(0, Math.min(1, val));
           }
         }
@@ -1290,6 +1297,7 @@
 
       async processSpeechItem(item) {
         this.isSpeaking = true;
+
         if (item.type === 'text') {
           try {
             const pre = this.lipsync.en.preProcessText(item.content);
@@ -1307,15 +1315,17 @@
 
       async playAudioWithVisemes(base64, timepoints) {
         if (this.audioCtx.state === 'suspended') await this.audioCtx.resume();
+
+        // Clear old mouth shapes
         this.animQueue = this.animQueue.filter(a => !Object.keys(a.vs)[0].startsWith('viseme_'));
 
         const audioData = Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer;
         const buffer = await this.audioCtx.decodeAudioData(audioData);
-        const duration = buffer.duration * 1000;
 
-        // ECHO FIX: Lock STT for the exact duration of the audio plus a 300ms safety buffer
-        // This essentially "mutes" the ears of the AI while its mouth is open
-        this.ignoreSTTUntil = Date.now() + duration + 300;
+        // ------------------------------------------
+        // ECHO LOCK: START
+        // ------------------------------------------
+        window.isAIProcessing = true; // LOCK MIC
 
         const audioStart = this.animClock + 50;
         timepoints.forEach((tp, idx) => {
@@ -1326,9 +1336,17 @@
             const totalRel = vis.durations.reduce((a, b) => a + b, 0);
             vis.visemes.forEach((v, i) => {
               const absStart = (tp.time_seconds * 1000) + (vis.times[i] / totalRel * wordDur);
-              const absDur = Math.max(50, (vis.durations[i] / totalRel * wordDur));
+              const absDur = (vis.durations[i] / totalRel * wordDur);
+
+              // FLAP FIX: Ensure minimum duration but don't hold too long
+              const finalDur = Math.max(60, absDur);
               const t = audioStart + absStart;
-              this.animQueue.push({ ts: [t, t + (absDur * 0.2), t + absDur], vs: { [`viseme_${v}`]: [0, 1, 0] } });
+
+              this.animQueue.push({
+                ts: [t, t + (finalDur * 0.5), t + finalDur],
+                // FLAP FIX: Intensity capped at 0.7 (not 1.0) so it looks natural
+                vs: { [`viseme_${v}`]: [0, 0.7, 0] }
+              });
             });
           }
         });
@@ -1339,19 +1357,27 @@
         this.audioSpeechSource.connect(this.audioCtx.destination);
         this.audioSpeechSource.start(this.audioCtx.currentTime + 0.05);
 
-        // Pass start time to subtitles
         if (typeof scheduleAISubtitles === 'function') scheduleAISubtitles(timepoints, buffer.duration, this.audioCtx.currentTime + 0.05);
-        this.audioSpeechSource.onended = () => this.finishSpeaking();
+
+        // UNLOCK MIC ONLY AFTER AUDIO ENDS
+        this.audioSpeechSource.onended = () => {
+          // Add small buffer for room reverb/latency
+          setTimeout(() => {
+            window.isAIProcessing = false;
+            this.finishSpeaking();
+          }, 500);
+        };
+      }
+
+      stopSpeaking() {
+        if (this.audioSpeechSource) { this.audioSpeechSource.stop(); this.audioSpeechSource = null; }
+        this.speechQueue = []; this.isSpeaking = false;
+        window.isAIProcessing = false; // RELEASE LOCK
       }
 
       speakText(t) { if (this.isSpeaking) { this.speechQueue.push({ type: 'text', content: t }); return; } this.processSpeechItem({ type: 'text', content: t }); }
       speakEmoji(e) { if (this.isSpeaking) { this.speechQueue.push({ type: 'emoji', content: e }); return; } this.processSpeechItem({ type: 'emoji', content: this.animEmojis[e] }); }
       finishSpeaking() { this.isSpeaking = false; this.start(); if (this.speechQueue.length) this.processSpeechItem(this.speechQueue.shift()); }
-      stopSpeaking() {
-        if (this.audioSpeechSource) { this.audioSpeechSource.stop(); this.audioSpeechSource = null; }
-        this.speechQueue = []; this.isSpeaking = false;
-        this.ignoreSTTUntil = 0; // Release lock
-      }
 
       getValue(n) { if (n.startsWith('headRotate')) return this.poseDelta.props['Head.rotation']?.[n.slice(-1).toLowerCase()] || 0; const m = this.morphs[0]; return (m && m.morphTargetDictionary[n] !== undefined) ? m.morphTargetInfluences[m.morphTargetDictionary[n]] : 0; }
       poseFactory(t, ms = 2000) { const p = {}; if (t.props) Object.keys(t.props).forEach(k => { const v = t.props[k]; if (k.includes('rotation')) p[k] = new THREE.Quaternion().setFromEuler(new THREE.Euler(v.x, v.y, v.z)); else p[k] = new THREE.Vector3(v.x, v.y, v.z); }); return { props: p }; }
@@ -1402,11 +1428,11 @@
         speechRecognition.lang = 'en-US';
 
         speechRecognition.onresult = (event) => {
-          // --- ECHO LOCK GATE ---
-          // If the AI is currently speaking (based on calculated audio duration), 
-          // we completely IGNORE microphone input. This prevents self-hearing.
-          if (avatar && Date.now() < avatar.ignoreSTTUntil) {
-            return; // Drop input
+          // --- ECHO KILLER ---
+          // If window.isAIProcessing is true, we immediately discard the input.
+          // This blocks the microphone from sending the AI's own voice back to itself.
+          if (window.isAIProcessing) {
+            return;
           }
 
           let finalTranscript = '';
@@ -1422,8 +1448,7 @@
     }
 
     function handleSpeechInput(text) {
-      if (!text.trim() || isWaitingForAIResponse) return;
-      // Ignore noise
+      if (!text.trim() || isWaitingForAIResponse || window.isAIProcessing) return;
       if (text.length < 3 && !['no', 'yes', 'ok'].includes(text.toLowerCase())) return;
       addChatMessage('user', 'You', text);
       sendToAI(text);
