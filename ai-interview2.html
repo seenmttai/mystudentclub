@@ -1118,7 +1118,6 @@
     </div>
   </div>
 
-
   <script type="module">
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -1132,9 +1131,8 @@
     const WORKER_URL = 'https://interviewme.bhansalimanan55.workers.dev/';
     const TTS_ENDPOINT = 'https://us-central1-msc-notif.cloudfunctions.net/gcp-tts-rate-limited';
 
-    // --- GLOBAL STATE FOR ECHO CANCELLATION ---
-    // This is the master switch. If true, the mic ignores EVERYTHING.
-    window.isAIProcessing = false;
+    // --- GLOBAL CONTROLS ---
+    window.speechRecognitionActive = false; // Flag to track state
 
     // --- TALKING HEAD CLASS ---
     class TalkingHead {
@@ -1150,7 +1148,6 @@
         this.camera = new THREE.PerspectiveCamera(25, node.clientWidth / node.clientHeight, 0.1, 100);
         this.scene = new THREE.Scene();
 
-        // Lighting
         this.scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.7));
         const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
         dirLight.position.set(0.5, 2, 2);
@@ -1259,18 +1256,34 @@
       }
 
       applyValues(values) {
+        // SMOOTH BLENDSHAPE LOGIC (Fixes Flapping)
         for (const mesh of this.morphs) {
           for (const name in mesh.morphTargetDictionary) {
             const idx = mesh.morphTargetDictionary[name];
-            let val = values.get(name);
-            if (val === undefined) {
+            let targetVal = values.get(name);
+
+            // Default decay if no target
+            if (targetVal === undefined) {
               const c = mesh.morphTargetInfluences[idx] || 0;
-              // FLAP FIX: Faster decay for visemes so mouth doesn't get stuck open
-              val = name.startsWith('viseme_') ? c * 0.6 : c * 0.95;
+              targetVal = name.startsWith('viseme_') ? 0 : c * 0.95;
             }
-            mesh.morphTargetInfluences[idx] = Math.max(0, Math.min(1, val));
+
+            // Cap Mouth Opening (Prevent Gaping)
+            if (name.startsWith('viseme_')) {
+              targetVal = Math.min(0.6, targetVal);
+            } else {
+              targetVal = Math.min(1.0, targetVal);
+            }
+
+            // LERP (Smoothing) - The key to fixing flapping
+            const currentVal = mesh.morphTargetInfluences[idx];
+            const smoothingSpeed = name.startsWith('viseme_') ? 0.4 : 0.1; // Higher = faster
+            const nextVal = THREE.MathUtils.lerp(currentVal, targetVal, smoothingSpeed);
+
+            mesh.morphTargetInfluences[idx] = Math.max(0, nextVal);
           }
         }
+
         const hX = values.get('headRotateX') || 0, hY = values.get('headRotateY') || 0, hZ = values.get('headRotateZ') || 0, chest = values.get('chestInhale') || 0;
         if (this.poseDelta.props['Head.rotation']) this.poseDelta.props['Head.rotation'].set(hX, hY, hZ);
         if (this.poseDelta.props['Spine1.rotation']) this.poseDelta.props['Spine1.rotation'].set(-chest * 0.05, 0, 0);
@@ -1296,6 +1309,9 @@
       updatePoseBase() { for (const [k, t] of Object.entries(this.poseTarget.props)) { const b = this.poseBase.props[k]; if (!b) continue; const a = Math.min(1, (this.animClock - t.t) / t.d); if (a >= 1) b.copy(t); else { if (b.isQuaternion) b.slerp(t, this.easing(a)); else b.lerp(t, this.easing(a)); } } }
 
       async processSpeechItem(item) {
+        // HARD STOP MIC
+        if (window.stopListening) window.stopListening();
+
         this.isSpeaking = true;
 
         if (item.type === 'text') {
@@ -1315,17 +1331,11 @@
 
       async playAudioWithVisemes(base64, timepoints) {
         if (this.audioCtx.state === 'suspended') await this.audioCtx.resume();
-
-        // Clear old mouth shapes
         this.animQueue = this.animQueue.filter(a => !Object.keys(a.vs)[0].startsWith('viseme_'));
 
         const audioData = Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer;
         const buffer = await this.audioCtx.decodeAudioData(audioData);
-
-        // ------------------------------------------
-        // ECHO LOCK: START
-        // ------------------------------------------
-        window.isAIProcessing = true; // LOCK MIC
+        const duration = buffer.duration * 1000;
 
         const audioStart = this.animClock + 50;
         timepoints.forEach((tp, idx) => {
@@ -1337,15 +1347,11 @@
             vis.visemes.forEach((v, i) => {
               const absStart = (tp.time_seconds * 1000) + (vis.times[i] / totalRel * wordDur);
               const absDur = (vis.durations[i] / totalRel * wordDur);
-
-              // FLAP FIX: Ensure minimum duration but don't hold too long
-              const finalDur = Math.max(60, absDur);
+              const finalDur = Math.max(80, absDur); // Longer duration for smoother look
               const t = audioStart + absStart;
-
               this.animQueue.push({
                 ts: [t, t + (finalDur * 0.5), t + finalDur],
-                // FLAP FIX: Intensity capped at 0.7 (not 1.0) so it looks natural
-                vs: { [`viseme_${v}`]: [0, 0.7, 0] }
+                vs: { [`viseme_${v}`]: [0, 1, 0] } // 1.0 is fine here because applyValues caps it
               });
             });
           }
@@ -1359,25 +1365,29 @@
 
         if (typeof scheduleAISubtitles === 'function') scheduleAISubtitles(timepoints, buffer.duration, this.audioCtx.currentTime + 0.05);
 
-        // UNLOCK MIC ONLY AFTER AUDIO ENDS
         this.audioSpeechSource.onended = () => {
-          // Add small buffer for room reverb/latency
-          setTimeout(() => {
-            window.isAIProcessing = false;
-            this.finishSpeaking();
-          }, 500);
+          // Small buffer before listening again to clear room echo
+          setTimeout(() => this.finishSpeaking(), 800);
         };
       }
 
       stopSpeaking() {
         if (this.audioSpeechSource) { this.audioSpeechSource.stop(); this.audioSpeechSource = null; }
-        this.speechQueue = []; this.isSpeaking = false;
-        window.isAIProcessing = false; // RELEASE LOCK
+        this.speechQueue = []; this.finishSpeaking();
       }
 
       speakText(t) { if (this.isSpeaking) { this.speechQueue.push({ type: 'text', content: t }); return; } this.processSpeechItem({ type: 'text', content: t }); }
       speakEmoji(e) { if (this.isSpeaking) { this.speechQueue.push({ type: 'emoji', content: e }); return; } this.processSpeechItem({ type: 'emoji', content: this.animEmojis[e] }); }
-      finishSpeaking() { this.isSpeaking = false; this.start(); if (this.speechQueue.length) this.processSpeechItem(this.speechQueue.shift()); }
+      finishSpeaking() {
+        this.isSpeaking = false;
+        this.start();
+        if (this.speechQueue.length) {
+          this.processSpeechItem(this.speechQueue.shift());
+        } else {
+          // Only start listening if queue is empty
+          if (window.startListening) window.startListening();
+        }
+      }
 
       getValue(n) { if (n.startsWith('headRotate')) return this.poseDelta.props['Head.rotation']?.[n.slice(-1).toLowerCase()] || 0; const m = this.morphs[0]; return (m && m.morphTargetDictionary[n] !== undefined) ? m.morphTargetInfluences[m.morphTargetDictionary[n]] : 0; }
       poseFactory(t, ms = 2000) { const p = {}; if (t.props) Object.keys(t.props).forEach(k => { const v = t.props[k]; if (k.includes('rotation')) p[k] = new THREE.Quaternion().setFromEuler(new THREE.Euler(v.x, v.y, v.z)); else p[k] = new THREE.Vector3(v.x, v.y, v.z); }); return { props: p }; }
@@ -1419,6 +1429,19 @@
       window.addEventListener('resize', () => { if (avatar) avatar.onResize(); });
     }
 
+    // --- GLOBAL MIC CONTROLS (THE HARD FIX) ---
+    window.startListening = function () {
+      if (speechRecognition && !isWaitingForAIResponse) {
+        try { speechRecognition.start(); } catch (e) { /* ignore already started errors */ }
+      }
+    };
+
+    window.stopListening = function () {
+      if (speechRecognition) {
+        try { speechRecognition.stop(); } catch (e) { }
+      }
+    };
+
     function setupContinuousSpeechRecognition() {
       if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1428,11 +1451,9 @@
         speechRecognition.lang = 'en-US';
 
         speechRecognition.onresult = (event) => {
-          // --- ECHO KILLER ---
-          // If window.isAIProcessing is true, we immediately discard the input.
-          // This blocks the microphone from sending the AI's own voice back to itself.
-          if (window.isAIProcessing) {
-            return;
+          // Logic gate: If AI is theoretically speaking, reject everything.
+          if (avatar && avatar.isSpeaking) {
+            return; // Ignore inputs completely
           }
 
           let finalTranscript = '';
@@ -1443,14 +1464,22 @@
             }
           }
         };
-        speechRecognition.onend = () => { if (!interviewScreen.classList.contains('hidden')) try { speechRecognition.start(); } catch (e) { } };
+
+        speechRecognition.onend = () => {
+          // Auto-restart if we are supposed to be listening (not speaking)
+          if (!interviewScreen.classList.contains('hidden') && avatar && !avatar.isSpeaking && !isWaitingForAIResponse) {
+            try { speechRecognition.start(); } catch (e) { }
+          }
+        };
       }
     }
 
     function handleSpeechInput(text) {
-      if (!text.trim() || isWaitingForAIResponse || window.isAIProcessing) return;
+      if (!text.trim() || isWaitingForAIResponse) return;
+      // Ignore short noise/echo remnants
       if (text.length < 3 && !['no', 'yes', 'ok'].includes(text.toLowerCase())) return;
       addChatMessage('user', 'You', text);
+      window.stopListening(); // Stop immediately once we have a sentence
       sendToAI(text);
     }
 
@@ -1489,7 +1518,6 @@
         .catch(e => console.log(e));
 
       setTimeout(() => avatar && avatar.onResize(), 50);
-      try { speechRecognition.start(); } catch (e) { }
 
       const welcome = "Hello, I'm Alex. Let's get started. Please walk me through your background.";
       addChatMessage('ai', 'Alex Johnson', welcome);
@@ -1555,7 +1583,7 @@
     };
 
     function toggleSubtitles() { areSubtitlesOn = !areSubtitlesOn; subtitlesBtn.classList.toggle('active', areSubtitlesOn); if (!areSubtitlesOn) subtitlesOverlay.classList.add('hidden'); }
-    function endInterview() { if (confirm('End interview?')) { if (userStream) userStream.getTracks().forEach(t => t.stop()); if (avatar) avatar.stopSpeaking(); try { speechRecognition.stop(); } catch (e) { } interviewScreen.classList.add('hidden'); setupScreen.classList.remove('hidden'); isModelLoaded = false; location.reload(); } }
+    function endInterview() { if (confirm('End interview?')) { if (userStream) userStream.getTracks().forEach(t => t.stop()); if (avatar) avatar.stopSpeaking(); try { window.stopListening(); } catch (e) { } interviewScreen.classList.add('hidden'); setupScreen.classList.remove('hidden'); isModelLoaded = false; location.reload(); } }
 
     init();
   </script>
