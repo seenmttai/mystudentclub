@@ -1118,14 +1118,15 @@
     </div>
   </div>
 
+
   <script type="module">
     import * as THREE from 'three';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
     import { LipsyncEn } from 'lipsync-en';
-    // Ensure animations.js exists in the same folder
-    import { poses, moods, emojis } from 'https://www.mystudentclub.com/scripts/animations.js';
+    // Import new extended animations
+    import { poses, moods, emojis, gestures } from 'https://www.mystudentclub.com/scripts/animations.js';
 
     // --- CONFIGURATION ---
     const AVATAR_URL = 'https://models.readyplayer.me/69440c84ca696e5f2fb7bfd5.glb?morphTargets=ARKit,Oculus+Visemes,mouthOpen,mouthSmile,eyesClosed,eyesLookUp,eyesLookDown';
@@ -1138,35 +1139,26 @@
         this.nodeAvatar = node;
         this.opt = { ttsEndpoint: null, lipsyncLang: 'en', cameraView: 'upper', ...opt };
 
-        // Renderer
+        // Three.js Setup
         this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-        const w = Math.max(this.nodeAvatar.clientWidth || 640, 640);
-        const h = Math.max(this.nodeAvatar.clientHeight || 360, 360);
         this.renderer.setPixelRatio(window.devicePixelRatio);
-        this.renderer.setSize(w, h);
+        this.renderer.setSize(node.clientWidth, node.clientHeight);
         this.renderer.outputColorSpace = THREE.SRGBColorSpace;
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
         this.nodeAvatar.appendChild(this.renderer.domElement);
 
-        // Camera
-        this.camera = new THREE.PerspectiveCamera(25, w / h, 0.1, 100);
+        this.camera = new THREE.PerspectiveCamera(25, node.clientWidth / node.clientHeight, 0.1, 100);
         this.scene = new THREE.Scene();
 
         // Lighting
-        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.6);
+        const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.7);
         hemiLight.position.set(0, 20, 0);
         this.scene.add(hemiLight);
-
-        const dirLight = new THREE.DirectionalLight(0xffffff, 1.0);
+        const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
         dirLight.position.set(0.5, 2, 2);
         dirLight.castShadow = true;
         this.scene.add(dirLight);
 
-        const backLight = new THREE.DirectionalLight(0xffffff, 0.8);
-        backLight.position.set(-0.5, 2, -2);
-        this.scene.add(backLight);
-
-        // Controls
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableZoom = false;
         this.controls.enablePan = false;
@@ -1184,27 +1176,27 @@
         this.isSpeaking = false;
         this.isRunning = false;
         this.stateName = 'idle';
+        this.currentAudioDuration = 0;
 
         this.audioCtx = new AudioContext();
         this.audioSpeechSource = null;
         this.lipsync = {};
         this.visemeNames = ['viseme_sil', 'viseme_PP', 'viseme_FF', 'viseme_TH', 'viseme_DD', 'viseme_kk', 'viseme_CH', 'viseme_SS', 'viseme_nn', 'viseme_RR', 'viseme_aa', 'viseme_E', 'viseme_I', 'viseme_O', 'viseme_U'];
 
-        // Load Animations
+        // Animation Data
         this.poseTemplates = poses;
         this.animMoods = moods;
         this.animEmojis = emojis;
+        this.gestureTemplates = gestures || {};
 
-        // Animation Engine
         this.animQueue = [];
         this.easing = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
-        // Initialize Objects (Prevent undefined errors)
+        // Transform Objects
         this.poseBase = { props: {} };
         this.poseTarget = { props: {} };
         this.poseAvatar = { props: {} };
         this.poseDelta = { props: {} };
-
         this.animBaseline = {};
         this.currentPoseName = 'straight';
 
@@ -1215,12 +1207,10 @@
         this.lipsync[this.opt.lipsyncLang] = new LipsyncEn();
         const rgbe = new RGBELoader();
         try {
-          const tex = await new Promise((resolve, reject) => {
-            rgbe.load('https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr', resolve, undefined, reject);
-          });
+          const tex = await new Promise((res, rej) => rgbe.load('https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr', res, undefined, rej));
           tex.mapping = THREE.EquirectangularReflectionMapping;
           this.scene.environment = tex;
-        } catch (e) { console.warn("HDR env failed"); }
+        } catch (e) { }
       }
 
       async showAvatar(avatar) {
@@ -1228,63 +1218,43 @@
         const gltf = await loader.loadAsync(avatar.url);
         this.armature = gltf.scene;
 
-        // 1. Material Fixes
         this.armature.traverse(node => {
           if (node.isMesh) {
-            node.castShadow = true;
-            node.receiveShadow = true;
-            node.frustumCulled = false;
+            node.castShadow = true; node.receiveShadow = true; node.frustumCulled = false;
             if (node.material) {
-              node.material.transparent = false;
-              node.material.alphaTest = 0.5;
-              node.material.side = THREE.FrontSide;
-              if (node.name.toLowerCase().includes('eye')) {
-                node.material.roughness = 0.2;
-                node.material.metalness = 0.1;
-              }
+              node.material.transparent = false; node.material.alphaTest = 0.5; node.material.side = THREE.FrontSide;
+              if (node.name.toLowerCase().includes('eye')) { node.material.roughness = 0.2; node.material.metalness = 0.1; }
             }
             if (node.morphTargetDictionary) this.morphs.push(node);
           }
         });
 
-        // 2. Setup Bones (Robust Initialization)
-        // Force reset objects to ensure they are clean
+        // Init Bones
         this.poseAvatar = { props: {} };
         this.poseDelta = { props: {} };
+        if (!this.poseTemplates.straight) this.poseTemplates.straight = { props: {} }; // Safety
 
-        // Check if straight pose exists, fallback if not
-        if (!this.poseTemplates.straight) {
-          console.error("Animations.js missing 'straight' pose. Using fallback.");
-          this.poseTemplates.straight = { props: {} };
-        }
-
-        // Initial Pose setup
+        // Setup Initial Pose
         this.poseBase = this.poseFactory(this.poseTemplates.straight);
         this.poseTarget = this.poseFactory(this.poseTemplates.straight);
 
-        // Collect all bone names from all templates
+        // Map all potential bones
         const usedBones = new Set();
-        Object.values(this.poseTemplates).forEach(t => {
+        [...Object.values(this.poseTemplates), ...Object.values(this.gestureTemplates)].forEach(t => {
           if (t.props) Object.keys(t.props).forEach(k => usedBones.add(k));
+          else Object.keys(t).forEach(k => usedBones.add(k)); // Gestures might be flat
         });
 
-        // Map bones
         usedBones.forEach(key => {
           const [boneName, prop] = key.split('.');
           const bone = this.armature.getObjectByName(boneName);
           if (bone) {
-            // Store direct reference to bone property
             this.poseAvatar.props[key] = bone[prop];
-
-            // Ensure base/target have clones
             if (!this.poseBase.props[key]) this.poseBase.props[key] = bone[prop].clone();
             if (!this.poseTarget.props[key]) this.poseTarget.props[key] = bone[prop].clone();
 
-            // Setup Delta objects
-            if (prop === 'rotation' || prop === 'quaternion')
-              this.poseDelta.props[key] = new THREE.Euler();
-            else
-              this.poseDelta.props[key] = new THREE.Vector3();
+            if (prop === 'rotation' || prop === 'quaternion') this.poseDelta.props[key] = new THREE.Euler();
+            else this.poseDelta.props[key] = new THREE.Vector3();
           }
         });
 
@@ -1294,21 +1264,25 @@
         this.start();
       }
 
-      // --- ANIMATION LOOP ---
-
+      // --- ANIMATION CORE ---
       start() {
         if (this.isRunning) return;
         this.isRunning = true;
         this.animTimeLast = performance.now();
-        this.startIdleBehavior();
+        this.setMood('stern'); // Default to stern
         this.renderer.setAnimationLoop(this.animate.bind(this));
       }
 
-      startIdleBehavior() {
-        this.animQueue = this.animQueue.filter(a => a.loop !== -1);
-        if (this.animMoods.neutral?.anims) {
-          this.animMoods.neutral.anims.forEach(anim => {
-            this.animQueue.push(this.animFactory(anim));
+      setMood(moodName) {
+        if (!this.animMoods[moodName]) return;
+        this.animQueue = this.animQueue.filter(a => a.loop !== -1); // Clear old idle
+        this.animMoods[moodName].anims.forEach(anim => {
+          this.animQueue.push(this.animFactory(anim));
+        });
+        // Set baseline morphs
+        if (this.animMoods[moodName].baseline) {
+          Object.entries(this.animMoods[moodName].baseline).forEach(([k, v]) => {
+            this.animBaseline[k] = { target: v, t0: this.animClock, v0: this.getValue(k) };
           });
         }
       }
@@ -1322,15 +1296,14 @@
 
         const currentValues = new Map();
 
-        // Baseline Interpolation
+        // Baselines
         for (let [mt, x] of Object.entries(this.animBaseline)) {
           if (x.t0 === undefined) { x.t0 = this.animClock; x.v0 = this.getValue(mt); }
           const val = this.valueAnimationSeq([x.t0, x.t0 + 1000], [x.v0, x.target], this.animClock);
           currentValues.set(mt, val);
-          if (this.animClock > x.t0 + 1000) delete this.animBaseline[mt];
         }
 
-        // Animation Queue
+        // Queue
         for (let i = 0; i < this.animQueue.length; i++) {
           const anim = this.animQueue[i];
           if (this.animClock < anim.ts[0]) continue;
@@ -1340,10 +1313,19 @@
             const val = this.valueAnimationSeq(anim.ts, vs, this.animClock);
 
             if (mt === 'pose') {
+              // Pose Switching
               const segmentIdx = anim.ts.findIndex(t => t > this.animClock) - 1;
               const poseName = vs[Math.max(0, segmentIdx)];
               if (poseName && poseName !== this.currentPoseName && typeof poseName === 'string') {
                 this.setPose(poseName);
+              }
+            } else if (mt === 'gesture') {
+              // Complex Gestures
+              const segmentIdx = anim.ts.findIndex(t => t > this.animClock) - 1;
+              const gData = vs[Math.max(0, segmentIdx)];
+              if (Array.isArray(gData) && !anim._triggered) {
+                this.playGesture(gData[0], gData[1]);
+                anim._triggered = true; // prevent re-triggering in loop
               }
             } else {
               const prev = currentValues.get(mt) || 0;
@@ -1352,8 +1334,11 @@
           });
 
           if (this.animClock >= anim.ts.at(-1)) {
-            if (anim.loop === -1) this.animQueue[i] = this.animFactory(anim.template);
-            else this.animQueue.splice(i--, 1);
+            if (anim.loop === -1) {
+              this.animQueue[i] = this.animFactory(anim.template); // Reset loop
+            } else {
+              this.animQueue.splice(i--, 1);
+            }
           }
         }
 
@@ -1370,13 +1355,14 @@
             let val = values.get(name);
             if (val === undefined) {
               const curr = mesh.morphTargetInfluences[idx] || 0;
-              val = name.startsWith('viseme_') ? curr * 0.7 : curr * 0.92;
+              // Fast decay for visemes, slow for others
+              val = name.startsWith('viseme_') ? 0 : curr * 0.9;
             }
             mesh.morphTargetInfluences[idx] = Math.max(0, Math.min(1, val));
           }
         }
 
-        // Bones
+        // Bone Deltas
         const headX = values.get('headRotateX') || 0;
         const headY = values.get('headRotateY') || 0;
         const headZ = values.get('headRotateZ') || 0;
@@ -1403,14 +1389,13 @@
           }
         });
 
+        // Eyes
         const lEye = this.armature.getObjectByName('LeftEye');
         const rEye = this.armature.getObjectByName('RightEye');
-        if (lEye && rEye) {
-          lEye.rotation.set(eyeX, eyeY, 0);
-          rEye.rotation.set(eyeX, eyeY, 0);
-        }
+        if (lEye && rEye) { lEye.rotation.set(eyeX, eyeY, 0); rEye.rotation.set(eyeX, eyeY, 0); }
       }
 
+      // --- ANIMATION HELPERS ---
       setPose(name, ms = 2000) {
         if (!this.poseTemplates[name]) return;
         this.currentPoseName = name;
@@ -1423,6 +1408,25 @@
         });
         this.poseTarget.props = newTargetProps;
         Object.values(this.poseTarget.props).forEach(v => { v.t = this.animClock; v.d = ms; });
+      }
+
+      playGesture(name, dur = 1) {
+        const g = this.gestureTemplates[name];
+        if (!g) return;
+        // Temporarily override target pose with gesture
+        Object.keys(g).forEach(k => {
+          const val = g[k];
+          const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(val.x, val.y, val.z));
+          if (this.poseTarget.props[k]) {
+            this.poseTarget.props[k].copy(q);
+            this.poseTarget.props[k].t = this.animClock;
+            this.poseTarget.props[k].d = 500; // Fast in
+          }
+        });
+        // Reset after duration
+        setTimeout(() => {
+          this.setPose(this.currentPoseName, 1000);
+        }, dur * 1000);
       }
 
       updatePoseBase() {
@@ -1438,8 +1442,7 @@
         }
       }
 
-      // --- SPEECH ---
-
+      // --- SPEECH & AUDIO ---
       async processSpeechItem(item) {
         this.isSpeaking = true;
         if (item.type === 'text') {
@@ -1453,109 +1456,116 @@
         } else if (item.type === 'emoji') {
           const anim = this.animFactory(this.animEmojis[item.content] || this.animEmojis['😊']);
           this.animQueue.push(anim);
-          this.animQueue.push(this.animFactory({ dt: [1000], vs: { headRotateX: [0], headRotateY: [0] } }));
           setTimeout(() => this.finishSpeaking(), anim.ts.at(-1) - this.animClock);
         }
       }
 
       async playAudioWithVisemes(base64, timepoints) {
         if (this.audioCtx.state === 'suspended') await this.audioCtx.resume();
+
+        // Clean queue of old visemes
+        this.animQueue = this.animQueue.filter(a => !Object.keys(a.vs)[0].startsWith('viseme_'));
+
         const audioData = Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer;
         const buffer = await this.audioCtx.decodeAudioData(audioData);
-        const durationMs = buffer.duration * 1000;
+        this.currentAudioDuration = buffer.duration;
 
-        // Micro-expressions
-        const numEmphases = Math.floor(durationMs / 2000);
-        for (let i = 0; i < numEmphases; i++) {
-          const t = this.animClock + (Math.random() * durationMs);
-          if (Math.random() > 0.5) this.animQueue.push({ ts: [t, t + 150, t + 400], vs: { headRotateX: [0, 0.15, 0] } });
-          else this.animQueue.push({ ts: [t, t + 200, t + 600], vs: { browInnerUp: [0, 0.6, 0] } });
-        }
-
-        // Visemes
-        const audioStart = this.animClock + 100;
+        // 1. Strict Lip Sync (No Flapping)
+        const audioStart = this.animClock + 50;
         timepoints.forEach((tp, idx) => {
-          const next = timepoints[idx + 1];
-          const wordDur = next ? (next.time_seconds - tp.time_seconds) * 1000 : 200;
-          const wordVisemes = this.lipsync.en.wordsToVisemes(tp.word);
-          if (wordVisemes.visemes.length) {
-            const totalRelDur = wordVisemes.durations.reduce((a, b) => a + b, 0);
-            wordVisemes.visemes.forEach((v, i) => {
-              const relStart = wordVisemes.times[i] / totalRelDur * wordDur;
-              const relDur = wordVisemes.durations[i] / totalRelDur * wordDur;
-              const t = audioStart + (tp.time_seconds * 1000) + relStart;
-              this.animQueue.push({ ts: [t, t + (relDur * 0.5), t + relDur], vs: { [`viseme_${v}`]: [0, 0.8, 0] } });
+          const nextTp = timepoints[idx + 1];
+          const wordStart = tp.time_seconds * 1000;
+          // Strict bounding: Word ends when next word begins
+          const wordEnd = nextTp ? (nextTp.time_seconds * 1000) : (buffer.duration * 1000);
+          const duration = wordEnd - wordStart;
+
+          const vis = this.lipsync.en.wordsToVisemes(tp.word);
+          if (vis.visemes.length) {
+            const totalRel = vis.durations.reduce((a, b) => a + b, 0);
+            vis.visemes.forEach((v, i) => {
+              // Map relative viseme time to absolute audio time
+              const absStart = wordStart + (vis.times[i] / totalRel * duration);
+              const absDur = (vis.durations[i] / totalRel * duration);
+
+              // Clamp minimum duration for visibility, but don't overlap too much
+              const finalDur = Math.max(50, absDur);
+              const t = audioStart + absStart;
+
+              this.animQueue.push({
+                ts: [t, t + (finalDur * 0.2), t + finalDur], // Attack, Sustain, Decay
+                vs: { [`viseme_${v}`]: [0, 1, 0] } // Full intensity (1), then 0. No lingering.
+              });
             });
           }
         });
 
+        // 2. Play Audio
         if (this.audioSpeechSource) this.audioSpeechSource.stop();
         this.audioSpeechSource = this.audioCtx.createBufferSource();
         this.audioSpeechSource.buffer = buffer;
         this.audioSpeechSource.connect(this.audioCtx.destination);
-        this.audioSpeechSource.start(this.audioCtx.currentTime + 0.1);
+        this.audioSpeechSource.start(this.audioCtx.currentTime + 0.05);
 
-        if (typeof scheduleAISubtitles === 'function') scheduleAISubtitles(timepoints, buffer.duration, this.audioCtx.currentTime + 0.1);
+        // 3. Subtitles
+        if (typeof scheduleAISubtitles === 'function') scheduleAISubtitles(timepoints, buffer.duration, this.audioCtx.currentTime + 0.05);
+
         this.audioSpeechSource.onended = () => this.finishSpeaking();
+      }
+
+      // Interrupt Handling
+      interrupt() {
+        if (!this.isSpeaking) return;
+        if (this.audioSpeechSource) {
+          this.audioSpeechSource.stop();
+          this.audioSpeechSource = null;
+        }
+        // Clear visemes immediately
+        this.animQueue = this.animQueue.filter(a => !Object.keys(a.vs)[0].startsWith('viseme_'));
+        // Clear subtitle timers
+        if (window.clearAISubtitles) window.clearAISubtitles();
+
+        this.speechQueue = [];
+        this.isSpeaking = false;
+        this.stateName = 'idle';
+
+        // Visually react to interruption
+        this.speakEmoji('😤');
       }
 
       speakText(t) { if (this.isSpeaking) { this.speechQueue.push({ type: 'text', content: t }); return; } this.processSpeechItem({ type: 'text', content: t }); }
       speakEmoji(e) { if (this.isSpeaking) { this.speechQueue.push({ type: 'emoji', content: e }); return; } this.processSpeechItem({ type: 'emoji', content: this.animEmojis[e] }); }
       finishSpeaking() { this.isSpeaking = false; this.startIdleBehavior(); if (this.speechQueue.length) this.processSpeechItem(this.speechQueue.shift()); }
-      stopSpeaking() { if (this.audioSpeechSource) this.audioSpeechSource.stop(); this.speechQueue = []; this.finishSpeaking(); }
+      stopSpeaking() { this.interrupt(); }
 
-      getValue(name) {
-        if (name.startsWith('headRotate')) return this.poseDelta.props['Head.rotation']?.[name.slice(-1).toLowerCase()] || 0;
-        const mesh = this.morphs[0];
-        return (mesh && mesh.morphTargetDictionary[name] !== undefined) ? mesh.morphTargetInfluences[mesh.morphTargetDictionary[name]] : 0;
-      }
-      poseFactory(t, ms = 2000) {
-        const p = {};
-        if (t.props) Object.keys(t.props).forEach(k => {
-          const val = t.props[k];
-          if (k.includes('rotation')) p[k] = new THREE.Quaternion().setFromEuler(new THREE.Euler(val.x, val.y, val.z));
-          else p[k] = new THREE.Vector3(val.x, val.y, val.z);
-        });
-        return { props: p };
-      }
-      animFactory(t) {
-        const inst = { template: t, ts: [], vs: {}, loop: t.loop };
-        let curTime = this.animClock + (Array.isArray(t.delay) ? (t.delay[0] + Math.random() * (t.delay[1] - t.delay[0])) : (t.delay || 0));
-        inst.ts.push(curTime);
-        (t.dt || [1000]).forEach(dt => { curTime += Array.isArray(dt) ? (dt[0] + Math.random() * (dt[1] - dt[0])) : dt; inst.ts.push(curTime); });
-        Object.keys(t.vs).forEach(k => {
-          inst.vs[k] = t.vs[k].map(v => Array.isArray(v) ? v[0] + Math.random() * (v[1] - v[0]) : v);
-          while (inst.vs[k].length < inst.ts.length) inst.vs[k].push(inst.vs[k].at(-1));
-        });
-        return inst;
-      }
-      valueAnimationSeq(ts, vs, t) {
-        if (t <= ts[0]) return vs[0];
-        if (t >= ts.at(-1)) return vs.at(-1);
-        let i = ts.findIndex(time => time > t) - 1;
-        if (i < 0) i = 0;
-        return vs[i] + (vs[i + 1] - vs[i]) * this.easing((t - ts[i]) / (ts[i + 1] - ts[i]));
-      }
+      // Boilerplate
+      getValue(n) { if (n.startsWith('headRotate')) return this.poseDelta.props['Head.rotation']?.[n.slice(-1).toLowerCase()] || 0; const m = this.morphs[0]; return (m && m.morphTargetDictionary[n] !== undefined) ? m.morphTargetInfluences[m.morphTargetDictionary[n]] : 0; }
+      poseFactory(t, ms = 2000) { const p = {}; if (t.props) Object.keys(t.props).forEach(k => { const v = t.props[k]; if (k.includes('rotation')) p[k] = new THREE.Quaternion().setFromEuler(new THREE.Euler(v.x, v.y, v.z)); else p[k] = new THREE.Vector3(v.x, v.y, v.z); }); return { props: p }; }
+      animFactory(t) { const i = { template: t, ts: [], vs: {}, loop: t.loop }; let c = this.animClock + (Array.isArray(t.delay) ? (t.delay[0] + Math.random() * (t.delay[1] - t.delay[0])) : (t.delay || 0)); i.ts.push(c); (t.dt || [1000]).forEach(d => { c += Array.isArray(d) ? (d[0] + Math.random() * (d[1] - d[0])) : d; i.ts.push(c); }); Object.keys(t.vs).forEach(k => { i.vs[k] = t.vs[k].map(v => Array.isArray(v) ? v[0] + Math.random() * (v[1] - v[0]) : v); while (i.vs[k].length < i.ts.length) i.vs[k].push(i.vs[k].at(-1)); }); return i; }
+      valueAnimationSeq(ts, vs, t) { if (t <= ts[0]) return vs[0]; if (t >= ts.at(-1)) return vs.at(-1); let i = ts.findIndex(time => time > t) - 1; if (i < 0) i = 0; const p = (t - ts[i]) / (ts[i + 1] - ts[i]); return vs[i] + (vs[i + 1] - vs[i]) * this.easing(p); }
       onResize() { this.camera.aspect = this.nodeAvatar.clientWidth / this.nodeAvatar.clientHeight; this.camera.updateProjectionMatrix(); this.renderer.setSize(this.nodeAvatar.clientWidth, this.nodeAvatar.clientHeight); }
       setView(v) { this.camera.position.set(0, 1.55, 0.85); }
     }
 
-    // --- GLOBAL & UI LOGIC ---
-    let avatar, userStream, isModelLoaded = false, areSubtitlesOn = true, interviewConfig = {}, messages = [], isRecording = false, speechRecognition, isWaitingForAIResponse = false, scores = [];
-    let EMOJI_CHAR = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u, NON_TTS = /[^A-Za-z0-9\s.,!?;:'"()[\]{}<>@#$%^&*_\-+=/\\|~`]/g;
+    // --- GLOBAL LOGIC ---
+    let avatar, userStream, isModelLoaded = false, areSubtitlesOn = true, interviewConfig = {}, messages = [], speechRecognition, isWaitingForAIResponse = false;
+    let finalTranscript = '';
+
+    // Report/Sanitizer
+    const EMOJI_CHAR = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
     function extractEmojisAndSanitize(text = "") {
       const chars = Array.from(text), emojis = [];
-      const clean = chars.map(ch => EMOJI_CHAR.test(ch) ? (emojis.push(ch), "") : ch).join("").replace(NON_TTS, "").replace(/\s+/g, " ").trim();
-      return { clean, emojis };
+      const clean = chars.map(ch => EMOJI_CHAR.test(ch) ? (emojis.push(ch), "") : ch).join("").replace(/<<<FINAL_INTERVIEW_REPORT>>>[\s\S]*?<<<END_FINAL_INTERVIEW_REPORT>>>/, "").trim();
+      const reportMatch = text.match(/<<<FINAL_INTERVIEW_REPORT>>>([\s\S]*?)<<<END_FINAL_INTERVIEW_REPORT>>>/);
+      return { clean, emojis, report: reportMatch ? reportMatch[1] : null };
     }
-    function sanitizeForTTS(s) { return extractEmojisAndSanitize(s).clean; }
 
-    const setupScreen = document.getElementById('setup-screen'), loadingScreen = document.getElementById('loading-screen'), permissionsModal = document.getElementById('permissions-modal'), interviewScreen = document.getElementById('interview-screen'), setupForm = document.getElementById('setup-form'), avatarContainer = document.getElementById('avatar-container'), modelLoadingOverlay = document.getElementById('model-loading-overlay'), chatMessages = document.getElementById('chat-messages'), userVideo = document.getElementById('user-video'), subtitlesOverlay = document.getElementById('subtitles-overlay'), currentRoleSpan = document.getElementById('current-role'), loadingProgressBar = document.getElementById('loading-progress-bar'), pushToTalkBtn = document.getElementById('push-to-talk-btn'), speechStatus = document.getElementById('speech-status'), scorePill = document.getElementById('score-pill'), progressPill = document.getElementById('progress-pill'), subtitlesBtn = document.getElementById('subtitles-btn'), endCallBtn = document.getElementById('end-call-btn'), allowPermissionsBtn = document.getElementById('allow-permissions'), skipPermissionsBtn = document.getElementById('skip-permissions');
-    let interimTranscript = '', finalTranscript = '';
+    const setupScreen = document.getElementById('setup-screen'), loadingScreen = document.getElementById('loading-screen'), permissionsModal = document.getElementById('permissions-modal'), interviewScreen = document.getElementById('interview-screen'), setupForm = document.getElementById('setup-form'), avatarContainer = document.getElementById('avatar-container'), modelLoadingOverlay = document.getElementById('model-loading-overlay'), chatMessages = document.getElementById('chat-messages'), userVideo = document.getElementById('user-video'), subtitlesOverlay = document.getElementById('subtitles-overlay'), currentRoleSpan = document.getElementById('current-role'), loadingProgressBar = document.getElementById('loading-progress-bar'), speechStatus = document.getElementById('speech-status'), subtitlesBtn = document.getElementById('subtitles-btn'), endCallBtn = document.getElementById('end-call-btn'), allowPermissionsBtn = document.getElementById('allow-permissions'), skipPermissionsBtn = document.getElementById('skip-permissions');
+    // Hide push to talk - we are always listening
+    document.getElementById('push-to-talk-btn').style.display = 'none';
 
     async function init() {
       setupEventListeners();
-      setupSpeechRecognition();
+      setupContinuousSpeechRecognition();
       loadModelInBackground();
       subtitlesBtn.classList.toggle('active', areSubtitlesOn);
     }
@@ -1566,61 +1576,85 @@
       endCallBtn.addEventListener('click', endInterview);
       if (allowPermissionsBtn) allowPermissionsBtn.addEventListener('click', requestPermissions);
       if (skipPermissionsBtn) skipPermissionsBtn.addEventListener('click', skipPermissions);
-      pushToTalkBtn.addEventListener('mousedown', startRecording);
-      pushToTalkBtn.addEventListener('mouseup', stopRecording);
-      pushToTalkBtn.addEventListener('mouseleave', stopRecording);
-      pushToTalkBtn.addEventListener('touchstart', startRecording, { passive: false });
-      pushToTalkBtn.addEventListener('touchend', stopRecording);
       window.addEventListener('resize', () => { if (avatar) avatar.onResize(); });
     }
 
-    function setupSpeechRecognition() {
+    // --- CONTINUOUS SPEECH (VAD logic) ---
+    function setupContinuousSpeechRecognition() {
       if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         speechRecognition = new SpeechRecognition();
         speechRecognition.continuous = true;
         speechRecognition.interimResults = true;
         speechRecognition.lang = 'en-US';
-        speechRecognition.onstart = () => updateSpeechStatus('Listening...', true);
+
         speechRecognition.onresult = (event) => {
-          interimTranscript = ''; finalTranscript = '';
+          let interim = '';
+          finalTranscript = ''; // Reset final to accumulation of this session? No, browser handles it.
+
+          // 1. INTERRUPT LOGIC
+          // If we detect speech and AI is speaking, cut it off.
+          if (avatar && avatar.isSpeaking && event.results.length > 0) {
+            const latestResult = event.results[event.results.length - 1];
+            if (latestResult[0].transcript.trim().length > 0) {
+              avatar.interrupt();
+              updateSpeechStatus("Interruption detected...", true);
+              // Add marker to history
+              if (messages.length && messages[messages.length - 1].role === 'assistant') {
+                messages[messages.length - 1].content += " [Interrupted]";
+              }
+            }
+          }
+
           for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) finalTranscript += event.results[i][0].transcript;
-            else interimTranscript += event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              const spoken = event.results[i][0].transcript.trim();
+              if (spoken) handleSpeechInput(spoken);
+            } else {
+              interim += event.results[i][0].transcript;
+            }
           }
-          const display = (finalTranscript + ' ' + interimTranscript).trim();
-          updateSpeechStatus(display ? `You said: ${display}` : 'Listening...', true);
-          if (areSubtitlesOn && display) showSubtitles(`You: ${display}`);
+          if (interim) updateSpeechStatus(`Listening: ${interim}`, true);
         };
+
         speechRecognition.onend = () => {
-          const toSend = (finalTranscript + ' ' + interimTranscript).trim();
-          if (toSend && !isWaitingForAIResponse) {
-            if (areSubtitlesOn) showSubtitles(`You: ${toSend}`);
-            handleSpeechInput(toSend);
+          // Restart automatically (Continuous listening)
+          if (interviewScreen.classList.contains('hidden') === false) {
+            try { speechRecognition.start(); } catch (e) { }
           }
-          isRecording = false; pushToTalkBtn.classList.remove('recording'); updateSpeechStatus('', false);
         };
+
+        // Start initially silently
       }
     }
 
-    function startRecording(e) { if (e) e.preventDefault(); if (isRecording || isWaitingForAIResponse) return; isRecording = true; pushToTalkBtn.classList.add('recording'); interimTranscript = ''; finalTranscript = ''; try { speechRecognition.start(); } catch (e) { } }
-    function stopRecording(e) { if (e) e.preventDefault(); if (!isRecording) return; try { speechRecognition.stop(); } catch (e) { } }
-    function handleSpeechInput(t) { if (!t.trim() || isWaitingForAIResponse) return; addChatMessage('user', 'You', t); sendToAI(t); }
+    function handleSpeechInput(text) {
+      if (!text.trim() || isWaitingForAIResponse) return;
+
+      // Filter short noise (optional, but requested)
+      const words = text.split(' ');
+      if (words.length < 2 && !['stop', 'wait', 'no', 'yes'].includes(text.toLowerCase().replace(/[^\w]/g, ''))) {
+        return; // Ignore coughs or short noise
+      }
+
+      addChatMessage('user', 'You', text);
+      sendToAI(text);
+    }
+
     function updateSpeechStatus(t, v) { speechStatus.textContent = t; speechStatus.classList.toggle('visible', v); }
 
+    // --- LOADING ---
     async function loadModelInBackground() {
       try {
         avatar = new TalkingHead(avatarContainer, { ttsEndpoint: TTS_ENDPOINT, cameraView: 'head' });
         await avatar.init();
-        avatar.onResize();
         updateLoadingProgress(30, 'Loading 3D model...');
         await avatar.showAvatar({ url: AVATAR_URL });
         updateLoadingProgress(100, 'Ready!');
         isModelLoaded = true;
         modelLoadingOverlay.classList.add('hidden');
         loadingScreen.classList.add('hidden');
-        setTimeout(() => avatar && avatar.onResize(), 100);
-      } catch (error) { console.error('Failed to load avatar:', error); updateLoadingProgress(0, 'Failed to load. Refresh page.'); }
+      } catch (error) { console.error(error); updateLoadingProgress(0, 'Failed to load.'); }
     }
     function updateLoadingProgress(p, t) { loadingProgressBar.style.width = `${p}%`; const lt = document.querySelector('.loading-text'); if (lt) lt.textContent = t; }
 
@@ -1630,18 +1664,22 @@
       currentRoleSpan.textContent = interviewConfig.specialization;
       setupScreen.classList.add('hidden');
       if (!isModelLoaded) { loadingScreen.classList.remove('hidden'); while (!isModelLoaded) await new Promise(r => setTimeout(r, 100)); loadingScreen.classList.add('hidden'); }
-      try { const existing = await navigator.mediaDevices.getUserMedia({ video: false, audio: true }); existing.getTracks().forEach(t => t.stop()); skipPermissions(); } catch (error) { permissionsModal.classList.remove('hidden'); }
+      try { await navigator.mediaDevices.getUserMedia({ audio: true }); skipPermissions(); } catch (error) { permissionsModal.classList.remove('hidden'); }
     }
     function skipPermissions() { permissionsModal.classList.add('hidden'); startInterview(); }
-    async function requestPermissions() { try { await ensureUserMedia(true); skipPermissions(); } catch (e) { skipPermissions(); } }
-    async function ensureUserMedia(showVideo) { try { userStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: true }); if (userVideo) { userVideo.srcObject = userStream; userVideo.play().catch(() => { }); } } catch (e) { } }
+    async function requestPermissions() { try { await navigator.mediaDevices.getUserMedia({ audio: true }); skipPermissions(); } catch (e) { skipPermissions(); } }
 
     async function startInterview() {
       interviewScreen.classList.remove('hidden');
       messages = []; isWaitingForAIResponse = false;
-      await ensureUserMedia(true);
+      await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: true })
+        .then(stream => { userStream = stream; if (userVideo) { userVideo.srcObject = stream; userVideo.play(); } })
+        .catch(e => console.log(e));
+
       setTimeout(() => avatar && avatar.onResize(), 50);
-      const welcome = 'Hello! I\'m Alex. Ready to begin the interview?';
+      try { speechRecognition.start(); } catch (e) { } // Start listening
+
+      const welcome = "I'm Alex. Let's not waste time. Tell me about your background.";
       addChatMessage('ai', 'Alex Johnson', welcome);
       if (avatar) avatar.speakText(welcome);
       if (areSubtitlesOn) showSubtitles(`Alex: ${welcome}`);
@@ -1662,36 +1700,61 @@
         const data = await response.json();
         if (data.ok && data.response) {
           let aiMessage = data.response;
-          messages.push({ role: 'assistant', content: aiMessage });
-          addChatMessage('ai', 'Alex Johnson', aiMessage);
-          const { clean, emojis } = extractEmojisAndSanitize(aiMessage);
-          if (avatar && isModelLoaded) {
-            emojis.forEach((e, i) => setTimeout(() => avatar.speakEmoji(e), i * 500));
-            avatar.speakText(clean);
+          const { clean, emojis, report } = extractEmojisAndSanitize(aiMessage);
+
+          if (report) {
+            // Render report specially
+            addChatMessage('ai', 'System', '<b>Interview Report Generated</b><br><pre style="white-space:pre-wrap; font-size:0.8em">' + report + '</pre>');
+            messages.push({ role: 'assistant', content: aiMessage }); // Save full context
+          } else {
+            messages.push({ role: 'assistant', content: aiMessage });
+            addChatMessage('ai', 'Alex Johnson', clean); // Show clean text in chat
+
+            if (avatar && isModelLoaded) {
+              emojis.forEach((e, i) => setTimeout(() => avatar.speakEmoji(e), i * 500));
+              avatar.speakText(clean);
+            }
           }
-          if (areSubtitlesOn) showSubtitles(`Alex: ${aiMessage}`);
         }
       } catch (error) { console.error(error); addChatMessage('ai', 'System', 'Connection error.'); } finally { isWaitingForAIResponse = false; }
     }
 
-    function showSubtitles(text) { subtitlesOverlay.textContent = text; subtitlesOverlay.classList.remove('hidden'); if (subtitlesOverlay._timer) clearTimeout(subtitlesOverlay._timer); subtitlesOverlay._timer = setTimeout(() => subtitlesOverlay.classList.add('hidden'), 4000); }
+    // --- SUBTITLES ---
+    function showSubtitles(text) { subtitlesOverlay.textContent = text; subtitlesOverlay.classList.remove('hidden'); }
+    window.clearAISubtitles = function () {
+      if (subtitlesOverlay._sched) subtitlesOverlay._sched.forEach(id => clearTimeout(id));
+      subtitlesOverlay._sched = [];
+      subtitlesOverlay.classList.add('hidden');
+    };
     window.scheduleAISubtitles = function (timepoints, duration, startTime) {
       if (!areSubtitlesOn) return;
+      window.clearAISubtitles();
+
       const now = new Date(); const timeStr = `[${now.getHours()}:${now.getMinutes()}]`;
-      if (subtitlesOverlay._sched) subtitlesOverlay._sched.forEach(id => clearTimeout(id));
-      subtitlesOverlay._sched = []; let sentence = [];
-      timepoints.forEach(tp => {
+      let currentLine = "";
+
+      timepoints.forEach((tp, i) => {
         const delay = (tp.time_seconds * 1000);
         subtitlesOverlay._sched.push(setTimeout(() => {
-          sentence.push(tp.word); const display = sentence.slice(-8).join(' '); showSubtitles(`${timeStr} Alex: ${display}`); if (/[.!?]/.test(tp.word)) sentence = [];
+          // Typewriter / Line-by-line effect
+          if (currentLine.length > 50 || /[.!?]/.test(tp.word)) {
+            // Reset if line too long or sentence ends, but keep last few words for continuity if needed
+            if (/[.!?]/.test(tp.word)) currentLine = "";
+          }
+          currentLine += " " + tp.word;
+          showSubtitles(`Alex: ${currentLine.trim()}`);
         }, delay));
       });
+      // Hide after audio
+      subtitlesOverlay._sched.push(setTimeout(() => subtitlesOverlay.classList.add('hidden'), duration * 1000 + 1000));
     };
+
     function toggleSubtitles() { areSubtitlesOn = !areSubtitlesOn; subtitlesBtn.classList.toggle('active', areSubtitlesOn); if (!areSubtitlesOn) subtitlesOverlay.classList.add('hidden'); }
-    function endInterview() { if (confirm('End interview?')) { if (userStream) userStream.getTracks().forEach(t => t.stop()); if (avatar) avatar.stopSpeaking(); interviewScreen.classList.add('hidden'); setupScreen.classList.remove('hidden'); isModelLoaded = false; location.reload(); } }
+    function endInterview() { if (confirm('End interview?')) { if (userStream) userStream.getTracks().forEach(t => t.stop()); if (avatar) avatar.stopSpeaking(); try { speechRecognition.stop(); } catch (e) { } interviewScreen.classList.add('hidden'); setupScreen.classList.remove('hidden'); isModelLoaded = false; location.reload(); } }
 
     init();
   </script>
+
   <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
     data-cf-beacon='{"token": "9ecf6f49919940acb2efcc833483cd5f"}'></script><!-- Cloudflare Pages Analytics -->
   <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
