@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- Added maximum-scale to prevent auto-zoom glitches on reload -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Padam Bhansali - CV</title>
+    <style>
+        /* ---------------------------------------------------------
+           CORE VARIABLES
+           --------------------------------------------------------- */
+        :root {
+            --blue-header: #1a3556;
+            --grey-bg: #dbe1ec;
+            --border-color: #000000;
+            --text-black: #000000;
+            --bg-white: #ffffff;
+            --font-main: 'Times New Roman', Times, serif;
+            --viewer-bg: #525659;
+
+            /* A4 DIMENSIONS (Fixed Reference) */
+            --ref-width: 1000px;
+            --ref-height: 1414px;
+            /* 1:1.414 Ratio */
+
+            /* DYNAMIC SCALING FACTOR (Controlled by JS for shrinking content) */
+            --content-scale: 1;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        /* RESET & BASIC SETUP */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            /* Ensures colors print correctly */
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            /* Vital */
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.2s ease-in;
+        }
+
+        /* WRAPPER FIX */
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            /* Hides the overflow of the scaled element */
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        /* ---------------------------------------------------------
+           THE SHEET (A4 CONTAINER)
+           --------------------------------------------------------- */
+        .page {
+            /* Fixed Dimensions based on reference */
+            width: var(--ref-width);
+            height: var(--ref-height);
+            background: var(--bg-white);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+
+            /* Initial Padding (Scaled by content-scale) */
+            padding: calc(30px * var(--content-scale)) calc(40px * var(--content-scale));
+
+            display: flex;
+            flex-direction: column;
+
+            /* Prevent flexbox from squashing the width */
+            flex-shrink: 0;
+
+            /* Origin for transform scaling */
+            transform-origin: top center;
+
+            /* Base font size scaling */
+            font-size: calc(18px * var(--content-scale));
+            line-height: 1.25;
+            color: #000;
+        }
+
+        /* TYPOGRAPHY & LINKS */
+        a {
+            color: blue;
+            text-decoration: underline;
+        }
+
+        strong {
+            font-weight: bold;
+        }
+
+        p {
+            margin: 0;
+            padding: 0;
+        }
+
+        /* TABLE STYLING (The core layout engine) */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 3px solid black;
+            margin-bottom: -1px;
+            /* Collapses borders between stacked tables */
+            font-size: calc(15px * var(--content-scale));
+        }
+
+        th,
+        td {
+            border: 3px solid black;
+            padding: calc(3px * var(--content-scale)) calc(6px * var(--content-scale));
+            vertical-align: top;
+            text-align: left;
+            font-size: calc(18px * var(--content-scale));
+        }
+
+        /* HEADER SECTION */
+        .header-name {
+            font-size: calc(28px * var(--content-scale));
+            font-weight: bold;
+            margin-bottom: calc(0.5px * var(--content-scale));
+            color: #000;
+        }
+
+        .header-contact {
+            margin-bottom: calc(5px * var(--content-scale));
+            font-size: calc(20px * var(--content-scale));
+        }
+
+        /* BLUE HEADERS */
+        .section-header {
+            background-color: var(--blue-header);
+            color: white;
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: calc(6px * var(--content-scale)) calc(8px * var(--content-scale));
+            border: 1px solid black;
+            font-size: calc(18px * var(--content-scale));
+        }
+
+        /* GREY SIDE HEADERS */
+        .grey-label {
+            background-color: var(--grey-bg);
+            font-weight: bold;
+            width: 18%;
+            /* Approximate width from image */
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .work-label {
+            background-color: var(--grey-bg);
+            font-weight: bold;
+            font-size: calc(19px * var(--content-scale));
+            width: 16%;
+            vertical-align: middle;
+            text-align: left;
+        }
+
+        /* SPECIFIC TABLE ADJUSTMENTS */
+        .qual-table th {
+            text-align: center;
+            background-color: var(--grey-bg);
+            font-weight: bold;
+            vertical-align: middle;
+            padding: calc(5px * var(--content-scale)) 0;
+            font-size: calc(16px * var(--content-scale));
+        }
+
+        .qual-table td {
+            text-align: center;
+            vertical-align: middle;
+            font-size: calc(18px * var(--content-scale));
+            padding: calc(1px * var(--content-scale)) calc(1px * var(--content-scale));
+        }
+
+        .qual-table td:last-child {
+            text-align: left;
+            /* Remarks column is left aligned */
+        }
+
+        /* SUB-HEADERS IN TABLES */
+        .sub-header-row {
+            background-color: var(--grey-bg);
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            border: none;
+            width: 100%;
+        }
+
+        .sub-header-cell {
+            background-color: var(--grey-bg);
+            padding: calc(4px * var(--content-scale)) calc(6px * var(--content-scale));
+            font-weight: bold;
+            border-bottom: 1px solid black;
+        }
+
+        /* LIST STYLING */
+        ul {
+            margin: 0;
+            padding-left: calc(20px * var(--content-scale));
+            /* Tight indentation */
+        }
+
+        li {
+            margin-bottom: calc(2px * var(--content-scale));
+            text-align: justify;
+        }
+
+        /* UTILITY CLASSES */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .font-small {
+            font-size: calc(13px * var(--content-scale));
+        }
+
+        .template {
+            display: none !important;
+        }
+
+        /* ---------------------------------------------------------
+           PRINT STYLES - STRICT SINGLE PAGE A4
+           --------------------------------------------------------- */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                background: #ffffff !important;
+            }
+
+            #zoom-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                transform: none !important;
+                /* Reset transform */
+            }
+
+            .page {
+                width: 1000px !important;
+                /* Keep design width */
+                /* height: 1414px !important;  Keep design height */
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: none !important;
+
+                /* SCALE TO A4 */
+                /* 210mm / 1000px = ~0.7937 */
+                zoom: 0.7937;
+                -moz-transform: scale(0.7937);
+                -moz-transform-origin: top center;
+
+                /* Reset other transforms */
+                transform: none !important;
+                position: static !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+
+            /* Hide any buttons if present */
+            #print-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- WRAPPER FIX -->
+    <div id="zoom-wrapper">
+        <div class="page" id="cv-page">
+
+            <div class="header-name" data-field="name"></div>
+            <div class="header-contact" data-field="contact">
+            </div>
+
+            <table>
+                <tr>
+                    <td class="grey-label" style="text-align: center; ">CAREER OBJECTIVE</td>
+                    <td data-field="summary">
+                    </td>
+                </tr>
+            </table>
+
+            <div class="section-header">PROFESSIONAL & EDUCATIONAL QUALIFICATIONS</div>
+
+            <table class="qual-table">
+                <thead>
+                    <tr>
+                        <th style="width: 28%;">Course/Examination</th>
+                        <th style="width: 20%;">Institution</th>
+                        <th style="width: 12%;">Year of Passing</th>
+                        <th style="width: 10%;">Results</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody id="education-list">
+                    <tr class="template">
+                        <td data-field="degree"></td>
+                        <td data-field="institution"></td>
+                        <td data-field="year"></td>
+                        <td data-field="marks"></td>
+                        <td data-field="remarks"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="section-header" style="border-top: none;">WORK EXPERIENCE</div>
+
+            <table style="border-top: none;">
+                <tbody id="experience-list">
+                    <tr class="template">
+                        <td colspan="2" style="padding:0; border:none;">
+                            <table style="width:100%; border:none; margin:0;">
+                                <tr>
+                                    <td colspan="2" class="sub-header-cell">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <span><span data-field="role"></span> – (<span
+                                                    data-field="company"></span>)</span>
+                                            <span style="font-style: italic;" data-field="dates"></span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="work-label"></td>
+                                    <td>
+                                        <ul data-list="bullets">
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="section-header" style="border-top: none;">EXTRACURRICULAR ACTIVITIES, CERTIFICATIONS, AND SKILLS
+            </div>
+
+            <table style="border-top: none;">
+                <tr>
+                    <td class="work-label">Extracurricular Activities</td>
+                    <td>
+                        <ul data-list="achievements">
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="work-label">Certifications</td>
+                    <td>
+                        <ul data-list="certifications">
+                        </ul>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="work-label">Skill Set</td>
+                    <td>
+                        <div data-field="skills">
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script src="cv-common.js"></script>
+    <script>
+        // 1. SCALING LOGIC (Visual Zoom)
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            if (!page || document.body.classList.contains('print-mode')) return;
+
+            const targetWidth = window.innerWidth - 48;
+            const refWidth = 1000;
+            const scale = targetWidth / refWidth;
+
+            page.style.transform = `scale(${scale})`;
+
+            const refHeight = 1414;
+            const currentVisualHeight = refHeight * scale;
+            const spaceToRemove = refHeight - currentVisualHeight;
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        // 2. SHRINK TO FIT LOGIC (Content Compression)
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            const maxHeight = 1414;
+
+            let contentScale = 1;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+
+            let iterations = 0;
+            while (page.scrollHeight > maxHeight && iterations < 50) {
+                contentScale -= 0.02;
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                iterations++;
+            }
+        }
+
+        let screenTransform = '';
+        let screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            screenTransform = page.style.transform;
+            screenMarginBottom = page.style.marginBottom;
+            document.body.classList.add('print-mode');
+
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+
+            shrinkContentToFit();
+        }
+
+        function handlePrintChange(e) {
+            if (e.matches) {
+                enablePrintMode();
+            } else {
+                disablePrintMode();
+            }
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            document.body.classList.remove('print-mode');
+
+            page.style.transform = screenTransform || '';
+            page.style.marginBottom = screenMarginBottom || '';
+
+            scaleToFit();
+        }
+
+        function init() {
+            scaleToFit();
+            shrinkContentToFit();
+            document.body.style.opacity = '1';
+
+            const printMedia = window.matchMedia('print');
+            if (printMedia.addEventListener) {
+                printMedia.addEventListener('change', handlePrintChange);
+            } else if (printMedia.addListener) {
+                printMedia.addListener(handlePrintChange);
+            }
+
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+        window.addEventListener('load', () => {
+            scaleToFit();
+            shrinkContentToFit();
+        });
+
+        let resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+
+</html>

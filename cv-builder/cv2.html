@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- Added maximum-scale to prevent auto-zoom glitches on reload -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Padam Bhansali CV</title>
+    <style>
+        /* ---------------------------------------------------------
+           CORE VARIABLES
+           --------------------------------------------------------- */
+        :root {
+            --blue-header: #264e80;
+            --border-color: #bfbfbf;
+            --text-black: #000000;
+            --bg-white: #ffffff;
+            --font-main: 'Times New Roman', Times, serif;
+            --viewer-bg: #525659;
+
+            /* A4 DIMENSIONS (Fixed Reference) */
+            --ref-width: 1000px;
+            --ref-height: 1414px;
+            /* 1:1.414 Ratio */
+
+            /* DYNAMIC SCALING FACTOR (Controlled by JS for shrinking content) */
+            --content-scale: 1;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            /* Vital */
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.2s ease-in;
+        }
+
+        /* WRAPPER FIX: 
+           This isolates the large 1000px page from the viewport.
+           The browser only sees this container (width: 100%), so it won't 
+           auto-zoom to fit the huge 1000px child.
+        */
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            /* Hides the overflow of the scaled element */
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        /* ---------------------------------------------------------
+           THE SHEET (A4 CONTAINER)
+           --------------------------------------------------------- */
+        .cv-page {
+            /* Fixed Dimensions based on reference */
+            width: var(--ref-width);
+            height: var(--ref-height);
+            background: var(--bg-white);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+
+            /* Initial Padding (Scaled by content-scale) */
+            padding: calc(30px * var(--content-scale)) calc(40px * var(--content-scale));
+
+            display: flex;
+            flex-direction: column;
+
+            /* Prevent flexbox from squashing the width */
+            flex-shrink: 0;
+
+            /* Origin for transform scaling */
+            transform-origin: top center;
+        }
+
+        /* CONTENT STYLES */
+        .cv-page {
+            font-size: calc(16px * var(--content-scale));
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: calc(5px * var(--content-scale));
+            padding-bottom: calc(5px * var(--content-scale));
+        }
+
+        .name {
+            font-size: calc(42px * var(--content-scale));
+            font-weight: 900;
+            color: var(--text-black);
+            line-height: 1;
+        }
+
+        .subtitle {
+            font-size: calc(20px * var(--content-scale));
+            color: #555;
+            font-weight: bold;
+            text-align: right;
+            padding-bottom: calc(5px * var(--content-scale));
+        }
+
+        /* Contact Bar */
+        .contact-bar {
+            background-color: #f2f2f2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: calc(16px * var(--content-scale));
+            padding: calc(6px * var(--content-scale)) calc(35px * var(--content-scale));
+            margin-left: calc(-40px * var(--content-scale));
+            margin-right: calc(-40px * var(--content-scale));
+            margin-bottom: calc(10px * var(--content-scale));
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: calc(5px * var(--content-scale));
+        }
+
+        .contact-item a {
+            text-decoration: none;
+            color: blue;
+            border-bottom: 1px solid blue;
+        }
+
+        .icon {
+            width: calc(18px * var(--content-scale));
+            height: calc(18px * var(--content-scale));
+            fill: #000;
+        }
+
+        /* Sections */
+        .section-header {
+            background-color: var(--blue-header);
+            color: white;
+            font-weight: bold;
+            padding: calc(4px * var(--content-scale)) calc(10px * var(--content-scale));
+            font-size: calc(18px * var(--content-scale));
+            text-transform: uppercase;
+            border: 1px solid var(--blue-header);
+            /* margin-top: calc(12px * var(--content-scale));
+            margin-bottom: calc(5px * var(--content-scale)); */
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: calc(16px * var(--content-scale));
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border-color);
+            padding: calc(2px * var(--content-scale)) calc(3px * var(--content-scale));
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .qual-table th {
+            background-color: #f9f9f9;
+            font-weight: 900;
+            font-size: calc(15px * var(--content-scale));
+        }
+
+        .qual-table td {
+            font-weight: 500;
+        }
+
+        .merged-cell {
+            font-weight: bold;
+            line-height: 1.1;
+        }
+
+        .b {
+            font-weight: 900;
+        }
+
+        /* Work Experience */
+        .work-exp-header {
+            background-color: #f2f2f2;
+            font-weight: 900;
+            text-align: left;
+            padding: calc(4px * var(--content-scale)) calc(10px * var(--content-scale));
+            border: 1px solid var(--border-color);
+            border-top: none;
+            font-size: calc(17px * var(--content-scale));
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .work-table td {
+            text-align: left;
+            vertical-align: top;
+            padding: calc(6px * var(--content-scale));
+        }
+
+        .role-col {
+            background-color: #f2f2f2;
+            font-weight: 900;
+            width: 18%;
+            text-align: center !important;
+            vertical-align: middle !important;
+            line-height: 1.2;
+        }
+
+        .desc-col {
+            width: 82%;
+            text-align: justify !important;
+        }
+
+        .bullet-list {
+            list-style-type: none;
+            padding-left: calc(15px * var(--content-scale));
+            margin: 0;
+        }
+
+        .bullet-list li {
+            position: relative;
+            margin-bottom: calc(3px * var(--content-scale));
+            line-height: 1.05;
+        }
+
+        .bullet-list li::before {
+            content: "▪";
+            position: absolute;
+            left: calc(-15px * var(--content-scale));
+            top: 0;
+            font-size: 1.2em;
+        }
+
+        .extra-table td.category {
+            background-color: #f2f2f2;
+            font-weight: 900;
+            width: 18%;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 1.3;
+        }
+
+        .extra-table td.details {
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .no-top-border {
+            border-top: none;
+        }
+
+        .template {
+            display: none !important;
+        }
+
+        .job-group {
+            display: contents;
+        }
+
+        /* ---------------------------------------------------------
+           PRINT STYLES - STRICT SINGLE PAGE A4
+           --------------------------------------------------------- */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                background: #ffffff !important;
+            }
+
+            #zoom-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                transform: none !important;
+                /* Reset transform */
+            }
+
+            .cv-page {
+                width: 1000px !important;
+                /* Keep design width */
+                /* height: 1414px !important;  Keep design height */
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: none !important;
+
+                /* SCALE TO A4 */
+                /* 210mm / 1000px = ~0.7937 */
+                zoom: 0.7937;
+                -moz-transform: scale(0.7937);
+                -moz-transform-origin: top center;
+
+                /* Reset other transforms */
+                transform: none !important;
+                position: static !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+    </style>
+</head>
+
+<body>
+
+    <!-- WRAPPER FIX -->
+    <div id="zoom-wrapper">
+        <!-- SINGLE A4 PAGE -->
+        <div class="cv-page" id="cv-page">
+            <!-- HEADER -->
+            <div class="header">
+                <div class="name" data-field="name"></div>
+                <div class="contact-info" data-field="contact">
+                </div>
+            </div>
+
+            <!-- CONTACT BAR -->
+            <div class="contact-bar" data-field="contact">
+            </div>
+
+            <!-- QUALIFICATIONS -->
+            <div class="section-header">PROFESSIONAL & EDUCATIONAL QUALIFICATIONS</div>
+            <table class="qual-table">
+                <thead>
+                    <tr>
+                        <th style="width: 22%;">EXAMINATION</th>
+                        <th style="width: 12%;">YEAR</th>
+                        <th style="width: 36%;">INSTITUTION</th>
+                        <th style="width: 12%;">PERCENTAGE</th>
+                        <th style="width: 18%;">REMARKS</th>
+                    </tr>
+                </thead>
+                <tbody id="education-list">
+                    <tr class="template">
+                        <td data-field="degree"></td>
+                        <td data-field="year"></td>
+                        <td data-field="institution" class="merged-cell"></td>
+                        <td data-field="marks"></td>
+                        <td class="b" data-field="remarks"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- WORK EXPERIENCE -->
+            <div class="section-header">WORK EXPERIENCE</div>
+
+            <div id="experience-list">
+                <div class="job-group template">
+                    <div class="work-exp-header no-top-border">
+                        <span><span data-field="company"></span> – <span data-field="role"></span></span>
+                        <span data-field="dates"></span>
+                    </div>
+                    <table class="work-table">
+                        <tr>
+                            <td class="role-col"></td>
+                            <td class="desc-col">
+                                <ul class="bullet-list" data-list="bullets">
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- EXTRA CURRICULAR -->
+            <div class="section-header">EXTRA CURRICULAR ACTIVTIES, SKILLS, ACHIEVEMENTS & INTERESTS</div>
+            <table class="extra-table">
+                <tbody>
+                    <tr>
+                        <td class="category">Skills</td>
+                        <td class="details">
+                            <div data-field="skills"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="category">Achievements</td>
+                        <td class="details">
+                            <ul class="bullet-list" data-list="achievements">
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="category">Certifications</td>
+                        <td class="details">
+                            <ul class="bullet-list" data-list="certifications">
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="category">Interests</td>
+                        <td class="details">
+                            <ul class="bullet-list" data-list="interests">
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="category">Leadership</td>
+                        <td class="details">
+                            <ul class="bullet-list" data-list="leadership">
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script src="cv-common.js"></script>
+    <script>
+        // 1. SCALING LOGIC (Visual Zoom)
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            if (!page || document.body.classList.contains('print-mode')) return;
+
+            const targetWidth = window.innerWidth - 48;
+            const refWidth = 1000;
+            const scale = targetWidth / refWidth;
+
+            page.style.transform = `scale(${scale})`;
+
+            const refHeight = 1414;
+            const currentVisualHeight = refHeight * scale;
+            const spaceToRemove = refHeight - currentVisualHeight;
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        // 2. SHRINK TO FIT LOGIC (Content Compression)
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            const maxHeight = 1414;
+
+            let contentScale = 1;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+
+            let iterations = 0;
+            while (page.scrollHeight > maxHeight && iterations < 50) {
+                contentScale -= 0.02;
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                iterations++;
+            }
+        }
+
+        let screenTransform = '';
+        let screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            screenTransform = page.style.transform;
+            screenMarginBottom = page.style.marginBottom;
+            document.body.classList.add('print-mode');
+
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+
+            shrinkContentToFit();
+        }
+
+        function handlePrintChange(e) {
+            if (e.matches) {
+                enablePrintMode();
+            } else {
+                disablePrintMode();
+            }
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            document.body.classList.remove('print-mode');
+
+            page.style.transform = screenTransform || '';
+            page.style.marginBottom = screenMarginBottom || '';
+
+            scaleToFit();
+        }
+
+        function init() {
+            scaleToFit();
+            shrinkContentToFit();
+            document.body.style.opacity = '1';
+
+            const printMedia = window.matchMedia('print');
+            if (printMedia.addEventListener) {
+                printMedia.addEventListener('change', handlePrintChange);
+            } else if (printMedia.addListener) {
+                printMedia.addListener(handlePrintChange);
+            }
+
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+        window.addEventListener('load', () => {
+            scaleToFit();
+            shrinkContentToFit();
+        });
+
+        let resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+
+</html>

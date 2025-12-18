@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Padam Bhansali CV - Template 7</title>
+    <style>
+        /* ---------------------------------------------------------
+           CORE VARIABLES
+           --------------------------------------------------------- */
+        :root {
+            --header-bg: #000000;
+            /* Black */
+            --header-text: #ffffff;
+            --sub-header-bg: #d9d9d9;
+            /* Light Gray */
+            --border-color: #000000;
+            --font-main: 'Arial', sans-serif;
+            /* Clean Sans-Serif */
+            --viewer-bg: #46494b;
+            --ref-width: 1000px;
+            --ref-height: 1414px;
+            --content-scale: 1;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.2s ease-in;
+        }
+
+        /* WRAPPER */
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        /* CV PAGE - A4 */
+        .cv-page {
+            width: var(--ref-width);
+            height: var(--ref-height);
+            background: #ffffff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            padding: calc(40px * var(--content-scale));
+            display: flex;
+            flex-direction: column;
+            transform-origin: top center;
+            font-size: calc(16.5px * var(--content-scale));
+            flex-shrink: 0;
+            /* Critical for scaling */
+        }
+
+        /* UTILS */
+        .bold {
+            font-weight: bold;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .justify {
+            text-align: justify;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+
+        /* HEADER */
+        .main-header {
+            text-align: center;
+            margin-bottom: calc(10px * var(--content-scale));
+        }
+
+        .name {
+            font-size: calc(28px * var(--content-scale));
+            font-weight: bold;
+            margin-bottom: calc(2px * var(--content-scale));
+        }
+
+        .contact-info {
+            font-size: calc(19px * var(--content-scale));
+        }
+
+        .contact-info a {
+            color: blue;
+            text-decoration: underline;
+        }
+
+        /* SECTION STYLES */
+        .section-header {
+            background-color: var(--header-bg);
+            color: var(--header-text);
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: calc(2px * var(--content-scale)) calc(4px * var(--content-scale));
+            font-size: calc(16px * var(--content-scale));
+            border: calc(2px * var(--content-scale)) solid var(--border-color);
+
+        }
+
+        .section-header:first-of-type {
+            margin-top: 0;
+        }
+
+        /* TABLES */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: calc(17px * var(--content-scale));
+            border: calc(2px * var(--content-scale)) solid var(--border-color);
+            border-top: none;
+            /* Merges with section header */
+        }
+
+        th,
+        td {
+            border: calc(1px * var(--content-scale)) solid var(--border-color);
+            padding: calc(2px * var(--content-scale)) calc(1px * var(--content-scale));
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--sub-header-bg);
+            font-weight: bold;
+        }
+
+        /* GRAY BAR SUB-HEADER */
+        .gray-bar {
+            background-color: var(--sub-header-bg);
+            border: calc(2px * var(--content-scale)) solid var(--border-color);
+            border-top: none;
+            padding: calc(2px * var(--content-scale)) calc(4px * var(--content-scale));
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        /* LISTS IN SECTIONS */
+        .section-content {
+            border: calc(2px * var(--content-scale)) solid var(--border-color);
+            border-top: none;
+            padding: calc(1px * var(--content-scale)) calc(3px * var(--content-scale)) calc(5px * var(--content-scale)) calc(20px * var(--content-scale));
+        }
+
+        ul {
+            margin: 0;
+            padding-left: calc(18px * var(--content-scale));
+            list-style-type: disc;
+        }
+
+        li {
+            margin-bottom: calc(2px * var(--content-scale));
+            text-align: justify;
+        }
+
+        /* CERTIFICATIONS SPECIFIC TABLE */
+        .cert-table td {
+            text-align: left;
+            padding-left: 8px;
+            vertical-align: top;
+        }
+
+        .cert-table td:first-child {
+            font-weight: bold;
+            width: 30%;
+        }
+
+        /* Added for JS Template Logic */
+        .template {
+            display: none !important;
+        }
+
+        .job-group {
+            display: contents;
+        }
+
+        /* Allows grouping without breaking layout */
+
+        /* ---------------------------------------------------------
+           PRINT STYLES - STRICT SINGLE PAGE A4
+           --------------------------------------------------------- */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                background: #ffffff !important;
+            }
+
+            #zoom-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                transform: none !important;
+            }
+
+            .cv-page {
+                width: 1000px !important;
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: none !important;
+                zoom: 0.7937;
+                -moz-transform: scale(0.7937);
+                -moz-transform-origin: top center;
+                transform-origin: top center;
+                transform: none !important;
+                position: static !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="zoom-wrapper">
+        <div class="cv-page" id="cv-page">
+
+            <!-- HEADER -->
+            <div class="main-header">
+                <div class="name" data-field="name"></div>
+                <div class="contact-info" data-field="contact">
+                </div>
+            </div>
+
+            <!-- ACADEMIC QUALIFICATIONS -->
+            <div class="section-header">ACADEMIC QUALIFICATIONS</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 12%;">Year</th>
+                        <th style="width: 18%;">Degree/ Examination</th>
+                        <th style="width: 33%;">Board/ Institute</th>
+                        <th style="width: 15%;">%/ CGPA</th>
+                        <th style="width: 20%;">Remarks</th>
+                    </tr>
+                </thead>
+                <tbody id="education-list">
+                    <tr class="template">
+                        <td data-field="year"></td>
+                        <td data-field="degree"></td>
+                        <td data-field="institution"></td>
+                        <td data-field="marks"></td>
+                        <td data-field="remarks"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- WORK EXPERIENCE -->
+            <div class="section-header">WORK EXPERIENCE</div>
+
+            <div id="experience-list">
+                <!-- Template Group -->
+                <div class="job-group template">
+                    <div class="gray-bar">
+                        <span><span data-field="role"></span> || <span data-field="company"></span></span>
+                        <span data-field="dates"></span>
+                    </div>
+                    <div class="section-content">
+                        <ul data-list="bullets">
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- POSITIONS OF LEADERSHIP -->
+            <div class="section-header">POSITIONS OF LEADERSHIP</div>
+            <div class="section-content">
+                <ul data-list="leadership"></ul>
+            </div>
+
+            <!-- COURSES & CERTIFICATIONS -->
+            <div class="section-header">COURSES & CERTIFICATIONS</div>
+            <div class="section-content">
+                <ul data-list="certifications"></ul>
+            </div>
+
+            <!-- EXTRA-CURRICULAR -->
+            <div class="section-header">EXTRA-CURRICULAR ACTIVITIES & ACHIEVEMENTS</div>
+            <div class="section-content">
+                <ul data-list="achievements"></ul>
+            </div>
+
+            <div class="section-header">INTERESTS</div>
+            <div class="section-content">
+                <ul data-list="interests"></ul>
+            </div>
+
+            <!-- ADDITIONAL SKILLS -->
+            <div class="section-header">ADDITIONAL SKILLS</div>
+            <div class="gray-bar" style="border-top: none; ">Skills</div>
+            <div class="section-content" style="border-top: none;" data-field="skills">
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script src="cv-common.js"></script>
+    <script>
+        // 1. SCALING LOGIC
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            if (!page || document.body.classList.contains('print-mode')) return;
+
+            const targetWidth = window.innerWidth - 48;
+            const refWidth = 1000;
+            const scale = targetWidth / refWidth;
+
+            page.style.transform = `scale(${scale})`;
+
+            const refHeight = 1414;
+            const currentVisualHeight = refHeight * scale;
+            const spaceToRemove = refHeight - currentVisualHeight;
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        // 2. SHRINK TO FIT LOGIC
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            const maxHeight = 1414;
+
+            let contentScale = 1;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+
+            let iterations = 0;
+            while (page.scrollHeight > maxHeight && iterations < 50) {
+                contentScale -= 0.02;
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                iterations++;
+            }
+        }
+
+        let screenTransform = '';
+        let screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            screenTransform = page.style.transform;
+            screenMarginBottom = page.style.marginBottom;
+            document.body.classList.add('print-mode');
+
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+
+            shrinkContentToFit();
+        }
+
+        function handlePrintChange(e) {
+            if (e.matches) {
+                enablePrintMode();
+            } else {
+                disablePrintMode();
+            }
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            document.body.classList.remove('print-mode');
+
+            page.style.transform = screenTransform || '';
+            page.style.marginBottom = screenMarginBottom || '';
+
+            scaleToFit();
+        }
+
+        function init() {
+            scaleToFit();
+            shrinkContentToFit();
+            document.body.style.opacity = '1';
+
+            const printMedia = window.matchMedia('print');
+            if (printMedia.addEventListener) {
+                printMedia.addEventListener('change', handlePrintChange);
+            } else if (printMedia.addListener) {
+                printMedia.addListener(handlePrintChange);
+            }
+
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+        window.addEventListener('load', () => {
+            scaleToFit();
+            shrinkContentToFit();
+        });
+
+        let resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+
+</html>

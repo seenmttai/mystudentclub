@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- Added maximum-scale to prevent auto-zoom glitches on reload -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Padam Bhansali - Resume</title>
+    <style>
+        /* ---------------------------------------------------------
+           CORE VARIABLES
+           --------------------------------------------------------- */
+        :root {
+            --blue-header: #4f81bc;
+            --border-color: #000000;
+            --text-black: #000000;
+            --bg-white: #ffffff;
+            --font-main: 'Times New Roman', Times, serif;
+            --viewer-bg: #525659;
+
+            /* A4 DIMENSIONS (Fixed Reference) */
+            --ref-width: 1000px;
+            --ref-height: 1414px;
+            /* 1:1.414 Ratio */
+
+            /* DYNAMIC SCALING FACTOR (Controlled by JS for shrinking content) */
+            --content-scale: 1;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            /* Vital */
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.2s ease-in;
+        }
+
+        /* WRAPPER FIX: 
+           This isolates the large 1000px page from the viewport.
+           The browser only sees this container (width: 100%), so it won't 
+           auto-zoom to fit the huge 1000px child.
+        */
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            /* Hides the overflow of the scaled element */
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        /* ---------------------------------------------------------
+           THE SHEET (A4 CONTAINER)
+           --------------------------------------------------------- */
+        .resume-container {
+            /* Fixed Dimensions based on reference */
+            width: var(--ref-width);
+            height: var(--ref-height);
+            background: var(--bg-white);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+
+            /* Initial Padding (Scaled by content-scale) */
+            padding: calc(25px * var(--content-scale)) calc(25px * var(--content-scale));
+
+            display: flex;
+            flex-direction: column;
+
+            /* Prevent flexbox from squashing the width */
+            flex-shrink: 0;
+
+            /* Origin for transform scaling */
+            transform-origin: top center;
+
+            /* Base font size scaling */
+            font-size: calc(16px * var(--content-scale));
+        }
+
+        /* Helper Classes */
+        .bold {
+            font-weight: bold;
+        }
+
+        .underline {
+            text-decoration: underline;
+        }
+
+        .justify {
+            text-align: justify;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .uppercase {
+            text-transform: uppercase;
+        }
+
+        /* Header Section */
+        header {
+            text-align: center;
+            margin-bottom: calc(10px * var(--content-scale));
+        }
+
+        h1 {
+            font-size: calc(35px * var(--content-scale));
+            font-weight: 900;
+            text-decoration: underline;
+            margin-bottom: calc(4px * var(--content-scale));
+            text-transform: none;
+        }
+
+        .contact-info {
+            font-size: calc(18px * var(--content-scale));
+        }
+
+        .contact-info a {
+            color: blue;
+            text-decoration: underline;
+        }
+
+        /* Section Headers */
+        .section-header {
+            background-color: var(--blue-header);
+            color: white;
+            padding: calc(2px * var(--content-scale)) calc(5px * var(--content-scale));
+            font-weight: bold;
+            font-size: calc(16px * var(--content-scale));
+            text-transform: uppercase;
+            border: 1px solid #1f3855;
+            margin-top: calc(12px * var(--content-scale));
+            margin-bottom: calc(5px * var(--content-scale));
+        }
+
+        /* Content Text */
+        p {
+            margin-bottom: calc(5px * var(--content-scale));
+            font-size: calc(19px * var(--content-scale));
+            line-height: 1.4;
+        }
+
+        /* Educational Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: calc(19px * var(--content-scale));
+            margin-bottom: calc(5px * var(--content-scale));
+        }
+
+        th,
+        td {
+            border: 1px solid black;
+            padding: calc(2px * var(--content-scale)) calc(5px * var(--content-scale));
+            vertical-align: top;
+        }
+
+        th {
+            text-align: center;
+            font-weight: bold;
+            background-color: white;
+        }
+
+        .col-course {
+            width: 20%;
+        }
+
+        .col-year {
+            width: 12%;
+            text-align: center;
+        }
+
+        .col-inst {
+            width: 40%;
+            text-align: center;
+        }
+
+        .col-marks {
+            width: 25%;
+            text-align: center;
+        }
+
+        /* Work Experience */
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: calc(19px * var(--content-scale));
+            margin-top: calc(5px * var(--content-scale));
+            margin-bottom: calc(2px * var(--content-scale));
+            border-bottom: none;
+        }
+
+        .job-title {
+            text-decoration: underline;
+        }
+
+        /* Lists */
+        ul {
+            list-style-type: disc;
+            margin-left: calc(25px * var(--content-scale));
+            margin-bottom: calc(5px * var(--content-scale));
+        }
+
+        li {
+            font-size: calc(17.8px * var(--content-scale));
+            margin-bottom: calc(2px * var(--content-scale));
+            text-align: justify;
+            padding-right: calc(5px * var(--content-scale));
+            line-height: 1.3;
+        }
+
+        /* Nested Lists */
+        ul ul {
+            margin-left: calc(20px * var(--content-scale));
+            list-style-type: none;
+        }
+
+        ul ul li::before {
+            content: "– ";
+            font-weight: bold;
+        }
+
+        .cell-center {
+            text-align: center;
+            vertical-align: middle;
+            padding: calc(1px * var(--content-scale)) 0;
+        }
+
+        .cell-center>div {
+            display: inline-block;
+            margin: 0 auto;
+        }
+
+        /* Added for JS */
+        .template {
+            display: none !important;
+        }
+
+        .job-group {
+            display: contents;
+        }
+
+        /* ---------------------------------------------------------
+           PRINT STYLES - STRICT SINGLE PAGE A4
+           --------------------------------------------------------- */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                background: #ffffff !important;
+            }
+
+            #zoom-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                transform: none !important;
+                /* Reset transform */
+            }
+
+            .resume-container {
+                width: 1000px !important;
+                /* Keep design width */
+                /* height: 1414px !important;  Keep design height */
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: none !important;
+
+                /* SCALE TO A4 */
+                /* 210mm / 1000px = ~0.7937 */
+                zoom: 0.7937;
+                -moz-transform: scale(0.7937);
+                -moz-transform-origin: top center;
+
+                /* Reset other transforms */
+                transform: none !important;
+                position: static !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- WRAPPER FIX -->
+    <div id="zoom-wrapper">
+        <!-- SINGLE A4 PAGE -->
+        <div class="resume-container" id="cv-page">
+            <header>
+                <h1 data-field="name"></h1>
+                <div class="contact-info" data-field="contact">
+                </div>
+            </header>
+
+            <div class="section-header">CAREER OBJECTIVE</div>
+            <p class="justify" data-field="summary"></p>
+
+            <div class="section-header ">EDUCATIONAL QUALIFICATION</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="col-course">Course</th>
+                        <th class="col-year">Year</th>
+                        <th class="col-inst">Institution</th>
+                        <th class="col-marks">Marks</th>
+                    </tr>
+                </thead>
+                <tbody id="education-list">
+                    <tr class="template">
+                        <td class="cell-center">
+                            <div data-field="degree"></div>
+                        </td>
+                        <td class="cell-center">
+                            <div data-field="year"></div>
+                        </td>
+                        <td class="cell-center">
+                            <div data-field="institution"></div>
+                        </td>
+                        <td class="cell-center">
+                            <div data-field="marks"></div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="section-header">WORK EXPERIENCE</div>
+
+            <div id="experience-list">
+                <div class="job-group template">
+                    <div class="job-header" style="border-bottom: 1px solid black;">
+                        <span><span data-field="role"></span> | <span class="bold" data-field="company"></span></span>
+                        <span data-field="dates"></span>
+                    </div>
+                    <ul data-list="bullets">
+                    </ul>
+                </div>
+            </div>
+
+            <div class="section-header">LEADERSHIP & COMMUNITY</div>
+            <ul data-list="leadership">
+            </ul>
+
+            <div class="section-header">ACHIEVEMENTS</div>
+            <ul data-list="achievements">
+            </ul>
+
+            <div class="section-header">INTERESTS</div>
+            <ul data-list="interests">
+            </ul>
+
+            <div class="section-header">SKILLS</div>
+            <ul>
+                <li data-field="skills"></li>
+            </ul>
+
+        </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script src="cv-common.js"></script>
+    <script>
+        // 1. SCALING LOGIC (Visual Zoom)
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            if (!page || document.body.classList.contains('print-mode')) return;
+
+            const targetWidth = window.innerWidth - 48;
+            const refWidth = 1000;
+            const scale = targetWidth / refWidth;
+
+            page.style.transform = `scale(${scale})`;
+
+            const refHeight = 1414;
+            const currentVisualHeight = refHeight * scale;
+            const spaceToRemove = refHeight - currentVisualHeight;
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        // 2. SHRINK TO FIT LOGIC (Content Compression)
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            const maxHeight = 1414;
+
+            let contentScale = 1;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+
+            let iterations = 0;
+            while (page.scrollHeight > maxHeight && iterations < 50) {
+                contentScale -= 0.02;
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                iterations++;
+            }
+        }
+
+        let screenTransform = '';
+        let screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            screenTransform = page.style.transform;
+            screenMarginBottom = page.style.marginBottom;
+            document.body.classList.add('print-mode');
+
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+
+            shrinkContentToFit();
+        }
+
+        function handlePrintChange(e) {
+            if (e.matches) {
+                enablePrintMode();
+            } else {
+                disablePrintMode();
+            }
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            document.body.classList.remove('print-mode');
+
+            page.style.transform = screenTransform || '';
+            page.style.marginBottom = screenMarginBottom || '';
+
+            scaleToFit();
+        }
+
+        function init() {
+            scaleToFit();
+            shrinkContentToFit();
+            document.body.style.opacity = '1';
+
+            const printMedia = window.matchMedia('print');
+            if (printMedia.addEventListener) {
+                printMedia.addEventListener('change', handlePrintChange);
+            } else if (printMedia.addListener) {
+                printMedia.addListener(handlePrintChange);
+            }
+
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+        window.addEventListener('load', () => {
+            scaleToFit();
+            shrinkContentToFit();
+        });
+
+        let resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+
+</html>

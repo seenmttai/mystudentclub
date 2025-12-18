@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- Added maximum-scale to prevent auto-zoom glitches on reload -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Padam Bhansali CV</title>
+    <style>
+        /* ---------------------------------------------------------
+           CORE VARIABLES
+           --------------------------------------------------------- */
+        :root {
+            --header-bg: #8eaadb;
+            /* Light blue for section headers */
+            --sub-header-bg: #d9e1f3;
+            /* Light grey for sub-headers */
+            --border-color: #000000;
+            --blue-shade: #b4c5e7;
+            --text-black: #000000;
+            --bg-white: #ffffff;
+            --font-main: 'Calibri', 'Arial', sans-serif;
+            --viewer-bg: #525659;
+
+            /* A4 DIMENSIONS (Fixed Reference) */
+            --ref-width: 1000px;
+            --ref-height: 1414px;
+            /* 1:1.414 Ratio */
+
+            /* DYNAMIC SCALING FACTOR (Controlled by JS for shrinking content) */
+            --content-scale: 1;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            /* Vital */
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.2s ease-in;
+        }
+
+        /* WRAPPER FIX */
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        /* ---------------------------------------------------------
+           THE SHEET (A4 CONTAINER)
+           --------------------------------------------------------- */
+        .cv-page {
+            width: var(--ref-width);
+            height: var(--ref-height);
+            background: var(--bg-white);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            padding: calc(30px * var(--content-scale));
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transform-origin: top center;
+            font-size: calc(14px * var(--content-scale));
+        }
+
+        /* Main Border Container */
+        .main-container {
+            border: 2px solid var(--border-color);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            border-bottom: 2px solid var(--border-color);
+            /* Keep border, grey bar is below */
+            padding: 0;
+        }
+
+        .name-block {
+            font-size: calc(36px * var(--content-scale));
+            font-weight: normal;
+            display: flex;
+            align-items: center;
+            padding-left: calc(10px * var(--content-scale));
+            flex-grow: 1;
+        }
+
+        .contact-block {
+            border-left: 2px solid var(--border-color);
+            font-size: calc(16px * var(--content-scale));
+            display: flex;
+            flex-direction: column;
+            width: 40%;
+        }
+
+        .contact-row {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            flex-grow: 1;
+        }
+
+        .contact-row:last-child {
+            border-bottom: none;
+        }
+
+        .contact-label {
+            font-weight: bold;
+            padding: calc(2px * var(--content-scale)) calc(5px * var(--content-scale));
+            background-color: #ffffff;
+            width: auto;
+            /* Allow natural width */
+            padding-right: calc(5px * var(--content-scale));
+            /* Space between label and value */
+            display: flex;
+            align-items: center;
+        }
+
+        .contact-value {
+            padding: calc(2px * var(--content-scale)) calc(5px * var(--content-scale));
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        .contact-value a {
+            color: blue;
+            text-decoration: underline;
+        }
+
+        /* GREY BAR */
+        .grey-bar {
+            background-color: #595959;
+            /* Dark grey */
+            height: calc(20px * var(--content-scale));
+            border-bottom: 1px solid var(--border-color);
+            width: 100%;
+        }
+
+        /* SUMMARY */
+        .summary-section {
+            padding: calc(5px * var(--content-scale));
+            border-bottom: 1px solid var(--border-color);
+            font-size: calc(16px * var(--content-scale));
+            text-align: justify;
+        }
+
+        /* SECTIONS */
+        .section-header {
+            background-color: var(--header-bg);
+            font-weight: bold;
+            padding: calc(3px * var(--content-scale)) calc(5px * var(--content-scale));
+            border-bottom: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-color);
+            font-size: calc(17px * var(--content-scale));
+            text-transform: uppercase;
+            /* Match image */
+        }
+
+        .section-header:first-of-type {
+            border-top: none;
+        }
+
+        /* SUB-HEADERS (e.g. Job Title) */
+        .sub-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            /* Stretch to fill height */
+            font-weight: bold;
+            border-bottom: 1px solid var(--border-color);
+            background-color: #ffffff;
+            padding: 0;
+            font-size: calc(17px * var(--content-scale));
+        }
+
+        .sub-header-title {
+            padding: calc(3px * var(--content-scale)) calc(5px * var(--content-scale));
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+        }
+
+        .sub-header-date {
+            background-color: var(--sub-header-bg);
+            padding: calc(3px * var(--content-scale)) calc(10px * var(--content-scale));
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: calc(120px * var(--content-scale));
+        }
+
+        /* CONTENT BLOCKS */
+        .content-block {
+            padding: calc(5px * var(--content-scale));
+            font-size: calc(16px * var(--content-scale));
+        }
+
+        ul {
+            margin: 0;
+            padding-left: calc(20px * var(--content-scale));
+            list-style-type: disc;
+        }
+
+        li {
+            margin-bottom: calc(2px * var(--content-scale));
+            font-size: calc(16px * var(--content-scale));
+        }
+
+        /* TABLES */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td,
+        th {
+            border: 1px solid var(--border-color);
+            padding: calc(3px * var(--content-scale));
+            vertical-align: top;
+            font-size: calc(13px * var(--content-scale));
+        }
+
+        /* Remove outer borders */
+        /* Left and Right edges */
+        th:first-child,
+        td:first-child {
+            border-left: none !important;
+        }
+
+        th:last-child,
+        td:last-child {
+            border-right: none !important;
+        }
+
+        /* Top edge */
+        thead tr:first-child th {
+            border-top: none !important;
+        }
+
+        /* Target first row of body if it's the first child of table (no thead) */
+        tbody:first-child tr:first-child td {
+            border-top: none !important;
+        }
+
+        /* Bottom edge */
+        tbody:last-child tr:last-child td {
+            border-bottom: none !important;
+        }
+
+        /* Fallback for direct tr children if tbody is missing (unlikely but safe) */
+        table>tr:last-child td {
+            border-bottom: none !important;
+        }
+
+        /* Leadership Table */
+        .leadership-table td:first-child {
+            width: 25%;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            background-color: #ffffff;
+            font-size: calc(16px * var(--content-scale));
+        }
+
+        .leadership-table td {
+            font-size: calc(16px * var(--content-scale));
+        }
+
+        /* Education Table */
+        .edu-table th {
+            background-color: var(--blue-shade);
+            text-align: center;
+            font-weight: bold;
+            border: 1.5px solid #d4d4d4;
+            font-size: calc(15px * var(--content-scale));
+        }
+
+        .edu-table td {
+            text-align: center;
+            vertical-align: middle;
+            border: 1.5px solid #d4d4d4;
+            font-size: calc(15px * var(--content-scale));
+            padding-left: calc(5px * var(--content-scale));
+        }
+
+        .edu-table td:first-child {
+            text-align: left;
+        }
+
+        /* Alternating rows for Education */
+        .edu-table tr:nth-child(odd) td {
+            background-color: var(--sub-header-bg);
+            /* Use the light blue variable */
+        }
+
+        .edu-table tr:nth-child(even) td {
+            background-color: var(--sub-header-bg);
+        }
+
+        /* UTILS */
+        .bold {
+            font-weight: bold;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+
+        .template {
+            display: none !important;
+        }
+
+        .job-group {
+            display: contents;
+        }
+
+
+
+        /* ---------------------------------------------------------
+           PRINT STYLES - STRICT SINGLE PAGE A4
+           --------------------------------------------------------- */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                background: #ffffff !important;
+            }
+
+            #zoom-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                transform: none !important;
+            }
+
+            .cv-page {
+                width: 1000px !important;
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: none !important;
+                zoom: 0.7937;
+                -moz-transform: scale(0.7937);
+                -moz-transform-origin: top center;
+                transform-origin: top center;
+                transform: none !important;
+                position: static !important;
+                padding: 0 !important;
+                /* Remove padding in print to maximize space if needed, or keep consistent */
+            }
+
+            /* Adjust main container for print margins if needed */
+            .main-container {
+                border: 2px solid var(--border-color);
+                width: 96%;
+                /* Slight margin */
+                margin: 2% auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="zoom-wrapper">
+        <div class="cv-page" id="cv-page">
+            <div class="main-container">
+
+                <!-- HEADER -->
+                <div class="header-section">
+                    <div class="name-block" data-field="name"></div>
+                    <div class="contact-block">
+                        <div class="contact-row">
+                            <div class="contact-value" data-field="contact" style="width:100%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-header">Career Objective</div>
+                <div class="summary-section" data-field="summary">
+                </div>
+
+                <!-- ARTICLESHIP EXPERIENCE -->
+                <div class="section-header">Articleship Experience</div>
+                <div id="experience-list">
+                    <div class="job-group template">
+                        <div class="sub-header">
+                            <div class="sub-header-title"><span data-field="role"></span> | <span
+                                    data-field="company"></span></div>
+                            <div class="sub-header-date" data-field="dates"></div>
+                        </div>
+                        <div class="content-block">
+                            <ul data-list="bullets">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EDUCATION -->
+                <div class="section-header">EDUCATION</div>
+                <table class="edu-table">
+                    <thead style="background-color: var(--blue-shade);">
+                        <tr>
+                            <th>Course</th>
+                            <th>Institution</th>
+                            <th>Year of Passing</th>
+                            <th>Performance</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="education-list">
+                        <tr class="template">
+                            <td class="bold" data-field="degree"></td>
+                            <td data-field="institution"></td>
+                            <td data-field="year"></td>
+                            <td data-field="marks"></td>
+                            <td data-field="remarks"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- SKILLS -->
+                <div class="section-header">SKILLS</div>
+                <div class="content-block" data-field="skills">
+                </div>
+
+            </div> <!-- End Main Container -->
+        </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script src="cv-common.js"></script>
+    <script>
+        // 1. SCALING LOGIC (Visual Zoom)
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            if (!page || document.body.classList.contains('print-mode')) return;
+
+            const targetWidth = window.innerWidth - 48;
+            const refWidth = 1000;
+            const scale = targetWidth / refWidth;
+
+            page.style.transform = `scale(${scale})`;
+
+            const refHeight = 1414;
+            const currentVisualHeight = refHeight * scale;
+            const spaceToRemove = refHeight - currentVisualHeight;
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        // 2. SHRINK TO FIT LOGIC (Content Compression)
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            const maxHeight = 1414;
+
+            let contentScale = 1;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+
+            let iterations = 0;
+            while (page.scrollHeight > maxHeight && iterations < 50) {
+                contentScale -= 0.02;
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                iterations++;
+            }
+        }
+
+        let screenTransform = '';
+        let screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            screenTransform = page.style.transform;
+            screenMarginBottom = page.style.marginBottom;
+            document.body.classList.add('print-mode');
+
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+
+            shrinkContentToFit();
+        }
+
+        function handlePrintChange(e) {
+            if (e.matches) {
+                enablePrintMode();
+            } else {
+                disablePrintMode();
+            }
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            document.body.classList.remove('print-mode');
+
+            page.style.transform = screenTransform || '';
+            page.style.marginBottom = screenMarginBottom || '';
+
+            scaleToFit();
+        }
+
+        function init() {
+            scaleToFit();
+            shrinkContentToFit();
+            document.body.style.opacity = '1';
+
+            const printMedia = window.matchMedia('print');
+            if (printMedia.addEventListener) {
+                printMedia.addEventListener('change', handlePrintChange);
+            } else if (printMedia.addListener) {
+                printMedia.addListener(handlePrintChange);
+            }
+
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+        window.addEventListener('load', () => {
+            scaleToFit();
+            shrinkContentToFit();
+        });
+
+        let resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,3004 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CA CV Maker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --primary-light: #eff6ff;
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg-app: #f8fafc;
+            --bg-panel: #ffffff;
+            --bg-hover: #f1f5f9;
+            --border-color: #e2e8f0;
+            --border-dark: #cbd5e1;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --radius-md: 14px;
+            --radius-sm: 8px;
+            --radius-lg: 16px;
+            --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+            --shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-app);
+            color: var(--text-main);
+            overflow: hidden;
+        }
+
+        /* --- LEFT PANEL: EDITOR --- */
+        .editor {
+            flex: 0 0 520px;
+            min-width: 360px;
+            max-width: 860px;
+            background: linear-gradient(180deg, #ffffff 0%, #f9fafb 40%, #f3f4f6 100%);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            z-index: 20;
+            box-shadow: 2px 0 18px rgba(15, 23, 42, 0.10);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.15s ease-out;
+        }
+
+        .editor-header {
+            padding: 20px 24px 16px;
+            background: radial-gradient(circle at top left, #f9fafb 0, #ffffff 55%, #eef2ff 120%);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 10;
+        }
+
+        .brand-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .app-logo {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.3px;
+        }
+
+        .app-logo svg {
+            width: 28px;
+            height: 28px;
+            color: var(--primary);
+        }
+
+        .beta-badge {
+            font-size: 10px;
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid #bfdbfe;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        /* Toolbar Actions */
+        .action-bar {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+            margin-bottom: 12px;
+        }
+
+        .action-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .btn-icon {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .btn-icon:hover {
+            background: var(--bg-panel);
+            border-color: var(--border-dark);
+            color: var(--text-main);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-icon:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: 1px solid var(--primary);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-magic {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-magic:hover {
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Progress Bar */
+        .progress-track {
+            height: 5px;
+            background: #e5e7eb;
+            border-radius: 999px;
+            margin-top: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, #06b6d4 100%);
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border-radius: 3px;
+        }
+
+        /* Editor Content Area */
+        .editor-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            scroll-behavior: smooth;
+            background: var(--bg-app);
+        }
+
+        .editor-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .editor-content::-webkit-scrollbar-thumb {
+            background: var(--border-dark);
+            border-radius: 3px;
+        }
+
+        .editor-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        /* Accordion Cards */
+        details {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-xs);
+            overflow: hidden;
+        }
+
+        details:hover {
+            border-color: var(--border-dark);
+            box-shadow: var(--shadow-sm);
+        }
+
+        details[open] {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
+        }
+
+        summary {
+            padding: 14px 18px;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-main);
+            cursor: pointer;
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+            transition: background 0.2s;
+            letter-spacing: 0.3px;
+        }
+
+        summary:hover {
+            background: var(--bg-hover);
+        }
+
+        details[open] summary {
+            background: var(--primary-light);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        summary::after {
+            content: '';
+            width: 16px;
+            height: 16px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233b82f6' stroke-width='2.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            transition: transform 0.2s;
+            opacity: 0.6;
+        }
+
+        details[open] summary::after {
+            transform: rotate(180deg);
+        }
+
+        .section-body {
+            padding: 18px;
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border-color);
+            animation: slideIn 0.2s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 14px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-panel);
+            color: var(--text-main);
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-light);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        /* Chips / Quick Fill */
+        .chip-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .chip {
+            background: var(--bg-hover);
+            color: var(--text-muted);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            border: 1px solid transparent;
+        }
+
+        .chip:hover {
+            background: var(--border-color);
+            color: var(--text-main);
+        }
+
+        .chip.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .btn-mini {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            padding: 4px 8px;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 999px;
+            border: 1px solid var(--border-color);
+            background: #f9fafb;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.15s ease-out;
+            white-space: nowrap;
+        }
+
+        .btn-mini svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        .btn-mini:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            color: var(--primary);
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+        }
+
+        .btn-mini:active {
+            transform: scale(0.97);
+        }
+
+        /* List Items (Education/Experience) */
+        .list-item {
+            background: var(--bg-hover);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px;
+            margin-bottom: 10px;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .list-item:hover {
+            border-color: var(--border-dark);
+            background: var(--bg-panel);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .item-actions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 4px;
+        }
+
+        .action-btn {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--text-light);
+            font-size: 14px;
+            transition: all 0.2s;
+            background: transparent;
+            border: none;
+        }
+
+        .action-btn:hover {
+            background: var(--border-color);
+            color: var(--text-muted);
+        }
+
+        .action-btn.delete:hover {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .btn-dashed {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px dashed var(--border-dark);
+            background: transparent;
+            color: var(--text-muted);
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .btn-dashed:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        /* Character Counter */
+        .char-counter {
+            font-size: 10px;
+            color: var(--text-light);
+            text-align: right;
+            margin-top: 4px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .char-counter.limit {
+            color: #f59e0b;
+        }
+
+        .char-counter.over {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        /* Column Resize Handle */
+        .resize-handle {
+            width: 6px;
+            cursor: col-resize;
+            background: linear-gradient(to bottom, #e5e7eb, #cbd5e1);
+            box-shadow: 1px 0 0 rgba(148, 163, 184, 0.9), -1px 0 0 rgba(148, 163, 184, 0.4);
+            flex: 0 0 6px;
+            position: relative;
+            z-index: 25;
+        }
+
+        .resize-handle::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 2px;
+            height: 44px;
+            border-radius: 999px;
+            background: linear-gradient(to bottom, #9ca3af, #6b7280);
+            transform: translate(-50%, -50%);
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .resize-handle {
+                display: none;
+            }
+        }
+
+        /* History Strip */
+        .history-strip {
+            margin-top: 14px;
+            padding: 8px 0 4px;
+        }
+
+        .history-header {
+            font-size: 10px;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .history-list {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: thin;
+        }
+
+        .history-list::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 999px;
+        }
+
+        .history-card {
+            border: 1px solid var(--border-color);
+            border-radius: 999px;
+            padding: 6px 10px 6px 12px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+            font-size: 11px;
+            display: inline-flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            min-width: 140px;
+            cursor: pointer;
+            transition: all 0.16s ease-out;
+            text-align: left;
+            position: relative;
+        }
+
+        .history-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.12);
+            transform: translateY(-1px);
+        }
+
+        .history-title {
+            font-weight: 600;
+            color: var(--text-main);
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        .history-meta {
+            font-size: 10px;
+            color: var(--text-light);
+            margin-top: 2px;
+        }
+
+        .history-main {
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .history-delete {
+            border: none;
+            background: transparent;
+            color: var(--text-light);
+            font-size: 12px;
+            width: 20px;
+            height: 20px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: background 0.15s ease, color 0.15s ease, transform 0.05s ease;
+        }
+
+        .history-delete:hover {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .history-delete:active {
+            transform: scale(0.92);
+        }
+
+        .history-empty {
+            font-size: 11px;
+            color: var(--text-light);
+            padding: 6px 0;
+        }
+
+        /* --- RIGHT PANEL: PREVIEW --- */
+        .preview {
+            flex: 1;
+            background: radial-gradient(circle at top, #f3f4f6 0, #e5e7eb 40%, #d1d5db 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 32px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Floating Pill Template Selector */
+        .template-floater {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 8px 8px 8px 18px;
+            border-radius: 99px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            max-width: 90%;
+        }
+
+        .template-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .template-select {
+            border: none;
+            background: transparent;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            cursor: pointer;
+            padding-right: 4px;
+        }
+
+        .template-select:hover {
+            color: var(--primary);
+        }
+
+        .preview-wrapper {
+            width: 100%;
+            max-width: 880px;
+            position: relative;
+            aspect-ratio: 1 / 1.414;
+            background: radial-gradient(circle at top, #f9fafb 0, #f3f4f6 45%, #e5e7eb 100%);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.35);
+            border-radius: 18px;
+            padding: 16px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(2px);
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Mobile Nav */
+        .mobile-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: var(--bg-panel);
+            border-top: 1px solid var(--border-color);
+            z-index: 100;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .nav-tab {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-light);
+            font-size: 10px;
+            font-weight: 600;
+            gap: 4px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .nav-tab.active {
+            color: var(--primary);
+        }
+
+        .nav-tab svg {
+            width: 20px;
+            height: 20px;
+            stroke-width: 2;
+        }
+
+        /* Toast */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: var(--text-main);
+            color: white;
+            padding: 11px 22px;
+            border-radius: 99px;
+            font-size: 13px;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        #toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* --- CV REVIEWER --- */
+        .reviewer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: none;
+            overflow-y: auto;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .reviewer-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .reviewer-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-app);
+            min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .reviewer-header-bar {
+            padding: 16px 24px;
+            background: white;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .reviewer-body {
+            padding: 32px 24px;
+            flex: 1;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .hero-section h2 {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary) 0%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-section p {
+            color: var(--text-muted);
+            font-size: 16px;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        .upload-section {
+            max-width: 480px;
+            margin: 0 auto;
+        }
+
+        .drop-area {
+            border: 2px dashed var(--border-dark);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            background: white;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .drop-area:hover,
+        .drop-area.dragover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .icon-cloud {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .drop-area p {
+            margin: 8px 0;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .drop-area .sub-text {
+            font-size: 13px;
+            color: var(--text-light);
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+
+        .preview-area {
+            text-align: center;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .preview-thumb {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            background: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .preview-thumb canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .file-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .preview-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        /* Results */
+        .score-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 24px;
+        }
+
+        .score-chart {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .score-bg {
+            fill: none;
+            stroke: #e2e8f0;
+            stroke-width: 2.5;
+        }
+
+        .score-progress {
+            fill: none;
+            stroke: var(--primary);
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            transition: stroke-dasharray 1s ease;
+        }
+
+        .score-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .score-notes {
+            text-align: center;
+            margin-bottom: 32px;
+            background: white;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-muted);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 16px;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Review Cards */
+        .review-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .review-card .section-header {
+            padding: 16px 20px;
+            background: #f8fafc;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .review-card .section-header:hover {
+            background: #f1f5f9;
+        }
+
+        .review-card .toggle-icon {
+            transition: transform 0.2s;
+            font-size: 12px;
+            opacity: 0.5;
+        }
+
+        .review-card .content-area {
+            padding: 20px;
+            display: none;
+            border-top: 1px solid var(--border-color);
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-main);
+        }
+
+        .review-card.collapsed .content-area {
+            display: block;
+        }
+
+        .review-card:not(.collapsed) .content-area {
+            display: none;
+        }
+
+        .review-card.open .content-area {
+            display: block;
+        }
+
+        .review-card.open .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        /* Utility Classes for content */
+        .highlight-good {
+            color: var(--success);
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .highlight-issue {
+            color: var(--danger);
+            font-weight: bold;
+            margin-right: 6px;
+        }
+
+        .severity-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-left: 8px;
+        }
+
+        .severity-critical {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .severity-high {
+            background: #ffedd5;
+            color: #9a3412;
+        }
+
+        .severity-moderate {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .severity-low {
+            background: #f0fdf4;
+            color: #065f46;
+        }
+
+        .feedback-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 16px 0 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .feedback-bullet {
+            margin-bottom: 8px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .feedback-bullet::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .feedback-numbered {
+            margin-bottom: 8px;
+            padding-left: 0;
+        }
+
+        .reviewer-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        /* Leaderboard/History */
+        .history-item {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .history-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Tailwind Utilities needed */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-danger {
+            color: var(--danger);
+        }
+
+        .p-4 {
+            padding: 16px;
+        }
+
+        .mb-2 {
+            margin-bottom: 8px;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .text-sm {
+            font-size: 13px;
+        }
+
+        .text-xs {
+            font-size: 11px;
+        }
+
+        .bg-gray-200 {
+            background: #e2e8f0;
+        }
+
+        .rounded {
+            border-radius: 4px;
+        }
+
+        .px-1 {
+            padding-left: 4px;
+            padding-right: 4px;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .space-y-3>*+* {
+            margin-top: 12px;
+        }
+
+        .list-decimal {
+            list-style-type: decimal;
+        }
+
+        .list-inside {
+            list-style-position: inside;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* --- RESPONSIVE --- */
+        @media (max-width: 900px) {
+            .editor {
+                width: 440px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-nav {
+                display: flex;
+            }
+
+            .editor {
+                width: 100%;
+                height: calc(100% - 60px);
+                position: fixed;
+                top: 0;
+                left: 0;
+                border: none;
+            }
+
+            .preview {
+                width: 100%;
+                height: calc(100% - 60px);
+                position: fixed;
+                top: 0;
+                left: 0;
+                padding: 16px;
+                z-index: 15;
+            }
+
+            body.view-editor .preview {
+                transform: translateX(100%);
+                display: none;
+            }
+
+            body.view-preview .editor {
+                transform: translateX(-20%);
+                display: none;
+            }
+
+            body.view-preview .preview {
+                transform: translateX(0);
+                display: flex;
+            }
+
+            .template-floater {
+                width: 100%;
+                justify-content: space-between;
+                padding: 10px 16px;
+                border-radius: 10px;
+            }
+
+            .editor-content {
+                padding-bottom: 80px;
+            }
+
+            .action-bar {
+                gap: 5px;
+                padding-bottom: 6px;
+            }
+
+            .btn-icon {
+                font-size: 11px;
+                padding: 7px 10px;
+            }
+
+            #toast.show {
+                bottom: 80px;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
+        integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+
+<body class="view-editor">
+
+    <div id="toast">Changes saved</div>
+
+    <!-- LEFT PANEL -->
+    <div class="editor">
+        <div class="editor-header">
+            <div class="brand-row">
+                <div class="app-logo">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    CA CV Maker
+                    <span class="beta-badge">Beta</span>
+                </div>
+                <button class="btn-icon btn-magic" onclick="generateAI()" title="Auto-improve with AI">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
+                        </path>
+                    </svg>
+                    AI Enhance
+                </button>
+            </div>
+
+            <div class="action-bar">
+                <button class="btn-icon" onclick="startReviewFromPreview()"
+                    style="color: var(--primary); border-color: var(--primary-light); background: #f0f9ff;">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path
+                            d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                        </path>
+                    </svg>
+                    AI Review
+                </button>
+                <button class="btn-icon" onclick="printCV()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M6 9V2h12v7"></path>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    PDF
+                </button>
+                <button class="btn-icon" onclick="document.getElementById('file-upload').click()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21 15 16 10 5 21"></polyline>
+                    </svg>
+                    Import
+                </button>
+                <button class="btn-icon btn-primary" onclick="manualSave()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M5 5v14a1 1 0 0 0 1 1h12"></path>
+                        <path d="M5 5h11l3 3v12a1 1 0 0 1-1 1H6"></path>
+                        <path d="M9 9h6v4H9z"></path>
+                    </svg>
+                    Save
+                </button>
+                <button class="btn-icon" style="color: #ef4444; border-color: #fecaca; margin-left: auto;"
+                    onclick="resetData()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Reset
+                </button>
+            </div>
+
+            <input type="file" id="file-upload" accept="image/*,application/pdf" style="display:none"
+                onchange="handleImageUpload(this)">
+
+            <div class="progress-track" title="Completion">
+                <div class="progress-fill" id="progress-fill" style="width: 10%"></div>
+            </div>
+
+            <div class="history-strip" id="history-strip">
+                <div class="history-header">Your CV versions</div>
+                <div class="history-list" id="history-list">
+                    <div class="history-empty">Snapshots will appear here as you edit.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="editor-content">
+
+            <details open>
+                <summary>Personal Details</summary>
+                <div class="section-body">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" class="form-control" id="inp-name" placeholder="e.g. Padam Bhansali"
+                            oninput="updateCV()" spellcheck="false">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Info</label>
+                        <input type="text" class="form-control" id="inp-contact"
+                            placeholder="+91 98765 43210 | email@me.com | linkedin.com/in/user" oninput="updateCV()">
+                    </div>
+                </div>
+            </details>
+
+            <details>
+                <summary>Career Objective</summary>
+                <div class="section-body">
+                    <div class="form-group">
+                        <div
+                            style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                            <label style="margin-bottom:0;">Objective / Summary</label>
+                            <button type="button" class="btn-mini" onclick="aiRefineSummary()"
+                                title="Let AI polish this section">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M12 3l2.09 4.26L19 8l-3.5 3.4L16.18 17 12 14.8 7.82 17 9 11.4 5 8l4.91-.74L12 3z">
+                                    </path>
+                                </svg>
+                                AI refine
+                            </button>
+                        </div>
+                        <textarea class="form-control" id="inp-summary"
+                            placeholder="Brief summary of your professional goals..." oninput="updateCV()"
+                            maxlength="500"></textarea>
+                        <div class="char-counter" id="summary-counter">0/500</div>
+                    </div>
+                </div>
+            </details>
+
+            <details open>
+                <summary>
+                    <span>Education</span>
+                    <button class="chip" onclick="prefillCAEducation(event)"
+                        style="font-size:10px; padding:4px 8px;">Auto-fill CA Path</button>
+                </summary>
+                <div class="section-body">
+                    <div id="edu-container"></div>
+                    <button class="btn-dashed" onclick="addEducation()">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add Education
+                    </button>
+                </div>
+            </details>
+
+            <details open>
+                <summary>Experience / Articleship</summary>
+                <div class="section-body">
+                    <div id="exp-container"></div>
+                    <button class="btn-dashed" onclick="addExperience()">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add Experience
+                    </button>
+                </div>
+            </details>
+
+            <details>
+                <summary>Certifications</summary>
+                <div class="section-body">
+                    <div id="cert-container"></div>
+                    <button class="btn-dashed" onclick="addCertification()">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add Certification
+                    </button>
+                </div>
+            </details>
+
+            <details>
+                <summary>Achievements & Awards</summary>
+                <div class="section-body">
+                    <div id="ach-container"></div>
+                    <button class="btn-dashed" onclick="addListItem('achievements')">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add Achievement
+                    </button>
+                </div>
+            </details>
+
+            <details>
+                <summary>Leadership</summary>
+                <div class="section-body">
+                    <div id="lead-container"></div>
+                    <button class="btn-dashed" onclick="addListItem('leadership')">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add Leadership Role
+                    </button>
+                </div>
+            </details>
+
+            <details>
+                <summary>Interests & Hobbies</summary>
+                <div class="section-body">
+                    <div id="int-container"></div>
+                    <button class="btn-dashed" onclick="addListItem('interests')">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add Interest
+                    </button>
+                </div>
+            </details>
+
+            <details>
+                <summary>Skills</summary>
+                <div class="section-body">
+                    <div class="chip-container" id="skills-chips"></div>
+                    <div class="form-group">
+                        <div
+                            style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                            <label style="margin-bottom:0;">Skills Overview</label>
+                            <button type="button" class="btn-mini" onclick="aiRefineSkills()"
+                                title="Let AI refine your skills wording">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M12 3l2.09 4.26L19 8l-3.5 3.4L16.18 17 12 14.8 7.82 17 9 11.4 5 8l4.91-.74L12 3z">
+                                    </path>
+                                </svg>
+                                AI refine
+                            </button>
+                        </div>
+                        <textarea class="form-control" id="inp-skills" placeholder="List your key skills..."
+                            oninput="updateCV()" maxlength="300"></textarea>
+                        <div class="char-counter" id="skills-counter">0/300</div>
+                    </div>
+                </div>
+            </details>
+
+            <!-- Spacer for mobile nav -->
+            <div style="height: 40px;"></div>
+        </div>
+    </div>
+
+    <div class="resize-handle" id="resize-handle"></div>
+
+    <!-- RIGHT PANEL -->
+    <div class="preview">
+        <div class="template-floater">
+            <span class="template-label">Template</span>
+            <select id="template-select" class="template-select" onchange="changeTemplate()">
+                <option value="cv1.html">Modern Serif</option>
+                <option value="cv2.html">Classic Blue</option>
+                <option value="cv3.html">Grid Layout</option>
+                <option value="cv4.html">Professional</option>
+                <option value="cv5.html">Corporate</option>
+                <option value="cv6.html">Minimalist</option>
+                <option value="cv7.html">Compact</option>
+            </select>
+        </div>
+
+        <div class="preview-wrapper">
+            <iframe id="cv-frame" src="cv1.html"></iframe>
+            <div id="ai-spinner" class="loading-overlay">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOBILE NAV -->
+    <!-- REVIEWER PANEL -->
+    <div id="reviewer-overlay" class="reviewer-overlay">
+        <div class="reviewer-container">
+            <div class="reviewer-header-bar">
+                <div class="brand-row" style="margin:0">
+                    <div class="app-logo">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" style="color:var(--primary)">
+                            <path
+                                d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                            </path>
+                        </svg>
+                        AI CV Reviewer
+                    </div>
+                </div>
+                <button class="btn-icon" onclick="toggleReviewer(false)">Close</button>
+            </div>
+
+            <div class="reviewer-body">
+                <!-- HERO -->
+                <div id="heroSection" class="hero-section">
+                    <h2>Optimize your CV</h2>
+                    <p>Upload your resume PDF to get instant, AI-powered feedback on structure, keywords, and impact.
+                    </p>
+                </div>
+
+                <!-- UPLOAD -->
+                <div id="uploadSection" class="upload-section">
+                    <div id="dropArea" class="drop-area">
+                        <span class="icon-cloud">☁️</span>
+                        <p>Drag & drop your PDF here</p>
+                        <p class="sub-text">or click to browse</p>
+                        <button id="browseButton" class="btn-primary">Browse Files</button>
+                    </div>
+                    <input type="file" id="fileInput" hidden accept=".pdf">
+                </div>
+
+                <!-- PREVIEW -->
+                <div id="previewArea" class="preview-area" style="display:none;">
+                    <div id="previewThumbnail" class="preview-thumb"></div>
+                    <div class="file-info">
+                        <span id="fileName">filename.pdf</span>
+                        <span id="fileSize" class="text-muted">0 KB</span>
+                    </div>
+                    <div class="preview-actions">
+                        <button id="removeFileBtn" class="btn-icon"
+                            style="color:var(--danger); border-color:var(--border-color);">Remove</button>
+                        <button id="proceedToReviewBtn" class="btn-primary" disabled>Analyze CV</button>
+                    </div>
+                </div>
+
+                <!-- LOADING -->
+                <div id="loadingSection" class="loading-section" style="display:none; text-align:center; padding:40px;">
+                    <div class="spinner" style="margin:0 auto 20px;"></div>
+                    <p id="loadingProgressText" style="font-weight:600; color:var(--text-main);">Analyzing...</p>
+                </div>
+
+                <!-- RESULTS -->
+                <div id="resultsSection" class="results-section" style="display:none;">
+                    <!-- Score -->
+                    <div class="score-container">
+                        <svg class="score-chart" viewBox="0 0 36 36">
+                            <path class="score-bg"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831">
+                            </path>
+                            <path id="scoreProgress" class="score-progress" stroke-dasharray="0, 100"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831">
+                            </path>
+                        </svg>
+                        <div id="scoreText" class="score-value">0</div>
+                    </div>
+                    <div id="scoreJustification" class="score-notes"></div>
+
+                    <!-- Tabs -->
+                    <div class="tabs">
+                        <button class="tab-btn active" data-tab="analysis">Analysis</button>
+                        <button class="tab-btn" data-tab="history">History</button>
+                        <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
+                    </div>
+
+                    <!-- Analysis Tab -->
+                    <div id="tab-analysis" class="tab-content active">
+                        <div id="tipsSection">
+                            <!-- Dynamic Sections -->
+                            <div id="recruiterTipsSection" class="review-card">
+                                <div class="section-header">Recruiter Tips <span class="toggle-icon">▼</span></div>
+                                <div class="content-area"></div>
+                            </div>
+                            <div id="measurableResultsSection" class="review-card">
+                                <div class="section-header">Measurable Results <span class="toggle-icon">▼</span></div>
+                                <div class="content-area"></div>
+                            </div>
+                            <div id="phrasesSuggestionsSection" class="review-card">
+                                <div class="section-header">Phrase Suggestions <span class="toggle-icon">▼</span></div>
+                                <div class="content-area"></div>
+                            </div>
+                            <div id="hardSkillsSection" class="review-card">
+                                <div class="section-header">Hard Skills <span class="toggle-icon">▼</span></div>
+                                <div class="content-area"></div>
+                            </div>
+                            <div id="softSkillsSection" class="review-card">
+                                <div class="section-header">Soft Skills <span class="toggle-icon">▼</span></div>
+                                <div class="content-area"></div>
+                            </div>
+                            <div id="actionVerbsSection" class="review-card">
+                                <div class="section-header">Action Verbs <span class="toggle-icon">▼</span></div>
+                                <div class="content-area"></div>
+                            </div>
+                            <div id="grammarCheckSection" class="review-card">
+                                <div class="section-header">Grammar Check <span class="toggle-icon">▼</span></div>
+                                <div class="content-area"></div>
+                            </div>
+                            <div id="formattingSection" class="review-card">
+                                <div class="section-header">Formatting <span class="toggle-icon">▼</span></div>
+                                <div class="content-area"></div>
+                            </div>
+                            <div id="educationSection" class="review-card">
+                                <div class="section-header">Education <span class="toggle-icon">▼</span></div>
+                                <div class="content-area"></div>
+                            </div>
+                            <div id="articleshipSection" class="review-card">
+                                <div class="section-header">Articleship <span class="toggle-icon">▼</span></div>
+                                <div class="content-area"></div>
+                            </div>
+                            <div id="interviewQuestionsSection" class="review-card">
+                                <div class="section-header">Interview Prep <span class="toggle-icon">▼</span></div>
+                                <div class="content-area"></div>
+                            </div>
+                            <div id="finalRecommendationsSection" class="review-card">
+                                <div class="section-header">Final Verdict <span class="toggle-icon">▼</span></div>
+                                <div class="content-area"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- History Tab -->
+                    <div id="tab-history" class="tab-content">
+                        <div id="historyContent"></div>
+                        <div id="historyDetailContent" style="display:none; margin-top:20px;"></div>
+                    </div>
+
+                    <!-- Leaderboard Tab -->
+                    <div id="tab-leaderboard" class="tab-content">
+                        <div id="leaderboardContent"></div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="reviewer-footer">
+                        <button id="startOverBtn" class="btn-secondary">Analyze Another</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mobile-nav">
+        <div class="nav-tab active" onclick="switchTab('editor')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            <span>Edit</span>
+        </div>
+        <div class="nav-tab" onclick="switchTab('reviewer')" style="color:var(--primary);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path
+                    d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z">
+                </path>
+            </svg>
+            <span>Review</span>
+        </div>
+        <div class="nav-tab" onclick="switchTab('preview')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span>Preview</span>
+        </div>
+    </div>
+
+    <!-- REVIEWER LOGIC -->
+    <script type="module">
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+        // Note: pdfjsLib is loaded via dynamic import below
+
+        // Configuration
+        const SUPABASE_URL = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+
+        let supabase = null;
+        let userId = null;
+        let authUser = null;
+        let selectedFile = null;
+        let pdfImages = [];
+        let analysisResultText = null;
+
+        // UI Elements
+        const els = {};
+
+        function initReviewer() {
+            // Map Elements
+            ['heroSection', 'uploadSection', 'dropArea', 'fileInput', 'browseButton', 'previewArea', 'previewThumbnail',
+                'fileName', 'fileSize', 'removeFileBtn', 'proceedToReviewBtn', 'loadingSection', 'resultsSection',
+                'scoreText', 'scoreProgress', 'scoreJustification', 'tipsSection', 'historyContent', 'leaderboardContent',
+                'downloadReportBtn', 'startOverBtn'].forEach(id => els[id] = document.getElementById(id));
+
+            // Listeners
+            if (els.browseButton) els.browseButton.onclick = () => els.fileInput.click();
+            if (els.fileInput) els.fileInput.onchange = handleFileSelect;
+            if (els.dropArea) {
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(e => els.dropArea.addEventListener(e, preventDefaults, false));
+                ['dragenter', 'dragover'].forEach(e => els.dropArea.addEventListener(e, () => els.dropArea.classList.add('dragover'), false));
+                ['dragleave', 'drop'].forEach(e => els.dropArea.addEventListener(e, () => els.dropArea.classList.remove('dragover'), false));
+                els.dropArea.addEventListener('drop', handleDrop, false);
+            }
+            if (els.removeFileBtn) els.removeFileBtn.onclick = resetUpload;
+            if (els.proceedToReviewBtn) els.proceedToReviewBtn.onclick = analyzeCv;
+            if (els.startOverBtn) els.startOverBtn.onclick = resetToUploadStage;
+
+            // Tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    btn.classList.add('active');
+                    const tabId = btn.dataset.tab;
+                    document.getElementById('tab-' + tabId).classList.add('active');
+                    if (tabId === 'history') loadHistory();
+                    if (tabId === 'leaderboard') loadLeaderboard();
+                };
+            });
+
+            // Collapsible Sections
+            document.getElementById('tipsSection').addEventListener('click', (e) => {
+                const header = e.target.closest('.section-header');
+                if (header) {
+                    const card = header.closest('.review-card');
+                    card.classList.toggle('open');
+                }
+            });
+
+            setupUserId();
+            supabase = createClient(SUPABASE_URL, SUPABASE_KEY, { global: { headers: { 'x-msc-user-id': userId } } });
+        }
+
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        function handleDrop(e) { handleFile(e.dataTransfer.files[0]); }
+        function handleFileSelect(e) { handleFile(e.target.files[0]); }
+
+        function setupUserId() {
+            userId = localStorage.getItem('msc_cv_reviewer_uuid');
+            if (!userId) {
+                userId = crypto.randomUUID();
+                localStorage.setItem('msc_cv_reviewer_uuid', userId);
+            }
+        }
+
+        async function handleFile(file) {
+            if (!file || file.type !== 'application/pdf') return alert('Please upload a PDF.');
+            selectedFile = file;
+            els.fileName.innerText = file.name;
+            els.fileSize.innerText = (file.size / 1024).toFixed(1) + ' KB';
+
+            els.dropArea.parentElement.style.display = 'none'; // Hide upload section
+            els.previewArea.style.display = 'block';
+            els.previewThumbnail.innerHTML = '<div style="padding:20px; text-align:center;">Loading Preview...</div>';
+
+            try {
+                const pdfjsLib = await import('https://esm.sh/pdfjs-dist@4.8.69');
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://esm.sh/pdfjs-dist@4.8.69/build/pdf.worker.min.js';
+
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+                const page = await pdf.getPage(1);
+                const viewport = page.getViewport({ scale: 0.5 });
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                await page.render({ canvasContext: context, viewport }).promise;
+
+                els.previewThumbnail.innerHTML = '';
+                els.previewThumbnail.appendChild(canvas);
+
+                // Convert to images for API
+                pdfImages = [];
+                for (let i = 1; i <= Math.min(pdf.numPages, 3); i++) {
+                    const p = await pdf.getPage(i);
+                    const v = p.getViewport({ scale: 1.5 });
+                    const c = document.createElement('canvas');
+                    c.width = v.width; c.height = v.height;
+                    await p.render({ canvasContext: c.getContext('2d'), viewport: v }).promise;
+                    pdfImages.push(c.toDataURL('image/jpeg', 0.8).split(',')[1]);
+                }
+
+                els.proceedToReviewBtn.disabled = false;
+            } catch (e) {
+                alert('Error processing PDF: ' + e.message);
+                resetUpload();
+            }
+        }
+
+        function resetUpload() {
+            selectedFile = null;
+            pdfImages = [];
+            els.fileInput.value = '';
+            els.previewArea.style.display = 'none';
+            els.uploadSection.style.display = 'block';
+            els.proceedToReviewBtn.disabled = true;
+        }
+
+        function resetToUploadStage() {
+            resetUpload();
+            els.resultsSection.style.display = 'none';
+            els.heroSection.style.display = 'block';
+        }
+
+        async function analyzeCv() {
+            if (!pdfImages.length) return;
+            els.heroSection.style.display = 'none';
+            els.uploadSection.style.display = 'none';
+            els.previewArea.style.display = 'none';
+            els.loadingSection.style.display = 'block';
+
+            try {
+                const res = await fetch('https://cv-reviewer.bhansalimanan55.workers.dev/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-Domain': 'Finance', 'X-Specialization': 'Audit' },
+                    body: JSON.stringify({ images: pdfImages })
+                });
+
+                const data = await res.json();
+                if (!data.ok) throw new Error(data.error || 'Analysis failed');
+
+                analysisResultText = data.response;
+                processResults(analysisResultText);
+                saveReview(analysisResultText);
+
+                els.loadingSection.style.display = 'none';
+                els.resultsSection.style.display = 'block';
+            } catch (e) {
+                alert(e.message);
+                resetToUploadStage();
+            }
+        }
+
+        function processResults(text) {
+            const score = parseScore(text);
+            animateScore(score);
+
+            // Map sections
+            const sections = {
+                '<<<RECRUITER_TIPS>>>': 'recruiterTipsSection',
+                '<<<MEASURABLE_RESULTS>>>': 'measurableResultsSection',
+                '<<<PHRASES_SUGGESTIONS>>>': 'phrasesSuggestionsSection',
+                '<<<HARD_SKILLS>>>': 'hardSkillsSection',
+                '<<<SOFT_SKILLS>>>': 'softSkillsSection',
+                '<<<ACTION_VERBS>>>': 'actionVerbsSection',
+                '<<<GRAMMAR_CHECK>>>': 'grammarCheckSection',
+                '<<<FORMATTING_READABILITY>>>': 'formattingSection',
+                '<<<EDUCATION_QUALIFICATION>>>': 'educationSection',
+                '<<<ARTICLESHIP_EXPERIENCE>>>': 'articleshipSection',
+                '<<<INTERVIEW_QUESTIONS>>>': 'interviewQuestionsSection',
+                '<<<FINAL_RECOMMENDATIONS>>>': 'finalRecommendationsSection'
+            };
+
+            for (const [marker, id] of Object.entries(sections)) {
+                const endMarker = marker.replace('<<<', '<<<END_');
+                const content = extractSection(text, marker, endMarker);
+                const container = document.getElementById(id).querySelector('.content-area');
+                container.innerHTML = formatText(content);
+            }
+
+            // Notes
+            const just = extractSection(text, '<<<OVERALL_SCORE>>>', '<<<END_OVERALL_SCORE>>>');
+            const justMatch = just?.match(/Justification:\s*(.*)/is);
+            els.scoreJustification.innerHTML = formatText(justMatch ? justMatch[1] : 'Analysis complete.');
+        }
+
+        function extractSection(text, start, end) {
+            const s = text.indexOf(start);
+            if (s === -1) return null;
+            const e = text.indexOf(end, s);
+            return text.substring(s + start.length, e === -1 ? undefined : e).trim();
+        }
+
+        function parseScore(text) {
+            const m = text.match(/Score:\s*([\d.]+)\/100/i) || text.match(/Overall Score:\s*([\d.]+)/i);
+            return m ? parseFloat(m[1]) : 0;
+        }
+
+        function formatText(md) {
+            if (!md) return '<p class="text-muted italic">No specific feedback.</p>';
+            let html = md
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/`([^`]+)`/g, '<code class="bg-gray-200 px-1 rounded text-sm">$1</code>')
+                .replace(/\[GOOD\]/g, '<span class="highlight-good">✓</span>')
+                .replace(/\[ISSUE\]/g, '<span class="highlight-issue">✗</span>')
+                .replace(/\[ISSUE - SEVERITY: (.*?)\]/g, '<span class="highlight-issue">✗</span><span class="severity-badge severity-$1">$1</span>')
+                .replace(/([.!?])\s+(?=[A-Z])/g, '$1<br>• ') // Bulletize sentences
+                .replace(/(\n)/g, '<br>');
+            return html;
+        }
+
+        function animateScore(target) {
+            let current = 0;
+            const el = els.scoreText;
+            const bar = els.scoreProgress;
+            const step = () => {
+                current += (target - current) * 0.1;
+                if (Math.abs(target - current) < 0.5) current = target;
+                el.innerText = current.toFixed(0);
+                bar.setAttribute('stroke-dasharray', `${Math.min(current, 100)}, 100`);
+                if (current !== target) requestAnimationFrame(step);
+            };
+            step();
+        }
+
+        async function saveReview(text) {
+            const { error } = await supabase.from('msc_cv_ai_resume_reviews').insert([{
+                user_id: userId,
+                score: parseScore(text),
+                review_data: { review: text },
+                file_name: selectedFile.name
+            }]);
+            if (error) console.error(error);
+        }
+
+        async function loadHistory() {
+            els.historyContent.innerHTML = 'Loading...';
+            const { data } = await supabase.from('msc_cv_ai_resume_reviews').select('*').eq('user_id', userId).order('created_at', { ascending: false }).limit(10);
+            if (!data || !data.length) return els.historyContent.innerHTML = '<p class="text-muted">No history yet.</p>';
+
+            els.historyContent.innerHTML = data.map(i => `
+                <div class="history-item" onclick="showHistoryDetail('${i.id}')">
+                    <div style="display:flex; justify-content:space-between;">
+                        <strong>${i.file_name}</strong>
+                        <span style="color:var(--primary); font-weight:bold;">${i.score?.toFixed(0)}%</span>
+                    </div>
+                    <div class="text-muted text-sm">${new Date(i.created_at).toLocaleDateString()}</div>
+                </div>
+            `).join('');
+
+            // Hack to store data for detail view
+            window._historyData = data;
+        }
+
+        window.showHistoryDetail = (id) => {
+            const item = window._historyData.find(i => i.id == id);
+            const detail = document.getElementById('historyDetailContent');
+            detail.style.display = 'block';
+            detail.innerHTML = `<div class="review-card open"><div class="content-area" style="display:block">${formatText(item.review_data.review)}</div></div>`;
+        };
+
+        async function loadLeaderboard() {
+            els.leaderboardContent.innerHTML = 'Loading...';
+            const { data } = await supabase.from('msc_cv_ai_resume_reviews').select('score, file_name, created_at').order('score', { ascending: false }).limit(10);
+            if (!data) return;
+            els.leaderboardContent.innerHTML = data.map((i, idx) => `
+                <div class="history-item" style="cursor:default;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span>#${idx + 1} ${i.file_name.substring(0, 15)}...</span>
+                        <span style="color:var(--primary); font-weight:bold;">${i.score?.toFixed(0)}%</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize
+        initReviewer();
+
+        // Expose a function to start review from the current live preview
+        window.startReviewFromPreview = async function () {
+            try {
+                if (window.toggleReviewer) window.toggleReviewer(true);
+
+                // Check for html2canvas - fallback to global or bundle internal if needed
+                const h2c = window.html2canvas || (window.html2pdf && window.html2pdf.Worker.prototype.html2canvas);
+
+                if (!h2c) {
+                    alert('Review engine (html2canvas) not ready. Please refresh and try again.');
+                    return;
+                }
+
+                const frame = document.getElementById('cv-frame');
+                const doc = frame?.contentDocument || frame?.contentWindow?.document;
+                const node = doc?.getElementById('cv-page') || doc?.body;
+                if (!frame || !doc || !node) {
+                    alert('Unable to access the live CV preview.');
+                    return;
+                }
+
+                // Reset UI to loading state
+                if (els.heroSection) els.heroSection.style.display = 'none';
+                if (els.uploadSection) els.uploadSection.style.display = 'none';
+                if (els.previewArea) els.previewArea.style.display = 'none';
+                if (els.loadingSection) els.loadingSection.style.display = 'block';
+
+                // Capture the current CV preview as an image (same content as the PDF)
+                const canvas = await h2c(node, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    onclone: (clonedDoc) => {
+                        // Ensure styles are available in the clone for correct capture
+                        const styles = doc.querySelectorAll('style, link[rel="stylesheet"]');
+                        styles.forEach(s => clonedDoc.head.appendChild(s.cloneNode(true)));
+                    }
+                });
+
+                pdfImages = [canvas.toDataURL('image/jpeg', 0.85).split(',')[1]];
+
+                // Re-use the existing analysis pipeline
+                await analyzeCv();
+            } catch (e) {
+                console.error("Review capture error:", e);
+                alert('Failed to analyze current CV: ' + (e.message || 'Unknown error'));
+                if (els.loadingSection) els.loadingSection.style.display = 'none';
+                if (els.heroSection) els.heroSection.style.display = 'block';
+                if (els.uploadSection) els.uploadSection.style.display = 'block';
+            }
+        };
+    </script>
+
+    <!-- MAIN LOGIC -->
+    <script>
+        // Constants & Data
+        const CA_SKILLS = ["Statutory Audit", "Tax Audit", "Internal Audit", "GST", "TDS", "Ind AS", "Excel", "Tally", "SAP", "Bank Audit"];
+        const CA_DEGREES = ["CA Final", "CA Intermediate", "B.Com", "Class XII", "Class X"];
+        const AUDIT_VERBS = ["Executed", "Analyzed", "Prepared", "Reviewed", "Led", "Verified"];
+
+        let cvData = {
+            personal: { name: "", contact: "" },
+            summary: "",
+            education: [],
+            experience: [],
+            certifications: [],
+            achievements: [],
+            interests: [],
+            leadership: [],
+            skills: ""
+        };
+
+        const WORKER_URL = "https://cv-maker.bhansalimanan55.workers.dev";
+        const HISTORY_KEY = 'cv_maker_history_v1';
+        let history = [];
+
+        // Initialization
+        window.onload = () => {
+            const saved = localStorage.getItem('cv_maker_data');
+            if (saved) {
+                try { cvData = JSON.parse(saved); if (!cvData.certifications) cvData.certifications = []; }
+                catch (e) { console.error('Load failed', e); }
+            }
+            loadHistory();
+
+            renderEditor();
+            updateProgress();
+
+            const frame = document.getElementById('cv-frame');
+            if (frame) {
+                frame.onload = () => setTimeout(postToFrame, 150);
+            }
+
+            initResizeHandle();
+        };
+
+        // Tabs
+        function switchTab(tab) {
+            if (tab === 'reviewer') {
+                if (typeof window.startReviewFromPreview === 'function') {
+                    window.startReviewFromPreview();
+                } else {
+                    toggleReviewer(true);
+                }
+                return;
+            }
+            toggleReviewer(false);
+            document.body.className = 'view-' + tab;
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            // simple index check won't work with 3 items now, update manually
+            if (tab === 'editor') document.querySelectorAll('.nav-tab')[0].classList.add('active');
+            if (tab === 'preview') document.querySelectorAll('.nav-tab')[2].classList.add('active');
+
+            if (tab === 'preview') postToFrame();
+        }
+
+        function toggleReviewer(show) {
+            const overlay = document.getElementById('reviewer-overlay');
+            if (show) overlay.classList.add('active');
+            else overlay.classList.remove('active');
+        }
+
+        // Render Functions
+        function renderEditor() {
+            document.getElementById('inp-name').value = cvData.personal.name || '';
+            document.getElementById('inp-contact').value = cvData.personal.contact || '';
+            document.getElementById('inp-summary').value = cvData.summary || '';
+            document.getElementById('inp-skills').value = cvData.skills || '';
+
+            updateCharCounter('inp-summary', 'summary-counter', 500);
+            updateCharCounter('inp-skills', 'skills-counter', 300);
+
+            renderEduInputs();
+            renderExpInputs();
+            renderCertInputs();
+            renderListInputs('achievements', 'ach-container', 'Achievement');
+            renderListInputs('interests', 'int-container', 'Interest');
+            renderListInputs('leadership', 'lead-container', 'Leadership Role');
+            renderSkillChips();
+        }
+
+        function renderListInputs(key, containerId, placeholder) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = '';
+            (cvData[key] || []).forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                div.innerHTML = `
+                    <div class="item-actions">
+                        <div class="action-btn delete" onclick="removeListItem('${key}', ${index})">×</div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0">
+                        <textarea class="form-control" style="min-height:60px" oninput="updateListItem('${key}', ${index}, this.value)" placeholder="${placeholder}">${item || ''}</textarea>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function addListItem(key) {
+            if (!cvData[key]) cvData[key] = [];
+            cvData[key].push("");
+            renderListInputs(key, (key === 'achievements' ? 'ach-container' : key === 'interests' ? 'int-container' : 'lead-container'), key);
+        }
+
+        function removeListItem(key, index) {
+            cvData[key].splice(index, 1);
+            renderListInputs(key, (key === 'achievements' ? 'ach-container' : key === 'interests' ? 'int-container' : 'lead-container'), key);
+            postToFrame();
+        }
+
+        function updateListItem(key, index, value) {
+            cvData[key][index] = value;
+            postToFrame();
+        }
+
+        function renderSkillChips() {
+            const container = document.getElementById('skills-chips');
+            container.innerHTML = CA_SKILLS.map(s =>
+                `<span class="chip" onclick="addSkill('${s}')">+ ${s}</span>`
+            ).join('');
+        }
+
+        function renderEduInputs() {
+            const container = document.getElementById('edu-container');
+            container.innerHTML = '';
+            cvData.education.forEach((edu, index) => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                div.innerHTML = `
+                    <div class="item-actions">
+                        <div class="action-btn" onclick="moveEdu(${index}, -1)">▲</div>
+                        <div class="action-btn" onclick="moveEdu(${index}, 1)">▼</div>
+                        <div class="action-btn delete" onclick="removeEdu(${index})">×</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Degree / Exam</label>
+                        <div class="chip-container" style="margin-bottom:6px">
+                            ${CA_DEGREES.map(d => `<span class="chip" style="font-size:10px; padding:2px 8px;" onclick="updateEdu(${index}, 'degree', '${d}')">${d}</span>`).join('')}
+                        </div>
+                        <input class="form-control" value="${edu.degree || ''}" oninput="updateEdu(${index}, 'degree', this.value)" placeholder="e.g. CA Intermediate">
+                    </div>
+                    <div class="form-group">
+                        <label>Institute / Board</label>
+                        <input class="form-control" value="${edu.institute || ''}" oninput="updateEdu(${index}, 'institute', this.value)" placeholder="e.g. ICAI">
+                    </div>
+                    <div style="display:flex; gap:10px;">
+                        <div class="form-group" style="flex:1">
+                            <label>Year</label>
+                            <input class="form-control" value="${edu.year || ''}" oninput="updateEdu(${index}, 'year', this.value)" placeholder="2023">
+                        </div>
+                        <div class="form-group" style="flex:1">
+                            <label>Marks / Grade</label>
+                            <input class="form-control" value="${edu.marks || ''}" oninput="updateEdu(${index}, 'marks', this.value)" placeholder="65%">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom:0">
+                        <label>Remarks</label>
+                        <input class="form-control" value="${edu.remarks || ''}" oninput="updateEdu(${index}, 'remarks', this.value)" placeholder="Optional (e.g. AIR 50)">
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderExpInputs() {
+            const container = document.getElementById('exp-container');
+            container.innerHTML = '';
+            cvData.experience.forEach((exp, index) => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                div.innerHTML = `
+                    <div class="item-actions">
+                        <div class="action-btn" onclick="moveExp(${index}, -1)">▲</div>
+                        <div class="action-btn" onclick="moveExp(${index}, 1)">▼</div>
+                        <div class="action-btn delete" onclick="removeExp(${index})">×</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <input class="form-control" value="${exp.role || ''}" oninput="updateExp(${index}, 'role', this.value)" placeholder="e.g. Articled Assistant">
+                    </div>
+                    <div class="form-group">
+                        <label>Firm / Company</label>
+                        <input class="form-control" value="${exp.company || ''}" oninput="updateExp(${index}, 'company', this.value)" placeholder="e.g. ABC & Associates">
+                    </div>
+                    <div class="form-group">
+                        <label>Duration</label>
+                        <input class="form-control" value="${exp.dates || ''}" oninput="updateExp(${index}, 'dates', this.value)" placeholder="e.g. Jan 2023 - Present">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                            <label style="margin-bottom:0;">Key Responsibilities (Bullets)</label>
+                            <button type="button" class="btn-mini" onclick="aiRefineExperience(${index})" title="AI refine these bullets">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 3l2.09 4.26L19 8l-3.5 3.4L16.18 17 12 14.8 7.82 17 9 11.4 5 8l4.91-.74L12 3z"></path>
+                                </svg>
+                                AI refine
+                            </button>
+                        </div>
+                        <div class="chip-container" style="margin-bottom:6px">
+                            ${AUDIT_VERBS.map(v => `<span class="chip" style="font-size:10px; padding:2px 8px;" onclick="appendBullet(${index}, '${v} ')">${v}</span>`).join('')}
+                        </div>
+                        <textarea id="exp-bullets-${index}" class="form-control" oninput="updateExp(${index}, 'bullets', this.value)" placeholder="One bullet per line">${(exp.bullets || []).join('\n')}</textarea>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function renderCertInputs() {
+            const container = document.getElementById('cert-container');
+            container.innerHTML = '';
+            (cvData.certifications || []).forEach((cert, index) => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                div.innerHTML = `
+                    <div class="item-actions">
+                        <div class="action-btn delete" onclick="removeCert(${index})">×</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Certification Name</label>
+                        <input class="form-control" value="${cert.name || ''}" oninput="updateCert(${index}, 'name', this.value)" placeholder="Course Name">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0">
+                        <label>Issuer / Date</label>
+                        <input class="form-control" value="${cert.issuer || ''}" oninput="updateCert(${index}, 'issuer', this.value)" placeholder="Organization">
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Data Updates
+        function updateCV() {
+            cvData.personal.name = document.getElementById('inp-name').value;
+            cvData.personal.contact = document.getElementById('inp-contact').value;
+            cvData.summary = document.getElementById('inp-summary').value;
+            cvData.skills = document.getElementById('inp-skills').value;
+
+            updateCharCounter('inp-summary', 'summary-counter', 500);
+            updateCharCounter('inp-skills', 'skills-counter', 300);
+
+            postToFrame();
+            updateProgress();
+        }
+
+        function updateEdu(index, field, value) {
+            cvData.education[index][field] = value;
+            postToFrame();
+            if (document.activeElement.tagName !== 'INPUT') renderEduInputs(); // Re-render only if clicked chip
+        }
+
+        function updateExp(index, field, value) {
+            if (field === 'bullets') {
+                cvData.experience[index].bullets = value.split('\n').filter(line => line.trim() !== '');
+            } else {
+                cvData.experience[index][field] = value;
+            }
+            postToFrame();
+        }
+
+        function appendBullet(index, text) {
+            const ta = document.getElementById('exp-bullets-' + index);
+            if (ta) {
+                const current = ta.value;
+                ta.value = current + (current.length && !current.endsWith('\n') ? '\n' : '') + text;
+                updateExp(index, 'bullets', ta.value);
+            }
+        }
+
+        function updateCert(index, field, value) {
+            cvData.certifications[index][field] = value;
+            postToFrame();
+        }
+
+        function addSkill(skill) {
+            const field = document.getElementById('inp-skills');
+            if (field.value.includes(skill)) return showToast("Already added");
+            field.value = field.value ? field.value + ", " + skill : skill;
+            updateCV();
+        }
+
+        // List Management
+        function addEducation() {
+            cvData.education.push({ degree: "", institute: "", year: "", marks: "" });
+            renderEduInputs();
+        }
+        function removeEdu(i) {
+            if (confirm("Delete entry?")) { cvData.education.splice(i, 1); renderEduInputs(); postToFrame(); }
+        }
+        function moveEdu(i, dir) {
+            if (i + dir < 0 || i + dir >= cvData.education.length) return;
+            [cvData.education[i], cvData.education[i + dir]] = [cvData.education[i + dir], cvData.education[i]];
+            renderEduInputs(); postToFrame();
+        }
+
+        function addExperience() {
+            cvData.experience.push({ role: "", company: "", dates: "", bullets: [] });
+            renderExpInputs();
+        }
+        function removeExp(i) {
+            if (confirm("Delete entry?")) { cvData.experience.splice(i, 1); renderExpInputs(); postToFrame(); }
+        }
+        function moveExp(i, dir) {
+            if (i + dir < 0 || i + dir >= cvData.experience.length) return;
+            [cvData.experience[i], cvData.experience[i + dir]] = [cvData.experience[i + dir], cvData.experience[i]];
+            renderExpInputs(); postToFrame();
+        }
+
+        function addCertification() {
+            cvData.certifications.push({ name: "", issuer: "" });
+            renderCertInputs();
+        }
+        function removeCert(i) {
+            if (confirm("Delete?")) { cvData.certifications.splice(i, 1); renderCertInputs(); postToFrame(); }
+        }
+
+        function prefillCAEducation(e) {
+            e.stopPropagation();
+            if (confirm("Replace current education with CA path?")) {
+                cvData.education = [
+                    { degree: "CA Final", institute: "ICAI", year: "", marks: "", remarks: "" },
+                    { degree: "CA Intermediate", institute: "ICAI", year: "", marks: "", remarks: "Both Groups" },
+                    { degree: "B.Com", institute: "", year: "", marks: "", remarks: "" },
+                    { degree: "Class XII", institute: "CBSE", year: "", marks: "", remarks: "" }
+                ];
+                renderEduInputs(); updateCV();
+            }
+        }
+
+        // Core Utilities
+        /**
+         * Converts plain text contact info into versatile HTML links
+         * Handles emails, LinkedIn/GitHub/naked domains, and phone numbers with '+'
+         */
+        function autoLink(text) {
+            if (!text) return '';
+            // Escape HTML but allow our generated tags later
+            let escaped = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+            // 1. URLs (including naked professional domains like linkedin.com/in/...)
+            // Matches http, https, www, or specific professional domains
+            const urlRegex = /\b((?:https?:\/\/|www\.)[^\s<>]+|(?:\w+\.)?(?:linkedin\.com|github\.com|twitter\.com|x\.com|behance\.net|dribbble\.com|medium\.com|portfolio\.me|bit\.ly)[^\s<>]*)\b/gi;
+            escaped = escaped.replace(urlRegex, (m) => {
+                let href = m;
+                if (!/^https?:\/\//i.test(m)) {
+                    href = 'https://' + (m.startsWith('www.') ? m : m);
+                }
+                return `<a href="${href}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:inherit; border-bottom:1px solid currentColor; opacity:0.9;">${m}</a>`;
+            });
+
+            // 2. Emails
+            const emailRegex = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi;
+            escaped = escaped.replace(emailRegex, (m) => `<a href="mailto:${m}" style="text-decoration:none; color:inherit; border-bottom:1px solid currentColor; opacity:0.9;">${m}</a>`);
+
+            // 3. Phone numbers (Handles + prefix, spaces, dashes, parentheses)
+            // Simplified to look for international or standard domestic patterns
+            const phoneRegex = /(?:\+|00)?(?:\d[ \-\(\)\.]{0,2}){8,}\d/g;
+            escaped = escaped.replace(phoneRegex, (m) => {
+                const clean = m.replace(/[^\d+]/g, '');
+                if (clean.length < 8 || clean.length > 16) return m; // Likely not a phone number if too short/long
+                return `<a href="tel:${clean}" style="text-decoration:none; color:inherit; border-bottom:1px solid currentColor; opacity:0.9;">${m}</a>`;
+            });
+
+            return escaped;
+        }
+
+        function postToFrame() {
+            const frame = document.getElementById('cv-frame');
+            if (frame && frame.contentWindow) {
+                try {
+                    const payload = JSON.parse(JSON.stringify(cvData));
+                    if (payload.personal && typeof payload.personal.contact === 'string') {
+                        payload.personal.contact = autoLink(payload.personal.contact);
+                    }
+                    frame.contentWindow.postMessage({ type: 'update-cv', payload }, '*');
+                } catch (e) {
+                    // Silently fail if frame is not ready or restricted
+                }
+            }
+        }
+
+        function changeTemplate() {
+            const select = document.getElementById('template-select');
+            const frame = document.getElementById('cv-frame');
+            document.querySelector('.loading-overlay').classList.add('active');
+            frame.src = select.value;
+            frame.onload = () => {
+                setTimeout(() => {
+                    postToFrame();
+                    document.querySelector('.loading-overlay').classList.remove('active');
+                }, 400);
+            };
+        }
+
+        function updateProgress() {
+            let filled = 0, total = 7;
+            if (cvData.personal.name) filled++;
+            if (cvData.personal.contact) filled++;
+            if (cvData.summary) filled++;
+            if (cvData.skills) filled++;
+            if (cvData.education.length) filled += 1.5;
+            if (cvData.experience.length) filled += 1.5;
+            document.getElementById('progress-fill').style.width = Math.min((filled / total) * 100, 100) + '%';
+        }
+
+        function updateCharCounter(fieldId, counterId, max) {
+            const len = document.getElementById(fieldId).value.length;
+            const el = document.getElementById(counterId);
+            el.innerText = `${len}/${max}`;
+            el.className = `char-counter ${len > max ? 'over' : (len > max * 0.9 ? 'limit' : '')}`;
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+
+        function saveLocal() { localStorage.setItem('cv_maker_data', JSON.stringify(cvData)); }
+
+        function manualSave() {
+            saveLocal();
+            createSnapshot('manual');
+            showToast('Saved');
+        }
+
+        function saveJSON() {
+            const blob = new Blob([JSON.stringify(cvData, null, 2)], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'cv_data.json';
+            a.click();
+            showToast("JSON Saved");
+        }
+
+        function loadJSON(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    cvData = JSON.parse(e.target.result);
+                    if (!cvData.certifications) cvData.certifications = [];
+                    renderEditor(); updateCV();
+                    showToast("Loaded successfully");
+                } catch (err) { alert("Invalid File"); }
+            };
+            reader.readAsText(file);
+            input.value = '';
+        }
+
+        function resetData() {
+            if (confirm("Clear all data?")) {
+                cvData = {
+                    personal: { name: "", contact: "" },
+                    summary: "",
+                    education: [],
+                    experience: [],
+                    certifications: [],
+                    achievements: [],
+                    leadership: [],
+                    interests: [],
+                    skills: ""
+                };
+                localStorage.removeItem('cv_maker_data');
+                renderEditor();
+                updateCV();
+                showToast('Form cleared. Saved versions preserved.');
+            }
+        }
+
+        function printCV() {
+            const frame = document.getElementById('cv-frame');
+            const doc = frame?.contentDocument || frame?.contentWindow?.document;
+            if (!frame || !doc) {
+                alert('Preview not ready yet. Please wait a moment and try again.');
+                return;
+            }
+            const element = doc.getElementById('cv-page') || doc.body;
+            if (!window.html2pdf || !element) {
+                alert('PDF generator library not ready. Please refresh.');
+                return;
+            }
+
+            const opt = {
+                margin: [0, 0, 0, 0],
+                filename: (cvData.personal?.name || 'cv').replace(/[^a-z0-9]/gi, '_') + '.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: {
+                    scale: 3,
+                    useCORS: true,
+                    logging: false,
+                    onclone: (clonedDoc) => {
+                        // CRITICAL: Copy all stylesheets from the original iframe document to the cloned document
+                        // html2pdf clones the target element into a new context; we must bridge the styles.
+                        const originalStyles = doc.querySelectorAll('style, link[rel="stylesheet"]');
+                        originalStyles.forEach(style => {
+                            clonedDoc.head.appendChild(style.cloneNode(true));
+                        });
+
+                        const node = clonedDoc.getElementById('cv-page') || clonedDoc.body;
+                        if (node) {
+                            node.style.transform = 'none';
+                            node.style.margin = '0';
+                            node.style.boxShadow = 'none';
+                            node.style.overflow = 'visible';
+                            node.style.display = 'block';
+                        }
+                    }
+                },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            window.html2pdf().from(element).set(opt).save();
+        }
+
+        // AI & Import Logic
+        async function refineSection(fieldType, text) {
+            const trimmed = (text || '').trim();
+            if (!trimmed) throw new Error('Nothing to refine');
+
+            const templateFile = document.getElementById('template-select')?.value || 'cv1.html';
+            const templateId = 'template_' + templateFile.replace('cv', '').replace('.html', '');
+
+            const response = await fetch(`${WORKER_URL}/refine-section`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: trimmed, field_type: fieldType, template_id: templateId })
+            });
+            const res = await response.json();
+            if (!res.ok || !res.refined_text) {
+                throw new Error(res.error || 'Refine failed');
+            }
+            return res.refined_text;
+        }
+
+        async function aiRefineSummary() {
+            try {
+                const overlay = document.querySelector('.loading-overlay');
+                overlay?.classList.add('active');
+                const refined = await refineSection('summary', cvData.summary);
+                cvData.summary = refined;
+                const field = document.getElementById('inp-summary');
+                if (field) field.value = refined;
+                updateCV();
+                showToast('Objective refined');
+            } catch (e) {
+                alert('AI refine failed: ' + e.message);
+            } finally {
+                const overlay = document.querySelector('.loading-overlay');
+                overlay?.classList.remove('active');
+            }
+        }
+
+        async function aiRefineSkills() {
+            try {
+                const overlay = document.querySelector('.loading-overlay');
+                overlay?.classList.add('active');
+                const refined = await refineSection('skills', cvData.skills);
+                cvData.skills = refined;
+                const field = document.getElementById('inp-skills');
+                if (field) field.value = refined;
+                updateCV();
+                showToast('Skills refined');
+            } catch (e) {
+                alert('AI refine failed: ' + e.message);
+            } finally {
+                const overlay = document.querySelector('.loading-overlay');
+                overlay?.classList.remove('active');
+            }
+        }
+
+        async function aiRefineExperience(index) {
+            try {
+                if (!cvData.experience || !cvData.experience[index]) throw new Error('Experience not found');
+                const bullets = cvData.experience[index].bullets || [];
+                const raw = bullets.join('\n');
+                const overlay = document.querySelector('.loading-overlay');
+                overlay?.classList.add('active');
+                const refined = await refineSection('bullets', raw);
+                const refinedLines = refined.split('\n').map(l => l.trim()).filter(Boolean);
+                cvData.experience[index].bullets = refinedLines;
+                renderExpInputs();
+                postToFrame();
+                showToast('Experience refined');
+            } catch (e) {
+                alert('AI refine failed: ' + e.message);
+            } finally {
+                const overlay = document.querySelector('.loading-overlay');
+                overlay?.classList.remove('active');
+            }
+        }
+
+        async function generateAI() {
+            if (!cvData.personal.name && !cvData.summary) return alert("Please fill basic info first.");
+
+            const overlay = document.querySelector('.loading-overlay');
+            overlay.classList.add('active');
+
+            const templateFile = document.getElementById('template-select').value;
+            const templateId = 'template_' + templateFile.replace('cv', '').replace('.html', '');
+
+            try {
+                const response = await fetch(`${WORKER_URL}/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_data: cvData, template_id: templateId })
+                });
+
+                const res = await response.json();
+                if (res.ok && res.data) {
+                    cvData = res.data;
+                    if (!cvData.certifications) cvData.certifications = [];
+                    renderEditor(); postToFrame(); showToast("AI Enhancement Applied!");
+                } else throw new Error(res.error || "Generation failed");
+            } catch (e) {
+                alert("Error: " + e.message);
+            } finally {
+                overlay.classList.remove('active');
+            }
+        }
+
+        async function handleImageUpload(input) {
+            if (!input.files[0]) return;
+            const overlay = document.querySelector('.loading-overlay');
+            overlay.classList.add('active');
+
+            try {
+                const file = input.files[0];
+                let images = [];
+
+                if (file.type === 'application/pdf') {
+                    const pdfjsLib = await import('https://esm.sh/pdfjs-dist@4.8.69');
+                    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://esm.sh/pdfjs-dist@4.8.69/build/pdf.worker.js';
+                    const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+
+                    // Limit to first 3 pages to avoid payload issues
+                    const maxPages = Math.min(pdf.numPages, 3);
+
+                    for (let i = 1; i <= maxPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const viewport = page.getViewport({ scale: 2 });
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.width = viewport.width;
+                        canvas.height = viewport.height;
+                        await page.render({ canvasContext: context, viewport }).promise;
+                        images.push(canvas.toDataURL('image/jpeg', 0.8).split(',')[1]);
+                    }
+                } else {
+                    const base64 = await new Promise((r) => {
+                        const reader = new FileReader();
+                        reader.onload = () => r(reader.result.split(',')[1]);
+                        reader.readAsDataURL(file);
+                    });
+                    images.push(base64);
+                }
+
+                const response = await fetch(`${WORKER_URL}/convert`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ images: images })
+                });
+
+                const res = await response.json();
+                if (res.ok && res.data) {
+                    // Merge new data with structure
+                    cvData = { ...cvData, ...res.data };
+                    // Ensure arrays
+                    ['education', 'experience', 'certifications', 'achievements', 'leadership', 'interests'].forEach(k => {
+                        if (!Array.isArray(cvData[k])) cvData[k] = [];
+                    });
+
+                    renderEditor();
+                    updateProgress();
+                    postToFrame();
+                    createSnapshot('import');
+                    showToast("CV Imported!");
+                } else throw new Error(res.error || "Unknown error");
+            } catch (e) {
+                console.error(e);
+                alert("Import failed: " + e.message);
+            } finally {
+                overlay.classList.remove('active');
+                input.value = '';
+            }
+        }
+
+        // ---- Snapshot History (Local Storage) ----
+        function loadHistory() {
+            try {
+                const raw = localStorage.getItem(HISTORY_KEY);
+                if (!raw) {
+                    history = [];
+                } else {
+                    history = JSON.parse(raw) || [];
+                }
+            } catch (e) {
+                console.error('Failed to load history', e);
+                history = [];
+            }
+            renderHistory();
+        }
+
+        function saveHistory() {
+            try {
+                localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+            } catch (e) {
+                console.error('Failed to save history', e);
+            }
+        }
+
+        function createSnapshot(source) {
+            const snapshot = {
+                id: Date.now(),
+                at: new Date().toISOString(),
+                source,
+                title: cvData.personal.name || 'Untitled CV',
+                data: JSON.parse(JSON.stringify(cvData))
+            };
+            history.unshift(snapshot);
+            if (history.length > 25) {
+                history = history.slice(0, 25);
+            }
+            saveHistory();
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            if (!list) return;
+
+            if (!history.length) {
+                list.innerHTML = '<div class="history-empty">Snapshots will appear here as you edit.</div>';
+                return;
+            }
+
+            list.innerHTML = history.map(s => {
+                const d = new Date(s.at);
+                const label = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) +
+                    ' · ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+                const safeTitle = (s.title || 'Untitled CV')
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;');
+                return `<div class="history-card" data-id="${s.id}" role="button" tabindex="0">
+                            <div class="history-main">
+                                <div class="history-title">${safeTitle}</div>
+                                <div class="history-meta">${label}</div>
+                            </div>
+                            <button type="button" class="history-delete" data-id="${s.id}" title="Delete this version">×</button>
+                        </div>`;
+            }).join('');
+        }
+
+        function deleteSnapshot(id) {
+            const before = history.length;
+            history = history.filter(h => h.id !== id);
+            if (history.length !== before) {
+                saveHistory();
+                renderHistory();
+                showToast('Snapshot deleted');
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            const deleteBtn = e.target.closest('.history-delete');
+            if (deleteBtn) {
+                const id = Number(deleteBtn.dataset.id);
+                if (!isNaN(id)) deleteSnapshot(id);
+                return;
+            }
+
+            const card = e.target.closest('.history-card');
+            if (!card) return;
+            const id = Number(card.dataset.id);
+            const snap = history.find(h => h.id === id);
+            if (!snap) return;
+
+            cvData = JSON.parse(JSON.stringify(snap.data));
+            if (!cvData.certifications) cvData.certifications = [];
+            renderEditor();
+            updateProgress();
+            postToFrame();
+            showToast('Snapshot loaded');
+        });
+
+        // ---- Resizable Columns ----
+        function initResizeHandle() {
+            const handle = document.getElementById('resize-handle');
+            const editor = document.querySelector('.editor');
+            if (!handle || !editor) return;
+
+            let startX = 0;
+            let startWidth = 0;
+            const minWidth = 360;
+            const maxWidth = 860;
+
+            const onMove = (event) => {
+                const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+                const dx = clientX - startX;
+                let newWidth = startWidth + dx;
+                if (newWidth < minWidth) newWidth = minWidth;
+                if (newWidth > maxWidth) newWidth = maxWidth;
+                editor.style.width = newWidth + 'px';
+                editor.style.flex = `0 0 ${newWidth}px`;
+                if (event.cancelable) event.preventDefault();
+            };
+
+            const stop = () => {
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('touchmove', onMove);
+                document.removeEventListener('mouseup', stop);
+                document.removeEventListener('touchend', stop);
+            };
+
+            const start = (event) => {
+                const clientX = event.touches ? event.touches[0].clientX : event.clientX;
+                startX = clientX;
+                startWidth = editor.getBoundingClientRect().width;
+                document.addEventListener('mousemove', onMove);
+                document.addEventListener('touchmove', onMove, { passive: false });
+                document.addEventListener('mouseup', stop);
+                document.addEventListener('touchend', stop);
+                if (event.cancelable) event.preventDefault();
+            };
+
+            handle.addEventListener('mousedown', start);
+            handle.addEventListener('touchstart', start, { passive: false });
+        }
+    </script>
+</body>
+
+</html>
