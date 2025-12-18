@@ -1,361 +1,2440 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Interview Coach by My Student Club</title>
-  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%2322d3ee' d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1.5 14.5L6 12l1.41-1.41L10.5 13.67l6.09-6.09L18 9l-7.5 7.5z'/%3E%3C/svg%3E">
+  <title>AI Video Interview - Professional Practice Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --primary: #22d3ee; --primary-dark: #0891b2; --secondary: #a855f7; --accent: #ec4899;
-      --success: #10b981; --warning: #f59e0b; --error: #ef4444; --bg-primary: #020617;
-      --bg-secondary: #0f172a; --bg-tertiary: #1e293b; --text-primary: #f8fafc;
-      --text-secondary: #cbd5e1; --text-muted: #94a3b8; --border-color: rgba(255, 255, 255, 0.1);
-      --border-radius: 16px; --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --primary: #4f46e5;
+      --primary-light: #6366f1;
+      --secondary: #6b7280;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --bg-primary: #030712;
+      --bg-secondary: #111827;
+      --bg-tertiary: #1f2937;
+      --text-primary: #f9fafb;
+      --text-secondary: #d1d5db;
+      --text-muted: #9ca3af;
+      --border: #374151;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+      --border-radius: 0.75rem;
+      --transition: all 0.2s ease-in-out;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Inter', sans-serif; background-color: var(--bg-primary); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; }
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: var(--bg-secondary); }
-    ::-webkit-scrollbar-thumb { background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 4px; }
-    #app-container { min-height: 100vh; display: flex; flex-direction: column; position: relative; }
-    .glass-card { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(20px); border: 1px solid var(--border-color); border-radius: var(--border-radius); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
-    .app-header { padding: 1rem 2rem; backdrop-filter: blur(20px); background: rgba(15, 23, 42, 0.5); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 100; }
-    .header-content { display: flex; align-items: center; justify-content: space-between; max-width: 1800px; margin: 0 auto; }
-    .logo { display: flex; align-items: center; gap: 1rem; }
-    .logo img { height: 40px; border-radius: 8px; }
-    .logo h1 { font-size: 1.2rem; font-weight: 600; color: var(--text-primary); }
-    .header-controls { display: flex; align-items: center; gap: 1rem; }
-    .main-content { flex: 1; padding: 2rem; max-width: 1800px; margin: 0 auto; width: 100%; }
-    .btn { padding: 0.75rem 1.5rem; border: none; border-radius: 10px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
-    .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; box-shadow: 0 4px 15px -2px rgba(34, 211, 238, 0.4); }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px -3px rgba(34, 211, 238, 0.5); }
-    .btn-secondary { background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border-color); }
-    #setup-screen { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 150px); animation: fadeIn 0.8s ease-out; }
-    .setup-card { max-width: 800px; width: 100%; padding: 3rem; text-align: center; }
-    .setup-title { font-size: 3rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;}
-    .setup-subtitle { font-size: 1.2rem; color: var(--text-muted); margin-bottom: 3rem; line-height: 1.6; max-width: 600px; margin-left: auto; margin-right: auto; }
-    .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2rem; text-align: left;}
-    .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-secondary); font-size: 0.9rem; }
-    .form-input { width: 100%; padding: 0.8rem 1rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-size: 1rem; transition: var(--transition); }
-    .form-input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.2); }
-    .form-group.full-width { grid-column: 1 / -1; }
-    .file-upload-area { border: 2px dashed var(--border-color); border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: var(--transition); }
-    .file-upload-area:hover, .file-upload-area.dragover { border-color: var(--primary); background: var(--bg-secondary); }
-    .file-info { margin-top: 1rem; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 8px; color: var(--success); }
-    .file-info.error { background: rgba(239, 68, 68, 0.1); color: var(--error); }
-    #interview-screen { display: flex; flex-direction: column; height: 100%; gap: 0; }
-    .chat-panel { flex-grow: 1; overflow: hidden; border-radius: 0; display: flex; flex-direction: column; }
-    .chat-messages { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
-    .message { display: flex; gap: 1rem; max-width: 90%; animation: messageSlide 0.5s ease-out; }
-    @keyframes messageSlide { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .message.user { align-self: flex-end; flex-direction: row-reverse; }
-    .message-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; align-self: flex-end; overflow: hidden; background: var(--bg-tertiary); padding: 4px; }
-    .message-content { padding: 1rem 1.25rem; border-radius: 18px; line-height: 1.6; }
-    .message.assistant .message-content { background: var(--bg-tertiary); border-bottom-left-radius: 6px; }
-    .message.user .message-content { background: linear-gradient(135deg, var(--primary), var(--secondary)); border-bottom-right-radius: 6px; }
-    .chat-input-container { padding: 1rem 1.5rem; }
-    .input-wrapper { display: flex; gap: 1rem; }
-    .chat-input { flex: 1; min-height: 52px; resize: none; padding: 0.8rem 4.5rem 0.8rem 1.5rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 26px; color: white; font-size: 1rem; }
-    .input-area { position: relative; flex: 1; }
-    .input-actions { position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); display: flex; gap: 0.5rem; }
-    .action-btn { background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: var(--transition); padding: 0.5rem; border-radius: 50%; }
-    .action-btn:hover { color: var(--primary); background: rgba(34, 211, 238, 0.1); }
-    .action-btn.recording { color: var(--error); animation: pulse 1s infinite; }
-    @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
-    .dashboard-panel { padding: 1rem; overflow-y: auto; }
-    #report-screen { padding: 2rem; max-width: 1200px; margin: 0 auto; animation: fadeIn 0.8s ease-out; }
-    .report-header { text-align: center; margin-bottom: 3rem; }
-    .report-title { font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .report-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 3rem; }
-    .report-card h3 { display: flex; align-items: center; gap: 0.75rem; font-size: 1.3rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--primary); }
-    .report-card ul { list-style-position: inside; }
-    .score-display { text-align: center; padding: 2rem 0; }
-    .score-value { font-size: 4rem; font-weight: 900; background: linear-gradient(135deg, var(--success), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-    .hidden { display: none !important; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-    @media (max-width: 1024px) {
-      .main-content { padding: 0; height: calc(100vh - 65px); }
-      #setup-screen, #report-screen { padding: 1rem; overflow-y: auto; height: 100%; }
-      .setup-card, .report-card { padding: 1.5rem; }
-      .setup-title { font-size: 2rem; }
-      .form-grid { grid-template-columns: 1fr; }
-      .report-grid { grid-template-columns: 1fr; }
-      .chat-messages { padding-bottom: 1rem; }
-      .chat-input-container { padding-bottom: 0.5rem; }
+    .hidden {
+      display: none !important;
     }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-primary);
+      background-image: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 119, 198, 0.3), transparent);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .setup-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .subtitles-overlay {
+      position: absolute;
+      left: 50%;
+      bottom: 76px;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, .65);
+      color: #fff;
+      padding: .6rem .9rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      line-height: 1.35;
+      max-width: 88%;
+      text-align: center;
+      z-index: 20;
+      pointer-events: none;
+      white-space: pre-wrap;
+    }
+
+
+    .setup-container::before {
+      display: none;
+    }
+
+    .setup-card {
+      background: rgba(17, 24, 39, 0.6);
+      backdrop-filter: blur(24px);
+      border: 1px solid transparent;
+      background-clip: padding-box;
+      border-image: linear-gradient(to bottom right, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05)) 1;
+      border-radius: 24px;
+      padding: 3rem;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      position: relative;
+      z-index: 2;
+    }
+
+    .setup-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .setup-logo {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+      box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
+    }
+
+    .setup-title {
+      font-size: 2.25rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.75rem;
+    }
+
+    .setup-subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      max-width: 450px;
+      margin: 0 auto;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-label {
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .form-input,
+    .form-select {
+      padding: 0.875rem 1rem;
+      background: rgba(17, 24, 39, 0.8);
+      border: 1px solid var(--border);
+      border-radius: var(--border-radius);
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .select-wrapper {
+      position: relative;
+      display: block;
+    }
+
+    .select-wrapper::after {
+      content: "▾";
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-secondary);
+      pointer-events: none;
+      font-size: 0.95rem;
+    }
+
+    .form-select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      color-scheme: dark;
+      width: 100%;
+      line-height: 1.2;
+      cursor: pointer;
+
+      background-color: var(--bg-secondary);
+      color: var(--text-primary);
+      border-color: var(--border);
+    }
+
+    .form-select:hover {
+      background-color: #0b1220;
+    }
+
+    .form-select:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      background-color: #0b1220;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+    }
+
+
+    .form-select option,
+    .form-select optgroup {
+      background-color: #0b1220 !important;
+      color: #f9fafb !important;
+    }
+
+    .form-select option:checked,
+    .form-select option:focus,
+    .form-select option:hover {
+      background-color: #1e40af !important;
+      color: #ffffff !important;
+    }
+
+
+    @media (-ms-high-contrast: active) {
+      .form-select {
+        border: 2px solid windowText;
+      }
+    }
+
+
+    .form-select::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    .form-select::-webkit-scrollbar-track {
+      background: #0b1220;
+    }
+
+    .form-select::-webkit-scrollbar-thumb {
+      background-color: #334155;
+      border-radius: 8px;
+      border: 3px solid #0b1220;
+    }
+
+
+    @-moz-document url-prefix() {
+
+      .form-select,
+      .form-select option,
+      .form-select optgroup {
+        background-color: #0b1220 !important;
+        color: #f9fafb !important;
+      }
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      background: var(--bg-secondary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: var(--border-radius);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background-image: linear-gradient(to right, #4f46e5 0%, #7c3aed 50%, #4f46e5 100%);
+      background-size: 200% auto;
+      color: white;
+      box-shadow: 0 4px 15px 0 rgba(79, 70, 229, 0.35);
+    }
+
+    .btn-primary:hover {
+      background-position: right center;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-primary);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(59, 130, 246, 0.2);
+      border-top: 3px solid var(--primary-light);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1.5rem;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-text {
+      color: var(--text-secondary);
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .loading-progress {
+      width: 200px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .loading-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+
+    .interview-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg-primary);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .interview-header {
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+    }
+
+    .interview-title {
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .interview-controls {
+      display: flex;
+      gap: 1rem;
+      margin-left: auto;
+    }
+
+    .control-btn {
+      width: 40px;
+      height: 40px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .control-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .control-btn.active {
+      background: var(--primary-light);
+    }
+
+    .control-btn.danger {
+      background: var(--error);
+    }
+
+    .interview-main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 1rem;
+      padding: 1rem;
+      overflow: hidden;
+      padding-bottom: 96px;
+    }
+
+    .main-video {
+      background: var(--bg-secondary);
+      border-radius: var(--border-radius);
+      position: relative;
+      overflow: hidden;
+      min-height: 400px;
+      border: 1px solid var(--border);
+    }
+
+    .avatar-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    .video-overlay {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      right: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      pointer-events: none;
+    }
+
+    .participant-info {
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .video-status {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success);
+    }
+
+    .status-indicator.muted {
+      background: var(--error);
+      box-shadow: 0 0 8px var(--error);
+    }
+
+    .sidebar {
+      width: 340px;
+      background: var(--bg-secondary);
+      border-radius: var(--border-radius);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .user-video {
+      height: 180px;
+      background: var(--bg-tertiary);
+      position: relative;
+      border-radius: var(--border-radius) var(--border-radius) 0 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .user-video video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .chat-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      max-height: 100%;
+      scrollbar-width: thin;
+    }
+
+    .message {
+      margin-bottom: 1rem;
+      max-width: 90%;
+    }
+
+    .message.ai {
+      align-self: flex-start;
+    }
+
+    .message.user {
+      align-self: flex-end;
+    }
+
+    .message-author {
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 0.35rem;
+      color: var(--text-secondary);
+    }
+
+    .message-content {
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      line-height: 1.5;
+      color: var(--text-primary);
+    }
+
+    .message.ai .message-content {
+      background: var(--bg-tertiary);
+      border-top-left-radius: 2px;
+    }
+
+    .message.user .message-content {
+      background: var(--primary);
+      color: white;
+      border-top-right-radius: 2px;
+    }
+
+    .chat-input-container {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 0.75rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 8px;
+      color: var(--text-primary);
+      resize: none;
+      min-height: 40px;
+      max-height: 100px;
+    }
+
+    .send-btn {
+      width: 40px;
+      height: 40px;
+      background: var(--primary-light);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+    }
+
+    .send-btn:hover {
+      background: var(--primary);
+    }
+
+
+    .push-to-talk-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .push-to-talk-btn {
+      width: 56px;
+      height: 56px;
+      border: 3px solid var(--primary-light);
+      border-radius: 50%;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      font-size: 1.3rem;
+      position: relative;
+    }
+
+    .push-to-talk-btn:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: var(--primary);
+    }
+
+    .push-to-talk-btn.recording {
+      background: var(--error);
+      border-color: var(--error);
+      color: white;
+      animation: pulse-recording 1.5s infinite;
+    }
+
+    @keyframes pulse-recording {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.05);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .push-to-talk-hint {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-left: 0.5rem;
+    }
+
+
+    .speech-status {
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      white-space: nowrap;
+      margin-bottom: 0.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .speech-status.visible {
+      opacity: 1;
+    }
+
+
+    .interview-footer {
+      background: rgba(0, 0, 0, 0.9);
+      backdrop-filter: blur(10px);
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .footer-controls {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .footer-btn {
+      width: 48px;
+      height: 48px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      font-size: 1.2rem;
+    }
+
+    .footer-btn.mic {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .footer-btn.mic.muted {
+      background: var(--error);
+      color: white;
+    }
+
+    .footer-btn.camera {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .footer-btn.camera.off {
+      background: var(--error);
+      color: white;
+    }
+
+    .footer-btn.end-call {
+      background: var(--error);
+      color: white;
+    }
+
+    .footer-btn.subtitles {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .footer-btn.subtitles.active {
+      background: var(--primary-light);
+      color: white;
+    }
+
+
     @media (max-width: 768px) {
-      .logo h1 { font-size: 1rem; }
-      .header-controls { display: none; }
-      .input-wrapper { flex-direction: column; gap: 0.5rem; align-items: flex-end; }
-      .input-area { width: 100%; }
+      .setup-card {
+        padding: 2rem;
+        margin: 1rem;
+      }
+
+      .setup-title {
+        font-size: 2rem;
+      }
+
+      .interview-main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto;
+        padding-bottom: 108px;
+      }
+
+      .main-video {
+        min-height: 260px;
+        height: 55vh;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        max-height: calc(45vh - 8px);
+        display: grid;
+        grid-template-columns: 180px 1fr;
+      }
+
+      .user-video {
+        width: 200px;
+        height: 100%;
+        border-radius: var(--border-radius) 0 0 var(--border-radius);
+        flex-shrink: 0;
+      }
+
+      .chat-section {
+        min-height: 140px;
+        overflow: hidden;
+      }
+
+      .chat-messages {
+        max-height: calc(45vh - 60px);
+        overflow-y: auto;
+      }
+
+      .subtitles-overlay {
+        bottom: 96px;
+        font-size: 0.9rem;
+        max-width: 92%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .sidebar {
+        grid-template-columns: 140px 1fr;
+      }
+
+      .main-video {
+        min-height: 240px;
+        height: 52vh;
+      }
+    }
+
+
+    .floating-ptt {
+      position: fixed;
+      right: 16px;
+      bottom: 88px;
+      z-index: 1100;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      pointer-events: none;
+    }
+
+    .floating-ptt .push-to-talk-container {
+      pointer-events: auto;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px 10px;
+      border-radius: 14px;
+      backdrop-filter: blur(8px);
+    }
+
+    @media (max-width: 768px) {
+      .floating-ptt {
+        bottom: 96px;
+        right: 12px;
+      }
+    }
+
+    /* hide self camera on mobile and simplify sidebar layout */
+    @media (max-width: 768px) {
+      .user-video {
+        display: none;
+      }
+
+      .sidebar {
+        width: 100%;
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Hide mobile chat UI by default (desktop), show only on mobile */
+    @media (min-width: 769px) {
+
+      #mobile-chat-fab,
+      #mobile-chat-sheet {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .mobile-chat-fab {
+        position: fixed;
+        right: 16px;
+        bottom: 156px;
+        background: #111827;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, .12);
+        padding: .6rem .9rem;
+        border-radius: 999px;
+        box-shadow: var(--shadow);
+        z-index: 1200;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .mobile-chat-sheet {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: -100%;
+        height: 70vh;
+        background: #0f172a;
+        border-top: 1px solid var(--border);
+        border-radius: 16px 16px 0 0;
+        display: flex;
+        flex-direction: column;
+        transition: transform .25s ease;
+        transform: translateY(100%);
+        z-index: 1300;
+      }
+
+      /* Ensure visibility on mobile */
+      #mobile-chat-fab {
+        display: inline-flex !important;
+        z-index: 2000;
+      }
+
+      #mobile-chat-sheet {
+        display: flex !important;
+        z-index: 2100;
+      }
     }
   </style>
+  <script type="importmap">
+    { 
+      "imports": { 
+        "three": "https://unpkg.com/three@0.149.0/build/three.module.js", 
+        "three/addons/": "https://unpkg.com/three@0.149.0/examples/jsm/",
+        "lipsync-en": "https://cdn.jsdelivr.net/gh/met4citizen/TalkingHead@1.2/modules/lipsync-en.mjs"
+      } 
+    }
+    </script>
 </head>
+
 <body>
-  <div id="app-container">
-    <header class="app-header">
-      <div class="header-content">
-        <div class="logo">
-          <img src="https://mystudentclub.com/assets/logo.png" alt="My Student Club Logo">
-          <h1>AI Interview Coach</h1>
+
+  <div id="setup-screen" class="setup-container">
+    <div class="setup-card fade-in">
+      <div class="setup-header">
+        <div class="setup-logo">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+            <path
+              d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+          </svg>
         </div>
-        <div class="header-controls">
-          <div id="interview-timer" class="hidden">00:00</div>
-          <button id="end-interview-btn" class="btn btn-secondary hidden">End Interview</button>
+        <h1 class="setup-title">AI Video Interview</h1>
+        <p class="setup-subtitle">Practice with our AI interviewer and get instant feedback on your performance</p>
+      </div>
+
+      <form id="setup-form" class="form-grid">
+        <div class="form-group">
+          <label class="form-label" for="specialization">Target Role</label>
+          <div class="select-wrapper">
+            <select id="specialization" class="form-select">
+              <optgroup label="CA & Accounting (Recommended)">
+                <option value="Chartered Accountant - Audit" selected>Chartered Accountant — Audit</option>
+                <option value="Chartered Accountant - Taxation">Chartered Accountant — Taxation</option>
+                <option value="Management Accountant (CMA)">Management Accountant (CMA)</option>
+                <option value="Financial Controller">Financial Controller</option>
+                <option value="Statutory Auditor">Statutory Auditor</option>
+                <option value="IFRS Specialist">IFRS Specialist</option>
+                <option value="GST/Indirect Tax Specialist">GST / Indirect Tax Specialist</option>
+                <option value="Direct Tax Consultant">Direct Tax Consultant</option>
+                <option value="Risk & Compliance (SOX/ICFR)">Risk & Compliance (SOX / ICFR)</option>
+                <option value="Treasury Analyst">Treasury Analyst</option>
+                <option value="Corporate Finance Associate">Corporate Finance Associate</option>
+                <option value="Forensic Accountant">Forensic Accountant</option>
+              </optgroup>
+              <optgroup label="Other Roles">
+                <option value="Finance Analyst">Finance Analyst</option>
+                <option value="Business Analyst">Business Analyst</option>
+                <option value="Product Manager">Product Manager</option>
+                <option value="Data Scientist">Data Scientist</option>
+                <option value="Software Engineer">Software Engineer</option>
+                <option value="UX Designer">UX Designer</option>
+                <option value="Marketing Manager">Marketing Manager</option>
+                <option value="Sales Representative">Sales Representative</option>
+              </optgroup>
+            </select>
+          </div>
         </div>
+
+        <div class="form-group">
+          <label class="form-label" for="experience-level">Experience Level</label>
+          <div class="select-wrapper">
+            <select id="experience-level" class="form-select">
+              <option value="Article/Intern">Article/Intern</option>
+              <option value="Entry Level" selected>Entry Level (0-2 years)</option>
+              <option value="Mid Level">Mid Level (3-5 years)</option>
+              <option value="Senior Level">Senior Level (6-10 years)</option>
+              <option value="Executive Level">Executive Level (10+ years)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="company-type">Company Type</label>
+          <div class="select-wrapper">
+            <select id="company-type" class="form-select">
+              <option value="Big 4 (Audit/Tax)">Big 4 (Audit/Tax)</option>
+              <option value="Mid-size CA Firm">Mid-size CA Firm</option>
+              <option value="Corporate (Industry)">Corporate (Industry)</option>
+              <option value="Consulting Firm">Consulting Firm</option>
+              <option value="Fortune 500">Fortune 500</option>
+              <option value="Tech Startup">Tech Startup</option>
+              <option value="Healthcare">Healthcare</option>
+              <option value="Government">Government</option>
+              <option value="Non-Profit">Non-Profit</option>
+              <option value="Investment Bank">Investment Bank</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="interview-duration">Interview Duration</label>
+          <div class="select-wrapper">
+            <select id="interview-duration" class="form-select">
+              <option value="15">15 minutes</option>
+              <option value="30" selected>30 minutes</option>
+              <option value="45">45 minutes</option>
+              <option value="60">60 minutes</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+          Start Interview
+        </button>
+      </form>
+    </div>
+  </div>
+
+
+  <div id="loading-screen" class="loading-screen hidden">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Preparing your interview...</div>
+    <div class="loading-progress">
+      <div class="loading-progress-bar" id="loading-progress-bar"></div>
+    </div>
+  </div>
+
+
+  <div id="permissions-modal" class="permissions-modal hidden">
+    <div class="permissions-content">
+      <h2 class="permissions-title">Camera & Microphone Access</h2>
+      <p class="permissions-text">
+        To provide the best interview experience, we need access to your camera and microphone.
+        This helps our AI interviewer analyze your verbal and non-verbal communication.
+      </p>
+      <div class="permissions-actions">
+        <button id="allow-permissions" class="btn btn-primary">Allow Access</button>
+        <button id="skip-permissions" class="btn"
+          style="background: var(--bg-tertiary); color: var(--text-primary);">Skip for now</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="interview-screen" class="interview-container hidden">
+    <header class="interview-header">
+      <div class="interview-title">
+        AI Video Interview - <span id="current-role">Software Engineer</span>
+        <span class="pills">
+          <span id="score-pill" class="pill success">Avg Score: —</span>
+          <span id="progress-pill" class="pill info">Progress: 0%</span>
+        </span>
+      </div>
+      <div class="interview-controls">
       </div>
     </header>
 
-    <main class="main-content">
-      <div id="setup-screen">
-        <div class="setup-card glass-card">
-          <h1 class="setup-title">Master Your Next Interview</h1>
-          <p class="setup-subtitle">Practice with our advanced AI, and get personalized, real-time feedback to land your dream job.</p>
-          <form class="form-grid">
-            <div class="form-group"><label for="specialization">Target Role</label><select id="specialization" class="form-input"><option value="Finance">Finance & Investment Banking</option><option value="Audit">Audit & Risk Management</option><option value="Technology">Software Engineering</option><option value="Consulting">Management Consulting</option><option value="Marketing">Marketing & Brand Management</option></select></div>
-            <div class="form-group"><label for="company-persona">Company Type</label><select id="company-persona" class="form-input"><option value="a top investment bank like Goldman Sachs">Investment Bank (Goldman Sachs)</option><option value="a fast-growing tech startup like Flipkart">Tech Unicorn (Flipkart, Stripe)</option><option value="a prestigious consulting firm like McKinsey">Big 3 Consulting (McKinsey, BCG)</option><option value="a large multinational like Unilever">Large Multinational (Unilever, P&G)</option></select></div>
-            <div class="form-group"><label for="interview-style">Interview Style</label><select id="interview-style" class="form-input"><option value="Standard">Standard (Mixed)</option><option value="Technical Deep-Dive">Technical Deep-Dive</option><option value="Behavioral">Behavioral (STAR Method)</option><option value="Stress Test">High-Pressure Stress Test</option></select></div>
-            <div class="form-group"><label for="difficulty-level">Difficulty Level</label><select id="difficulty-level" class="form-input"><option value="Beginner">Beginner (Intern/Graduate)</option><option value="Intermediate">Intermediate (2-5 years exp)</option><option value="Advanced">Advanced (Senior/Lead)</option></select></div>
-            <div class="form-group full-width"><label>Upload Resume (Optional, PDF/TXT)</label><div class="file-upload-area" id="file-upload-area"><input type="file" id="cv-upload" class="hidden" accept=".pdf,.txt"><p><strong>Click to upload</strong> or drag and drop</p></div><div id="file-info" class="file-info hidden"></div></div>
-          </form>
-          <button id="start-interview-btn" class="btn btn-primary">Start Interview</button>
-        </div>
-      </div>
-
-      <div id="interview-screen" class="hidden">
-        <div id="chat-panel" class="chat-panel glass-card">
-          <div class="chat-messages" id="chat-messages"></div>
-          <div class="chat-input-container">
-            <form id="message-form">
-              <div class="input-wrapper">
-                <div class="input-area"><textarea id="message-input" class="chat-input" placeholder="Type your response..." rows="1"></textarea><div class="input-actions"><button type="button" id="voice-btn" class="action-btn" title="Voice Input"><svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"/></svg></button><button type="button" id="hint-btn" class="action-btn" title="Get a hint"><svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="currentColor"><path d="M9 21c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-1H9v1zm3-19C8.14 2 5 5.14 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h4c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.86-3.14-7-7-7z"/></svg></button></div></div>
-                <button type="submit" id="send-btn" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
-              </div>
-            </form>
+    <main class="interview-main">
+      <div class="main-video">
+        <div id="avatar-container" class="avatar-container">
+          <div id="model-loading-overlay" class="model-loading-overlay">
+            <div class="loading-spinner"></div>
+            <div style="color: var(--text-secondary); margin-top: 1rem;">Loading AI Interviewer...</div>
           </div>
         </div>
+        <div class="video-overlay">
+          <div class="participant-info">
+            Alex Johnson - AI Interviewer
+          </div>
+          <div class="video-status">
+            <div class="status-indicator" id="ai-audio-status"></div>
+          </div>
+        </div>
+        <div id="subtitles-overlay" class="subtitles-overlay hidden"></div>
       </div>
-      <div id="report-screen" class="hidden"></div>
+
+      <aside class="sidebar">
+        <div class="user-video">
+          <video id="user-video" autoplay muted playsinline></video>
+          <div class="video-overlay" style="bottom: 0.5rem; left: 0.5rem; right: 0.5rem;">
+            <div class="participant-info" style="font-size: 0.8rem;">
+              You
+            </div>
+            <div class="video-status">
+              <div class="status-indicator" id="user-audio-status"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-section">
+          <div id="chat-messages" class="chat-messages"></div>
+        </div>
+      </aside>
     </main>
+
+    <footer class="interview-footer">
+      <div class="footer-controls">
+        <button id="subtitles-btn" class="footer-btn subtitles" title="Toggle Subtitles">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M19 4H5c-1.66 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.79-.73-1.68-1.36-2.66-1.85-.33-.16-.56-.51-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z" />
+          </svg>
+        </button>
+        <button id="end-call-btn" class="footer-btn end-call" title="End Interview">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path
+              d="M12 9c-1.66 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.79-.73-1.68-1.36-2.66-1.85-.33-.16-.56-.51-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z" />
+          </svg>
+        </button>
+      </div>
+    </footer>
+
+
+    <div class="floating-ptt" aria-live="polite">
+      <div class="push-to-talk-container">
+        <button id="push-to-talk-btn" class="push-to-talk-btn" title="Hold to speak" aria-label="Hold to speak">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path
+              d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z" />
+          </svg>
+        </button>
+        <div id="speech-status" class="speech-status" role="status" aria-live="polite"></div>
+        <span class="push-to-talk-hint">Hold to speak, release to send</span>
+      </div>
+    </div>
+
+    <div id="mobile-chat-fab" class="mobile-chat-fab" aria-label="Open chat">Chat</div>
+    <div id="mobile-chat-sheet" class="mobile-chat-sheet" aria-hidden="true">
+      <div class="sheet-header">
+        <span>Chat</span>
+        <button id="mobile-chat-close" class="sheet-close" aria-label="Close">×</button>
+      </div>
+      <div id="mobile-chat-messages" class="sheet-messages"></div>
+      <div class="sheet-input">
+        <input id="mobile-chat-input" type="text" placeholder="Type your message..." />
+        <button id="mobile-send-btn" class="btn btn-primary">Send</button>
+      </div>
+    </div>
   </div>
 
-  <script>
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
+  <script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+    import { LipsyncEn } from 'lipsync-en';
+
+    class TalkingHead {
+      constructor(node, opt = {}) {
+        this.nodeAvatar = node;
+        this.opt = { ttsEndpoint: null, lipsyncLang: 'en', cameraView: 'upper', ...opt };
+        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        const w = Math.max(this.nodeAvatar.clientWidth || 640, 640);
+        const h = Math.max(this.nodeAvatar.clientHeight || 360, 360);
+        this.renderer.setPixelRatio(window.devicePixelRatio);
+        this.renderer.setSize(w, h);
+        this.renderer.outputColorSpace = THREE.SRGBColorSpace;
+        this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        this.renderer.sortObjects = false;
+        this.nodeAvatar.appendChild(this.renderer.domElement);
+        this.camera = new THREE.PerspectiveCamera(25, w / h, 0.1, 100);
+        this.scene = new THREE.Scene();
+        this.scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
+        directionalLight.position.set(0.5, 1, 1).normalize();
+        this.scene.add(directionalLight);
+        this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+        this.controls.enableZoom = false;
+        this.controls.enablePan = false;
+        this.controls.target.set(0, 1.6, 0);
+        this.controls.enableDamping = true;
+        this.controls.dampingFactor = 0.05;
+        this.animClock = 0; this.animTimeLast = 0;
+        this.avatar = null; this.armature = null; this.morphs = []; this.mixer = null;
+        this.speechQueue = []; this.isSpeaking = false; this.isRunning = false; this.stateName = 'idle';
+        this.audioCtx = new AudioContext(); this.audioSpeechSource = null;
+        this.lipsync = {};
+        this.visemeNames = ['viseme_sil', 'viseme_PP', 'viseme_FF', 'viseme_TH', 'viseme_DD', 'viseme_kk', 'viseme_CH', 'viseme_SS', 'viseme_nn', 'viseme_RR', 'viseme_aa', 'viseme_E', 'viseme_I', 'viseme_O', 'viseme_U'];
+        this.poseTemplates = {
+          'side': {
+            standing: true,
+            props: {
+              'Hips.position': { x: 0, y: 1, z: 0 },
+              'Hips.rotation': { x: -0.003, y: -0.017, z: 0.1 },
+              'Spine.rotation': { x: -0.103, y: -0.002, z: -0.063 },
+              'Spine1.rotation': { x: 0.042, y: -0.02, z: -0.069 },
+              'Spine2.rotation': { x: 0.131, y: -0.012, z: -0.065 },
+              'Neck.rotation': { x: 0.027, y: 0.006, z: 0 },
+              'Head.rotation': { x: 0.077, y: -0.065, z: 0 },
+              'LeftShoulder.rotation': { x: 1.599, y: 0.084, z: -1.77 },
+              'LeftArm.rotation': { x: 1.364, y: 0.052, z: -0.044 },
+              'LeftForeArm.rotation': { x: 0.002, y: -0.007, z: 0.331 },
+              'LeftHand.rotation': { x: 0.104, y: -0.067, z: -0.174 },
+              'LeftUpLeg.rotation': { x: 0.096, y: 0.209, z: 2.983 },
+              'LeftLeg.rotation': { x: -0.053, y: 0.042, z: -0.017 },
+              'LeftFoot.rotation': { x: 1.091, y: 0.15, z: 0.026 },
+              'RightShoulder.rotation': { x: 1.541, y: 0.192, z: 1.775 },
+              'RightArm.rotation': { x: 1.273, y: -0.352, z: -0.067 },
+              'RightForeArm.rotation': { x: -0.011, y: -0.031, z: -0.357 },
+              'RightHand.rotation': { x: -0.008, y: 0.312, z: -0.028 },
+              'RightUpLeg.rotation': { x: -0.307, y: -0.219, z: 2.912 },
+              'RightLeg.rotation': { x: -0.359, y: 0.164, z: 0.015 },
+              'RightFoot.rotation': { x: 1.035, y: 0.11, z: 0.005 }
+            }
+          },
+          'straight': {
+            standing: true,
+            props: {
+              'Hips.position': { x: 0, y: 0.989, z: 0.001 },
+              'Hips.rotation': { x: 0.047, y: 0.007, z: -0.007 },
+              'Spine.rotation': { x: -0.143, y: -0.007, z: 0.005 },
+              'Spine1.rotation': { x: -0.043, y: -0.014, z: 0.012 },
+              'Spine2.rotation': { x: 0.072, y: -0.013, z: 0.013 },
+              'Neck.rotation': { x: 0.048, y: -0.003, z: 0.012 },
+              'Head.rotation': { x: 0.05, y: -0.02, z: -0.017 },
+              'LeftShoulder.rotation': { x: 1.62, y: -0.166, z: -1.605 },
+              'LeftArm.rotation': { x: 1.275, y: 0.544, z: -0.092 },
+              'LeftForeArm.rotation': { x: 0, y: 0, z: 0.302 },
+              'LeftHand.rotation': { x: -0.225, y: -0.154, z: 0.11 },
+              'RightShoulder.rotation': { x: 1.615, y: 0.064, z: 1.53 },
+              'RightArm.rotation': { x: 1.313, y: -0.424, z: 0.131 },
+              'RightForeArm.rotation': { x: 0, y: 0, z: -0.317 },
+              'RightHand.rotation': { x: -0.158, y: -0.639, z: -0.196 },
+              'LeftUpLeg.rotation': { x: -0.077, y: -0.058, z: 3.126 },
+              'LeftLeg.rotation': { x: -0.252, y: 0.001, z: -0.018 },
+              'LeftFoot.rotation': { x: 1.315, y: -0.064, z: 0.315 },
+              'RightUpLeg.rotation': { x: -0.083, y: -0.032, z: 3.124 },
+              'RightLeg.rotation': { x: -0.272, y: -0.003, z: 0.021 },
+              'RightFoot.rotation': { x: 1.342, y: 0.076, z: -0.222 }
+            }
+          }
+        };
+        this.animMoods = {
+          neutral: {
+            anims: [
+              {
+                name: 'breathing',
+                loop: -1,
+                delay: 1500,
+                dt: [1200, 500, 1000],
+                vs: { chestInhale: [0.5, 0.5, 0] }
+              },
+              {
+                name: 'pose',
+                loop: -1,
+                alt: [
+                  {
+                    p: 0.4,
+                    delay: [5000, 20000],
+                    dt: [2000],
+                    vs: { pose: ['side'] }
+                  },
+                  {
+                    delay: [5000, 20000],
+                    dt: [2000],
+                    vs: { pose: ['straight'] }
+                  }
+                ]
+              },
+              {
+                name: 'head',
+                loop: -1,
+                idle: {
+                  delay: [0, 1000],
+                  dt: [[200, 5000]],
+                  vs: {
+                    headRotateX: [[-0.04, 0.10]],
+                    headRotateY: [[-0.3, 0.3]],
+                    headRotateZ: [[-0.08, 0.08]]
+                  }
+                },
+                talking: {
+                  delay: [0, 1000],
+                  dt: [[0, 1000, 0]],
+                  vs: {
+                    headRotateX: [[-0.05, 0.15, 1, 2]],
+                    headRotateY: [[-0.1, 0.1]],
+                    headRotateZ: [[-0.1, 0.1]]
+                  }
+                }
+              },
+              {
+                name: 'eyes',
+                loop: -1,
+                delay: [200, 5000],
+                dt: [[100, 500], [100, 5000, 2]],
+                vs: {
+                  eyesRotateY: [[-0.6, 0.6]],
+                  eyesRotateX: [[-0.2, 0.6]]
+                }
+              },
+              {
+                name: 'blink',
+                loop: -1,
+                delay: [1000, 8000],
+                dt: [50, [100, 300], 100],
+                vs: {
+                  eyeBlinkLeft: [1, 1, 0],
+                  eyeBlinkRight: [1, 1, 0]
+                }
+              },
+              {
+                name: 'mouth',
+                loop: -1,
+                delay: [1000, 5000],
+                dt: [[100, 500], [100, 5000, 2]],
+                vs: {
+                  mouthRollLower: [[0, 0.3, 2]],
+                  mouthPucker: [[0, 0.3]]
+                }
+              }
+            ]
+          }
+        };
+
+        this.animEmojis = {
+          '😊': { name: 'smile', dt: [300, 1000], vs: { mouthSmile: [0.7], eyeSquintLeft: [0.8], eyeSquintRight: [0.8] } },
+          '😉': { name: 'wink', dt: [100, 200, 500], vs: { mouthSmile: [0.5, 0.5, 0], eyeBlinkRight: [1, 1, 0] } },
+          '😞': { name: 'sad', dt: [1000], vs: { browInnerUp: [0.7], mouthFrownLeft: [0.8], mouthFrownRight: [0.8] } },
+          '😡': { name: 'angry', dt: [500], vs: { browDownLeft: [1], browDownRight: [1], mouthFrownLeft: [1], mouthFrownRight: [1] } }
+        };
+
+        this.animQueue = [];
+        this.easing = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        this.poseBase = {}; this.poseTarget = {}; this.poseAvatar = {}; this.poseDelta = { props: {} };
+        this.poseWeightOnLeft = true;
+        this.randomized = ['mouthStretchLeft', 'mouthStretchRight', 'mouthRollLower', 'mouthRollUpper', 'browDownLeft', 'browDownRight', 'browOuterUpLeft', 'browOuterUpRight', 'cheekPuff', 'cheekSquintLeft', 'cheekSquintRight'];
+        this.animBaseline = {};
+        this.ikMesh = new THREE.SkinnedMesh();
+        window.addEventListener('resize', this.onResize.bind(this));
+        this.envLoaded = false;
+      }
+
+      init() {
+        this.lipsync[this.opt.lipsyncLang] = new LipsyncEn();
+        const rgbe = new RGBELoader();
+        const hdrUrl = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/studio_small_09_2k.hdr';
+        rgbe.load(hdrUrl, (tex) => {
+          tex.mapping = THREE.EquirectangularReflectionMapping;
+          this.scene.environment = tex;
+          this.scene.background = tex;
+          this.envLoaded = true;
+        }, undefined, (e) => {
+          console.warn('HDR env load failed', e);
+          this.scene.background = new THREE.Color(0x0f172a);
+        });
+      }
+
+      fixMaterial(mat, owner) {
+        if (!mat) return;
+        const ownerName = (owner?.name || '').toLowerCase();
+        const matName = (mat.name || '').toLowerCase();
+        const tag = (ownerName + ' ' + matName);
+
+        const isHairCard = /(hair|lash|eyelash|eyebrow|brow|beard|stubble|mustache)/i.test(tag);
+        const isEyeCornea = /(cornea|eyemoisture|tear|tearline|eye_moisture|eye\-moisture)/i.test(tag);
+        const isEyeIrisSclera = /(eye$|eyes$|iris|sclera|eyeball)/i.test(tag) && !isEyeCornea;
+
+        const makeOpaqueSolid = (m) => {
+          m.transparent = false;
+          m.alphaTest = 0;
+          m.opacity = 1;
+          m.depthWrite = true;
+          m.depthTest = true;
+          m.blending = THREE.NormalBlending;
+          m.side = THREE.FrontSide;
+          m.needsUpdate = true;
+        };
+
+        if (isEyeCornea) {
+          mat.transparent = true;
+          mat.alphaTest = 0.0;
+          mat.opacity = Math.min(1, Math.max(0.2, mat.opacity ?? 0.35));
+          mat.depthWrite = false;
+          mat.depthTest = true;
+          mat.blending = THREE.NormalBlending;
+          mat.side = THREE.FrontSide;
+          mat.polygonOffset = true;
+          mat.polygonOffsetFactor = -0.5;
+          mat.polygonOffsetUnits = -1;
+          mat.needsUpdate = true;
+          return;
+        }
+
+        if (isHairCard) {
+          mat.alphaTest = Math.max(mat.alphaTest || 0, 0.5);
+          mat.transparent = false;
+          mat.opacity = 1;
+          mat.depthWrite = true;
+          mat.depthTest = true;
+          mat.blending = THREE.NormalBlending;
+          mat.side = THREE.FrontSide;
+          mat.polygonOffset = true;
+          mat.polygonOffsetFactor = 0.5;
+          mat.polygonOffsetUnits = 1;
+          mat.needsUpdate = true;
+          return;
+        }
+
+        if (isEyeIrisSclera) {
+          makeOpaqueSolid(mat);
+          mat.polygonOffset = true;
+          mat.polygonOffsetFactor = 0.25;
+          mat.polygonOffsetUnits = 0.5;
+          return;
+        }
+
+        const hasRGBA = !!(mat.map && mat.map.format === THREE.RGBAFormat);
+        const looksTransparent = mat.transparent || (mat.opacity !== undefined && mat.opacity < 1) || hasRGBA;
+        if (looksTransparent) {
+          mat.alphaTest = Math.max(mat.alphaTest || 0, 0.5);
+          mat.transparent = false;
+          mat.opacity = 1;
+          mat.depthWrite = true;
+          mat.depthTest = true;
+          mat.blending = THREE.NormalBlending;
+          mat.side = THREE.FrontSide;
+          mat.needsUpdate = true;
+        } else {
+          makeOpaqueSolid(mat);
+        }
+      }
+
+      async showAvatar(avatar) {
+        const loader = new GLTFLoader();
+        const gltf = await loader.loadAsync(avatar.url);
+        this.armature = gltf.scene;
+
+        this.armature.traverse(node => {
+          if (node.isMesh || node.isSkinnedMesh) {
+            if (Array.isArray(node.material)) {
+              node.material = node.material.map(m => m.clone());
+              node.material.forEach(m => this.fixMaterial(m, node));
+            } else if (node.material) {
+              node.material = node.material.clone();
+              this.fixMaterial(node.material, node);
+            }
+
+            if (node.material) {
+              if (Array.isArray(node.material)) {
+                node.material.forEach(m => { m.envMap = null; });
+              } else {
+                node.material.envMap = null;
+              }
+            }
+
+            const n = (node.name || '').toLowerCase();
+            if (/(cornea|eyemoisture|tear|tearline|eye_moisture|eye\-moisture)/i.test(n)) {
+              node.renderOrder = 30;
+            } else if (/(eye$|eyes$|iris|sclera|eyeball)/i.test(n)) {
+              node.renderOrder = 20;
+            } else if (/(lash|eyelash|brow|eyebrow)/i.test(n)) {
+              node.renderOrder = 15;
+            } else {
+              node.renderOrder = 10;
+            }
+
+            if (node.morphTargetDictionary) { this.morphs.push(node); }
+            node.frustumCulled = false;
+          }
+        });
+
+        if (!this.morphs.length) { throw new Error("No morph targets found on model."); }
+
+        this.poseBase = this.poseFactory(this.poseTemplates.straight);
+        this.poseTarget = this.poseFactory(this.poseTemplates.straight);
+        this.poseAvatar.props = {};
+        this.poseDelta.props = {};
+
+        const posePropNames = new Set();
+        Object.values(this.poseTemplates).forEach(x => {
+          Object.keys(this.propsToThreeObjects(x.props)).forEach(y => posePropNames.add(y));
+        });
+
+        for (const key of posePropNames) {
+          const [boneName, propName] = key.split('.');
+          const bone = this.armature.getObjectByName(boneName);
+          if (bone && bone[propName]) {
+            this.poseAvatar.props[key] = bone[propName];
+            if (this.poseBase.props[key]) {
+              this.poseAvatar.props[key].copy(this.poseBase.props[key]);
+            } else {
+              this.poseBase.props[key] = this.poseAvatar.props[key].clone();
+            }
+            if (this.poseTarget.props[key]) {
+              this.poseTarget.props[key].t = this.animClock;
+              this.poseTarget.props[key].d = 2000;
+            }
+            if (propName === 'quaternion' || propName === 'scale') {
+              this.poseDelta.props[key] = propName === 'quaternion' ? new THREE.Euler() : new THREE.Vector3();
+            }
+          }
+        }
+
+        this.mixer = new THREE.AnimationMixer(this.armature);
+        let idleClip = gltf.animations.find(clip => clip.name.toLowerCase() === 'idle') || gltf.animations[0];
+        if (idleClip) { this.mixer.clipAction(idleClip).play(); }
+
+        this.scene.add(this.armature);
+        this.setView(this.opt.cameraView);
+        this.start();
+      }
+
+      propsToThreeObjects(p) { const r = {}; for (let [key, val] of Object.entries(p)) { const ids = key.split('.'); let v; let x = val.x ?? 0; let y = val.y ?? 0; let z = val.z ?? 0; if (ids[1] === 'position' || ids[1] === 'scale') { v = new THREE.Vector3(x, y, z); } else if (ids[1] === 'rotation') { key = ids[0] + '.quaternion'; v = new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z, 'XYZ')); } if (v) r[key] = v; } return r; }
+      poseFactory(template, ms = 2000) { const o = { template: template, props: this.propsToThreeObjects(template.props) }; for (const v of Object.values(o.props)) { v.t = this.animClock; v.d = ms; } return o; }
+      mirrorPose(p) { const r = {}; for (let [key, v] of Object.entries(p)) { if (v.isQuaternion) { if (key.startsWith('Left')) { key = 'Right' + key.substring(4); } else if (key.startsWith('Right')) { key = 'Left' + key.substring(5); } v.x *= -1; v.w *= -1; } r[key] = v.clone(); r[key].t = v.t; r[key].d = v.d; } return r; }
+      setPoseFromTemplate(templateName, ms = 2000) {
+        const template = this.poseTemplates[templateName];
+        if (!template) return;
+        const isSameTemplate = this.poseCurrentTemplate && template.props === this.poseCurrentTemplate.props;
+        this.poseBase = this.poseFactory(this.poseCurrentTemplate || this.poseTemplates.straight, ms);
+        this.poseTarget = this.poseFactory(template, ms);
+        this.poseCurrentTemplate = template;
+
+        if ((!isSameTemplate && !this.poseWeightOnLeft) || (isSameTemplate && this.poseWeightOnLeft)) {
+          this.poseTarget.props = this.mirrorPose(this.poseTarget.props);
+          this.poseWeightOnLeft = !this.poseWeightOnLeft;
+        }
+      }
+
+      startIdleAnimations() { this.animMoods.neutral.anims.forEach(animTemplate => { this.animQueue.push(this.animFactory(animTemplate)); }); }
+      stopIdleAnimations() { this.animQueue = this.animQueue.filter(anim => anim.loop !== -1 && anim.template.name !== 'pose'); }
+      animFactory(t) {
+        const o = { template: t, ts: [0], vs: {}, loop: t.loop };
+        let a = t;
+        if (a[this.stateName]) {
+          a = a[this.stateName];
+        }
+        if (a.alt) {
+          let b = a.alt[0];
+          if (a.alt.length > 1) {
+            const coin = Math.random();
+            let p = 0;
+            for (let i = 0; i < a.alt.length; i++) {
+              p += a.alt[i].p || (1 - p) / (a.alt.length - i);
+              if (coin < p) {
+                b = a.alt[i];
+                break;
+              }
+            }
+          }
+          a = b;
+        }
+
+        const delay = a.delay ? (Array.isArray(a.delay) ? this.gaussianRandom(...a.delay) : a.delay) : 0;
+        const dt = a.dt || t.dt;
+        dt.forEach((x, i) => o.ts[i + 1] = o.ts[i] + (Array.isArray(x) ? this.gaussianRandom(...x) : x));
+        o.ts = o.ts.map(x => this.animClock + delay + x);
+        const vs = a.vs || t.vs;
+        Object.entries(vs).forEach(([mt, v_seq]) => {
+          o.vs[mt] = [null, ...v_seq.map(x => Array.isArray(x) ? this.gaussianRandom(...x) : x)];
+          while (o.vs[mt].length - 1 < o.ts.length) o.vs[mt].push(o.vs[mt].at(-1));
+        });
+        return o;
+      }
+      gaussianRandom(start, end, skew = 1, samples = 3) { let r = 0; for (let i = 0; i < samples; i++) r += Math.random(); return start + Math.pow(r / samples, skew) * (end - start); }
+      setView(view) { let z = 2.5; if (view === 'head') z = 1.2; this.camera.position.set(0, 1.6, z); this.controls.update(); }
+      onResize() { this.camera.aspect = this.nodeAvatar.clientWidth / this.nodeAvatar.clientHeight; this.camera.updateProjectionMatrix(); this.renderer.setSize(this.nodeAvatar.clientWidth, this.nodeAvatar.clientHeight); }
+      start() { if (this.isRunning) return; this.isRunning = true; this.animTimeLast = performance.now(); this.startIdleAnimations(); this.renderer.setAnimationLoop(this.animate.bind(this)); }
+
+      animate() {
+        const now = performance.now(); const dt = now - this.animTimeLast; this.animClock += dt; this.animTimeLast = now;
+        if (this.mixer) this.mixer.update(dt / 1000);
+        this.controls.update();
+
+        if (Math.random() < 0.1) {
+          const randomizedMs = this.randomized[Math.floor(Math.random() * this.randomized.length)];
+          const v = this.getValue(randomizedMs);
+          const vb = this.getBaselineValue(randomizedMs);
+          if (Math.abs(v - vb) < 0.01) {
+            const randomizedV = (this.mood?.baseline?.[randomizedMs] || 0) + Math.random() / 5;
+            this.setBaselineValue(randomizedMs, randomizedV);
+          }
+        }
+
+        const frameMorphAcc = new Map();
+        for (let [mt, x] of Object.entries(this.animBaseline)) {
+          const v = this.getValue(mt);
+          const restrain = (this.isSpeaking && mt.startsWith("mouth")) ? 3 : 1;
+          const target = x.target / restrain;
+          if (Math.abs(v - target) > 0.01) {
+            if (x.t0 === undefined) {
+              x.t0 = this.animClock;
+              x.v0 = v;
+            }
+            let delay = 1000;
+            const val = this.valueAnimationSeq([x.t0, x.t0 + delay], [x.v0, target], this.animClock);
+            frameMorphAcc.set(mt, val);
+          } else {
+            x.t0 = undefined;
+            frameMorphAcc.set(mt, target);
+          }
+        }
+
+        this.updatePoseBase();
+
+        for (let i = 0; i < this.animQueue.length; i++) {
+          const anim = this.animQueue[i];
+          if (this.animClock >= anim.ts[0]) {
+            Object.entries(anim.vs).forEach(([mt, vs]) => {
+              if (vs[0] === null) vs[0] = this.getValue(mt);
+              const vv = this.valueAnimationSeq(anim.ts, vs, this.animClock);
+              const prev = frameMorphAcc.get(mt) ?? -Infinity;
+              if (vv > prev) frameMorphAcc.set(mt, vv);
+            });
+            if (this.animClock >= anim.ts.at(-1)) {
+              if (anim.loop === -1) {
+                if (this.stateName === 'idle' || (this.stateName === 'talking' && (anim.template.name === 'head' || anim.template.name === 'eyes'))) {
+                  const restrain = (this.stateName === 'talking' && (anim.template.name === 'head' || anim.template.name === 'eyes')) ? 4 : 1;
+                  this.animQueue[i] = this.animFactory(anim.template, anim.loop, 1, 1 / restrain);
+                } else {
+                  this.animQueue.splice(i--, 1);
+                }
+              } else {
+                this.animQueue.splice(i--, 1);
+              }
+            }
+          }
+        }
+        this.updatePoseDelta(frameMorphAcc);
+        for (const mesh of this.morphs) {
+          for (const name in mesh.morphTargetDictionary) {
+            const idx = mesh.morphTargetDictionary[name];
+            const value = frameMorphAcc.get(name);
+            if (value !== undefined && typeof value === 'number' && !isNaN(value)) {
+              mesh.morphTargetInfluences[idx] = Math.min(1, Math.max(0, value));
+            } else if (!this.isViseme(name)) {
+              const current = mesh.morphTargetInfluences[idx] || 0;
+              if (current > 0.001) {
+                mesh.morphTargetInfluences[idx] = Math.max(0, current * 0.95);
+              } else {
+                mesh.morphTargetInfluences[idx] = 0;
+              }
+            }
+          }
+        }
+
+        const box = new THREE.Box3();
+        box.setFromObject(this.armature);
+        const ltoePos = new THREE.Vector3();
+        const rtoePos = new THREE.Vector3();
+        this.armature.getObjectByName('LeftToeBase').getWorldPosition(ltoePos);
+        this.armature.getObjectByName('RightToeBase').getWorldPosition(rtoePos);
+        const hips = this.armature.getObjectByName('Hips');
+        if (hips) {
+          hips.position.y -= box.min.y / 2;
+          hips.position.x -= (ltoePos.x + rtoePos.x) / 4;
+          hips.position.z -= (ltoePos.z + rtoePos.z) / 2;
+        }
+
+        this.renderer.render(this.scene, this.camera);
+      }
+
+      updatePoseBase() { for (const [key, v] of Object.entries(this.poseTarget.props)) { const o = this.poseAvatar.props[key]; if (!o || !this.poseBase.props[key]) continue; const alpha = Math.min(1, (this.animClock - v.t) / v.d); if (alpha > 1 || !this.poseBase.props.hasOwnProperty(key)) { o.copy(v); } else if (o.isQuaternion) { o.copy(this.poseBase.props[key]).slerp(v, this.easing(alpha)); } else if (o.isVector3) { o.copy(this.poseBase.props[key]).lerp(v, this.easing(alpha)); } } }
+      updatePoseDelta(morphs) { const euler = this.poseDelta.props['Head.quaternion']; if (euler) euler.set(morphs.get('headRotateX') || 0, morphs.get('headRotateY') || 0, morphs.get('headRotateZ') || 0); const q = new THREE.Quaternion().setFromEuler(euler || new THREE.Euler()); if (this.poseAvatar.props['Head.quaternion']) this.poseAvatar.props['Head.quaternion'].multiply(q); const scale = morphs.get('chestInhale') || 0; if (this.poseAvatar.props['Spine1.scale']) { const s = 1 + scale; this.poseAvatar.props['Spine1.scale'].set(s, s, s); } }
+
+      valueAnimationSeq(ts, vs, t) {
+        if (!ts || ts.length < 2) return 0;
+        if (t <= ts[0]) return vs[1];
+        if (t >= ts.at(-1)) return vs.at(-1);
+        let i = 0;
+        for (i = 0; i < ts.length - 2; i++) {
+          if (t >= ts[i] && t < ts[i + 1]) { break; }
+        }
+        const startTime = ts[i]; const endTime = ts[i + 1];
+        const startValue = vs[i + 1]; const endValue = vs[i + 2];
+        if (endTime === startTime) return startValue;
+        const progress = (t - startTime) / (endTime - startTime);
+        return startValue + (endValue - startValue) * this.easing(progress);
+      }
+
+      isViseme(name) { return name.startsWith('viseme_'); }
+
+      getBaselineValue(mt) { return (this.animBaseline.hasOwnProperty(mt) ? this.animBaseline[mt].target : 0); }
+      setBaselineValue(mt, v) {
+        if (v === null) {
+          if (this.animBaseline.hasOwnProperty(mt)) delete this.animBaseline[mt];
+        } else {
+          this.animBaseline[mt] = { target: v, t0: undefined, v0: 0 };
+        }
+      }
+
+      getValue(mt) {
+        if (mt.startsWith('headRotate')) {
+          const axis = mt.charAt(mt.length - 1).toLowerCase();
+          return this.poseDelta.props['Head.quaternion']?.[axis] || 0;
+        }
+        if (mt === 'chestInhale') {
+          return (this.poseDelta.props['Spine1.scale']?.x || 0) * 20;
+        }
+        const mesh = this.morphs[0];
+        return (mesh && mesh.morphTargetDictionary[mt] !== undefined) ? mesh.morphTargetInfluences[mesh.morphTargetDictionary[mt]] : 0;
+      }
+
+      speakText(text) {
+        if (this.isSpeaking) {
+          this.speechQueue.push({ type: 'text', content: text });
+          return;
+        }
+        this.processSpeechItem({ type: 'text', content: text });
+      }
+
+      speakEmoji(emojiChar) {
+        this.speechQueue.push({ type: 'emoji', content: this.animEmojis[emojiChar] });
+        if (!this.isSpeaking) this.startSpeaking();
+      }
+
+      async processSpeechItem(item) {
+        this.isSpeaking = true; this.stateName = 'talking';
+        this.stopIdleAnimations();
+        this.resetLips();
+
+        if (item.type === 'text') {
+          this.speakWithHands(0, 0.5);
+          try {
+            const preprocessedText = this.lipsync.en.preProcessText(sanitizeForTTS(item.content));
+            const response = await fetch(this.opt.ttsEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: preprocessedText }) });
+            if (!response.ok) throw new Error(`TTS Error: ${response.status} ${await response.text()}`);
+            const data = await response.json();
+            if (!data.audioContent || !data.timepoints) throw new Error("Invalid TTS response format.");
+            await this.playAudioWithVisemes(data.audioContent, data.timepoints);
+          } catch (error) { console.error("TTS failed:", error); this.finishSpeaking(); }
+        } else if (item.type === 'emoji') {
+          const anim = this.animFactory(item.content);
+          this.animQueue.push(anim);
+          setTimeout(() => this.finishSpeaking(), anim.ts.at(-1) - this.animClock);
+        }
+      }
+
+      async playAudioWithVisemes(base64Audio, timepoints) {
+        if (this.audioCtx.state === 'suspended') await this.audioCtx.resume();
+
+        const audioData = Uint8Array.from(atob(base64Audio), c => c.charCodeAt(0)).buffer;
+        const audioBuffer = await this.audioCtx.decodeAudioData(audioData);
+
+        const LEAD_IN_MS = 80;
+        const MIN_WORD_MS = 220;
+        const MIN_VISEME_MS = 90;
+        const MAX_VISEMES_PER_WORD = 3;
+        const PEAK_FRACTION = 0.45;
+        const AMPLITUDE = 0.6;
+
+        const audioStartAnimClock = this.animClock + 150;
+
+        const sortedTP = [...timepoints].sort((a, b) => parseInt(a.mark_name) - parseInt(b.mark_name));
+
+        const condenseVisemes = (visemes, times, durations) => {
+          const out = [];
+          for (let i = 0; i < visemes.length; i++) {
+            const v = visemes[i];
+            if (v === 'sil') continue;
+            out.push({ v, t: times[i], d: durations[i] });
+          }
+          if (!out.length) return out;
+
+          const merged = [];
+          for (const seg of out) {
+            const last = merged[merged.length - 1];
+            if (last && last.v === seg.v) {
+              last.d += seg.d;
+            } else {
+              merged.push({ ...seg });
+            }
+          }
+
+          if (merged.length > MAX_VISEMES_PER_WORD) {
+            const sortedByDur = [...merged].sort((a, b) => b.d - a.d).slice(0, MAX_VISEMES_PER_WORD);
+            sortedByDur.sort((a, b) => a.t - b.t);
+            return sortedByDur;
+          }
+
+          return merged;
+        };
+
+        sortedTP.forEach((tp, idx) => {
+          const nextTp = sortedTP[idx + 1];
+          const wordStartMs = tp.time_seconds * 1000;
+          const wordEndMs = nextTp
+            ? (nextTp.time_seconds * 1000)
+            : (audioBuffer.duration * 1000);
+          let wordDurationMs = Math.max(MIN_WORD_MS, wordEndMs - wordStartMs);
+          if (wordDurationMs <= 0) return;
+
+          const visemeData = this.lipsync.en.wordsToVisemes(tp.word);
+          if (!visemeData.visemes.length) return;
+
+          const condensed = condenseVisemes(
+            visemeData.visemes,
+            visemeData.times,
+            visemeData.durations
+          );
+          if (!condensed.length) return;
+
+          const totalRel = condensed.reduce((sum, s) => sum + s.d, 0) || 1;
+
+          for (let i = 0; i < condensed.length; i++) {
+            const { v, t, d } = condensed[i];
+            const visemeName = "viseme_" + v;
+            if (this.morphs[0]?.morphTargetDictionary[visemeName] === undefined) continue;
+
+            const relStart = t;
+            const relDur = d;
+            const absStart = wordStartMs + (relStart / totalRel) * wordDurationMs;
+            let absDur = (relDur / totalRel) * wordDurationMs;
+
+            if (absDur < MIN_VISEME_MS) {
+              const extraNeeded = MIN_VISEME_MS - absDur;
+              const remaining = (wordStartMs + wordDurationMs) - (absStart + absDur);
+              const grant = Math.min(remaining, extraNeeded);
+              absDur += Math.max(0, grant);
+              if (absDur < MIN_VISEME_MS * 0.8) continue;
+            }
+
+            const startTime = audioStartAnimClock + absStart - LEAD_IN_MS;
+            const peakTime = startTime + LEAD_IN_MS + absDur * PEAK_FRACTION;
+            const endTime = startTime + LEAD_IN_MS + absDur;
+
+            if (endTime - startTime < 50) continue;
+
+            this.animQueue.push({
+              ts: [startTime, peakTime, endTime],
+              vs: { [visemeName]: [null, AMPLITUDE, 0] }
+            });
+          }
+        });
+
+        if (this.audioSpeechSource) { this.audioSpeechSource.stop(); }
+        this.audioSpeechSource = this.audioCtx.createBufferSource();
+        this.audioSpeechSource.buffer = audioBuffer;
+        this.audioSpeechSource.connect(this.audioCtx.destination);
+        const startAt = this.audioCtx.currentTime + 0.150;
+        this.audioSpeechSource.start(startAt);
+        if (typeof scheduleAISubtitles === 'function') {
+          scheduleAISubtitles(sortedTP, audioBuffer.duration, startAt);
+        }
+        this.audioSpeechSource.onended = () => this.finishSpeaking();
+      }
+
+      resetLips() { this.animQueue = this.animQueue.filter(a => !Object.keys(a.vs)[0].startsWith('viseme_')); this.visemeNames.forEach(name => { const current = this.getValue(name); if (current > 0.001) { const now = this.animClock; this.animQueue.push({ ts: [now, now + 60], vs: { [name]: [current, 0] } }); } }); }
+      startSpeaking() { if (this.isSpeaking || !this.speechQueue.length) return; this.processSpeechItem(this.speechQueue.shift()); }
+      finishSpeaking() { this.isSpeaking = false; this.stateName = 'idle'; this.resetLips(); this.startIdleAnimations(); if (this.speechQueue.length > 0) this.startSpeaking(); }
+      stopSpeaking() { if (this.audioSpeechSource) { this.audioSpeechSource.onended = null; this.audioSpeechSource.stop(); this.audioSpeechSource = null; } this.speechQueue = []; this.finishSpeaking(); }
+
+      speakWithHands(delay = 0, prob = 0.5) {
+        if (Math.random() > prob) return;
+
+        const dt = [100 + Math.round(Math.random() * 500)];
+        const moveto = [{
+          duration: 1000,
+          props: {
+            "LeftHand.rotation": { x: 0, y: -1 - Math.random(), z: 0 },
+            "RightHand.rotation": { x: 0, y: 1 + Math.random(), z: 0 },
+            "LeftArm.rotation": { x: 1.5, y: 0, z: 0 },
+            "RightArm.rotation": { x: 1.5, y: 0, z: 0 },
+            "LeftForeArm.rotation": { x: 0, y: 0, z: 1 },
+            "RightForeArm.rotation": { x: 0, y: 0, z: -1 },
+          }
+        }];
+        dt.push(1000 + Math.round(Math.random() * 500));
+        moveto.push({ duration: 2000, props: {} });
+        ["LeftArm", "LeftForeArm", "RightArm", "RightForeArm", "LeftHand", "RightHand"].forEach(x => {
+          moveto[1].props[x + '.rotation'] = null;
+        });
+
+        const anim = this.animFactory({
+          name: 'talkinghands',
+          delay: delay,
+          dt: dt,
+          vs: { moveto: moveto }
+        });
+        this.animQueue.push(anim);
+      }
+    }
+
+    let avatar;
+    let userStream;
+    let isModelLoaded = false;
+    let areSubtitlesOn = true;
+    let interviewConfig = {};
+    let messages = [];
+    let isRecording = false;
+    let speechRecognition;
+    let isWaitingForAIResponse = false;
+    let scores = [];
 
     const WORKER_URL = 'https://interviewme.bhansalimanan55.workers.dev/';
-    const dom = {
-      setupScreen: document.getElementById('setup-screen'), interviewScreen: document.getElementById('interview-screen'),
-      startInterviewBtn: document.getElementById('start-interview-btn'), endInterviewBtn: document.getElementById('end-interview-btn'),
-      specializationSelect: document.getElementById('specialization'), companyPersonaSelect: document.getElementById('company-persona'),
-      interviewStyleSelect: document.getElementById('interview-style'), difficultyLevelSelect: document.getElementById('difficulty-level'),
-      cvUploadInput: document.getElementById('cv-upload'), fileUploadArea: document.getElementById('file-upload-area'), fileInfoEl: document.getElementById('file-info'),
-      chatPanel: document.getElementById('chat-panel'),
-      chatMessages: document.getElementById('chat-messages'), messageForm: document.getElementById('message-form'),
-      messageInput: document.getElementById('message-input'), sendButton: document.getElementById('send-btn'),
-      hintButton: document.getElementById('hint-btn'), voiceButton: document.getElementById('voice-btn'),
-      reportScreen: document.getElementById('report-screen'), interviewTimer: document.getElementById('interview-timer'),
-    };
-    const USER_AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></g></svg>`;
-    const ASSISTANT_AVATAR_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="var(--primary)"><path d="M15.586 2.05c.344.49.133 1.149-.357 1.492-2.857 2-4.229 5.438-3.225 8.468.201.604-.34 1.207-.945.998-3.464-1.192-5.75-4.522-5.05-7.98.14-.693.81-1.15 1.503-.993.694.156 1.15.822.994 1.516-.54 2.652 1.12 5.166 3.497 6.132.61.252 1.26-.205 1.442-.816.82-2.73-2.13-5.26 4.31-6.853.486-.346 1.14-.136 1.49.356zM8.414 21.95c-.344-.49-.133-1.149.357-1.492 2.857-2 4.229-5.438 3.225-8.468-.201-.604.34-1.207.945-.998 3.464 1.192 5.75 4.522 5.05 7.98-.14-.693.81-1.15-1.503-.993-.694-.156-1.15-.822-.994-1.516-.54 2.652-1.12-5.166-3.497-6.132-.61-.252-1.26-.205-1.442-.816-.82-2.73-2.13-5.26-4.31-6.853-.486-.346-1.14-.136-1.49-.356z"/></svg>`;
-    const appState = {
-      messages: [], isLoading: false, interviewEnded: false, cvText: '',
-      settings: { specialization: '', companyPersona: '', interviewStyle: '', difficultyLevel: '' },
-      timer: { intervalId: null, seconds: 0 }, recognition: null,
-      charts: { skills: null },
-    };
+    const TTS_ENDPOINT = 'https://us-central1-msc-notif.cloudfunctions.net/gcp-tts-rate-limited';
+    const AVATAR_URL = 'https://models.readyplayer.me/69440c84ca696e5f2fb7bfd5.glb?morphTargets=ARKit,Oculus+Visemes,mouthOpen,mouthSmile,eyesClosed,eyesLookUp,eyesLookDown';
 
-    function initialize() {
+    let EMOJI_CHAR, NON_TTS;
+    try {
+      EMOJI_CHAR = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u;
+      NON_TTS = /[^\p{L}\p{N}\p{P}\p{Z}\n\r\t]/gu;
+    } catch {
+      EMOJI_CHAR = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
+      NON_TTS = /[^A-Za-z0-9\s.,!?;:'"()[\]{}<>@#$%^&*_\-+=/\\|~`]/g;
+    }
+    function extractEmojisAndSanitize(text = "") {
+      const chars = Array.from(text);
+      const emojis = [];
+      const noEmoji = chars.map(ch => {
+        if (EMOJI_CHAR.test(ch)) { emojis.push(ch); return ""; }
+        return ch;
+      }).join("");
+      let clean = noEmoji.replace(NON_TTS, "").replace(/\s{2,}/g, " ").trim();
+      return { clean, emojis };
+    }
+    function sanitizeForTTS(s) {
+      return extractEmojisAndSanitize(s).clean;
+    }
+
+    const setupScreen = document.getElementById('setup-screen');
+    const loadingScreen = document.getElementById('loading-screen');
+    const permissionsModal = document.getElementById('permissions-modal');
+    const interviewScreen = document.getElementById('interview-screen');
+    const setupForm = document.getElementById('setup-form');
+    const avatarContainer = document.getElementById('avatar-container');
+    const modelLoadingOverlay = document.getElementById('model-loading-overlay');
+    const chatMessages = document.getElementById('chat-messages');
+    const userVideo = document.getElementById('user-video');
+    const subtitlesOverlay = document.getElementById('subtitles-overlay');
+    const currentRoleSpan = document.getElementById('current-role');
+    const loadingProgressBar = document.getElementById('loading-progress-bar');
+    const pushToTalkBtn = document.getElementById('push-to-talk-btn');
+    const speechStatus = document.getElementById('speech-status');
+    const scorePill = document.getElementById('score-pill');
+    const progressPill = document.getElementById('progress-pill');
+
+    const subtitlesBtn = document.getElementById('subtitles-btn');
+    const endCallBtn = document.getElementById('end-call-btn');
+    const allowPermissionsBtn = document.getElementById('allow-permissions');
+    const skipPermissionsBtn = document.getElementById('skip-permissions');
+    const mobileChatFab = document.getElementById('mobile-chat-fab');
+    const mobileChatSheet = document.getElementById('mobile-chat-sheet');
+    const mobileChatClose = document.getElementById('mobile-chat-close');
+    const mobileChatMessages = document.getElementById('mobile-chat-messages');
+    const mobileChatInput = document.getElementById('mobile-chat-input');
+    const mobileSendBtn = document.getElementById('mobile-send-btn');
+
+    let interimTranscript = '';
+    let finalTranscript = '';
+
+    async function init() {
       setupEventListeners();
-      initializeSpeechRecognition();
+      setupSpeechRecognition();
+      loadModelInBackground();
+      subtitlesBtn.classList.toggle('active', areSubtitlesOn);
+      ensureMobileChatUIVisible();
     }
 
     function setupEventListeners() {
-      dom.startInterviewBtn.addEventListener('click', startInterview);
-      dom.endInterviewBtn.addEventListener('click', () => handleAIResponse('<<<FINAL_REPORT>>>The user ended the interview early. Please provide a brief summary based on the conversation so far.<<<END_FINAL_REPORT>>>'));
-      dom.fileUploadArea.addEventListener('click', () => dom.cvUploadInput.click());
-      dom.cvUploadInput.addEventListener('change', handleFileUpload);
-      dom.fileUploadArea.addEventListener('dragover', (e) => { e.preventDefault(); dom.fileUploadArea.classList.add('dragover'); });
-      dom.fileUploadArea.addEventListener('dragleave', () => dom.fileUploadArea.classList.remove('dragover'));
-      dom.fileUploadArea.addEventListener('drop', (e) => { e.preventDefault(); dom.fileUploadArea.classList.remove('dragover'); handleFileUpload(e); });
-      dom.messageForm.addEventListener('submit', handleFormSubmit);
-      dom.hintButton.addEventListener('click', getHint);
-      dom.voiceButton.addEventListener('click', toggleVoiceRecognition);
+      setupForm.addEventListener('submit', handleSetupSubmit);
+      subtitlesBtn.addEventListener('click', toggleSubtitles);
+      endCallBtn.addEventListener('click', endInterview);
+
+      if (allowPermissionsBtn) {
+        allowPermissionsBtn.addEventListener('click', requestPermissions);
+      }
+      if (skipPermissionsBtn) {
+        skipPermissionsBtn.addEventListener('click', skipPermissions);
+      }
+
+      pushToTalkBtn.addEventListener('mousedown', startRecording);
+      pushToTalkBtn.addEventListener('mouseup', stopRecording);
+      pushToTalkBtn.addEventListener('mouseleave', stopRecording);
+      pushToTalkBtn.addEventListener('touchstart', startRecording, { passive: false });
+      pushToTalkBtn.addEventListener('touchend', stopRecording);
+      pushToTalkBtn.addEventListener('touchcancel', stopRecording);
+
+      window.addEventListener('resize', () => {
+        if (avatar) avatar.onResize();
+        ensureMobileChatUIVisible();
+      });
+      if (mobileChatFab) mobileChatFab.addEventListener('click', () => { mobileChatSheet.classList.add('open'); mobileChatSheet.setAttribute('aria-hidden', 'false'); });
+      if (mobileChatClose) mobileChatClose.addEventListener('click', () => { mobileChatSheet.classList.remove('open'); mobileChatSheet.setAttribute('aria-hidden', 'true'); });
+      if (mobileSendBtn) mobileSendBtn.addEventListener('click', sendTypedMessage);
+      if (mobileChatInput) mobileChatInput.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendTypedMessage(); } });
     }
 
-    function initializeSpeechRecognition() {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (SpeechRecognition) {
-        appState.recognition = new SpeechRecognition();
-        appState.recognition.continuous = false; appState.recognition.lang = 'en-US';
-        appState.recognition.onresult = (e) => { dom.messageInput.value = e.results[0][0].transcript; stopVoiceRecognition(); handleFormSubmit(new Event('submit')); };
-        appState.recognition.onerror = (e) => { console.error('Speech recognition error:', e.error); stopVoiceRecognition(); };
-        appState.recognition.onend = stopVoiceRecognition;
-      } else { dom.voiceButton.disabled = true; }
-    }
+    function setupSpeechRecognition() {
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        speechRecognition = new SpeechRecognition();
+        speechRecognition.continuous = true;
+        speechRecognition.interimResults = true;
+        speechRecognition.lang = 'en-US';
 
-    function toggleVoiceRecognition() { dom.voiceButton.classList.contains('recording') ? stopVoiceRecognition() : startVoiceRecognition(); }
-    function startVoiceRecognition() { if (appState.recognition && !appState.isLoading) { dom.voiceButton.classList.add('recording'); appState.recognition.start(); } }
-    function stopVoiceRecognition() { if (appState.recognition) { dom.voiceButton.classList.remove('recording'); appState.recognition.stop(); } }
+        speechRecognition.onstart = () => {
+          updateSpeechStatus('Listening...', true);
+        };
 
-    function startInterview() {
-      Object.assign(appState.settings, { specialization: dom.specializationSelect.value, companyPersona: dom.companyPersonaSelect.value, interviewStyle: dom.interviewStyleSelect.value, difficultyLevel: dom.difficultyLevelSelect.value });
-      dom.setupScreen.classList.add('hidden');
-      dom.interviewScreen.classList.remove('hidden');
-      dom.interviewTimer.classList.remove('hidden');
-      dom.endInterviewBtn.classList.remove('hidden');
-      resetInterviewState();
-      startTimer();
-      initCharts();
-      let initialPrompt = "I'm ready to start the interview.";
-      if (appState.cvText) initialPrompt = `(My CV/Resume:\n${appState.cvText}\n) I'm ready to start the interview. Ask me about my experience.`;
-      addMessage('user', initialPrompt);
-      fetchAIResponse();
-    }
-    
-    function resetInterviewState() {
-        appState.messages = []; appState.interviewEnded = false; appState.timer.seconds = 0;
-        dom.reportScreen.innerHTML = ''; dom.reportScreen.classList.add('hidden');
-        dom.interviewScreen.classList.remove('hidden');
-        setInputsDisabled(false);
-    }
-    
-    function startTimer() {
-        if (appState.timer.intervalId) clearInterval(appState.timer.intervalId);
-        appState.timer.intervalId = setInterval(() => {
-            appState.timer.seconds++;
-            const mins = String(Math.floor(appState.timer.seconds / 60)).padStart(2, '0');
-            const secs = String(appState.timer.seconds % 60).padStart(2, '0');
-            dom.interviewTimer.textContent = `${mins}:${secs}`;
-        }, 1000);
-    }
-    
-    async function handleFileUpload(e) {
-      const file = e.target.files ? e.target.files[0] : e.dataTransfer.files[0]; if (!file) return;
-      dom.fileInfoEl.textContent = `Processing ${file.name}...`; dom.fileInfoEl.classList.remove('hidden', 'error');
-      try {
-        if (file.type === 'application/pdf') {
-          const reader = new FileReader();
-          reader.onload = async (event) => {
-            const typedarray = new Uint8Array(event.target.result); const pdf = await pdfjsLib.getDocument(typedarray).promise;
-            let text = '';
-            for (let i = 1; i <= pdf.numPages; i++) { const page = await pdf.getPage(i); const content = await page.getTextContent(); text += content.items.map(s => s.str).join(' '); }
-            appState.cvText = text; dom.fileInfoEl.textContent = `✅ ${file.name} processed successfully!`;
-          }; reader.readAsArrayBuffer(file);
-        } else if (file.type === 'text/plain') { appState.cvText = await file.text(); dom.fileInfoEl.textContent = `✅ ${file.name} processed successfully!`;
-        } else { throw new Error('Unsupported file type.'); }
-      } catch (error) { console.error('Error processing file:', error); dom.fileInfoEl.textContent = `❌ ${error.message}`; dom.fileInfoEl.classList.add('error'); appState.cvText = ''; }
-    }
+        speechRecognition.onresult = (event) => {
+          interimTranscript = '';
+          finalTranscript = '';
 
-    function handleFormSubmit(e) {
-      e.preventDefault(); const userInput = dom.messageInput.value.trim();
-      if (userInput && !appState.isLoading) { addMessage('user', userInput); dom.messageInput.value = ''; fetchAIResponse(); }
-    }
-    function getHint() { if (!appState.isLoading) { addMessage('user', 'I am not sure, can I get a small hint?'); fetchAIResponse(); } }
-    function addMessage(role, content) { appState.messages.push({ role, content }); renderMessages(); }
-    
-    function renderMessages() {
-        dom.chatMessages.innerHTML = appState.messages.filter(msg => !(msg.role === 'user' && msg.content.startsWith('(My CV/Resume:'))).map(msg => `
-            <div class="message ${msg.role}"><div class="message-avatar">${msg.role === 'user' ? USER_AVATAR_SVG : ASSISTANT_AVATAR_SVG}</div><div class="message-content">${marked.parse(msg.content)}</div></div>`).join('');
-        if (appState.isLoading) showTypingIndicator();
-        dom.chatMessages.scrollTop = dom.chatMessages.scrollHeight;
-    }
-
-    function showTypingIndicator() {
-        dom.chatMessages.insertAdjacentHTML('beforeend', `<div class="message assistant" id="typing-indicator"><div class="message-avatar">${ASSISTANT_AVATAR_SVG}</div><div class="message-content"><div class="typing-indicator"></div></div></div>`);
-        dom.chatMessages.scrollTop = dom.chatMessages.scrollHeight;
-    }
-
-    async function fetchAIResponse() {
-        appState.isLoading = true; setInputsDisabled(true); showTypingIndicator();
-        const { specialization, companyPersona, interviewStyle, difficultyLevel } = appState.settings;
-        try {
-            const response = await fetch(WORKER_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Specialization': specialization,
-                    'X-Company-Persona': companyPersona,
-                    'X-Interview-Style': interviewStyle,
-                    'X-Difficulty-Level': difficultyLevel
-                },
-                body: JSON.stringify({ messages: appState.messages })
-            });
-            if (!response.ok) {
-              const errorText = await response.text();
-              throw new Error(`API Error ${response.status}: ${errorText}`);
+          for (let i = event.resultIndex; i < event.results.length; ++i) {
+            if (event.results[i].isFinal) {
+              finalTranscript += event.results[i][0].transcript;
+            } else {
+              interimTranscript += event.results[i][0].transcript;
             }
-            const data = await response.json();
-            if (data.ok && data.response) handleAIResponse(data.response);
-            else throw new Error(data.error || 'Invalid response from server.');
-        } catch (error) { addMessage('assistant', `Sorry, an error occurred: ${error.message}. Please try again.`);
-        } finally { appState.isLoading = false; renderMessages(); if (!appState.interviewEnded) setInputsDisabled(false); }
+          }
+
+          const display = (finalTranscript + ' ' + interimTranscript).trim();
+          updateSpeechStatus(display ? `You said: ${display}` : 'Listening...', true);
+
+          if (areSubtitlesOn && display) {
+            showSubtitles(`${timestampNow()} You: ${display}`);
+          }
+        };
+
+        speechRecognition.onend = () => {
+          const toSend = (finalTranscript + ' ' + interimTranscript).trim();
+
+          if (toSend && !isWaitingForAIResponse) {
+            if (areSubtitlesOn) showSubtitles(`${timestampNow()} You: ${toSend}`);
+            handleSpeechInput(toSend);
+          }
+
+          isRecording = false;
+          pushToTalkBtn.classList.remove('recording');
+          updateSpeechStatus('', false);
+        };
+
+        speechRecognition.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
+          if (event.error === 'no-speech') {
+            updateSpeechStatus('No speech detected', true);
+          } else {
+            updateSpeechStatus('Error: ' + event.error, true);
+            isRecording = false;
+            pushToTalkBtn.classList.remove('recording');
+          }
+        };
+      }
     }
 
-    function handleAIResponse(text) {
-        const [mainMessage, feedback] = text.includes('<<<RESPONSE_FEEDBACK>>>') ? text.split('<<<RESPONSE_FEEDBACK>>>').map(s => s.replace('<<<END_RESPONSE_FEEDBACK>>>', '').trim()) : [text.trim(), null];
-        if (text.includes('<<<FINAL_REPORT>>>')) {
-            appState.interviewEnded = true;
-            const finalReport = text.split('<<<FINAL_REPORT>>>')[1].trim();
-            renderFinalReport(finalReport);
+    function startRecording(event) {
+      if (event) event.preventDefault();
+      if (isRecording || isWaitingForAIResponse) return;
+
+      isRecording = true;
+      pushToTalkBtn.classList.add('recording');
+
+      interimTranscript = '';
+      finalTranscript = '';
+
+      if (speechRecognition) {
+        try {
+          speechRecognition.start();
+        } catch (error) {
+          if (error.name !== 'InvalidStateError') {
+            updateSpeechStatus('Error starting mic', false);
+            isRecording = false;
+            pushToTalkBtn.classList.remove('recording');
+          }
+        }
+      } else {
+        updateSpeechStatus('Speech recognition not supported', false);
+      }
+    }
+
+    function stopRecording(event) {
+      if (event) event.preventDefault();
+      if (!isRecording) return;
+
+      if (speechRecognition) {
+        try {
+          speechRecognition.stop();
+        } catch (e) {
+        }
+      }
+    }
+
+    function updateSpeechStatus(text, visible) {
+      speechStatus.textContent = text;
+      speechStatus.classList.toggle('visible', visible);
+    }
+
+    function handleSpeechInput(transcript) {
+      if (!transcript.trim() || isWaitingForAIResponse) return;
+      addChatMessage('user', 'You', transcript);
+      sendToAI(transcript);
+    }
+
+    async function loadModelInBackground() {
+      try {
+        avatar = new TalkingHead(avatarContainer, {
+          ttsEndpoint: TTS_ENDPOINT,
+          cameraView: 'head'
+        });
+        await avatar.init();
+
+        avatar.onResize();
+        setTimeout(() => avatar && avatar.onResize(), 150);
+
+        updateLoadingProgress(30, 'Loading 3D model...');
+        await avatar.showAvatar({ url: AVATAR_URL });
+
+        updateLoadingProgress(70, 'Optimizing performance...');
+        await new Promise(resolve => setTimeout(resolve, 400));
+
+        updateLoadingProgress(100, 'Ready!');
+        isModelLoaded = true;
+        modelLoadingOverlay.classList.add('hidden');
+        loadingScreen.classList.add('hidden');
+
+        setTimeout(() => avatar && avatar.onResize(), 50);
+        setTimeout(() => avatar && avatar.onResize(), 300);
+        window.dispatchEvent(new Event('resize'));
+      } catch (error) {
+        console.error('Failed to load avatar:', error);
+        updateLoadingProgress(0, 'Failed to load model. Please refresh.');
+      }
+    }
+
+    function updateLoadingProgress(percent, text) {
+      loadingProgressBar.style.width = `${percent}%`;
+      const lt = document.querySelector('.loading-text');
+      if (lt) lt.textContent = text;
+    }
+
+    async function handleSetupSubmit(e) {
+      e.preventDefault();
+
+      interviewConfig = {
+        specialization: document.getElementById('specialization').value,
+        experienceLevel: document.getElementById('experience-level').value,
+        companyType: document.getElementById('company-type').value,
+        duration: document.getElementById('interview-duration').value
+      };
+
+      currentRoleSpan.textContent = interviewConfig.specialization;
+
+      setupScreen.classList.add('hidden');
+
+      if (!isModelLoaded) {
+        loadingScreen.classList.remove('hidden');
+        while (!isModelLoaded) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+        loadingScreen.classList.add('hidden');
+      }
+
+      try {
+        const existing = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+        existing.getTracks().forEach(t => t.stop());
+        skipPermissions();
+      } catch (error) {
+        permissionsModal.classList.remove('hidden');
+      }
+    }
+
+    async function requestPermissions() {
+      try {
+        await ensureUserMedia(true);
+        permissionsModal.classList.add('hidden');
+        startInterview();
+      } catch (error) {
+        console.error('Failed to get media permissions:', error);
+        alert('Camera/microphone access was denied. You can still continue with the interview.');
+        skipPermissions();
+      }
+    }
+
+    function skipPermissions() {
+      permissionsModal.classList.add('hidden');
+      startInterview();
+    }
+
+    async function ensureUserMedia(showVideo = false) {
+      try {
+        userStream = await navigator.mediaDevices.getUserMedia({
+          video: showVideo ? { facingMode: 'user' } : { facingMode: 'user' },
+          audio: true
+        });
+        if (userVideo) {
+          userVideo.srcObject = userStream;
+          await userVideo.play().catch(() => { });
+        }
+      } catch (e) {
+        console.warn('User media not available:', e);
+      }
+    }
+
+    async function startInterview() {
+      interviewScreen.classList.remove('hidden');
+      scores = [];
+      updateScoreAndProgress();
+
+      messages = [];
+      isWaitingForAIResponse = false;
+
+      await ensureUserMedia(false);
+
+      if (!isModelLoaded) {
+        while (!isModelLoaded) {
+          await new Promise(resolve => setTimeout(resolve, 100));
+        }
+      }
+      setTimeout(() => avatar && avatar.onResize(), 50);
+
+      const welcomeMessage = 'Welcome to your AI video interview! I\'m Alex, and I\'ll be conducting your interview today. Are you ready to begin?';
+      addChatMessage('ai', 'Alex Johnson', welcomeMessage);
+      if (avatar) avatar.speakText(welcomeMessage);
+      if (areSubtitlesOn) {
+        showSubtitles(`${timestampNow()} Alex: ${welcomeMessage}`);
+      }
+    }
+
+    function addChatMessage(type, author, content) {
+      const messageEl = document.createElement('div');
+      messageEl.className = `message ${type}`;
+      messageEl.innerHTML = `
+                <div class="message-author">${author}</div>
+                <div class="message-content">${content}</div>
+            `;
+      chatMessages.appendChild(messageEl);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+      if (mobileChatMessages) {
+        const clone = messageEl.cloneNode(true);
+        mobileChatMessages.appendChild(clone);
+        mobileChatMessages.scrollTop = mobileChatMessages.scrollHeight;
+      }
+    }
+
+    async function sendToAI(message) {
+      if (isWaitingForAIResponse) return;
+      isWaitingForAIResponse = true;
+
+      try {
+        messages.push({ role: 'user', content: message });
+
+        const response = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Specialization': interviewConfig.specialization,
+            'X-Experience-Level': interviewConfig.experienceLevel,
+            'X-Company-Type': interviewConfig.companyType,
+            'X-Duration': interviewConfig.duration
+          },
+          body: JSON.stringify({ messages })
+        });
+
+        if (!response.ok) {
+          throw new Error(`API Error: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        if (data.ok && data.response) {
+          let aiMessage = data.response;
+          let score = null;
+          if (data.meta && typeof data.meta.score === 'number') {
+            score = data.meta.score;
+          } else {
+            const m = aiMessage.match(/<<<SCORE\s+(\d+(?:\.\d+)?)\/10>>>/i);
+            if (m) {
+              score = parseFloat(m[1]);
+              aiMessage = aiMessage.replace(/<<<SCORE\s+\d+(?:\.\d+)?\/10>>>/i, '', '').trim();
+            }
+          }
+
+          const ended = !!(data.meta && data.meta.ended);
+          const progress = data.meta && typeof data.meta.progress === 'number' ? data.meta.progress : undefined;
+
+          if (/<<<FINAL_INTERVIEW_REPORT>>>/i.test(aiMessage)) {
+            const reportContent = aiMessage.replace(/<<<FINAL_INTERVIEW_REPORT>>>/i, '').trim();
+            addChatMessage('ai', 'Final Report', reportContent);
+            messages.push({ role: 'assistant', content: aiMessage });
+
+            const downloadBtnContainer = document.createElement('div');
+            downloadBtnContainer.style.padding = '0 1rem 1rem 1rem';
+
+            const downloadBtn = document.createElement('button');
+            downloadBtn.className = 'btn btn-primary';
+            downloadBtn.style.width = '100%';
+            downloadBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 0.5rem;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download Report`;
+            downloadBtn.onclick = () => downloadInterviewReport(reportContent);
+
+            downloadBtnContainer.appendChild(downloadBtn);
+            chatMessages.appendChild(downloadBtnContainer);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+          } else {
+            messages.push({ role: 'assistant', content: aiMessage });
+            addChatMessage('ai', 'Alex Johnson', aiMessage);
+
+            const { clean, emojis } = extractEmojisAndSanitize(aiMessage);
+
+            if (avatar && isModelLoaded) {
+              emojis.slice(0, 3).forEach((e, i) => {
+                const known = avatar.animEmojis[e] ? e : '😊';
+                setTimeout(() => avatar.speakEmoji(known), i * 400);
+              });
+              avatar.speakText(clean);
+            }
+
+            if (areSubtitlesOn) {
+              showSubtitles(`${timestampNow()} Alex: ${aiMessage}`);
+            }
+          }
+
+          if (typeof score === 'number') {
+            scores.push(score);
+            updateScoreAndProgress(progress);
+            addChatMessage('ai', 'Score', `Assessment for your last answer: ${score.toFixed(1)}/10`);
+          }
+
+          if (ended) {
+            addChatMessage('ai', 'System', 'Interview concluded. You can end the call or review the chat.');
+          }
         } else {
-            if (mainMessage) addMessage('assistant', mainMessage);
-            if (feedback) updateSkillsChart();
+          throw new Error(data.error || 'Invalid response from AI');
         }
-    }
-    
-    function setInputsDisabled(disabled) {
-        dom.sendButton.disabled = disabled; dom.hintButton.disabled = disabled; dom.messageInput.disabled = disabled; dom.voiceButton.disabled = disabled;
-        dom.messageInput.placeholder = disabled ? "AI is thinking..." : "Type your response...";
-        if (!disabled) dom.messageInput.focus();
-    }
-    
-    function initCharts() {
-        const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { beginAtZero: true, max: 100, pointLabels: { color: 'white', font: { size: 12 } }, grid: { color: 'rgba(255,255,255,0.2)' }, angleLines: { color: 'rgba(255,255,255,0.2)' }, ticks: { display: false } } } };
-        const initialData = { labels: ['Technical', 'Communication', 'Problem Solving', 'Leadership', 'Clarity'], datasets: [{ data: [10, 10, 10, 10, 10], fill: true, backgroundColor: 'rgba(34, 211, 238, 0.2)', borderColor: 'rgb(34, 211, 238)', pointBackgroundColor: 'rgb(34, 211, 238)' }]};
-        if(appState.charts.skills) appState.charts.skills.destroy();
+
+      } catch (error) {
+        console.error('AI communication error:', error);
+        addChatMessage('ai', 'System', 'I apologize, but I\'m having trouble processing your response. Please try again.');
+      } finally {
+        isWaitingForAIResponse = false;
+      }
     }
 
-    function updateSkillsChart() {
-        if (!appState.charts.skills) return;
-        const chart = appState.charts.skills;
-        chart.data.datasets[0].data = chart.data.datasets[0].data.map(d => Math.min(100, d + (Math.random() * 15 + 5)));
-        chart.update();
+    function timestampNow() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, '0');
+      const mm = String(now.getMinutes()).padStart(2, '0');
+      const ss = String(now.getSeconds()).padStart(2, '0');
+      return `[${hh}:${mm}:${ss}]`;
     }
-    
-    function renderFinalReport(reportText) {
-        if (appState.timer.intervalId) clearInterval(appState.timer.intervalId);
-        const cleanReport = reportText.replace('<<<END_FINAL_REPORT>>>', '').trim();
-        const score = cleanReport.match(/Overall Performance Score:\s*(\d+)/i)?.[1] || 'N/A';
-        const strengths = cleanReport.match(/Strengths:([\s\S]*?)Areas for Development:/is)?.[1] || 'Not available.';
-        const areas = cleanReport.match(/Areas for Development:([\s\S]*?)Actionable Next Steps:/is)?.[1] || 'Not available.';
-      
-        const html = `<div class="report-header"><h2 class="report-title">Interview Complete: Final Report</h2></div><div class="report-grid">
-            <div class="report-card glass-card"><div class="score-display"><div class="score-value">${score}<span style="font-size: 1.5rem; color: var(--text-muted);">/100</span></div></div><canvas id="final-skills-chart"></canvas></div>
-            <div class="report-card glass-card"><h3>Strengths</h3>${marked.parse(strengths)}</div>
-            <div class="report-card glass-card"><h3>Areas for Development</h3>${marked.parse(areas)}</div>
-        </div><div style="text-align: center; margin-top: 2rem; display: flex; gap: 1rem; justify-content: center;"><button id="restart-btn" class="btn btn-primary">Start New Interview</button></div>`;
-        dom.reportScreen.innerHTML = html;
-        dom.interviewScreen.classList.add('hidden');
-        dom.reportScreen.classList.remove('hidden');
 
-        const finalChartEl = document.getElementById('final-skills-chart');
-        const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { r: { beginAtZero: true, max: 100, pointLabels: { color: 'white', font: { size: 12 } }, grid: { color: 'rgba(255,255,255,0.2)' }, angleLines: { color: 'rgba(255,255,255,0.2)' }, ticks: { display: false } } } };
-        const finalChartData = { labels: ['Technical', 'Communication', 'Problem Solving', 'Leadership', 'Clarity'], datasets: [{ data: [Math.random()*90+10, Math.random()*90+10, Math.random()*90+10, Math.random()*90+10, Math.random()*90+10], fill: true, backgroundColor: 'rgba(34, 211, 238, 0.2)', borderColor: 'rgb(34, 211, 238)', pointBackgroundColor: 'rgb(34, 211, 238)' }]};
-        
-        if (finalChartEl) {
-            new Chart(finalChartEl, { type: 'radar', data: finalChartData, options: chartOptions });
+    function showSubtitles(text) {
+      subtitlesOverlay.textContent = text;
+      subtitlesOverlay.classList.remove('hidden');
+      const displayDuration = Math.max(2500, text.length * 50);
+      if (subtitlesOverlay._hideTimer) clearTimeout(subtitlesOverlay._hideTimer);
+      subtitlesOverlay._hideTimer = setTimeout(() => {
+        subtitlesOverlay.classList.add('hidden');
+      }, displayDuration);
+    }
+
+    function scheduleAISubtitles(sortedTP, totalDurationSec, audioStartAt) {
+      if (!areSubtitlesOn || !sortedTP || !sortedTP.length) return;
+      if (subtitlesOverlay._sched) { subtitlesOverlay._sched.forEach(id => clearTimeout(id)); }
+      const ids = []; const startEpoch = performance.now();
+      const offsetMs = (audioStartAt - avatar.audioCtx.currentTime) * 1000;
+      let currentSentence = [];
+      sortedTP.forEach((tp, i) => {
+        const atMs = tp.time_seconds * 1000 + offsetMs;
+        if (currentSentence.length === 0) ids.push(setTimeout(() => subtitlesOverlay.classList.add('hidden'), Math.max(0, atMs - 10)));
+        currentSentence.push(tp.word);
+        const slice = currentSentence.length > 6 ? currentSentence.slice(-6) : currentSentence;
+        const text = `${timestampNow()} Alex: ${slice.join(' ')}`;
+        ids.push(setTimeout(() => showSubtitles(text), Math.max(0, atMs)));
+        if (/[.!?]$/.test(tp.word)) { currentSentence = []; ids.push(setTimeout(() => subtitlesOverlay.classList.add('hidden'), Math.max(0, atMs + 200))); }
+      });
+      const totalMs = totalDurationSec * 1000 + offsetMs + 400;
+      ids.push(setTimeout(() => { subtitlesOverlay.classList.add('hidden'); }, Math.max(0, totalMs)));
+      subtitlesOverlay._sched = ids;
+    }
+
+    function toggleSubtitles() {
+      areSubtitlesOn = !areSubtitlesOn;
+      document.getElementById('subtitles-btn').classList.toggle('active', areSubtitlesOn);
+      if (!areSubtitlesOn) {
+        subtitlesOverlay.classList.add('hidden');
+      }
+    }
+
+    function updateScoreAndProgress(progress) {
+      if (scores.length) {
+        const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+        scorePill.textContent = `Avg Score: ${avg.toFixed(1)}/10`;
+      } else {
+        scorePill.textContent = 'Avg Score: —';
+      }
+      if (typeof progress === 'number') {
+        progressPill.textContent = `Progress: ${Math.round(progress)}%`;
+      }
+    }
+
+    async function downloadInterviewReport(reportContent) {
+      const filename = "AI_Interview_Report.txt";
+      const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
+
+      if (window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler === 'function') {
+        try {
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = function () {
+            const base64data = reader.result;
+            const base64Content = base64data.split(',')[1];
+            window.flutter_inappwebview.callHandler('blobToBase64Handler', base64Content, filename);
+          };
+        } catch (e) {
+          console.error("Flutter download failed:", e);
+          alert("Download failed. Please try again.");
         }
-        document.getElementById('restart-btn').addEventListener('click', () => window.location.reload());
+      } else {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        a.remove();
+      }
     }
 
-    initialize();
+    function endInterview() {
+      if (confirm('Are you sure you want to end the interview?')) {
+        if (userStream) {
+          userStream.getTracks().forEach(track => track.stop());
+        }
+        if (avatar) {
+          avatar.stopSpeaking();
+        }
+        interviewScreen.classList.add('hidden');
+        setupScreen.classList.remove('hidden');
+        messages = [];
+        isModelLoaded = false;
+        areSubtitlesOn = true;
+        isWaitingForAIResponse = false;
+        scores = [];
+        chatMessages.innerHTML = '';
+        modelLoadingOverlay.classList.remove('hidden');
+        loadModelInBackground();
+      }
+    }
+
+    function sendTypedMessage() {
+      const text = (mobileChatInput?.value || '').trim();
+      if (!text || isWaitingForAIResponse) return;
+      mobileChatInput.value = '';
+      addChatMessage('user', 'You', text);
+      sendToAI(text);
+      if (!mobileChatSheet.classList.contains('open')) {
+        mobileChatSheet.classList.add('open');
+        mobileChatSheet.setAttribute('aria-hidden', 'false');
+      }
+    }
+
+    function ensureMobileChatUIVisible() {
+      if (window.innerWidth <= 768) {
+        if (mobileChatFab) mobileChatFab.style.display = 'inline-flex';
+        if (mobileChatSheet) mobileChatSheet.style.display = 'flex';
+      }
+    }
+
+    init();
   </script>
+  <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+    data-cf-beacon='{"token": "9ecf6f49919940acb2efcc833483cd5f"}'></script><!-- Cloudflare Pages Analytics -->
+  <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+    data-cf-beacon='{"token": "9ecf6f49919940acb2efcc833483cd5f"}'></script><!-- Cloudflare Pages Analytics -->
 </body>
+
 </html>
