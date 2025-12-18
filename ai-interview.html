@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,7 +27,9 @@
             --transition: all 0.2s ease-in-out;
         }
 
-        .hidden { display: none !important; }
+        .hidden {
+            display: none !important;
+        }
 
         * {
             margin: 0;
@@ -37,7 +40,7 @@
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--bg-primary);
-            background-image: radial-gradient(ellipse 80% 50% at 50% -20%,rgba(120, 119, 198, 0.3), transparent);
+            background-image: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(120, 119, 198, 0.3), transparent);
             color: var(--text-primary);
             min-height: 100vh;
             overflow-x: hidden;
@@ -53,21 +56,21 @@
         }
 
         .subtitles-overlay {
-        position: absolute;
-        left: 50%;
-        bottom: 76px;             
-        transform: translateX(-50%);
-        background: rgba(0,0,0,.65);
-        color: #fff;
-        padding: .6rem .9rem;
-        border-radius: 10px;
-        font-size: 1rem;
-        line-height: 1.35;
-        max-width: 88%;
-        text-align: center;
-        z-index: 20;                
-        pointer-events: none;
-        white-space: pre-wrap;
+            position: absolute;
+            left: 50%;
+            bottom: 76px;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, .65);
+            color: #fff;
+            padding: .6rem .9rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            line-height: 1.35;
+            max-width: 88%;
+            text-align: center;
+            z-index: 20;
+            pointer-events: none;
+            white-space: pre-wrap;
         }
 
 
@@ -80,12 +83,12 @@
             backdrop-filter: blur(24px);
             border: 1px solid transparent;
             background-clip: padding-box;
-            border-image: linear-gradient(to bottom right, rgba(255,255,255,0.15), rgba(255,255,255,0.05)) 1;
+            border-image: linear-gradient(to bottom right, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05)) 1;
             border-radius: 24px;
             padding: 3rem;
             max-width: 600px;
             width: 100%;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             position: relative;
             z-index: 2;
         }
@@ -143,7 +146,8 @@
             font-size: 0.9rem;
         }
 
-        .form-input, .form-select {
+        .form-input,
+        .form-select {
             padding: 0.875rem 1rem;
             background: rgba(17, 24, 39, 0.8);
             border: 1px solid var(--border);
@@ -152,11 +156,12 @@
             font-size: 1rem;
             transition: var(--transition);
         }
-        
+
         .select-wrapper {
             position: relative;
             display: block;
         }
+
         .select-wrapper::after {
             content: "▾";
             position: absolute;
@@ -177,13 +182,13 @@
             line-height: 1.2;
             cursor: pointer;
 
-            background-color: var(--bg-secondary); 
+            background-color: var(--bg-secondary);
             color: var(--text-primary);
             border-color: var(--border);
         }
 
         .form-select:hover {
-            background-color: #0b1220; 
+            background-color: #0b1220;
         }
 
         .form-select:focus {
@@ -193,42 +198,45 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
         }
 
-        
+
         .form-select option,
         .form-select optgroup {
-            background-color: #0b1220 !important; 
-            color: #f9fafb !important;           
+            background-color: #0b1220 !important;
+            color: #f9fafb !important;
         }
 
         .form-select option:checked,
         .form-select option:focus,
         .form-select option:hover {
-            background-color: #1e40af !important; 
+            background-color: #1e40af !important;
             color: #ffffff !important;
         }
 
-        
+
         @media (-ms-high-contrast: active) {
             .form-select {
                 border: 2px solid windowText;
             }
         }
 
-        
+
         .form-select::-webkit-scrollbar {
             width: 12px;
         }
+
         .form-select::-webkit-scrollbar-track {
             background: #0b1220;
         }
+
         .form-select::-webkit-scrollbar-thumb {
             background-color: #334155;
             border-radius: 8px;
             border: 3px solid #0b1220;
         }
 
-        
+
         @-moz-document url-prefix() {
+
             .form-select,
             .form-select option,
             .form-select optgroup {
@@ -237,7 +245,8 @@
             }
         }
 
-        .form-input:focus, .form-select:focus {
+        .form-input:focus,
+        .form-select:focus {
             outline: none;
             border-color: var(--primary-light);
             background: var(--bg-secondary);
@@ -280,7 +289,7 @@
             box-shadow: none;
         }
 
-        
+
         .loading-screen {
             position: fixed;
             top: 0;
@@ -306,8 +315,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .loading-text {
@@ -331,7 +345,7 @@
             transition: width 0.5s ease;
         }
 
-        
+
         .interview-container {
             position: fixed;
             top: 0;
@@ -504,7 +518,7 @@
         .message.ai {
             align-self: flex-start;
         }
-        
+
         .message.user {
             align-self: flex-end;
         }
@@ -527,7 +541,7 @@
             background: var(--bg-tertiary);
             border-top-left-radius: 2px;
         }
-        
+
         .message.user .message-content {
             background: var(--primary);
             color: white;
@@ -569,7 +583,7 @@
             background: var(--primary);
         }
 
-        
+
         .push-to-talk-container {
             position: relative;
             display: flex;
@@ -606,9 +620,17 @@
         }
 
         @keyframes pulse-recording {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         .push-to-talk-hint {
@@ -617,7 +639,7 @@
             margin-left: 0.5rem;
         }
 
-        
+
         .speech-status {
             position: absolute;
             bottom: 100%;
@@ -639,7 +661,7 @@
             opacity: 1;
         }
 
-        
+
         .interview-footer {
             background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(10px);
@@ -704,7 +726,7 @@
             color: white;
         }
 
-        
+
         @media (max-width: 768px) {
             .setup-card {
                 padding: 2rem;
@@ -769,7 +791,7 @@
             }
         }
 
-        
+
         .floating-ptt {
             position: fixed;
             right: 16px;
@@ -784,7 +806,7 @@
         .floating-ptt .push-to-talk-container {
             pointer-events: auto;
             background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 8px 10px;
             border-radius: 14px;
             backdrop-filter: blur(8px);
@@ -796,25 +818,71 @@
                 right: 12px;
             }
         }
-/* hide self camera on mobile and simplify sidebar layout */
-@media (max-width: 768px) {
-    .user-video { display: none; }
-    .sidebar { width: 100%; grid-template-columns: 1fr; }
-}
 
-/* Hide mobile chat UI by default (desktop), show only on mobile */
-@media (min-width: 769px) {
-  #mobile-chat-fab,
-  #mobile-chat-sheet { display: none; }
-}
+        /* hide self camera on mobile and simplify sidebar layout */
+        @media (max-width: 768px) {
+            .user-video {
+                display: none;
+            }
 
-@media (max-width: 768px) {
-  .mobile-chat-fab { position: fixed; right: 16px; bottom: 156px; background:#111827; color:#fff; border:1px solid rgba(255,255,255,.12); padding:.6rem .9rem; border-radius:999px; box-shadow: var(--shadow); z-index:1200; display: inline-flex; align-items: center; }
-  .mobile-chat-sheet { position: fixed; left:0; right:0; bottom:-100%; height:70vh; background:#0f172a; border-top:1px solid var(--border); border-radius:16px 16px 0 0; display:flex; flex-direction:column; transition: transform .25s ease; transform: translateY(100%); z-index:1300; }
-  /* Ensure visibility on mobile */
-  #mobile-chat-fab { display: inline-flex !important; z-index: 2000; }
-  #mobile-chat-sheet { display: flex !important; z-index: 2100; }
-}
+            .sidebar {
+                width: 100%;
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Hide mobile chat UI by default (desktop), show only on mobile */
+        @media (min-width: 769px) {
+
+            #mobile-chat-fab,
+            #mobile-chat-sheet {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mobile-chat-fab {
+                position: fixed;
+                right: 16px;
+                bottom: 156px;
+                background: #111827;
+                color: #fff;
+                border: 1px solid rgba(255, 255, 255, .12);
+                padding: .6rem .9rem;
+                border-radius: 999px;
+                box-shadow: var(--shadow);
+                z-index: 1200;
+                display: inline-flex;
+                align-items: center;
+            }
+
+            .mobile-chat-sheet {
+                position: fixed;
+                left: 0;
+                right: 0;
+                bottom: -100%;
+                height: 70vh;
+                background: #0f172a;
+                border-top: 1px solid var(--border);
+                border-radius: 16px 16px 0 0;
+                display: flex;
+                flex-direction: column;
+                transition: transform .25s ease;
+                transform: translateY(100%);
+                z-index: 1300;
+            }
+
+            /* Ensure visibility on mobile */
+            #mobile-chat-fab {
+                display: inline-flex !important;
+                z-index: 2000;
+            }
+
+            #mobile-chat-sheet {
+                display: flex !important;
+                z-index: 2100;
+            }
+        }
     </style>
     <script type="importmap">
     { 
@@ -826,18 +894,21 @@
     }
     </script>
 </head>
+
 <body>
-    
+
     <div id="setup-screen" class="setup-container">
         <div class="setup-card fade-in">
             <div class="setup-header">
                 <div class="setup-logo">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                     </svg>
                 </div>
                 <h1 class="setup-title">AI Video Interview</h1>
-                <p class="setup-subtitle">Practice with our AI interviewer and get instant feedback on your performance</p>
+                <p class="setup-subtitle">Practice with our AI interviewer and get instant feedback on your performance
+                </p>
             </div>
 
             <form id="setup-form" class="form-grid">
@@ -846,7 +917,8 @@
                     <div class="select-wrapper">
                         <select id="specialization" class="form-select">
                             <optgroup label="CA & Accounting (Recommended)">
-                                <option value="Chartered Accountant - Audit" selected>Chartered Accountant — Audit</option>
+                                <option value="Chartered Accountant - Audit" selected>Chartered Accountant — Audit
+                                </option>
                                 <option value="Chartered Accountant - Taxation">Chartered Accountant — Taxation</option>
                                 <option value="Management Accountant (CMA)">Management Accountant (CMA)</option>
                                 <option value="Financial Controller">Financial Controller</option>
@@ -918,7 +990,7 @@
 
                 <button type="submit" class="btn btn-primary">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M8 5v14l11-7z"/>
+                        <path d="M8 5v14l11-7z" />
                     </svg>
                     Start Interview
                 </button>
@@ -926,7 +998,7 @@
         </div>
     </div>
 
-    
+
     <div id="loading-screen" class="loading-screen hidden">
         <div class="loading-spinner"></div>
         <div class="loading-text">Preparing your interview...</div>
@@ -935,22 +1007,23 @@
         </div>
     </div>
 
-    
+
     <div id="permissions-modal" class="permissions-modal hidden">
         <div class="permissions-content">
             <h2 class="permissions-title">Camera & Microphone Access</h2>
             <p class="permissions-text">
-                To provide the best interview experience, we need access to your camera and microphone. 
+                To provide the best interview experience, we need access to your camera and microphone.
                 This helps our AI interviewer analyze your verbal and non-verbal communication.
             </p>
             <div class="permissions-actions">
                 <button id="allow-permissions" class="btn btn-primary">Allow Access</button>
-                <button id="skip-permissions" class="btn" style="background: var(--bg-tertiary); color: var(--text-primary);">Skip for now</button>
+                <button id="skip-permissions" class="btn"
+                    style="background: var(--bg-tertiary); color: var(--text-primary);">Skip for now</button>
             </div>
         </div>
     </div>
 
-    
+
     <div id="interview-screen" class="interview-container hidden">
         <header class="interview-header">
             <div class="interview-title">
@@ -1006,23 +1079,26 @@
             <div class="footer-controls">
                 <button id="subtitles-btn" class="footer-btn subtitles" title="Toggle Subtitles">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 4H5c-1.66 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.79-.73-1.68-1.36-2.66-1.85-.33-.16-.56-.51-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/>
+                        <path
+                            d="M19 4H5c-1.66 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.79-.73-1.68-1.36-2.66-1.85-.33-.16-.56-.51-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z" />
                     </svg>
                 </button>
                 <button id="end-call-btn" class="footer-btn end-call" title="End Interview">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 9c-1.66 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.79-.73-1.68-1.36-2.66-1.85-.33-.16-.56-.51-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/>
+                        <path
+                            d="M12 9c-1.66 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.79-.73-1.68-1.36-2.66-1.85-.33-.16-.56-.51-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z" />
                     </svg>
                 </button>
             </div>
         </footer>
 
-        
+
         <div class="floating-ptt" aria-live="polite">
             <div class="push-to-talk-container">
                 <button id="push-to-talk-btn" class="push-to-talk-btn" title="Hold to speak" aria-label="Hold to speak">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"/>
+                        <path
+                            d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z" />
                     </svg>
                 </button>
                 <div id="speech-status" class="speech-status" role="status" aria-live="polite"></div>
@@ -1050,840 +1126,325 @@
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
         import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
         import { LipsyncEn } from 'lipsync-en';
+        import { poses, moods, emojis, gestures } from 'https://www.mystudentclub.com/scripts/animations.js';
 
+        // --- CONFIGURATION ---
+        const AVATAR_URL = 'https://models.readyplayer.me/69440c84ca696e5f2fb7bfd5.glb?morphTargets=ARKit,Oculus+Visemes,mouthOpen,mouthSmile,eyesClosed,eyesLookUp,eyesLookDown';
+        const WORKER_URL = 'https://interviewme.bhansalimanan55.workers.dev/';
+        const TTS_ENDPOINT = 'https://us-central1-msc-notif.cloudfunctions.net/gcp-tts-rate-limited';
+
+        // --- GLOBAL CONTROLS ---
+        window.speechRecognitionActive = false; // Flag to track state
+
+        // --- TALKING HEAD CLASS ---
         class TalkingHead {
             constructor(node, opt = {}) {
                 this.nodeAvatar = node;
                 this.opt = { ttsEndpoint: null, lipsyncLang: 'en', cameraView: 'upper', ...opt };
                 this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-                const w = Math.max( this.nodeAvatar.clientWidth || 640, 640 );
-                const h = Math.max( this.nodeAvatar.clientHeight || 360, 360 );
                 this.renderer.setPixelRatio(window.devicePixelRatio);
-                this.renderer.setSize(w, h);
+                this.renderer.setSize(node.clientWidth, node.clientHeight);
                 this.renderer.outputColorSpace = THREE.SRGBColorSpace;
                 this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-                this.renderer.sortObjects = false;
                 this.nodeAvatar.appendChild(this.renderer.domElement);
-                this.camera = new THREE.PerspectiveCamera(25, w / h, 0.1, 100);
+                this.camera = new THREE.PerspectiveCamera(25, node.clientWidth / node.clientHeight, 0.1, 100);
                 this.scene = new THREE.Scene();
-                this.scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-                const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
-                directionalLight.position.set(0.5, 1, 1).normalize();
-                this.scene.add(directionalLight);
+
+                this.scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.7));
+                const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+                dirLight.position.set(0.5, 2, 2);
+                dirLight.castShadow = true;
+                this.scene.add(dirLight);
+
                 this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-                this.controls.enableZoom = false; 
-                this.controls.enablePan = false; 
-                this.controls.target.set(0, 1.6, 0);
-                this.controls.enableDamping = true;
-                this.controls.dampingFactor = 0.05;
+                this.controls.enableZoom = false; this.controls.enablePan = false;
+                this.controls.target.set(0, 1.58, 0); this.controls.enableDamping = true;
+
                 this.animClock = 0; this.animTimeLast = 0;
                 this.avatar = null; this.armature = null; this.morphs = []; this.mixer = null;
-                this.speechQueue = []; this.isSpeaking = false; this.isRunning = false; this.stateName = 'idle';
+                this.speechQueue = []; this.isSpeaking = false; this.isRunning = false;
                 this.audioCtx = new AudioContext(); this.audioSpeechSource = null;
                 this.lipsync = {};
-                this.visemeNames = [ 'viseme_sil', 'viseme_PP', 'viseme_FF', 'viseme_TH', 'viseme_DD', 'viseme_kk', 'viseme_CH', 'viseme_SS', 'viseme_nn', 'viseme_RR', 'viseme_aa', 'viseme_E', 'viseme_I', 'viseme_O', 'viseme_U' ];
-                this.poseTemplates = { 
-                    'side': {
-                        standing: true,
-                        props: {
-                            'Hips.position': { x: 0, y: 1, z: 0 },
-                            'Hips.rotation': { x: -0.003, y: -0.017, z: 0.1 },
-                            'Spine.rotation': { x: -0.103, y: -0.002, z: -0.063 },
-                            'Spine1.rotation': { x: 0.042, y: -0.02, z: -0.069 },
-                            'Spine2.rotation': { x: 0.131, y: -0.012, z: -0.065 },
-                            'Neck.rotation': { x: 0.027, y: 0.006, z: 0 },
-                            'Head.rotation': { x: 0.077, y: -0.065, z: 0 },
-                            'LeftShoulder.rotation': { x: 1.599, y: 0.084, z: -1.77 },
-                            'LeftArm.rotation': { x: 1.364, y: 0.052, z: -0.044 },
-                            'LeftForeArm.rotation': { x: 0.002, y: -0.007, z: 0.331 },
-                            'LeftHand.rotation': { x: 0.104, y: -0.067, z: -0.174 },
-                            'LeftUpLeg.rotation': { x: 0.096, y: 0.209, z: 2.983 },
-                            'LeftLeg.rotation': { x: -0.053, y: 0.042, z: -0.017 },
-                            'LeftFoot.rotation': { x: 1.091, y: 0.15, z: 0.026 },
-                            'RightShoulder.rotation': { x: 1.541, y: 0.192, z: 1.775 },
-                            'RightArm.rotation': { x: 1.273, y: -0.352, z: -0.067 },
-                            'RightForeArm.rotation': { x: -0.011, y: -0.031, z: -0.357 },
-                            'RightHand.rotation': { x: -0.008, y: 0.312, z: -0.028 },
-                            'RightUpLeg.rotation': { x: -0.307, y: -0.219, z: 2.912 },
-                            'RightLeg.rotation': { x: -0.359, y: 0.164, z: 0.015 },
-                            'RightFoot.rotation': { x: 1.035, y: 0.11, z: 0.005 }
-                        }
-                    },
-                    'straight': {
-                        standing: true,
-                        props: {
-                            'Hips.position': { x: 0, y: 0.989, z: 0.001 },
-                            'Hips.rotation': { x: 0.047, y: 0.007, z: -0.007 },
-                            'Spine.rotation': { x: -0.143, y: -0.007, z: 0.005 },
-                            'Spine1.rotation': { x: -0.043, y: -0.014, z: 0.012 },
-                            'Spine2.rotation': { x: 0.072, y: -0.013, z: 0.013 },
-                            'Neck.rotation': { x: 0.048, y: -0.003, z: 0.012 },
-                            'Head.rotation': { x: 0.05, y: -0.02, z: -0.017 },
-                            'LeftShoulder.rotation': { x: 1.62, y: -0.166, z: -1.605 },
-                            'LeftArm.rotation': { x: 1.275, y: 0.544, z: -0.092 },
-                            'LeftForeArm.rotation': { x: 0, y: 0, z: 0.302 },
-                            'LeftHand.rotation': { x: -0.225, y: -0.154, z: 0.11 },
-                            'RightShoulder.rotation': { x: 1.615, y: 0.064, z: 1.53 },
-                            'RightArm.rotation': { x: 1.313, y: -0.424, z: 0.131 },
-                            'RightForeArm.rotation': { x: 0, y: 0, z: -0.317 },
-                            'RightHand.rotation': { x: -0.158, y: -0.639, z: -0.196 },
-                            'LeftUpLeg.rotation': { x: -0.077, y: -0.058, z: 3.126 },
-                            'LeftLeg.rotation': { x: -0.252, y: 0.001, z: -0.018 },
-                            'LeftFoot.rotation': { x: 1.315, y: -0.064, z: 0.315 },
-                            'RightUpLeg.rotation': { x: -0.083, y: -0.032, z: 3.124 },
-                            'RightLeg.rotation': { x: -0.272, y: -0.003, z: 0.021 },
-                            'RightFoot.rotation': { x: 1.342, y: 0.076, z: -0.222 }
-                        }
-                    }
-                };
-                this.animMoods = {
-                    neutral: {
-                        anims: [
-                            {
-                                name: 'breathing',
-                                loop: -1,
-                                delay: 1500,
-                                dt: [1200, 500, 1000],
-                                vs: { chestInhale: [0.5, 0.5, 0] }
-                            },
-                            {
-                                name: 'pose',
-                                loop: -1,
-                                alt: [
-                                    {
-                                        p: 0.4,
-                                        delay: [5000, 20000],
-                                        dt: [2000],
-                                        vs: { pose: ['side'] }
-                                    },
-                                    {
-                                        delay: [5000, 20000],
-                                        dt: [2000],
-                                        vs: { pose: ['straight'] }
-                                    }
-                                ]
-                            },
-                            {
-                                name: 'head',
-                                loop: -1,
-                                idle: {
-                                    delay: [0, 1000],
-                                    dt: [[200, 5000]],
-                                    vs: {
-                                        headRotateX: [[-0.04, 0.10]],
-                                        headRotateY: [[-0.3, 0.3]],
-                                        headRotateZ: [[-0.08, 0.08]]
-                                    }
-                                },
-                                talking: {
-                                    delay: [0, 1000],
-                                    dt: [[0, 1000, 0]],
-                                    vs: {
-                                        headRotateX: [[-0.05, 0.15, 1, 2]],
-                                        headRotateY: [[-0.1, 0.1]],
-                                        headRotateZ: [[-0.1, 0.1]]
-                                    }
-                                }
-                            },
-                            {
-                                name: 'eyes',
-                                loop: -1,
-                                delay: [200, 5000],
-                                dt: [[100, 500], [100, 5000, 2]],
-                                vs: {
-                                    eyesRotateY: [[-0.6, 0.6]],
-                                    eyesRotateX: [[-0.2, 0.6]]
-                                }
-                            },
-                            {
-                                name: 'blink',
-                                loop: -1,
-                                delay: [1000, 8000],
-                                dt: [50, [100, 300], 100],
-                                vs: {
-                                    eyeBlinkLeft: [1, 1, 0],
-                                    eyeBlinkRight: [1, 1, 0]
-                                }
-                            },
-                            {
-                                name: 'mouth',
-                                loop: -1,
-                                delay: [1000, 5000],
-                                dt: [[100, 500], [100, 5000, 2]],
-                                vs: {
-                                    mouthRollLower: [[0, 0.3, 2]],
-                                    mouthPucker: [[0, 0.3]]
-                                }
-                            }
-                        ]
-                    }
-                };
+                this.visemeNames = ['viseme_sil', 'viseme_PP', 'viseme_FF', 'viseme_TH', 'viseme_DD', 'viseme_kk', 'viseme_CH', 'viseme_SS', 'viseme_nn', 'viseme_RR', 'viseme_aa', 'viseme_E', 'viseme_I', 'viseme_O', 'viseme_U'];
 
-                this.animEmojis = {
-                    '😊': { name: 'smile', dt: [300, 1000], vs: { mouthSmile: [0.7], eyeSquintLeft: [0.8], eyeSquintRight: [0.8] } },
-                    '😉': { name: 'wink', dt: [100, 200, 500], vs: { mouthSmile: [0.5, 0.5, 0], eyeBlinkRight: [1, 1, 0] } },
-                    '😞': { name: 'sad', dt: [1000], vs: { browInnerUp: [0.7], mouthFrownLeft: [0.8], mouthFrownRight: [0.8] } },
-                    '😡': { name: 'angry', dt: [500], vs: { browDownLeft: [1], browDownRight: [1], mouthFrownLeft: [1], mouthFrownRight: [1] } }
-                };
+                this.poseTemplates = poses; this.animMoods = moods; this.animEmojis = emojis; this.gestureTemplates = gestures || {};
 
-                this.animQueue = [];
+                this.animQueue = []; this.poseBase = { props: {} }; this.poseTarget = { props: {} }; this.poseAvatar = { props: {} }; this.poseDelta = { props: {} }; this.animBaseline = {};
+                this.currentPoseName = 'straight';
                 this.easing = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-                this.poseBase = {}; this.poseTarget = {}; this.poseAvatar = {}; this.poseDelta = { props: {} };
-                this.poseWeightOnLeft = true;
-                this.randomized = ['mouthStretchLeft', 'mouthStretchRight', 'mouthRollLower', 'mouthRollUpper', 'browDownLeft', 'browDownRight', 'browOuterUpLeft', 'browOuterUpRight', 'cheekPuff', 'cheekSquintLeft', 'cheekSquintRight'];
-                this.animBaseline = {};
-                this.ikMesh = new THREE.SkinnedMesh();
+
                 window.addEventListener('resize', this.onResize.bind(this));
-                this.envLoaded = false;
             }
 
-            init() {
+            async init() {
                 this.lipsync[this.opt.lipsyncLang] = new LipsyncEn();
-                const rgbe = new RGBELoader();
-                const hdrUrl = 'https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/studio_small_09_2k.hdr';
-                rgbe.load(hdrUrl, (tex) => {
-                    tex.mapping = THREE.EquirectangularReflectionMapping;
-                    this.scene.environment = tex;
-                    this.scene.background = tex;
-                    this.envLoaded = true;
-                }, undefined, (e) => {
-                    console.warn('HDR env load failed', e);
-                    this.scene.background = new THREE.Color(0x0f172a);
-                });
-            }
-
-            fixMaterial(mat, owner) {
-                if (!mat) return;
-                const ownerName = (owner?.name || '').toLowerCase();
-                const matName = (mat.name || '').toLowerCase();
-                const tag = (ownerName + ' ' + matName);
-
-                const isHairCard = /(hair|lash|eyelash|eyebrow|brow|beard|stubble|mustache)/i.test(tag);
-                const isEyeCornea = /(cornea|eyemoisture|tear|tearline|eye_moisture|eye\-moisture)/i.test(tag);
-                const isEyeIrisSclera = /(eye$|eyes$|iris|sclera|eyeball)/i.test(tag) && !isEyeCornea;
-
-                const makeOpaqueSolid = (m) => {
-                    m.transparent = false;
-                    m.alphaTest = 0;
-                    m.opacity = 1;
-                    m.depthWrite = true;
-                    m.depthTest = true;
-                    m.blending = THREE.NormalBlending;
-                    m.side = THREE.FrontSide;
-                    m.needsUpdate = true;
-                };
-
-                if (isEyeCornea) {
-                    mat.transparent = true;
-                    mat.alphaTest = 0.0;
-                    mat.opacity = Math.min(1, Math.max(0.2, mat.opacity ?? 0.35));
-                    mat.depthWrite = false;
-                    mat.depthTest = true;
-                    mat.blending = THREE.NormalBlending;
-                    mat.side = THREE.FrontSide;
-                    mat.polygonOffset = true;
-                    mat.polygonOffsetFactor = -0.5;
-                    mat.polygonOffsetUnits = -1;
-                    mat.needsUpdate = true;
-                    return;
-                }
-
-                if (isHairCard) {
-                    mat.alphaTest = Math.max(mat.alphaTest || 0, 0.5);
-                    mat.transparent = false;
-                    mat.opacity = 1;
-                    mat.depthWrite = true;
-                    mat.depthTest = true;
-                    mat.blending = THREE.NormalBlending;
-                    mat.side = THREE.FrontSide;
-                    mat.polygonOffset = true;
-                    mat.polygonOffsetFactor = 0.5;
-                    mat.polygonOffsetUnits = 1;
-                    mat.needsUpdate = true;
-                    return;
-                }
-
-                if (isEyeIrisSclera) {
-                    makeOpaqueSolid(mat);
-                    mat.polygonOffset = true;
-                    mat.polygonOffsetFactor = 0.25;
-                    mat.polygonOffsetUnits = 0.5;
-                    return;
-                }
-
-                const hasRGBA = !!(mat.map && mat.map.format === THREE.RGBAFormat);
-                const looksTransparent = mat.transparent || (mat.opacity !== undefined && mat.opacity < 1) || hasRGBA;
-                if (looksTransparent) {
-                    mat.alphaTest = Math.max(mat.alphaTest || 0, 0.5);
-                    mat.transparent = false;
-                    mat.opacity = 1;
-                    mat.depthWrite = true;
-                    mat.depthTest = true;
-                    mat.blending = THREE.NormalBlending;
-                    mat.side = THREE.FrontSide;
-                    mat.needsUpdate = true;
-                } else {
-                    makeOpaqueSolid(mat);
-                }
+                try {
+                    const rgbe = new RGBELoader();
+                    const tex = await new Promise((res, rej) => rgbe.load('https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr', res, undefined, rej));
+                    tex.mapping = THREE.EquirectangularReflectionMapping; this.scene.environment = tex;
+                } catch (e) { }
             }
 
             async showAvatar(avatar) {
                 const loader = new GLTFLoader();
                 const gltf = await loader.loadAsync(avatar.url);
                 this.armature = gltf.scene;
-
                 this.armature.traverse(node => {
-                    if (node.isMesh || node.isSkinnedMesh) {
-                        if (Array.isArray(node.material)) {
-                            node.material = node.material.map(m => m.clone());
-                            node.material.forEach(m => this.fixMaterial(m, node));
-                        } else if (node.material) {
-                            node.material = node.material.clone();
-                            this.fixMaterial(node.material, node);
-                        }
-
-                        if (node.material) {
-                            if (Array.isArray(node.material)) {
-                                node.material.forEach(m => { m.envMap = null; });
-                            } else {
-                                node.material.envMap = null;
-                            }
-                        }
-
-                        const n = (node.name || '').toLowerCase();
-                        if (/(cornea|eyemoisture|tear|tearline|eye_moisture|eye\-moisture)/i.test(n)) {
-                            node.renderOrder = 30; 
-                        } else if (/(eye$|eyes$|iris|sclera|eyeball)/i.test(n)) {
-                            node.renderOrder = 20;
-                        } else if (/(lash|eyelash|brow|eyebrow)/i.test(n)) {
-                            node.renderOrder = 15;
-                        } else {
-                            node.renderOrder = 10;
-                        }
-
-                        if (node.morphTargetDictionary) { this.morphs.push(node); }
-                        node.frustumCulled = false;
+                    if (node.isMesh) {
+                        node.castShadow = true; node.receiveShadow = true; node.frustumCulled = false;
+                        if (node.material) { node.material.transparent = false; node.material.alphaTest = 0.5; node.material.side = THREE.FrontSide; if (node.name.toLowerCase().includes('eye')) { node.material.roughness = 0.2; node.material.metalness = 0.1; } }
+                        if (node.morphTargetDictionary) this.morphs.push(node);
                     }
                 });
 
-                if (!this.morphs.length) { throw new Error("No morph targets found on model."); }
-                
+                this.poseAvatar = { props: {} }; this.poseDelta = { props: {} };
+                if (!this.poseTemplates.straight) this.poseTemplates.straight = { props: {} };
                 this.poseBase = this.poseFactory(this.poseTemplates.straight);
                 this.poseTarget = this.poseFactory(this.poseTemplates.straight);
-                this.poseAvatar.props = {};
-                this.poseDelta.props = {};
 
-                const posePropNames = new Set();
-                Object.values(this.poseTemplates).forEach(x => {
-                    Object.keys(this.propsToThreeObjects(x.props)).forEach(y => posePropNames.add(y));
+                const usedBones = new Set();
+                [...Object.values(this.poseTemplates), ...Object.values(this.gestureTemplates)].forEach(t => {
+                    if (t.props) Object.keys(t.props).forEach(k => usedBones.add(k));
+                    else Object.keys(t).forEach(k => usedBones.add(k));
                 });
 
-                for (const key of posePropNames) {
-                    const [boneName, propName] = key.split('.');
+                usedBones.forEach(key => {
+                    const [boneName, prop] = key.split('.');
                     const bone = this.armature.getObjectByName(boneName);
-                    if (bone && bone[propName]) {
-                        this.poseAvatar.props[key] = bone[propName];
-                        if(this.poseBase.props[key]) {
-                            this.poseAvatar.props[key].copy(this.poseBase.props[key]);
-                        } else {
-                            this.poseBase.props[key] = this.poseAvatar.props[key].clone();
-                        }
-                        if(this.poseTarget.props[key]) {
-                            this.poseTarget.props[key].t = this.animClock;
-                            this.poseTarget.props[key].d = 2000;
-                        }
-                         if(propName === 'quaternion' || propName === 'scale') {
-                             this.poseDelta.props[key] = propName === 'quaternion' ? new THREE.Euler() : new THREE.Vector3();
-                        }
+                    if (bone) {
+                        this.poseAvatar.props[key] = bone[prop];
+                        if (!this.poseBase.props[key]) this.poseBase.props[key] = bone[prop].clone();
+                        if (!this.poseTarget.props[key]) this.poseTarget.props[key] = bone[prop].clone();
+                        if (prop === 'rotation' || prop === 'quaternion') this.poseDelta.props[key] = new THREE.Euler();
+                        else this.poseDelta.props[key] = new THREE.Vector3();
                     }
-                }
+                });
 
-                this.mixer = new THREE.AnimationMixer(this.armature);
-                let idleClip = gltf.animations.find(clip => clip.name.toLowerCase() === 'idle') || gltf.animations[0];
-                if(idleClip) { this.mixer.clipAction(idleClip).play(); }
-                
+                this.setPose('straight', 0);
                 this.scene.add(this.armature);
                 this.setView(this.opt.cameraView);
                 this.start();
             }
 
-            propsToThreeObjects(p) { const r = {}; for (let [key, val] of Object.entries(p)) { const ids = key.split('.'); let v; let x = val.x ?? 0; let y = val.y ?? 0; let z = val.z ?? 0; if (ids[1] === 'position' || ids[1] === 'scale') { v = new THREE.Vector3(x, y, z); } else if (ids[1] === 'rotation') { key = ids[0] + '.quaternion'; v = new THREE.Quaternion().setFromEuler(new THREE.Euler(x, y, z, 'XYZ')); } if (v) r[key] = v; } return r; }
-            poseFactory(template, ms = 2000) { const o = { template: template, props: this.propsToThreeObjects(template.props) }; for (const v of Object.values(o.props)) { v.t = this.animClock; v.d = ms; } return o; }
-            mirrorPose(p) { const r = {}; for (let [key, v] of Object.entries(p)) { if (v.isQuaternion) { if (key.startsWith('Left')) { key = 'Right' + key.substring(4); } else if (key.startsWith('Right')) { key = 'Left' + key.substring(5); } v.x *= -1; v.w *= -1; } r[key] = v.clone(); r[key].t = v.t; r[key].d = v.d; } return r; }
-            setPoseFromTemplate(templateName, ms=2000) { 
-                const template = this.poseTemplates[templateName]; 
-                if(!template) return;
-                const isSameTemplate = this.poseCurrentTemplate && template.props === this.poseCurrentTemplate.props;
-                this.poseBase = this.poseFactory(this.poseCurrentTemplate || this.poseTemplates.straight, ms); 
-                this.poseTarget = this.poseFactory(template, ms);
-                this.poseCurrentTemplate = template;
-                
-                if ((!isSameTemplate && !this.poseWeightOnLeft) || (isSameTemplate && this.poseWeightOnLeft)) {
-                    this.poseTarget.props = this.mirrorPose(this.poseTarget.props);
-                    this.poseWeightOnLeft = !this.poseWeightOnLeft;
-                }
-            }
+            start() { if (this.isRunning) return; this.isRunning = true; this.animTimeLast = performance.now(); this.setMood('neutral'); this.renderer.setAnimationLoop(this.animate.bind(this)); }
+            setMood(n) { if (!this.animMoods[n]) return; this.animQueue = this.animQueue.filter(a => a.loop !== -1); this.animMoods[n].anims.forEach(a => this.animQueue.push(this.animFactory(a))); if (this.animMoods[n].baseline) Object.entries(this.animMoods[n].baseline).forEach(([k, v]) => this.animBaseline[k] = { target: v, t0: this.animClock, v0: this.getValue(k) }); }
 
-            startIdleAnimations() { this.animMoods.neutral.anims.forEach(animTemplate => { this.animQueue.push(this.animFactory(animTemplate)); }); }
-            stopIdleAnimations() { this.animQueue = this.animQueue.filter(anim => anim.loop !== -1 && anim.template.name !== 'pose'); }
-            animFactory(t) { 
-                const o = { template: t, ts: [0], vs: {}, loop: t.loop }; 
-                let a = t;
-                if (a[this.stateName]) {
-                    a = a[this.stateName];
-                }
-                if (a.alt) {
-                    let b = a.alt[0];
-                    if (a.alt.length > 1) {
-                        const coin = Math.random(); 
-                        let p = 0; 
-                        for (let i = 0; i < a.alt.length; i++) {
-                            p += a.alt[i].p || (1 - p) / (a.alt.length - i); 
-                            if (coin < p) { 
-                                b = a.alt[i]; 
-                                break; 
-                            } 
-                        }
-                    }
-                    a = b;
-                }
-
-                const delay = a.delay ? (Array.isArray(a.delay) ? this.gaussianRandom(...a.delay) : a.delay) : 0;
-                const dt = a.dt || t.dt;
-                dt.forEach((x, i) => o.ts[i + 1] = o.ts[i] + (Array.isArray(x) ? this.gaussianRandom(...x) : x));
-                o.ts = o.ts.map(x => this.animClock + delay + x);
-                const vs = a.vs || t.vs;
-                Object.entries(vs).forEach(([mt, v_seq]) => { 
-                    o.vs[mt] = [null, ...v_seq.map(x => Array.isArray(x) ? this.gaussianRandom(...x) : x)]; 
-                    while (o.vs[mt].length - 1 < o.ts.length) o.vs[mt].push(o.vs[mt].at(-1)); 
-                });
-                return o;
-            }
-            gaussianRandom(start, end, skew=1, samples=3) { let r = 0; for(let i=0; i<samples; i++) r += Math.random(); return start + Math.pow(r/samples,skew) * (end - start); }
-            setView(view) { let z = 2.5; if (view === 'head') z = 1.2; this.camera.position.set(0, 1.6, z); this.controls.update(); }
-            onResize() { this.camera.aspect = this.nodeAvatar.clientWidth / this.nodeAvatar.clientHeight; this.camera.updateProjectionMatrix(); this.renderer.setSize(this.nodeAvatar.clientWidth, this.nodeAvatar.clientHeight); }
-            start() { if (this.isRunning) return; this.isRunning = true; this.animTimeLast = performance.now(); this.startIdleAnimations(); this.renderer.setAnimationLoop(this.animate.bind(this)); }
-            
             animate() {
-                const now = performance.now(); const dt = now - this.animTimeLast; this.animClock += dt; this.animTimeLast = now;
-                if (this.mixer) this.mixer.update(dt / 1000);
-                this.controls.update();
-
-                if (Math.random() < 0.1) {
-                    const randomizedMs = this.randomized[Math.floor(Math.random() * this.randomized.length)];
-                    const v = this.getValue(randomizedMs);
-                    const vb = this.getBaselineValue(randomizedMs);
-                    if (Math.abs(v - vb) < 0.01) {
-                        const randomizedV = (this.mood?.baseline?.[randomizedMs] || 0) + Math.random() / 5;
-                        this.setBaselineValue(randomizedMs, randomizedV);
-                    }
+                const now = performance.now(); const dt = now - this.animTimeLast; this.animClock += dt; this.animTimeLast = now; this.controls.update();
+                const cv = new Map();
+                for (let [mt, x] of Object.entries(this.animBaseline)) {
+                    if (x.t0 === undefined) { x.t0 = this.animClock; x.v0 = this.getValue(mt); }
+                    cv.set(mt, this.valueAnimationSeq([x.t0, x.t0 + 1000], [x.v0, x.target], this.animClock));
                 }
-
-                const frameMorphAcc = new Map();
-                 for (let [mt, x] of Object.entries(this.animBaseline)) {
-                    const v = this.getValue(mt);
-                    const restrain = (this.isSpeaking && mt.startsWith("mouth")) ? 3 : 1;
-                    const target = x.target / restrain;
-                    if (Math.abs(v - target) > 0.01) {
-                        if (x.t0 === undefined) {
-                            x.t0 = this.animClock;
-                            x.v0 = v;
-                        }
-                        let delay = 1000;
-                        const val = this.valueAnimationSeq([x.t0, x.t0 + delay], [x.v0, target], this.animClock);
-                        frameMorphAcc.set(mt, val);
-                    } else {
-                        x.t0 = undefined;
-                        frameMorphAcc.set(mt, target);
-                    }
-                }
-
-                this.updatePoseBase();
-
                 for (let i = 0; i < this.animQueue.length; i++) {
                     const anim = this.animQueue[i];
-                    if (this.animClock >= anim.ts[0]) {
-                        Object.entries(anim.vs).forEach(([mt, vs]) => { 
-                            if (vs[0] === null) vs[0] = this.getValue(mt);
-                            const vv = this.valueAnimationSeq(anim.ts, vs, this.animClock);
-                            const prev = frameMorphAcc.get(mt) ?? -Infinity;
-                            if (vv > prev) frameMorphAcc.set(mt, vv);
-                        });
-                        if (this.animClock >= anim.ts.at(-1)) {
-                            if (anim.loop === -1) {
-                                 if (this.stateName === 'idle' || (this.stateName === 'talking' && (anim.template.name === 'head' || anim.template.name === 'eyes')) ) {
-                                    const restrain = (this.stateName === 'talking' && (anim.template.name === 'head' || anim.template.name === 'eyes')) ? 4 : 1;
-                                    this.animQueue[i] = this.animFactory(anim.template, anim.loop, 1, 1 / restrain);
-                                } else {
-                                    this.animQueue.splice(i--, 1);
-                                }
-                            } else {
-                                this.animQueue.splice(i--, 1);
-                            }
+                    if (this.animClock < anim.ts[0]) continue;
+                    Object.entries(anim.vs).forEach(([mt, vs]) => {
+                        if (vs[0] === null) vs[0] = this.getValue(mt) || 0;
+                        const val = this.valueAnimationSeq(anim.ts, vs, this.animClock);
+                        if (mt === 'pose') {
+                            const pName = vs[Math.max(0, anim.ts.findIndex(t => t > this.animClock) - 1)];
+                            if (pName && pName !== this.currentPoseName) this.setPose(pName);
+                        } else if (mt === 'gesture') {
+                            const gData = vs[Math.max(0, anim.ts.findIndex(t => t > this.animClock) - 1)];
+                            if (Array.isArray(gData) && !anim._triggered) { this.playGesture(gData[0], gData[1]); anim._triggered = true; }
+                        } else {
+                            if (Math.abs(val) >= Math.abs(cv.get(mt) || 0)) cv.set(mt, val);
                         }
-                    }
+                    });
+                    if (this.animClock >= anim.ts.at(-1)) { if (anim.loop === -1) this.animQueue[i] = this.animFactory(anim.template); else this.animQueue.splice(i--, 1); }
                 }
-                this.updatePoseDelta(frameMorphAcc);
+                this.applyValues(cv); this.updatePoseBase(); this.renderer.render(this.scene, this.camera);
+            }
+
+            applyValues(values) {
+                // SMOOTH BLENDSHAPE LOGIC (Fixes Flapping)
                 for (const mesh of this.morphs) {
                     for (const name in mesh.morphTargetDictionary) {
                         const idx = mesh.morphTargetDictionary[name];
-                        const value = frameMorphAcc.get(name);
-                        if (value !== undefined && typeof value === 'number' && !isNaN(value)) {
-                            mesh.morphTargetInfluences[idx] = Math.min(1, Math.max(0, value));
-                        } else if (!this.isViseme(name)) {
-                            const current = mesh.morphTargetInfluences[idx] || 0;
-                            if (current > 0.001) {
-                                mesh.morphTargetInfluences[idx] = Math.max(0, current * 0.95);
-                            } else {
-                                mesh.morphTargetInfluences[idx] = 0;
-                            }
+                        let targetVal = values.get(name);
+
+                        // Default decay if no target
+                        if (targetVal === undefined) {
+                            const c = mesh.morphTargetInfluences[idx] || 0;
+                            targetVal = name.startsWith('viseme_') ? 0 : c * 0.95;
                         }
+
+                        // Cap Mouth Opening (Prevent Gaping)
+                        if (name.startsWith('viseme_')) {
+                            targetVal = Math.min(0.6, targetVal);
+                        } else {
+                            targetVal = Math.min(1.0, targetVal);
+                        }
+
+                        // LERP (Smoothing) - The key to fixing flapping
+                        const currentVal = mesh.morphTargetInfluences[idx];
+                        const smoothingSpeed = name.startsWith('viseme_') ? 0.4 : 0.1; // Higher = faster
+                        const nextVal = THREE.MathUtils.lerp(currentVal, targetVal, smoothingSpeed);
+
+                        mesh.morphTargetInfluences[idx] = Math.max(0, nextVal);
                     }
                 }
 
-                const box = new THREE.Box3();
-                box.setFromObject(this.armature);
-                const ltoePos = new THREE.Vector3();
-                const rtoePos = new THREE.Vector3();
-                this.armature.getObjectByName('LeftToeBase').getWorldPosition(ltoePos);
-                this.armature.getObjectByName('RightToeBase').getWorldPosition(rtoePos);
-                const hips = this.armature.getObjectByName('Hips');
-                if (hips) {
-                    hips.position.y -= box.min.y / 2;
-                    hips.position.x -= (ltoePos.x + rtoePos.x) / 4;
-                    hips.position.z -= (ltoePos.z + rtoePos.z) / 2;
-                }
-
-                this.renderer.render(this.scene, this.camera);
+                const hX = values.get('headRotateX') || 0, hY = values.get('headRotateY') || 0, hZ = values.get('headRotateZ') || 0, chest = values.get('chestInhale') || 0;
+                if (this.poseDelta.props['Head.rotation']) this.poseDelta.props['Head.rotation'].set(hX, hY, hZ);
+                if (this.poseDelta.props['Spine1.rotation']) this.poseDelta.props['Spine1.rotation'].set(-chest * 0.05, 0, 0);
+                Object.keys(this.poseAvatar.props).forEach(k => {
+                    const b = this.poseAvatar.props[k], base = this.poseBase.props[k]; if (!b || !base) return;
+                    if (b.isQuaternion) { b.copy(base); const [n] = k.split('.'); const d = this.poseDelta.props[`${n}.rotation`]; if (d) b.multiply(new THREE.Quaternion().setFromEuler(d)); }
+                    else if (b.isVector3) { b.copy(base); if (k === 'Spine1.scale' && chest > 0) b.set(1 + (chest * 0.1), 1 + (chest * 0.1), 1 + (chest * 0.1)); }
+                });
+                const lEye = this.armature.getObjectByName('LeftEye'), rEye = this.armature.getObjectByName('RightEye');
+                if (lEye && rEye) { const eX = values.get('eyesRotateX') || 0, eY = values.get('eyesRotateY') || 0; lEye.rotation.set(eX, eY, 0); rEye.rotation.set(eX, eY, 0); }
             }
 
-            updatePoseBase() { for (const [key, v] of Object.entries(this.poseTarget.props)) { const o = this.poseAvatar.props[key]; if (!o || !this.poseBase.props[key]) continue; const alpha = Math.min(1, (this.animClock - v.t) / v.d); if (alpha > 1 || !this.poseBase.props.hasOwnProperty(key)) { o.copy(v); } else if (o.isQuaternion) { o.copy(this.poseBase.props[key]).slerp(v, this.easing(alpha)); } else if (o.isVector3) { o.copy(this.poseBase.props[key]).lerp(v, this.easing(alpha)); } } }
-            updatePoseDelta(morphs) { const euler = this.poseDelta.props['Head.quaternion']; if(euler) euler.set(morphs.get('headRotateX')||0, morphs.get('headRotateY')||0, morphs.get('headRotateZ')||0); const q = new THREE.Quaternion().setFromEuler(euler || new THREE.Euler()); if(this.poseAvatar.props['Head.quaternion']) this.poseAvatar.props['Head.quaternion'].multiply(q); const scale = morphs.get('chestInhale')||0; if(this.poseAvatar.props['Spine1.scale']) { const s = 1 + scale; this.poseAvatar.props['Spine1.scale'].set(s,s,s); } }
-            
-            valueAnimationSeq(ts, vs, t) {
-                if (!ts || ts.length < 2) return 0;
-                if (t <= ts[0]) return vs[1];
-                if (t >= ts.at(-1)) return vs.at(-1);
-                let i = 0;
-                for (i = 0; i < ts.length - 2; i++) {
-                    if (t >= ts[i] && t < ts[i+1]) { break; }
-                }
-                const startTime = ts[i]; const endTime = ts[i+1];
-                const startValue = vs[i+1]; const endValue = vs[i+2];
-                if (endTime === startTime) return startValue;
-                const progress = (t - startTime) / (endTime - startTime);
-                return startValue + (endValue - startValue) * this.easing(progress);
+            setPose(name, ms = 2000) {
+                if (!this.poseTemplates[name]) return; this.currentPoseName = name; const t = this.poseTemplates[name], p = {};
+                Object.keys(t.props).forEach(k => { const v = t.props[k]; if (k.includes('rotation')) p[k] = new THREE.Quaternion().setFromEuler(new THREE.Euler(v.x, v.y, v.z)); else p[k] = new THREE.Vector3(v.x, v.y, v.z); });
+                this.poseTarget.props = p; Object.values(this.poseTarget.props).forEach(v => { v.t = this.animClock; v.d = ms; });
             }
-
-            isViseme(name) { return name.startsWith('viseme_'); }
-            
-            getBaselineValue(mt) { return (this.animBaseline.hasOwnProperty(mt) ? this.animBaseline[mt].target : 0); }
-            setBaselineValue(mt, v) {
-                if (v === null) {
-                    if (this.animBaseline.hasOwnProperty(mt)) delete this.animBaseline[mt];
-                } else {
-                    this.animBaseline[mt] = { target: v, t0: undefined, v0: 0 };
-                }
+            playGesture(name, dur = 1) {
+                const g = this.gestureTemplates[name]; if (!g) return;
+                Object.keys(g).forEach(k => { const v = g[k]; if (this.poseTarget.props[k]) { this.poseTarget.props[k].copy(new THREE.Quaternion().setFromEuler(new THREE.Euler(v.x, v.y, v.z))); this.poseTarget.props[k].t = this.animClock; this.poseTarget.props[k].d = 500; } });
+                setTimeout(() => this.setPose(this.currentPoseName, 1000), dur * 1000);
             }
-
-            getValue(mt) { 
-                if (mt.startsWith('headRotate')) {
-                    const axis = mt.charAt(mt.length - 1).toLowerCase();
-                    return this.poseDelta.props['Head.quaternion']?.[axis] || 0;
-                }
-                if (mt === 'chestInhale') {
-                    return (this.poseDelta.props['Spine1.scale']?.x || 0) * 20;
-                }
-                const mesh = this.morphs[0]; 
-                return (mesh && mesh.morphTargetDictionary[mt] !== undefined) ? mesh.morphTargetInfluences[mesh.morphTargetDictionary[mt]] : 0; 
-            }
-            
-            speakText(text) { 
-                if (this.isSpeaking) { 
-                    this.speechQueue.push({ type: 'text', content: text }); 
-                    return; 
-                } 
-                this.processSpeechItem({ type: 'text', content: text }); 
-            }
-
-            speakEmoji(emojiChar) { 
-                this.speechQueue.push({ type: 'emoji', content: this.animEmojis[emojiChar] }); 
-                if(!this.isSpeaking) this.startSpeaking(); 
-            }
+            updatePoseBase() { for (const [k, t] of Object.entries(this.poseTarget.props)) { const b = this.poseBase.props[k]; if (!b) continue; const a = Math.min(1, (this.animClock - t.t) / t.d); if (a >= 1) b.copy(t); else { if (b.isQuaternion) b.slerp(t, this.easing(a)); else b.lerp(t, this.easing(a)); } } }
 
             async processSpeechItem(item) {
-                this.isSpeaking = true; this.stateName = 'talking';
-                this.stopIdleAnimations();
-                this.resetLips();
-                
+                // HARD STOP MIC
+                if (window.stopListening) window.stopListening();
+
+                this.isSpeaking = true;
+
                 if (item.type === 'text') {
-                    this.speakWithHands(0, 0.5);
                     try {
-                        const preprocessedText = this.lipsync.en.preProcessText(sanitizeForTTS(item.content));
-                        const response = await fetch(this.opt.ttsEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: preprocessedText }) });
-                        if (!response.ok) throw new Error(`TTS Error: ${response.status} ${await response.text()}`);
-                        const data = await response.json();
-                        if (!data.audioContent || !data.timepoints) throw new Error("Invalid TTS response format.");
+                        const pre = this.lipsync.en.preProcessText(item.content);
+                        const res = await fetch(this.opt.ttsEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text: pre }) });
+                        if (!res.ok) throw new Error("TTS Error");
+                        const data = await res.json();
                         await this.playAudioWithVisemes(data.audioContent, data.timepoints);
-                    } catch (error) { console.error("TTS failed:", error); this.finishSpeaking(); }
+                    } catch (e) { console.error(e); this.finishSpeaking(); }
                 } else if (item.type === 'emoji') {
-                    const anim = this.animFactory(item.content);
+                    const anim = this.animFactory(this.animEmojis[item.content] || this.animEmojis['😊']);
                     this.animQueue.push(anim);
                     setTimeout(() => this.finishSpeaking(), anim.ts.at(-1) - this.animClock);
                 }
             }
 
-            async playAudioWithVisemes(base64Audio, timepoints) {
+            async playAudioWithVisemes(base64, timepoints) {
                 if (this.audioCtx.state === 'suspended') await this.audioCtx.resume();
+                this.animQueue = this.animQueue.filter(a => !Object.keys(a.vs)[0].startsWith('viseme_'));
 
-                const audioData = Uint8Array.from(atob(base64Audio), c => c.charCodeAt(0)).buffer;
-                const audioBuffer = await this.audioCtx.decodeAudioData(audioData);
+                const audioData = Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer;
+                const buffer = await this.audioCtx.decodeAudioData(audioData);
+                const duration = buffer.duration * 1000;
 
-                const LEAD_IN_MS = 80;                
-                const MIN_WORD_MS = 220;              
-                const MIN_VISEME_MS = 90;             
-                const MAX_VISEMES_PER_WORD = 3;       
-                const PEAK_FRACTION = 0.45;           
-                const AMPLITUDE = 0.6;                
-
-                const audioStartAnimClock = this.animClock + 150;
-
-                const sortedTP = [...timepoints].sort((a, b) => parseInt(a.mark_name) - parseInt(b.mark_name));
-
-                const condenseVisemes = (visemes, times, durations) => {
-                    const out = [];
-                    for (let i = 0; i < visemes.length; i++) {
-                        const v = visemes[i];
-                        if (v === 'sil') continue;
-                        out.push({ v, t: times[i], d: durations[i] });
-                    }
-                    if (!out.length) return out;
-
-                    const merged = [];
-                    for (const seg of out) {
-                        const last = merged[merged.length - 1];
-                        if (last && last.v === seg.v) {
-                            last.d += seg.d;
-                        } else {
-                            merged.push({ ...seg });
-                        }
-                    }
-
-                    if (merged.length > MAX_VISEMES_PER_WORD) {
-                        const sortedByDur = [...merged].sort((a, b) => b.d - a.d).slice(0, MAX_VISEMES_PER_WORD);
-                        sortedByDur.sort((a, b) => a.t - b.t);
-                        return sortedByDur;
-                    }
-
-                    return merged;
-                };
-
-                sortedTP.forEach((tp, idx) => {
-                    const nextTp = sortedTP[idx + 1];
-                    const wordStartMs = tp.time_seconds * 1000;
-                    const wordEndMs = nextTp
-                        ? (nextTp.time_seconds * 1000)
-                        : (audioBuffer.duration * 1000);
-                    let wordDurationMs = Math.max(MIN_WORD_MS, wordEndMs - wordStartMs);
-                    if (wordDurationMs <= 0) return;
-
-                    const visemeData = this.lipsync.en.wordsToVisemes(tp.word);
-                    if (!visemeData.visemes.length) return;
-
-                    const condensed = condenseVisemes(
-                        visemeData.visemes,
-                        visemeData.times,
-                        visemeData.durations
-                    );
-                    if (!condensed.length) return;
-
-                    const totalRel = condensed.reduce((sum, s) => sum + s.d, 0) || 1;
-
-                    for (let i = 0; i < condensed.length; i++) {
-                        const { v, t, d } = condensed[i];
-                        const visemeName = "viseme_" + v;
-                        if (this.morphs[0]?.morphTargetDictionary[visemeName] === undefined) continue;
-
-                        const relStart = t;
-                        const relDur = d;
-                        const absStart = wordStartMs + (relStart / totalRel) * wordDurationMs;
-                        let absDur = (relDur / totalRel) * wordDurationMs;
-
-                        if (absDur < MIN_VISEME_MS) {
-                            const extraNeeded = MIN_VISEME_MS - absDur;
-                            const remaining = (wordStartMs + wordDurationMs) - (absStart + absDur);
-                            const grant = Math.min(remaining, extraNeeded);
-                            absDur += Math.max(0, grant);
-                            if (absDur < MIN_VISEME_MS * 0.8) continue;
-                        }
-
-                        const startTime = audioStartAnimClock + absStart - LEAD_IN_MS;
-                        const peakTime = startTime + LEAD_IN_MS + absDur * PEAK_FRACTION;
-                        const endTime = startTime + LEAD_IN_MS + absDur;
-
-                        if (endTime - startTime < 50) continue; 
-
-                        this.animQueue.push({
-                            ts: [startTime, peakTime, endTime],
-                            vs: { [visemeName]: [null, AMPLITUDE, 0] }
+                const audioStart = this.animClock + 50;
+                timepoints.forEach((tp, idx) => {
+                    const next = timepoints[idx + 1];
+                    const wordDur = next ? (next.time_seconds - tp.time_seconds) * 1000 : 200;
+                    const vis = this.lipsync.en.wordsToVisemes(tp.word);
+                    if (vis.visemes.length) {
+                        const totalRel = vis.durations.reduce((a, b) => a + b, 0);
+                        vis.visemes.forEach((v, i) => {
+                            const absStart = (tp.time_seconds * 1000) + (vis.times[i] / totalRel * wordDur);
+                            const absDur = (vis.durations[i] / totalRel * wordDur);
+                            const finalDur = Math.max(80, absDur); // Longer duration for smoother look
+                            const t = audioStart + absStart;
+                            this.animQueue.push({
+                                ts: [t, t + (finalDur * 0.5), t + finalDur],
+                                vs: { [`viseme_${v}`]: [0, 1, 0] } // 1.0 is fine here because applyValues caps it
+                            });
                         });
                     }
                 });
 
-                if (this.audioSpeechSource) { this.audioSpeechSource.stop(); }
+                if (this.audioSpeechSource) this.audioSpeechSource.stop();
                 this.audioSpeechSource = this.audioCtx.createBufferSource();
-                this.audioSpeechSource.buffer = audioBuffer;
+                this.audioSpeechSource.buffer = buffer;
                 this.audioSpeechSource.connect(this.audioCtx.destination);
-                const startAt = this.audioCtx.currentTime + 0.150;
-                this.audioSpeechSource.start(startAt);
-                if (typeof scheduleAISubtitles === 'function') {
-                    scheduleAISubtitles(sortedTP, audioBuffer.duration, startAt);
+                this.audioSpeechSource.start(this.audioCtx.currentTime + 0.05);
+
+                if (typeof scheduleAISubtitles === 'function') scheduleAISubtitles(timepoints, buffer.duration, this.audioCtx.currentTime + 0.05);
+
+                this.audioSpeechSource.onended = () => {
+                    // Small buffer before listening again to clear room echo
+                    setTimeout(() => this.finishSpeaking(), 800);
+                };
+            }
+
+            stopSpeaking() {
+                if (this.audioSpeechSource) { this.audioSpeechSource.stop(); this.audioSpeechSource = null; }
+                this.speechQueue = []; this.finishSpeaking();
+            }
+
+            speakText(t) { if (this.isSpeaking) { this.speechQueue.push({ type: 'text', content: t }); return; } this.processSpeechItem({ type: 'text', content: t }); }
+            speakEmoji(e) { if (this.isSpeaking) { this.speechQueue.push({ type: 'emoji', content: e }); return; } this.processSpeechItem({ type: 'emoji', content: this.animEmojis[e] }); }
+            finishSpeaking() {
+                this.isSpeaking = false;
+                this.start();
+                if (this.speechQueue.length) {
+                    this.processSpeechItem(this.speechQueue.shift());
+                } else {
+                    // Only start listening if queue is empty
+                    if (window.startListening) window.startListening();
                 }
-                this.audioSpeechSource.onended = () => this.finishSpeaking();
             }
-            
-            resetLips() { this.animQueue = this.animQueue.filter(a => !Object.keys(a.vs)[0].startsWith('viseme_')); this.visemeNames.forEach(name => { const current = this.getValue(name); if (current > 0.001) { const now = this.animClock; this.animQueue.push({ ts: [now, now + 60], vs: { [name]: [current, 0] }}); }}); }
-            startSpeaking() { if (this.isSpeaking || !this.speechQueue.length) return; this.processSpeechItem(this.speechQueue.shift()); }
-            finishSpeaking() { this.isSpeaking = false; this.stateName = 'idle'; this.resetLips(); this.startIdleAnimations(); if (this.speechQueue.length > 0) this.startSpeaking(); }
-            stopSpeaking() { if (this.audioSpeechSource) { this.audioSpeechSource.onended = null; this.audioSpeechSource.stop(); this.audioSpeechSource = null; } this.speechQueue = []; this.finishSpeaking(); }
-            
-            speakWithHands(delay=0, prob=0.5) {
-                if (Math.random() > prob) return;
 
-                const dt = [100 + Math.round(Math.random() * 500)];
-                const moveto = [{
-                    duration: 1000,
-                    props: {
-                        "LeftHand.rotation": { x: 0, y: -1 - Math.random(), z: 0 },
-                        "RightHand.rotation": { x: 0, y: 1 + Math.random(), z: 0 },
-                        "LeftArm.rotation": {x: 1.5, y:0, z:0},
-                        "RightArm.rotation": {x: 1.5, y:0, z:0},
-                        "LeftForeArm.rotation": {x: 0, y:0, z:1},
-                        "RightForeArm.rotation": {x: 0, y:0, z:-1},
-                    }
-                }];
-                dt.push(1000 + Math.round(Math.random() * 500));
-                moveto.push({ duration: 2000, props: {} });
-                ["LeftArm", "LeftForeArm", "RightArm", "RightForeArm", "LeftHand", "RightHand"].forEach(x => {
-                    moveto[1].props[x + '.rotation'] = null;
-                });
-
-                const anim = this.animFactory({
-                    name: 'talkinghands',
-                    delay: delay,
-                    dt: dt,
-                    vs: { moveto: moveto }
-                });
-                this.animQueue.push(anim);
-            }
+            getValue(n) { if (n.startsWith('headRotate')) return this.poseDelta.props['Head.rotation']?.[n.slice(-1).toLowerCase()] || 0; const m = this.morphs[0]; return (m && m.morphTargetDictionary[n] !== undefined) ? m.morphTargetInfluences[m.morphTargetDictionary[n]] : 0; }
+            poseFactory(t, ms = 2000) { const p = {}; if (t.props) Object.keys(t.props).forEach(k => { const v = t.props[k]; if (k.includes('rotation')) p[k] = new THREE.Quaternion().setFromEuler(new THREE.Euler(v.x, v.y, v.z)); else p[k] = new THREE.Vector3(v.x, v.y, v.z); }); return { props: p }; }
+            animFactory(t) { const i = { template: t, ts: [], vs: {}, loop: t.loop }; let c = this.animClock + (Array.isArray(t.delay) ? (t.delay[0] + Math.random() * (t.delay[1] - t.delay[0])) : (t.delay || 0)); i.ts.push(c); (t.dt || [1000]).forEach(d => { c += Array.isArray(d) ? (d[0] + Math.random() * (d[1] - d[0])) : d; i.ts.push(c); }); Object.keys(t.vs).forEach(k => { i.vs[k] = t.vs[k].map(v => Array.isArray(v) ? v[0] + Math.random() * (v[1] - v[0]) : v); while (i.vs[k].length < i.ts.length) i.vs[k].push(i.vs[k].at(-1)); }); return i; }
+            valueAnimationSeq(ts, vs, t) { if (t <= ts[0]) return vs[0]; if (t >= ts.at(-1)) return vs.at(-1); let i = ts.findIndex(time => time > t) - 1; if (i < 0) i = 0; const p = (t - ts[i]) / (ts[i + 1] - ts[i]); return vs[i] + (vs[i + 1] - vs[i]) * this.easing(p); }
+            onResize() { this.camera.aspect = this.nodeAvatar.clientWidth / this.nodeAvatar.clientHeight; this.camera.updateProjectionMatrix(); this.renderer.setSize(this.nodeAvatar.clientWidth, this.nodeAvatar.clientHeight); }
+            setView(v) { this.camera.position.set(0, 1.55, 0.85); }
         }
 
-        let avatar;
-        let userStream;
-        let isModelLoaded = false;
-        let areSubtitlesOn = true; 
-        let interviewConfig = {};
-        let messages = [];
-        let isRecording = false;
-        let speechRecognition;
-        let isWaitingForAIResponse = false;
-        let scores = [];
+        // --- GLOBAL LOGIC ---
+        let avatar, userStream, isModelLoaded = false, areSubtitlesOn = true, interviewConfig = {}, messages = [], speechRecognition, isWaitingForAIResponse = false;
 
-        const WORKER_URL = 'https://interviewme.bhansalimanan55.workers.dev/';
-        const TTS_ENDPOINT = 'https://us-central1-msc-notif.cloudfunctions.net/gcp-tts-rate-limited';
-        const AVATAR_URL = 'https://models.readyplayer.me/64bfa15f0e72c63d7c3934a6.glb?morphTargets=ARKit,Oculus+Visemes,mouthOpen,mouthSmile,eyesClosed,eyesLookUp,eyesLookDown';
-
-        let EMOJI_CHAR, NON_TTS;
-        try {
-        EMOJI_CHAR = /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u;
-        NON_TTS    = /[^\p{L}\p{N}\p{P}\p{Z}\n\r\t]/gu;
-        } catch {
-        EMOJI_CHAR = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
-        NON_TTS    = /[^A-Za-z0-9\s.,!?;:'"()[\]{}<>@#$%^&*_\-+=/\\|~`]/g;
-        }
+        const EMOJI_CHAR = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
         function extractEmojisAndSanitize(text = "") {
-        const chars = Array.from(text);
-        const emojis = [];
-        const noEmoji = chars.map(ch => {
-            if (EMOJI_CHAR.test(ch)) { emojis.push(ch); return ""; }
-            return ch;
-        }).join("");
-        let clean = noEmoji.replace(NON_TTS, "").replace(/\s{2,}/g, " ").trim();
-        return { clean, emojis };
-        }
-        function sanitizeForTTS(s) {
-        return extractEmojisAndSanitize(s).clean;
+            const reportRegex = /<<<FINAL_INTERVIEW_REPORT>>>[\s\S]*?<<<END_FINAL_INTERVIEW_REPORT>>>/;
+            const reportMatch = text.match(/<<<FINAL_INTERVIEW_REPORT>>>([\s\S]*?)<<<END_FINAL_INTERVIEW_REPORT>>>/);
+            let clean = text.replace(reportRegex, "").replace(/\*/g, "");
+            const chars = Array.from(clean), emojis = [];
+            clean = chars.map(ch => EMOJI_CHAR.test(ch) ? (emojis.push(ch), "") : ch).join("").trim();
+            return { clean, emojis, report: reportMatch ? reportMatch[1] : null };
         }
 
-        const setupScreen = document.getElementById('setup-screen');
-        const loadingScreen = document.getElementById('loading-screen');
-        const permissionsModal = document.getElementById('permissions-modal');
-        const interviewScreen = document.getElementById('interview-screen');
-        const setupForm = document.getElementById('setup-form');
-        const avatarContainer = document.getElementById('avatar-container');
-        const modelLoadingOverlay = document.getElementById('model-loading-overlay');
-        const chatMessages = document.getElementById('chat-messages');
-        const userVideo = document.getElementById('user-video');
-        const subtitlesOverlay = document.getElementById('subtitles-overlay');
-        const currentRoleSpan = document.getElementById('current-role');
-        const loadingProgressBar = document.getElementById('loading-progress-bar');
-        const pushToTalkBtn = document.getElementById('push-to-talk-btn');
-        const speechStatus = document.getElementById('speech-status');
-        const scorePill = document.getElementById('score-pill');
-        const progressPill = document.getElementById('progress-pill');
-
-        const subtitlesBtn = document.getElementById('subtitles-btn');
-        const endCallBtn = document.getElementById('end-call-btn');
-        const allowPermissionsBtn = document.getElementById('allow-permissions');
-        const skipPermissionsBtn = document.getElementById('skip-permissions');
-        const mobileChatFab = document.getElementById('mobile-chat-fab');
-        const mobileChatSheet = document.getElementById('mobile-chat-sheet');
-        const mobileChatClose = document.getElementById('mobile-chat-close');
-        const mobileChatMessages = document.getElementById('mobile-chat-messages');
-        const mobileChatInput = document.getElementById('mobile-chat-input');
-        const mobileSendBtn = document.getElementById('mobile-send-btn');
-
-        let interimTranscript = '';
-        let finalTranscript = '';
+        const setupScreen = document.getElementById('setup-screen'), loadingScreen = document.getElementById('loading-screen'), permissionsModal = document.getElementById('permissions-modal'), interviewScreen = document.getElementById('interview-screen'), setupForm = document.getElementById('setup-form'), avatarContainer = document.getElementById('avatar-container'), modelLoadingOverlay = document.getElementById('model-loading-overlay'), chatMessages = document.getElementById('chat-messages'), userVideo = document.getElementById('user-video'), subtitlesOverlay = document.getElementById('subtitles-overlay'), currentRoleSpan = document.getElementById('current-role'), loadingProgressBar = document.getElementById('loading-progress-bar'), speechStatus = document.getElementById('speech-status'), subtitlesBtn = document.getElementById('subtitles-btn'), endCallBtn = document.getElementById('end-call-btn'), allowPermissionsBtn = document.getElementById('allow-permissions'), skipPermissionsBtn = document.getElementById('skip-permissions');
+        document.getElementById('push-to-talk-btn').style.display = 'none';
 
         async function init() {
             setupEventListeners();
-            setupSpeechRecognition();
+            setupContinuousSpeechRecognition();
             loadModelInBackground();
             subtitlesBtn.classList.toggle('active', areSubtitlesOn);
-            ensureMobileChatUIVisible();
         }
 
         function setupEventListeners() {
             setupForm.addEventListener('submit', handleSetupSubmit);
             subtitlesBtn.addEventListener('click', toggleSubtitles);
             endCallBtn.addEventListener('click', endInterview);
-            
-            if (allowPermissionsBtn) {
-                allowPermissionsBtn.addEventListener('click', requestPermissions);
-            }
-            if (skipPermissionsBtn) {
-                skipPermissionsBtn.addEventListener('click', skipPermissions);
-            }
-
-            pushToTalkBtn.addEventListener('mousedown', startRecording);
-            pushToTalkBtn.addEventListener('mouseup', stopRecording);
-            pushToTalkBtn.addEventListener('mouseleave', stopRecording);
-            pushToTalkBtn.addEventListener('touchstart', startRecording, { passive: false });
-            pushToTalkBtn.addEventListener('touchend', stopRecording);
-            pushToTalkBtn.addEventListener('touchcancel', stopRecording);
-
-            window.addEventListener('resize', () => {
-                if (avatar) avatar.onResize();
-                ensureMobileChatUIVisible();
-            });
-            if (mobileChatFab) mobileChatFab.addEventListener('click', () => { mobileChatSheet.classList.add('open'); mobileChatSheet.setAttribute('aria-hidden','false'); });
-            if (mobileChatClose) mobileChatClose.addEventListener('click', () => { mobileChatSheet.classList.remove('open'); mobileChatSheet.setAttribute('aria-hidden','true'); });
-            if (mobileSendBtn) mobileSendBtn.addEventListener('click', sendTypedMessage);
-            if (mobileChatInput) mobileChatInput.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendTypedMessage(); }});
+            if (allowPermissionsBtn) allowPermissionsBtn.addEventListener('click', requestPermissions);
+            if (skipPermissionsBtn) skipPermissionsBtn.addEventListener('click', skipPermissions);
+            window.addEventListener('resize', () => { if (avatar) avatar.onResize(); });
         }
 
-        function setupSpeechRecognition() {
+        // --- GLOBAL MIC CONTROLS (THE HARD FIX) ---
+        window.startListening = function () {
+            if (speechRecognition && !isWaitingForAIResponse) {
+                try { speechRecognition.start(); } catch (e) { /* ignore already started errors */ }
+            }
+        };
+
+        window.stopListening = function () {
+            if (speechRecognition) {
+                try { speechRecognition.stop(); } catch (e) { }
+            }
+        };
+
+        function setupContinuousSpeechRecognition() {
             if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
                 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
                 speechRecognition = new SpeechRecognition();
@@ -1891,470 +1452,148 @@
                 speechRecognition.interimResults = true;
                 speechRecognition.lang = 'en-US';
 
-                speechRecognition.onstart = () => {
-                    updateSpeechStatus('Listening...', true);
-                };
-
                 speechRecognition.onresult = (event) => {
-                    interimTranscript = '';
-                    finalTranscript = '';
-                    
-                    for (let i = event.resultIndex; i < event.results.length; ++i) {
-                        if (event.results[i].isFinal) {
-                            finalTranscript += event.results[i][0].transcript;
-                        } else {
-                            interimTranscript += event.results[i][0].transcript;
-                        }
+                    // Logic gate: If AI is theoretically speaking, reject everything.
+                    if (avatar && avatar.isSpeaking) {
+                        return; // Ignore inputs completely
                     }
 
-                    const display = (finalTranscript + ' ' + interimTranscript).trim();
-                    updateSpeechStatus(display ? `You said: ${display}` : 'Listening...', true);
-                    
-                    if (areSubtitlesOn && display) {
-                        showSubtitles(`${timestampNow()} You: ${display}`);
+                    let finalTranscript = '';
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            const spoken = event.results[i][0].transcript.trim();
+                            if (spoken) handleSpeechInput(spoken);
+                        }
                     }
                 };
 
                 speechRecognition.onend = () => {
-                    const toSend = (finalTranscript + ' ' + interimTranscript).trim();
-                    
-                    if (toSend && !isWaitingForAIResponse) {
-                        if (areSubtitlesOn) showSubtitles(`${timestampNow()} You: ${toSend}`);
-                        handleSpeechInput(toSend);
-                    }
-                    
-                    isRecording = false;
-                    pushToTalkBtn.classList.remove('recording');
-                    updateSpeechStatus('', false);
-                };
-
-                speechRecognition.onerror = (event) => {
-                    console.error('Speech recognition error:', event.error);
-                    if (event.error === 'no-speech') {
-                        updateSpeechStatus('No speech detected', true);
-                    } else {
-                        updateSpeechStatus('Error: ' + event.error, true);
-                        isRecording = false;
-                        pushToTalkBtn.classList.remove('recording');
+                    // Auto-restart if we are supposed to be listening (not speaking)
+                    if (!interviewScreen.classList.contains('hidden') && avatar && !avatar.isSpeaking && !isWaitingForAIResponse) {
+                        try { speechRecognition.start(); } catch (e) { }
                     }
                 };
             }
         }
 
-        function startRecording(event) {
-            if(event) event.preventDefault();
-            if (isRecording || isWaitingForAIResponse) return;
-
-            isRecording = true;
-            pushToTalkBtn.classList.add('recording');
-            
-            interimTranscript = '';
-            finalTranscript = '';
-            
-            if (speechRecognition) {
-                try {
-                    speechRecognition.start();
-                } catch (error) {
-                    if(error.name !== 'InvalidStateError') {
-                        updateSpeechStatus('Error starting mic', false);
-                        isRecording = false;
-                        pushToTalkBtn.classList.remove('recording');
-                    }
-                }
-            } else {
-                updateSpeechStatus('Speech recognition not supported', false);
-            }
+        function handleSpeechInput(text) {
+            if (!text.trim() || isWaitingForAIResponse) return;
+            // Ignore short noise/echo remnants
+            if (text.length < 3 && !['no', 'yes', 'ok'].includes(text.toLowerCase())) return;
+            addChatMessage('user', 'You', text);
+            window.stopListening(); // Stop immediately once we have a sentence
+            sendToAI(text);
         }
 
-        function stopRecording(event) {
-            if(event) event.preventDefault();
-            if (!isRecording) return;
-
-            if (speechRecognition) {
-                try {
-                    speechRecognition.stop();
-                } catch (e) {
-                }
-            }
-        }
-
-        function updateSpeechStatus(text, visible) {
-            speechStatus.textContent = text;
-            speechStatus.classList.toggle('visible', visible);
-        }
-
-        function handleSpeechInput(transcript) {
-            if (!transcript.trim() || isWaitingForAIResponse) return;
-            addChatMessage('user', 'You', transcript);
-            sendToAI(transcript);
-        }
+        function updateSpeechStatus(t, v) { speechStatus.textContent = t; speechStatus.classList.toggle('visible', v); }
 
         async function loadModelInBackground() {
             try {
-                avatar = new TalkingHead(avatarContainer, { 
-                    ttsEndpoint: TTS_ENDPOINT,
-                    cameraView: 'head' 
-                });
+                avatar = new TalkingHead(avatarContainer, { ttsEndpoint: TTS_ENDPOINT, cameraView: 'head' });
                 await avatar.init();
-
-                avatar.onResize();
-                setTimeout(() => avatar && avatar.onResize(), 150);
-                
                 updateLoadingProgress(30, 'Loading 3D model...');
                 await avatar.showAvatar({ url: AVATAR_URL });
-                
-                updateLoadingProgress(70, 'Optimizing performance...');
-                await new Promise(resolve => setTimeout(resolve, 400));
-                
                 updateLoadingProgress(100, 'Ready!');
                 isModelLoaded = true;
                 modelLoadingOverlay.classList.add('hidden');
                 loadingScreen.classList.add('hidden');
-
-                setTimeout(() => avatar && avatar.onResize(), 50);
-                setTimeout(() => avatar && avatar.onResize(), 300);
-                window.dispatchEvent(new Event('resize'));
-            } catch (error) {
-                console.error('Failed to load avatar:', error);
-                updateLoadingProgress(0, 'Failed to load model. Please refresh.');
-            }
+            } catch (error) { console.error(error); updateLoadingProgress(0, 'Failed.'); }
         }
-
-        function updateLoadingProgress(percent, text) {
-            loadingProgressBar.style.width = `${percent}%`;
-            const lt = document.querySelector('.loading-text');
-            if (lt) lt.textContent = text;
-        }
+        function updateLoadingProgress(p, t) { loadingProgressBar.style.width = `${p}%`; const lt = document.querySelector('.loading-text'); if (lt) lt.textContent = t; }
 
         async function handleSetupSubmit(e) {
             e.preventDefault();
-            
-            interviewConfig = {
-                specialization: document.getElementById('specialization').value,
-                experienceLevel: document.getElementById('experience-level').value,
-                companyType: document.getElementById('company-type').value,
-                duration: document.getElementById('interview-duration').value
-            };
-
+            interviewConfig = { specialization: document.getElementById('specialization').value, experienceLevel: document.getElementById('experience-level').value, companyType: document.getElementById('company-type').value, duration: document.getElementById('interview-duration').value };
             currentRoleSpan.textContent = interviewConfig.specialization;
-
             setupScreen.classList.add('hidden');
-            
-            if (!isModelLoaded) {
-                loadingScreen.classList.remove('hidden');
-                while (!isModelLoaded) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                }
-                loadingScreen.classList.add('hidden');
-            }
-            
-            try {
-                const existing = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
-                existing.getTracks().forEach(t => t.stop());
-                skipPermissions();
-            } catch (error) {
-                permissionsModal.classList.remove('hidden');
-            }
+            if (!isModelLoaded) { loadingScreen.classList.remove('hidden'); while (!isModelLoaded) await new Promise(r => setTimeout(r, 100)); loadingScreen.classList.add('hidden'); }
+            try { await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); skipPermissions(); } catch (error) { permissionsModal.classList.remove('hidden'); }
         }
-
-        async function requestPermissions() {
-            try {
-                await ensureUserMedia(true);
-                permissionsModal.classList.add('hidden');
-                startInterview();
-            } catch (error) {
-                console.error('Failed to get media permissions:', error);
-                alert('Camera/microphone access was denied. You can still continue with the interview.');
-                skipPermissions();
-            }
-        }
-
-        function skipPermissions() {
-            permissionsModal.classList.add('hidden');
-            startInterview();
-        }
-
-        async function ensureUserMedia(showVideo = false) {
-            try {
-                userStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: showVideo ? { facingMode: 'user' } : { facingMode: 'user' }, 
-                    audio: true 
-                });
-                if (userVideo) {
-                    userVideo.srcObject = userStream;
-                    await userVideo.play().catch(() => {});
-                }
-            } catch (e) {
-                console.warn('User media not available:', e);
-            }
-        }
+        function skipPermissions() { permissionsModal.classList.add('hidden'); startInterview(); }
+        async function requestPermissions() { try { await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true } }); skipPermissions(); } catch (e) { skipPermissions(); } }
 
         async function startInterview() {
             interviewScreen.classList.remove('hidden');
-            scores = [];
-            updateScoreAndProgress();
+            messages = []; isWaitingForAIResponse = false;
+            await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: { echoCancellation: true, noiseSuppression: true } })
+                .then(stream => { userStream = stream; if (userVideo) { userVideo.srcObject = stream; userVideo.play(); } })
+                .catch(e => console.log(e));
 
-            messages = [];
-            isWaitingForAIResponse = false;
-
-            await ensureUserMedia(false);
-            
-            if (!isModelLoaded) {
-                while (!isModelLoaded) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                }
-            }
             setTimeout(() => avatar && avatar.onResize(), 50);
-            
-            const welcomeMessage = 'Welcome to your AI video interview! I\'m Alex, and I\'ll be conducting your interview today. Are you ready to begin?';
-            addChatMessage('ai', 'Alex Johnson', welcomeMessage);
-            if (avatar) avatar.speakText(welcomeMessage);
-            if (areSubtitlesOn) {
-                showSubtitles(`${timestampNow()} Alex: ${welcomeMessage}`);
-            }
+
+            const welcome = "Hello, I'm Alex. Let's get started. Please walk me through your background.";
+            addChatMessage('ai', 'Alex Johnson', welcome);
+            if (avatar) avatar.speakText(welcome);
+            if (areSubtitlesOn) scheduleAISubtitles([{ word: "Hello,", time_seconds: 0 }, { word: "I'm", time_seconds: 0.3 }, { word: "Alex.", time_seconds: 0.5 }, { word: "Let's", time_seconds: 1.0 }, { word: "get", time_seconds: 1.2 }, { word: "started.", time_seconds: 1.5 }], 3.0, 0);
         }
 
         function addChatMessage(type, author, content) {
-            const messageEl = document.createElement('div');
-            messageEl.className = `message ${type}`;
-            messageEl.innerHTML = `
-                <div class="message-author">${author}</div>
-                <div class="message-content">${content}</div>
-            `;
-            chatMessages.appendChild(messageEl);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            if (mobileChatMessages) {
-                const clone = messageEl.cloneNode(true);
-                mobileChatMessages.appendChild(clone);
-                mobileChatMessages.scrollTop = mobileChatMessages.scrollHeight;
-            }
+            const el = document.createElement('div');
+            el.className = `message ${type}`;
+            el.innerHTML = `<div class="message-author">${author}</div><div class="message-content">${content}</div>`;
+            chatMessages.appendChild(el); chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
         async function sendToAI(message) {
-            if (isWaitingForAIResponse) return;
-            isWaitingForAIResponse = true;
-            
+            if (isWaitingForAIResponse) return; isWaitingForAIResponse = true;
             try {
                 messages.push({ role: 'user', content: message });
-                
-                const response = await fetch(WORKER_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Specialization': interviewConfig.specialization,
-                        'X-Experience-Level': interviewConfig.experienceLevel,
-                        'X-Company-Type': interviewConfig.companyType,
-                        'X-Duration': interviewConfig.duration
-                    },
-                    body: JSON.stringify({ messages })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API Error: ${response.statusText}`);
-                }
-
+                const response = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Specialization': interviewConfig.specialization, 'X-Experience-Level': interviewConfig.experienceLevel, 'X-Company-Type': interviewConfig.companyType, 'X-Duration': interviewConfig.duration }, body: JSON.stringify({ messages }) });
                 const data = await response.json();
                 if (data.ok && data.response) {
                     let aiMessage = data.response;
-                    let score = null;
-                    if (data.meta && typeof data.meta.score === 'number') {
-                        score = data.meta.score;
-                    } else {
-                        const m = aiMessage.match(/<<<SCORE\s+(\d+(?:\.\d+)?)\/10>>>/i);
-                        if (m) {
-                            score = parseFloat(m[1]);
-                            aiMessage = aiMessage.replace(/<<<SCORE\s+\d+(?:\.\d+)?\/10>>>/i, '', '').trim();
+                    const { clean, emojis, report } = extractEmojisAndSanitize(aiMessage);
+
+                    if (report) {
+                        messages.push({ role: 'assistant', content: aiMessage });
+                        addChatMessage('ai', 'System', `<b>Interview Report Generated</b><div style="font-size:0.85em; margin-top:5px; white-space:pre-wrap; opacity:0.9">${report}</div>`);
+                        if (clean.length > 2) {
+                            addChatMessage('ai', 'Alex Johnson', clean);
+                            if (avatar && isModelLoaded) avatar.speakText(clean);
                         }
-                    }
-
-                    const ended = !!(data.meta && data.meta.ended);
-                    const progress = data.meta && typeof data.meta.progress === 'number' ? data.meta.progress : undefined;
-
-                    if (/<<<FINAL_INTERVIEW_REPORT>>>/i.test(aiMessage)) {
-                        const reportContent = aiMessage.replace(/<<<FINAL_INTERVIEW_REPORT>>>/i, '').trim();
-                        addChatMessage('ai', 'Final Report', reportContent);
-                        messages.push({ role: 'assistant', content: aiMessage });
-
-                        const downloadBtnContainer = document.createElement('div');
-                        downloadBtnContainer.style.padding = '0 1rem 1rem 1rem';
-                        
-                        const downloadBtn = document.createElement('button');
-                        downloadBtn.className = 'btn btn-primary';
-                        downloadBtn.style.width = '100%';
-                        downloadBtn.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 0.5rem;"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg> Download Report`;
-                        downloadBtn.onclick = () => downloadInterviewReport(reportContent);
-
-                        downloadBtnContainer.appendChild(downloadBtn);
-                        chatMessages.appendChild(downloadBtnContainer);
-                        chatMessages.scrollTop = chatMessages.scrollHeight;
                     } else {
                         messages.push({ role: 'assistant', content: aiMessage });
-                        addChatMessage('ai', 'Alex Johnson', aiMessage);
-
-                        const { clean, emojis } = extractEmojisAndSanitize(aiMessage);
-
+                        addChatMessage('ai', 'Alex Johnson', clean);
                         if (avatar && isModelLoaded) {
-                            emojis.slice(0, 3).forEach((e, i) => {
-                                const known = avatar.animEmojis[e] ? e : '😊';
-                                setTimeout(() => avatar.speakEmoji(known), i * 400);
-                            });
+                            emojis.forEach((e, i) => setTimeout(() => avatar.speakEmoji(e), i * 500));
                             avatar.speakText(clean);
                         }
-
-                        if (areSubtitlesOn) {
-                            showSubtitles(`${timestampNow()} Alex: ${aiMessage}`);
-                        }
                     }
-
-                    if (typeof score === 'number') {
-                        scores.push(score);
-                        updateScoreAndProgress(progress);
-                        addChatMessage('ai', 'Score', `Assessment for your last answer: ${score.toFixed(1)}/10`);
-                    }
-
-                    if (ended) {
-                        addChatMessage('ai', 'System', 'Interview concluded. You can end the call or review the chat.');
-                    }
-                } else {
-                    throw new Error(data.error || 'Invalid response from AI');
                 }
-
-            } catch (error) {
-                console.error('AI communication error:', error);
-                addChatMessage('ai', 'System', 'I apologize, but I\'m having trouble processing your response. Please try again.');
-            } finally {
-                isWaitingForAIResponse = false;
-            }
+            } catch (error) { console.error(error); addChatMessage('ai', 'System', 'Connection error.'); } finally { isWaitingForAIResponse = false; }
         }
 
-        function timestampNow() {
-            const now = new Date();
-            const hh = String(now.getHours()).padStart(2,'0');
-            const mm = String(now.getMinutes()).padStart(2,'0');
-            const ss = String(now.getSeconds()).padStart(2,'0');
-            return `[${hh}:${mm}:${ss}]`;
-        }
-
-        function showSubtitles(text) {
-            subtitlesOverlay.textContent = text;
-            subtitlesOverlay.classList.remove('hidden');
-            const displayDuration = Math.max(2500, text.length * 50);
-            if (subtitlesOverlay._hideTimer) clearTimeout(subtitlesOverlay._hideTimer);
-            subtitlesOverlay._hideTimer = setTimeout(() => {
-                subtitlesOverlay.classList.add('hidden');
-            }, displayDuration);
-        }
-
-        function scheduleAISubtitles(sortedTP, totalDurationSec, audioStartAt) {
-            if (!areSubtitlesOn || !sortedTP || !sortedTP.length) return;
-            if (subtitlesOverlay._sched) { subtitlesOverlay._sched.forEach(id => clearTimeout(id)); }
-            const ids = []; const startEpoch = performance.now();
-            const offsetMs = (audioStartAt - avatar.audioCtx.currentTime) * 1000;
-            let currentSentence = [];
-            sortedTP.forEach((tp, i) => {
-                const atMs = tp.time_seconds * 1000 + offsetMs;
-                if (currentSentence.length === 0) ids.push(setTimeout(()=>subtitlesOverlay.classList.add('hidden'), Math.max(0, atMs - 10)));
-                currentSentence.push(tp.word);
-                const slice = currentSentence.length > 6 ? currentSentence.slice(-6) : currentSentence;
-                const text = `${timestampNow()} Alex: ${slice.join(' ')}`;
-                ids.push(setTimeout(() => showSubtitles(text), Math.max(0, atMs)));
-                if (/[.!?]$/.test(tp.word)) { currentSentence = []; ids.push(setTimeout(()=>subtitlesOverlay.classList.add('hidden'), Math.max(0, atMs + 200))); }
+        function showSubtitles(text) { subtitlesOverlay.textContent = text; subtitlesOverlay.classList.remove('hidden'); }
+        window.clearAISubtitles = function () {
+            if (subtitlesOverlay._sched) subtitlesOverlay._sched.forEach(id => clearTimeout(id));
+            subtitlesOverlay._sched = [];
+            subtitlesOverlay.classList.add('hidden');
+        };
+        window.scheduleAISubtitles = function (timepoints, duration, startTime) {
+            if (!areSubtitlesOn) return;
+            window.clearAISubtitles();
+            let currentLine = "";
+            timepoints.forEach((tp) => {
+                const delay = (tp.time_seconds * 1000);
+                subtitlesOverlay._sched.push(setTimeout(() => {
+                    if (currentLine.length > 60 || /[.!?]/.test(tp.word)) if (/[.!?]/.test(tp.word)) currentLine = "";
+                    currentLine += " " + tp.word;
+                    showSubtitles(currentLine.trim());
+                }, delay));
             });
-            const totalMs = totalDurationSec * 1000 + offsetMs + 400;
-            ids.push(setTimeout(() => { subtitlesOverlay.classList.add('hidden'); }, Math.max(0, totalMs)));
-            subtitlesOverlay._sched = ids;
-        }
+            subtitlesOverlay._sched.push(setTimeout(() => subtitlesOverlay.classList.add('hidden'), duration * 1000 + 1000));
+        };
 
-        function toggleSubtitles() {
-            areSubtitlesOn = !areSubtitlesOn;
-            document.getElementById('subtitles-btn').classList.toggle('active', areSubtitlesOn);
-            if (!areSubtitlesOn) {
-                subtitlesOverlay.classList.add('hidden');
-            }
-        }
-
-        function updateScoreAndProgress(progress) {
-            if (scores.length) {
-                const avg = scores.reduce((a,b)=>a+b,0)/scores.length;
-                scorePill.textContent = `Avg Score: ${avg.toFixed(1)}/10`;
-            } else {
-                scorePill.textContent = 'Avg Score: —';
-            }
-            if (typeof progress === 'number') {
-                progressPill.textContent = `Progress: ${Math.round(progress)}%`;
-            }
-        }
-
-        async function downloadInterviewReport(reportContent) {
-            const filename = "AI_Interview_Report.txt";
-            const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' });
-
-            if (window.flutter_inappwebview && typeof window.flutter_inappwebview.callHandler === 'function') {
-                try {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(blob);
-                    reader.onloadend = function() {
-                        const base64data = reader.result;
-                        const base64Content = base64data.split(',')[1];
-                        window.flutter_inappwebview.callHandler('blobToBase64Handler', base64Content, filename);
-                    };
-                } catch (e) {
-                    console.error("Flutter download failed:", e);
-                    alert("Download failed. Please try again.");
-                }
-            } else {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.style.display = 'none';
-                a.href = url;
-                a.download = filename;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                a.remove();
-            }
-        }
-
-        function endInterview() {
-            if (confirm('Are you sure you want to end the interview?')) {
-                if (userStream) {
-                    userStream.getTracks().forEach(track => track.stop());
-                }
-                if (avatar) {
-                    avatar.stopSpeaking();
-                }
-                interviewScreen.classList.add('hidden');
-                setupScreen.classList.remove('hidden');
-                messages = [];
-                isModelLoaded = false;
-                areSubtitlesOn = true;
-                isWaitingForAIResponse = false;
-                scores = [];
-                chatMessages.innerHTML = '';
-                modelLoadingOverlay.classList.remove('hidden');
-                loadModelInBackground();
-            }
-        }
-
-        function sendTypedMessage() {
-            const text = (mobileChatInput?.value || '').trim();
-            if (!text || isWaitingForAIResponse) return;
-            mobileChatInput.value = '';
-            addChatMessage('user', 'You', text);
-            sendToAI(text);
-            if (!mobileChatSheet.classList.contains('open')) {
-                mobileChatSheet.classList.add('open');
-                mobileChatSheet.setAttribute('aria-hidden','false');
-            }
-        }
-
-        function ensureMobileChatUIVisible(){
-            if (window.innerWidth <= 768) {
-                if (mobileChatFab) mobileChatFab.style.display = 'inline-flex';
-                if (mobileChatSheet) mobileChatSheet.style.display = 'flex';
-            }
-        }
+        function toggleSubtitles() { areSubtitlesOn = !areSubtitlesOn; subtitlesBtn.classList.toggle('active', areSubtitlesOn); if (!areSubtitlesOn) subtitlesOverlay.classList.add('hidden'); }
+        function endInterview() { if (confirm('End interview?')) { if (userStream) userStream.getTracks().forEach(t => t.stop()); if (avatar) avatar.stopSpeaking(); try { window.stopListening(); } catch (e) { } interviewScreen.classList.add('hidden'); setupScreen.classList.remove('hidden'); isModelLoaded = false; location.reload(); } }
 
         init();
-    </script><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "9ecf6f49919940acb2efcc833483cd5f"}'></script><!-- Cloudflare Pages Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "9ecf6f49919940acb2efcc833483cd5f"}'></script><!-- Cloudflare Pages Analytics --></body>
+    </script>
+
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+        data-cf-beacon='{"token": "9ecf6f49919940acb2efcc833483cd5f"}'></script><!-- Cloudflare Pages Analytics -->
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+        data-cf-beacon='{"token": "9ecf6f49919940acb2efcc833483cd5f"}'></script><!-- Cloudflare Pages Analytics -->
+</body>
+
 </html>
