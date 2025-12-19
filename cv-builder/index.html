@@ -3195,31 +3195,6 @@ function printCV() {
     window.html2pdf().from(element).set(opt).save();
 }
 
-        // function printCV() {
-        //     const frame = document.getElementById('cv-frame');
-        //     if (!frame || !frame.contentWindow) {
-        //         alert('Preview not ready yet. Please wait a moment and try again.');
-        //         return;
-        //     }
-            
-        //     // Focus and print the iframe content directly
-        //     // This triggers the browser's print dialog (Save as PDF)
-        //     // ensuring text is selectable and vector-based.
-            
-        //     // Set the document title to the desired filename so "Save as PDF" uses it automatically
-        //     const originalTitle = frame.contentDocument.title;
-        //     const filename = (cvData.personal?.name || 'CV').replace(/[^a-z0-9 ]/gi, '_') + '_CV';
-        //     frame.contentDocument.title = filename;
-
-        //     frame.contentWindow.focus();
-        //     frame.contentWindow.print();
-            
-        //     // Restore title after a short delay (optional, but good practice)
-        //     setTimeout(() => {
-        //         if (frame.contentDocument) frame.contentDocument.title = originalTitle;
-        //     }, 1000);
-        // }
-
         // AI & Import Logic
         async function refineSection(fieldType, text) {
             const trimmed = (text || '').trim();
