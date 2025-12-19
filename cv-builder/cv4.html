@@ -95,6 +95,8 @@
 
             /* Origin for transform scaling */
             transform-origin: top center;
+
+            overflow: hidden;
         }
 
         /* CONTENT STYLES */
@@ -185,7 +187,6 @@
 
         .leadership-table td:first-child {
             width: 30%;
-            font-weight: bold;
         }
 
         /* Skills Table */
@@ -197,7 +198,6 @@
 
         .skills-table td:first-child {
             width: 30%;
-            font-weight: bold;
             padding-left: calc(9px * var(--content-scale));
         }
 
@@ -210,7 +210,6 @@
 
         .interest-table td:first-child {
             width: 30%;
-            font-weight: bold;
         }
 
         /* Common Utils */
@@ -292,6 +291,7 @@
                 zoom: 0.7937;
                 -moz-transform: scale(0.7937);
                 -moz-transform-origin: top center;
+                transform-origin: top center;
 
                 /* Reset other transforms */
                 transform: none !important;
@@ -366,7 +366,6 @@
             <table class="leadership-table">
                 <tbody>
                     <tr>
-                        <td></td>
                         <td>
                             <ul data-list="leadership">
                             </ul>
@@ -387,7 +386,6 @@
             <table class="interest-table">
                 <tbody>
                     <tr>
-                        <td></td>
                         <td>
                             <ul data-list="interests" style="margin:0; padding-left:15px;"></ul>
                         </td>
@@ -396,7 +394,7 @@
             </table>
 
             <!-- AWARDS -->
-            <div class="section-header">SIGNIFICANT AWARDS & CERTIFICATIONS</div>
+            <div class="section-header">CERTIFICATIONS</div>
             <div
                 style="padding-left: calc(9px * var(--content-scale)); border: 1px solid var(--border-color); padding: calc(5px * var(--content-scale));">
                 <ul data-list="certifications">
@@ -408,7 +406,6 @@
             <table class="skills-table">
                 <tbody>
                     <tr>
-                        <td></td>
                         <td data-field="skills"></td>
                     </tr>
                 </tbody>

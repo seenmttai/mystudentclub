@@ -92,6 +92,8 @@
 
             /* Origin for transform scaling */
             transform-origin: top center;
+
+            overflow: hidden;
         }
 
         /* CONTENT STYLES */
@@ -120,7 +122,7 @@
             color: #555;
             font-weight: bold;
             text-align: right;
-            padding-bottom: calc(5px * var(--content-scale));
+            padding-bottom: calc(2px * var(--content-scale));
         }
 
         /* Contact Bar */
@@ -323,6 +325,7 @@
                 zoom: 0.7937;
                 -moz-transform: scale(0.7937);
                 -moz-transform-origin: top center;
+                transform-origin: top center;
 
                 /* Reset other transforms */
                 transform: none !important;
@@ -344,8 +347,7 @@
             <!-- HEADER -->
             <div class="header">
                 <div class="name" data-field="name"></div>
-                <div class="contact-info" data-field="contact">
-                </div>
+                <div class="subtitle" data-field="tagline"></div>
             </div>
 
             <!-- CONTACT BAR -->
@@ -386,7 +388,7 @@
                     </div>
                     <table class="work-table">
                         <tr>
-                            <td class="role-col"></td>
+                            <td class="role-col" data-field="category"></td>
                             <td class="desc-col">
                                 <ul class="bullet-list" data-list="bullets">
                                 </ul>
