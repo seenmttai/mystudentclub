@@ -8,22 +8,31 @@ window.addEventListener('message', (event) => {
     const data = event.data;
     if (!data || data.type !== 'update-cv') return;
 
+    window._hasReceivedData = true;
     renderCV(data.payload);
 });
 
-// Initialize with empty data on load to hide all sections by default
+// Initialize with empty data on load, but only if we don't get a message immediately
 document.addEventListener('DOMContentLoaded', () => {
-    renderCV({
-        personal: {},
-        summary: '',
-        education: [],
-        experience: [],
-        certifications: [],
-        achievements: [],
-        leadership: [],
-        interests: [],
-        skills: ''
-    });
+    // We notify the parent we are ready to receive data
+    window.parent.postMessage({ type: 'cv-frame-ready' }, '*');
+
+    // Initial blank state - but don't force hide if data might be coming
+    setTimeout(() => {
+        if (!window._hasReceivedData) {
+            renderCV({
+                personal: {},
+                summary: '',
+                education: [],
+                experience: [],
+                certifications: [],
+                achievements: [],
+                leadership: [],
+                interests: [],
+                skills: ''
+            });
+        }
+    }, 50);
 });
 
 function renderCV(data) {
@@ -36,14 +45,14 @@ function renderCV(data) {
     setHTML('[data-field="phone"]', data.personal?.phone);
     setHTML('[data-field="email"]', data.personal?.email);
     setHTML('[data-field="linkedin"]', data.personal?.linkedin);
-    
+
     // Hide contact-block if phone, email, linkedin are all empty (CV-5 pattern)
     const hasContactDetails = !!(data.personal?.phone || data.personal?.email || data.personal?.linkedin);
     const contactBlock = document.querySelector('.contact-block');
     if (contactBlock) {
         contactBlock.style.display = hasContactDetails ? '' : 'none';
     }
-    
+
     // Also hide contact-row items individually when empty
     document.querySelectorAll('.contact-row').forEach(row => {
         const valueEl = row.querySelector('.contact-value');
@@ -96,7 +105,7 @@ function renderCV(data) {
         if (row.tagName === 'LI') row.innerHTML = text;
         else setHTMLIn(row, '[data-field="cert"]', text);
     });
-    
+
     // Handle certifications rendered as simple list (data-list="certifications")
     const certContainer = document.querySelector('[data-list="certifications"]');
     if (certContainer) {
@@ -270,9 +279,9 @@ function toggleSectionElement(element, isVisible) {
     // Check if element is inside a generic styled div wrapper (CV4 pattern)
     // These are divs with inline styles like border, padding that wrap the content
     let parent = element.parentElement;
-    if (parent && parent.tagName === 'DIV' && 
+    if (parent && parent.tagName === 'DIV' &&
         !containerToHide.classList.contains('section-container') &&
-        parent.id !== 'cv-page' && 
+        parent.id !== 'cv-page' &&
         !parent.classList.contains('cv-page') &&
         !parent.classList.contains('resume-container') &&
         !parent.classList.contains('main-container') &&
@@ -289,15 +298,15 @@ function toggleSectionElement(element, isVisible) {
     if (parentTd) {
         const parentTr = parentTd.closest('tr');
         const parentTable = parentTd.closest('table');
-        
+
         if (parentTr && parentTable) {
             // Always set the row visibility first
             parentTr.style.display = isVisible ? '' : 'none';
-            
+
             // If we're SHOWING content, make sure the table and header are also visible
             if (isVisible) {
                 parentTable.style.display = '';
-                
+
                 // Also find and show the section header
                 let tableHeader = parentTable.previousElementSibling;
                 let searchCount = 5;
@@ -316,14 +325,14 @@ function toggleSectionElement(element, isVisible) {
                 }
                 return;
             }
-            
+
             // If we're HIDING, check if all rows in the table are now hidden
             const tbody = parentTable.querySelector('tbody') || parentTable;
             const allRows = Array.from(tbody.querySelectorAll('tr'));
-            const visibleRows = allRows.filter(tr => 
+            const visibleRows = allRows.filter(tr =>
                 tr.style.display !== 'none' && !tr.classList.contains('template')
             );
-            
+
             // If no visible rows remain, hide the table and its header
             if (visibleRows.length === 0) {
                 containerToHide = parentTable;
@@ -338,12 +347,12 @@ function toggleSectionElement(element, isVisible) {
     // Walk up to find the container that has a section-header sibling
     let current = containerToHide;
     let searchLimit = 10;
-    
+
     while (current && searchLimit > 0) {
         // Check previous siblings for a header
         let sibling = current.previousElementSibling;
         let siblingLimit = 5;
-        
+
         while (sibling && siblingLimit > 0) {
             if (
                 sibling.classList.contains('section-header') ||
@@ -358,13 +367,13 @@ function toggleSectionElement(element, isVisible) {
             sibling = sibling.previousElementSibling;
             siblingLimit--;
         }
-        
+
         if (headerToHide) break;
-        
+
         // Move up to parent, but stop at known CV page containers
-        if (current.id === 'cv-page' || 
+        if (current.id === 'cv-page' ||
             current.id === 'zoom-wrapper' ||
-            current.classList.contains('cv-page') || 
+            current.classList.contains('cv-page') ||
             current.classList.contains('resume-container') ||
             current.classList.contains('main-container') ||
             current.classList.contains('page') ||
@@ -379,10 +388,10 @@ function toggleSectionElement(element, isVisible) {
     if (containerToHide && containerToHide !== element) {
         containerToHide.style.display = isVisible ? '' : 'none';
     }
-    
+
     if (headerToHide) {
         headerToHide.style.display = isVisible ? '' : 'none';
-        
+
         // Also check if there's a section-header before the gray-bar/section-title
         // This handles CV-7's pattern: section-header → gray-bar → section-content
         if (headerToHide.classList.contains('gray-bar')) {
