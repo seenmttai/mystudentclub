@@ -7,6 +7,8 @@
     <title>LMS Resources | My Student Club</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Added PDF.js for viewing PDFs -->
+    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="importmap">
     {
@@ -44,55 +46,6 @@
             color: var(--text-secondary);
             max-width: 700px;
             margin: 0 auto;
-        }
-
-        .info-box {
-            background-color: var(--surface-elevated);
-            border-radius: var(--radius-xl);
-            padding: var(--space-8);
-            margin-bottom: 3rem;
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .info-box h2 {
-            font-size: var(--text-2xl);
-            font-weight: 700;
-            color: var(--primary-600);
-            margin-bottom: var(--space-6);
-            text-align: center;
-        }
-
-        .info-box ul {
-            list-style: none;
-            display: grid;
-            gap: var(--space-4);
-        }
-
-        .info-box li {
-            background: var(--surface);
-            padding: var(--space-4);
-            border-radius: var(--radius-lg);
-            border-left: 4px solid var(--secondary-500);
-            display: flex;
-            align-items: center;
-            gap: var(--space-4);
-        }
-
-        .info-box li p {
-            margin: 0;
-            color: var(--text-secondary);
-            flex-grow: 1;
-        }
-
-        .info-box a {
-            color: var(--secondary-500);
-            font-weight: 600;
-            text-decoration: underline;
-        }
-
-        .info-box a:hover {
-            color: var(--secondary-600);
         }
 
         .resources-grid {
@@ -205,7 +158,6 @@
             background-color: var(--secondary-600, #7c3aed);
         }
 
-
         .loading-state,
         .empty-state {
             grid-column: 1 / -1;
@@ -214,6 +166,7 @@
             color: var(--text-secondary);
         }
 
+        /* Modal Styles */
         #resource-viewer-modal {
             position: fixed;
             top: 0;
@@ -239,6 +192,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
         }
 
         .resource-viewer-header {
@@ -248,6 +202,8 @@
             padding: 1rem 1.5rem;
             border-bottom: 1px solid #e2e8f0;
             flex-shrink: 0;
+            background: white;
+            z-index: 20;
         }
 
         .resource-viewer-title {
@@ -269,13 +225,20 @@
             flex-grow: 1;
             overflow: auto;
             position: relative;
+            background: #f1f5f9;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
         }
 
+        /* Iframe Styles */
         .iframe-container {
-            position: relative;
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden;
+            background: white;
         }
 
         #resource-iframe {
@@ -298,14 +261,76 @@
             user-select: none;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
+        /* PDF & CSV Styles */
+        .pdf-canvas-container {
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+        }
 
-            to {
-                opacity: 1;
-            }
+        #pdf-canvas {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            max-width: 100%;
+        }
+
+        .csv-preview-container {
+            padding: 2rem;
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .csv-preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .csv-preview-table th,
+        .csv-preview-table td {
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .csv-preview-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+        }
+
+        .resource-viewer-controls {
+            padding: 1rem;
+            border-top: 1px solid #e2e8f0;
+            background: white;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .viewer-nav-button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .viewer-nav-button:hover:not(:disabled) {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .viewer-nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
     </style>
 </head>
@@ -354,42 +379,49 @@
             <div class="resources-container">
                 <div class="page-header">
                     <h1>LMS Resources Hub</h1>
-                    <p>A centralized place for all important links and materials related to your courses. Bookmark this
-                        page for easy access!</p>
+                    <p>A centralized place for all important links and materials related to your courses.</p>
                 </div>
 
                 <div class="page-header" style="margin-top: 4rem;">
                     <h2>Course Materials</h2>
-                    <p>Here are all the downloadable materials and links from your courses, all in one place.</p>
                 </div>
 
                 <div id="all-resources-grid" class="resources-grid">
                     <div v-if="loading" class="loading-state">
                         <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
-                        <p>Loading all resources...</p>
+                        <p>Loading resources...</p>
                     </div>
                     <div v-else-if="allResources.length === 0" class="empty-state">
                         <p>No resources found for your enrolled courses.</p>
                     </div>
-                    <div v-else v-for="resource in allResources" :key="resource.title" class="resource-card">
+                    <div v-else v-for="resource in allResources" :key="resource.title + resource.download_storage_path" class="resource-card">
                         <div class="resource-header">
                             <div class="resource-icon"><i :class="getResourceIcon(resource.type)"></i></div>
                             <h3 class="resource-title">{{ resource.title }}</h3>
                         </div>
-                        <p class="resource-description">{{ resource.description || 'Access this resource.' }}
-                        </p>
+                        <p class="resource-description">{{ resource.description || 'Access this resource below.' }}</p>
                         <div class="resource-actions">
-                            <button
-                                v-if="resource.url === 'https://docs.google.com/spreadsheets/d/1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y/edit?gid=1269177841#gid=1269177841'"
-                                @click="viewInModal(resource)" class="resource-btn resource-btn-view">
+                            <!-- Special Google Sheet -->
+                            <button v-if="isSpecialSheet(resource)" 
+                                    @click="openViewer(resource, 'iframe')" class="resource-btn resource-btn-view">
+                                <i class="fas fa-eye"></i> View Sheet
+                            </button>
+                            
+                            <!-- PDF/CSV Viewable -->
+                            <button v-else-if="hasViewPath(resource)" 
+                                    @click="openViewer(resource, getPreviewType(resource))" class="resource-btn resource-btn-view">
                                 <i class="fas fa-eye"></i> View
                             </button>
-                            <a v-else-if="resource.type === 'external_link' && resource.url" :href="resource.url"
-                                target="_blank" rel="noopener noreferrer" class="resource-btn resource-btn-link">
+                            
+                            <!-- External Link -->
+                            <a v-else-if="resource.type === 'external_link' && resource.url" 
+                               :href="resource.url" target="_blank" rel="noopener noreferrer" class="resource-btn resource-btn-link">
                                 <i class="fas fa-external-link-alt"></i> Open Link
                             </a>
-                            <button v-else-if="resource.download_storage_path && resource.download_storage_path !== 'None'"
-                                @click.stop="downloadResource(resource)" class="resource-btn resource-btn-download">
+                            
+                            <!-- Downloadable -->
+                            <button v-if="hasDownloadPath(resource)" 
+                                    @click.stop="downloadResource(resource)" class="resource-btn resource-btn-download">
                                 <i class="fas fa-download"></i> Download
                             </button>
                         </div>
@@ -397,17 +429,42 @@
                 </div>
             </div>
 
+            <!-- Modal Viewer -->
             <div v-if="isViewerVisible" id="resource-viewer-modal">
                 <div class="resource-viewer-content">
                     <div class="resource-viewer-header">
                         <h2 class="resource-viewer-title">{{ currentResourceTitle }}</h2>
                         <button @click="closeViewer" class="resource-viewer-close-button">×</button>
                     </div>
+                    
                     <div class="viewer-main-content">
-                        <div id="iframe-viewer-container" class="iframe-container">
+                        <div v-if="viewerLoading" class="loading-state" style="position:absolute; top:40%; width:100%">
+                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
+                            <p>Loading...</p>
+                        </div>
+
+                        <!-- Iframe (Google Sheet) -->
+                        <div v-show="previewType === 'iframe'" class="iframe-container">
                             <div class="iframe-overlay"></div>
                             <iframe id="resource-iframe" :src="iframeSrc" title="Embedded Resource"></iframe>
                         </div>
+
+                        <!-- PDF Canvas -->
+                        <div v-show="previewType === 'pdf'" class="pdf-canvas-container">
+                            <canvas ref="pdfCanvas" id="pdf-canvas"></canvas>
+                        </div>
+
+                        <!-- CSV Table -->
+                        <div v-show="previewType === 'csv'" class="csv-preview-container">
+                            <table class="csv-preview-table" v-html="csvHtml"></table>
+                        </div>
+                    </div>
+
+                    <!-- Controls (Only for PDF) -->
+                    <div v-if="previewType === 'pdf'" class="resource-viewer-controls">
+                        <button @click="renderPdfPage(pdfCurrentPage - 1)" :disabled="pdfCurrentPage <= 1" class="viewer-nav-button">Previous</button>
+                        <span>Page {{ pdfCurrentPage }} of {{ pdfTotalPages }}</span>
+                        <button @click="renderPdfPage(pdfCurrentPage + 1)" :disabled="pdfCurrentPage >= pdfTotalPages" class="viewer-nav-button">Next</button>
                     </div>
                 </div>
             </div>
@@ -419,8 +476,7 @@
                 <div class="footer-brand">
                     <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo">
                     <h4>My Student Club</h4>
-                    <p>Empowering the next generation of Chartered Accountants with world-class education and resources.
-                    </p>
+                    <p>Empowering the next generation of Chartered Accountants with world-class education and resources.</p>
                 </div>
                 <div class="footer-links">
                     <div class="footer-column">
@@ -444,6 +500,11 @@
         const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        
+        // Setup PDF.js
+        if(window.pdfjsLib) {
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
+        }
 
         createApp({
             data() {
@@ -452,13 +513,28 @@
                     user: null,
                     allResources: [],
                     loading: true,
+                    
+                    // Viewer State
                     isViewerVisible: false,
+                    viewerLoading: false,
+                    previewType: null, // 'iframe', 'pdf', 'csv'
+                    currentResourceTitle: '',
+                    
+                    // Iframe Data
                     iframeSrc: '',
-                    currentResourceTitle: ''
+                    
+                    // PDF Data
+                    pdfDoc: null,
+                    pdfCurrentPage: 1,
+                    pdfTotalPages: 1,
+                    
+                    // CSV Data
+                    csvHtml: ''
                 }
             },
             methods: {
                 toggleMenu() { this.menuActive = !this.menuActive; },
+                
                 async checkAuth() {
                     const { data: { session } } = await supabase.auth.getSession();
                     if (session && session.user) {
@@ -471,7 +547,9 @@
                         window.location.href = 'https://www.mystudentclub.com/login.html';
                     }
                 },
+                
                 handleProfileClick() { if (!this.user) { window.location.href = 'https://www.mystudentclub.com/login.html'; } },
+                
                 async fetchAllResources() {
                     this.loading = true;
                     try {
@@ -486,11 +564,13 @@
                         videos.forEach(video => {
                             if (video.resources && Array.isArray(video.resources)) {
                                 video.resources.forEach(resource => {
-                                    const isSpecialSheet = resource.url === 'https://docs.google.com/spreadsheets/d/1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y/edit?gid=1269177841#gid=1269177841';
-                                    const isExternalLink = resource.type === 'external_link' && resource.url;
-                                    const isDownloadable = resource.download_storage_path && resource.download_storage_path !== 'None';
+                                    // UPDATED FILTER: Include if viewable, downloadable, OR external link
+                                    const isSpecial = this.isSpecialSheet(resource);
+                                    const canView = this.hasViewPath(resource);
+                                    const canDownload = this.hasDownloadPath(resource);
+                                    const isLink = resource.type === 'external_link';
 
-                                    if (isSpecialSheet || isExternalLink || isDownloadable) {
+                                    if (isSpecial || canView || canDownload || isLink) {
                                         const uniqueKey = resource.title + (resource.url || resource.download_storage_path);
                                         if (!uniqueResources.has(uniqueKey)) {
                                             uniqueResources.set(uniqueKey, resource);
@@ -506,10 +586,126 @@
                         this.loading = false;
                     }
                 },
+                
+                // Helper methods for template
+                isSpecialSheet(resource) {
+                    return resource.url === 'https://docs.google.com/spreadsheets/d/1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y/edit?gid=1269177841#gid=1269177841';
+                },
+                hasViewPath(resource) {
+                    return resource.view_storage_path && resource.view_storage_path !== 'None';
+                },
+                hasDownloadPath(resource) {
+                    return resource.download_storage_path && resource.download_storage_path !== 'None';
+                },
+                getPreviewType(resource) {
+                    if (this.isSpecialSheet(resource)) return 'iframe';
+                    if (resource.view_storage_path) {
+                        return resource.view_storage_path.toLowerCase().endsWith('.csv') ? 'csv' : 'pdf';
+                    }
+                    return null;
+                },
                 getResourceIcon(type) {
                     const iconMap = { pdf: 'fas fa-file-pdf', image: 'fas fa-file-image', doc: 'fas fa-file-word', docx: 'fas fa-file-word', txt: 'fas fa-file-alt', external_link: 'fas fa-external-link-alt', video: 'fas fa-file-video', archive: 'fas fa-file-archive', spreadsheet: 'fas fa-file-excel', xlsx: 'fas fa-file-excel', csv: 'fas fa-file-csv' };
                     return iconMap[type ? type.toLowerCase() : ''] || 'fas fa-file';
                 },
+
+                // Main Viewer Function
+                async openViewer(resource, type) {
+                    this.isViewerVisible = true;
+                    this.currentResourceTitle = resource.title;
+                    this.previewType = type;
+                    this.viewerLoading = true;
+                    
+                    // Reset States
+                    this.iframeSrc = '';
+                    this.pdfDoc = null;
+                    this.csvHtml = '';
+                    
+                    if (type === 'iframe') {
+                        const sheetId = '1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y';
+                        this.iframeSrc = `https://docs.google.com/spreadsheets/d/${sheetId}/pubhtml?widget=true&headers=false&chrome=false`;
+                        this.viewerLoading = false;
+                        return;
+                    }
+
+                    try {
+                        // Get Signed URL
+                        const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
+                        if (error) throw error;
+
+                        // Fetch via proxy
+                        const proxyUrl = `https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`;
+                        const response = await fetch(proxyUrl);
+                        if (!response.ok) throw new Error('Fetch failed');
+
+                        if (type === 'pdf') {
+                            const pdfData = await response.arrayBuffer();
+                            this.pdfDoc = await window.pdfjsLib.getDocument(pdfData).promise;
+                            this.pdfTotalPages = this.pdfDoc.numPages;
+                            this.pdfCurrentPage = 1;
+                            await this.$nextTick(); // Wait for canvas to exist
+                            this.renderPdfPage(1);
+                        } else if (type === 'csv') {
+                            const csvText = await response.text();
+                            this.renderCsv(csvText);
+                        }
+                    } catch (err) {
+                        console.error("Viewer error", err);
+                        alert("Could not load resource.");
+                        this.closeViewer();
+                    } finally {
+                        this.viewerLoading = false;
+                    }
+                },
+
+                // PDF Rendering
+                async renderPdfPage(num) {
+                    if (!this.pdfDoc) return;
+                    this.pdfCurrentPage = num;
+                    const page = await this.pdfDoc.getPage(num);
+                    const canvas = this.$refs.pdfCanvas;
+                    const ctx = canvas.getContext('2d');
+                    const viewport = page.getViewport({ scale: 1.5 });
+                    
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    
+                    await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+                    this.drawWatermark(canvas, ctx);
+                },
+
+                drawWatermark(canvas, ctx) {
+                    const watermarkText = this.user ? this.user.email : 'MyStudentClub';
+                    ctx.font = '20px Arial'; ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+                    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+                    const x_step = 250, y_step = 150;
+                    ctx.save();
+                    for (let y = y_step / 2; y < canvas.height; y += y_step) {
+                        for (let x = x_step / 2; x < canvas.width; x += x_step) {
+                            ctx.save(); ctx.translate(x, y); ctx.rotate(-Math.PI / 4);
+                            ctx.fillText(watermarkText, 0, 0); ctx.restore();
+                        }
+                    }
+                    ctx.restore();
+                },
+
+                // CSV Rendering
+                renderCsv(csvText) {
+                    const lines = csvText.split('\n').filter(line => line.trim() !== '');
+                    const header = lines.length > 0 ? lines[0].split(',').map(h => h.trim()) : [];
+                    const rows = lines.length > 1 ? lines.slice(1).map(line => line.split(',').map(cell => cell.trim())) : [];
+                    
+                    let html = `<thead><tr>${header.map(h => `<th>${h}</th>`).join('')}</tr></thead>`;
+                    html += `<tbody>${rows.map(row => `<tr>${row.map(cell => `<td title="${cell}">${cell}</td>`).join('')}</tr>`).join('')}</tbody>`;
+                    this.csvHtml = html;
+                },
+
+                closeViewer() {
+                    this.isViewerVisible = false;
+                    this.iframeSrc = 'about:blank';
+                    this.pdfDoc = null;
+                },
+
                 async downloadResource(resource) {
                     const path = resource.download_storage_path;
                     if (!path || path === 'None') {
@@ -529,34 +725,19 @@
                             const reader = new FileReader();
                             reader.readAsDataURL(blob);
                             reader.onloadend = function () {
-                                const base64data = reader.result;
-                                const base64Content = base64data.split(',')[1];
+                                const base64Content = reader.result.split(',')[1];
                                 window.flutter_inappwebview.callHandler('blobToBase64Handler', base64Content, filename);
                             };
                         } else {
                             const url = window.URL.createObjectURL(blob);
                             const a = document.createElement('a');
-                            a.href = url;
-                            a.download = filename;
-                            document.body.appendChild(a);
-                            a.click();
-                            window.URL.revokeObjectURL(url);
-                            a.remove();
+                            a.href = url; a.download = filename;
+                            document.body.appendChild(a); a.click();
+                            window.URL.revokeObjectURL(url); a.remove();
                         }
                     } catch (err) {
                         alert('Could not download the file. Please try again.');
                     }
-                },
-                viewInModal(resource) {
-                    const sheetId = '1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y';
-                    this.iframeSrc = `https://docs.google.com/spreadsheets/d/${sheetId}/pubhtml?widget=true&headers=false&chrome=false`;
-                    this.currentResourceTitle = resource.title;
-                    this.isViewerVisible = true;
-                },
-                closeViewer() {
-                    this.isViewerVisible = false;
-                    this.iframeSrc = 'about:blank';
-                    this.currentResourceTitle = '';
                 }
             },
             async mounted() {
