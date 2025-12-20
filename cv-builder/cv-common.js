@@ -8,22 +8,31 @@ window.addEventListener('message', (event) => {
     const data = event.data;
     if (!data || data.type !== 'update-cv') return;
 
+    window._hasReceivedData = true;
     renderCV(data.payload);
 });
 
-// Initialize with empty data on load to hide all sections by default
+// Initialize with empty data on load, but only if we don't get a message immediately
 document.addEventListener('DOMContentLoaded', () => {
-    renderCV({
-        personal: {},
-        summary: '',
-        education: [],
-        experience: [],
-        certifications: [],
-        achievements: [],
-        leadership: [],
-        interests: [],
-        skills: ''
-    });
+    // We notify the parent we are ready to receive data
+    window.parent.postMessage({ type: 'cv-frame-ready' }, '*');
+    
+    // Initial blank state - but don't force hide if data might be coming
+    setTimeout(() => {
+        if (!window._hasReceivedData) {
+            renderCV({
+                personal: {},
+                summary: '',
+                education: [],
+                experience: [],
+                certifications: [],
+                achievements: [],
+                leadership: [],
+                interests: [],
+                skills: ''
+            });
+        }
+    }, 50);
 });
 
 function renderCV(data) {
