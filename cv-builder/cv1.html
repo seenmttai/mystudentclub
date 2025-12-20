@@ -400,10 +400,10 @@
     </div>
 
     <!-- SCRIPT -->
-    <script src="cv-common.js"></script>
+    <script src="/cv-common.js"></script>
     <script>
         // 1. SCALING LOGIC (Visual Zoom)
-        function scaleToFit() {
+        window.scaleToFit = function scaleToFit() {
             const page = document.getElementById('cv-page');
             if (!page || document.body.classList.contains('print-mode')) return;
 
@@ -420,7 +420,7 @@
         }
 
         // 2. SHRINK TO FIT LOGIC (Content Compression)
-        function shrinkContentToFit() {
+        window.shrinkContentToFit = function shrinkContentToFit() {
             const page = document.getElementById('cv-page');
             const maxHeight = 1414;
 

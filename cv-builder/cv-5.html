@@ -202,7 +202,7 @@
             font-size: calc(17px * var(--content-scale));
             border-top: 1px solid var(--border-color);
         }
-
+        
         /* Remove top border for the first experience item to avoid double border with section header */
         #experience-list .job-group:first-child .sub-header,
         #certification-list .sub-header:first-child {
@@ -509,7 +509,7 @@
                     </ul>
                 </div>
 
-
+                
                 <!-- SKILLS -->
                 <div class="section-header">SKILLS</div>
                 <div class="content-block" data-field="skills">
@@ -520,10 +520,10 @@
     </div>
 
     <!-- SCRIPT -->
-    <script src="cv-common.js"></script>
+    <script src="/cv-common.js"></script>
     <script>
         // 1. SCALING LOGIC (Visual Zoom)
-        function scaleToFit() {
+        window.scaleToFit = function scaleToFit() {
             const page = document.getElementById('cv-page');
             if (!page || document.body.classList.contains('print-mode')) return;
 
@@ -540,7 +540,7 @@
         }
 
         // 2. SHRINK TO FIT LOGIC (Content Compression)
-        function shrinkContentToFit() {
+        window.shrinkContentToFit = function shrinkContentToFit() {
             const page = document.getElementById('cv-page');
             const maxHeight = 1414;
 

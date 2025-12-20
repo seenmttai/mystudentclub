@@ -1886,13 +1886,13 @@
         <div class="template-floater">
             <span class="template-label">Template</span>
             <select id="template-select" class="template-select" onchange="changeTemplate()">
-                <option value="cv1.html">Modern Serif</option>
-                <option value="cv2.html">Classic Blue</option>
-                <option value="cv3.html">Grid Layout</option>
-                <option value="cv4.html">Professional</option>
-                <option value="cv5.html">Corporate</option>
-                <option value="cv6.html">Minimalist</option>
-                <option value="cv7.html">Compact</option>
+                <option value="/cv1.html">Modern Serif</option>
+                <option value="/cv2.html">Classic Blue</option>
+                <option value="/cv3.html">Grid Layout</option>
+                <option value="/cv4.html">Professional</option>
+                <option value="/cv5.html">Corporate</option>
+                <option value="/cv6.html">Minimalist</option>
+                <option value="/cv7.html">Compact</option>
             </select>
         </div>
 
@@ -2598,19 +2598,19 @@
         // Template configuration: which sections each template supports
         // Based on actual template file analysis - includes tagline, category, contact fields
         const templateConfig = {
-            'cv1.html': ['contact', 'summary', 'achievements', 'leadership', 'interests'],
-            'cv2.html': ['contact', 'tagline', 'category', 'achievements','certifications', 'leadership', 'interests'],
-            'cv3.html': ['contact', 'summary', 'category', 'certifications', 'achievements'],
-            'cv4.html': ['contact', 'certifications', 'achievements', 'leadership', 'interests'],
-            'cv5.html': ['summary', 'phone', 'email', 'linkedin', 'leadership', 'certifications', 'achievements', 'interests', 'skills'],
-            'cv6.html': ['contact', 'achievements', 'certifications'],
-            'cv7.html': ['contact', 'certifications', 'achievements', 'leadership', 'interests']
+            '/cv1.html': ['contact', 'summary', 'achievements', 'leadership', 'interests'],
+            '/cv2.html': ['contact', 'tagline', 'category', 'achievements','certifications', 'leadership', 'interests'],
+            '/cv3.html': ['contact', 'summary', 'category', 'certifications', 'achievements'],
+            '/cv4.html': ['contact', 'certifications', 'achievements', 'leadership', 'interests'],
+            '/cv5.html': ['summary', 'phone', 'email', 'linkedin', 'leadership', 'certifications', 'achievements', 'interests', 'skills'],
+            '/cv6.html': ['contact', 'achievements', 'certifications'],
+            '/cv7.html': ['contact', 'certifications', 'achievements', 'leadership', 'interests']
         };
 
         // Update form sections visibility based on selected template
         function updateFormSections() {
             const select = document.getElementById('template-select');
-            const currentTemplate = select ? select.value : 'cv1.html';
+            const currentTemplate = select ? select.value : '/cv1.html';
             const supportedSections = templateConfig[currentTemplate] || [];
             
             // Find all sections with data-section attribute
@@ -3034,14 +3034,16 @@
             if (frame && frame.contentWindow) {
                 try {
                     const payload = JSON.parse(JSON.stringify(cvData));
-                    const templateFile = document.getElementById('template-select')?.value || 'cv1.html';
+                    const select = document.getElementById('template-select');
+                    const templateFile = select ? select.value : '/cv1.html';
                     
                     if (payload.personal && typeof payload.personal.contact === 'string') {
                         let contactStr = payload.personal.contact;
                         
                         // "Auto remover" for templates that struggle with pipes (like CV2 for scaling)
                         // Templates like cv2.html use flex justify-between, so individual items work better
-                        const needsSplit = ['cv2.html', 'cv4.html', 'cv6.html', 'cv7.html'].includes(templateFile);
+                        const templateId = templateFile.split('/').pop();
+                        const needsSplit = ['cv2.html', 'cv4.html', 'cv6.html', 'cv7.html'].includes(templateId);
                         
                         if (needsSplit && contactStr.includes('|')) {
                             const parts = contactStr.split('|').map(p => p.trim()).filter(Boolean);
@@ -3062,16 +3064,32 @@
             const select = document.getElementById('template-select');
             const frame = document.getElementById('cv-frame');
             
+            if (!select || !frame) return;
+
             // Update form sections visibility for new template
             updateFormSections();
             
             document.querySelector('.loading-overlay').classList.add('active');
+            
+            // Set source with absolute path
             frame.src = select.value;
+            
+            // Clear any existing onload to avoid duplicates
+            frame.onload = null; 
+            
+            // We use the message-based system instead for more reliability
+            // but keep a fallback just in case
+            const fallback = setTimeout(() => {
+                postToFrame();
+                document.querySelector('.loading-overlay').classList.remove('active');
+            }, 1000);
+            
             frame.onload = () => {
+                clearTimeout(fallback);
                 setTimeout(() => {
                     postToFrame();
                     document.querySelector('.loading-overlay').classList.remove('active');
-                }, 400);
+                }, 300);
             };
         }
 
