@@ -766,25 +766,28 @@ function formatFeedbackText(text) {
 
     // The model often returns long paragraphs. Break them into bullet-friendly lines:
     // 1) After sentence boundaries (., ?, !) followed by a capital letter â†’ new bullet
-    processedText = processedText.replace(/([.!?])\s+(?=[A-Z])/g, '$1\nâ€¢ ');
+    processedText = processedText.replace(/([.!?])\s+(?=[A-Z])/g, '$1\n• ');
     // 2) After ISSUE markers when explanation continues
-    processedText = processedText.replace(/(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\.?\s+([A-Z])/gi, '$1\nâ€¢ $2');
-    // 3) Ensure inline numbered items become separate lines
-    processedText = processedText.replace(/(\d)\.\s+([A-Z])/g, '\n$1. $2');
+    processedText = processedText.replace(/(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\.?\s+([A-Z])/gi, '$1\n• $2');
+    // 3) Convert inline numbered items (1. 2. 3. etc.) to bullet points
+    // First, handle patterns like "text. 1. more" or "text 1. more" - any " N. " pattern
+    processedText = processedText.replace(/\s+(\d+)\.\s+/g, '\n ');
+    // Also handle numbered items at the very start of text
+    processedText = processedText.replace(/^(\d+)\.\s+/gm, '');
 
     // STEP 2: Convert to HTML
     let html = simpleMarkdownToHtml(processedText);
 
-    // Replace [GOOD] with simple âœ“ symbol  
-    html = html.replace(/\[GOOD\]/g, '<span class="highlight-good" title="Good point">âœ“</span>');
+    // Replace [GOOD] with simple ✓ symbol
+    html = html.replace(/\[GOOD\]/gi, '<span class="highlight-good" title="Good point">✓</span>');
 
-    // Replace [ISSUE] with simple âœ— symbol (without severity)
-    html = html.replace(/\[ISSUE\](?!\s*-\s*SEVERITY)/g, '<span class="highlight-issue" title="Area for improvement">âœ—</span>');
+    // Replace [ISSUE] with simple ✗ symbol (without severity)
+    html = html.replace(/\[ISSUE\](?!\s*-\s*SEVERITY)/gi, '<span class="highlight-issue" title="Area for improvement">✗</span>');
 
     // Replace [ISSUE - SEVERITY: Level] with compact severity badges
     html = html.replace(/\[ISSUE\s*-\s*SEVERITY:\s*(Critical|High|Moderate|Low)(?:[^\]]*)\]/gi, (match, severity) => {
         const level = severity.toLowerCase();
-        return `<span class="highlight-issue" title="Issue">âœ—</span><span class="severity-badge severity-${level}">${severity}</span>`;
+        return `<span class="highlight-issue" title="Issue">✗</span><span class="severity-badge severity-${level}">${severity}</span>`;
     });
 
     // Format section labels: "*   *Label:*" pattern from prompt
@@ -794,10 +797,10 @@ function formatFeedbackText(text) {
     // Also handle simpler bold labels: "**Label:**"
     html = html.replace(/<br>\s*\*\*([^*:]+):\*\*/g, '</p><h4 class="feedback-label">$1:</h4><p>');
 
-    // Convert bullet markers (â€¢ ) to styled paragraphs - strip the â€¢ since CSS adds it via ::before
-    html = html.replace(/<br>\s*â€¢\s*/g, '</p><p class="feedback-bullet">');
-    html = html.replace(/<p>â€¢\s*/g, '<p class="feedback-bullet">');
-    html = html.replace(/^â€¢\s*/gm, '');
+    // Convert bullet markers • to styled paragraphs - strip the • since CSS adds it via ::before
+    html = html.replace(/<br>\s*•\s*/g, '</p><p class="feedback-bullet">');
+    html = html.replace(/<p>•\s*/g, '<p class="feedback-bullet">');
+    html = html.replace(/^•\s*/gm, '');
 
     // Convert numbered items to styled format (remove ::before bullet for numbered items)
     html = html.replace(/<br>\s*(\d+)\.\s+/g, '</p><p class="feedback-numbered"><strong>$1.</strong> ');
