@@ -72,6 +72,7 @@
             transform-origin: top center;
             font-size: calc(17px * var(--content-scale));
             flex-shrink: 0;
+            overflow: hidden;
             /* Critical for scaling without reflow */
         }
 
@@ -326,22 +327,8 @@
             <!-- CERTIFICATIONS -->
             <div class="section-container">
                 <div class="section-title">CERTIFICATIONS</div>
-
-                <div class="sub-header">
-                    <span></span>
-                    <span></span>
-                </div>
                 <div class="content-padding">
-                    <ul>
-                    </ul>
-                </div>
-
-                <div class="sub-header" style="border-top: 4px solid var(--border-color);">
-                    <span></span>
-                    <span></span>
-                </div>
-                <div class="content-padding">
-                    <ul>
+                    <ul data-list="certifications">
                     </ul>
                 </div>
             </div>

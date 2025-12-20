@@ -11,12 +11,47 @@ window.addEventListener('message', (event) => {
     renderCV(data.payload);
 });
 
+// Initialize with empty data on load to hide all sections by default
+document.addEventListener('DOMContentLoaded', () => {
+    renderCV({
+        personal: {},
+        summary: '',
+        education: [],
+        experience: [],
+        certifications: [],
+        achievements: [],
+        leadership: [],
+        interests: [],
+        skills: ''
+    });
+});
+
 function renderCV(data) {
     if (!data) return;
 
     // 1. Personal Info
     setHTML('[data-field="name"]', data.personal?.name);
-    setHTML('[data-field="contact"]', data.personal?.contact); // Assuming contact is pre-formatted HTML or text
+    setHTML('[data-field="tagline"]', data.personal?.tagline);
+    setHTML('[data-field="contact"]', data.personal?.contact);
+    setHTML('[data-field="phone"]', data.personal?.phone);
+    setHTML('[data-field="email"]', data.personal?.email);
+    setHTML('[data-field="linkedin"]', data.personal?.linkedin);
+    
+    // Hide contact-block if phone, email, linkedin are all empty (CV-5 pattern)
+    const hasContactDetails = !!(data.personal?.phone || data.personal?.email || data.personal?.linkedin);
+    const contactBlock = document.querySelector('.contact-block');
+    if (contactBlock) {
+        contactBlock.style.display = hasContactDetails ? '' : 'none';
+    }
+    
+    // Also hide contact-row items individually when empty
+    document.querySelectorAll('.contact-row').forEach(row => {
+        const valueEl = row.querySelector('.contact-value');
+        if (valueEl) {
+            const hasValue = valueEl.innerHTML.trim() !== '';
+            row.style.display = hasValue ? '' : 'none';
+        }
+    });
 
     // 2. Summary
     const hasSummary = !!(data.summary && data.summary.trim());
@@ -41,6 +76,7 @@ function renderCV(data) {
         setHTMLIn(block, '[data-field="role"]', item.role);
         setHTMLIn(block, '[data-field="company"]', item.company);
         setHTMLIn(block, '[data-field="dates"]', item.dates);
+        setHTMLIn(block, '[data-field="category"]', item.category); // Department/Area like "Business Finance"
 
         const ul = block.querySelector('[data-list="bullets"]');
         if (ul) {
@@ -60,12 +96,16 @@ function renderCV(data) {
         if (row.tagName === 'LI') row.innerHTML = text;
         else setHTMLIn(row, '[data-field="cert"]', text);
     });
-    // Fallback for templates using bullets in a div
-    if (data.certifications && data.certifications.length) {
-        const certContainer = document.querySelector('[data-list="certifications"]');
-        if (certContainer) {
+    
+    // Handle certifications rendered as simple list (data-list="certifications")
+    const certContainer = document.querySelector('[data-list="certifications"]');
+    if (certContainer) {
+        if (hasCerts) {
             certContainer.innerHTML = data.certifications.map(c => `<li>${c.name || c} ${c.issuer ? '- ' + c.issuer : ''}</li>`).join('');
             toggleSectionElement(certContainer, true);
+        } else {
+            certContainer.innerHTML = '';
+            toggleSectionElement(certContainer, false);
         }
     }
 
@@ -78,11 +118,6 @@ function renderCV(data) {
     // 8. Interests (Simple List)
     renderSimpleList(data.interests, '[data-list="interests"]');
 
-    // Extra check for certifications if rendered as simple list
-    if (data.certifications && data.certifications.length > 0 && document.querySelector('[data-list="certifications"]')) {
-        renderSimpleList(data.certifications.map(c => typeof c === 'string' ? c : `${c.name || ''} ${c.issuer ? '- ' + c.issuer : ''}`), '[data-list="certifications"]');
-    }
-
     // 9. Skills
     const hasSkills = !!(data.skills && data.skills.trim());
     setHTML('[data-field="skills"]', data.skills);
@@ -90,12 +125,15 @@ function renderCV(data) {
 
     // 10. Recalculate Layout (Scale/Shrink)
     // These functions exist in the templates script block
-    if (typeof window.shrinkContentToFit === 'function') {
-        window.shrinkContentToFit();
-    }
-    if (typeof window.scaleToFit === 'function') {
-        window.scaleToFit();
-    }
+    // Use requestAnimationFrame to ensure DOM is fully updated before recalculating
+    requestAnimationFrame(() => {
+        if (typeof window.shrinkContentToFit === 'function') {
+            window.shrinkContentToFit();
+        }
+        if (typeof window.scaleToFit === 'function') {
+            window.scaleToFit();
+        }
+    });
 }
 
 // Helper: Set innerHTML safely
@@ -190,63 +228,168 @@ function toggleSectionByContent(selector, isVisible) {
     toggleSectionElement(container, isVisible);
 }
 
-// Core toggler that finds headers
+// Core toggler that finds headers and hides entire sections
 function toggleSectionElement(element, isVisible) {
     if (!element) return;
 
     // 1. Toggle the element itself
     element.style.display = isVisible ? '' : 'none';
 
-    // Special Handling: If this element is inside a table row (like in CV2/CV3),
-    // and that row is dedicated to this content, hide the row too.
+    // 2. Find the appropriate container to hide
+    // Walk up the DOM to find a proper section container
+    let containerToHide = element;
+    let headerToHide = null;
+
+    // Check if element is inside a content-block div (CV-5)
+    const contentBlock = element.closest('.content-block');
+    if (contentBlock) {
+        containerToHide = contentBlock;
+    }
+
+    // Check if element is inside a section-content div (CV-7)
+    const sectionContent = element.closest('.section-content');
+    if (sectionContent) {
+        containerToHide = sectionContent;
+    }
+
+    // Check if element is inside a content-padding div (CV-6)
+    const contentPadding = element.closest('.content-padding');
+    if (contentPadding) {
+        containerToHide = contentPadding;
+    }
+
+    // Check if element is inside a section-container (CV-6)
+    // These wrap both the title and content
+    const sectionContainer = element.closest('.section-container');
+    if (sectionContainer) {
+        containerToHide = sectionContainer;
+        // The section-title is inside, so we need to find it
+        headerToHide = sectionContainer.querySelector('.section-title');
+    }
+
+    // Check if element is inside a generic styled div wrapper (CV4 pattern)
+    // These are divs with inline styles like border, padding that wrap the content
+    let parent = element.parentElement;
+    if (parent && parent.tagName === 'DIV' && 
+        !containerToHide.classList.contains('section-container') &&
+        parent.id !== 'cv-page' && 
+        !parent.classList.contains('cv-page') &&
+        !parent.classList.contains('resume-container') &&
+        !parent.classList.contains('main-container') &&
+        !parent.classList.contains('page') &&
+        !parent.classList.contains('content-block') &&
+        !parent.classList.contains('section-content') &&
+        !parent.classList.contains('content-padding') &&
+        parent.getAttribute('style')) {
+        containerToHide = parent;
+    }
+
+    // Check if element is inside a table cell
     const parentTd = element.closest('td');
     if (parentTd) {
         const parentTr = parentTd.closest('tr');
-        if (parentTr) {
-            // Only hide the TR if this element is the main content provider for it
-            // Assumption: If data-list is on an element in a TD, that TR is likely just for that list.
+        const parentTable = parentTd.closest('table');
+        
+        if (parentTr && parentTable) {
+            // Always set the row visibility first
             parentTr.style.display = isVisible ? '' : 'none';
+            
+            // If we're SHOWING content, make sure the table and header are also visible
+            if (isVisible) {
+                parentTable.style.display = '';
+                
+                // Also find and show the section header
+                let tableHeader = parentTable.previousElementSibling;
+                let searchCount = 5;
+                while (tableHeader && searchCount > 0) {
+                    if (
+                        tableHeader.classList.contains('section-header') ||
+                        tableHeader.classList.contains('section-title') ||
+                        tableHeader.tagName === 'H2' ||
+                        tableHeader.tagName === 'H3'
+                    ) {
+                        tableHeader.style.display = '';
+                        break;
+                    }
+                    tableHeader = tableHeader.previousElementSibling;
+                    searchCount--;
+                }
+                return;
+            }
+            
+            // If we're HIDING, check if all rows in the table are now hidden
+            const tbody = parentTable.querySelector('tbody') || parentTable;
+            const allRows = Array.from(tbody.querySelectorAll('tr'));
+            const visibleRows = allRows.filter(tr => 
+                tr.style.display !== 'none' && !tr.classList.contains('template')
+            );
+            
+            // If no visible rows remain, hide the table and its header
+            if (visibleRows.length === 0) {
+                containerToHide = parentTable;
+            } else {
+                // There are still visible rows, don't hide table or header
+                return;
+            }
         }
     }
 
-    // 2. Find the associated header (Previous Sibling Heuristic)
-    // We search backwards for a 'section-header', 'section-title', or similar
-    // Note: If we are in a table (like CV2), the header is often outside the table.
-    // We shouldn't hide the header if the table still has visible rows.
-
-    let containerForHeaderSearch = element;
-    if (parentTd && element.closest('table')) {
-        containerForHeaderSearch = element.closest('table');
-        // If table has other visible rows, don't hide the table or header
-        const table = containerForHeaderSearch;
-        const visibleRows = Array.from(table.querySelectorAll('tr')).filter(tr => tr.style.display !== 'none');
-        if (visibleRows.length > 0 && !isVisible) return; // Don't hide header if there are other visible rows
-    }
-
-    let sibling = containerForHeaderSearch.previousElementSibling;
-    let header = null;
-    let limit = 5; // Search limit to avoid hiding unrelated things
-
-    while (sibling && limit > 0) {
-        // Check for common header classes or tags
-        if (
-            sibling.classList.contains('section-header') ||
-            sibling.classList.contains('section-title') ||
-            sibling.tagName === 'H2' ||
-            sibling.tagName === 'H3' ||
-            (sibling.classList.contains('sub-header') && element.classList.contains('content-padding')) // Template 6 specific
-        ) {
-            header = sibling;
+    // 3. Find and hide the associated header
+    // Walk up to find the container that has a section-header sibling
+    let current = containerToHide;
+    let searchLimit = 10;
+    
+    while (current && searchLimit > 0) {
+        // Check previous siblings for a header
+        let sibling = current.previousElementSibling;
+        let siblingLimit = 5;
+        
+        while (sibling && siblingLimit > 0) {
+            if (
+                sibling.classList.contains('section-header') ||
+                sibling.classList.contains('section-title') ||
+                sibling.classList.contains('gray-bar') ||
+                sibling.tagName === 'H2' ||
+                sibling.tagName === 'H3'
+            ) {
+                headerToHide = sibling;
+                break;
+            }
+            sibling = sibling.previousElementSibling;
+            siblingLimit--;
+        }
+        
+        if (headerToHide) break;
+        
+        // Move up to parent, but stop at known CV page containers
+        if (current.id === 'cv-page' || 
+            current.id === 'zoom-wrapper' ||
+            current.classList.contains('cv-page') || 
+            current.classList.contains('resume-container') ||
+            current.classList.contains('main-container') ||
+            current.classList.contains('page') ||
+            current.tagName === 'BODY') {
             break;
         }
-        sibling = sibling.previousElementSibling;
-        limit--;
+        current = current.parentElement;
+        searchLimit--;
     }
 
-    if (header) {
-        header.style.display = isVisible ? '' : 'none';
-        if (containerForHeaderSearch.tagName === 'TABLE') {
-            containerForHeaderSearch.style.display = isVisible ? '' : 'none';
+    // 4. Apply visibility to container and header
+    if (containerToHide && containerToHide !== element) {
+        containerToHide.style.display = isVisible ? '' : 'none';
+    }
+    
+    if (headerToHide) {
+        headerToHide.style.display = isVisible ? '' : 'none';
+        
+        // Also check if there's a section-header before the gray-bar/section-title
+        // This handles CV-7's pattern: section-header → gray-bar → section-content
+        if (headerToHide.classList.contains('gray-bar')) {
+            const mainHeader = headerToHide.previousElementSibling;
+            if (mainHeader && mainHeader.classList.contains('section-header')) {
+                mainHeader.style.display = isVisible ? '' : 'none';
+            }
         }
     }
 }

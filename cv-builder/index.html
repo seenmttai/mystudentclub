@@ -398,29 +398,24 @@
             transform: scale(0.97);
         }
 
-        /* List Items (Education/Experience) */
+
+        /* List Item Styling */
         .list-item {
-            background: var(--bg-hover);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 14px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 10px;
+            padding-top: 30px; /* Space for actions */
             margin-bottom: 10px;
             position: relative;
-            transition: all 0.2s;
-        }
-
-        .list-item:hover {
-            border-color: var(--border-dark);
-            background: var(--bg-panel);
-            box-shadow: var(--shadow-sm);
         }
 
         .item-actions {
             position: absolute;
-            top: 10px;
-            right: 10px;
+            top: 5px;
+            right: 5px;
             display: flex;
-            gap: 4px;
+            gap: 5px;
         }
 
         .action-btn {
@@ -429,23 +424,26 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 6px;
+            background: #f1f1f1;
+            border-radius: 4px;
             cursor: pointer;
-            color: var(--text-light);
-            font-size: 14px;
-            transition: all 0.2s;
-            background: transparent;
-            border: none;
+            font-size: 12px;
+            color: #555;
+            user-select: none;
         }
 
         .action-btn:hover {
-            background: var(--border-color);
-            color: var(--text-muted);
+            background: #e1e1e1;
+            color: #000;
+        }
+
+        .action-btn.delete {
+            background: #ffebee;
+            color: #c62828;
         }
 
         .action-btn.delete:hover {
-            background: #fee2e2;
-            color: var(--danger);
+            background: #ffcdd2;
         }
 
         .btn-dashed {
@@ -511,12 +509,6 @@
             background: linear-gradient(to bottom, #9ca3af, #6b7280);
             transform: translate(-50%, -50%);
             opacity: 0.8;
-        }
-
-        @media (max-width: 768px) {
-            .resize-handle {
-                display: none;
-            }
         }
 
         /* History Strip */
@@ -865,6 +857,7 @@
             margin-bottom: 10px;
             background: linear-gradient(135deg, var(--primary) 0%, #06b6d4 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -953,11 +946,24 @@
         }
 
         /* Results */
+        .score-section {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .score-section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 16px;
+        }
+
         .score-container {
             position: relative;
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 24px;
+            width: 130px;
+            height: 130px;
+            margin: 0 auto 12px;
+            filter: drop-shadow(0 4px 12px rgba(37, 99, 235, 0.15));
         }
 
         .score-chart {
@@ -969,15 +975,15 @@
         .score-bg {
             fill: none;
             stroke: #e2e8f0;
-            stroke-width: 2.5;
+            stroke-width: 3.5;
         }
 
         .score-progress {
             fill: none;
-            stroke: var(--primary);
-            stroke-width: 2.5;
+            stroke: url(#scoreGradient);
+            stroke-width: 3.5;
             stroke-linecap: round;
-            transition: stroke-dasharray 1s ease;
+            transition: stroke-dasharray 1.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .score-value {
@@ -985,9 +991,17 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 800;
-            color: var(--text-main);
+            color: var(--primary);
+            letter-spacing: -0.02em;
+        }
+
+        .score-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-top: 4px;
         }
 
         .score-notes {
@@ -1099,73 +1113,112 @@
 
         /* Utility Classes for content */
         .highlight-good {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
             color: var(--success);
             font-weight: bold;
-            margin-right: 6px;
+            margin-right: 8px;
+            font-size: 13px;
         }
 
         .highlight-issue {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
             color: var(--danger);
             font-weight: bold;
-            margin-right: 6px;
+            margin-right: 8px;
+            font-size: 13px;
+            
         }
 
+        /* Compact severity badges */
         .severity-badge {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
             padding: 2px 8px;
             border-radius: 4px;
-            font-size: 10px;
-            font-weight: 700;
+            font-size: 0.7rem;
+            font-weight: 600;
             text-transform: uppercase;
-            margin-left: 8px;
+            letter-spacing: 0.025em;
+            margin-left: 6px;
+            vertical-align: middle;
         }
 
         .severity-critical {
-            background: #fee2e2;
-            color: #991b1b;
+            background-color: rgba(220, 38, 38, 0.12);
+            color: #dc2626;
+            border: 1px solid rgba(220, 38, 38, 0.25);
         }
 
         .severity-high {
-            background: #ffedd5;
-            color: #9a3412;
+            background-color: rgba(234, 88, 12, 0.12);
+            color: #ea580c;
+            border: 1px solid rgba(234, 88, 12, 0.25);
         }
 
         .severity-moderate {
-            background: #fef3c7;
-            color: #92400e;
+            background-color: rgba(202, 138, 4, 0.12);
+            color: #ca8a04;
+            border: 1px solid rgba(202, 138, 4, 0.25);
         }
 
         .severity-low {
-            background: #f0fdf4;
-            color: #065f46;
+            background-color: rgba(100, 116, 139, 0.12);
+            color: #64748b;
+            border: 1px solid rgba(100, 116, 139, 0.25);
         }
 
+        /* Feedback section labels */
         .feedback-label {
-            font-size: 14px;
+            display: block;
+            margin: 16px 0 8px 0;
+            font-size: 0.95rem;
             font-weight: 700;
-            color: var(--text-main);
-            margin: 16px 0 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            color: var(--primary);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            padding-bottom: 4px;
         }
 
+        /* Improved content readability - bullet points */
         .feedback-bullet {
-            margin-bottom: 8px;
-            padding-left: 16px;
+            display: block;
+            padding-left: 1.5rem;
             position: relative;
+            margin: 0.5rem 0;
+            line-height: 1.6;
         }
 
         .feedback-bullet::before {
             content: "•";
             position: absolute;
-            left: 0;
-            color: var(--primary);
+            left: 0.5rem;
+            color: black;
             font-weight: bold;
         }
 
+        /* Numbered items - similar style but no pseudo-element */
         .feedback-numbered {
-            margin-bottom: 8px;
-            padding-left: 0;
+            display: block;
+            margin: 0.5rem 0;
+            padding-left: 1.25rem;
+            line-height: 1.6;
+        }
+
+        /* Content area improvements */
+        .content-area p {
+            margin: 0.5rem 0;
+            line-height: 1.6;
+        }
+
+        .content-area > p:first-child {
+            margin-top: 0;
         }
 
         .reviewer-footer {
@@ -1274,12 +1327,82 @@
         }
 
         /* --- RESPONSIVE --- */
-        @media (max-width: 900px) {
+        
+        /* Large Tablet / Small Desktop (1024px - 1200px) */
+        @media (max-width: 1200px) {
             .editor {
-                width: 440px;
+                flex: 0 0 480px;
+            }
+        }
+        
+        /* Tablet Landscape (769px - 1024px) */
+        @media (max-width: 1024px) {
+            .editor {
+                flex: 0 0 420px;
+                min-width: 360px;
+            }
+            
+            .editor-header {
+                padding: 16px 20px 12px;
+            }
+            
+            .brand-row {
+                margin-bottom: 12px;
+            }
+            
+            .app-logo {
+                font-size: 14px;
+            }
+            
+            .app-logo svg {
+                width: 24px;
+                height: 24px;
+            }
+            
+            .btn-icon {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+            
+            .form-control {
+                font-size: 13px;
+            }
+            
+            .section-expand-btn {
+                padding: 12px 16px;
+                font-size: 13px;
             }
         }
 
+        /* Small Tablet (769px - 900px) */
+        @media (max-width: 900px) {
+            .editor {
+                flex: 0 0 380px;
+                min-width: 320px;
+            }
+            
+            .editor-header {
+                padding: 14px 16px 10px;
+            }
+            
+            .beta-badge {
+                display: none;
+            }
+            
+            .action-bar {
+                gap: 4px;
+            }
+            
+            .btn-icon span:not(.btn-text-always) {
+                display: none;
+            }
+            
+            .btn-icon {
+                padding: 8px;
+            }
+        }
+
+        /* Mobile (max-width: 768px) - Full screen panels with tab switching */
         @media (max-width: 768px) {
             .mobile-nav {
                 display: flex;
@@ -1292,6 +1415,9 @@
                 top: 0;
                 left: 0;
                 border: none;
+                flex: none;
+                min-width: unset;
+                max-width: unset;
             }
 
             .preview {
@@ -1300,7 +1426,7 @@
                 position: fixed;
                 top: 0;
                 left: 0;
-                padding: 16px;
+                padding: 12px;
                 z-index: 15;
             }
 
@@ -1322,26 +1448,152 @@
             .template-floater {
                 width: 100%;
                 justify-content: space-between;
-                padding: 10px 16px;
-                border-radius: 10px;
+                padding: 8px 12px;
+                border-radius: 8px;
             }
 
             .editor-content {
-                padding-bottom: 80px;
+                padding: 12px 16px 80px;
+            }
+            
+            .editor-header {
+                padding: 12px 16px 10px;
             }
 
             .action-bar {
-                gap: 5px;
-                padding-bottom: 6px;
+                gap: 4px;
+                padding-bottom: 4px;
+                margin-bottom: 8px;
             }
 
             .btn-icon {
                 font-size: 11px;
-                padding: 7px 10px;
+                padding: 8px 10px;
+            }
+            
+            .btn-icon svg {
+                width: 14px;
+                height: 14px;
+            }
+            
+            .brand-row {
+                margin-bottom: 10px;
+            }
+            
+            .app-logo {
+                font-size: 13px;
+                gap: 8px;
+            }
+            
+            .section-expand-btn {
+                padding: 12px 14px;
+                font-size: 13px;
+            }
+            
+            .list-item {
+                padding: 12px;
+            }
+            
+            .form-group label {
+                font-size: 11px;
+            }
+            
+            .form-control {
+                font-size: 14px;
+                padding: 10px 12px;
             }
 
             #toast.show {
                 bottom: 80px;
+            }
+            
+            .resize-handle {
+                display: none;
+            }
+        }
+        
+        /* Small Mobile (max-width: 480px) */
+        @media (max-width: 480px) {
+            .editor-content {
+                padding: 10px 12px 90px;
+            }
+            
+            .editor-header {
+                padding: 10px 12px 8px;
+            }
+            
+            .action-bar {
+                gap: 3px;
+            }
+            
+            .btn-icon {
+                padding: 7px 8px;
+                font-size: 10px;
+            }
+            
+            .btn-icon svg {
+                width: 12px;
+                height: 12px;
+            }
+            
+            .app-logo {
+                font-size: 12px;
+                gap: 6px;
+            }
+            
+            .app-logo svg {
+                width: 20px;
+                height: 20px;
+            }
+            
+            .section-expand-btn {
+                padding: 10px 12px;
+                font-size: 12px;
+            }
+            
+            .form-control {
+                padding: 8px 10px;
+            }
+            
+            .list-item {
+                padding: 10px;
+            }
+            
+            .item-actions {
+                gap: 4px;
+            }
+            
+            .action-btn {
+                width: 22px;
+                height: 22px;
+                font-size: 12px;
+            }
+            
+            .template-floater {
+                padding: 6px 10px;
+            }
+            
+            .template-floater select {
+                font-size: 11px;
+            }
+            
+            .preview {
+                padding: 8px;
+            }
+        }
+        
+        /* Extra Small Mobile (max-width: 360px) */
+        @media (max-width: 360px) {
+            .editor-header {
+                padding: 8px 10px 6px;
+            }
+            
+            .btn-icon {
+                padding: 6px;
+            }
+            
+            .brand-row .btn-icon span {
+                display: none;
             }
         }
     </style>
@@ -1450,15 +1702,35 @@
                         <input type="text" class="form-control" id="inp-name" placeholder="e.g. Padam Bhansali"
                             oninput="updateCV()" spellcheck="false">
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" data-section="tagline">
+                        <label>Tagline / Current Role</label>
+                        <input type="text" class="form-control" id="inp-tagline" 
+                            placeholder="e.g. CA Final | Flipkart" oninput="updateCV()">
+                    </div>
+                    <div class="form-group" data-section="contact">
                         <label>Contact Info</label>
                         <input type="text" class="form-control" id="inp-contact"
                             placeholder="+91 98765 43210 | email@me.com | linkedin.com/in/user" oninput="updateCV()">
                     </div>
+                    <div class="form-group" data-section="phone">
+                        <label>Phone</label>
+                        <input type="text" class="form-control" id="inp-phone"
+                            placeholder="+91 98765 43210" oninput="updateCV()">
+                    </div>
+                    <div class="form-group" data-section="email">
+                        <label>Email</label>
+                        <input type="email" class="form-control" id="inp-email"
+                            placeholder="yourname@email.com" oninput="updateCV()">
+                    </div>
+                    <div class="form-group" data-section="linkedin">
+                        <label>LinkedIn</label>
+                        <input type="text" class="form-control" id="inp-linkedin"
+                            placeholder="linkedin.com/in/yourname" oninput="updateCV()">
+                    </div>
                 </div>
             </details>
 
-            <details>
+            <details data-section="summary">
                 <summary>Career Objective</summary>
                 <div class="section-body">
                     <div class="form-group">
@@ -1517,7 +1789,7 @@
                 </div>
             </details>
 
-            <details>
+            <details data-section="certifications">
                 <summary>Certifications</summary>
                 <div class="section-body">
                     <div id="cert-container"></div>
@@ -1532,7 +1804,7 @@
                 </div>
             </details>
 
-            <details>
+            <details data-section="achievements">
                 <summary>Achievements & Awards</summary>
                 <div class="section-body">
                     <div id="ach-container"></div>
@@ -1547,7 +1819,7 @@
                 </div>
             </details>
 
-            <details>
+            <details data-section="leadership">
                 <summary>Leadership</summary>
                 <div class="section-body">
                     <div id="lead-container"></div>
@@ -1562,7 +1834,7 @@
                 </div>
             </details>
 
-            <details>
+            <details data-section="interests">
                 <summary>Interests & Hobbies</summary>
                 <div class="section-body">
                     <div id="int-container"></div>
@@ -1618,9 +1890,9 @@
                 <option value="cv2.html">Classic Blue</option>
                 <option value="cv3.html">Grid Layout</option>
                 <option value="cv4.html">Professional</option>
-                <option value="cv5.html">Corporate</option>
-                <option value="cv6.html">Minimalist</option>
-                <option value="cv7.html">Compact</option>
+                <option value="cv-5.html">Corporate</option>
+                <option value="cv-6.html">Minimalist</option>
+                <option value="cv-7.html">Compact</option>
             </select>
         </div>
 
@@ -1693,16 +1965,26 @@
                 <!-- RESULTS -->
                 <div id="resultsSection" class="results-section" style="display:none;">
                     <!-- Score -->
-                    <div class="score-container">
-                        <svg class="score-chart" viewBox="0 0 36 36">
-                            <path class="score-bg"
-                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831">
-                            </path>
-                            <path id="scoreProgress" class="score-progress" stroke-dasharray="0, 100"
-                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831">
-                            </path>
-                        </svg>
-                        <div id="scoreText" class="score-value">0</div>
+                    <div class="score-section">
+                        <h3 class="score-section-title">Overall Score</h3>
+                        <div class="score-container">
+                            <svg class="score-chart" viewBox="0 0 36 36">
+                                <defs>
+                                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#818cf8" />
+                                        <stop offset="100%" stop-color="#4f46e5" />
+                                    </linearGradient>
+                                </defs>
+                                <path class="score-bg"
+                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831">
+                                </path>
+                                <path id="scoreProgress" class="score-progress" stroke-dasharray="0, 100"
+                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831">
+                                </path>
+                            </svg>
+                            <div id="scoreText" class="score-value">0</div>
+                        </div>
+                        <div class="score-label">out of 100</div>
                     </div>
                     <div id="scoreJustification" class="score-notes"></div>
 
@@ -2003,7 +2285,13 @@
                 const endMarker = marker.replace('<<<', '<<<END_');
                 const content = extractSection(text, marker, endMarker);
                 const container = document.getElementById(id).querySelector('.content-area');
-                container.innerHTML = formatText(content);
+                
+                // Special handling for sections with <<POINT>> markers
+                if (marker === '<<<MEASURABLE_RESULTS>>>' || marker === '<<<PHRASES_SUGGESTIONS>>>') {
+                    container.innerHTML = formatPointSection(content);
+                } else {
+                    container.innerHTML = formatText(content);
+                }
             }
 
             // Notes
@@ -2024,17 +2312,159 @@
             return m ? parseFloat(m[1]) : 0;
         }
 
+        // Special formatter for sections with <<POINT>> markers (Measurable Results, Phrases Suggestions)
+        function formatPointSection(content) {
+            if (!content) return '<p class="text-muted italic">No specific feedback.</p>';
+            
+            // Split by <<END_POINT>> or --- delimiters
+            const points = content.split(/<<END_POINT>>|---/);
+            let html = '';
+            
+            points.forEach((point) => {
+                if (!point.trim()) return;
+                
+                // Remove <<POINT>> marker
+                point = point.replace(/<<POINT>>/g, '').trim();
+                if (!point) return;
+                
+                // Extract Original quote
+                const originalMatch = point.match(/Original:\s*"([\s\S]+?)"/i);
+                // Extract Critique
+                const critiqueMatch = point.match(/Critique:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/i);
+                
+                html += `<div class="feedback-point" style="border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 16px; background: #fafbfc;">`;
+                
+                if (originalMatch && originalMatch[1]) {
+                    html += `<div style="margin-bottom: 12px;">
+                        <span style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Original</span>
+                        <div style="margin-top: 4px; padding: 10px 12px; background: #fff; border: 1px solid var(--border-color); border-radius: 6px; font-style: italic; color: var(--text-main); line-height: 1.5;">"${originalMatch[1].trim()}"</div>
+                    </div>`;
+                }
+                
+                if (critiqueMatch && critiqueMatch[1]) {
+                    const critiqueText = critiqueMatch[1].trim();
+                    html += `<div style="margin-bottom: 12px;">
+                        <span style="font-size: 10px; font-weight: 700; color: var(--danger); text-transform: uppercase; letter-spacing: 0.5px;">Critique</span>
+                        <div style="margin-top: 4px; color: var(--text-main); line-height: 1.6;">${formatCritiqueText(critiqueText)}</div>
+                    </div>`;
+                }
+                
+                // Extract all rewrite suggestions
+                const allSuggestions = [...point.matchAll(/Rewrite Suggestion (\d+):\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/gi)];
+                
+                if (allSuggestions.length > 0) {
+                    html += `<div>
+                        <span style="font-size: 10px; font-weight: 700; color: var(--success); text-transform: uppercase; letter-spacing: 0.5px;">Rewrite Suggestions</span>
+                        <div style="margin-top: 8px;">`;
+                    
+                    allSuggestions.forEach((match, idx) => {
+                        const suggestionText = match[2].trim();
+                        if (suggestionText) {
+                            html += `<div style="display: flex; gap: 10px; margin-bottom: 8px; padding: 10px 12px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 6px;">
+                                <span style="flex-shrink: 0; width: 22px; height: 22px; background: var(--success); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;">${idx + 1}</span>
+                                <div style="color: var(--text-main); line-height: 1.5;">${escapeHtml(suggestionText)}</div>
+                            </div>`;
+                        }
+                    });
+                    
+                    html += `</div></div>`;
+                }
+                
+                html += `</div>`;
+            });
+            
+            return html || '<p class="text-muted italic">No specific feedback.</p>';
+        }
+        
+        function formatCritiqueText(text) {
+            // Escape HTML and format
+            let html = escapeHtml(text);
+            // Convert line breaks
+            html = html.replace(/\n/g, '<br>');
+            return html;
+        }
+        
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+
         function formatText(md) {
             if (!md) return '<p class="text-muted italic">No specific feedback.</p>';
-            let html = md
+
+            // STEP 1: Pre-process raw text before HTML conversion
+            let processedText = md;
+            
+            // Replace asterisks at the start of lines with bullet points
+            processedText = processedText.replace(/^\* /gm, '• ');
+            processedText = processedText.replace(/\n\* /g, '\n• ');
+
+            // The model often returns long paragraphs. Break them into bullet-friendly lines:
+            // 1) After sentence boundaries (., ?, !) followed by a capital letter → new bullet
+            processedText = processedText.replace(/([.!?])\s+(?=[A-Z])/g, '$1\n• ');
+            // 2) After ISSUE markers when explanation continues
+            processedText = processedText.replace(/(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\.?\s+([A-Z])/gi, '$1\n• $2');
+            // 3) Convert inline numbered items (1. 2. 3. etc.) to bullet points
+            // First, handle patterns like "text. 1. more" or "text 1. more" - any " N. " pattern
+            processedText = processedText.replace(/\s+(\d+)\.\s+/g, '\n ');
+            // Also handle numbered items at the very start of text
+            processedText = processedText.replace(/^(\d+)\.\s+/gm, '');
+
+            // STEP 2: Convert to HTML with escaping and markdown
+            let html = processedText
                 .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
                 .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
                 .replace(/`([^`]+)`/g, '<code class="bg-gray-200 px-1 rounded text-sm">$1</code>')
-                .replace(/\[GOOD\]/g, '<span class="highlight-good">✓</span>')
-                .replace(/\[ISSUE\]/g, '<span class="highlight-issue">✗</span>')
-                .replace(/\[ISSUE - SEVERITY: (.*?)\]/g, '<span class="highlight-issue">✗</span><span class="severity-badge severity-$1">$1</span>')
-                .replace(/([.!?])\s+(?=[A-Z])/g, '$1<br>• ') // Bulletize sentences
-                .replace(/(\n)/g, '<br>');
+                .replace(/(\r\n|\n|\r)/g, '<br>');
+
+            // STEP 3: Replace markers with styled elements
+            // Replace [GOOD] with styled checkmark
+            html = html.replace(/\[GOOD\]/g, '<span class="highlight-good" title="Good point">✓</span>');
+
+            // Replace [ISSUE] with styled X (without severity)
+            html = html.replace(/\[ISSUE\](?!\s*-\s*SEVERITY)/g, '<span class="highlight-issue" title="Area for improvement">✗</span>');
+
+            // Replace [ISSUE - SEVERITY: Level] with compact severity badges
+            html = html.replace(/\[ISSUE\s*-\s*SEVERITY:\s*(Critical|High|Moderate|Low)(?:[^\]]*)\]/gi, (match, severity) => {
+                const level = severity.toLowerCase();
+                return `<span class="highlight-issue" title="Issue">✗</span><span class="severity-badge severity-${level}">${severity}</span>`;
+            });
+
+            // STEP 4: Format section labels: "**Label:**" pattern
+            html = html.replace(/<br>\s*\*\*([^*:]+):\*\*/g, '</p><h4 class="feedback-label">$1:</h4><p>');
+            html = html.replace(/^\*\*([^*:]+):\*\*/gm, '<h4 class="feedback-label">$1:</h4>');
+
+            // STEP 5: Convert bullet markers to styled paragraphs
+            html = html.replace(/<br>\s*•\s*/g, '</p><p class="feedback-bullet">');
+            html = html.replace(/<p>•\s*/g, '<p class="feedback-bullet">');
+            html = html.replace(/^•\s*/gm, '');
+
+            // Convert numbered items to styled format
+            html = html.replace(/<br>\s*(\d+)\.\s+/g, '</p><p class="feedback-numbered"><strong>$1.</strong> ');
+
+            // Convert <br><br> to separate paragraphs for better spacing
+            html = html.replace(/<br>\s*<br>/g, '</p><p>');
+
+            // Convert hyphen list markers to feedback-bullet paragraphs
+            html = html.replace(/<br>\s*-\s+/g, '</p><p class="feedback-bullet">');
+            html = html.replace(/<br>\s*\*\s+/g, '</p><p class="feedback-bullet">');
+
+            // STEP 6: Clean up empty paragraphs and fix structure
+            html = html.replace(/<p>\s*<\/p>/g, '');
+            html = html.replace(/<\/p>\s*<\/p>/g, '</p>');
+            html = html.replace(/<p>\s*<p/g, '<p');
+
+            // Wrap in paragraph if not already
+            if (!html.startsWith('<p') && !html.startsWith('<h')) {
+                html = '<p>' + html + '</p>';
+            }
+
             return html;
         }
 
@@ -2165,8 +2595,37 @@
         const CA_DEGREES = ["CA Final", "CA Intermediate", "B.Com", "Class XII", "Class X"];
         const AUDIT_VERBS = ["Executed", "Analyzed", "Prepared", "Reviewed", "Led", "Verified"];
 
+        // Template configuration: which sections each template supports
+        // Based on actual template file analysis - includes tagline, category, contact fields
+        const templateConfig = {
+            'cv1.html': ['contact', 'summary', 'achievements', 'leadership', 'interests'],
+            'cv2.html': ['contact', 'tagline', 'category', 'achievements','certifications', 'leadership', 'interests'],
+            'cv3.html': ['contact', 'summary', 'category', 'certifications', 'achievements'],
+            'cv4.html': ['contact', 'certifications', 'achievements', 'leadership', 'interests'],
+            'cv-5.html': ['summary', 'phone', 'email', 'linkedin', 'leadership', 'certifications', 'achievements', 'interests', 'skills'],
+            'cv-6.html': ['contact', 'achievements', 'certifications'],
+            'cv-7.html': ['contact', 'certifications', 'achievements', 'leadership', 'interests']
+        };
+
+        // Update form sections visibility based on selected template
+        function updateFormSections() {
+            const select = document.getElementById('template-select');
+            const currentTemplate = select ? select.value : 'cv1.html';
+            const supportedSections = templateConfig[currentTemplate] || [];
+            
+            // Find all sections with data-section attribute
+            document.querySelectorAll('[data-section]').forEach(section => {
+                const sectionName = section.getAttribute('data-section');
+                if (supportedSections.includes(sectionName)) {
+                    section.style.display = '';
+                } else {
+                    section.style.display = 'none';
+                }
+            });
+        }
+
         let cvData = {
-            personal: { name: "", contact: "" },
+            personal: { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "" },
             summary: "",
             education: [],
             experience: [],
@@ -2191,6 +2650,7 @@
             loadHistory();
 
             renderEditor();
+            updateFormSections();
             updateProgress();
 
             const frame = document.getElementById('cv-frame');
@@ -2230,7 +2690,11 @@
         // Render Functions
         function renderEditor() {
             document.getElementById('inp-name').value = cvData.personal.name || '';
+            document.getElementById('inp-tagline').value = cvData.personal.tagline || '';
             document.getElementById('inp-contact').value = cvData.personal.contact || '';
+            document.getElementById('inp-phone').value = cvData.personal.phone || '';
+            document.getElementById('inp-email').value = cvData.personal.email || '';
+            document.getElementById('inp-linkedin').value = cvData.personal.linkedin || '';
             document.getElementById('inp-summary').value = cvData.summary || '';
             document.getElementById('inp-skills').value = cvData.skills || '';
 
@@ -2255,6 +2719,8 @@
                 div.className = 'list-item';
                 div.innerHTML = `
                     <div class="item-actions">
+                        <div class="action-btn" onclick="moveListItem('${key}', ${index}, -1)">▲</div>
+                        <div class="action-btn" onclick="moveListItem('${key}', ${index}, 1)">▼</div>
                         <div class="action-btn delete" onclick="removeListItem('${key}', ${index})">×</div>
                     </div>
                     <div class="form-group" style="margin-bottom:0">
@@ -2279,6 +2745,15 @@
 
         function updateListItem(key, index, value) {
             cvData[key][index] = value;
+            postToFrame();
+        }
+
+        function moveListItem(key, index, direction) {
+            const newIndex = index + direction;
+            if (newIndex < 0 || newIndex >= cvData[key].length) return;
+            const item = cvData[key].splice(index, 1)[0];
+            cvData[key].splice(newIndex, 0, item);
+            renderListInputs(key, (key === 'achievements' ? 'ach-container' : key === 'interests' ? 'int-container' : 'lead-container'), key);
             postToFrame();
         }
 
@@ -2355,6 +2830,10 @@
                         <label>Duration</label>
                         <input class="form-control" value="${exp.dates || ''}" oninput="updateExp(${index}, 'dates', this.value)" placeholder="e.g. Jan 2023 - Present">
                     </div>
+                    <div class="form-group" data-section="category">
+                        <label>Department / Category (optional)</label>
+                        <input class="form-control" value="${exp.category || ''}" oninput="updateExp(${index}, 'category', this.value)" placeholder="e.g. Business Finance, Auditing & Assurance">
+                    </div>
                     <div class="form-group" style="margin-bottom:0">
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                             <label style="margin-bottom:0;">Key Responsibilities (Bullets)</label>
@@ -2401,7 +2880,11 @@
         // Data Updates
         function updateCV() {
             cvData.personal.name = document.getElementById('inp-name').value;
+            cvData.personal.tagline = document.getElementById('inp-tagline').value;
             cvData.personal.contact = document.getElementById('inp-contact').value;
+            cvData.personal.phone = document.getElementById('inp-phone').value;
+            cvData.personal.email = document.getElementById('inp-email').value;
+            cvData.personal.linkedin = document.getElementById('inp-linkedin').value;
             cvData.summary = document.getElementById('inp-summary').value;
             cvData.skills = document.getElementById('inp-skills').value;
 
@@ -2551,6 +3034,10 @@
         function changeTemplate() {
             const select = document.getElementById('template-select');
             const frame = document.getElementById('cv-frame');
+            
+            // Update form sections visibility for new template
+            updateFormSections();
+            
             document.querySelector('.loading-overlay').classList.add('active');
             frame.src = select.value;
             frame.onload = () => {
@@ -2622,7 +3109,7 @@
         function resetData() {
             if (confirm("Clear all data?")) {
                 cvData = {
-                    personal: { name: "", contact: "" },
+                    personal: { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "" },
                     summary: "",
                     education: [],
                     experience: [],
@@ -2639,50 +3126,74 @@
             }
         }
 
-        function printCV() {
-            const frame = document.getElementById('cv-frame');
-            const doc = frame?.contentDocument || frame?.contentWindow?.document;
-            if (!frame || !doc) {
-                alert('Preview not ready yet. Please wait a moment and try again.');
-                return;
+function printCV() {
+    const frame = document.getElementById('cv-frame');
+    const doc = frame?.contentDocument || frame?.contentWindow?.document;
+    if (!frame || !doc) {
+        alert('Preview not ready yet. Please wait a moment and try again.');
+        return;
+    }
+    const element = doc.getElementById('cv-page') || doc.body;
+    if (!window.html2pdf || !element) {
+        alert('PDF generator library not ready. Please refresh.');
+        return;
+    }
+
+    // A4 dimensions in pixels at 96 DPI: 794 x 1123
+    // Our templates use 1000 x 1414 (scaled reference)
+    const A4_WIDTH = 1000;
+    const A4_HEIGHT = 1414;
+
+    const opt = {
+        margin: [0, 0, 0, 0],
+        filename: (cvData.personal?.name || 'cv').replace(/[^a-z0-9]/gi, '_') + '.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            width: A4_WIDTH,
+            height: A4_HEIGHT,
+            windowWidth: A4_WIDTH,
+            windowHeight: A4_HEIGHT,
+            onclone: (clonedDoc) => {
+                // Copy all stylesheets from the original iframe document
+                const originalStyles = doc.querySelectorAll('style, link[rel="stylesheet"]');
+                originalStyles.forEach(style => {
+                    clonedDoc.head.appendChild(style.cloneNode(true));
+                });
+
+                const node = clonedDoc.getElementById('cv-page') || clonedDoc.body;
+                if (node) {
+                    // Reset all transforms and scaling for clean capture
+                    node.style.transform = 'none';
+                    node.style.width = A4_WIDTH + 'px';
+                    node.style.height = A4_HEIGHT + 'px';
+                    node.style.margin = '0';
+                    node.style.padding = node.style.padding || '30px';
+                    node.style.boxShadow = 'none';
+                    node.style.overflow = 'visible';
+                    node.style.display = 'block';
+                    node.style.position = 'relative';
+                    
+                    // Reset CSS variable for content scaling
+                    clonedDoc.documentElement.style.setProperty('--content-scale', '1');
+                }
+
+                // Reset zoom wrapper if it exists
+                const wrapper = clonedDoc.getElementById('zoom-wrapper');
+                if (wrapper) {
+                    wrapper.style.transform = 'none';
+                    wrapper.style.padding = '0';
+                    wrapper.style.margin = '0';
+                }
             }
-            const element = doc.getElementById('cv-page') || doc.body;
-            if (!window.html2pdf || !element) {
-                alert('PDF generator library not ready. Please refresh.');
-                return;
-            }
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
 
-            const opt = {
-                margin: [0, 0, 0, 0],
-                filename: (cvData.personal?.name || 'cv').replace(/[^a-z0-9]/gi, '_') + '.pdf',
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: {
-                    scale: 3,
-                    useCORS: true,
-                    logging: false,
-                    onclone: (clonedDoc) => {
-                        // CRITICAL: Copy all stylesheets from the original iframe document to the cloned document
-                        // html2pdf clones the target element into a new context; we must bridge the styles.
-                        const originalStyles = doc.querySelectorAll('style, link[rel="stylesheet"]');
-                        originalStyles.forEach(style => {
-                            clonedDoc.head.appendChild(style.cloneNode(true));
-                        });
-
-                        const node = clonedDoc.getElementById('cv-page') || clonedDoc.body;
-                        if (node) {
-                            node.style.transform = 'none';
-                            node.style.margin = '0';
-                            node.style.boxShadow = 'none';
-                            node.style.overflow = 'visible';
-                            node.style.display = 'block';
-                        }
-                    }
-                },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            window.html2pdf().from(element).set(opt).save();
-        }
+    window.html2pdf().from(element).set(opt).save();
+}
 
         // AI & Import Logic
         async function refineSection(fieldType, text) {

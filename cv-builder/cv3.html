@@ -96,6 +96,8 @@
             font-size: calc(18px * var(--content-scale));
             line-height: 1.25;
             color: #000;
+
+            overflow: hidden;
         }
 
         /* TYPOGRAPHY & LINKS */
@@ -286,6 +288,7 @@
                 zoom: 0.7937;
                 -moz-transform: scale(0.7937);
                 -moz-transform-origin: top center;
+                transform-origin: top center;
 
                 /* Reset other transforms */
                 transform: none !important;
@@ -360,7 +363,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td class="work-label"></td>
+                                    <td class="work-label" data-field="category"></td>
                                     <td>
                                         <ul data-list="bullets">
                                         </ul>

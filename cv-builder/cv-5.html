@@ -84,6 +84,7 @@
             flex-shrink: 0;
             transform-origin: top center;
             font-size: calc(14px * var(--content-scale));
+            overflow: hidden;
         }
 
         /* Main Border Container */
@@ -134,7 +135,6 @@
         .contact-label {
             font-weight: bold;
             padding: calc(2px * var(--content-scale)) calc(5px * var(--content-scale));
-            background-color: #ffffff;
             width: auto;
             /* Allow natural width */
             padding-right: calc(5px * var(--content-scale));
@@ -200,6 +200,13 @@
             background-color: #ffffff;
             padding: 0;
             font-size: calc(17px * var(--content-scale));
+            border-top: 1px solid var(--border-color);
+        }
+        
+        /* Remove top border for the first experience item to avoid double border with section header */
+        #experience-list .job-group:first-child .sub-header,
+        #certification-list .sub-header:first-child {
+            border-top: none;
         }
 
         .sub-header-title {
@@ -285,8 +292,7 @@
         /* Leadership Table */
         .leadership-table td:first-child {
             width: 25%;
-            font-weight: bold;
-            text-align: center;
+            text-align: left;
             vertical-align: middle;
             background-color: #ffffff;
             font-size: calc(16px * var(--content-scale));
@@ -412,7 +418,16 @@
                     <div class="name-block" data-field="name"></div>
                     <div class="contact-block">
                         <div class="contact-row">
-                            <div class="contact-value" data-field="contact" style="width:100%"></div>
+                            <div class="contact-label">Mobile:</div>
+                            <div class="contact-value" data-field="phone"></div>
+                        </div>
+                        <div class="contact-row">
+                            <div class="contact-label">LinkedIn:</div>
+                            <div class="contact-value" data-field="linkedin"></div>
+                        </div>
+                        <div class="contact-row">
+                            <div class="contact-label">Email:</div>
+                            <div class="contact-value" data-field="email"></div>
                         </div>
                     </div>
                 </div>
@@ -435,6 +450,26 @@
                             </ul>
                         </div>
                     </div>
+                </div>
+
+                <!-- POSITIONS OF LEADERSHIP -->
+                <div class="section-header">Positions of Leadership</div>
+                <table class="leadership-table">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <ul data-list="leadership">
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- CERTIFICATION COURSE -->
+                <div class="section-header">Certification Course</div>
+                <div class="content-block">
+                    <ul data-list="certifications">
+                    </ul>
                 </div>
 
                 <!-- EDUCATION -->
@@ -460,6 +495,21 @@
                     </tbody>
                 </table>
 
+                <!-- HONORS & AWARDS -->
+                <div class="section-header">HONORS & AWARDS</div>
+                <div class="content-block">
+                    <ul data-list="achievements">
+                    </ul>
+                </div>
+
+                <!-- EXTRA-CURRICULAR ACTIVITIES -->
+                <div class="section-header">Interests & Hobbies</div>
+                <div class="content-block">
+                    <ul data-list="interests">
+                    </ul>
+                </div>
+
+                
                 <!-- SKILLS -->
                 <div class="section-header">SKILLS</div>
                 <div class="content-block" data-field="skills">

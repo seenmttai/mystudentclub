@@ -95,6 +95,8 @@
 
             /* Base font size scaling */
             font-size: calc(16px * var(--content-scale));
+
+            overflow: hidden;
         }
 
         /* Helper Classes */
@@ -309,6 +311,7 @@
                 zoom: 0.7937;
                 -moz-transform: scale(0.7937);
                 -moz-transform-origin: top center;
+                transform-origin: top center;
 
                 /* Reset other transforms */
                 transform: none !important;
