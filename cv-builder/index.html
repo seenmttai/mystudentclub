@@ -696,7 +696,7 @@
 
         /* Loading Overlay */
         .loading-overlay {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
             right: 0;
@@ -705,7 +705,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 10000;
+            z-index: 10;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s;
@@ -1605,10 +1605,6 @@
 
 <body class="view-editor">
 
-    <div id="ai-spinner" class="loading-overlay">
-        <div class="spinner"></div>
-    </div>
-
     <div id="toast">Changes saved</div>
 
     <!-- LEFT PANEL -->
@@ -1894,14 +1890,17 @@
                 <option value="cv2.html">Classic Blue</option>
                 <option value="cv3.html">Grid Layout</option>
                 <option value="cv4.html">Professional</option>
-                <option value="cv5.html">Corporate</option>
-                <option value="cv6.html">Minimalist</option>
-                <option value="cv7.html">Compact</option>
+                <option value="cv-5.html">Corporate</option>
+                <option value="cv-6.html">Minimalist</option>
+                <option value="cv-7.html">Compact</option>
             </select>
         </div>
 
         <div class="preview-wrapper">
             <iframe id="cv-frame" src="cv1.html"></iframe>
+            <div id="ai-spinner" class="loading-overlay">
+                <div class="spinner"></div>
+            </div>
         </div>
     </div>
 
@@ -2603,9 +2602,9 @@
             'cv2.html': ['contact', 'tagline', 'category', 'achievements','certifications', 'leadership', 'interests'],
             'cv3.html': ['contact', 'summary', 'category', 'certifications', 'achievements'],
             'cv4.html': ['contact', 'certifications', 'achievements', 'leadership', 'interests'],
-            'cv5.html': ['summary', 'phone', 'email', 'linkedin', 'leadership', 'certifications', 'achievements', 'interests', 'skills'],
-            'cv6.html': ['contact', 'achievements', 'certifications'],
-            'cv7.html': ['contact', 'certifications', 'achievements', 'leadership', 'interests']
+            'cv-5.html': ['summary', 'phone', 'email', 'linkedin', 'leadership', 'certifications', 'achievements', 'interests', 'skills'],
+            'cv-6.html': ['contact', 'achievements', 'certifications'],
+            'cv-7.html': ['contact', 'certifications', 'achievements', 'leadership', 'interests']
         };
 
         // Update form sections visibility based on selected template
@@ -2645,12 +2644,7 @@
         window.onload = () => {
             const saved = localStorage.getItem('cv_maker_data');
             if (saved) {
-                try { 
-                    const parsed = JSON.parse(saved);
-                    // Ensure deep merge/compatibility
-                    cvData = { ...cvData, ...parsed };
-                    if (!cvData.certifications) cvData.certifications = [];
-                }
+                try { cvData = JSON.parse(saved); if (!cvData.certifications) cvData.certifications = []; }
                 catch (e) { console.error('Load failed', e); }
             }
             loadHistory();
@@ -2661,15 +2655,7 @@
 
             const frame = document.getElementById('cv-frame');
             if (frame) {
-                frame.onload = () => setTimeout(postToFrame, 300);
-                // Listen for frame saying it's ready (fix for white screen on reload)
-                window.addEventListener('message', (e) => {
-                    if (e.data && e.data.type === 'cv-frame-ready') {
-                        postToFrame();
-                    }
-                });
-                // Fallback attempt
-                setTimeout(postToFrame, 1000);
+                frame.onload = () => setTimeout(postToFrame, 150);
             }
 
             initResizeHandle();
@@ -3035,24 +3021,8 @@
             if (frame && frame.contentWindow) {
                 try {
                     const payload = JSON.parse(JSON.stringify(cvData));
-                    const select = document.getElementById('template-select');
-                    const templateFile = select ? select.value : 'cv1.html';
-                    
                     if (payload.personal && typeof payload.personal.contact === 'string') {
-                        let contactStr = payload.personal.contact;
-                        
-                        // "Auto remover" for templates that struggle with pipes (like CV2 for scaling)
-                        // Templates like cv2.html use flex justify-between, so individual items work better
-                        const templateId = templateFile.split('/').pop();
-                        const needsSplit = ['cv2.html', 'cv4.html', 'cv6.html', 'cv7.html'].includes(templateId);
-                        
-                        if (needsSplit && contactStr.includes('|')) {
-                            const parts = contactStr.split('|').map(p => p.trim()).filter(Boolean);
-                            // Convert to HTML with auto-linked parts, but separated by spaces or wrapped
-                            payload.personal.contact = parts.map(p => `<span>${autoLink(p)}</span>`).join('<span class="contact-sep" style="opacity:0; width:10px; display:inline-block;"> </span>');
-                        } else {
-                            payload.personal.contact = autoLink(contactStr);
-                        }
+                        payload.personal.contact = autoLink(payload.personal.contact);
                     }
                     frame.contentWindow.postMessage({ type: 'update-cv', payload }, '*');
                 } catch (e) {
@@ -3065,32 +3035,16 @@
             const select = document.getElementById('template-select');
             const frame = document.getElementById('cv-frame');
             
-            if (!select || !frame) return;
-
             // Update form sections visibility for new template
             updateFormSections();
             
             document.querySelector('.loading-overlay').classList.add('active');
-            
-            // Set source with absolute path
             frame.src = select.value;
-            
-            // Clear any existing onload to avoid duplicates
-            frame.onload = null; 
-            
-            // We use the message-based system instead for more reliability
-            // but keep a fallback just in case
-            const fallback = setTimeout(() => {
-                postToFrame();
-                document.querySelector('.loading-overlay').classList.remove('active');
-            }, 1000);
-            
             frame.onload = () => {
-                clearTimeout(fallback);
                 setTimeout(() => {
                     postToFrame();
                     document.querySelector('.loading-overlay').classList.remove('active');
-                }, 300);
+                }, 400);
             };
         }
 
@@ -3247,8 +3201,7 @@ function printCV() {
             if (!trimmed) throw new Error('Nothing to refine');
 
             const templateFile = document.getElementById('template-select')?.value || 'cv1.html';
-            const cleanFile = templateFile.replace(/^\//, ''); // Clean slash if exists
-            const templateId = 'template_' + cleanFile.replace('cv', '').replace('-', '').replace('.html', '');
+            const templateId = 'template_' + templateFile.replace('cv', '').replace('.html', '');
 
             const response = await fetch(`${WORKER_URL}/refine-section`, {
                 method: 'POST',
@@ -3326,8 +3279,7 @@ function printCV() {
             overlay.classList.add('active');
 
             const templateFile = document.getElementById('template-select').value;
-            const cleanFile = templateFile.replace(/^\//, '');
-            const templateId = 'template_' + cleanFile.replace('cv', '').replace('-', '').replace('.html', '');
+            const templateId = 'template_' + templateFile.replace('cv', '').replace('.html', '');
 
             try {
                 const response = await fetch(`${WORKER_URL}/generate`, {
