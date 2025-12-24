@@ -277,6 +277,7 @@ h1 {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
   padding: 12px 30px;
+  padding-bottom: calc(12px + env(safe-area-inset-bottom));
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -548,6 +549,7 @@ h1 {
 @media (max-width: 768px) {
   .fixed-cta {
     padding: 10px 20px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
     justify-content: flex-start;
     display: flex;
   }
@@ -602,6 +604,7 @@ h1 {
 
   .fixed-cta {
     padding: 8px 15px;
+    padding-bottom: calc(8px + env(safe-area-inset-bottom));
   }
 
   .fixed-cta .price .discounted {
