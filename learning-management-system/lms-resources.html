@@ -7,13 +7,13 @@
     <title>LMS Resources | My Student Club</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Added PDF.js for viewing PDFs -->
-    <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+    <!-- Using a slightly older, more stable version of PDF.js for better compatibility -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="importmap">
     {
         "imports": {
-            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.prod.js"
         }
     }
     </script>
@@ -329,8 +329,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
     </style>
 </head>
@@ -394,34 +399,32 @@
                     <div v-else-if="allResources.length === 0" class="empty-state">
                         <p>No resources found for your enrolled courses.</p>
                     </div>
-                    <div v-else v-for="resource in allResources" :key="resource.title + resource.download_storage_path" class="resource-card">
+                    <div v-else v-for="resource in allResources" :key="resource.title + resource.download_storage_path"
+                        class="resource-card">
                         <div class="resource-header">
                             <div class="resource-icon"><i :class="getResourceIcon(resource.type)"></i></div>
                             <h3 class="resource-title">{{ resource.title }}</h3>
                         </div>
                         <p class="resource-description">{{ resource.description || 'Access this resource below.' }}</p>
                         <div class="resource-actions">
-                            <!-- Special Google Sheet -->
-                            <button v-if="isSpecialSheet(resource)" 
-                                    @click="openViewer(resource, 'iframe')" class="resource-btn resource-btn-view">
+                            <button v-if="isSpecialSheet(resource)" @click="openViewer(resource, 'iframe')"
+                                class="resource-btn resource-btn-view">
                                 <i class="fas fa-eye"></i> View Sheet
                             </button>
-                            
-                            <!-- PDF/CSV Viewable -->
-                            <button v-else-if="hasViewPath(resource)" 
-                                    @click="openViewer(resource, getPreviewType(resource))" class="resource-btn resource-btn-view">
+
+                            <button v-else-if="hasViewPath(resource)"
+                                @click="openViewer(resource, getPreviewType(resource))"
+                                class="resource-btn resource-btn-view">
                                 <i class="fas fa-eye"></i> View
                             </button>
-                            
-                            <!-- External Link -->
-                            <a v-else-if="resource.type === 'external_link' && resource.url" 
-                               :href="resource.url" target="_blank" rel="noopener noreferrer" class="resource-btn resource-btn-link">
+
+                            <a v-else-if="resource.type === 'external_link' && resource.url" :href="resource.url"
+                                target="_blank" rel="noopener noreferrer" class="resource-btn resource-btn-link">
                                 <i class="fas fa-external-link-alt"></i> Open Link
                             </a>
-                            
-                            <!-- Downloadable -->
-                            <button v-if="hasDownloadPath(resource)" 
-                                    @click.stop="downloadResource(resource)" class="resource-btn resource-btn-download">
+
+                            <button v-if="hasDownloadPath(resource)" @click.stop="downloadResource(resource)"
+                                class="resource-btn resource-btn-download">
                                 <i class="fas fa-download"></i> Download
                             </button>
                         </div>
@@ -436,14 +439,14 @@
                         <h2 class="resource-viewer-title">{{ currentResourceTitle }}</h2>
                         <button @click="closeViewer" class="resource-viewer-close-button">×</button>
                     </div>
-                    
+
                     <div class="viewer-main-content">
                         <div v-if="viewerLoading" class="loading-state" style="position:absolute; top:40%; width:100%">
                             <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
                             <p>Loading...</p>
                         </div>
 
-                        <!-- Iframe (Google Sheet) -->
+                        <!-- Iframe -->
                         <div v-show="previewType === 'iframe'" class="iframe-container">
                             <div class="iframe-overlay"></div>
                             <iframe id="resource-iframe" :src="iframeSrc" title="Embedded Resource"></iframe>
@@ -462,9 +465,11 @@
 
                     <!-- Controls (Only for PDF) -->
                     <div v-if="previewType === 'pdf'" class="resource-viewer-controls">
-                        <button @click="renderPdfPage(pdfCurrentPage - 1)" :disabled="pdfCurrentPage <= 1" class="viewer-nav-button">Previous</button>
+                        <button @click="renderPdfPage(pdfCurrentPage - 1)" :disabled="pdfCurrentPage <= 1"
+                            class="viewer-nav-button">Previous</button>
                         <span>Page {{ pdfCurrentPage }} of {{ pdfTotalPages }}</span>
-                        <button @click="renderPdfPage(pdfCurrentPage + 1)" :disabled="pdfCurrentPage >= pdfTotalPages" class="viewer-nav-button">Next</button>
+                        <button @click="renderPdfPage(pdfCurrentPage + 1)" :disabled="pdfCurrentPage >= pdfTotalPages"
+                            class="viewer-nav-button">Next</button>
                     </div>
                 </div>
             </div>
@@ -476,7 +481,8 @@
                 <div class="footer-brand">
                     <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo">
                     <h4>My Student Club</h4>
-                    <p>Empowering the next generation of Chartered Accountants with world-class education and resources.</p>
+                    <p>Empowering the next generation of Chartered Accountants with world-class education and resources.
+                    </p>
                 </div>
                 <div class="footer-links">
                     <div class="footer-column">
@@ -494,16 +500,17 @@
             </div>
         </footer>
     </div>
+
     <script type="module">
-        import { createApp } from 'vue';
+        import { createApp, markRaw } from 'vue';
 
         const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-        
-        // Setup PDF.js
-        if(window.pdfjsLib) {
-            window.pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
+
+        // Setup PDF.js Worker
+        if (window.pdfjsLib) {
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
         }
 
         createApp({
@@ -513,28 +520,28 @@
                     user: null,
                     allResources: [],
                     loading: true,
-                    
+
                     // Viewer State
                     isViewerVisible: false,
                     viewerLoading: false,
                     previewType: null, // 'iframe', 'pdf', 'csv'
                     currentResourceTitle: '',
-                    
+
                     // Iframe Data
                     iframeSrc: '',
-                    
-                    // PDF Data
+
+                    // PDF Data (will be marked raw)
                     pdfDoc: null,
                     pdfCurrentPage: 1,
                     pdfTotalPages: 1,
-                    
+
                     // CSV Data
                     csvHtml: ''
                 }
             },
             methods: {
                 toggleMenu() { this.menuActive = !this.menuActive; },
-                
+
                 async checkAuth() {
                     const { data: { session } } = await supabase.auth.getSession();
                     if (session && session.user) {
@@ -547,9 +554,9 @@
                         window.location.href = 'https://www.mystudentclub.com/login.html';
                     }
                 },
-                
+
                 handleProfileClick() { if (!this.user) { window.location.href = 'https://www.mystudentclub.com/login.html'; } },
-                
+
                 async fetchAllResources() {
                     this.loading = true;
                     try {
@@ -564,7 +571,6 @@
                         videos.forEach(video => {
                             if (video.resources && Array.isArray(video.resources)) {
                                 video.resources.forEach(resource => {
-                                    // UPDATED FILTER: Include if viewable, downloadable, OR external link
                                     const isSpecial = this.isSpecialSheet(resource);
                                     const canView = this.hasViewPath(resource);
                                     const canDownload = this.hasDownloadPath(resource);
@@ -586,8 +592,7 @@
                         this.loading = false;
                     }
                 },
-                
-                // Helper methods for template
+
                 isSpecialSheet(resource) {
                     return resource.url === 'https://docs.google.com/spreadsheets/d/1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y/edit?gid=1269177841#gid=1269177841';
                 },
@@ -609,18 +614,16 @@
                     return iconMap[type ? type.toLowerCase() : ''] || 'fas fa-file';
                 },
 
-                // Main Viewer Function
                 async openViewer(resource, type) {
                     this.isViewerVisible = true;
                     this.currentResourceTitle = resource.title;
                     this.previewType = type;
                     this.viewerLoading = true;
-                    
-                    // Reset States
+
                     this.iframeSrc = '';
                     this.pdfDoc = null;
                     this.csvHtml = '';
-                    
+
                     if (type === 'iframe') {
                         const sheetId = '1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y';
                         this.iframeSrc = `https://docs.google.com/spreadsheets/d/${sheetId}/pubhtml?widget=true&headers=false&chrome=false`;
@@ -629,21 +632,26 @@
                     }
 
                     try {
-                        // Get Signed URL
                         const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
                         if (error) throw error;
 
-                        // Fetch via proxy
                         const proxyUrl = `https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`;
                         const response = await fetch(proxyUrl);
                         if (!response.ok) throw new Error('Fetch failed');
 
                         if (type === 'pdf') {
                             const pdfData = await response.arrayBuffer();
-                            this.pdfDoc = await window.pdfjsLib.getDocument(pdfData).promise;
+                            const loadingTask = window.pdfjsLib.getDocument(pdfData);
+                            const doc = await loadingTask.promise;
+
+                            // !!! CRITICAL FIX !!! 
+                            // Use markRaw to prevent Vue from proxying the PDF document object.
+                            // This stops the "Cannot read private member #d" error.
+                            this.pdfDoc = markRaw(doc);
+
                             this.pdfTotalPages = this.pdfDoc.numPages;
                             this.pdfCurrentPage = 1;
-                            await this.$nextTick(); // Wait for canvas to exist
+                            await this.$nextTick();
                             this.renderPdfPage(1);
                         } else if (type === 'csv') {
                             const csvText = await response.text();
@@ -658,7 +666,6 @@
                     }
                 },
 
-                // PDF Rendering
                 async renderPdfPage(num) {
                     if (!this.pdfDoc) return;
                     this.pdfCurrentPage = num;
@@ -666,10 +673,10 @@
                     const canvas = this.$refs.pdfCanvas;
                     const ctx = canvas.getContext('2d');
                     const viewport = page.getViewport({ scale: 1.5 });
-                    
+
                     canvas.height = viewport.height;
                     canvas.width = viewport.width;
-                    
+
                     await page.render({ canvasContext: ctx, viewport: viewport }).promise;
                     this.drawWatermark(canvas, ctx);
                 },
@@ -689,12 +696,11 @@
                     ctx.restore();
                 },
 
-                // CSV Rendering
                 renderCsv(csvText) {
                     const lines = csvText.split('\n').filter(line => line.trim() !== '');
                     const header = lines.length > 0 ? lines[0].split(',').map(h => h.trim()) : [];
                     const rows = lines.length > 1 ? lines.slice(1).map(line => line.split(',').map(cell => cell.trim())) : [];
-                    
+
                     let html = `<thead><tr>${header.map(h => `<th>${h}</th>`).join('')}</tr></thead>`;
                     html += `<tbody>${rows.map(row => `<tr>${row.map(cell => `<td title="${cell}">${cell}</td>`).join('')}</tr>`).join('')}</tbody>`;
                     this.csvHtml = html;
