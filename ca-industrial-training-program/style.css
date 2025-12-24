@@ -282,8 +282,9 @@ h1 {
   justify-content: flex-start;
   align-items: center;
   box-shadow: 0 -5px 25px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
+  z-index: 1500;
   box-sizing: border-box;
+  will-change: transform;
 }
 
 .price-container {
@@ -603,8 +604,8 @@ h1 {
   }
 
   .fixed-cta {
-    padding: 8px 15px;
-    padding-bottom: calc(8px + env(safe-area-inset-bottom));
+    padding: 15px 15px;
+    padding-bottom: calc(30px + env(safe-area-inset-bottom));
   }
 
   .fixed-cta .price .discounted {
