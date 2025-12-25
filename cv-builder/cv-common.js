@@ -78,6 +78,86 @@ function renderCV(data) {
         setHTMLIn(row, '[data-field="marks"]', item.marks || item.remarks);
         setHTMLIn(row, '[data-field="remarks"]', item.remarks);
     });
+    
+    // 3b. Grouped Education (CV8/CV9) - groups entries by institution
+    const groupedEduContainer = document.getElementById('education-grouped-list');
+    if (groupedEduContainer && hasEdu) {
+        // Detect if we're in CV9 (has bullet-list class in the page)
+        const isCV9Style = document.querySelector('.section-header-2') !== null;
+        
+        // Group education entries by institution
+        const grouped = {};
+        const order = [];
+        data.education.forEach(edu => {
+            const inst = edu.institute || edu.institution || '';
+            if (!grouped[inst]) {
+                grouped[inst] = [];
+                order.push(inst);
+            }
+            grouped[inst].push(edu);
+        });
+        
+        // Render grouped entries
+        let html = '';
+        order.forEach(inst => {
+            html += `<div class="edu-item">`;
+            if (inst) {
+                html += `<div class="edu-institution">${inst}</div>`;
+            }
+            
+            if (isCV9Style) {
+                // CV9 style: Each entry shows degree with date, then its marks as bullet points
+                const entries = grouped[inst];
+                entries.forEach(entry => {
+                    const degree = entry.degree || '';
+                    const year = entry.year || '';
+                    const marks = entry.marks || entry.remarks || '';
+                    
+                    // Show degree + year line
+                    html += `<div class="edu-row">
+                        <span class="edu-qual">${degree}</span>
+                        <span class="edu-date">${year}</span>
+                    </div>`;
+                    
+                    // Show marks/remarks as bullet points - split by comma if multiple
+                    if (marks) {
+                        // Split by comma and trim each item
+                        const marksList = marks.split(',').map(m => m.trim()).filter(m => m);
+                        if (marksList.length > 0) {
+                            html += `<ul class="bullet-list">`;
+                            marksList.forEach(mark => {
+                                html += `<li>${mark}</li>`;
+                            });
+                            html += `</ul>`;
+                        }
+                    }
+                });
+            } else {
+                // CV8 style: Each entry inline with | separator (Degree | Marks | Remarks)
+                grouped[inst].forEach(edu => {
+                    const degree = edu.degree || '';
+                    const marks = edu.marks || '';
+                    const remarks = edu.remarks || '';
+                    const year = edu.year || '';
+                    
+                    // Build the qualification string with | separators
+                    let qualParts = [degree];
+                    if (marks) qualParts.push(marks);
+                    if (remarks) qualParts.push(remarks);
+                    const qualStr = qualParts.join(' | ');
+                    
+                    html += `<div class="edu-row">
+                        <span class="edu-qual">${qualStr}</span>
+                        <span class="edu-date">${year}</span>
+                    </div>`;
+                });
+            }
+            html += `</div>`;
+        });
+        groupedEduContainer.innerHTML = html;
+    } else if (groupedEduContainer) {
+        groupedEduContainer.innerHTML = '';
+    }
 
     // 4. Experience
     const hasExp = data.experience && data.experience.length > 0;
@@ -86,6 +166,22 @@ function renderCV(data) {
         setHTMLIn(block, '[data-field="company"]', item.company);
         setHTMLIn(block, '[data-field="dates"]', item.dates);
         setHTMLIn(block, '[data-field="category"]', item.category); // Department/Area like "Business Finance"
+
+        const ul = block.querySelector('[data-list="bullets"]');
+        if (ul) {
+            if (item.bullets && Array.isArray(item.bullets) && item.bullets.length > 0) {
+                ul.innerHTML = item.bullets.map(b => `<li>${b}</li>`).join('');
+            } else {
+                ul.innerHTML = '';
+            }
+        }
+    });
+
+    // 4b. Projects (CV-9)
+    const hasProjects = data.projects && data.projects.length > 0;
+    updateList('projects-list', data.projects, hasProjects, (block, item) => {
+        setHTMLIn(block, '[data-field="title"]', item.title);
+        setHTMLIn(block, '[data-field="description"]', item.description);
 
         const ul = block.querySelector('[data-list="bullets"]');
         if (ul) {
@@ -110,7 +206,16 @@ function renderCV(data) {
     const certContainer = document.querySelector('[data-list="certifications"]');
     if (certContainer) {
         if (hasCerts) {
-            certContainer.innerHTML = data.certifications.map(c => `<li>${c.name || c} ${c.issuer ? '- ' + c.issuer : ''}</li>`).join('');
+            certContainer.innerHTML = data.certifications.map(c => {
+                // Handle both string format and object format (name + issuer)
+                if (typeof c === 'string') {
+                    return `<li>${c}</li>`;
+                }
+                // Object format: use name, optionally append issuer if it exists and is non-empty
+                const name = c.name || '';
+                const issuer = c.issuer && c.issuer.trim() ? ' - ' + c.issuer : '';
+                return `<li>${name}${issuer}</li>`;
+            }).join('');
             toggleSectionElement(certContainer, true);
         } else {
             certContainer.innerHTML = '';
@@ -275,6 +380,15 @@ function toggleSectionElement(element, isVisible) {
         // The section-title is inside, so we need to find it
         headerToHide = sectionContainer.querySelector('.section-title');
     }
+    
+    // Check if element is inside a .section wrapper (CV-8, CV-9)
+    // These wrap both the section-header and content
+    const sectionWrapper = element.closest('.section');
+    if (sectionWrapper) {
+        containerToHide = sectionWrapper;
+        // The section-header or section-header-2 is inside
+        headerToHide = sectionWrapper.querySelector('.section-header, .section-header-2');
+    }
 
     // Check if element is inside a generic styled div wrapper (CV4 pattern)
     // These are divs with inline styles like border, padding that wrap the content
@@ -356,6 +470,7 @@ function toggleSectionElement(element, isVisible) {
         while (sibling && siblingLimit > 0) {
             if (
                 sibling.classList.contains('section-header') ||
+                sibling.classList.contains('section-header-2') ||
                 sibling.classList.contains('section-title') ||
                 sibling.classList.contains('gray-bar') ||
                 sibling.tagName === 'H2' ||

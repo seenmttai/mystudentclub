@@ -1789,6 +1789,21 @@
                 </div>
             </details>
 
+            <details data-section="projects">
+                <summary>Projects</summary>
+                <div class="section-body">
+                    <div id="proj-container"></div>
+                    <button class="btn-dashed" onclick="addProject()">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                            viewBox="0 0 24 24">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add Project
+                    </button>
+                </div>
+            </details>
+
             <details data-section="certifications">
                 <summary>Certifications</summary>
                 <div class="section-body">
@@ -1849,7 +1864,7 @@
                 </div>
             </details>
 
-            <details>
+            <details data-section="skills">
                 <summary>Skills</summary>
                 <div class="section-body">
                     <div class="chip-container" id="skills-chips"></div>
@@ -1893,6 +1908,8 @@
                 <option value="cv5.html">Corporate</option>
                 <option value="cv6.html">Minimalist</option>
                 <option value="cv7.html">Compact</option>
+                <option value="cv8.html">Bold Modern</option>
+                <option value="cv9.html">Executive</option>
             </select>
         </div>
 
@@ -2598,13 +2615,15 @@
         // Template configuration: which sections each template supports
         // Based on actual template file analysis - includes tagline, category, contact fields
         const templateConfig = {
-            'cv1.html': ['contact', 'summary', 'achievements', 'leadership', 'interests'],
-            'cv2.html': ['contact', 'tagline', 'category', 'achievements','certifications', 'leadership', 'interests'],
-            'cv3.html': ['contact', 'summary', 'category', 'certifications', 'achievements'],
-            'cv4.html': ['contact', 'certifications', 'achievements', 'leadership', 'interests'],
+            'cv1.html': ['contact', 'summary', 'achievements', 'leadership', 'interests', 'skills'],
+            'cv2.html': ['contact', 'tagline', 'category', 'achievements','certifications', 'leadership', 'interests', 'skills'],
+            'cv3.html': ['contact', 'summary', 'category', 'certifications', 'achievements', 'skills'],
+            'cv4.html': ['contact', 'certifications', 'achievements', 'leadership', 'interests', 'skills'],
             'cv5.html': ['summary', 'phone', 'email', 'linkedin', 'leadership', 'certifications', 'achievements', 'interests', 'skills'],
-            'cv6.html': ['contact', 'achievements', 'certifications'],
-            'cv7.html': ['contact', 'certifications', 'achievements', 'leadership', 'interests']
+            'cv6.html': ['contact', 'achievements', 'certifications', 'skills'],
+            'cv7.html': ['contact', 'certifications', 'achievements', 'leadership', 'interests', 'skills'],
+            'cv8.html': ['contact', 'tagline', 'summary', 'certifications', 'interests'],
+            'cv9.html': ['contact', 'projects','achievements', 'leadership']
         };
 
         // Update form sections visibility based on selected template
@@ -2629,6 +2648,7 @@
             summary: "",
             education: [],
             experience: [],
+            projects: [],
             certifications: [],
             achievements: [],
             interests: [],
@@ -2649,6 +2669,7 @@
                     // Ensure deep merge/compatibility
                     cvData = { ...cvData, ...parsed };
                     if (!cvData.certifications) cvData.certifications = [];
+                    if (!cvData.projects) cvData.projects = [];
                 }
                 catch (e) { console.error('Load failed', e); }
             }
@@ -2716,6 +2737,7 @@
 
             renderEduInputs();
             renderExpInputs();
+            renderProjInputs();
             renderCertInputs();
             renderListInputs('achievements', 'ach-container', 'Achievement');
             renderListInputs('interests', 'int-container', 'Interest');
@@ -2867,6 +2889,36 @@
             });
         }
 
+        function renderProjInputs() {
+            const container = document.getElementById('proj-container');
+            if (!container) return;
+            container.innerHTML = '';
+            (cvData.projects || []).forEach((proj, index) => {
+                const div = document.createElement('div');
+                div.className = 'list-item';
+                div.innerHTML = `
+                    <div class="item-actions">
+                        <div class="action-btn" onclick="moveProj(${index}, -1)">▲</div>
+                        <div class="action-btn" onclick="moveProj(${index}, 1)">▼</div>
+                        <div class="action-btn delete" onclick="removeProj(${index})">×</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Project Title</label>
+                        <input class="form-control" value="${proj.title || ''}" oninput="updateProj(${index}, 'title', this.value)" placeholder="e.g. Parag Milk Foods Ltd">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input class="form-control" value="${proj.description || ''}" oninput="updateProj(${index}, 'description', this.value)" placeholder="e.g. Valued a leading dairy company">
+                    </div>
+                    <div class="form-group" style="margin-bottom:0">
+                        <label>Key Points (Bullets)</label>
+                        <textarea id="proj-bullets-${index}" class="form-control" oninput="updateProj(${index}, 'bullets', this.value)" placeholder="One bullet per line">${(proj.bullets || []).join('\n')}</textarea>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
         function renderCertInputs() {
             const container = document.getElementById('cert-container');
             container.innerHTML = '';
@@ -2878,12 +2930,12 @@
                         <div class="action-btn delete" onclick="removeCert(${index})">×</div>
                     </div>
                     <div class="form-group">
-                        <label>Certification Name</label>
-                        <input class="form-control" value="${cert.name || ''}" oninput="updateCert(${index}, 'name', this.value)" placeholder="Course Name">
+                        <label>Certification Name/ Bullet Point</label>
+                        <input class="form-control" value="${cert.name || ''}" oninput="updateCert(${index}, 'name', this.value)" placeholder="e.g. Power BI Course/Cleared CFA Level 1 in first attempt ">
                     </div>
                     <div class="form-group" style="margin-bottom:0">
-                        <label>Issuer / Date</label>
-                        <input class="form-control" value="${cert.issuer || ''}" oninput="updateCert(${index}, 'issuer', this.value)" placeholder="Organization">
+                        <label>Issuer / Date (optional)</label>
+                        <input class="form-control" value="${cert.issuer || ''}" oninput="updateCert(${index}, 'issuer', this.value)" placeholder="e.g. CFI/2024">
                     </div>
                 `;
                 container.appendChild(div);
@@ -2971,6 +3023,27 @@
             renderExpInputs(); postToFrame();
         }
 
+        function addProject() {
+            if (!cvData.projects) cvData.projects = [];
+            cvData.projects.push({ title: "", description: "", bullets: [] });
+            renderProjInputs();
+        }
+        function removeProj(i) {
+            if (confirm("Delete project?")) { cvData.projects.splice(i, 1); renderProjInputs(); postToFrame(); }
+        }
+        function moveProj(i, dir) {
+            if (i + dir < 0 || i + dir >= cvData.projects.length) return;
+            [cvData.projects[i], cvData.projects[i + dir]] = [cvData.projects[i + dir], cvData.projects[i]];
+            renderProjInputs(); postToFrame();
+        }
+        function updateProj(index, field, value) {
+            if (field === 'bullets') {
+                cvData.projects[index].bullets = value.split('\n').filter(line => line.trim() !== '');
+            } else {
+                cvData.projects[index][field] = value;
+            }
+            postToFrame();
+        }
         function addCertification() {
             cvData.certifications.push({ name: "", issuer: "" });
             renderCertInputs();
