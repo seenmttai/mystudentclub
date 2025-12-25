@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CV - Template 9</title>
+    <style>
+        /* ---------------------------------------------------------
+           CORE VARIABLES
+           --------------------------------------------------------- */
+        :root {
+            --accent-color: #f0c14b;
+            --text-black: #000000;
+            --bg-white: #ffffff;
+            --font-main: 'Arial', 'Helvetica', sans-serif;
+            --viewer-bg: #525659;
+
+            /* A4 DIMENSIONS (Fixed Reference) */
+            --ref-width: 1000px;
+            --ref-height: 1414px;
+            
+            /* DYNAMIC SCALING FACTOR */
+            --content-scale: 1; 
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.2s ease-in;
+        }
+
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        /* ---------------------------------------------------------
+           THE SHEET (A4 CONTAINER)
+           --------------------------------------------------------- */
+        .cv-page {
+            width: var(--ref-width);
+            height: var(--ref-height);
+            background: var(--bg-white);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            padding: calc(35px * var(--content-scale)) calc(45px * var(--content-scale));
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transform-origin: top center;
+            font-size: calc(13px * var(--content-scale));
+            line-height: 1.4;
+            color: var(--text-black);
+            overflow: hidden;
+        }
+
+        /* ---------------------------------------------------------
+           HEADER
+           --------------------------------------------------------- */
+        .header {
+            text-align: right;
+            margin-bottom: calc(15px * var(--content-scale));
+        }
+
+        .header-name {
+            font-size: calc(32px * var(--content-scale));
+            font-weight: 900;
+            color: var(--text-black);
+            line-height: 1.1;
+        }
+
+        .contact-line {
+            font-size: calc(12px * var(--content-scale));
+            color: #333;
+            margin-top: calc(3px * var(--content-scale));
+        }
+
+        .contact-line a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        /* ---------------------------------------------------------
+           SECTIONS
+           --------------------------------------------------------- */
+        .section {
+            margin-bottom: calc(10px * var(--content-scale));
+        }
+
+        .section-header {
+            background-color: transparent;
+            font-size: calc(13px * var(--content-scale));
+            font-weight: 700;
+            color: var(--text-black);
+            border-bottom: 1px solid black;
+            padding-bottom: calc(3px * var(--content-scale));
+            margin-bottom: calc(10px * var(--content-scale));
+            text-transform: uppercase;
+        }
+
+        .section-header-2 {
+            background-color: transparent;
+            font-size: calc(13px * var(--content-scale));
+            font-weight: 700;
+            color: var(--text-black);
+            border-top: 1px solid black;
+            padding-top: calc(2px * var(--content-scale));
+            margin-top: calc(1px * var(--content-scale));
+            text-transform: uppercase;
+        }
+
+        /* ---------------------------------------------------------
+           GROUPED EDUCATION (for institution grouping)
+           --------------------------------------------------------- */
+        .edu-item {
+            margin-bottom: calc(10px * var(--content-scale));
+        }
+
+        .edu-institution {
+            font-size: calc(13px * var(--content-scale));
+            font-weight: 700;
+            margin-bottom: calc(2px * var(--content-scale));
+        }
+
+        .edu-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: calc(12px * var(--content-scale));
+            line-height: 1.5;
+        }
+
+        .edu-qual {
+            flex: 1;
+        }
+
+        .edu-date {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        /* ---------------------------------------------------------
+           EDUCATION / EXPERIENCE ENTRIES
+           --------------------------------------------------------- */
+        .entry {
+            margin-bottom: calc(10px * var(--content-scale));
+        }
+
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: calc(2px * var(--content-scale));
+        }
+
+        .entry-title {
+            font-size: calc(13px * var(--content-scale));
+            font-weight: 700;
+        }
+
+        .entry-location {
+            font-size: calc(12px * var(--content-scale));
+            text-align: right;
+        }
+
+        .entry-subtitle {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: calc(12px * var(--content-scale));
+            margin-bottom: calc(2px * var(--content-scale));
+        }
+
+        .entry-role {
+            font-weight: 600;
+        }
+
+        .entry-role-italic {
+            font-style: italic;
+        }
+
+        .entry-dates {
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        /* ---------------------------------------------------------
+           BULLET LISTS
+           --------------------------------------------------------- */
+        .bullet-list {
+            list-style-type: disc;
+            padding-left: calc(18px * var(--content-scale));
+            margin: 0;
+        }
+
+        .bullet-list li {
+            font-size: calc(12px * var(--content-scale));
+            margin-bottom: calc(3px * var(--content-scale));
+            text-align: justify;
+            line-height: 1.35;
+        }
+
+        .b {
+            font-weight: 700;
+        }
+
+        .detail-line {
+            font-size: calc(12px * var(--content-scale));
+            margin-left: calc(5px * var(--content-scale));
+        }
+
+        /* Added for JS Template Logic */
+        .template {
+            display: none !important;
+        }
+
+        .job-group {
+            display: contents;
+        }
+
+        /* ---------------------------------------------------------
+           PRINT STYLES
+           --------------------------------------------------------- */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                background: #ffffff !important;
+            }
+
+            #zoom-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                transform: none !important;
+            }
+
+            .cv-page {
+                width: 1000px !important;
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: none !important;
+                zoom: 0.7937; 
+                -moz-transform: scale(0.7937);
+                -moz-transform-origin: top center;
+                transform-origin: top center;
+                transform: none !important; 
+                position: static !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="zoom-wrapper">
+        <div class="cv-page" id="cv-page">
+            
+            <!-- HEADER -->
+            <div class="header">
+                <div class="header-name" data-field="name"></div>
+                <div class="contact-line" data-field="contact"></div>
+            </div>
+
+            <!-- EDUCATION -->
+            <div class="section">
+                <div class="section-header">Education</div>
+                <div id="education-grouped-list">
+                    <!-- Will be rendered by custom grouped logic -->
+                </div>
+            </div>
+
+            <!-- EXPERIENCE -->
+            <div class="section">
+                <div class="section-header-2">Experience</div>
+                <div id="experience-list">
+                    <div class="entry template">
+                        <div class="entry-header">
+                            <span class="entry-title" data-field="company"></span>
+                            <span class="entry-location"></span>
+                        </div>
+                        <div class="entry-subtitle">
+                            <span class="entry-role-italic" data-field="category"></span>
+                        </div>
+                        <div class="entry-subtitle">
+                            <span class="entry-role" data-field="role"></span>
+                            <span class="entry-dates" data-field="dates"></span>
+                        </div>
+                        <ul class="bullet-list" data-list="bullets"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROJECTS -->
+            <div class="section">
+                <div class="section-header-2">Projects</div>
+                <div id="projects-list">
+                    <div class="entry template">
+                        <div class="entry-header">
+                            <span class="entry-title" data-field="title"></span>
+                        </div>
+                        <div class="entry-subtitle">
+                            <span class="entry-role-italic" data-field="description"></span>
+                        </div>
+                        <ul class="bullet-list" data-list="bullets"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACHIEVEMENTS -->
+            <div class="section">
+                <div class="section-header-2">Additionals</div>
+                <ul class="bullet-list" data-list="achievements"></ul>
+                <ul class="bullet-list" data-list="leadership" style="margin-top: calc(5px * var(--content-scale));"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script src="cv-common.js"></script>
+    <script>
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            if (!page || document.body.classList.contains('print-mode')) return;
+
+            const windowWidth = window.innerWidth;
+            const targetWidth = windowWidth - 48;
+            const refWidth = 1000;
+
+            let scale = 1;
+            if (targetWidth < refWidth) {
+                scale = targetWidth / refWidth;
+            }
+
+            page.style.transform = `scale(${scale})`;
+            
+            const refHeight = 1414;
+            const currentVisualHeight = refHeight * scale;
+            const spaceToRemove = refHeight - currentVisualHeight;
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            const maxHeight = 1414; 
+            
+            let contentScale = 1;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+
+            let iterations = 0;
+            while (page.scrollHeight > maxHeight && iterations < 50) {
+                contentScale -= 0.02; 
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                iterations++;
+            }
+        }
+
+        let screenTransform = '';
+        let screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            screenTransform = page.style.transform;
+            screenMarginBottom = page.style.marginBottom;
+            document.body.classList.add('print-mode');
+
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+
+            shrinkContentToFit();
+        }
+
+        function handlePrintChange(e) {
+            if (e.matches) {
+                enablePrintMode();
+            } else {
+                disablePrintMode();
+            }
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            document.body.classList.remove('print-mode');
+
+            page.style.transform = screenTransform || '';
+            page.style.marginBottom = screenMarginBottom || '';
+
+            scaleToFit();
+        }
+
+        function init() {
+            shrinkContentToFit(); 
+            scaleToFit();
+            document.body.style.opacity = '1';
+
+            const printMedia = window.matchMedia('print');
+            if (printMedia.addEventListener) {
+                printMedia.addEventListener('change', handlePrintChange);
+            } else if (printMedia.addListener) {
+                printMedia.addListener(handlePrintChange);
+            }
+
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+        window.addEventListener('load', () => {
+            scaleToFit();
+            shrinkContentToFit();
+        });
+        
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(scaleToFit, 100); 
+        });
+    </script>
+</body>
+</html>

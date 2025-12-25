@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Added maximum-scale to prevent auto-zoom glitches on reload -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CV - Template 8</title>
+    <style>
+        /* ---------------------------------------------------------
+           CORE VARIABLES
+           --------------------------------------------------------- */
+        :root {
+            --accent-color: #000000;
+            --text-black: #000000;
+            --bg-white: #ffffff;
+            --font-main: 'Arial', 'Helvetica', sans-serif;
+            --viewer-bg: #525659;
+
+            /* A4 DIMENSIONS (Fixed Reference) */
+            --ref-width: 1000px;
+            --ref-height: 1414px; /* 1:1.414 Ratio */
+            
+            /* DYNAMIC SCALING FACTOR (Controlled by JS for shrinking content) */
+            --content-scale: 1; 
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.2s ease-in;
+        }
+
+        /* WRAPPER FIX */
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        /* ---------------------------------------------------------
+           THE SHEET (A4 CONTAINER)
+           --------------------------------------------------------- */
+        .cv-page {
+            width: var(--ref-width);
+            height: var(--ref-height);
+            background: var(--bg-white);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            padding: calc(40px * var(--content-scale)) calc(50px * var(--content-scale));
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transform-origin: top center;
+            font-size: calc(14px * var(--content-scale));
+            line-height: 1.4;
+            color: var(--text-black);
+            overflow: hidden;
+        }
+
+        /* ---------------------------------------------------------
+           HEADER
+           --------------------------------------------------------- */
+        .header-name {
+            font-size: calc(48px * var(--content-scale));
+            font-weight: 900;
+            color: var(--text-black);
+            line-height: 1;
+            margin-bottom: calc(8px * var(--content-scale));
+        }
+
+        .contact-line {
+            font-size: calc(13px * var(--content-scale));
+            color: #333;
+            margin-bottom: calc(15px * var(--content-scale));
+        }
+
+        .contact-line a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .contact-line a:hover {
+            text-decoration: underline;
+        }
+
+        .tagline-separator:not(:empty)::before {
+            content: " • ";
+        }
+
+        .tagline-separator {
+            font-weight: bold;
+        }
+
+        .contact-separator {
+            margin: 0 calc(8px * var(--content-scale));
+            color: #666;
+        }
+
+        /* ---------------------------------------------------------
+           SECTIONS
+           --------------------------------------------------------- */
+        .section {
+            margin-bottom: calc(10px * var(--content-scale));
+        }
+
+        .section-header {
+            font-size: calc(16px * var(--content-scale));
+            font-weight: 700;
+            color: var(--text-black);
+            border-bottom: calc(5px * var(--content-scale)) solid var(--accent-color);
+            padding-bottom: calc(2px * var(--content-scale));
+            margin-bottom: calc(4px * var(--content-scale));
+        }
+
+        /* ---------------------------------------------------------
+           ABOUT SECTION
+           --------------------------------------------------------- */
+        .about-text {
+            font-size: calc(13px * var(--content-scale));
+            text-align: justify;
+            line-height: 1.5;
+        }
+
+        /* ---------------------------------------------------------
+           EDUCATION SECTION
+           --------------------------------------------------------- */
+        .edu-item {
+            margin-bottom: calc(10px * var(--content-scale));
+        }
+
+        .edu-institution {
+            font-size: calc(14px * var(--content-scale));
+            font-weight: 700;
+            margin-bottom: calc(2px * var(--content-scale));
+        }
+
+        .edu-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: calc(13px * var(--content-scale));
+            line-height: 1.5;
+        }
+
+        .marks-separator:not(:empty)::before {
+            content: " | ";
+        }
+
+        .edu-qual {
+            flex: 1;
+        }
+
+        .edu-date {
+            text-align: right;
+            white-space: nowrap;
+            min-width: calc(100px * var(--content-scale));
+        }
+
+        /* ---------------------------------------------------------
+           PROFESSIONAL EXPERIENCE
+           --------------------------------------------------------- */
+        .exp-company {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: calc(5px * var(--content-scale));
+        }
+
+        .company-name {
+            font-size: calc(14px * var(--content-scale));
+            font-weight: 700;
+        }
+
+        .exp-dates {
+            font-size: calc(13px * var(--content-scale));
+        }
+
+        .exp-role {
+            font-size: calc(13px * var(--content-scale));
+            font-weight: 600;
+            margin-bottom: calc(5px * var(--content-scale));
+        }
+
+        /* ---------------------------------------------------------
+           BULLET LISTS
+           --------------------------------------------------------- */
+        .bullet-list {
+            list-style-type: disc;
+            padding-left: calc(20px * var(--content-scale));
+            margin: 0;
+        }
+
+        .bullet-list li {
+            font-size: calc(13px * var(--content-scale));
+            margin-bottom: calc(4px * var(--content-scale));
+            text-align: justify;
+            line-height: 1.4;
+        }
+
+        .bullet-list li:last-child {
+            margin-bottom: 0;
+        }
+
+        .b {
+            font-weight: 700;
+        }
+
+        /* Added for JS Template Logic */
+        .template {
+            display: none !important;
+        }
+
+        .job-group {
+            display: contents;
+        }
+
+        /* ---------------------------------------------------------
+           PRINT STYLES - STRICT SINGLE PAGE A4
+           --------------------------------------------------------- */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                background: #ffffff !important;
+            }
+
+            #zoom-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                transform: none !important;
+            }
+
+            .cv-page {
+                width: 1000px !important;
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: none !important;
+                zoom: 0.7937; 
+                -moz-transform: scale(0.7937);
+                -moz-transform-origin: top center;
+                transform-origin: top center;
+                transform: none !important; 
+                position: static !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- WRAPPER FIX -->
+    <div id="zoom-wrapper">
+        <!-- SINGLE A4 PAGE -->
+        <div class="cv-page" id="cv-page">
+            
+            <!-- HEADER -->
+            <div class="header-name" data-field="name"></div>
+            <div class="contact-line"><span data-field="contact"></span><span class="tagline-separator" data-field="tagline"></span></div>
+
+            <!-- ABOUT -->
+            <div class="section" data-section="summary">
+                <div class="section-header">About</div>
+                <p class="about-text" data-field="summary"></p>
+            </div>
+
+            <!-- EDUCATION -->
+            <div class="section">
+                <div class="section-header">Education</div>
+                <div id="education-grouped-list">
+                    <!-- Will be rendered by custom grouped logic -->
+                </div>
+            </div>
+
+            <!-- PROFESSIONAL EXPERIENCE -->
+            <div class="section">
+                <div class="section-header">Professional Experience</div>
+                <div id="experience-list">
+                    <div class="job-group template">
+                        <div class="exp-company">
+                            <span class="company-name" data-field="company"></span>
+                            <span class="exp-dates" data-field="dates"></span>
+                        </div>
+                        <div class="exp-role" data-field="role"></div>
+                        <ul class="bullet-list" data-list="bullets"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CERTIFICATIONS & RECOGNITION -->
+            <div class="section">
+                <div class="section-header">Certifications & Recognition</div>
+                <ul class="bullet-list" data-list="certifications"></ul>
+            </div>
+
+            <div class="section">
+                <div class="section-header">Skills & Hobbies</div>
+                <ul class="bullet-list" data-list="interests"></ul>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script src="cv-common.js"></script>
+    <script>
+        // 1. SCALING LOGIC (Visual Zoom)
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            if (!page || document.body.classList.contains('print-mode')) return;
+
+            const windowWidth = window.innerWidth;
+            const targetWidth = windowWidth - 48;
+            const refWidth = 1000;
+
+            let scale = 1;
+            
+            if (targetWidth < refWidth) {
+                scale = targetWidth / refWidth;
+            }
+
+            page.style.transform = `scale(${scale})`;
+            
+            const refHeight = 1414;
+            const currentVisualHeight = refHeight * scale;
+            const spaceToRemove = refHeight - currentVisualHeight;
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        // 2. SHRINK TO FIT LOGIC (Content Compression)
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            const maxHeight = 1414; 
+            
+            let contentScale = 1;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+
+            let iterations = 0;
+            while (page.scrollHeight > maxHeight && iterations < 50) {
+                contentScale -= 0.02; 
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                iterations++;
+            }
+        }
+
+        let screenTransform = '';
+        let screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            screenTransform = page.style.transform;
+            screenMarginBottom = page.style.marginBottom;
+            document.body.classList.add('print-mode');
+
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+
+            shrinkContentToFit();
+        }
+
+        function handlePrintChange(e) {
+            if (e.matches) {
+                enablePrintMode();
+            } else {
+                disablePrintMode();
+            }
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            document.body.classList.remove('print-mode');
+
+            page.style.transform = screenTransform || '';
+            page.style.marginBottom = screenMarginBottom || '';
+
+            scaleToFit();
+        }
+
+        function init() {
+            shrinkContentToFit(); 
+            scaleToFit();
+            document.body.style.opacity = '1';
+
+            const printMedia = window.matchMedia('print');
+            if (printMedia.addEventListener) {
+                printMedia.addEventListener('change', handlePrintChange);
+            } else if (printMedia.addListener) {
+                printMedia.addListener(handlePrintChange);
+            }
+
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+        window.addEventListener('load', () => {
+            scaleToFit();
+            shrinkContentToFit();
+        });
+        
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(scaleToFit, 100); 
+        });
+    </script>
+</body>
+</html>
