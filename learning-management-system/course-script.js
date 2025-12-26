@@ -903,6 +903,64 @@ document.addEventListener('DOMContentLoaded', () => {
             resetOnEnd: false
         });
 
+        // Debounce seeking to prevent 429 errors
+        const seekInput = state.plyrPlayer.elements.inputs.seek;
+        let seekTimeout;
+
+        if (seekInput) {
+            seekInput.addEventListener('input', (e) => {
+                // Stop Plyr from updating video immediately
+                e.stopImmediatePropagation();
+
+                // 1. Visually update the slider thumb/fill
+                const value = e.target.value;
+                // Plyr uses CSS variables for the progress fill
+                e.target.style.setProperty('--value', `${value}%`);
+
+                // 2. Debounce the actual video seek
+                clearTimeout(seekTimeout);
+                seekTimeout = setTimeout(() => {
+                    const duration = state.plyrPlayer.duration;
+                    if (duration) {
+                        state.plyrPlayer.currentTime = (value / 100) * duration;
+                    }
+                }, 700); // Wait 700ms before requesting new frame
+            }, { capture: true });
+        }
+
+        // Debounce forward/rewind buttons to prevent 429 loops
+        const plyrContainer = state.plyrPlayer.elements.container;
+        let seekAccumulator = 0;
+        let buttonSeekTimeout;
+
+        if (plyrContainer) {
+            plyrContainer.addEventListener('click', (e) => {
+                // Find if the click target is a rewind/forward button (or inside one)
+                const target = e.target.closest('button[data-plyr="rewind"], button[data-plyr="fast-forward"]');
+                
+                if (target) {
+                    // Prevent Plyr's default handler
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+
+                    const isRewind = target.getAttribute('data-plyr') === 'rewind';
+                    // Default seek time is 10s as per config
+                    const seekStep = 10; 
+                    
+                    seekAccumulator += isRewind ? -seekStep : seekStep;
+                    
+                    clearTimeout(buttonSeekTimeout);
+                    buttonSeekTimeout = setTimeout(() => {
+                        if (state.plyrPlayer.duration) {
+                             state.plyrPlayer.currentTime = Math.max(0, Math.min(state.plyrPlayer.duration, state.plyrPlayer.currentTime + seekAccumulator));
+                        }
+                        seekAccumulator = 0;
+                    }, 700); // Wait 700ms to accumulate clicks
+                    return;
+                }
+            }, { capture: true });
+        }
+
         // Plyr events for state tracking
         state.plyrPlayer.on('play', () => { state.isPlaying = true; });
         state.plyrPlayer.on('pause', () => { state.isPlaying = false; });
