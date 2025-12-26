@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="course-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Plyr Video Player -->
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+    <!-- Other Libraries -->
     <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
@@ -143,36 +147,12 @@
 
                         <div id="video-section-container" class="video-container-premium" style="display: none;">
                             <div id="video-player-container" class="video-player-premium">
-                                <div class="video-player-wrapper">
-                                    <video id="video-player" preload="auto" class="custom-video-player">Your browser
-                                        does not support the video tag.</video>
-                                    <div class="loading-overlay" id="video-loading-overlay"><i
-                                            class="fas fa-spinner fa-spin"></i></div>
-                                    <div class="seek-indicator" id="seek-indicator"><i></i></div>
-                                </div>
-                                <div class="custom-video-controls" id="video-controls">
-                                    <button id="play-pause-btn" class="control-btn"><i class="fas fa-play"></i></button>
-                                    <div class="seek-bar-container">
-                                        <div class="seek-bar-track">
-                                            <div id="seek-bar-fill" class="seek-bar-fill"></div>
-                                        </div>
-                                        <input type="range" id="seek-bar" class="seek-bar" min="0" value="0">
-                                    </div>
-                                    <div id="time-display" class="time-display">00:00 / 00:00</div>
-                                    <div class="volume-control">
-                                        <button id="mute-btn" class="control-btn"><i id="volume-icon"
-                                                class="fas fa-volume-up"></i></button>
-                                        <input type="range" id="volume-slider" class="volume-slider" min="0" max="1"
-                                            step="0.1" value="1">
-                                    </div>
-                                    <div class="settings-control">
-                                        <button id="settings-btn" class="control-btn"><i
-                                                class="fas fa-cog"></i></button>
-                                        <div class="speed-menu" id="speed-menu" style="display: none;"></div>
-                                    </div>
-                                    <button id="fullscreen-btn" class="control-btn"><i
-                                            class="fas fa-expand"></i></button>
-                                </div>
+                                <!-- Plyr will wrap this video element -->
+                                <video id="video-player" playsinline>
+                                    Your browser does not support the video tag.
+                                </video>
+                                <div class="loading-overlay" id="video-loading-overlay"><i
+                                        class="fas fa-spinner fa-spin"></i></div>
                             </div>
                             <div class="no-video-selected" id="no-video-message-player" style="display: none;">
                                 <div class="empty-state">
@@ -285,8 +265,9 @@
             <div class="footer-content">
                 <div class="footer-main">
                     <div class="footer-brand">
-                        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo"
-                            class="logo-enhanced">
+                        <a href="https://mystudentclub.com">
+                            <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo-enhanced">
+                        </a>
                         <h4>My Student Club</h4>
                         <p>Empowering the next generation of Chartered Accountants with world-class education and
                             resources.</p>
@@ -318,9 +299,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="footer-bottom">
-                    <p>© 2025 My Student Club LMS. All rights reserved.</p>
-                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 My Student Club LMS. All rights reserved.</p>
             </div>
         </footer>
     </div>
