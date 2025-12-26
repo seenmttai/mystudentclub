@@ -12,8 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         videoStartTimes: {},
         currentResource: null, previewType: null, isViewerVisible: false, pdfDoc: null,
         pdfCurrentPage: 1, pdfTotalPages: 1, isFullscreen: false, isPlaying: false,
-        retryCount: 0, maxRetries: 5,
-        plyrPlayer: null
+        controlsTimeout: null, seekIndicatorTimeout: null, retryCount: 0, maxRetries: 5, isDraggingSeekBar: false
     };
 
     const courses = {
@@ -63,10 +62,19 @@ document.addEventListener('DOMContentLoaded', () => {
         videoPlayerContainer: document.getElementById('video-player-container'),
         videoPlayer: document.getElementById('video-player'),
         videoLoadingOverlay: document.getElementById('video-loading-overlay'),
+        seekIndicator: document.getElementById('seek-indicator'),
+        videoControls: document.getElementById('video-controls'),
+        playPauseBtn: document.getElementById('play-pause-btn'),
+        seekBar: document.getElementById('seek-bar'),
+        seekBarFill: document.getElementById('seek-bar-fill'),
+        timeDisplay: document.getElementById('time-display'),
+        muteBtn: document.getElementById('mute-btn'),
+        volumeIcon: document.getElementById('volume-icon'),
+        volumeSlider: document.getElementById('volume-slider'),
+        settingsBtn: document.getElementById('settings-btn'),
+        speedMenu: document.getElementById('speed-menu'),
+        fullscreenBtn: document.getElementById('fullscreen-btn'),
         noVideoMessagePlayer: document.getElementById('no-video-message-player'),
-        prevVideoBtn: document.getElementById('prev-video-btn'),
-        nextVideoBtn: document.getElementById('next-video-btn'),
-        videoCounter: document.getElementById('video-counter'),
         prevVideoBtn: document.getElementById('prev-video-btn'),
         nextVideoBtn: document.getElementById('next-video-btn'),
         videoCounter: document.getElementById('video-counter'),
@@ -405,15 +413,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const checkAuth = async () => {
         const { data: { session } } = await supabase.auth.getSession();
-        if (session && session.user) {
-            state.user = session.user;
-            DOMElements.userDisplayName.textContent = session.user.user_metadata?.first_name || session.user.email.split('@')[0];
-            DOMElements.profileDropdownName.textContent = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
-            DOMElements.profileDropdownEmail.textContent = session.user.email;
-            await checkEnrollment();
-        } else {
-            window.location.href = 'https://www.mystudentclub.com/login.html';
-        }
     };
 
     const fetchComments = async () => {
@@ -487,11 +486,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!currentVideo) return;
 
         DOMElements.courseTabsContainer.innerHTML = '';
-        const tabs = ['overview', 'resources', 'discussion', 'report'];
+        const tabs = ['overview', 'resources', 'discussion', 'report an issue'];
         tabs.forEach(tabId => {
             const btn = document.createElement('button');
             btn.className = 'tab-btn';
-            btn.textContent = tabId === 'report' ? 'Report an Issue' : tabId.charAt(0).toUpperCase() + tabId.slice(1);
+            btn.textContent = tabId.charAt(0).toUpperCase() + tabId.slice(1);
             btn.dataset.tab = tabId;
 
             if (tabId === 'resources' && (!currentVideo.resources || currentVideo.resources.length === 0)) {
@@ -818,6 +817,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const showSeekIndicator = (direction) => {
+        const icon = DOMElements.seekIndicator.querySelector('i');
+        if (!icon) return;
+        icon.className = `fas fa-fast-${direction}`;
+        DOMElements.seekIndicator.classList.add('show', direction);
+        if (state.seekIndicatorTimeout) clearTimeout(state.seekIndicatorTimeout);
+        state.seekIndicatorTimeout = setTimeout(() => {
+            DOMElements.seekIndicator.classList.remove('show', 'forward', 'backward');
+        }, 500);
+    };
+
+    const showControlsOnMove = () => {
+        DOMElements.videoControls.classList.add('visible');
+        if (state.controlsTimeout) clearTimeout(state.controlsTimeout);
+        if (state.isPlaying) {
+            state.controlsTimeout = setTimeout(() => {
+                DOMElements.videoControls.classList.remove('visible');
+            }, 3000);
+        }
+    };
+
+    const updateVolumeIcon = () => {
+        const video = DOMElements.videoPlayer;
+        if (video.muted || video.volume === 0) DOMElements.volumeIcon.className = 'fas fa-volume-mute';
+        else if (video.volume < 0.5) DOMElements.volumeIcon.className = 'fas fa-volume-down';
+        else DOMElements.volumeIcon.className = 'fas fa-volume-up';
+    };
+
     const setupEventListeners = () => {
         DOMElements.hamburgerMenu.addEventListener('click', () => DOMElements.navLinks.classList.toggle('active'));
         DOMElements.logoutButton.addEventListener('click', async () => {
@@ -829,9 +856,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cvDismissBtn) {
             cvDismissBtn.addEventListener('click', dismissCVPopup);
         }
-        DOMElements.enrollRedirectBtn.addEventListener('click', () => {
-            window.location.href = 'https://www.mystudentclub.com/login';
-        });
+        DOMElements.enrollRedirectBtn.addEventListener('click', () => window.location.href = 'https://www.mystudentclub.com/login');
         DOMElements.sidebarToggleBtn.addEventListener('click', () => DOMElements.courseSidebar.classList.add('active'));
         DOMElements.sidebarCloseBtn.addEventListener('click', () => DOMElements.courseSidebar.classList.remove('active'));
 
@@ -889,46 +914,114 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const video = DOMElements.videoPlayer;
-
-        // Initialize Plyr video player
-        state.plyrPlayer = new Plyr(video, {
-            controls: ['play-large', 'rewind', 'play', 'fast-forward', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
-            settings: ['speed'],
-            speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
-            seekTime: 10,
-            keyboard: { focused: true, global: true },
-            tooltips: { controls: true, seek: true },
-            hideControls: true,
-            clickToPlay: true, // Enable tap/click to play/pause
-            resetOnEnd: false
+        video.addEventListener('play', () => { state.isPlaying = true; DOMElements.playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>'; });
+        video.addEventListener('pause', () => { state.isPlaying = false; DOMElements.playPauseBtn.innerHTML = '<i class="fas fa-play"></i>'; DOMElements.videoControls.classList.add('visible'); });
+        video.addEventListener('ended', markVideoCompleted);
+        video.addEventListener('timeupdate', () => {
+            if (state.isDraggingSeekBar) return;
+            const virtualStartTime = state.videoStartTimes[state.currentVideoId] || 0;
+            const displayCurrentTime = Math.max(0, video.currentTime - virtualStartTime);
+            const displayDuration = Math.max(0, video.duration - virtualStartTime);
+            if (displayDuration > 0) {
+                const progressPercentage = (displayCurrentTime / displayDuration) * 100;
+                DOMElements.seekBar.value = displayCurrentTime;
+                DOMElements.seekBarFill.style.width = `${progressPercentage}%`;
+            }
+            DOMElements.timeDisplay.textContent = `${formatTime(displayCurrentTime)} / ${formatTime(displayDuration)}`;
         });
-
-        // Plyr events for state tracking
-        state.plyrPlayer.on('play', () => { state.isPlaying = true; });
-        state.plyrPlayer.on('pause', () => { state.isPlaying = false; });
-        state.plyrPlayer.on('ended', markVideoCompleted);
-        state.plyrPlayer.on('enterfullscreen', () => { state.isFullscreen = true; });
-        state.plyrPlayer.on('exitfullscreen', () => { state.isFullscreen = false; });
-
-        // Keep loading overlay logic
         video.addEventListener('loadedmetadata', () => {
             DOMElements.videoLoadingOverlay.style.display = 'none';
             state.retryCount = 0;
             const virtualStartTime = state.videoStartTimes[state.currentVideoId] || 0;
-            if (virtualStartTime > 0 && video.currentTime < virtualStartTime) {
-                video.currentTime = virtualStartTime;
-            }
+            const displayDuration = Math.max(0, video.duration - virtualStartTime);
+            DOMElements.seekBar.max = displayDuration;
+            if (virtualStartTime > 0 && video.currentTime < virtualStartTime) video.currentTime = virtualStartTime;
         });
         video.addEventListener('waiting', () => DOMElements.videoLoadingOverlay.style.display = 'flex');
         video.addEventListener('playing', () => DOMElements.videoLoadingOverlay.style.display = 'none');
 
-        // Error handling with retry
         video.addEventListener('error', () => {
             if (video.error && (video.error.code === 2 || video.error.code === 3 || video.error.code === 4)) {
                 DOMElements.videoLoadingOverlay.style.display = 'flex';
-                setTimeout(() => { attemptReload(); }, 2000);
+                setTimeout(() => {
+                    attemptReload();
+                }, 2000);
             } else {
                 DOMElements.videoLoadingOverlay.style.display = 'none';
+            }
+        });
+
+        video.parentElement.addEventListener('click', () => {
+            if (video.paused) {
+                const p = video.play();
+                if (p !== undefined) p.catch(() => { });
+            } else {
+                video.pause();
+            }
+        });
+        video.parentElement.addEventListener('dblclick', (e) => {
+            const rect = video.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            if (clickX < rect.width * 0.4) { video.currentTime -= 10; showSeekIndicator('backward'); }
+            else if (clickX > rect.width * 0.6) { video.currentTime += 10; showSeekIndicator('forward'); }
+        });
+
+        DOMElements.playPauseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (video.paused) {
+                const p = video.play();
+                if (p !== undefined) p.catch(() => { });
+            } else {
+                video.pause();
+            }
+        });
+        DOMElements.seekBar.addEventListener('input', (e) => {
+            state.isDraggingSeekBar = true;
+            const virtualStartTime = state.videoStartTimes[state.currentVideoId] || 0;
+            const displayTime = parseFloat(e.target.value);
+            const displayDuration = parseFloat(DOMElements.seekBar.max);
+            if (displayDuration > 0) DOMElements.seekBarFill.style.width = `${(displayTime / displayDuration) * 100}%`;
+            DOMElements.timeDisplay.textContent = `${formatTime(displayTime)} / ${formatTime(displayDuration)}`;
+        });
+        DOMElements.seekBar.addEventListener('change', (e) => {
+            const virtualStartTime = state.videoStartTimes[state.currentVideoId] || 0;
+            video.currentTime = parseFloat(e.target.value) + virtualStartTime;
+            state.isDraggingSeekBar = false;
+        });
+        DOMElements.muteBtn.addEventListener('click', (e) => { e.stopPropagation(); video.muted = !video.muted; updateVolumeIcon(); });
+        DOMElements.volumeSlider.addEventListener('input', (e) => { video.volume = e.target.value; video.muted = e.target.value == 0; updateVolumeIcon(); });
+        DOMElements.fullscreenBtn.addEventListener('click', (e) => { e.stopPropagation(); DOMElements.videoPlayerContainer.requestFullscreen(); });
+        DOMElements.settingsBtn.addEventListener('click', (e) => { e.stopPropagation(); DOMElements.speedMenu.style.display = DOMElements.speedMenu.style.display === 'none' ? 'block' : 'none'; });
+        DOMElements.videoPlayerContainer.addEventListener('mousemove', showControlsOnMove);
+
+        const playbackRates = [0.5, 0.75, 1, 1.25, 1.5, 2];
+        playbackRates.forEach(rate => {
+            const div = document.createElement('div');
+            div.textContent = `${rate}x`;
+            div.addEventListener('click', () => { video.playbackRate = rate; DOMElements.speedMenu.style.display = 'none'; renderSpeedMenu(rate); });
+            DOMElements.speedMenu.appendChild(div);
+        });
+        const renderSpeedMenu = (activeRate) => {
+            DOMElements.speedMenu.querySelectorAll('div').forEach(el => el.classList.toggle('active', parseFloat(el.textContent) === activeRate));
+        };
+        renderSpeedMenu(1);
+
+        document.addEventListener('fullscreenchange', () => { state.isFullscreen = !!document.fullscreenElement; });
+        document.addEventListener('keydown', (e) => {
+            if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+            if (!state.currentVideoId) return;
+            switch (e.key) {
+                case ' ':
+                    e.preventDefault();
+                    if (video.paused) {
+                        const p = video.play();
+                        if (p !== undefined) p.catch(() => { });
+                    } else {
+                        video.pause();
+                    }
+                    break;
+                case 'ArrowLeft': e.preventDefault(); video.currentTime -= 10; showSeekIndicator('backward'); break;
+                case 'ArrowRight': e.preventDefault(); video.currentTime += 10; showSeekIndicator('forward'); break;
             }
         });
 
