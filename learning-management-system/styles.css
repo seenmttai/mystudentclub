@@ -1113,6 +1113,88 @@ body {
     transform: scale(1.05);
 }
 
+/* View Toggle Controls */
+.view-controls {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: var(--space-4);
+}
+
+.view-toggle {
+    display: flex;
+    background: var(--surface-elevated);
+    padding: 4px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    gap: 4px;
+}
+
+.view-btn {
+    background: none;
+    border: none;
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.view-btn:hover {
+    color: var(--primary-500);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.view-btn.active {
+    background: var(--primary-500);
+    color: white;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+}
+
+/* List View Layout */
+.courses-container.view-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.courses-container.view-list .course-card-enhanced-premium {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    min-height: 200px;
+}
+
+.courses-container.view-list .course-image-premium {
+    flex: 0 0 300px;
+    aspect-ratio: auto; /* Override default aspect ratio */
+}
+
+.courses-container.view-list .course-content-premium {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--space-6);
+}
+
+.courses-container.view-list .course-footer-premium {
+    margin-top: auto;
+}
+
+@media (max-width: 768px) {
+    .courses-container.view-list .course-card-enhanced-premium {
+        flex-direction: column;
+    }
+    
+    .courses-container.view-list .course-image-premium {
+        flex: 0 0 auto;
+        aspect-ratio: 16/9;
+    }
+}
+
 .course-card-enhanced-premium {
     background: var(--surface-elevated);
     border-radius: var(--radius-2xl);
@@ -1309,24 +1391,62 @@ body {
 
 .video-player-premium {
     position: relative;
-    padding-top: 56.25%;
     background: linear-gradient(135deg, var(--gray-900), var(--gray-800));
     overflow: hidden;
+    aspect-ratio: 16 / 9;
+    min-height: 200px;
+    width: 100%;
 }
 
-.custom-video-player {
+/* Plyr player styling */
+.video-player-premium .plyr {
+    width: 100%;
+    height: 100%;
+}
+
+.video-player-premium .plyr--video {
+    border-radius: 0;
+    height: 100%;
+}
+
+.video-player-premium .plyr__video-wrapper {
+    height: 100%;
+}
+
+/* Loading overlay positioning */
+.video-player-premium .loading-overlay {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 0;
-    outline: none;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    font-size: 2rem;
 }
 
-.custom-video-player::-webkit-media-controls-panel {
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.8), rgba(30, 64, 175, 0.3));
-    border-radius: var(--radius-lg);
+/* Mobile video container */
+@media (max-width: 768px) {
+    .video-player-premium {
+        min-height: 180px;
+        border-radius: 0;
+    }
+    
+    .video-container-premium {
+        border-radius: 0;
+        margin: 0 -15px;
+        width: calc(100% + 30px);
+    }
+}
+
+@media (max-width: 480px) {
+    .video-player-premium {
+        min-height: 150px;
+    }
 }
 
 .video-overlay-controls {
