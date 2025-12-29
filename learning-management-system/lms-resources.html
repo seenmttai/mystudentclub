@@ -18,8 +18,104 @@
     }
     </script>
     <style>
+        .logo-enhanced {
+            width: 180px;
+            height: auto;
+            object-fit: contain;
+            transition: transform 0.2s;
+        }
+
+        .logo-enhanced:hover {
+            transform: scale(1.05);
+        }
+
+        /* Footer logo - larger size */
+        .footer-brand .logo-enhanced {
+            width: 200px;
+        }
+
+        .profile-dropdown-container {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .profile-dropdown-menu {
+            position: absolute;
+            top: 110%;
+            right: 0;
+            background: white;
+            border: 1px solid var(--border-color, #e2e8f0);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            width: 220px;
+            display: none;
+            flex-direction: column;
+            z-index: 10000;
+            overflow: hidden;
+            animation: dropdownFadeIn 0.2s ease-out;
+        }
+
+        .profile-dropdown-container:hover .profile-dropdown-menu {
+            display: flex;
+        }
+
+        .profile-header {
+            padding: 1rem;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .profile-name {
+            font-weight: 700;
+            color: #1e293b;
+            display: block;
+        }
+
+        .profile-email {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            color: #475569;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 0.95rem;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background: #f1f5f9;
+            color: #2563eb;
+        }
+
+        .dropdown-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        @keyframes dropdownFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         main {
-            padding-top: 100px;
+            padding-top: 180px;
             padding-bottom: 4rem;
         }
 
@@ -345,7 +441,10 @@
         <header class="glass-header">
             <div class="header-container">
                 <div class="logo-container">
-                    <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo">
+                    <a href="https://mystudentclub.com/profile">
+                        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo"
+                            class="logo-enhanced">
+                    </a>
                 </div>
                 <nav>
                     <div class="hamburger-menu" @click="toggleMenu">
@@ -356,24 +455,37 @@
                     <ul class="nav-links" :class="{ 'active': menuActive }">
                         <li><a href="index.html" class="nav-item">
                                 <i class="fas fa-graduation-cap"></i>
-                                <span>Courses</span>
+                                <span>My Courses</span>
                             </a></li>
                         <li><a href="lms-resources.html" class="active nav-item">
                                 <i class="fas fa-book-open"></i>
                                 <span>Resources</span>
                             </a></li>
-                        <li><a href="https://www.mystudentclub.com/cv-reviewer" class="nav-item">
+                        <li><a href="https://mystudentclub.com/cv-reviewer/" class="nav-item">
                                 <i class="fas fa-file-alt"></i>
                                 <span>CV Review</span>
                             </a></li>
-                        <li class="profile-link">
-                            <a href="#" class="nav-item profile-nav" @click.prevent="handleProfileClick">
+
+                        <li class="profile-link profile-dropdown-container">
+                            <a href="#" class="nav-item profile-nav" @click.prevent>
                                 <div class="profile-avatar">
                                     <i class="fas fa-user"></i>
                                 </div>
-                                <span v-if="user">{{ user.email.split('@')[0] }}</span>
+                                <span v-if="user">{{ getUserName() }}</span>
                                 <span v-else>Login</span>
                             </a>
+                            <div class="profile-dropdown-menu" v-if="user">
+                                <div class="profile-header">
+                                    <span class="profile-name">{{ getUserName() }}</span>
+                                    <span class="profile-email">{{ user.email }}</span>
+                                </div>
+                                <a href="https://mystudentclub.com/profile" class="dropdown-item">
+                                    <i class="fas fa-user-circle"></i> My Profile
+                                </a>
+                                <button class="dropdown-item" @click="logout">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </button>
+                            </div>
                         </li>
                     </ul>
                 </nav>
@@ -479,7 +591,10 @@
         <footer class="footer-enhanced">
             <div class="footer-content">
                 <div class="footer-brand">
-                    <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo">
+                    <a href="https://mystudentclub.com">
+                        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo"
+                            class="logo-enhanced">
+                    </a>
                     <h4>My Student Club</h4>
                     <p>Empowering the next generation of Chartered Accountants with world-class education and resources.
                     </p>
@@ -491,6 +606,14 @@
                             <li><a href="index.html">All Courses</a></li>
                             <li><a href="lms-resources.html">Resources</a></li>
                             <li><a href="cv-reviewer.html">CV Review</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h5>Support</h5>
+                        <ul>
+                            <li><a href="mailto:support@mystudentclub.com">Contact Us</a></li>
+                            <li><a href="https://mystudentclub.com/privacy-policy">Privacy Policy</a></li>
+                            <li><a href="https://mystudentclub.com/terms">Terms of Service</a></li>
                         </ul>
                     </div>
                 </div>
@@ -553,6 +676,16 @@
                     } else {
                         window.location.href = 'https://www.mystudentclub.com/login.html';
                     }
+                },
+
+                getUserName() {
+                    if (!this.user) return 'Student';
+                    return this.user.user_metadata?.full_name || this.user.email.split('@')[0];
+                },
+
+                async logout() {
+                    await supabase.auth.signOut();
+                    window.location.href = 'https://www.mystudentclub.com/login';
                 },
 
                 handleProfileClick() { if (!this.user) { window.location.href = 'https://www.mystudentclub.com/login.html'; } },

@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | My Student Club LMS</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="importmap">
     {
@@ -22,14 +24,21 @@
             object-fit: contain;
             transition: transform 0.2s;
         }
+
         .logo-enhanced:hover {
             transform: scale(1.05);
+        }
+
+        /* Footer logo - larger size */
+        .footer-brand .logo-enhanced {
+            width: 200px;
         }
 
         .profile-dropdown-container {
             position: relative;
             cursor: pointer;
         }
+
         .profile-dropdown-menu {
             position: absolute;
             top: 110%;
@@ -37,7 +46,7 @@
             background: white;
             border: 1px solid var(--border-color, #e2e8f0);
             border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
             width: 220px;
             display: none;
             flex-direction: column;
@@ -45,23 +54,28 @@
             overflow: hidden;
             animation: fadeIn 0.2s ease-out;
         }
+
         .profile-dropdown-container:hover .profile-dropdown-menu {
             display: flex;
         }
+
         .profile-header {
             padding: 1rem;
             background: #f8fafc;
             border-bottom: 1px solid #e2e8f0;
         }
+
         .profile-name {
             font-weight: 700;
             color: #1e293b;
             display: block;
         }
+
         .profile-email {
             font-size: 0.8rem;
             color: #64748b;
         }
+
         .dropdown-item {
             padding: 0.75rem 1rem;
             color: #475569;
@@ -77,17 +91,27 @@
             font-size: 0.95rem;
             cursor: pointer;
         }
+
         .dropdown-item:hover {
             background: #f1f5f9;
             color: #2563eb;
         }
+
         .dropdown-item i {
             width: 20px;
             text-align: center;
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .loading-container {
@@ -111,7 +135,7 @@
             align-items: center;
             z-index: 2000;
         }
-        
+
         .modal-content {
             background: white;
             padding: 2rem;
@@ -156,13 +180,15 @@
         }
     </style>
 </head>
+
 <body>
     <div id="app">
         <header class="glass-header">
             <div class="header-container">
                 <div class="logo-container">
                     <a href="https://mystudentclub.com/profile">
-                        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo-enhanced">
+                        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo"
+                            class="logo-enhanced">
                     </a>
                 </div>
                 <nav>
@@ -173,18 +199,18 @@
                     </div>
                     <ul class="nav-links" :class="{ 'active': menuActive }">
                         <li><a href="index.html" class="active nav-item">
-                            <i class="fas fa-graduation-cap"></i>
-                            <span>My Courses</span>
-                        </a></li>
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>My Courses</span>
+                            </a></li>
                         <li><a href="lms-resources.html" class="nav-item">
-                            <i class="fas fa-book-open"></i>
-                            <span>Resources</span>
-                        </a></li>
+                                <i class="fas fa-book-open"></i>
+                                <span>Resources</span>
+                            </a></li>
                         <li><a href="https://mystudentclub.com/cv-reviewer/" class="nav-item">
-                            <i class="fas fa-file-alt"></i>
-                            <span>CV Review</span>
-                        </a></li>
-                        
+                                <i class="fas fa-file-alt"></i>
+                                <span>CV Review</span>
+                            </a></li>
+
                         <li class="profile-link profile-dropdown-container">
                             <a href="#" class="nav-item profile-nav" @click.prevent>
                                 <div class="profile-avatar">
@@ -226,8 +252,9 @@
                         <h1 class="hero-title">
                             Welcome Back, <span class="gradient-text">{{ getUserName() }}</span>
                         </h1>
-                        <p class="hero-subtitle">Your journey to CA excellence continues here. Track your progress and master your skills.</p>
-                        
+                        <p class="hero-subtitle">Your journey to CA excellence continues here. Track your progress and
+                            master your skills.</p>
+
                         <div class="hero-stats">
                             <div class="stat-item">
                                 <div class="stat-number" v-if="!loading">{{ enrolledCourses.length }}</div>
@@ -246,16 +273,12 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="search-enhanced">
                         <div class="search-wrapper">
                             <i class="fas fa-search search-icon"></i>
-                            <input 
-                                type="text" 
-                                placeholder="Search your enrolled courses..." 
-                                v-model="searchQuery"
-                                class="search-input"
-                            >
+                            <input type="text" placeholder="Search your enrolled courses..." v-model="searchQuery"
+                                class="search-input">
                         </div>
                     </div>
                 </div>
@@ -271,7 +294,8 @@
                     <i class="fas fa-folder-open fa-4x" style="color: #cbd5e1; margin-bottom: 1rem;"></i>
                     <h2>No Enrolled Courses Found</h2>
                     <p>It looks like you haven't enrolled in any courses yet.</p>
-                    <a href="https://www.mystudentclub.com/#courses" class="enroll-btn" style="display: inline-flex; margin-top: 1rem;">
+                    <a href="https://www.mystudentclub.com/#courses" class="enroll-btn"
+                        style="display: inline-flex; margin-top: 1rem;">
                         Browse Courses
                     </a>
                 </div>
@@ -282,13 +306,15 @@
                     <div class="section-header-enhanced">
                         <h2>My Learning Path</h2>
                         <p>Pick up where you left off</p>
-                        
+
                         <div class="view-controls">
                             <div class="view-toggle">
-                                <button class="view-btn" :class="{ 'active': viewMode === 'grid' }" @click="viewMode = 'grid'">
+                                <button class="view-btn" :class="{ 'active': viewMode === 'grid' }"
+                                    @click="viewMode = 'grid'">
                                     <i class="fas fa-th-large"></i>
                                 </button>
-                                <button class="view-btn" :class="{ 'active': viewMode === 'list' }" @click="viewMode = 'list'">
+                                <button class="view-btn" :class="{ 'active': viewMode === 'list' }"
+                                    @click="viewMode = 'list'">
                                     <i class="fas fa-list"></i>
                                 </button>
                             </div>
@@ -296,7 +322,8 @@
                     </div>
 
                     <div class="courses-container" :class="'view-' + viewMode">
-                        <div v-for="course in filteredEnrolledCourses" :key="course.id" class="course-card-enhanced-premium" @click="goToCourse(course.slug)">
+                        <div v-for="course in filteredEnrolledCourses" :key="course.id"
+                            class="course-card-enhanced-premium" @click="goToCourse(course.slug)">
                             <div class="course-image-premium">
                                 <img :src="course.thumbnail" :alt="course.title">
                                 <div class="course-overlay-premium">
@@ -313,20 +340,22 @@
                                     <h3>{{ course.title }}</h3>
                                 </div>
                                 <p class="course-description">{{ course.description }}</p>
-                                
+
                                 <div class="course-progress-container-premium">
                                     <div class="progress-info-row">
                                         <span class="progress-label">Progress</span>
                                         <span class="progress-percentage">{{ course.calculatedProgress }}%</span>
                                     </div>
                                     <div class="progress-bar-premium">
-                                        <div class="progress-fill-animated" :style="{ width: course.calculatedProgress + '%' }"></div>
+                                        <div class="progress-fill-animated"
+                                            :style="{ width: course.calculatedProgress + '%' }"></div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="course-footer-premium">
                                     <div class="instructor">
-                                        <img src="https://mystudentclub.com/assets/mentor_transparent.png" alt="Padam Bhansali">
+                                        <img src="https://mystudentclub.com/assets/mentor_transparent.png"
+                                            alt="Padam Bhansali">
                                         <span>Padam Bhansali</span>
                                     </div>
                                 </div>
@@ -366,7 +395,8 @@
         <div v-if="showReportModal" class="modal-overlay" @click.self="showReportModal = false">
             <div class="modal-content">
                 <h2>Report a Problem</h2>
-                <p style="color: #64748b; font-size: 0.9rem;">Describe the issue you are facing. We will look into it shortly.</p>
+                <p style="color: #64748b; font-size: 0.9rem;">Describe the issue you are facing. We will look into it
+                    shortly.</p>
                 <div class="report-form">
                     <textarea v-model="reportText" placeholder="E.g., The video on Day 2 isn't loading..."></textarea>
                 </div>
@@ -381,13 +411,20 @@
             <div class="footer-content">
                 <div class="footer-main">
                     <div class="footer-brand">
-                        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo-enhanced">
+                        <a href="https://mystudentclub.com">
+                            <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo"
+                                class="logo-enhanced">
+                        </a>
                         <h4>My Student Club</h4>
-                        <p>Empowering the next generation of Chartered Accountants with world-class education and resources.</p>
+                        <p>Empowering the next generation of Chartered Accountants with world-class education and
+                            resources.</p>
                         <div class="social-links">
-                            <a href="https://www.linkedin.com/company/mystudentclub" target="_blank"><i class="fab fa-linkedin"></i></a>
-                            <a href="https://www.instagram.com/mystudentclub/" target="_blank"><i class="fab fa-instagram"></i></a>
-                            <a href="https://www.youtube.com/@MyStudentClub" target="_blank"><i class="fab fa-youtube"></i></a>
+                            <a href="https://www.linkedin.com/company/mystudentclub" target="_blank"><i
+                                    class="fab fa-linkedin"></i></a>
+                            <a href="https://www.instagram.com/mystudentclub/" target="_blank"><i
+                                    class="fab fa-instagram"></i></a>
+                            <a href="https://www.youtube.com/@MyStudentClub" target="_blank"><i
+                                    class="fab fa-youtube"></i></a>
                         </div>
                     </div>
                     <div class="footer-links">
@@ -409,9 +446,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="footer-bottom">
-                    <p>© 2025 My Student Club LMS. All rights reserved.</p>
-                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 My Student Club LMS. All rights reserved.</p>
             </div>
         </footer>
     </div>
@@ -426,7 +463,7 @@
         const MAX_ERRORS = 6;
         let errorCount = 0;
 
-        window.onerror = function(message, source, lineno, colno, error) {
+        window.onerror = function (message, source, lineno, colno, error) {
             if (errorCount < MAX_ERRORS) {
                 logFrontendError(message, source, lineno, colno, error ? error.stack : null);
                 errorCount++;
@@ -437,7 +474,7 @@
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 const userId = session?.user?.id || null;
-                
+
                 await supabase.from('frontend_errors').insert({
                     user_id: userId,
                     error_message: message,
@@ -489,7 +526,7 @@
             computed: {
                 filteredEnrolledCourses() {
                     if (!this.searchQuery) return this.enrolledCourses;
-                    return this.enrolledCourses.filter(course => 
+                    return this.enrolledCourses.filter(course =>
                         course.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
                         course.description.toLowerCase().includes(this.searchQuery.toLowerCase())
                     );
@@ -499,7 +536,7 @@
                 toggleMenu() {
                     this.menuActive = !this.menuActive;
                 },
-                
+
                 async checkAuth() {
                     const { data: { session }, error } = await supabase.auth.getSession();
                     if (session && session.user) {
@@ -559,7 +596,7 @@
                         }
 
                         const enrolledSlugs = enrollments.map(e => e.course);
-                        
+
                         this.enrolledCourses = this.masterCatalog
                             .filter(course => enrolledSlugs.includes(course.slug))
                             .map(course => {
@@ -572,7 +609,7 @@
                             });
 
                         this.updateGlobalAnalytics();
-                    
+
                     } catch (err) {
                         console.error("Error loading dashboard:", err);
                         logFrontendError(err.message, 'index.html', 0, 0, err.stack);
@@ -584,7 +621,7 @@
                 calculateCourseProgress(slug, totalEstimate) {
                     const storageKey = `courseVideos_${slug}`;
                     const storedData = localStorage.getItem(storageKey);
-                    
+
                     let completed = 0;
                     if (storedData) {
                         try {
@@ -594,7 +631,7 @@
                     }
 
                     const percentage = totalEstimate > 0 ? Math.round((completed / totalEstimate) * 100) : 0;
-                    
+
                     return {
                         completed: completed,
                         percentage: Math.min(percentage, 100)
@@ -611,10 +648,10 @@
                     });
 
                     this.analytics.totalVideosCompleted = totalVideos;
-                    this.analytics.completionRate = this.enrolledCourses.length > 0 
-                        ? Math.round(sumProgress / this.enrolledCourses.length) 
+                    this.analytics.completionRate = this.enrolledCourses.length > 0
+                        ? Math.round(sumProgress / this.enrolledCourses.length)
                         : 0;
-                    
+
                     const streak = localStorage.getItem('learningStreak');
                     this.analytics.streak = streak ? parseInt(streak) : 0;
                 },
@@ -637,7 +674,7 @@
             },
             mounted() {
                 this.checkAuth();
-                
+
                 supabase.auth.onAuthStateChange((event, session) => {
                     if (event === 'SIGNED_OUT') {
                         window.location.href = 'https://www.mystudentclub.com/login';
@@ -647,4 +684,5 @@
         }).mount('#app');
     </script>
 </body>
+
 </html>
