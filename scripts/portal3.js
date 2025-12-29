@@ -102,7 +102,7 @@ function setActivePortalTab() {
     }
 
     document.querySelectorAll(activeSelector).forEach(el => el.classList.add('active'));
-    
+
     // Update cache when table changes (categories are table-specific)
     if (allLocations.length > 0 || Object.keys(allCategories).length > 0) {
         updateFilterCache();
@@ -113,7 +113,16 @@ function renderJobCard(job) {
     const jobCard = document.createElement('article');
     jobCard.className = 'job-card';
     jobCard.dataset.jobId = job.id;
-    jobCard.addEventListener('click', () => showModal(job));
+    jobCard.addEventListener('click', (e) => {
+        // Prevent redirect if clicking apply button directly
+        if (e.target.closest('.apply-now-card-btn')) return;
+
+        if (currentTable === 'Articleship Jobs') {
+            window.location.href = `/jobs.html?id=${job.id}&type=articleship`;
+        } else {
+            showModal(job);
+        }
+    });
 
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
@@ -218,11 +227,11 @@ function closeModal() {
 
 // Update cache when filter options change
 function updateFilterCache() {
-    cachedSortedLocations = allLocations.length > 0 
-        ? [...allLocations].sort((a, b) => b.length - a.length) 
+    cachedSortedLocations = allLocations.length > 0
+        ? [...allLocations].sort((a, b) => b.length - a.length)
         : [];
 
-    
+
     const currentCategories = allCategories[currentTable] || [];
     cachedSortedCategories = currentCategories.length > 0
         ? [...currentCategories].sort((a, b) => b.length - a.length)
@@ -275,12 +284,12 @@ async function fetchJobs() {
                 // wildcard matching for spaces to find "PhonePe" from "Phone Pe"
                 const flexibleTerm = state.keywords[i].trim().replace(/\s+/g, '%');
                 keywordOrs.push(
-                  `Company.ilike."%${flexibleTerm}%",Description.ilike."%${flexibleTerm}%",Category.ilike."%${flexibleTerm}%",Location.ilike."%${flexibleTerm}%"`
-);
+                    `Company.ilike."%${flexibleTerm}%",Description.ilike."%${flexibleTerm}%",Category.ilike."%${flexibleTerm}%",Location.ilike."%${flexibleTerm}%"`
+                );
             }
             query = query.or(keywordOrs.join(','));
         }
-        
+
         if (state.locations.length > 0) {
             const locationOr = [];
             for (let i = 0; i < state.locations.length; i++) {
@@ -288,7 +297,7 @@ async function fetchJobs() {
             }
             query = query.or(locationOr.join(','));
         }
-        
+
         if (state.categories.length > 0) {
             const categoryOr = [];
             for (let i = 0; i < state.categories.length; i++) {
@@ -296,7 +305,7 @@ async function fetchJobs() {
             }
             query = query.or(categoryOr.join(','));
         }
-        
+
         if (state.salary) {
             if (state.salary.endsWith('+')) {
                 const minValue = parseInt(state.salary);
@@ -306,11 +315,11 @@ async function fetchJobs() {
                 if (!isNaN(min) && !isNaN(max)) query = query.gte('Salary', min).lte('Salary', max);
             }
         }
-        
+
         if (state.experience && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
             query = query.eq('Experience', state.experience);
         }
-        
+
         if (state.applicationStatus === 'not_applied' && currentSession && appliedJobIds.size > 0) {
             // Optimize: use array directly instead of spread operator for large sets
             const appliedIds = Array.from(appliedJobIds);
@@ -338,7 +347,7 @@ async function fetchJobs() {
             if (dom.jobsContainer) {
                 dom.jobsContainer.appendChild(fragment);
             }
-            
+
             page++;
             hasMoreData = data.length === limit;
             if (hasMoreData && dom.loadMoreButton) {
@@ -569,7 +578,7 @@ function processAndApplySearch(inputElement) {
 
     // Pre-compile regex escape function (moved outside loop)
     const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    
+
     // Use Sets for O(1) duplicate checking instead of array.some()
     const existingLocations = new Set(state.locations.map(l => l.toLowerCase()));
     const existingCategories = new Set(state.categories.map(c => c.toLowerCase()));
@@ -580,14 +589,14 @@ function processAndApplySearch(inputElement) {
         for (let i = 0; i < list.length; i++) {
             const item = list[i];
             const itemLower = item.toLowerCase();
-            
+
             // Skip if already exists
             if (existingSet.has(itemLower)) continue;
-            
+
             // Match whole words/phrases bounded by start/end or delimiters
             const escaped = escapeRegExp(item);
             const regex = new RegExp(`(^|[\\s,])${escaped}(?=$|[\\s,])`, 'gi');
-            
+
             if (regex.test(value)) {
                 targetArray.push(item);
                 existingSet.add(itemLower);
@@ -605,7 +614,7 @@ function processAndApplySearch(inputElement) {
     const remainingValue = value.trim();
     if (remainingValue) {
         const terms = remainingValue.split(',').map(t => t.trim()).filter(Boolean);
-        
+
         for (let i = 0; i < terms.length; i++) {
             // Normalize internal spaces (e.g. "Phone   Pe" -> "Phone Pe")
             const cleanTerm = terms[i].replace(/\s+/g, ' ');
@@ -886,51 +895,51 @@ function formatTopicForDisplay(topic) {
 
 function updateSpecificTopicAreaVisibility() { if (dom.specificSubscriptionForm) dom.specificSubscriptionForm.style.display = dom.topicAllCheckbox.checked ? 'none' : 'block'; }
 async function manageTopicSubscription(topic, action) {
-  // Actively try to get token if missing
-  if (!currentFcmToken) {
-    // Prioritize App token if available
-    if (window.flutter_app.fcmToken) {
-      currentFcmToken = window.flutter_app.fcmToken;
+    // Actively try to get token if missing
+    if (!currentFcmToken) {
+        // Prioritize App token if available
+        if (window.flutter_app.fcmToken) {
+            currentFcmToken = window.flutter_app.fcmToken;
+        }
+        else if (window.flutter_app.isReady) {
+        } else {
+            if (Notification.permission === 'granted') {
+                showNotifStatus('Connecting to notification service...', 'info');
+                await requestTokenAndSync();
+            } else {
+                showNotifStatus('Please enable notifications first.', 'error');
+                return false;
+            }
+        }
     }
-    else if (window.flutter_app.isReady) {
-    } else {
-      if (Notification.permission === 'granted') {
-        showNotifStatus('Connecting to notification service...', 'info');
-        await requestTokenAndSync();
-      } else {
-        showNotifStatus('Please enable notifications first.', 'error');
+
+    currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
+
+    if (!currentFcmToken) {
+        showNotifStatus('Notification service unavailable. Please refresh or check permissions.', 'error');
         return false;
-      }
     }
-  }
-
-  currentFcmToken = window.flutter_app.fcmToken || currentFcmToken;
-
-  if (!currentFcmToken) {
-     showNotifStatus('Notification service unavailable. Please refresh or check permissions.','error');
-    return false;
-  }
-  try {
-    const response = await fetch(
-      'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: currentFcmToken, topic, action }),
-      }
-    );
-    if (!response.ok) throw new Error(await response.text());
-    let topics = getSubscribedTopics();
-    if (action === 'subscribe' && !topics.includes(topic)) topics.push(topic);
-    else if (action === 'unsubscribe')
-      topics = topics.filter((t) => t !== topic);
-    saveSubscribedTopics(topics);
-    renderSubscribedTopics();
-    return true;
-  } catch (err) {
-    showNotifStatus(`Failed to ${action}`, 'error');
-    return false;
-  }
+    try {
+        const response = await fetch(
+            'https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription',
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: currentFcmToken, topic, action }),
+            }
+        );
+        if (!response.ok) throw new Error(await response.text());
+        let topics = getSubscribedTopics();
+        if (action === 'subscribe' && !topics.includes(topic)) topics.push(topic);
+        else if (action === 'unsubscribe')
+            topics = topics.filter((t) => t !== topic);
+        saveSubscribedTopics(topics);
+        renderSubscribedTopics();
+        return true;
+    } catch (err) {
+        showNotifStatus(`Failed to ${action}`, 'error');
+        return false;
+    }
 }
 async function subscribeToTopic(topic) { return manageTopicSubscription(topic, 'subscribe'); }
 async function unsubscribeFromTopic(topic) { return manageTopicSubscription(topic, 'unsubscribe'); }
@@ -1130,7 +1139,7 @@ function setupEventListeners() {
                 }
             } catch (err) {
                 console.error('Subscription error:', err);
-                e.target.checked = !isChecked; 
+                e.target.checked = !isChecked;
             } finally {
                 e.target.disabled = false; // Re-enable
             }
@@ -1177,7 +1186,7 @@ function setupEventListeners() {
 // Optimal Custom Dropdown Implementation
 function initCustomSelects() {
     const selectorIds = ['sortBySelect', 'salaryFilterDesktop', 'sortBySelectMobile', 'salaryFilterMobile', 'locationSelect', 'jobTypeSelect'];
-    
+
     // Close dropdowns on outside click
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.custom-select-wrapper')) {
@@ -1202,11 +1211,11 @@ function initCustomSelects() {
         // Create Custom UI
         const wrapper = document.createElement('div');
         wrapper.className = 'custom-select-wrapper';
-        
+
         const trigger = document.createElement('div');
         trigger.className = 'custom-select-trigger';
         trigger.innerHTML = `<span>${select.options[select.selectedIndex]?.text || 'Select'}</span><div class="custom-arrow"></div>`;
-        
+
         const optionsList = document.createElement('div');
         optionsList.className = 'custom-options';
 
@@ -1224,11 +1233,11 @@ function initCustomSelects() {
                     trigger.querySelector('span').textContent = opt.text;
                     wrapper.classList.remove('open');
                     optionsList.style.display = 'none'; // Instant hide
-                    
+
                     // Visual update
                     optionsList.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
                     div.classList.add('selected');
-                    
+
                     // Trigger native event
                     select.dispatchEvent(new Event('change'));
                 });
@@ -1251,17 +1260,17 @@ function initCustomSelects() {
             const isOpen = wrapper.classList.contains('open');
             // Close others
             document.querySelectorAll('.custom-select-wrapper.open').forEach(w => {
-                 if(w !== wrapper) {
+                if (w !== wrapper) {
                     w.classList.remove('open');
                     w.querySelector('.custom-options').style.display = 'none';
-                 }
+                }
             });
 
             if (!isOpen) {
                 wrapper.classList.add('open');
                 optionsList.style.display = 'block';
                 // Trigger reflow
-                optionsList.offsetHeight; 
+                optionsList.offsetHeight;
                 optionsList.style.opacity = '1';
             } else {
                 wrapper.classList.remove('open');
@@ -1273,21 +1282,21 @@ function initCustomSelects() {
         // REACTIVITY: Watch for Native Changes (JS updates, Resets)
         // 1. MutationObserver for option changes (dynamic loading)
         const observer = new MutationObserver(() => {
-             buildOptions();
-             const sel = select.options[select.selectedIndex];
-             if(sel) trigger.querySelector('span').textContent = sel.text;
+            buildOptions();
+            const sel = select.options[select.selectedIndex];
+            if (sel) trigger.querySelector('span').textContent = sel.text;
         });
         observer.observe(select, { childList: true, subtree: true });
 
         // 2. Intercept programmatic .value changes (e.g. Reset Button)
         const descriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
         Object.defineProperty(select, 'value', {
-            get: function() { return descriptor.get.call(this); },
-            set: function(val) {
+            get: function () { return descriptor.get.call(this); },
+            set: function (val) {
                 descriptor.set.call(this, val);
                 // Update UI
                 const sel = this.options[this.selectedIndex];
-                if(sel) {
+                if (sel) {
                     trigger.querySelector('span').textContent = sel.text;
                     optionsList.querySelectorAll('.custom-option').forEach(o => {
                         o.classList.toggle('selected', o.dataset.value === val);
@@ -1298,13 +1307,13 @@ function initCustomSelects() {
 
         // 3. Listen for internal value changes (standard change event)
         select.addEventListener('change', () => {
-             const sel = select.options[select.selectedIndex];
-             if(sel) {
-                 trigger.querySelector('span').textContent = sel.text;
-                 optionsList.querySelectorAll('.custom-option').forEach(o => {
-                     o.classList.toggle('selected', o.dataset.value === select.value);
-                 });
-             }
+            const sel = select.options[select.selectedIndex];
+            if (sel) {
+                trigger.querySelector('span').textContent = sel.text;
+                optionsList.querySelectorAll('.custom-option').forEach(o => {
+                    o.classList.toggle('selected', o.dataset.value === select.value);
+                });
+            }
         });
     });
 }
