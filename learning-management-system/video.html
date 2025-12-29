@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,7 +20,7 @@
             height: calc(100vh - 80px);
             display: flex;
         }
-        
+
         .video-sidebar {
             width: 350px;
             height: 100%;
@@ -28,20 +29,20 @@
             border-right: 1px solid var(--border-color);
             transition: var(--transition);
         }
-        
+
         .video-main {
             flex: 1;
             display: flex;
             flex-direction: column;
         }
-        
+
         .video-player-large {
             flex: 1;
             background-color: #000;
             position: relative;
             min-height: 300px;
         }
-        
+
         .video-player-large video {
             position: absolute;
             top: 0;
@@ -49,12 +50,12 @@
             width: 100%;
             height: 100%;
         }
-        
+
         .course-selector {
             padding: 1rem;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         .course-selector select {
             width: 100%;
             padding: 0.8rem;
@@ -63,7 +64,7 @@
             font-size: 1rem;
             outline: none;
         }
-        
+
         .playlist-header {
             padding: 1rem;
             border-bottom: 1px solid var(--border-color);
@@ -73,7 +74,7 @@
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .playlist-toggle {
             display: none;
             background: none;
@@ -81,18 +82,18 @@
             font-size: 1.2rem;
             cursor: pointer;
         }
-        
+
         .video-info-panel {
             padding: 1.5rem;
             background-color: var(--card-bg);
             border-top: 1px solid var(--border-color);
         }
-        
+
         .video-info-panel h2 {
             margin-bottom: 0.5rem;
             color: var(--primary-color);
         }
-        
+
         .video-info-panel .meta {
             display: flex;
             gap: 1rem;
@@ -101,29 +102,29 @@
             opacity: 0.8;
             font-size: 0.9rem;
         }
-        
+
         .video-description {
             line-height: 1.6;
         }
-        
+
         @media (max-width: 992px) {
             .video-fullpage {
                 flex-direction: column;
                 height: auto;
             }
-            
+
             .video-sidebar {
                 width: 100%;
                 height: 300px;
                 border-right: none;
                 border-bottom: 1px solid var(--border-color);
             }
-            
+
             .video-player-large {
                 height: 50vh;
             }
         }
-        
+
         @media (max-width: 768px) {
             .video-sidebar {
                 position: fixed;
@@ -135,11 +136,11 @@
                 box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
                 transition: bottom 0.3s ease;
             }
-            
+
             .video-sidebar.active {
                 bottom: 0;
             }
-            
+
             .playlist-toggle {
                 display: block;
                 position: fixed;
@@ -156,7 +157,7 @@
                 box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
                 z-index: 999;
             }
-            
+
             .playlist-header {
                 position: sticky;
                 top: 0;
@@ -166,6 +167,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="app">
         <header>
@@ -193,7 +195,8 @@
             <aside class="video-sidebar" :class="{ 'active': sidebarActive }">
                 <div class="course-selector">
                     <select v-model="selectedCourseId" @change="changeCourse">
-                        <option v-for="course in courses" :key="course.id" :value="course.id">{{ course.title }}</option>
+                        <option v-for="course in courses" :key="course.id" :value="course.id">{{ course.title }}
+                        </option>
                     </select>
                 </div>
                 <div class="playlist-header">
@@ -212,8 +215,7 @@
                             </div>
                         </div>
                         <div class="module-content" :class="{ 'expanded': module.expanded }">
-                            <div v-for="(video, videoIndex) in module.videos" :key="videoIndex" 
-                                class="video-item" 
+                            <div v-for="(video, videoIndex) in module.videos" :key="videoIndex" class="video-item"
                                 :class="{ 'active': currentVideoId === video.id, 'completed': video.completed }"
                                 @click="selectVideo(video.id)">
                                 <div class="video-status">
@@ -238,7 +240,7 @@
                         Your browser does not support the video tag.
                     </video>
                 </div>
-                
+
                 <div class="video-info-panel">
                     <h2>{{ currentVideo ? currentVideo.title : 'Select a video' }}</h2>
                     <div class="meta" v-if="currentVideo">
@@ -249,7 +251,7 @@
                         {{ currentVideo.description }}
                     </div>
                 </div>
-                
+
                 <button class="playlist-toggle" @click="toggleSidebar">
                     <i :class="['fas', sidebarActive ? 'fa-times' : 'fa-list']"></i>
                 </button>
@@ -259,7 +261,7 @@
 
     <script type="module">
         import { createApp } from 'vue';
-        
+
         createApp({
             data() {
                 return {
@@ -307,7 +309,7 @@
             computed: {
                 currentVideo() {
                     if (!this.currentVideoId) return null;
-                    
+
                     for (const section of this.courseSections) {
                         for (const video of section.videos) {
                             if (video.id === this.currentVideoId) {
@@ -315,12 +317,12 @@
                             }
                         }
                     }
-                    
+
                     return null;
                 },
                 videoUrl() {
                     if (!this.currentVideo) return '';
-                    return `https://advertisement.bhansalimanan55.workers.dev/stream/Screen%20Recording%202025-02-04%20233839.mp4?secret=YOUR_SECRET_VALUE`;
+                    return `https://advertisement.bhansalimanan55.workers.dev/stream/Screen%20Recording%202025-02-04%20233839.mp4`;
                 }
             },
             methods: {
@@ -335,20 +337,20 @@
                 },
                 selectVideo(videoId) {
                     this.currentVideoId = videoId;
-                    
+
                     const url = new URL(window.location);
                     url.searchParams.set('video', videoId);
                     window.history.pushState({}, '', url);
-                    
+
                     if (window.innerWidth < 768) {
                         this.sidebarActive = false;
                     }
-                    
+
                     localStorage.setItem(`lastVideoId_${this.selectedCourseId}`, videoId);
                 },
                 changeCourse() {
                     this.generateCourseSections();
-                    
+
                     const url = new URL(window.location);
                     url.searchParams.set('course', this.selectedCourseId);
                     if (this.currentVideoId) {
@@ -363,7 +365,7 @@
                         for (const video of section.videos) {
                             if (video.id === this.currentVideoId) {
                                 video.completed = true;
-                                
+
                                 this.saveVideoProgress();
                                 break;
                             }
@@ -374,7 +376,7 @@
                     const completedVideos = {};
                     let totalVideos = 0;
                     let completedCount = 0;
-                    
+
                     for (const section of this.courseSections) {
                         for (const video of section.videos) {
                             completedVideos[video.id] = video.completed;
@@ -382,26 +384,26 @@
                             if (video.completed) completedCount++;
                         }
                     }
-                    
+
                     localStorage.setItem(`courseVideos_${this.selectedCourseId}`, JSON.stringify(completedVideos));
-                    
+
                     const progressPercentage = Math.round((completedCount / totalVideos) * 100);
-                    
+
                     let progressData = {};
                     const savedProgress = localStorage.getItem('courseProgress');
                     if (savedProgress) {
                         progressData = JSON.parse(savedProgress);
                     }
-                    
+
                     progressData[this.selectedCourseId] = progressPercentage;
-                    
+
                     localStorage.setItem('courseProgress', JSON.stringify(progressData));
                 },
                 loadVideoProgress() {
                     const savedVideos = localStorage.getItem(`courseVideos_${this.selectedCourseId}`);
                     if (savedVideos) {
                         const completedVideos = JSON.parse(savedVideos);
-                        
+
                         for (const section of this.courseSections) {
                             for (const video of section.videos) {
                                 if (completedVideos[video.id] !== undefined) {
@@ -413,7 +415,7 @@
                 },
                 generateCourseSections() {
                     const sectionsData = [];
-                    
+
                     if (this.selectedCourseId === 'industrial-training-mastery') {
                         sectionsData.push(
                             {
@@ -508,11 +510,11 @@
                             }
                         );
                     }
-                    
+
                     this.courseSections = sectionsData;
-                    
+
                     this.loadVideoProgress();
-                    
+
                     if (this.videoId) {
                         this.currentVideoId = parseInt(this.videoId);
                     } else {
@@ -528,25 +530,25 @@
                     const urlParams = new URLSearchParams(window.location.search);
                     const courseParam = urlParams.get('course');
                     const videoParam = urlParams.get('video');
-                    
+
                     if (courseParam) {
                         this.selectedCourseId = courseParam;
                     }
-                    
+
                     if (videoParam) {
                         this.videoId = parseInt(videoParam);
                     }
-                    
+
                     this.generateCourseSections();
                 }
             },
             mounted() {
                 this.initFromUrl();
-                
+
                 window.addEventListener('popstate', () => {
                     this.initFromUrl();
                 });
-                
+
                 window.addEventListener('resize', () => {
                     if (window.innerWidth >= 768) {
                         this.sidebarActive = true;
@@ -558,4 +560,5 @@
         }).mount('#app');
     </script>
 </body>
+
 </html>
