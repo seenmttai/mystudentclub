@@ -447,6 +447,11 @@
             border-radius: 8px;
         }
 
+        /* Mobile Apply Button - Hidden by default on desktop */
+        .mobile-apply-btn {
+            display: none;
+        }
+
         /* Responsive Design */
         @media (max-width: 968px) {
             .job-body {
@@ -515,6 +520,28 @@
                 padding: 0.65rem 0.75rem;
                 font-size: 0.8rem;
             }
+
+            .mobile-apply-btn {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                margin-top: 1rem;
+            }
+
+            .mobile-apply-btn .btn-large {
+                width: 100%;
+                justify-content: center;
+                background: white !important;
+                color: var(--primary-color) !important;
+                border: 2px solid white !important;
+                font-weight: 600;
+            }
+
+            .mobile-apply-btn .btn-ai-apply {
+                background: linear-gradient(135deg, #7c3aed 0%, #2563eb 100%) !important;
+                color: white !important;
+                border: 2px solid rgba(255,255,255,0.3) !important;
+            }
         }
     </style>
 </head>
@@ -526,9 +553,9 @@
             <a href="/">
                 <img src="/assets/logo.png" alt="My Student Club" class="logo">
             </a>
-            <a href="/" class="back-link">
+            <a href="/" class="back-link" id="backLink">
                 <i class="fas fa-arrow-left"></i>
-                <span>Back to Home</span>
+                <span id="backLinkText">Back to Jobs</span>
             </a>
         </div>
     </header>
