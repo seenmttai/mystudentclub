@@ -7,11 +7,10 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 const JOB_TITLE_MAP = {
     "Industrial Training Job Portal": "Industrial Trainee",
     "Fresher Jobs": "CA Fresher",
-    "Semi Qualified Jobs": "Semi Qualified Chartered Accountant", // User specified example
+    "Semi Qualified Jobs": "Semi Qualified Chartered Accountant",
     "Articleship Jobs": "Articleship Trainee"
 };
 
-// Also map for simple display/logic if needed
 const TABLE_MAP = {
     "industrial": "Industrial Training Job Portal",
     "fresher": "Fresher Jobs",
@@ -22,6 +21,7 @@ const TABLE_MAP = {
 async function init() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
+    
     // Allow type param (industrial, fresher, semi, articleship) or table name directly
     let tableParam = params.get('type') || params.get('table');
 
@@ -39,18 +39,12 @@ async function init() {
     try {
         await fetchJobDetails(id, tableName);
     } catch (error) {
-        // If failed and no explicit table was provided, maybe try others? 
-        // For now, just show error.
         showError('Job not found or error loading details.');
         console.error(error);
     }
 }
 
 async function fetchJobDetails(id, tableName) {
-    // Select * first to see if connect_link exists, or explicitly select key fields + connect_link
-    // I'll try selecting specific fields plus connect_link. If connect_link column doesn't exist, Supabase might error.
-    // However, I can't know for sure if the column exists without schema. 
-    // Safest is to select *
 
     const { data, error } = await supabaseClient
         .from(tableName)
@@ -68,6 +62,9 @@ function renderJob(job, tableName) {
     const container = document.getElementById('jobDetailsContainer');
     const loadingState = document.getElementById('loadingState');
 
+    // Store tableName for use in apply handlers
+    currentTableName = tableName;
+
     const companyName = (job.Company || 'Company Name').trim();
     const companyInitial = companyName.charAt(0).toUpperCase();
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'Recently';
@@ -75,76 +72,97 @@ function renderJob(job, tableName) {
     const location = job.Location || 'Remote / Unspecified';
     const category = job.Category || 'General';
     const description = job.Description || 'No description provided.';
-    const applyLink = job['Application ID'] || '#';
+    
+    // Get application info (email vs link)
+    const applyInfo = getApplicationLink(job['Application ID']);
 
-    // Connect to Peers Logic
     let connectLink = checkConnectLink(job);
     if (!connectLink) {
         const searchKeywordSuffix = JOB_TITLE_MAP[tableName] || "Chartered Accountant";
-        // User example: "Deutch Bank Semi Qualified Chartered Accountant"
         const query = `${companyName} ${searchKeywordSuffix}`;
         connectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(query)}&origin=SWITCH_SEARCH_VERTICAL`;
     }
+
+    const applyButtonsHtml = generateApplyButtons(applyInfo, job);
 
     const html = `
       <div class="job-header-section">
         <div class="job-header-content">
           <div class="company-logo-large">${companyInitial}</div>
           <div class="job-title-block">
-            <h1 class="job-company-name">${companyName}</h1>
-            <div class="job-company-name">
-                <i class="fas fa-map-marker-alt"></i> ${location}
-                <span style="margin: 0 10px">•</span>
-                <i class="far fa-clock"></i> Posted ${postedDate}
+            <h1>${companyName}</h1>
+            <div class="job-meta-row">
+                <div class="job-meta-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${location}</span>
+                </div>
+                <div class="job-meta-item">
+                    <i class="far fa-clock"></i>
+                    <span>Posted ${postedDate}</span>
+                </div>
+                <div class="job-meta-item">
+                    <i class="fas fa-tag"></i>
+                    <span>${category}</span>
+                </div>
             </div>
           </div>
         </div>
-        <!-- Decorative background elements could go here -->
       </div>
 
       <div class="job-body">
         <div class="main-column">
-             <div class="info-grid">
-                <div class="info-card">
-                    <div class="info-icon"><i class="fas fa-money-bill-wave"></i></div>
-                    <div class="info-text">
-                        <small>Stipend/Salary</small>
-                        <span>${salary}</span>
-                    </div>
-                </div>
-                <div class="info-card">
-                    <div class="info-icon"><i class="fas fa-briefcase"></i></div>
-                    <div class="info-text">
-                        <small>Job Type</small>
-                        <span>${category}</span>
-                    </div>
-                </div>
-             </div>
-
             <div class="description-section">
-                <h2><i class="fas fa-align-left" style="color: var(--primary-color);"></i> Job Description</h2>
+                <h2><i class="fas fa-file-lines"></i> Job Description</h2>
                 <div class="description-content">${formatDescription(description)}</div>
             </div>
         </div>
 
         <aside class="action-sidebar">
             <div class="action-card">
-                <h3>Interested?</h3>
-                <p style="color: #64748b; margin-bottom: 1.5rem; font-size: 0.9rem;">
-                    Apply now or connect with peers at this company.
-                </p>
+                <h3>Job Details</h3>
                 
-                <a href="${getSafeLink(applyLink)}" target="_blank" class="btn-large btn-primary-large">
-                    <i class="fas fa-paper-plane"></i> Apply Now
-                </a>
+                <div class="info-grid">
+                    <div class="info-card">
+                        <div>
+                            <span class="info-label">Stipend/Salary</span>
+                            <div class="info-value">
+                                <i class="fas fa-rupee-sign"></i>
+                                <span>${salary}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div>
+                            <span class="info-label">Job Type</span>
+                            <div class="info-value">
+                                <i class="fas fa-briefcase"></i>
+                                <span>${category}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div>
+                            <span class="info-label">Location</span>
+                            <div class="info-value">
+                                <i class="fas fa-location-dot"></i>
+                                <span>${location}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 1rem;">Interested?</h3>
+                <p>Apply now or connect with peers at this company.</p>
+                
+                ${applyButtonsHtml}
 
                 <a href="${connectLink}" target="_blank" class="btn-large btn-linkedin">
                     <i class="fab fa-linkedin"></i> Connect to Peers
                 </a>
                 
-                <p style="font-size: 0.8rem; color: #94a3b8; margin-top: 1rem;">
-                    Found a bug? <a href="/contact.html" style="color: var(--primary-color);">Report it</a>
-                </p>
+                <div class="action-card-footer">
+                    False job vacancy? <a href="/contact.html">Report it</a>
+                </div>
             </div>
         </aside>
       </div>
@@ -154,11 +172,184 @@ function renderJob(job, tableName) {
     container.classList.add('fade-in');
     loadingState.style.display = 'none';
     container.style.display = 'block';
+
+    if (applyInfo.isEmail) {
+        const aiApplyBtn = document.getElementById('aiApplyBtn');
+        if (aiApplyBtn) {
+            aiApplyBtn.addEventListener('click', () => handleAiApply(job, aiApplyBtn, tableName));
+        }
+    }
+}
+
+// Determine if application ID is email, URL, or search term
+function getApplicationLink(id) {
+    if (!id) return { link: '#', isEmail: false };
+    const trimmedId = id.trim();
+    
+    if (trimmedId.toLowerCase().startsWith('http')) {
+        try {
+            new URL(trimmedId);
+            return { link: trimmedId, isEmail: false };
+        } catch (_) {}
+    }
+    
+    if (trimmedId.includes('@')) {
+        const emailMatch = trimmedId.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+        if (emailMatch) {
+            return { link: trimmedId, isEmail: true, email: emailMatch[0] };
+        }
+    }
+    
+    return { 
+        link: `https://www.google.com/search?q=${encodeURIComponent(trimmedId + ' careers')}`, 
+        isEmail: false 
+    };
+}
+
+const EMAIL_SUBJECT_MAP = {
+    "Industrial Training Job Portal": "Application for CA Industrial Training Position",
+    "Fresher Jobs": "Application for CA Fresher Position",
+    "Semi Qualified Jobs": "Application for Semi Qualified CA Position",
+    "Articleship Jobs": "Application for CA Articleship Role"
+};
+
+function constructMailto(job, tableName, body = "") {
+    const rawLink = job['Application ID'];
+    if (!rawLink) return '#';
+    const emailMatch = rawLink.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+    if (!emailMatch) return '#';
+    const email = emailMatch[0];
+    const subjectBase = EMAIL_SUBJECT_MAP[tableName] || `Application for ${job.Category || 'the role'} Position`;
+    const subject = `${subjectBase} at ${job.Company} (Ref: My Student Club)`;
+    return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+// Store current tableName for use in handlers
+let currentTableName = 'Industrial Training Job Portal';
+
+function generateApplyButtons(applyInfo, job) {
+    if (applyInfo.isEmail) {
+        const simpleMailto = constructMailto(job, currentTableName);
+        return `
+            <div class="email-apply-buttons">
+                <a href="${simpleMailto}" class="btn-large btn-secondary-large" id="simpleApplyBtn">
+                    <i class="fas fa-envelope"></i> Simple Apply
+                </a>
+                <button class="btn-large btn-ai-apply" id="aiApplyBtn">
+                    <i class="fas fa-magic"></i>
+                    <span class="btn-text">AI Powered Apply</span>
+                    <i class="fas fa-spinner fa-spin"></i>
+                </button>
+            </div>
+        `;
+    } else {
+        return `
+            <a href="${applyInfo.link}" target="_blank" class="btn-large btn-primary-large">
+                <i class="fas fa-external-link-alt"></i> Apply Now
+            </a>
+        `;
+    }
+}
+
+function isProfileComplete() {
+    return !!localStorage.getItem('userCVText');
+}
+
+async function getCurrentSession() {
+    try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        return session;
+    } catch (e) {
+        return null;
+    }
+}
+
+// Handle AI Powered Apply click
+async function handleAiApply(job, buttonElement, tableName) {
+    const btnText = buttonElement.querySelector('.btn-text');
+    const spinner = buttonElement.querySelector('.fa-spinner');
+    const originalText = btnText.textContent;
+
+    const session = await getCurrentSession();
+    if (!session) {
+        window.location.href = '/login.html';
+        return;
+    }
+
+    if (!isProfileComplete()) {
+        alert("Your profile is incomplete. Please upload your resume to use the AI Apply feature.");
+        window.location.href = `/profile.html?redirect=${encodeURIComponent(window.location.href)}`;
+        return;
+    }
+
+    buttonElement.classList.add('loading');
+    btnText.textContent = 'Preparing...';
+    if (spinner) spinner.style.display = 'inline-block';
+    buttonElement.disabled = true;
+
+    try {
+        const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
+        const cvText = localStorage.getItem('userCVText');
+        
+        const emailBody = await generateEmailBody({ profile_data: profileData, cv_text: cvText }, job, tableName);
+        
+        window.location.href = constructMailto(job, tableName, emailBody);
+    } catch (e) {
+        console.error('AI Apply error:', e);
+        alert("Could not generate AI email. Opening a standard email draft.");
+        window.location.href = constructMailto(job, tableName, "");
+    } finally {
+        buttonElement.classList.remove('loading');
+        btnText.textContent = originalText;
+        if (spinner) spinner.style.display = 'none';
+        buttonElement.disabled = false;
+    }
+}
+
+async function generateEmailBody(profile, job, tableName) {
+    const workerUrl = 'https://emailgenerator.bhansalimanan55.workers.dev/';
+    try {
+        const response = await fetch(workerUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                profile_data: profile,
+                job_details: {
+                    company_name: job.Company,
+                    job_description: job.Description,
+                    job_location: job.Location,
+                    job_title: JOB_TITLE_MAP[tableName] || job.Category || 'the role'
+                }
+            })
+        });
+        if (!response.ok) throw new Error(`AI worker responded with status: ${response.status}`);
+        const data = await response.json();
+        return data.email_body || "";
+    } catch (error) {
+        console.error('Email generation failed:', error);
+        return generateFallbackEmail(job);
+    }
+}
+
+function generateFallbackEmail(job) {
+    return `Dear Hiring Manager,
+
+I am writing to express my interest in the ${job.Category || 'Articleship'} position at ${job.Company}.
+
+With my academic background and passion for the field, I am confident that I would be a valuable addition to your team.
+
+I have attached my resume for your review. I would welcome the opportunity to discuss how my skills can contribute to your organization's success.
+
+Thank you for considering my application.
+
+Best regards,
+[Your Name]
+
+---
+Application submitted via My Student Club`;
 }
 
 function checkConnectLink(job) {
-    // Check various possible column names for connect_link as not sure of exact schema
-    // User said "column connect_link"
     if (job.connect_link && job.connect_link.trim() !== '') return job.connect_link;
     if (job['connect_link'] && job['connect_link'].trim() !== '') return job['connect_link'];
     return null;
@@ -166,16 +357,7 @@ function checkConnectLink(job) {
 
 function formatDescription(text) {
     if (!text) return '';
-    // Convert newlines to <br> and possibly auto-link URLs
     return text.replace(/\n/g, '<br>');
-}
-
-function getSafeLink(link) {
-    if (!link) return '#';
-    const lower = link.toLowerCase().trim();
-    if (lower.startsWith('mailto:')) return link;
-    if (lower.startsWith('http')) return link;
-    return `https://${link}`; // Fallback
 }
 
 function showError(msg) {
@@ -189,3 +371,4 @@ function showError(msg) {
 }
 
 init();
+
