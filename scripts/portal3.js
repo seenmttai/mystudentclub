@@ -114,14 +114,15 @@ function renderJobCard(job) {
     jobCard.className = 'job-card';
     jobCard.dataset.jobId = job.id;
     jobCard.addEventListener('click', (e) => {
-        // Prevent redirect if clicking apply button directly
-        if (e.target.closest('.apply-now-card-btn')) return;
-
-        if (currentTable === 'Articleship Jobs') {
-            window.location.href = `/jobs.html?id=${job.id}&type=articleship`;
-        } else {
-            showModal(job);
-        }
+        // Redirect to job details page
+        const typeMap = {
+            'Industrial Training Job Portal': 'industrial',
+            'Fresher Jobs': 'fresher',
+            'Semi Qualified Jobs': 'semi',
+            'Articleship Jobs': 'articleship'
+        };
+        const jobType = typeMap[currentTable] || 'industrial';
+        window.location.href = `/jobs.html?id=${job.id}&type=${jobType}`;
     });
 
     const companyName = (job.Company || '').trim();
@@ -269,8 +270,8 @@ async function fetchJobs() {
     if (dom.loadMoreButton) dom.loadMoreButton.style.display = 'none';
 
     try {
-        // Cache select columns string
-        let selectColumns = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID"';
+        // Optimized: Only fetch fields needed for job cards (Description/Application ID fetched on detail page)
+        let selectColumns = 'id, Company, Location, Salary, Created_At, Category';
         if (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs") {
             selectColumns += ', Experience';
         }
