@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Contact Us | My Student Club</title>
+    <meta name="description" content="Report an issue or contact My Student Club. We're here to help you with any questions or concerns.">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --primary-color: #1e3a5f;
+            --secondary-color: #2563eb;
+            --accent-color: #3b82f6;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --text-color: #334155;
+            --text-secondary: #64748b;
+            --background-color: #f8fafc;
+            --surface-color: #ffffff;
+            --border-color: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+            --radius: 12px;
+            --transition: all 0.2s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--background-color);
+            display: grid;
+            grid-template-rows: auto 1fr;
+            color: var(--text-color);
+        }
+
+        header {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 1rem 1.25rem;
+            box-shadow: var(--shadow);
+            z-index: 100;
+            grid-column: 1 / -1;
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 100%;
+        }
+
+        .logo {
+            height: 32px;
+        }
+
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--primary-color);
+        }
+
+        main {
+            display: grid;
+            grid-template-columns: 1fr;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .contact-image-section {
+            display: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-image-section img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            padding: 0rem;
+        }
+
+        .contact-container {
+            background: var(--surface-color);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            min-height: 100%;
+        }
+
+        .contact-header {
+            background: var(--surface-color);
+            color: var(--text-color);
+            padding: 1.5rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            flex-shrink: 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .contact-header i {
+            font-size: 1.75rem;
+            opacity: 0.95;
+        }
+
+        .contact-header-text h1 {
+            font-size: 1.15rem;
+            font-weight: 600;
+        }
+
+        .contact-header-text p {
+            opacity: 0.9;
+            font-size: 0.75rem;
+        }
+
+        .contact-form {
+            padding: 2rem 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.625rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            font-size: 0.75rem;
+            color: var(--text-color);
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.5rem 0.65rem;
+            border: 1.5px solid var(--border-color);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            color: var(--text-color);
+            transition: var(--transition);
+            background: var(--surface-color);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 0.625rem 1rem;
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--accent-color) 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+            margin-top: 0.25rem;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .success-message {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 3rem 2rem;
+            gap: 1rem;
+        }
+
+        .success-message.show {
+            display: flex;
+        }
+
+        .success-message i {
+            font-size: 3rem;
+            color: #3b82f6;
+            background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .success-message h2 {
+            color: var(--text-color);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .success-message p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+
+        .success-message .another-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.7rem 1rem;
+            background: transparent;
+            color: #3b82f6;
+            border: 1px solid #e0f2fe;
+            border-radius: 15px;
+            font-family: inherit;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin-top: 0.5rem;
+        }
+
+        .success-message .another-btn:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            transform: translateY(-1px);
+        }
+
+        .contact-info {
+            background: white;
+            padding: 2rem 2rem;
+            border-top: 1px solid var(--border-color);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .contact-info h3 {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .contact-methods {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .contact-method {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.75rem;
+            padding: 0.35rem 0.65rem;
+            background: var(--surface-color);
+            border-radius: 6px;
+            transition: var(--transition);
+        }
+
+        .contact-method:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .contact-method i {
+            color: var(--secondary-color);
+            font-size: 0.8rem;
+        }
+
+        .contact-method:hover i {
+            color: white;
+        }
+
+        .error-text {
+            color: var(--error-color);
+            font-size: 0.7rem;
+            display: none;
+        }
+
+        .form-group.error input,
+        .form-group.error textarea,
+        .form-group.error select {
+            border-color: var(--error-color);
+        }
+
+        .form-group.error .error-text {
+            display: block;
+        }
+
+        /* Desktop - Show two columns */
+        @media (min-width: 768px) {
+            main {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .contact-image-section {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .contact-container {
+                box-shadow: var(--shadow-lg);
+            }
+        }
+
+        /* Large desktop */
+        @media (min-width: 1200px) {
+            main {
+                grid-template-columns: 45% 55%;
+            }
+        }
+
+        /* Large screens */
+        @media (min-height: 750px) {
+            main {
+                padding: 1.5rem;
+            }
+            .contact-header {
+                padding: 1.25rem 1.5rem;
+            }
+            .contact-header i {
+                font-size: 2rem;
+            }
+            .contact-header-text h1 {
+                font-size: 1.35rem;
+            }
+            .contact-header-text p {
+                font-size: 0.85rem;
+            }
+            .contact-form {
+                padding: 1.25rem 1.5rem;
+                gap: 0.875rem;
+            }
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                padding: 0.6rem 0.75rem;
+                font-size: 0.9rem;
+            }
+            .form-group textarea {
+                min-height: 90px;
+                max-height: 120px;
+            }
+            .contact-info {
+                padding: 0.875rem 1.5rem;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 520px) {
+            header {
+                padding: 0.4rem 1rem;
+            }
+            .logo {
+                height: 28px;
+            }
+            main {
+                padding: 0.5rem;
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            .contact-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+                padding: 0.875rem 1rem;
+            }
+            .contact-header i {
+                font-size: 1.5rem;
+            }
+            .contact-header-text h1 {
+                font-size: 1.1rem;
+            }
+            .contact-methods {
+                justify-content: center;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 767px) {
+            .contact-header {
+                padding: 1rem;
+            }
+            .contact-form {
+                padding: 1rem;
+                gap: 0.75rem;
+            }
+        }
+
+        /* Custom Dropdown Styles */
+        .custom-select-wrapper {
+            position: relative;
+            user-select: none;
+            width: 100%;
+        }
+
+        .custom-select-trigger {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0.65rem;
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--text-color);
+            background: var(--surface-color);
+            border: 1.5px solid var(--border-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .custom-select-trigger:hover {
+            border-color: var(--secondary-color);
+        }
+
+        .custom-select-wrapper.open .custom-select-trigger {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .custom-arrow {
+            position: relative;
+            height: 10px;
+            width: 10px;
+        }
+
+        .custom-arrow::before,
+        .custom-arrow::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            width: 0.1rem;
+            height: 100%;
+            background-color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .custom-arrow::before {
+            left: -3px;
+            transform: rotate(-45deg);
+        }
+
+        .custom-arrow::after {
+            left: 3px;
+            transform: rotate(45deg);
+        }
+
+        .custom-select-wrapper.open .custom-arrow::before {
+            left: -3px;
+            transform: rotate(45deg);
+        }
+
+        .custom-select-wrapper.open .custom-arrow::after {
+            left: 3px;
+            transform: rotate(-45deg);
+        }
+
+        .custom-options {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            background: var(--surface-color);
+            border: 1.5px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: var(--shadow-lg);
+            display: none;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+            z-index: 2000;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .custom-select-wrapper.open .custom-options {
+            display: block;
+            opacity: 1;
+        }
+
+        .custom-option {
+            padding: 0.6rem 0.75rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: background-color 0.1s ease;
+        }
+
+        .custom-option:hover {
+            background-color: var(--background-color);
+            color: var(--secondary-color);
+        }
+
+        .custom-option.selected {
+            background-color: #f0f6ff;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+
+            .form-group textarea {
+                min-height: 50px;
+                max-height: 60px;
+            }
+            .submit-btn {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+            .contact-info {
+                padding: 0.5rem 1rem;
+            }
+        
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-container">
+            <a href="/">
+                <img src="/assets/logo.png" alt="My Student Club" class="logo">
+            </a>
+            <a href="/" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Home</span>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <div class="contact-image-section">
+            <img src="assets/contact-us.jpg" alt="Customer Support">
+        </div>
+        <div class="contact-container">
+            <div class="contact-header">
+                <i class="fas fa-headset"></i>
+                <div class="contact-header-text">
+                    <h1>Contact Us</h1>
+                    <p>Have a question or want to report an issue? We're here to help!</p>
+                </div>
+            </div>
+
+            <form id="contact-form" class="contact-form">
+                <!-- <div class="form-row"> -->
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" name="name" placeholder="Full name">
+                        <span class="error-text">Please enter your name</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" name="email" placeholder="email@example.com">
+                        <span class="error-text">Please enter a valid email</span>
+                    </div>
+                <!-- </div> -->
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category">
+                        <option value="">Select a category</option>
+                        <option value="technical_issue">Technical Issue</option>
+                        <option value="false_job_listing">False Job Listing</option>
+                        <option value="course_content">Course Content Issue</option>
+                        <option value="payment">Payment Issue</option>
+                        <option value="account">Account Related</option>
+                        <option value="suggestion">Feedback / Suggestion</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <span class="error-text">Please select a category</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" 
+                        placeholder="Describe your issue or question..."></textarea>
+                    <span class="error-text">Please describe your issue</span>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submit-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Submit</span>
+                </button>
+            </form>
+
+            <div class="success-message" id="success-message">
+                <i class="fas fa-check-circle"></i>
+                <h2>Thank You!</h2>
+                <p>Your message has been submitted. We'll get back to you soon.</p>
+                <button class="another-btn" id="reset-btn">
+                    <i class="fas fa-plus"></i>
+                    Submit Another
+                </button>
+            </div>
+
+            <div class="contact-info">
+                <h3>Other Ways to Reach Us</h3>
+                <div class="contact-methods">
+                    <a href="mailto:support@mystudentclub.com" class="contact-method">
+                        <i class="fas fa-envelope"></i>
+                        <span>support@mystudentclub.com</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const form = document.getElementById('contact-form');
+        const submitBtn = document.getElementById('submit-btn');
+        const successMessage = document.getElementById('success-message');
+        const resetBtn = document.getElementById('reset-btn');
+
+        let currentUser = null;
+
+        // Check if user is logged in
+        async function checkAuth() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session && session.user) {
+                currentUser = session.user;
+                document.getElementById('email').value = currentUser.email;
+                if (currentUser.user_metadata?.full_name) {
+                    document.getElementById('name').value = currentUser.user_metadata.full_name;
+                } else if (currentUser.user_metadata?.first_name) {
+                    document.getElementById('name').value = currentUser.user_metadata.first_name;
+                }
+            }
+        }
+
+        checkAuth();
+
+        // Initialize Custom Dropdown
+        function initCustomSelect() {
+            // console.log('Initializing custom select dropdown...');
+            const select = document.getElementById('category');
+            // console.log('Found select element:', select);
+            
+            if (!select || select.parentNode.classList.contains('custom-select-wrapper')) {
+                // console.log('Select not found or already wrapped');
+                return;
+            }
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'custom-select-wrapper';
+
+            const trigger = document.createElement('div');
+            trigger.className = 'custom-select-trigger';
+            trigger.innerHTML = `<span>${select.options[select.selectedIndex]?.text || 'Select a category'}</span><div class="custom-arrow"></div>`;
+
+            const optionsList = document.createElement('div');
+            optionsList.className = 'custom-options';
+
+            const buildOptions = () => {
+                optionsList.innerHTML = '';
+                Array.from(select.options).forEach(opt => {
+                    const div = document.createElement('div');
+                    div.className = `custom-option ${opt.selected ? 'selected' : ''}`;
+                    div.textContent = opt.text;
+                    div.dataset.value = opt.value;
+                    div.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        select.value = opt.value;
+                        trigger.querySelector('span').textContent = opt.text;
+                        wrapper.classList.remove('open');
+                        optionsList.style.display = 'none';
+                        optionsList.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+                        div.classList.add('selected');
+                        select.dispatchEvent(new Event('change'));
+                    });
+                    optionsList.appendChild(div);
+                });
+            };
+
+            buildOptions();
+
+            select.style.display = 'none';
+            select.parentNode.insertBefore(wrapper, select);
+            wrapper.appendChild(select);
+            wrapper.appendChild(trigger);
+            wrapper.appendChild(optionsList);
+
+            trigger.addEventListener('click', () => {
+                const isOpen = wrapper.classList.contains('open');
+                document.querySelectorAll('.custom-select-wrapper.open').forEach(w => {
+                    if (w !== wrapper) {
+                        w.classList.remove('open');
+                        w.querySelector('.custom-options').style.display = 'none';
+                    }
+                });
+
+                if (!isOpen) {
+                    wrapper.classList.add('open');
+                    optionsList.style.display = 'block';
+                    optionsList.offsetHeight;
+                    optionsList.style.opacity = '1';
+                } else {
+                    wrapper.classList.remove('open');
+                    optionsList.style.opacity = '0';
+                    setTimeout(() => optionsList.style.display = 'none', 200);
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.custom-select-wrapper')) {
+                    document.querySelectorAll('.custom-select-wrapper.open').forEach(wrapper => {
+                        wrapper.classList.remove('open');
+                        const opts = wrapper.querySelector('.custom-options');
+                        if (opts) {
+                            opts.style.opacity = '0';
+                            setTimeout(() => opts.style.display = 'none', 200);
+                        }
+                    });
+                }
+            });
+        }
+
+        // Initialize dropdown after DOM is fully ready
+        setTimeout(() => {
+            initCustomSelect();
+        }, 100);
+
+        // Form validation
+        function validateForm() {
+            let isValid = true;
+            const fields = ['name', 'email', 'category', 'description'];
+
+            fields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const formGroup = field.closest('.form-group');
+                
+                if (!field.value.trim()) {
+                    formGroup.classList.add('error');
+                    isValid = false;
+                } else {
+                    formGroup.classList.remove('error');
+                }
+
+                if (fieldId === 'email' && field.value.trim()) {
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(field.value.trim())) {
+                        formGroup.classList.add('error');
+                        isValid = false;
+                    }
+                }
+            });
+
+            return isValid;
+        }
+
+        // Submit form
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!validateForm()) return;
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Submitting...</span>';
+
+            const formData = {
+                user_id: currentUser ? currentUser.id : null,
+                name: document.getElementById('name').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                category: document.getElementById('category').value,
+                description: document.getElementById('description').value.trim(),
+                page_url: window.location.href,
+                user_agent: navigator.userAgent
+            };
+
+            try {
+                const { error } = await supabaseClient
+                        .from('course_reports')
+                        .insert({
+                            user_id: formData.user_id,
+                            course_slug: 'contact-form',
+                            description: `[${formData.category}] From: ${formData.name} (${formData.email})\n\n${formData.description}`,
+                            page_url: formData.page_url
+                        });
+
+                if (error) {
+                    const { error: fallbackError } = await supabaseClient
+                        .from('course_reports')
+                        .insert({
+                            user_id: formData.user_id,
+                            course_slug: 'contact-form',
+                            description: `[${formData.category}] From: ${formData.name} (${formData.email})\n\n${formData.description}`,
+                            page_url: formData.page_url
+                        });
+
+                    if (fallbackError) throw fallbackError;
+                }
+
+                form.style.display = 'none';
+                successMessage.classList.add('show');
+            } catch (error) {
+                // console.error('Error submitting form:', error);
+                alert('Something went wrong. Please try again or contact us via email.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i><span>Submit</span>';
+            }
+        });
+
+        // Reset form
+        resetBtn.addEventListener('click', () => {
+            form.reset();
+            form.style.display = 'flex';
+            successMessage.classList.remove('show');
+            
+            if (currentUser) {
+                document.getElementById('email').value = currentUser.email;
+                if (currentUser.user_metadata?.full_name) {
+                    document.getElementById('name').value = currentUser.user_metadata.full_name;
+                } else if (currentUser.user_metadata?.first_name) {
+                    document.getElementById('name').value = currentUser.user_metadata.first_name;
+                }
+            }
+
+            document.querySelectorAll('.form-group').forEach(g => g.classList.remove('error'));
+        });
+
+        // Real-time validation
+        document.querySelectorAll('.form-group input, .form-group textarea, .form-group select').forEach(field => {
+            field.addEventListener('input', () => {
+                field.closest('.form-group').classList.remove('error');
+            });
+        });
+    </script>
+</body>
+
+</html>
