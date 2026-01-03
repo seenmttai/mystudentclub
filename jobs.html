@@ -222,6 +222,12 @@
             display: flex;
             flex-direction: column;
             gap: 1rem;
+            min-width: 0;
+        }
+
+        .action-card {
+            min-width: 0;
+            overflow: hidden;
         }
 
         /* Dense Info Grid - In Sidebar */
@@ -230,6 +236,8 @@
             grid-template-columns: 1fr;
             gap: 0.75rem;
             margin-bottom: 1.25rem;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .info-card {
@@ -238,6 +246,8 @@
             border-radius: 6px;
             border: 1px solid var(--border-color);
             transition: all 0.2s;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .info-card:hover {
@@ -264,9 +274,117 @@
             gap: 0.4rem;
         }
 
+        .info-value-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f8fafc;
+            border-radius: 6px;
+            padding: 0.5rem;
+            max-width: 100%;
+        }
+
+        .info-value-scroll {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            min-width: 0;
+        }
+
+        .info-value-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .info-value-scroll::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 2px;
+        }
+
+        .info-value-scroll::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        .apply-link-text {
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .copy-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.4rem 0.6rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .copy-btn:hover {
+            background: #1e40af;
+            transform: scale(1.05);
+        }
+
+        .copy-btn i {
+            font-size: 0.9rem;
+        }
+
         .info-value i {
             color: var(--primary-color);
             font-size: 1rem;
+        }
+
+        /* Markdown Description Styling */
+        .description-content {
+            line-height: 1.7;
+        }
+
+        .description-content p {
+            margin-bottom: 1rem;
+        }
+
+        .description-content h1,
+        .description-content h2,
+        .description-content h3 {
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .description-content h1 {
+            font-size: 1.5rem;
+        }
+
+        .description-content h2 {
+            font-size: 1.25rem;
+        }
+
+        .description-content h3 {
+            font-size: 1.1rem;
+        }
+
+        .description-content strong {
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .description-content em {
+            font-style: italic;
+        }
+
+        .description-content a {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .description-content a:hover {
+            color: #1e40af;
         }
 
         /* Description */

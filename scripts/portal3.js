@@ -114,10 +114,7 @@ function renderJobCard(job) {
     jobCard.className = 'job-card';
     jobCard.dataset.jobId = job.id;
     jobCard.addEventListener('click', (e) => {
-        // Prevent redirect if clicking apply button directly
-        if (e.target.closest('.apply-now-card-btn')) return;
-
-        // Map table names to URL type parameter
+        // Redirect to job details page
         const typeMap = {
             'Industrial Training Job Portal': 'industrial',
             'Fresher Jobs': 'fresher',

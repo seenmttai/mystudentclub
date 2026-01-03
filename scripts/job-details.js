@@ -7,7 +7,7 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 const JOB_TITLE_MAP = {
     "Industrial Training Job Portal": "Industrial Trainee",
     "Fresher Jobs": "CA Fresher",
-    "Semi Qualified Jobs": "Semi Qualified Chartered Accountant", // User specified example
+    "Semi Qualified Jobs": "Semi Qualified Chartered Accountant",
     "Articleship Jobs": "Articleship Trainee"
 };
 
@@ -31,7 +31,7 @@ async function init() {
         return;
     }
 
-    let tableName = 'Industrial Training Job Portal'; 
+    let tableName = 'Industrial Training Job Portal';
     if (tableParam) {
         if (TABLE_MAP[tableParam]) tableName = TABLE_MAP[tableParam];
         else if (Object.values(TABLE_MAP).includes(tableParam)) tableName = tableParam;
@@ -63,6 +63,48 @@ function setBackLink(type) {
     backLinkText.textContent = 'Back to jobs';
 }
 
+function renderMarkdown(text) {
+    if (!text) return 'No description provided.';
+    
+    let html = text
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/__(.+?)__/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/_(.+?)_/g, '<em>$1</em>')
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+    
+    html = '<p>' + html + '</p>';
+    
+    html = html.replace(/<p><\/p>/g, '');
+    
+    return html;
+}
+
+function copyApplyLink(event) {
+    const btn = event.currentTarget;
+    const text = btn.getAttribute('data-copy-text');
+    
+    if (!text || text === 'N/A') return;
+    
+    navigator.clipboard.writeText(text).then(() => {
+        const icon = btn.querySelector('i');
+        icon.className = 'fas fa-check';
+        btn.style.color = '#22c55e';
+        setTimeout(() => {
+            icon.className = 'fas fa-copy';
+            btn.style.color = '';
+        }, 2000);
+    }).catch(err => {
+        console.error('Copy failed:', err);
+        alert('Failed to copy. Please copy manually.');
+    });
+}
+
 async function fetchJobDetails(id, tableName) {
     const { data, error } = await supabaseClient
         .from(tableName)
@@ -80,7 +122,6 @@ function renderJob(job, tableName) {
     const container = document.getElementById('jobDetailsContainer');
     const loadingState = document.getElementById('loadingState');
 
-    // Store tableName for use in apply handlers
     currentTableName = tableName;
 
     const companyName = (job.Company || 'Company Name').trim();
@@ -91,7 +132,6 @@ function renderJob(job, tableName) {
     const category = job.Category || 'General';
     const description = job.Description || 'No description provided.';
     
-
     const applyInfo = getApplicationLink(job['Application ID']);
 
     let connectLink = checkConnectLink(job);
@@ -141,7 +181,7 @@ function renderJob(job, tableName) {
         <div class="main-column">
             <div class="description-section">
                 <h2><i class="fas fa-file-lines"></i> Job Description</h2>
-                <div class="description-content">${formatDescription(description)}</div>
+                <div class="description-content">${renderMarkdown(description)}</div>
             </div>
         </div>
 
@@ -153,9 +193,14 @@ function renderJob(job, tableName) {
                     <div class="info-card">
                         <div>
                             <span class="info-label">${applyInfo.isEmail ? 'Email' : 'Apply Link'}</span>
-                            <div class="info-value">
-                                <i class="fas ${applyInfo.isEmail ? 'fa-envelope' : 'fa-link'}"></i>
-                                <span style="word-break: break-all;">${applyInfo.isEmail ? applyInfo.email : job['Application ID'] || 'N/A'}</span>
+                            <div class="info-value-container">
+                                <div class="info-value-scroll">
+                                    <i class="fas ${applyInfo.isEmail ? 'fa-envelope' : 'fa-link'}"></i>
+                                    <span class="apply-link-text">${applyInfo.isEmail ? applyInfo.email : job['Application ID'] || 'N/A'}</span>
+                                </div>
+                                <button class="copy-btn" data-copy-text="${applyInfo.isEmail ? applyInfo.email : job['Application ID'] || 'N/A'}" title="Copy">
+                                    <i class="fas fa-copy"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -183,12 +228,16 @@ function renderJob(job, tableName) {
     loadingState.style.display = 'none';
     container.style.display = 'block';
 
-    // Attach event listeners for email apply buttons
     if (applyInfo.isEmail) {
         const aiApplyBtn = document.getElementById('aiApplyBtn');
         if (aiApplyBtn) {
             aiApplyBtn.addEventListener('click', () => handleAiApply(job, aiApplyBtn, tableName));
         }
+    }
+
+    const copyBtn = container.querySelector('.copy-btn');
+    if (copyBtn) {
+        copyBtn.addEventListener('click', copyApplyLink);
     }
 }
 
@@ -314,7 +363,6 @@ async function handleAiApply(job, buttonElement, tableName) {
     }
 }
 
-// Generate AI email body using Cloudflare Worker API
 async function generateEmailBody(profile, job, tableName) {
     const workerUrl = 'https://emailgenerator.bhansalimanan55.workers.dev/';
     try {
