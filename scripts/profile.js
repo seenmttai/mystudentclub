@@ -4,14 +4,35 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
 
 const profileForm = document.getElementById('profile-form');
-const resumeInput = document.getElementById('resume');
-const resumeDropZone = document.querySelector('.file-drop-zone');
-const resumeDisplayArea = document.getElementById('resume-display-area');
-const resumeFilenameEl = document.getElementById('resume-filename');
-const removeResumeBtn = document.getElementById('remove-resume-btn');
 const loadingOverlay = document.getElementById('loading-overlay');
 const saveBtn = profileForm.querySelector('.save-profile-btn');
 let currentUser = null;
+
+// generalized selectors for file handling
+const fileConfig = {
+    resume: {
+        input: document.getElementById('resume'),
+        dropZone: document.querySelector('.file-drop-zone'), // Keeps initial selector for backward compat logic if needed, but better to use specific ID if possible. 
+        // HTML update used class .file-drop-zone for resume, and id #cover-letter-drop-zone for CL.
+        // Let's grab them specifically.
+        dropZone: document.getElementById('resume').closest('.file-drop-zone'),
+        displayArea: document.getElementById('resume-display-area'),
+        filenameEl: document.getElementById('resume-filename'),
+        uploadArea: document.getElementById('resume-upload-area'),
+        storageKeyText: 'userCVText',
+        storageKeyName: 'userCVFileName'
+    },
+    cover_letter: {
+        input: document.getElementById('cover_letter'),
+        dropZone: document.getElementById('cover-letter-drop-zone'),
+        displayArea: document.getElementById('cover-letter-display-area'),
+        filenameEl: document.getElementById('cover-letter-filename'),
+        uploadArea: document.getElementById('cover-letter-upload-area'),
+        storageKeyText: 'userCoverLetterText',
+        storageKeyName: 'userCoverLetterFileName'
+    }
+};
+
 
 async function checkAuth() {
     const { data: { session } } = await supabaseClient.auth.getSession();
@@ -42,7 +63,7 @@ async function loadProfile() {
             .select('profile')
             .eq('uuid', currentUser.id)
             .single();
-        
+
         if (error && error.code !== 'PGRST116') throw error;
 
         if (data && data.profile) {
@@ -53,10 +74,14 @@ async function loadProfile() {
             if (localProfile) populateForm(JSON.parse(localProfile));
         }
 
-        const cachedResumeName = localStorage.getItem('userCVFileName');
-        if (cachedResumeName) {
-            showResumeDisplay(cachedResumeName);
-        }
+        // Restore cached files
+        ['resume', 'cover_letter'].forEach(type => {
+            const cachedName = localStorage.getItem(fileConfig[type].storageKeyName);
+            if (cachedName) {
+                showFileDisplay(type, cachedName);
+            }
+        });
+
     } catch (e) {
         console.error("Error loading profile:", e);
         const localProfile = localStorage.getItem('userProfileData');
@@ -69,6 +94,9 @@ async function loadProfile() {
 function populateForm(profileData) {
     for (const key in profileData) {
         if (profileData.hasOwnProperty(key)) {
+            // Skip file inputs in main loop, handled via localStorage cache
+            if (key === 'resume' || key === 'cover_letter') continue;
+
             const field = profileForm.elements[key];
             if (field) {
                 field.value = profileData[key];
@@ -77,24 +105,34 @@ function populateForm(profileData) {
     }
 }
 
-function showResumeDisplay(filename) {
-    resumeFilenameEl.textContent = filename;
-    resumeDisplayArea.style.display = 'block';
-    document.getElementById('resume-upload-area').style.display = 'none';
+function showFileDisplay(type, filename) {
+    const config = fileConfig[type];
+    if (!config) return;
+
+    config.filenameEl.textContent = filename;
+    config.displayArea.style.display = 'block';
+    config.uploadArea.style.display = 'none';
 }
 
-function hideResumeDisplay() {
-    resumeFilenameEl.textContent = '';
-    resumeDisplayArea.style.display = 'none';
-    document.getElementById('resume-upload-area').style.display = 'block';
-    localStorage.removeItem('userCVText');
-    localStorage.removeItem('userCVFileName');
-    resumeInput.value = '';
+function hideFileDisplay(type) {
+    const config = fileConfig[type];
+    if (!config) return;
+
+    config.filenameEl.textContent = '';
+    config.displayArea.style.display = 'none';
+    config.uploadArea.style.display = 'block';
+
+    localStorage.removeItem(config.storageKeyText);
+    localStorage.removeItem(config.storageKeyName);
+    config.input.value = '';
 }
 
-async function handleFile(file) {
+async function handleFile(file, type) {
     if (!file) return;
-    showLoading(true, "Processing resume...");
+    const config = fileConfig[type];
+    if (!config) return;
+
+    showLoading(true, `Processing ${type.replace('_', ' ')}...`);
     try {
         let textContent = '';
         if (file.type === 'application/pdf') {
@@ -111,12 +149,13 @@ async function handleFile(file) {
             alert('Unsupported file type. Please upload PDF or TXT.');
             return;
         }
-        localStorage.setItem('userCVText', textContent);
-        localStorage.setItem('userCVFileName', file.name);
-        showResumeDisplay(file.name);
+
+        localStorage.setItem(config.storageKeyText, textContent);
+        localStorage.setItem(config.storageKeyName, file.name);
+        showFileDisplay(type, file.name);
     } catch (error) {
         console.error("Error processing file:", error);
-        alert('Could not process your resume. Please try a different file.');
+        alert(`Could not process your ${type.replace('_', ' ')}. Please try a different file.`);
     } finally {
         showLoading(false);
     }
@@ -138,7 +177,20 @@ async function handleSave(e) {
 
     const formData = new FormData(profileForm);
     const profileData = Object.fromEntries(formData.entries());
+
+    // Remove file objects from direct profile data (stored in localStorage/jsonb separate keys if we wanted, but logic says just skip)
     delete profileData.resume;
+    delete profileData.cover_letter;
+
+    // Note: We are NOT saving the full text to the profile JSONB here, logic implies it relies on localStorage for the session/AI usage.
+    // If we wanted to save it to DB, we would add it here. The prompt implies "data shared with companies", usually implies DB.
+    // But original code didn't save resume text to DB profileData, only to localStorage. I will stick to that pattern unless asked.
+    // Wait, the prompt said "Data will be shared". If it's in localStorage, it's NOT shared with valid backend.
+    // The original code `localStorage.setItem('userProfileData', JSON.stringify(profileData))` and then `supabaseClient.from('profiles').upsert`.
+    // The `profileData` from `formData` usually contains the filename from file input if not deleted? No, file input value is fake path.
+    // The original code DELETED `profileData.resume`. So resume text *never went to DB profile JSON*.
+    // Attempting to change this behavior might be out of scope or dangerous if text is huge.
+    // I will stick to original behavior: files are local-cached for "AI features" (which presumably run client-side or check local storage).
 
     localStorage.setItem('userProfileData', JSON.stringify(profileData));
 
@@ -172,22 +224,43 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('email').value = user.email;
         loadProfile();
 
-        resumeInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
-        resumeDropZone.addEventListener('click', () => resumeInput.click());
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            resumeDropZone.addEventListener(eventName, (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                if (['dragenter', 'dragover'].includes(eventName)) {
-                    resumeDropZone.classList.add('hover');
-                } else {
-                    resumeDropZone.classList.remove('hover');
-                }
-            }, false);
-        });
-        resumeDropZone.addEventListener('drop', (e) => handleFile(e.dataTransfer.files[0]));
+        // Setup listeners for both Resume and Cover Letter
+        ['resume', 'cover_letter'].forEach(type => {
+            const config = fileConfig[type];
+            if (!config) return; // safety
 
-        removeResumeBtn.addEventListener('click', hideResumeDisplay);
+            if (config.input) {
+                config.input.addEventListener('change', (e) => handleFile(e.target.files[0], type));
+            }
+
+            if (config.dropZone) {
+                config.dropZone.addEventListener('click', () => config.input.click());
+
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    config.dropZone.addEventListener(eventName, (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (['dragenter', 'dragover'].includes(eventName)) {
+                            config.dropZone.classList.add('hover');
+                        } else {
+                            config.dropZone.classList.remove('hover');
+                        }
+                    }, false);
+                });
+
+                config.dropZone.addEventListener('drop', (e) => handleFile(e.dataTransfer.files[0], type));
+            }
+        });
+
+        // Event delegation for remove buttons
+        document.body.addEventListener('click', (e) => {
+            const btn = e.target.closest('.remove-file-btn');
+            if (btn) {
+                const targetType = btn.getAttribute('data-target');
+                if (targetType) hideFileDisplay(targetType);
+            }
+        });
+
         profileForm.addEventListener('submit', handleSave);
 
         const menuButton = document.getElementById('menuButton');
