@@ -2,19 +2,17 @@ const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+const WORKER_URL = 'https://profill.bhansalimanan55.workers.dev';
 
 const profileForm = document.getElementById('profile-form');
 const loadingOverlay = document.getElementById('loading-overlay');
 const saveBtn = profileForm.querySelector('.save-profile-btn');
 let currentUser = null;
 
-// generalized selectors for file handling
 const fileConfig = {
     resume: {
         input: document.getElementById('resume'),
-        dropZone: document.querySelector('.file-drop-zone'), // Keeps initial selector for backward compat logic if needed, but better to use specific ID if possible. 
-        // HTML update used class .file-drop-zone for resume, and id #cover-letter-drop-zone for CL.
-        // Let's grab them specifically.
+        dropZone: document.querySelector('.file-drop-zone'),
         dropZone: document.getElementById('resume').closest('.file-drop-zone'),
         displayArea: document.getElementById('resume-display-area'),
         filenameEl: document.getElementById('resume-filename'),
@@ -74,7 +72,6 @@ async function loadProfile() {
             if (localProfile) populateForm(JSON.parse(localProfile));
         }
 
-        // Restore cached files
         ['resume', 'cover_letter'].forEach(type => {
             const cachedName = localStorage.getItem(fileConfig[type].storageKeyName);
             if (cachedName) {
@@ -94,7 +91,6 @@ async function loadProfile() {
 function populateForm(profileData) {
     for (const key in profileData) {
         if (profileData.hasOwnProperty(key)) {
-            // Skip file inputs in main loop, handled via localStorage cache
             if (key === 'resume' || key === 'cover_letter') continue;
 
             const field = profileForm.elements[key];
@@ -135,16 +131,44 @@ async function handleFile(file, type) {
     showLoading(true, `Processing ${type.replace('_', ' ')}...`);
     try {
         let textContent = '';
+        let images = [];
+
         if (file.type === 'application/pdf') {
             const arrayBuffer = await file.arrayBuffer();
+            // Load PDF document
             const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+            // Extract Text
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
                 const text = await page.getTextContent();
                 textContent += text.items.map(s => s.str).join(' ');
             }
+
+            // Extract Images (for Resume Auto-fill)
+            if (type === 'resume') {
+                showLoading(true, "Analyzing Resume with AI...");
+                images = await convertPdfToImages(pdf);
+                if (images.length > 0) {
+                    const extractedData = await extractProfileData(images, textContent);
+                    if (extractedData) {
+                        populateForm(extractedData);
+                        alert('Profile auto-filled from your resume! Please review the details.');
+                    }
+                }
+            }
+
         } else if (file.type === 'text/plain') {
             textContent = await file.text();
+            if (type === 'resume') {
+                // For text files, we can only send text
+                showLoading(true, "Analyzing Resume (Text) with AI...");
+                const extractedData = await extractProfileData([], textContent);
+                if (extractedData) {
+                    populateForm(extractedData);
+                    alert('Profile auto-filled from your resume! Please review the details.');
+                }
+            }
         } else {
             alert('Unsupported file type. Please upload PDF or TXT.');
             return;
@@ -158,6 +182,70 @@ async function handleFile(file, type) {
         alert(`Could not process your ${type.replace('_', ' ')}. Please try a different file.`);
     } finally {
         showLoading(false);
+    }
+}
+
+async function convertPdfToImages(pdf) {
+    const images = [];
+    try {
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const viewport = page.getViewport({ scale: 1.5 });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            await page.render({ canvasContext: context, viewport: viewport }).promise;
+            // Get base64 without prefix
+            const base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+            images.push(base64);
+        }
+    } catch (e) {
+        console.error("Error converting PDF to images", e);
+    }
+    return images;
+}
+
+async function extractProfileData(images, text) {
+    try {
+        const payload = {
+            images: images,
+            pdf_text: text,
+            domain: "Finance & Accounting", // default
+            specialization: "Accountant" // default
+        };
+
+        const response = await fetch(WORKER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            console.warn("Worker API returned error:", response.status);
+            return null;
+        }
+
+        const data = await response.json();
+        if (data.ok && data.response) {
+            return parseGeminiJson(data.response);
+        }
+    } catch (e) {
+        console.error("Error calling worker:", e);
+    }
+    return null;
+}
+
+function parseGeminiJson(text) {
+    try {
+        const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
+        return JSON.parse(cleaned);
+    } catch (e) {
+        console.error("Failed to parse JSON from AI response", e);
+        return null;
     }
 }
 
@@ -177,20 +265,8 @@ async function handleSave(e) {
 
     const formData = new FormData(profileForm);
     const profileData = Object.fromEntries(formData.entries());
-
-    // Remove file objects from direct profile data (stored in localStorage/jsonb separate keys if we wanted, but logic says just skip)
     delete profileData.resume;
     delete profileData.cover_letter;
-
-    // Note: We are NOT saving the full text to the profile JSONB here, logic implies it relies on localStorage for the session/AI usage.
-    // If we wanted to save it to DB, we would add it here. The prompt implies "data shared with companies", usually implies DB.
-    // But original code didn't save resume text to DB profileData, only to localStorage. I will stick to that pattern unless asked.
-    // Wait, the prompt said "Data will be shared". If it's in localStorage, it's NOT shared with valid backend.
-    // The original code `localStorage.setItem('userProfileData', JSON.stringify(profileData))` and then `supabaseClient.from('profiles').upsert`.
-    // The `profileData` from `formData` usually contains the filename from file input if not deleted? No, file input value is fake path.
-    // The original code DELETED `profileData.resume`. So resume text *never went to DB profile JSON*.
-    // Attempting to change this behavior might be out of scope or dangerous if text is huge.
-    // I will stick to original behavior: files are local-cached for "AI features" (which presumably run client-side or check local storage).
 
     localStorage.setItem('userProfileData', JSON.stringify(profileData));
 
@@ -223,11 +299,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (user) {
         document.getElementById('email').value = user.email;
         loadProfile();
-
-        // Setup listeners for both Resume and Cover Letter
         ['resume', 'cover_letter'].forEach(type => {
             const config = fileConfig[type];
-            if (!config) return; // safety
+            if (!config) return;
 
             if (config.input) {
                 config.input.addEventListener('change', (e) => handleFile(e.target.files[0], type));
@@ -252,7 +326,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        // Event delegation for remove buttons
         document.body.addEventListener('click', (e) => {
             const btn = e.target.closest('.remove-file-btn');
             if (btn) {
