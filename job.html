@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Student Club</title>
+</head>
+<body>
+    <script>
+        // Extract parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const jobId = urlParams.get('id');
+        const jobType = urlParams.get('type');
+        
+        // Map job type to portal page
+        const portalPages = {
+            'industrial': '/index.html',
+            'fresher': '/fresher.html',
+            'semi': '/semi-qualified.html',
+            'articleship': '/articleship.html'
+        };
+        
+        // Redirect to appropriate portal with parameters
+        if (jobId && jobType && portalPages[jobType]) {
+            window.location.href = `${portalPages[jobType]}?id=${jobId}&type=${jobType}`;
+        } else {
+            // Default to home if parameters missing
+            window.location.href = '/';
+        }
+    </script>
+    <p style="text-align: center; padding: 2rem;">My Student Club</p>
+</body>
+</html>

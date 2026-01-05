@@ -1795,3 +1795,33 @@ body {
     width: 100%;
   }
 }
+
+/* Modal Share Button */
+.modal-share-action {
+  position: absolute;
+  top: 3.5rem;
+  right: 0.8rem;
+  background: #2563eb;
+  border: none;
+  font-size: 0.9rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: white;
+  z-index: 1000;
+}
+
+.modal-share-action:hover {
+  background: #1e40af;
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+}
+
+.modal-share-action:active {
+  transform: scale(0.95);
+}
