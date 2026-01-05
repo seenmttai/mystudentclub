@@ -114,15 +114,7 @@ function renderJobCard(job) {
     jobCard.className = 'job-card';
     jobCard.dataset.jobId = job.id;
     jobCard.addEventListener('click', (e) => {
-        // Redirect to job details page
-        const typeMap = {
-            'Industrial Training Job Portal': 'industrial',
-            'Fresher Jobs': 'fresher',
-            'Semi Qualified Jobs': 'semi',
-            'Articleship Jobs': 'articleship'
-        };
-        const jobType = typeMap[currentTable] || 'industrial';
-        window.location.href = `/jobs.html?id=${job.id}&type=${jobType}`;
+        showModal(job);
     });
 
     const companyName = (job.Company || '').trim();
@@ -153,6 +145,85 @@ function renderJobCard(job) {
         </div>`;
 
     return jobCard;
+}
+
+// Simple markdown renderer for job descriptions
+function renderMarkdown(text) {
+    if (!text) return 'No description available.';
+    
+    let html = text
+        // Headers
+        .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+        .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+        .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+        // Bold
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/__(.+?)__/g, '<strong>$1</strong>')
+        // Italic
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/_(.+?)_/g, '<em>$1</em>')
+        // Links
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
+        // Line breaks
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/\n/g, '<br>');
+    
+    // Wrap in paragraph
+    html = '<p>' + html + '</p>';
+    
+    // Fix multiple paragraph tags
+    html = html.replace(/<p><\/p>/g, '');
+    
+    return html;
+}
+
+// Generate application links with copy buttons (handles comma-separated values)
+function generateApplicationLinks(applicationId) {
+    if (!applicationId) {
+        return '<p class="modal-description">No Application ID Available</p>';
+    }
+    
+    // Split by comma and trim whitespace
+    const links = applicationId.split(',').map(link => link.trim()).filter(link => link);
+    
+    if (links.length === 0) {
+        return '<p class="modal-description">No Application ID Available</p>';
+    }
+    
+    // Generate HTML for each link with copy button
+    return links.map((link, index) => `
+        <div style="display: flex; align-items: center; gap: 0.75rem; background: #f8fafc; padding: 0.4rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: ${index < links.length - 1 ? '0.75rem' : '0'};">
+            <p class="modal-description" style="flex: 1; margin: 0; word-break: break-all; font-size: 0.95rem;">${link}</p>
+            <button class="modal-copy-btn" data-copy-text="${link.replace(/"/g, '&quot;')}" style="background: #2563eb; color: white; border: none; border-radius: 6px; padding: 0.6rem 0.8rem; cursor: pointer; transition: all 0.2s; flex-shrink: 0; min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" title="Copy to clipboard">
+                <i class="fas fa-copy" style="font-size: 1rem;"></i>
+            </button>
+        </div>
+    `).join('');
+}
+
+// Share job using Web Share API or fallback to copy link
+function shareJob(job) {
+    const jobType = currentTable === 'Industrial Training Job Portal' ? 'industrial' : 
+                    currentTable === 'Fresher Jobs' ? 'fresher' : 
+                    currentTable === 'Semi Qualified Jobs' ? 'semi' : 'articleship';
+    const jobUrl = `${window.location.origin}/job.html?id=${job.id}&type=${jobType}`;
+    const shareData = {
+        title: `Job at ${job.Company}`,
+        text: `Check out this job opportunity at ${job.Company} in ${job.Location}`,
+        url: jobUrl
+    };
+
+    if (navigator.share) {
+        // Native share dialog will close automatically when clicking outside
+        navigator.share(shareData).catch(err => console.log('Share cancelled'));
+    } else {
+        // Fallback: copy link
+        navigator.clipboard.writeText(jobUrl).then(() => {
+            alert('Job link copied to clipboard!');
+        }).catch(err => {
+            alert('Failed to copy link. URL: ' + jobUrl);
+        });
+    }
 }
 
 function showModal(job) {
@@ -203,11 +274,11 @@ function showModal(job) {
         <div class="modal-actions">${actionsHtml}</div>
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>Apply here!</h3>
-            <p class="modal-description">${job['Application ID'] || 'No Application ID Available'}</p>
+            ${generateApplicationLinks(job['Application ID'])}
         </div>
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Job Description</h3>
-            <p class="modal-description">${job.Description || 'No description available.'}</p>
+            <div class="modal-description">${renderMarkdown(job.Description)}</div>
         </div>`;
 
     dom.modalOverlay.style.display = 'flex';
@@ -218,6 +289,43 @@ function showModal(job) {
         document.getElementById('modalAiApplyBtn').addEventListener('click', (e) => handleApplyClick(job, e.currentTarget, true));
     } else {
         document.getElementById('modalExternalApplyBtn').addEventListener('click', (e) => handleApplyClick(job, e.currentTarget));
+    }
+
+    // Attach copy button event listeners (multiple buttons for comma-separated links)
+    const copyBtns = document.querySelectorAll('.modal-copy-btn');
+    copyBtns.forEach((copyBtn, index) => {
+        copyBtn.addEventListener('click', () => {
+            const text = copyBtn.getAttribute('data-copy-text');
+            // Pass button element directly for visual feedback
+            const icon = copyBtn.querySelector('i');
+            const originalClass = icon.className;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                icon.className = 'fas fa-check';
+                copyBtn.style.background = '#22c55e';
+                setTimeout(() => {
+                    icon.className = originalClass;
+                    copyBtn.style.background = '#2563eb';
+                }, 2000);
+            }).catch(err => {
+                console.error('Copy failed:', err);
+                alert('Failed to copy. Please copy manually.');
+            });
+        });
+    });
+
+    // Attach share button event listener
+    const shareBtn = document.getElementById('modalShareBtn');
+    if (shareBtn) {
+        // Clone button to remove all old listeners
+        const newShareBtn = shareBtn.cloneNode(true);
+        shareBtn.parentNode.replaceChild(newShareBtn, shareBtn);
+        
+        // Attach new listener with current job
+        newShareBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            shareJob(job);
+        });
     }
 }
 
@@ -270,8 +378,7 @@ async function fetchJobs() {
     if (dom.loadMoreButton) dom.loadMoreButton.style.display = 'none';
 
     try {
-        // Optimized: Only fetch fields needed for job cards (Description/Application ID fetched on detail page)
-        let selectColumns = 'id, Company, Location, Salary, Created_At, Category';
+        let selectColumns = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID"';
         if (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs") {
             selectColumns += ', Experience';
         }
@@ -1395,10 +1502,45 @@ async function initializePage() {
 
     await Promise.all([fetchJobs(), loadBanners()]);
 
+    // Check if a shared job link was opened
+    checkAndOpenSharedJob();
+
     populateNotificationDropdowns();
     updateNotificationBadge();
     if (Notification.permission === 'granted' || window.flutter_app.isReady) {
         initializeFCM();
+    }
+}
+
+// Check URL parameters and auto-open job modal if shared link
+function checkAndOpenSharedJob() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const jobId = urlParams.get('id');
+    const jobType = urlParams.get('type');
+    
+    if (jobId && jobType) {
+        // Fetch and open the specific job
+        fetchSharedJob(jobId);
+        
+        // Clean URL without reloading
+        window.history.replaceState({}, '', window.location.pathname);
+    }
+}
+
+// Fetch a specific shared job and open modal
+async function fetchSharedJob(jobId) {
+    try {
+        const { data, error } = await supabaseClient
+            .from(currentTable)
+            .select('*')
+            .eq('id', jobId)
+            .single();
+        
+        if (!error && data) {
+            setTimeout(() => showModal(data), 300);
+        }
+    } catch (err) {
+        console.error('Failed to fetch shared job:', err);
     }
 }
 
