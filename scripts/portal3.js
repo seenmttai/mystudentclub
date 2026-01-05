@@ -226,6 +226,13 @@ function shareJob(job) {
     }
 }
 
+// Check if job has custom connect link
+function checkConnectLink(job) {
+    if (job.connect_link && job.connect_link.trim() !== '') return job.connect_link;
+    if (job['connect_link'] && job['connect_link'].trim() !== '') return job['connect_link'];
+    return null;
+}
+
 function showModal(job) {
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
@@ -234,6 +241,14 @@ function showModal(job) {
     const isMailto = applyLink.startsWith('mailto:');
     const isApplied = appliedJobIds.has(job.id);
     const buttonClass = isApplied ? 'applied' : '';
+
+    // Connect to Peers Logic
+    let connectLink = checkConnectLink(job);
+    if (!connectLink) {
+        const searchKeywordSuffix = JOB_TITLE_MAP[currentTable] || "Chartered Accountant";
+        const query = `${companyName} ${searchKeywordSuffix}`;
+        connectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(query)}&origin=SWITCH_SEARCH_VERTICAL`;
+    }
 
     let actionsHtml = '';
     if (isMailto) {
@@ -248,13 +263,21 @@ function showModal(job) {
                 <svg fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                 <span class="btn-text">${aiApplyText}</span>
                 <i class="fas fa-spinner fa-spin"></i>
-            </button>`;
+            </button>
+            <a href="${connectLink}" target="_blank" class="btn btn-secondary" style="width: 100%; margin-top: 0rem;">
+                <i class="fab fa-linkedin"></i>
+                Connect to Peers
+            </a>`;
     } else {
         const applyText = isApplied ? 'Applied' : 'Apply Now';
         actionsHtml = `
             <a href="${applyLink}" id="modalExternalApplyBtn" class="btn btn-primary ${buttonClass}" target="_blank">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 ${applyText}
+            </a>
+            <a href="${connectLink}" target="_blank" class="btn btn-secondary" style="width: 100%; margin-top: 0rem;">
+                <i class="fab fa-linkedin"></i>
+                Connect to Peers
             </a>`;
     }
 
@@ -279,6 +302,12 @@ function showModal(job) {
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Job Description</h3>
             <div class="modal-description">${renderMarkdown(job.Description)}</div>
+        </div>
+        <div class="modal-footer" style="text-align: center; padding: 1rem; border-top: 1px solid #e5e7eb; margin-top: 5rem;">
+            <p style="color: #6b7280; font-size: 0.9rem;">
+                Found an issue with job posting? 
+                <a href="/contact.html" style="color: #2563eb; text-decoration: none; font-weight: 500;">Report it</a>
+            </p>
         </div>`;
 
     dom.modalOverlay.style.display = 'flex';
