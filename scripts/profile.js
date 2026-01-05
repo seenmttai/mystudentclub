@@ -308,7 +308,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
 
             if (config.dropZone) {
-                config.dropZone.addEventListener('click', () => config.input.click());
+                config.dropZone.addEventListener('click', (e) => {
+                    if (e.target !== config.input) {
+                        config.input.click();
+                    }
+                });
 
                 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                     config.dropZone.addEventListener(eventName, (e) => {

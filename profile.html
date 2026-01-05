@@ -97,7 +97,27 @@
             </div>
 
             <div class="profile-section">
-                <h2>Section 3: CA Education Details</h2>
+                <h2>Section 3: Cover Letter (Mandatory for AI features)</h2>
+                <div id="cover-letter-upload-area">
+                    <label for="cover_letter">Upload your Cover Letter (PDF or .txt) *</label>
+                    <div class="file-drop-zone" id="cover-letter-drop-zone">
+                        <input type="file" id="cover_letter" name="cover_letter" accept=".pdf,.txt">
+                        <p>Drag & drop your file here, or click to browse.</p>
+                    </div>
+                </div>
+                <div id="cover-letter-display-area" style="display: none;">
+                    <div class="file-info-tag">
+                        <span id="cover-letter-filename"></span>
+                        <button type="button" class="remove-file-btn" data-target="cover_letter"
+                            aria-label="Remove file">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2>Section 4: CA Education Details</h2>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="ca_level">Current Level in CA Journey</label>
@@ -131,7 +151,7 @@
             </div>
 
             <div class="profile-section">
-                <h2>Section 4: Experience</h2>
+                <h2>Section 5: Experience</h2>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="articleship_firm_type">Articleship Firm Type</label>
@@ -166,7 +186,7 @@
             </div>
 
             <div class="profile-section">
-                <h2>Section 5: Job Preferences</h2>
+                <h2>Section 6: Job Preferences</h2>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="current_location">Current Location</label>
@@ -180,25 +200,7 @@
                 </div>
             </div>
 
-            <div class="profile-section">
-                <h2>Section 6: Cover Letter (Mandatory for AI features)</h2>
-                <div id="cover-letter-upload-area">
-                    <label for="cover_letter">Upload your Cover Letter (PDF or .txt) *</label>
-                    <div class="file-drop-zone" id="cover-letter-drop-zone">
-                        <input type="file" id="cover_letter" name="cover_letter" accept=".pdf,.txt">
-                        <p>Drag & drop your file here, or click to browse.</p>
-                    </div>
-                </div>
-                <div id="cover-letter-display-area" style="display: none;">
-                    <div class="file-info-tag">
-                        <span id="cover-letter-filename"></span>
-                        <button type="button" class="remove-file-btn" data-target="cover_letter"
-                            aria-label="Remove file">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+
 
             <div class="form-actions">
                 <button type="submit" class="save-profile-btn">
