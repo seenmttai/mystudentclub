@@ -113,16 +113,14 @@ function renderJobCard(job) {
     const jobCard = document.createElement('article');
     jobCard.className = 'job-card';
     jobCard.dataset.jobId = job.id;
-    jobCard.addEventListener('click', (e) => {
-        showModal(job);
-    });
-
+    
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     const isApplied = appliedJobIds.has(job.id);
     const buttonText = isApplied ? 'Applied' : 'View Details';
     const buttonClass = isApplied ? 'applied' : '';
+    const applyLink = getApplicationLink(job['Application ID']);
 
     jobCard.innerHTML = `
         <div class="job-card-logo">${companyInitial}</div>
@@ -141,8 +139,17 @@ function renderJobCard(job) {
             </div>
         </div>
         <div class="job-card-actions">
-             <button class="apply-now-card-btn ${buttonClass}">${buttonText}</button>
+             <a href="${applyLink}" target="_blank" class="apply-now-card-btn" onclick="event.stopPropagation();" style="background: #3B82F6; color: white; text-decoration: none; padding: 0.5rem 1rem; display: inline-flex; align-items: center; justify-content: center; min-height: 2.5rem;">Apply Now</a>
+             <button class="apply-now-card-btn secondary ${buttonClass}" style="padding: 0.5rem 1rem; min-height: 2.5rem;">${buttonText}</button>
         </div>`;
+
+    // Add click handler to entire card
+    jobCard.addEventListener('click', (e) => {
+        // Don't open modal if clicking on Apply Now button
+        if (!e.target.closest('.apply-now-card-btn') || e.target.textContent.includes('View Details') || e.target.textContent.includes('Applied')) {
+            showModal(job);
+        }
+    });
 
     return jobCard;
 }
@@ -255,30 +262,46 @@ function showModal(job) {
         const simpleApplyText = isApplied ? 'Applied' : 'Simple Apply';
         const aiApplyText = isApplied ? 'Applied' : 'AI Powered Apply';
         actionsHtml = `
-            <button id="modalSimpleApplyBtn" class="btn btn-secondary ${buttonClass}">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                <span>${simpleApplyText}</span>
-            </button>
-            <button id="modalAiApplyBtn" class="btn btn-primary ${buttonClass}">
-                <svg fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                <span class="btn-text">${aiApplyText}</span>
-                <i class="fas fa-spinner fa-spin"></i>
-            </button>
-            <a href="${connectLink}" target="_blank" class="btn btn-secondary" style="width: 100%; margin-top: 0rem;">
-                <i class="fab fa-linkedin"></i>
-                Connect to Peers
-            </a>`;
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <button id="modalSimpleApplyBtn" class="btn btn-secondary ${buttonClass}" style="flex: 1; min-width: 100%; padding: 0.5rem 1rem; min-height: 3rem;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    <span>${simpleApplyText}</span>
+                </button>
+                <button id="modalAiApplyBtn" class="btn btn-primary ${buttonClass}" style="flex: 1; min-width: 100%; padding: 0.5rem 1rem; min-height: 3rem;">
+                    <svg fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <span class="btn-text">${aiApplyText}</span>
+                    <i class="fas fa-spinner fa-spin"></i>
+                </button>
+            </div>`;
+        actionsHtml += `
+            <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap;">
+                <a href="${connectLink}" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <i class="fab fa-linkedin"></i>
+                    Connect to Peers
+                </a>
+                <button id="modalShareBtnInline" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <i class="fas fa-share-alt"></i>
+                    Share this job
+                </button>
+            </div>`;
     } else {
         const applyText = isApplied ? 'Applied' : 'Apply Now';
         actionsHtml = `
-            <a href="${applyLink}" id="modalExternalApplyBtn" class="btn btn-primary ${buttonClass}" target="_blank">
+            <a href="${applyLink}" id="modalExternalApplyBtn" class="btn btn-primary ${buttonClass}" target="_blank" style="padding: 0.5rem 1rem; min-height: 3rem; display: flex; align-items: center; justify-content: center;">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 ${applyText}
-            </a>
-            <a href="${connectLink}" target="_blank" class="btn btn-secondary" style="width: 100%; margin-top: 0rem;">
-                <i class="fab fa-linkedin"></i>
-                Connect to Peers
             </a>`;
+        actionsHtml += `
+            <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap;">
+                <a href="${connectLink}" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <i class="fab fa-linkedin"></i>
+                    Connect to Peers
+                </a>
+                <button id="modalShareBtnInline" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <i class="fas fa-share-alt"></i>
+                    Share this job
+                </button>
+            </div>`;
     }
 
     dom.modalBody.innerHTML = `
@@ -294,7 +317,7 @@ function showModal(job) {
             <span class="job-tag">Posted: ${postedDate}</span>
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
         </div>
-        <div class="modal-actions">${actionsHtml}</div>
+        <div class="modal-actions" style="display: flex; flex-direction: column; gap: 0;">${actionsHtml}</div>
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>Apply here!</h3>
             ${generateApplicationLinks(job['Application ID'])}
@@ -343,15 +366,10 @@ function showModal(job) {
         });
     });
 
-    // Attach share button event listener
-    const shareBtn = document.getElementById('modalShareBtn');
-    if (shareBtn) {
-        // Clone button to remove all old listeners
-        const newShareBtn = shareBtn.cloneNode(true);
-        shareBtn.parentNode.replaceChild(newShareBtn, shareBtn);
-        
-        // Attach new listener with current job
-        newShareBtn.addEventListener('click', (e) => {
+    // Attach share button event listener (inline button in actions)
+    const shareBtnInline = document.getElementById('modalShareBtnInline');
+    if (shareBtnInline) {
+        shareBtnInline.addEventListener('click', (e) => {
             e.stopPropagation();
             shareJob(job);
         });
@@ -363,7 +381,6 @@ function closeModal() {
     document.body.style.overflow = 'auto';
 }
 
-// Update cache when filter options change
 function updateFilterCache() {
     cachedSortedLocations = allLocations.length > 0
         ? [...allLocations].sort((a, b) => b.length - a.length)
