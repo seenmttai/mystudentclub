@@ -271,7 +271,7 @@
     async function initialize() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session || !session.user) {
-        showStatus('You must be logged in to use this feature. Please <a href="/login.html">log in</a> or <a href="/sign-up.html">sign up</a>.', true);
+        showStatus('You must be logged in to use this feature. Please <a href="/login.html">log in or sign up</a>.', true);
         dom.form.style.opacity = '0.5';
         dom.generateBtn.disabled = true;
         return;
