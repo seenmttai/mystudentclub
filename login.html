@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - My Student Club</title>
-  <meta name="description" content="Login or sign up to My Student Club - Access CA jobs, industrial training, and career resources.">
+  <meta name="description"
+    content="Login or sign up to My Student Club - Access CA jobs, industrial training, and career resources.">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
@@ -33,7 +35,8 @@
     }
 
     /* Panels */
-    .form-panel, .marketing-panel {
+    .form-panel,
+    .marketing-panel {
       min-height: 100vh;
       transition: transform 0.6s cubic-bezier(0.645, 0.045, 0.355, 1);
       position: relative;
@@ -229,8 +232,13 @@
       background: #e5e7eb;
     }
 
-    .divider::before { margin-right: 1rem; }
-    .divider::after { margin-left: 1rem; }
+    .divider::before {
+      margin-right: 1rem;
+    }
+
+    .divider::after {
+      margin-left: 1rem;
+    }
 
     /* Form Inputs */
     .form-group {
@@ -334,7 +342,9 @@
     }
 
     @keyframes spin {
-      to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     /* Links */
@@ -412,9 +422,19 @@
     }
 
     @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-5px);
+      }
+
+      75% {
+        transform: translateX(5px);
+      }
     }
 
     /* Marketing Panel Content */
@@ -462,8 +482,15 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .testimonial-text {
@@ -524,7 +551,8 @@
     }
 
     /* Forms visibility toggle */
-    .login-form-wrapper, .signup-form-wrapper {
+    .login-form-wrapper,
+    .signup-form-wrapper {
       width: 100%;
       max-width: 380px;
     }
@@ -710,6 +738,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="auth-container" id="authContainer">
     <!-- Form Panel -->
@@ -723,20 +752,28 @@
               <stop offset="100%" style="stop-color:rgba(158, 148, 233, 0.15)" />
             </linearGradient>
           </defs>
-          <path d="M-50,60 Q200,-22 400,50 T850,150" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none" opacity="0.4"/>
-          <path d="M-50,90 Q200,-28 400,69 T850,157" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none" opacity="0.45"/>
-          <path d="M-50,150 Q200,-35 400,95 T850,142" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none" opacity="0.5"/>
-          <path d="M-50,450 Q200,400 400,500 T850,450" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none" opacity="0.3"/>
-          <path d="M-50,480 Q200,430 400,530 T850,480" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none" opacity="0.35"/>
-          <path d="M-50,510 Q200,460 400,560 T850,510" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none" opacity="0.4"/>
-          <path d="M-50,540 Q200,490 400,590 T850,540" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none" opacity="0.45"/>
-          <path d="M-50,570 Q200,520 400,620 T850,570" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none" opacity="0.5"/>
+          <path d="M-50,60 Q200,-22 400,50 T850,150" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none"
+            opacity="0.4" />
+          <path d="M-50,90 Q200,-28 400,69 T850,157" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none"
+            opacity="0.45" />
+          <path d="M-50,150 Q200,-35 400,95 T850,142" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none"
+            opacity="0.5" />
+          <path d="M-50,450 Q200,400 400,500 T850,450" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none"
+            opacity="0.3" />
+          <path d="M-50,480 Q200,430 400,530 T850,480" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none"
+            opacity="0.35" />
+          <path d="M-50,510 Q200,460 400,560 T850,510" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none"
+            opacity="0.4" />
+          <path d="M-50,540 Q200,490 400,590 T850,540" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none"
+            opacity="0.45" />
+          <path d="M-50,570 Q200,520 400,620 T850,570" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none"
+            opacity="0.5" />
         </svg>
       </div>
 
       <a href="/" class="back-btn" aria-label="Back to home">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
       </a>
 
@@ -753,10 +790,14 @@
 
           <button type="button" id="google-login-btn" class="google-btn">
             <svg viewBox="0 0 48 48">
-              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+              <path fill="#EA4335"
+                d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+              <path fill="#4285F4"
+                d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+              <path fill="#FBBC05"
+                d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+              <path fill="#34A853"
+                d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
             </svg>
             Login with Google
           </button>
@@ -770,10 +811,13 @@
             <div class="form-group">
               <div class="password-wrapper">
                 <input type="password" id="login-password" class="form-input" placeholder="Password" required>
-                <button type="button" class="password-toggle" data-target="login-password" aria-label="Toggle password visibility">
+                <button type="button" class="password-toggle" data-target="login-password"
+                  aria-label="Toggle password visibility">
                   <svg class="eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 </button>
               </div>
@@ -789,7 +833,7 @@
           <div class="switch-link">
             Not a user? <a href="#" id="show-signup">Sign up
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </a>
           </div>
@@ -810,10 +854,14 @@
 
           <button type="button" id="google-signup-btn" class="google-btn">
             <svg viewBox="0 0 48 48">
-              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+              <path fill="#EA4335"
+                d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+              <path fill="#4285F4"
+                d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+              <path fill="#FBBC05"
+                d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+              <path fill="#34A853"
+                d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
             </svg>
             Signup with Google
           </button>
@@ -835,10 +883,13 @@
             <div class="form-group">
               <div class="password-wrapper">
                 <input type="password" id="signup-password" class="form-input" placeholder="Password" required>
-                <button type="button" class="password-toggle" data-target="signup-password" aria-label="Toggle password visibility">
+                <button type="button" class="password-toggle" data-target="signup-password"
+                  aria-label="Toggle password visibility">
                   <svg class="eye-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 </button>
               </div>
@@ -852,7 +903,7 @@
           <div class="switch-link">
             Already have an account? <a href="#" id="show-login">Login
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
               </svg>
             </a>
           </div>
@@ -870,50 +921,60 @@
               <stop offset="100%" style="stop-color:rgba(255,255,255,0.08)" />
             </linearGradient>
           </defs>
-          <!-- Curved parallel lines like in the design -->
-          <path d="M-50,30 Q200,-50 400,50 T850,0" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.85"/>
-          <path d="M-50,60 Q200,-20 400,80 T850,30" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.8"/>
-          <path d="M-50,90 Q200,10 400,110 T850,60" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.75"/>
-          <path d="M-50,120 Q200,40 400,140 T850,90" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.7"/>
-          <path d="M-50,120 Q200,70 400,170 T850,120" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.65"/>
-          <path d="M-50,150 Q200,100 400,200 T850,150" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.6"/>
-          <path d="M-50,180 Q200,130 400,230 T850,180" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.55"/>
-          <path d="M-50,210 Q200,160 400,260 T850,210" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.5"/>
-          <path d="M-50,240 Q200,190 400,290 T850,240" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.45"/>
-          <path d="M-50,270 Q200,220 400,320 T850,270" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.4"/>
-          <path d="M-50,300 Q200,250 400,350 T850,300" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.35"/>
-          <path d="M-50,330 Q200,280 400,380 T850,330" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.3"/>
-          <path d="M-50,360 Q200,310 400,410 T850,360" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.28"/>
-          <path d="M-50,390 Q200,340 400,440 T850,390" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.25"/>
-          <path d="M-50,420 Q200,370 400,470 T850,420" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.22"/>
-          <path d="M-50,450 Q200,400 400,500 T850,450" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.2"/>
-          <path d="M-50,480 Q200,430 400,530 T850,480" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.18"/>
-          <path d="M-50,510 Q200,460 400,560 T850,510" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.15"/>
-          <path d="M-50,540 Q200,490 400,590 T850,540" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.12"/>
-          <path d="M-50,570 Q200,520 400,620 T850,570" stroke="url(#lineGrad)" stroke-width="1.5" fill="none" opacity="0.1"/>
+          <path d="M-50,30 Q200,-50 400,50 T850,0" stroke="url(#lineGrad)" stroke-width="1.5" fill="none"
+            opacity="0.85" />
+          <path d="M-50,60 Q200,-20 400,80 T850,30" stroke="url(#lineGrad)" stroke-width="1.5" fill="none"
+            opacity="0.8" />
+          <path d="M-50,90 Q200,10 400,110 T850,60" stroke="url(#lineGrad)" stroke-width="1.5" fill="none"
+            opacity="0.75" />
+          <path d="M-50,120 Q200,40 400,140 T850,90" stroke="url(#lineGrad)" stroke-width="1.5" fill="none"
+            opacity="0.7" />
+          <path d="M-50,150 Q200,100 400,200 T850,150" stroke="url(#lineGrad)" stroke-width="1.5" fill="none"
+            opacity="0.6" />
+          <path d="M-50,180 Q200,130 400,230 T850,180" stroke="url(#lineGrad)" stroke-width="1.5" fill="none"
+            opacity="0.55" />
+          <path d="M-50,210 Q200,160 400,260 T850,210" stroke="url(#lineGrad)" stroke-width="1.5" fill="none"
+            opacity="0.5" />
+          <path d="M-50,240 Q200,190 400,290 T850,240" stroke="url(#lineGrad)" stroke-width="1.5" fill="none"
+            opacity="0.45" />
         </svg>
       </div>
 
       <div class="marketing-content">
-        <h2 class="marketing-title">Start your journey with us</h2>
-        <p class="marketing-subtitle">Access valuable resources, expert advice, and personalized support that will give you the edge you need to excel in your CA journey.</p>
+        <h2 class="marketing-title">Unlock Your Dream<br>CA Career</h2>
+        <p class="marketing-subtitle">Your one-stop destination for Industrial Training, Articleship vacancies, and
+          expert mentorship to fast-track your corporate success.</p>
       </div>
 
       <div class="testimonial-carousel">
+        <!-- Banner 1: Placements & Vacancies -->
         <div class="testimonial-card active" data-index="0">
-          <p class="testimonial-text">According to LinkedIn, 76% of professionals believe that skills assessments are an effective way to evaluate candidates' readiness for interviews.</p>
+          <p class="testimonial-text">
+            <strong>Top-Tier Opportunities:</strong> Access exclusive vacancies and get referrals to leading
+            organizations like Amazon, UBS, and Flipkart with stipends up to ₹1.25 Lakhs.
+          </p>
         </div>
+
+        <!-- Banner 2: AI Tools -->
         <div class="testimonial-card" data-index="1">
-          <p class="testimonial-text">93% of our users reported improved confidence in their CA exam preparation within the first month.</p>
+          <p class="testimonial-text">
+            <strong>AI-Powered Edge:</strong> Utilize our AI CV Reviewer and Interview Bot to perfect your resume and
+            boost your shortlist chances by 3x compared to standard applicants.
+          </p>
         </div>
+
+        <!-- Banner 3: Mentorship -->
         <div class="testimonial-card" data-index="2">
-          <p class="testimonial-text">Students who use our platform are 2x more likely to secure their dream articleship positions.</p>
+          <p class="testimonial-text">
+            <strong>Expert Guidance:</strong> "The Masterclass and personal guidance helped me crack my dream Industrial
+            Training role." — Join 1000+ students placed through our programs.
+          </p>
         </div>
 
         <div class="carousel-controls">
           <button class="carousel-btn" id="carousel-prev" aria-label="Previous testimonial">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
           <div class="carousel-dots">
@@ -923,333 +984,333 @@
           </div>
           <button class="carousel-btn" id="carousel-next" aria-label="Next testimonial">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Forgot Password Modal -->
-  <div class="modal-overlay" id="forgot-password-modal">
-    <div class="modal-content">
-      <h3 class="modal-title">Reset Password</h3>
-      <p class="modal-subtitle">Enter your email address and we'll send you a link to reset your password.</p>
-      
-      <div class="form-group">
-        <input type="email" id="reset-email" class="form-input" placeholder="Email address" required>
-      </div>
-      <div id="reset-message"></div>
+    <!-- Forgot Password Modal -->
+    <div class="modal-overlay" id="forgot-password-modal">
+      <div class="modal-content">
+        <h3 class="modal-title">Reset Password</h3>
+        <p class="modal-subtitle">Enter your email address and we'll send you a link to reset your password.</p>
 
-      <div class="modal-buttons">
-        <button type="button" class="modal-btn secondary" id="cancel-reset">Cancel</button>
-        <button type="button" class="modal-btn primary" id="send-reset">Send Reset Link</button>
+        <div class="form-group">
+          <input type="email" id="reset-email" class="form-input" placeholder="Email address" required>
+        </div>
+        <div id="reset-message"></div>
+
+        <div class="modal-buttons">
+          <button type="button" class="modal-btn secondary" id="cancel-reset">Cancel</button>
+          <button type="button" class="modal-btn primary" id="send-reset">Send Reset Link</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script>
-    // Initialize Supabase
-    const supabaseClient = supabase.createClient(
-      'https://izsggdtdiacxdsjjncdq.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0'
-    );
+    <script>
+      // Initialize Supabase
+      const supabaseClient = supabase.createClient(
+        'https://izsggdtdiacxdsjjncdq.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0'
+      );
 
-    const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
+      const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
 
-    // Check if already logged in
-    window.addEventListener('DOMContentLoaded', async () => {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      if (session) {
-        window.location.href = redirectUrl || '/';
-      }
-    });
+      // Check if already logged in
+      window.addEventListener('DOMContentLoaded', async () => {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
+          window.location.href = redirectUrl || '/';
+        }
+      });
 
-    // DOM Elements
-    const authContainer = document.getElementById('authContainer');
-    const showSignupLink = document.getElementById('show-signup');
-    const showLoginLink = document.getElementById('show-login');
+      // DOM Elements
+      const authContainer = document.getElementById('authContainer');
+      const showSignupLink = document.getElementById('show-signup');
+      const showLoginLink = document.getElementById('show-login');
 
-    // Toggle between login and signup
-    showSignupLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      authContainer.classList.add('signup-active');
-    });
+      // Toggle between login and signup
+      showSignupLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        authContainer.classList.add('signup-active');
+      });
 
-    showLoginLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      authContainer.classList.remove('signup-active');
-    });
+      showLoginLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        authContainer.classList.remove('signup-active');
+      });
 
-    // Password visibility toggle
-    document.querySelectorAll('.password-toggle').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const targetId = btn.getAttribute('data-target');
-        const input = document.getElementById(targetId);
-        const icon = btn.querySelector('svg');
-        
-        if (input.type === 'password') {
-          input.type = 'text';
-          icon.innerHTML = `
+      // Password visibility toggle
+      document.querySelectorAll('.password-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const targetId = btn.getAttribute('data-target');
+          const input = document.getElementById(targetId);
+          const icon = btn.querySelector('svg');
+
+          if (input.type === 'password') {
+            input.type = 'text';
+            icon.innerHTML = `
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>
           `;
-        } else {
-          input.type = 'password';
-          icon.innerHTML = `
+          } else {
+            input.type = 'password';
+            icon.innerHTML = `
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
           `;
+          }
+        });
+      });
+
+      // Login Form
+      const loginForm = document.getElementById('login-form');
+      const loginError = document.getElementById('login-error');
+      const loginSubmit = document.getElementById('login-submit');
+
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const email = document.getElementById('login-email').value;
+        const password = document.getElementById('login-password').value;
+
+        loginSubmit.classList.add('loading');
+        loginSubmit.disabled = true;
+        loginError.classList.remove('show');
+
+        try {
+          const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+          });
+
+          if (error) throw error;
+          window.location.href = redirectUrl || '/';
+
+        } catch (error) {
+          loginError.textContent = error.message;
+          loginError.classList.add('show');
+          loginSubmit.classList.remove('loading');
+          loginSubmit.disabled = false;
         }
       });
-    });
 
-    // Login Form
-    const loginForm = document.getElementById('login-form');
-    const loginError = document.getElementById('login-error');
-    const loginSubmit = document.getElementById('login-submit');
+      // Signup Form
+      const signupForm = document.getElementById('signup-form');
+      const signupError = document.getElementById('signup-error');
+      const signupSuccess = document.getElementById('signup-success');
+      const signupSubmit = document.getElementById('signup-submit');
 
-    loginForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      
-      const email = document.getElementById('login-email').value;
-      const password = document.getElementById('login-password').value;
+      signupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-      loginSubmit.classList.add('loading');
-      loginSubmit.disabled = true;
-      loginError.classList.remove('show');
+        const firstName = document.getElementById('signup-firstname').value;
+        const lastName = document.getElementById('signup-lastname').value;
+        const email = document.getElementById('signup-email').value;
+        const password = document.getElementById('signup-password').value;
 
-      try {
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-          email,
-          password
-        });
+        signupError.classList.remove('show');
+        signupSuccess.classList.remove('show');
 
-        if (error) throw error;
-        window.location.href = redirectUrl || '/';
+        if (password.length < 6) {
+          signupError.textContent = 'Password must be at least 6 characters long.';
+          signupError.classList.add('show');
+          return;
+        }
 
-      } catch (error) {
-        loginError.textContent = error.message;
-        loginError.classList.add('show');
-        loginSubmit.classList.remove('loading');
-        loginSubmit.disabled = false;
-      }
-    });
+        signupSubmit.classList.add('loading');
+        signupSubmit.disabled = true;
 
-    // Signup Form
-    const signupForm = document.getElementById('signup-form');
-    const signupError = document.getElementById('signup-error');
-    const signupSuccess = document.getElementById('signup-success');
-    const signupSubmit = document.getElementById('signup-submit');
-
-    signupForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-
-      const firstName = document.getElementById('signup-firstname').value;
-      const lastName = document.getElementById('signup-lastname').value;
-      const email = document.getElementById('signup-email').value;
-      const password = document.getElementById('signup-password').value;
-
-      signupError.classList.remove('show');
-      signupSuccess.classList.remove('show');
-
-      if (password.length < 6) {
-        signupError.textContent = 'Password must be at least 6 characters long.';
-        signupError.classList.add('show');
-        return;
-      }
-
-      signupSubmit.classList.add('loading');
-      signupSubmit.disabled = true;
-
-      try {
-        const { data, error } = await supabaseClient.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/login.html`,
-            data: {
-              first_name: firstName,
-              last_name: lastName,
-              full_name: `${firstName} ${lastName}`
+        try {
+          const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: {
+              emailRedirectTo: `${window.location.origin}/login.html`,
+              data: {
+                first_name: firstName,
+                last_name: lastName,
+                full_name: `${firstName} ${lastName}`
+              }
             }
+          });
+
+          if (error) throw error;
+
+          if (data.user && !data.session) {
+            signupSuccess.textContent = 'Sign up successful! Please check your email to confirm your account.';
+            signupSuccess.classList.add('show');
+            signupForm.reset();
+          } else if (data.session) {
+            window.location.href = '/';
           }
-        });
 
-        if (error) throw error;
-
-        if (data.user && !data.session) {
-          signupSuccess.textContent = 'Sign up successful! Please check your email to confirm your account.';
-          signupSuccess.classList.add('show');
-          signupForm.reset();
-        } else if (data.session) {
-          window.location.href = '/';
-        }
-
-      } catch (error) {
-        if (error.message.includes('User already registered')) {
-          signupError.textContent = 'This email is already registered. Please log in instead.';
-        } else {
-          signupError.textContent = error.message || 'Failed to sign up. Please try again.';
-        }
-        signupError.classList.add('show');
-      } finally {
-        signupSubmit.classList.remove('loading');
-        signupSubmit.disabled = false;
-      }
-    });
-
-    // Google Sign In
-    const googleLoginBtn = document.getElementById('google-login-btn');
-    const googleSignupBtn = document.getElementById('google-signup-btn');
-
-    async function handleGoogleSignIn() {
-      try {
-        const { error } = await supabaseClient.auth.signInWithOAuth({
-          provider: 'google',
-          options: {
-            redirectTo: redirectUrl ? `${window.location.origin}${redirectUrl}` : window.location.origin
+        } catch (error) {
+          if (error.message.includes('User already registered')) {
+            signupError.textContent = 'This email is already registered. Please log in instead.';
+          } else {
+            signupError.textContent = error.message || 'Failed to sign up. Please try again.';
           }
-        });
-        if (error) throw error;
-      } catch (error) {
-        console.error('Google Sign-In Error:', error);
-        const errorEl = authContainer.classList.contains('signup-active') ? signupError : loginError;
-        errorEl.textContent = error.message || 'Failed to sign in with Google.';
-        errorEl.classList.add('show');
-      }
-    }
-
-    googleLoginBtn.addEventListener('click', handleGoogleSignIn);
-    googleSignupBtn.addEventListener('click', handleGoogleSignIn);
-
-    // Native Google Sign-In handler (for mobile apps)
-    window.handleGoogleSignInToken = async function(id_token) {
-      if (!id_token) return;
-      try {
-        const { error } = await supabaseClient.auth.signInWithIdToken({
-          provider: 'google',
-          token: id_token
-        });
-        if (error) {
-          alert('Could not complete Google Sign-In: ' + error.message);
-        } else {
-          window.location.href = redirectUrl || '/';
+          signupError.classList.add('show');
+        } finally {
+          signupSubmit.classList.remove('loading');
+          signupSubmit.disabled = false;
         }
-      } catch (e) {
-        console.error('Error during Google Sign-In:', e);
+      });
+
+      // Google Sign In
+      const googleLoginBtn = document.getElementById('google-login-btn');
+      const googleSignupBtn = document.getElementById('google-signup-btn');
+
+      async function handleGoogleSignIn() {
+        try {
+          const { error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+              redirectTo: redirectUrl ? `${window.location.origin}${redirectUrl}` : window.location.origin
+            }
+          });
+          if (error) throw error;
+        } catch (error) {
+          console.error('Google Sign-In Error:', error);
+          const errorEl = authContainer.classList.contains('signup-active') ? signupError : loginError;
+          errorEl.textContent = error.message || 'Failed to sign in with Google.';
+          errorEl.classList.add('show');
+        }
       }
-    };
 
-    // Forgot Password Modal
-    const forgotLink = document.getElementById('forgot-password-link');
-    const forgotModal = document.getElementById('forgot-password-modal');
-    const cancelReset = document.getElementById('cancel-reset');
-    const sendReset = document.getElementById('send-reset');
-    const resetEmail = document.getElementById('reset-email');
-    const resetMessage = document.getElementById('reset-message');
+      googleLoginBtn.addEventListener('click', handleGoogleSignIn);
+      googleSignupBtn.addEventListener('click', handleGoogleSignIn);
 
-    forgotLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      forgotModal.classList.add('show');
-    });
+      // Native Google Sign-In handler (for mobile apps)
+      window.handleGoogleSignInToken = async function (id_token) {
+        if (!id_token) return;
+        try {
+          const { error } = await supabaseClient.auth.signInWithIdToken({
+            provider: 'google',
+            token: id_token
+          });
+          if (error) {
+            alert('Could not complete Google Sign-In: ' + error.message);
+          } else {
+            window.location.href = redirectUrl || '/';
+          }
+        } catch (e) {
+          console.error('Error during Google Sign-In:', e);
+        }
+      };
 
-    cancelReset.addEventListener('click', () => {
-      forgotModal.classList.remove('show');
-      resetMessage.classList.remove('show');
-      resetEmail.value = '';
-    });
+      // Forgot Password Modal
+      const forgotLink = document.getElementById('forgot-password-link');
+      const forgotModal = document.getElementById('forgot-password-modal');
+      const cancelReset = document.getElementById('cancel-reset');
+      const sendReset = document.getElementById('send-reset');
+      const resetEmail = document.getElementById('reset-email');
+      const resetMessage = document.getElementById('reset-message');
 
-    forgotModal.addEventListener('click', (e) => {
-      if (e.target === forgotModal) {
+      forgotLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        forgotModal.classList.add('show');
+      });
+
+      cancelReset.addEventListener('click', () => {
         forgotModal.classList.remove('show');
         resetMessage.classList.remove('show');
         resetEmail.value = '';
-      }
-    });
+      });
 
-    sendReset.addEventListener('click', async () => {
-      const email = resetEmail.value;
-      
-      if (!email) {
-        resetMessage.textContent = 'Please enter your email address.';
-        resetMessage.className = 'error show';
-        return;
-      }
+      forgotModal.addEventListener('click', (e) => {
+        if (e.target === forgotModal) {
+          forgotModal.classList.remove('show');
+          resetMessage.classList.remove('show');
+          resetEmail.value = '';
+        }
+      });
 
-      sendReset.disabled = true;
-      sendReset.textContent = 'Sending...';
+      sendReset.addEventListener('click', async () => {
+        const email = resetEmail.value;
 
-      try {
-        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-          redirectTo: `${window.location.origin}/update-password.html`
+        if (!email) {
+          resetMessage.textContent = 'Please enter your email address.';
+          resetMessage.className = 'error show';
+          return;
+        }
+
+        sendReset.disabled = true;
+        sendReset.textContent = 'Sending...';
+
+        try {
+          const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+            redirectTo: `${window.location.origin}/update-password.html`
+          });
+
+          if (error) throw error;
+
+          resetMessage.innerHTML = 'Password reset link sent! <strong>Check your spam folder</strong> if you don\'t see it.';
+          resetMessage.className = 'success show';
+          resetEmail.value = '';
+
+        } catch (error) {
+          resetMessage.textContent = error.message;
+          resetMessage.className = 'error show';
+        } finally {
+          sendReset.disabled = false;
+          sendReset.textContent = 'Send Reset Link';
+        }
+      });
+
+      // Testimonial Carousel
+      const carouselCards = document.querySelectorAll('.testimonial-card');
+      const carouselDots = document.querySelectorAll('.carousel-dot');
+      const prevBtn = document.getElementById('carousel-prev');
+      const nextBtn = document.getElementById('carousel-next');
+      let currentSlide = 0;
+      let autoSlide;
+
+      function showSlide(index) {
+        if (index < 0) index = carouselCards.length - 1;
+        if (index >= carouselCards.length) index = 0;
+        currentSlide = index;
+
+        carouselCards.forEach((card, i) => {
+          card.classList.toggle('active', i === index);
         });
-
-        if (error) throw error;
-
-        resetMessage.innerHTML = 'Password reset link sent! <strong>Check your spam folder</strong> if you don\'t see it.';
-        resetMessage.className = 'success show';
-        resetEmail.value = '';
-
-      } catch (error) {
-        resetMessage.textContent = error.message;
-        resetMessage.className = 'error show';
-      } finally {
-        sendReset.disabled = false;
-        sendReset.textContent = 'Send Reset Link';
+        carouselDots.forEach((dot, i) => {
+          dot.classList.toggle('active', i === index);
+        });
       }
-    });
 
-    // Testimonial Carousel
-    const carouselCards = document.querySelectorAll('.testimonial-card');
-    const carouselDots = document.querySelectorAll('.carousel-dot');
-    const prevBtn = document.getElementById('carousel-prev');
-    const nextBtn = document.getElementById('carousel-next');
-    let currentSlide = 0;
-    let autoSlide;
+      function startAutoSlide() {
+        autoSlide = setInterval(() => {
+          showSlide(currentSlide + 1);
+        }, 5000);
+      }
 
-    function showSlide(index) {
-      if (index < 0) index = carouselCards.length - 1;
-      if (index >= carouselCards.length) index = 0;
-      currentSlide = index;
+      function resetAutoSlide() {
+        clearInterval(autoSlide);
+        startAutoSlide();
+      }
 
-      carouselCards.forEach((card, i) => {
-        card.classList.toggle('active', i === index);
-      });
-      carouselDots.forEach((dot, i) => {
-        dot.classList.toggle('active', i === index);
-      });
-    }
-
-    function startAutoSlide() {
-      autoSlide = setInterval(() => {
-        showSlide(currentSlide + 1);
-      }, 5000);
-    }
-
-    function resetAutoSlide() {
-      clearInterval(autoSlide);
-      startAutoSlide();
-    }
-
-    prevBtn.addEventListener('click', () => {
-      showSlide(currentSlide - 1);
-      resetAutoSlide();
-    });
-
-    nextBtn.addEventListener('click', () => {
-      showSlide(currentSlide + 1);
-      resetAutoSlide();
-    });
-
-    carouselDots.forEach(dot => {
-      dot.addEventListener('click', () => {
-        showSlide(parseInt(dot.getAttribute('data-index')));
+      prevBtn.addEventListener('click', () => {
+        showSlide(currentSlide - 1);
         resetAutoSlide();
       });
-    });
 
-    startAutoSlide();
-  </script>
+      nextBtn.addEventListener('click', () => {
+        showSlide(currentSlide + 1);
+        resetAutoSlide();
+      });
+
+      carouselDots.forEach(dot => {
+        dot.addEventListener('click', () => {
+          showSlide(parseInt(dot.getAttribute('data-index')));
+          resetAutoSlide();
+        });
+      });
+
+      startAutoSlide();
+    </script>
 </body>
+
 </html>
