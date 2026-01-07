@@ -120,7 +120,7 @@ function renderJobCard(job) {
     const isApplied = appliedJobIds.has(job.id);
     const buttonText = isApplied ? 'Applied' : 'View Details';
     const buttonClass = isApplied ? 'applied' : '';
-    const applyLink = getApplicationLink(job['Application ID']);
+    const applyLink = getApplicationLink(job['Application ID'], job.Company);
 
     jobCard.innerHTML = `
         <div class="job-card-logo">${companyInitial}</div>
@@ -244,7 +244,7 @@ function showModal(job) {
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
-    const applyLink = getApplicationLink(job['Application ID']);
+    const applyLink = getApplicationLink(job['Application ID'], job.Company);
     const isMailto = applyLink.startsWith('mailto:');
     const isApplied = appliedJobIds.has(job.id);
     const buttonClass = isApplied ? 'applied' : '';
@@ -954,7 +954,7 @@ function constructMailto(job, body = "") {
     return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
-function getApplicationLink(id) {
+function getApplicationLink(id, companyName = 'the company') {
     if (!id) return '#';
     const trimmedId = id.trim();
     if (trimmedId.startsWith('http')) {
@@ -965,7 +965,7 @@ function getApplicationLink(id) {
         }
     }
     if (trimmedId.includes('@')) {
-        return constructMailto({ 'Application ID': trimmedId, Company: 'the company' });
+        return constructMailto({ 'Application ID': trimmedId, Company: companyName });
     }
     return `https://www.google.com/search?q=${encodeURIComponent(trimmedId + ' careers')}`;
 }
