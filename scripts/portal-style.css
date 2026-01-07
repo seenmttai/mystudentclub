@@ -1379,14 +1379,14 @@ body {
 .whatsapp-fab span {
   display: inline-block;
   white-space: nowrap;
-  margin-left: 0.5rem;
+  margin-left: 0;
   max-width: 0;
   opacity: 0;
-  transition: max-width 0.3s ease-in-out, opacity 0.2s ease-in-out 0.1s;
+  transition: max-width 0.3s ease-in-out, opacity 0.2s ease-in-out 0.1s, margin-left 0.3s ease-in-out;
 }
 
 .whatsapp-fab:hover {
-  width: 180px;
+  width: 160px;
   justify-content: flex-start;
   padding: 0 1rem;
   transform: translateY(-3px) scale(1.02);
@@ -1396,6 +1396,7 @@ body {
 .whatsapp-fab:hover span {
   max-width: 100px;
   opacity: 1;
+  margin-left: 0.6rem;
 }
 
 .whatsapp-fab svg {
