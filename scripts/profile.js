@@ -133,6 +133,11 @@ async function handleFile(file, type) {
         let textContent = '';
         let images = [];
 
+        if (type === 'cover_letter' && file.type !== 'application/pdf') {
+            alert('Please upload your Cover Letter in PDF format only.');
+            return;
+        }
+
         if (file.type === 'application/pdf') {
             const arrayBuffer = await file.arrayBuffer();
             // Load PDF document
@@ -147,7 +152,7 @@ async function handleFile(file, type) {
 
             // Extract Images (for Resume Auto-fill)
             if (type === 'resume') {
-                showLoading(true, "Analyzing Resume with AI...");
+                showLoading(true, "Autofilling details using AI...");
                 images = await convertPdfToImages(pdf);
                 if (images.length > 0) {
                     const extractedData = await extractProfileData(images, textContent);
@@ -157,12 +162,10 @@ async function handleFile(file, type) {
                     }
                 }
             }
-
         } else if (file.type === 'text/plain') {
             textContent = await file.text();
             if (type === 'resume') {
-                // For text files, we can only send text
-                showLoading(true, "Analyzing Resume (Text) with AI...");
+                showLoading(true, "Autofilling details using AI...");
                 const extractedData = await extractProfileData([], textContent);
                 if (extractedData) {
                     populateForm(extractedData);
