@@ -1242,6 +1242,9 @@
           if (error) throw error;
 
           if (data.user && !data.session) {
+            // Mark as new user for resume prompt on first login
+            localStorage.setItem('newUserSignup', 'true');
+            localStorage.setItem('newUserEmail', email);
             signupSuccess.textContent = 'Sign up successful! Please check your email to confirm your account.';
             signupSuccess.classList.add('show');
             signupForm.reset();
