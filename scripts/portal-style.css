@@ -1826,3 +1826,49 @@ body {
 .modal-share-action:active {
   transform: scale(0.95);
 }
+
+/* Job Card Apply Button Styles */
+.apply-now-card-btn {
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: 1px solid var(--border-medium);
+}
+
+.apply-now-card-btn.primary {
+  background: var(--primary-brand);
+  color: white;
+  border: none;
+}
+
+.apply-now-card-btn.primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.apply-now-card-btn.secondary {
+  background: white;
+  color: var(--text-primary);
+}
+
+.apply-now-card-btn.secondary:hover {
+  background: var(--neutral-bg);
+  border-color: var(--primary-brand);
+  color: var(--primary-brand);
+}
+
+.apply-now-card-btn.applied {
+  background: #10B981 !important;
+  color: white !important;
+  border: none !important;
+  cursor: default;
+  pointer-events: none;
+}
+
+.apply-now-card-btn.applied:hover {
+  transform: none;
+  box-shadow: none;
+}
