@@ -671,13 +671,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             if (type === 'iframe') {
-                // Extract the Sheet ID dynamically from the URL
                 const matches = resource.url.match(/\/d\/([a-zA-Z0-9-_]+)/);
                 const sheetId = matches ? matches[1] : '';
+                const gidMatch = resource.url.match(/[#&]gid=([0-9]+)/);
+                const gid = gidMatch ? gidMatch[1] : '';
 
                 if (sheetId) {
-                    // Use pubhtml to prevent 'File > Make a copy' and hide UI
-                    const embedUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/pubhtml?widget=true&headers=false&chrome=false`;
+                    let embedUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/pubhtml?widget=true&headers=false&chrome=false`;
+                    if (gid) {
+                        embedUrl += `&gid=${gid}`;
+                    }
                     DOMElements.resourceIframe.src = embedUrl;
                     DOMElements.iframeViewerContainer.style.display = 'block';
                     DOMElements.viewerLoadingScreen.style.display = 'none';
