@@ -679,7 +679,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (sheetId) {
                     let embedUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/pubhtml?widget=true&headers=false&chrome=false`;
                     if (gid) {
-                        embedUrl += `&gid=${gid}`;
+                        embedUrl += `&gid=${gid}&single=true`;
                     }
                     DOMElements.resourceIframe.src = embedUrl;
                     DOMElements.iframeViewerContainer.style.display = 'block';
