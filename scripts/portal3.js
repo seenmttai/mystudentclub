@@ -70,10 +70,10 @@ const JOB_TITLE_MAP = {
 };
 
 const EMAIL_SUBJECT_MAP = {
-    "Industrial Training Job Portal": "Application for CA Industrial Training Position for your organisation",
-    "Fresher Jobs": "Application for CA Fresher Position for your organisation",
-    "Semi Qualified Jobs": "Application for Semi Qualified CA Position for your organisation",
-    "Articleship Jobs": "Application for CA Articleship Role for your organisation"
+    "Industrial Training Job Portal": "Application for CA Industrial Training",
+    "Fresher Jobs": "Application for CA Fresher",
+    "Semi Qualified Jobs": "Application for Semi Qualified CA",
+    "Articleship Jobs": "Application for CA Articleship"
 };
 
 function setActivePortalTab() {
@@ -113,7 +113,7 @@ function renderJobCard(job) {
     const jobCard = document.createElement('article');
     jobCard.className = 'job-card';
     jobCard.dataset.jobId = job.id;
-    
+
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
@@ -167,7 +167,7 @@ function renderJobCard(job) {
 // Simple markdown renderer for job descriptions
 function renderMarkdown(text) {
     if (!text) return 'No description available.';
-    
+
     let html = text
         // Headers
         .replace(/^### (.*$)/gim, '<h3>$1</h3>')
@@ -184,13 +184,13 @@ function renderMarkdown(text) {
         // Line breaks
         .replace(/\n\n/g, '</p><p>')
         .replace(/\n/g, '<br>');
-    
+
     // Wrap in paragraph
     html = '<p>' + html + '</p>';
-    
+
     // Fix multiple paragraph tags
     html = html.replace(/<p><\/p>/g, '');
-    
+
     return html;
 }
 
@@ -199,14 +199,14 @@ function generateApplicationLinks(applicationId) {
     if (!applicationId) {
         return '<p class="modal-description">No Application ID Available</p>';
     }
-    
+
     // Split by comma and trim whitespace
     const links = applicationId.split(',').map(link => link.trim()).filter(link => link);
-    
+
     if (links.length === 0) {
         return '<p class="modal-description">No Application ID Available</p>';
     }
-    
+
     // Generate HTML for each link with copy button
     return links.map((link, index) => `
         <div style="display: flex; align-items: center; gap: 0.75rem; background: #f8fafc; padding: 0.4rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: ${index < links.length - 1 ? '0.75rem' : '0'};">
@@ -220,9 +220,9 @@ function generateApplicationLinks(applicationId) {
 
 // Share job using Web Share API or fallback to copy link
 function shareJob(job) {
-    const jobType = currentTable === 'Industrial Training Job Portal' ? 'industrial' : 
-                    currentTable === 'Fresher Jobs' ? 'fresher' : 
-                    currentTable === 'Semi Qualified Jobs' ? 'semi' : 'articleship';
+    const jobType = currentTable === 'Industrial Training Job Portal' ? 'industrial' :
+        currentTable === 'Fresher Jobs' ? 'fresher' :
+            currentTable === 'Semi Qualified Jobs' ? 'semi' : 'articleship';
     const jobUrl = `${window.location.origin}/job.html?id=${job.id}&type=${jobType}`;
     const shareData = {
         title: `Job at ${job.Company}`,
@@ -254,7 +254,7 @@ function showModal(job) {
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
-    const applyLink = getApplicationLink(job['Application ID']);
+    const applyLink = getApplicationLink(job['Application ID'], job.Company);
     const isMailto = applyLink.startsWith('mailto:');
     const isApplied = appliedJobIds.has(job.id);
     const buttonClass = isApplied ? 'applied' : '';
@@ -363,7 +363,7 @@ function showModal(job) {
             // Pass button element directly for visual feedback
             const icon = copyBtn.querySelector('i');
             const originalClass = icon.className;
-            
+
             navigator.clipboard.writeText(text).then(() => {
                 icon.className = 'fas fa-check';
                 copyBtn.style.background = '#22c55e';
@@ -965,12 +965,12 @@ function constructMailto(job, body = "") {
     const emailMatch = rawLink.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
     if (!emailMatch) return '#';
     const email = emailMatch[0];
-    const subjectBase = EMAIL_SUBJECT_MAP[currentTable] || `Application for the role for your organisation`;
-    const subject = `${subjectBase} (Ref: My Student Club)`;
+    const subjectBase = EMAIL_SUBJECT_MAP[currentTable] || `Application for the role`;
+    const subject = `${subjectBase} at ${job.Company} (Ref: My Student Club)`;
     return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
-function getApplicationLink(id) {
+function getApplicationLink(id, companyName = 'the company') {
     if (!id) return '#';
     const trimmedId = id.trim();
     if (trimmedId.startsWith('http')) {
@@ -981,7 +981,7 @@ function getApplicationLink(id) {
         }
     }
     if (trimmedId.includes('@')) {
-        return constructMailto({ 'Application ID': trimmedId, Company: 'the company' });
+        return constructMailto({ 'Application ID': trimmedId, Company: companyName });
     }
     return `https://www.google.com/search?q=${encodeURIComponent(trimmedId + ' careers')}`;
 }
@@ -1579,11 +1579,11 @@ function checkAndOpenSharedJob() {
     const urlParams = new URLSearchParams(window.location.search);
     const jobId = urlParams.get('id');
     const jobType = urlParams.get('type');
-    
+
     if (jobId && jobType) {
         // Fetch and open the specific job
         fetchSharedJob(jobId);
-        
+
         // Clean URL without reloading
         window.history.replaceState({}, '', window.location.pathname);
     }
@@ -1597,7 +1597,7 @@ async function fetchSharedJob(jobId) {
             .select('*')
             .eq('id', jobId)
             .single();
-        
+
         if (!error && data) {
             setTimeout(() => showModal(data), 300);
         }

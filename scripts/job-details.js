@@ -21,7 +21,7 @@ const TABLE_MAP = {
 async function init() {
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
-    
+
     let tableParam = params.get('type') || params.get('table');
 
     setBackLink(tableParam);
@@ -48,16 +48,16 @@ async function init() {
 function setBackLink(type) {
     const backLink = document.getElementById('backLink');
     const backLinkText = document.getElementById('backLinkText');
-    
+
     if (!backLink || !backLinkText) return;
-    
+
     const portalMap = {
         'industrial': { url: '/', label: 'Industrial Training' },
         'fresher': { url: '/fresher.html', label: 'Fresher Jobs' },
         'semi': { url: '/semi-qualified.html', label: 'Semi Qualified' },
         'articleship': { url: '/articleship.html', label: 'Articleship' }
     };
-    
+
     const portal = portalMap[type] || portalMap['industrial'];
     backLink.href = portal.url;
     backLinkText.textContent = 'Back to jobs';
@@ -65,7 +65,7 @@ function setBackLink(type) {
 
 function renderMarkdown(text) {
     if (!text) return 'No description provided.';
-    
+
     let html = text
         .replace(/^### (.*$)/gim, '<h3>$1</h3>')
         .replace(/^## (.*$)/gim, '<h2>$1</h2>')
@@ -77,20 +77,20 @@ function renderMarkdown(text) {
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
         .replace(/\n\n/g, '</p><p>')
         .replace(/\n/g, '<br>');
-    
+
     html = '<p>' + html + '</p>';
-    
+
     html = html.replace(/<p><\/p>/g, '');
-    
+
     return html;
 }
 
 function copyApplyLink(event) {
     const btn = event.currentTarget;
     const text = btn.getAttribute('data-copy-text');
-    
+
     if (!text || text === 'N/A') return;
-    
+
     navigator.clipboard.writeText(text).then(() => {
         const icon = btn.querySelector('i');
         icon.className = 'fas fa-check';
@@ -131,7 +131,7 @@ function renderJob(job, tableName) {
     const location = job.Location || 'Remote / Unspecified';
     const category = job.Category || 'General';
     const description = job.Description || 'No description provided.';
-    
+
     const applyInfo = getApplicationLink(job['Application ID']);
 
     let connectLink = checkConnectLink(job);
@@ -244,32 +244,32 @@ function renderJob(job, tableName) {
 function getApplicationLink(id) {
     if (!id) return { link: '#', isEmail: false };
     const trimmedId = id.trim();
-    
+
     if (trimmedId.toLowerCase().startsWith('http')) {
         try {
             new URL(trimmedId);
             return { link: trimmedId, isEmail: false };
-        } catch (_) {}
+        } catch (_) { }
     }
-    
+
     if (trimmedId.includes('@')) {
         const emailMatch = trimmedId.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
         if (emailMatch) {
             return { link: trimmedId, isEmail: true, email: emailMatch[0] };
         }
     }
-    
-    return { 
-        link: `https://www.google.com/search?q=${encodeURIComponent(trimmedId + ' careers')}`, 
-        isEmail: false 
+
+    return {
+        link: `https://www.google.com/search?q=${encodeURIComponent(trimmedId + ' careers')}`,
+        isEmail: false
     };
 }
 
 const EMAIL_SUBJECT_MAP = {
-    "Industrial Training Job Portal": "Application for CA Industrial Training Position",
-    "Fresher Jobs": "Application for CA Fresher Position",
-    "Semi Qualified Jobs": "Application for Semi Qualified CA Position",
-    "Articleship Jobs": "Application for CA Articleship Role"
+    "Industrial Training Job Portal": "Application for CA Industrial Training",
+    "Fresher Jobs": "Application for CA Fresher",
+    "Semi Qualified Jobs": "Application for Semi Qualified CA",
+    "Articleship Jobs": "Application for CA Articleship"
 };
 
 function constructMailto(job, tableName, body = "") {
@@ -347,9 +347,9 @@ async function handleAiApply(job, buttonElement, tableName) {
     try {
         const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
         const cvText = localStorage.getItem('userCVText');
-        
+
         const emailBody = await generateEmailBody({ profile_data: profileData, cv_text: cvText }, job, tableName);
-        
+
         window.location.href = constructMailto(job, tableName, emailBody);
     } catch (e) {
         console.error('AI Apply error:', e);
@@ -379,14 +379,14 @@ async function generateEmailBody(profile, job, tableName) {
                 }
             })
         });
-        
+
         if (!response.ok) {
             const errorText = await response.text();
             throw new Error(`AI worker responded with status: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
+
         if (data.email_body && data.email_body.trim() !== '') {
             return data.email_body;
         } else {

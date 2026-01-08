@@ -727,7 +727,11 @@
                 },
 
                 isSpecialSheet(resource) {
-                    return resource.url === 'https://docs.google.com/spreadsheets/d/1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y/edit?gid=1269177841#gid=1269177841';
+                    const specialUrls = [
+                        'https://docs.google.com/spreadsheets/d/1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y/edit?gid=1269177841#gid=1269177841',
+                        'https://docs.google.com/spreadsheets/d/1vVVFbHawgCnr01_-eSVQLiSa3TZ9yuB00fgmNPZKZJc/edit?gid=1309949710#gid=1309949710'
+                    ];
+                    return specialUrls.includes(resource.url);
                 },
                 hasViewPath(resource) {
                     return resource.view_storage_path && resource.view_storage_path !== 'None';
@@ -758,8 +762,21 @@
                     this.csvHtml = '';
 
                     if (type === 'iframe') {
-                        const sheetId = '1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y';
-                        this.iframeSrc = `https://docs.google.com/spreadsheets/d/${sheetId}/pubhtml?widget=true&headers=false&chrome=false`;
+                        const matches = resource.url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                        const sheetId = matches ? matches[1] : '';
+                        const gidMatch = resource.url.match(/[#&]gid=([0-9]+)/);
+                        const gid = gidMatch ? gidMatch[1] : '';
+
+                        if (sheetId) {
+                            let embedUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/pubhtml?widget=true&headers=false&chrome=false`;
+                            if (gid) {
+                                embedUrl += `&gid=${gid}`;
+                            }
+                            this.iframeSrc = embedUrl;
+                        } else {
+                            alert("Invalid Sheet URL");
+                            this.closeViewer();
+                        }
                         this.viewerLoading = false;
                         return;
                     }

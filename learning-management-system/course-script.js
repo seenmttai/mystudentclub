@@ -590,8 +590,13 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const handleResourceClick = async (resource) => {
-        const specialSheetUrl = 'https://docs.google.com/spreadsheets/d/1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y/edit?gid=1269177841#gid=1269177841';
-        if (resource.url === specialSheetUrl) {
+        // Define all sheets that should open in the embedded viewer
+        const specialSheetUrls = [
+            'https://docs.google.com/spreadsheets/d/1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y/edit?gid=1269177841#gid=1269177841',
+            'https://docs.google.com/spreadsheets/d/1vVVFbHawgCnr01_-eSVQLiSa3TZ9yuB00fgmNPZKZJc/edit?gid=1309949710#gid=1309949710'
+        ];
+
+        if (specialSheetUrls.includes(resource.url)) {
             await openResourceViewer(resource, 'iframe');
             return;
         }
@@ -666,11 +671,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             if (type === 'iframe') {
-                const sheetId = '1NcACOrX0PsQCQ3P4b80EvGsI1fFxW8wlC-6y258HE-Y';
-                const embedUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/pubhtml?widget=true&headers=false&chrome=false`;
-                DOMElements.resourceIframe.src = embedUrl;
-                DOMElements.iframeViewerContainer.style.display = 'block';
-                DOMElements.viewerLoadingScreen.style.display = 'none';
+                const matches = resource.url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                const sheetId = matches ? matches[1] : '';
+                const gidMatch = resource.url.match(/[#&]gid=([0-9]+)/);
+                const gid = gidMatch ? gidMatch[1] : '';
+
+                if (sheetId) {
+                    let embedUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/pubhtml?widget=true&headers=false&chrome=false`;
+                    if (gid) {
+                        embedUrl += `&gid=${gid}`;
+                    }
+                    DOMElements.resourceIframe.src = embedUrl;
+                    DOMElements.iframeViewerContainer.style.display = 'block';
+                    DOMElements.viewerLoadingScreen.style.display = 'none';
+                } else {
+                    alert("Invalid Sheet URL");
+                    closeResourceViewer();
+                }
                 return;
             }
 
@@ -937,7 +954,7 @@ document.addEventListener('DOMContentLoaded', () => {
             plyrContainer.addEventListener('click', (e) => {
                 // Find if the click target is a rewind/forward button (or inside one)
                 const target = e.target.closest('button[data-plyr="rewind"], button[data-plyr="fast-forward"]');
-                
+
                 if (target) {
                     // Prevent Plyr's default handler
                     e.preventDefault();
@@ -945,14 +962,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     const isRewind = target.getAttribute('data-plyr') === 'rewind';
                     // Default seek time is 10s as per config
-                    const seekStep = 10; 
-                    
+                    const seekStep = 10;
+
                     seekAccumulator += isRewind ? -seekStep : seekStep;
-                    
+
                     clearTimeout(buttonSeekTimeout);
                     buttonSeekTimeout = setTimeout(() => {
                         if (state.plyrPlayer.duration) {
-                             state.plyrPlayer.currentTime = Math.max(0, Math.min(state.plyrPlayer.duration, state.plyrPlayer.currentTime + seekAccumulator));
+                            state.plyrPlayer.currentTime = Math.max(0, Math.min(state.plyrPlayer.duration, state.plyrPlayer.currentTime + seekAccumulator));
                         }
                         seekAccumulator = 0;
                     }, 700); // Wait 700ms to accumulate clicks
