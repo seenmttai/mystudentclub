@@ -61,38 +61,159 @@
       overflow: hidden;
     }
 
-    /* Form panel wave decoration */
-    .form-wave-bg {
+
+    /* Form Panel Floating Shapes */
+    .form-floating-shape {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      border-radius: 50%;
+      background: rgba(79, 70, 229, 0.06);
+      animation: float 6s ease-in-out infinite;
       pointer-events: none;
-      overflow: hidden;
     }
 
-    .form-wave-bg svg {
-      position: absolute;
-      width: 140%;
-      height: 140%;
-      top: -20%;
-      left: -20%;
+    .form-floating-shape:nth-child(1) {
+      width: 100px;
+      height: 100px;
+      top: 5%;
+      right: 5%;
+      animation-delay: 0s;
+    }
+
+    .form-floating-shape:nth-child(2) {
+      width: 70px;
+      height: 70px;
+      bottom: 15%;
+      left: 3%;
+      animation-delay: -2s;
+    }
+
+    .form-floating-shape:nth-child(3) {
+      width: 50px;
+      height: 50px;
+      top: 30%;
+      left: 8%;
+      animation-delay: -4s;
+    }
+
+    .form-floating-shape:nth-child(4) {
+      width: 80px;
+      height: 80px;
+      bottom: 5%;
+      right: 8%;
+      animation-delay: -3s;
     }
 
     .marketing-panel {
-      background: linear-gradient(135deg, #5b5fc7 0%, #4f46e5 50%, #3730a3 100%);
+      background: linear-gradient(-45deg, #5b5fc7, #4f46e5, #3730a3, #6366f1);
+      background-size: 400% 400%;
+      animation: gradientShift 10s ease infinite;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 3rem;
+      padding: 3rem 2rem;
       position: relative;
       overflow: hidden;
       z-index: 1;
       border-radius: 24px;
       margin: 16px 0;
       min-height: calc(100vh - 32px);
+    }
+
+    @keyframes gradientShift {
+      0% 
+      { 
+        background-position: 0% 50%; 
+      }
+      50% 
+      { 
+        background-position: 100% 50%; 
+      }
+      100% 
+      { 
+        background-position: 0% 50%; 
+      }
+    }
+
+    /* Floating Elements */
+    .floating-shape {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .floating-shape:nth-child(1) {
+      width: 120px;
+      height: 120px;
+      top: 10%;
+      right: 10%;
+      animation-delay: 0s;
+    }
+
+    .floating-shape:nth-child(2) {
+      width: 80px;
+      height: 80px;
+      bottom: 20%;
+      left: 5%;
+      animation-delay: -2s;
+    }
+
+    .floating-shape:nth-child(3) {
+      width: 60px;
+      height: 60px;
+      top: 20%;
+      left: 10%;
+      animation-delay: -4s;
+    }
+
+    .floating-shape:nth-child(4) {
+      width: 100px;
+      height: 100px;
+      bottom: 5%;
+      right: 10%;
+      animation-delay: -4s;
+    }
+
+    @keyframes float {
+      0%, 100% 
+      { 
+        transform: translateY(0) rotate(0deg); 
+      }
+      50% 
+      { 
+        transform: translateY(-20px) rotate(10deg); 
+      }
+    }
+
+
+    /* Animated Stats */
+    .stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.75);
+      margin-top: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     /* Signup active state - panels swap */
@@ -102,25 +223,6 @@
 
     .auth-container.signup-active .marketing-panel {
       transform: translateX(-100%);
-    }
-
-    /* Wave Background */
-    .wave-bg {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .wave-bg svg {
-      position: absolute;
-      width: 140%;
-      height: 140%;
-      top: -20%;
-      left: -20%;
     }
 
     /* Back Button */
@@ -743,33 +845,11 @@
   <div class="auth-container" id="authContainer">
     <!-- Form Panel -->
     <div class="form-panel">
-      <!-- Wave decoration -->
-      <div class="form-wave-bg">
-        <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
-          <defs>
-            <linearGradient id="formLineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:rgba(79, 70, 229, 0.25)" />
-              <stop offset="100%" style="stop-color:rgba(158, 148, 233, 0.15)" />
-            </linearGradient>
-          </defs>
-          <path d="M-50,60 Q200,-22 400,50 T850,150" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none"
-            opacity="0.4" />
-          <path d="M-50,90 Q200,-28 400,69 T850,157" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none"
-            opacity="0.45" />
-          <path d="M-50,150 Q200,-35 400,95 T850,142" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none"
-            opacity="0.5" />
-          <path d="M-50,450 Q200,400 400,500 T850,450" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none"
-            opacity="0.3" />
-          <path d="M-50,480 Q200,430 400,530 T850,480" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none"
-            opacity="0.35" />
-          <path d="M-50,510 Q200,460 400,560 T850,510" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none"
-            opacity="0.4" />
-          <path d="M-50,540 Q200,490 400,590 T850,540" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none"
-            opacity="0.45" />
-          <path d="M-50,570 Q200,520 400,620 T850,570" stroke="url(#formLineGrad)" stroke-width="1.5" fill="none"
-            opacity="0.5" />
-        </svg>
-      </div>
+      <!-- Floating Shapes -->
+      <div class="form-floating-shape"></div>
+      <div class="form-floating-shape"></div>
+      <div class="form-floating-shape"></div>
+      <div class="form-floating-shape"></div>
 
       <a href="/" class="back-btn" aria-label="Back to home">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -792,10 +872,13 @@
             <svg viewBox="0 0 48 48">
               <path fill="#EA4335"
                 d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
+
               <path fill="#4285F4"
                 d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
+
               <path fill="#FBBC05"
                 d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
+                
               <path fill="#34A853"
                 d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
             </svg>
@@ -913,66 +996,42 @@
 
     <!-- Marketing Panel -->
     <div class="marketing-panel">
-      <div class="wave-bg">
-        <svg viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
-          <defs>
-            <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style="stop-color:rgba(255,255,255,0.25)" />
-              <stop offset="100%" style="stop-color:rgba(255,255,255,0.08)" />
-            </linearGradient>
-          </defs>
-          <path d="M-50,30 Q200,-50 400,50 T850,0" stroke="url(#lineGrad)" stroke-width="1.5" fill="none"
-            opacity="0.85" />
-          <path d="M-50,60 Q200,-20 400,80 T850,30" stroke="url(#lineGrad)" stroke-width="1.5" fill="none"
-            opacity="0.8" />
-          <path d="M-50,90 Q200,10 400,110 T850,60" stroke="url(#lineGrad)" stroke-width="1.5" fill="none"
-            opacity="0.75" />
-          <path d="M-50,120 Q200,40 400,140 T850,90" stroke="url(#lineGrad)" stroke-width="1.5" fill="none"
-            opacity="0.7" />
-          <path d="M-50,150 Q200,100 400,200 T850,150" stroke="url(#lineGrad)" stroke-width="1.5" fill="none"
-            opacity="0.6" />
-          <path d="M-50,180 Q200,130 400,230 T850,180" stroke="url(#lineGrad)" stroke-width="1.5" fill="none"
-            opacity="0.55" />
-          <path d="M-50,210 Q200,160 400,260 T850,210" stroke="url(#lineGrad)" stroke-width="1.5" fill="none"
-            opacity="0.5" />
-          <path d="M-50,240 Q200,190 400,290 T850,240" stroke="url(#lineGrad)" stroke-width="1.5" fill="none"
-            opacity="0.45" />
-        </svg>
-      </div>
+      <!-- Floating Shapes -->
+      <div class="floating-shape"></div>
+      <div class="floating-shape"></div>
+      <div class="floating-shape"></div>
+      <div class="floating-shape"></div>
+      <div class="floating-shape"></div>
 
       <div class="marketing-content">
         <h2 class="marketing-title">Unlock Your Dream<br>CA Career</h2>
-        <p class="marketing-subtitle">Your one-stop destination for Industrial Training, Articleship vacancies, and
-          expert mentorship to fast-track your corporate success.</p>
+        <p class="marketing-subtitle">Your one-stop destination for Industrial Training, Articleship vacancies, and expert mentorship to fast-track your corporate success.</p>
       </div>
 
       <div class="testimonial-carousel">
         <!-- Banner 1: Placements & Vacancies -->
         <div class="testimonial-card active" data-index="0">
           <p class="testimonial-text">
-            <strong>Top-Tier Opportunities:</strong> Access exclusive vacancies and get referrals to leading
-            organizations like Amazon, UBS, and Flipkart with stipends up to ₹1.25 Lakhs.
+            <strong>Top-Tier Opportunities:</strong> Access exclusive vacancies and get referrals to leading organizations like Amazon, UBS, and Flipkart with stipends up to ₹1.25 Lakhs.
           </p>
         </div>
 
         <!-- Banner 2: AI Tools -->
         <div class="testimonial-card" data-index="1">
           <p class="testimonial-text">
-            <strong>AI-Powered Edge:</strong> Utilize our AI CV Reviewer and Interview Bot to perfect your resume and
-            boost your shortlist chances by 3x compared to standard applicants.
+            <strong>AI-Powered Edge:</strong> Utilize our AI CV Reviewer and Interview Bot to perfect your resume and boost your shortlist chances by 3x compared to standard applicants.
           </p>
         </div>
 
         <!-- Banner 3: Mentorship -->
         <div class="testimonial-card" data-index="2">
           <p class="testimonial-text">
-            <strong>Expert Guidance:</strong> "The Masterclass and personal guidance helped me crack my dream Industrial
-            Training role." — Join 1000+ students placed through our programs.
+            <strong>Expert Guidance:</strong> "The Masterclass and personal guidance helped me crack my dream Industrial Training role." — Join 1000+ students placed through our programs.
           </p>
         </div>
 
         <div class="carousel-controls">
-          <button class="carousel-btn" id="carousel-prev" aria-label="Previous testimonial">
+          <button class="carousel-btn" id="carousel-prev" aria-label="Previous">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
@@ -982,11 +1041,26 @@
             <div class="carousel-dot" data-index="1"></div>
             <div class="carousel-dot" data-index="2"></div>
           </div>
-          <button class="carousel-btn" id="carousel-next" aria-label="Next testimonial">
+          <button class="carousel-btn" id="carousel-next" aria-label="Next">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </button>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-number" data-target="1000">0</div>
+          <div class="stat-label">Students Placed</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="500">0</div>
+          <div class="stat-label">Top Firms</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="125000" data-prefix="₹" data-suffix="">0</div>
+          <div class="stat-label">Max Stipend</div>
         </div>
       </div>
     </div>
@@ -1024,6 +1098,40 @@
         if (session) {
           window.location.href = redirectUrl || '/';
         }
+
+        // Animated Counter for Stats
+        const animateCounter = (element) => {
+          const target = parseInt(element.dataset.target);
+          const prefix = element.dataset.prefix || '';
+          const suffix = element.dataset.suffix !== undefined ? element.dataset.suffix : '+';
+          const duration = 2000;
+          const increment = target / (duration / 16);
+          let current = 0;
+
+          const updateCounter = () => {
+            current += increment;
+            if (current < target) {
+              if (target >= 100000) {
+                element.textContent = prefix + (current / 100000).toFixed(2) + 'L';
+              } else {
+                element.textContent = prefix + Math.floor(current) + suffix;
+              }
+              requestAnimationFrame(updateCounter);
+            } else {
+              if (target >= 100000) {
+                element.textContent = prefix + (target / 100000).toFixed(2) + 'L';
+              } else {
+                element.textContent = prefix + target + suffix;
+              }
+            }
+          };
+          updateCounter();
+        };
+
+        // Start counter animation
+        document.querySelectorAll('.stat-number[data-target]').forEach(el => {
+          animateCounter(el);
+        });
       });
 
       // DOM Elements
@@ -1139,6 +1247,9 @@
           if (error) throw error;
 
           if (data.user && !data.session) {
+            // Mark as new user for resume prompt on first login
+            localStorage.setItem('newUserSignup', 'true');
+            localStorage.setItem('newUserEmail', email);
             signupSuccess.textContent = 'Sign up successful! Please check your email to confirm your account.';
             signupSuccess.classList.add('show');
             signupForm.reset();

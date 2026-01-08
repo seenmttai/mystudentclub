@@ -120,7 +120,8 @@ function renderJobCard(job) {
     const isApplied = appliedJobIds.has(job.id);
     const buttonText = isApplied ? 'Applied' : 'View Details';
     const buttonClass = isApplied ? 'applied' : '';
-    const applyLink = getApplicationLink(job['Application ID'], job.Company);
+    const applyLink = getApplicationLink(job['Application ID']);
+    const applyButtonText = isApplied ? 'Applied' : 'Apply Now';
 
     jobCard.innerHTML = `
         <div class="job-card-logo">${companyInitial}</div>
@@ -139,14 +140,23 @@ function renderJobCard(job) {
             </div>
         </div>
         <div class="job-card-actions">
-             <a href="${applyLink}" target="_blank" class="apply-now-card-btn" onclick="event.stopPropagation();" style="background: #3B82F6; color: white; text-decoration: none; padding: 0.5rem 1rem; display: inline-flex; align-items: center; justify-content: center; min-height: 2.5rem;">Apply Now</a>
-             <button class="apply-now-card-btn secondary ${buttonClass}" style="padding: 0.5rem 1rem; min-height: 2.5rem;">${buttonText}</button>
+             <a href="${applyLink}" target="_blank" class="apply-now-card-btn primary ${buttonClass}" style="background: #3B82F6; color: white; text-decoration: none; padding: 0.5rem 1rem; display: inline-flex; align-items: center; justify-content: center; min-height: 2.5rem;">${applyButtonText}</a>
+             <button class="apply-now-card-btn secondary" style="padding: 0.5rem 1rem; min-height: 2.5rem;">View Details</button>
         </div>`;
 
-    // Add click handler to entire card
+    // Add click handler for Apply Now button
+    const applyBtn = jobCard.querySelector('.apply-now-card-btn.primary');
+    if (applyBtn) {
+        applyBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            // Mark as applied after a short delay (allows link to open first)
+            setTimeout(() => markJobAsApplied(job), 500);
+        });
+    }
+
+    // Add click handler to entire card for View Details
     jobCard.addEventListener('click', (e) => {
-        // Don't open modal if clicking on Apply Now button
-        if (!e.target.closest('.apply-now-card-btn') || e.target.textContent.includes('View Details') || e.target.textContent.includes('Applied')) {
+        if (!e.target.closest('.apply-now-card-btn.primary')) {
             showModal(job);
         }
     });
@@ -252,9 +262,11 @@ function showModal(job) {
     // Connect to Peers Logic
     let connectLink = checkConnectLink(job);
     if (!connectLink) {
-        const searchKeywordSuffix = JOB_TITLE_MAP[currentTable] || "Chartered Accountant";
-        const query = `${companyName} ${searchKeywordSuffix}`;
-        connectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodeURIComponent(query)}&origin=SWITCH_SEARCH_VERTICAL`;
+        // Extract first two words of company name (avoid Ltd, Pvt, etc.)
+        const companyWords = companyName.split(/\s+/).slice(0, 2).join(' ');
+        const encodedCompany = encodeURIComponent(`"${companyWords}"`);
+        // LinkedIn search with CA Finalist / Industrial Training filters
+        connectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodedCompany}%20AND%20(%22CA%20Finalist%22%20OR%20%22Industrial%20Trainee%22%20OR%20%22Industrial%20Training%22)&origin=FACETED_SEARCH&schoolFilter=%5B%221968486%22%2C%22272365%22%5D&sid=~vG`;
     }
 
     let actionsHtml = '';
@@ -475,9 +487,10 @@ async function fetchJobs() {
         }
 
         if (state.applicationStatus === 'not_applied' && currentSession && appliedJobIds.size > 0) {
-            // Optimize: use array directly instead of spread operator for large sets
+            // Supabase requires parenthesized tuple format for 'in' operator: (1,2,3)
             const appliedIds = Array.from(appliedJobIds);
-            query = query.not('id', 'in', appliedIds);  // Use array, not string
+            const tupleString = `(${appliedIds.join(',')})`;
+            query = query.not('id', 'in', tupleString);
         }
 
         const [sortCol, sortDir] = state.sortBy.split('_');
@@ -892,20 +905,23 @@ async function markJobAsApplied(job) {
 
     appliedJobIds.add(job.id);
 
+    // Update modal buttons
     document.querySelectorAll(`#modalSimpleApplyBtn, #modalAiApplyBtn, #modalExternalApplyBtn`).forEach(btn => {
         if (btn) {
             btn.classList.add('applied');
-            const textEl = btn.querySelector('span') || btn;
+            const textEl = btn.querySelector('span') || btn.querySelector('.btn-text') || btn;
             if (textEl) textEl.textContent = 'Applied';
         }
     });
 
+    // Update job card buttons
     const card = document.querySelector(`.job-card[data-job-id='${job.id}']`);
     if (card) {
-        const cardButton = card.querySelector('.apply-now-card-btn');
-        if (cardButton) {
-            cardButton.classList.add('applied');
-            cardButton.textContent = 'Applied';
+        // Update primary Apply Now button only
+        const applyBtn = card.querySelector('.apply-now-card-btn.primary');
+        if (applyBtn) {
+            applyBtn.classList.add('applied');
+            applyBtn.textContent = 'Applied';
         }
     }
 
@@ -1591,3 +1607,36 @@ async function fetchSharedJob(jobId) {
 }
 
 document.addEventListener('DOMContentLoaded', initializePage);
+
+// Check for new user signup and show resume prompt
+document.addEventListener('DOMContentLoaded', async () => {
+    const isNewUser = localStorage.getItem('newUserSignup');
+    const hasResume = localStorage.getItem('userCVText');
+      
+    if (isNewUser === 'true') {
+    const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+        
+    const { data: { session } } = await supabaseClient.auth.getSession();
+        
+    if (session && !hasResume) {
+        setTimeout(() => {
+            document.getElementById('resumePromptModal').style.display = 'flex';
+        }, 1000);
+    }
+        
+    localStorage.removeItem('newUserSignup');
+    localStorage.removeItem('newUserEmail');
+    }
+});
+
+document.getElementById('skipResumePrompt')?.addEventListener('click', () => {
+    document.getElementById('resumePromptModal').style.display = 'none';
+});
+
+document.getElementById('resumePromptModal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'resumePromptModal') {
+    document.getElementById('resumePromptModal').style.display = 'none';
+    }
+});
