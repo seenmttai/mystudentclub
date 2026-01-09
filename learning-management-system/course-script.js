@@ -677,11 +677,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const gid = gidMatch ? gidMatch[1] : '';
 
                 if (sheetId) {
-                    // Use /htmlembed instead of /pubhtml - works with "Anyone with link" sharing
-                    // without requiring separate "Publish to web" step
-                    let embedUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/htmlembed?widget=false&chrome=false`;
+                    // Use /htmlembed with widget=true to show sheet tabs
+                    // gid sets the initially selected sheet
+                    let embedUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/htmlembed?widget=true&chrome=false`;
                     if (gid) {
-                        embedUrl += `&gid=${gid}&single=true`;
+                        embedUrl += `&gid=${gid}`;
                     }
                     DOMElements.resourceIframe.src = embedUrl;
                     DOMElements.iframeViewerContainer.style.display = 'block';
