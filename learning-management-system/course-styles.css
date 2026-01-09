@@ -1393,9 +1393,9 @@
     position: absolute;
     top: 0;
     left: 0;
-    /* Leave space for scrollbars (typically 17px on most browsers) */
+    /* Leave space for scrollbar on right (17px) and sheet tabs at bottom (40px) */
     width: calc(100% - 17px);
-    height: calc(100% - 17px);
+    height: calc(100% - 40px);
     z-index: 10;
     cursor: default;
     /* Prevent selection/interaction */
