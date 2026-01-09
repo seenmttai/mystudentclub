@@ -74,9 +74,20 @@ async function loadProfile() {
         }
 
         ['resume', 'cover_letter'].forEach(type => {
-            const cachedName = localStorage.getItem(fileConfig[type].storageKeyName);
-            if (cachedName) {
-                showFileDisplay(type, cachedName);
+            const config = fileConfig[type];
+            // For resume, require images to be cached (not just filename)
+            // For cover letter, filename is sufficient
+            if (type === 'resume') {
+                const cachedImages = localStorage.getItem(config.storageKeyImages);
+                const cachedName = localStorage.getItem(config.storageKeyName);
+                if (cachedImages && cachedName) {
+                    showFileDisplay(type, cachedName);
+                }
+            } else {
+                const cachedName = localStorage.getItem(config.storageKeyName);
+                if (cachedName) {
+                    showFileDisplay(type, cachedName);
+                }
             }
         });
 
