@@ -858,7 +858,7 @@ async function checkUserEnrollment() {
     } catch (error) { lmsNavLink.style.display = 'none'; }
 }
 
-function isProfileComplete() { return !!localStorage.getItem('userCVFileName'); }
+function isProfileComplete() { return !!localStorage.getItem('userCVImages'); }
 
 async function handleApplyClick(job, buttonElement, isAiApply = false) {
 
@@ -881,8 +881,8 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
 
         try {
             const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
-            const cvText = localStorage.getItem('userCVText');
-            const emailBody = await generateEmailBody({ profile_data: profileData, cv_text: cvText }, job);
+            const cvImages = JSON.parse(localStorage.getItem('userCVImages') || '[]');
+            const emailBody = await generateEmailBody(profileData, cvImages, job);
             window.location.href = constructMailto(job, emailBody);
         } catch (e) {
             alert("Could not generate AI email. Opening a standard email draft.");
@@ -935,14 +935,15 @@ async function markJobAsApplied(job) {
     }
 }
 
-async function generateEmailBody(profile, job) {
+async function generateEmailBody(profileData, cvImages, job) {
     const workerUrl = 'https://emailgenerator.bhansalimanan55.workers.dev/';
     try {
         const response = await fetch(workerUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                profile_data: profile,
+                images: cvImages,
+                profile_data: profileData,
                 job_details: {
                     company_name: job.Company,
                     job_description: job.Description,
@@ -955,6 +956,7 @@ async function generateEmailBody(profile, job) {
         const data = await response.json();
         return data.email_body || "";
     } catch (error) {
+        console.error('generateEmailBody error:', error);
         return "";
     }
 }

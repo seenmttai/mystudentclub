@@ -18,7 +18,8 @@ const fileConfig = {
         filenameEl: document.getElementById('resume-filename'),
         uploadArea: document.getElementById('resume-upload-area'),
         storageKeyText: 'userCVText',
-        storageKeyName: 'userCVFileName'
+        storageKeyName: 'userCVFileName',
+        storageKeyImages: 'userCVImages'
     },
     cover_letter: {
         input: document.getElementById('cover_letter'),
@@ -120,6 +121,9 @@ function hideFileDisplay(type) {
 
     localStorage.removeItem(config.storageKeyText);
     localStorage.removeItem(config.storageKeyName);
+    if (config.storageKeyImages) {
+        localStorage.removeItem(config.storageKeyImages);
+    }
     config.input.value = '';
 }
 
@@ -143,18 +147,29 @@ async function handleFile(file, type) {
             // Load PDF document
             const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 
-            // Extract Text
+            // Extract Text (still used for cover letter)
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
                 const text = await page.getTextContent();
                 textContent += text.items.map(s => s.str).join(' ');
             }
 
-            // Extract Images (for Resume Auto-fill)
+            // Extract Images (for Resume)
             if (type === 'resume') {
-                showLoading(true, "Autofilling details using AI...");
+                showLoading(true, "Converting resume to images...");
                 images = await convertPdfToImages(pdf);
+
+                // Cache images to localStorage for AI Apply
                 if (images.length > 0) {
+                    try {
+                        localStorage.setItem(config.storageKeyImages, JSON.stringify(images));
+                    } catch (e) {
+                        console.error("Error caching images (localStorage quota):", e);
+                        alert('Resume is too large to cache. AI Apply may not work correctly.');
+                    }
+
+                    // Autofill profile from resume
+                    showLoading(true, "Autofilling details using AI...");
                     const extractedData = await extractProfileData(images, textContent);
                     if (extractedData) {
                         populateForm(extractedData);
@@ -165,6 +180,8 @@ async function handleFile(file, type) {
         } else if (file.type === 'text/plain') {
             textContent = await file.text();
             if (type === 'resume') {
+                // For text files, we can't convert to images, so just store empty array
+                localStorage.setItem(config.storageKeyImages, JSON.stringify([]));
                 showLoading(true, "Autofilling details using AI...");
                 const extractedData = await extractProfileData([], textContent);
                 if (extractedData) {
@@ -254,7 +271,7 @@ function parseGeminiJson(text) {
 
 async function handleSave(e) {
     e.preventDefault();
-    if (!localStorage.getItem('userCVFileName')) {
+    if (!localStorage.getItem('userCVImages')) {
         alert('Please upload your resume. It is required to use the AI features.');
         return;
     }

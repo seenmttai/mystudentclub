@@ -310,7 +310,7 @@ function generateApplyButtons(applyInfo, job) {
 }
 
 function isProfileComplete() {
-    return !!localStorage.getItem('userCVFileName');
+    return !!localStorage.getItem('userCVImages');
 }
 
 async function getCurrentSession() {
@@ -346,9 +346,9 @@ async function handleAiApply(job, buttonElement, tableName) {
 
     try {
         const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
-        const cvText = localStorage.getItem('userCVText');
+        const cvImages = JSON.parse(localStorage.getItem('userCVImages') || '[]');
 
-        const emailBody = await generateEmailBody({ profile_data: profileData, cv_text: cvText }, job, tableName);
+        const emailBody = await generateEmailBody(profileData, cvImages, job, tableName);
 
         window.location.href = constructMailto(job, tableName, emailBody);
     } catch (e) {
@@ -363,14 +363,15 @@ async function handleAiApply(job, buttonElement, tableName) {
     }
 }
 
-async function generateEmailBody(profile, job, tableName) {
+async function generateEmailBody(profileData, cvImages, job, tableName) {
     const workerUrl = 'https://emailgenerator.bhansalimanan55.workers.dev/';
     try {
         const response = await fetch(workerUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                profile_data: profile,
+                images: cvImages,
+                profile_data: profileData,
                 job_details: {
                     company_name: job.Company,
                     job_description: job.Description,
@@ -393,6 +394,7 @@ async function generateEmailBody(profile, job, tableName) {
             return generateFallbackEmail(job);
         }
     } catch (error) {
+        console.error('generateEmailBody error:', error);
         return generateFallbackEmail(job);
     }
 }
