@@ -224,9 +224,16 @@ function shareJob(job) {
         currentTable === 'Fresher Jobs' ? 'fresher' :
             currentTable === 'Semi Qualified Jobs' ? 'semi' : 'articleship';
     const jobUrl = `${window.location.origin}/job.html?id=${job.id}&type=${jobType}`;
+
+    const shareText = `Check out this job at *${job.Company}* for *${job.Location}*
+URL - ${jobUrl}
+
+Do turn on notifications to stay updated with all such opportunites and ensure joining the whatsapp group below
+https://chat.whatsapp.com/D491zsqKmv25S2YLloSUBR`;
+
     const shareData = {
         title: `Job at ${job.Company}`,
-        text: `Check out this job opportunity at ${job.Company} in ${job.Location}`,
+        text: shareText,
         url: jobUrl
     };
 
@@ -235,10 +242,10 @@ function shareJob(job) {
         navigator.share(shareData).catch(err => console.log('Share cancelled'));
     } else {
         // Fallback: copy link
-        navigator.clipboard.writeText(jobUrl).then(() => {
-            alert('Job link copied to clipboard!');
+        navigator.clipboard.writeText(shareText).then(() => {
+            alert('Job details copied to clipboard!');
         }).catch(err => {
-            alert('Failed to copy link. URL: ' + jobUrl);
+            alert('Failed to copy details.');
         });
     }
 }
