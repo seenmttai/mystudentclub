@@ -254,7 +254,7 @@ function parseGeminiJson(text) {
 
 async function handleSave(e) {
     e.preventDefault();
-    if (!localStorage.getItem('userCVText')) {
+    if (!localStorage.getItem('userCVFileName')) {
         alert('Please upload your resume. It is required to use the AI features.');
         return;
     }
