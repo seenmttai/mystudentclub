@@ -427,8 +427,19 @@ async function fetchFilterOptions() {
 async function fetchJobs() {
     if (isFetching) return;
     isFetching = true;
-    if (dom.loader) dom.loader.style.display = 'block';
-    if (dom.loadMoreButton) dom.loadMoreButton.style.display = 'none';
+
+    // Only show the main full-screen loader if it's the first page load
+    if (page === 0 && dom.loader) {
+        dom.loader.style.display = 'block';
+    }
+
+    // Show spinner in sentinel if we are loading more
+    const sentinelSpinner = document.querySelector('.sentinel-spinner');
+    if (page > 0 && sentinelSpinner) {
+        sentinelSpinner.style.display = 'block';
+    }
+
+    // if (dom.loadMoreButton) dom.loadMoreButton.style.display = 'none'; // Removed
 
     try {
         let selectColumns = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID"';
@@ -512,9 +523,9 @@ async function fetchJobs() {
 
             page++;
             hasMoreData = data.length === limit;
-            if (hasMoreData && dom.loadMoreButton) {
-                dom.loadMoreButton.style.display = 'block';
-            }
+            // if (hasMoreData && dom.loadMoreButton) {
+            //     dom.loadMoreButton.style.display = 'block';
+            // }
         } else {
             hasMoreData = false;
             if (page === 0 && dom.jobsContainer) {
@@ -528,6 +539,10 @@ async function fetchJobs() {
     } finally {
         isFetching = false;
         if (dom.loader) dom.loader.style.display = 'none';
+
+        // Hide sentinel spinner
+        if (sentinelSpinner) sentinelSpinner.style.display = 'none';
+
         // Defer UI updates to avoid blocking render
         const updateUI = () => {
             renderActiveFilterPills();
@@ -1210,7 +1225,7 @@ async function initializeUserFeatures() {
 function setupEventListeners() {
     dom.modalOverlay.addEventListener('click', (e) => { if (e.target === dom.modalOverlay) closeModal(); });
     dom.modalCloseBtn.addEventListener('click', closeModal);
-    dom.loadMoreButton.addEventListener('click', () => fetchJobs());
+    // dom.loadMoreButton.addEventListener('click', () => fetchJobs()); // Removed
 
     [dom.searchInputMobile, dom.searchInputDesktop].forEach(input => {
         if (input) {
@@ -1503,6 +1518,25 @@ function initCustomSelects() {
     });
 }
 
+function setupInfiniteScroll() {
+    const sentinel = document.getElementById('sentinel');
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting && hasMoreData && !isFetching) {
+                fetchJobs();
+            }
+        });
+    }, {
+        root: null,
+        rootMargin: '200px', // Load before user reaches the very bottom
+        threshold: 0.1
+    });
+
+    observer.observe(sentinel);
+}
+
 async function initializePage() {
     dom.jobsContainer = document.getElementById('jobs');
     dom.loader = document.getElementById('loader');
@@ -1513,7 +1547,7 @@ async function initializePage() {
     dom.searchInputDesktop = document.getElementById('searchFilterDesktop');
     dom.sortBySelect = document.getElementById('sortBySelect');
     dom.sortBySelectMobile = document.getElementById('sortBySelectMobile');
-    dom.loadMoreButton = document.getElementById('loadMore');
+    // dom.loadMoreButton = document.getElementById('loadMore'); // Removed
     dom.activeFiltersDisplay = document.getElementById('active-filters-display');
     dom.menuButton = document.getElementById('menuButton');
     dom.expandedMenu = document.getElementById('expandedMenu');
@@ -1576,6 +1610,7 @@ async function initializePage() {
     populateSalaryFilter();
     setupEventListeners();
     syncFiltersUI();
+    setupInfiniteScroll(); // Initialize infinite scroll
 
     await Promise.all([fetchJobs(), loadBanners()]);
 
@@ -1597,6 +1632,7 @@ function checkAndOpenSharedJob() {
 
     if (jobId && jobType) {
         // Fetch and open the specific job
+
         fetchSharedJob(jobId);
 
         // Clean URL without reloading

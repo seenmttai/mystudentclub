@@ -209,8 +209,12 @@
         <div class="loader-container" id="loader">
           <div class="loader-spinner"></div>
         </div>
-        <div class="load-more-wrapper">
-          <button id="loadMore" class="action-button load-more-action">Load More Jobs</button>
+
+        <!-- Infinite Scroll Sentinel -->
+        <div id="sentinel" class="loading-sentinel"
+          style="min-height: 20px; display: flex; justify-content: center; align-items: center; margin-top: 20px;">
+          <div class="sentinel-spinner loader-spinner"
+            style="display: none; width: 30px; height: 30px; border-width: 3px;"></div>
         </div>
       </div>
     </div>
