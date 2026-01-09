@@ -230,7 +230,9 @@
                     </div>
                     <div id="pdf-viewer-container" class="pdf-canvas-container" style="display: none;"><canvas
                             id="pdf-canvas"></canvas></div>
-                    <div id="csv-viewer-container" class="csv-preview-container" style="display: none;">
+                    <div id="csv-viewer-container" class="csv-preview-container" style="display: none;"
+                        oncontextmenu="return false;" oncopy="return false;" oncut="return false;"
+                        onselectstart="return false;">
                         <table class="csv-preview-table"></table>
                     </div>
                     <div id="iframe-viewer-container" class="iframe-container" style="display: none;">

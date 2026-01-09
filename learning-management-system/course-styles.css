@@ -798,6 +798,10 @@
 .csv-preview-container {
     height: 100%;
     overflow: auto;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .csv-preview-table {

@@ -373,6 +373,10 @@
             padding: 2rem;
             width: 100%;
             overflow-x: auto;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
 
         .csv-preview-table {
@@ -570,7 +574,8 @@
                         </div>
 
                         <!-- CSV Table -->
-                        <div v-show="previewType === 'csv'" class="csv-preview-container">
+                        <div v-show="previewType === 'csv'" class="csv-preview-container" @contextmenu.prevent
+                            @copy.prevent @cut.prevent @selectstart.prevent>
                             <table class="csv-preview-table" v-html="csvHtml"></table>
                         </div>
                     </div>
