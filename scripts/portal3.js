@@ -858,7 +858,7 @@ async function checkUserEnrollment() {
     } catch (error) { lmsNavLink.style.display = 'none'; }
 }
 
-function isProfileComplete() { return !!localStorage.getItem('userCVText'); }
+function isProfileComplete() { return !!localStorage.getItem('userCVFileName'); }
 
 async function handleApplyClick(job, buttonElement, isAiApply = false) {
 
@@ -1612,22 +1612,22 @@ document.addEventListener('DOMContentLoaded', initializePage);
 document.addEventListener('DOMContentLoaded', async () => {
     const isNewUser = localStorage.getItem('newUserSignup');
     const hasResume = localStorage.getItem('userCVText');
-      
+
     if (isNewUser === 'true') {
-    const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-        
-    const { data: { session } } = await supabaseClient.auth.getSession();
-        
-    if (session && !hasResume) {
-        setTimeout(() => {
-            document.getElementById('resumePromptModal').style.display = 'flex';
-        }, 1000);
-    }
-        
-    localStorage.removeItem('newUserSignup');
-    localStorage.removeItem('newUserEmail');
+        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const { data: { session } } = await supabaseClient.auth.getSession();
+
+        if (session && !hasResume) {
+            setTimeout(() => {
+                document.getElementById('resumePromptModal').style.display = 'flex';
+            }, 1000);
+        }
+
+        localStorage.removeItem('newUserSignup');
+        localStorage.removeItem('newUserEmail');
     }
 });
 
@@ -1637,6 +1637,6 @@ document.getElementById('skipResumePrompt')?.addEventListener('click', () => {
 
 document.getElementById('resumePromptModal')?.addEventListener('click', (e) => {
     if (e.target.id === 'resumePromptModal') {
-    document.getElementById('resumePromptModal').style.display = 'none';
+        document.getElementById('resumePromptModal').style.display = 'none';
     }
 });

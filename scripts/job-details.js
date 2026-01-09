@@ -310,7 +310,7 @@ function generateApplyButtons(applyInfo, job) {
 }
 
 function isProfileComplete() {
-    return !!localStorage.getItem('userCVText');
+    return !!localStorage.getItem('userCVFileName');
 }
 
 async function getCurrentSession() {
