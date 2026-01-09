@@ -798,6 +798,7 @@
 .csv-preview-container {
     height: 100%;
     overflow: auto;
+    padding: 1rem;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -806,14 +807,18 @@
 
 .csv-preview-table {
     border-collapse: collapse;
+    table-layout: auto;
 }
 
 .csv-preview-table th,
 .csv-preview-table td {
-    padding: 0.75rem;
+    padding: 0.75rem 1rem;
     text-align: left;
     border: 1px solid #dde1e6;
-    white-space: nowrap;
+    min-width: 120px;
+    max-width: 350px;
+    word-wrap: break-word;
+    white-space: normal;
 }
 
 .csv-preview-table th {

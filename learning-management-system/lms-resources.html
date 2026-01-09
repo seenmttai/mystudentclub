@@ -370,9 +370,10 @@
         }
 
         .csv-preview-container {
-            padding: 2rem;
+            padding: 1rem;
             width: 100%;
-            overflow-x: auto;
+            height: 100%;
+            overflow: auto;
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
@@ -380,23 +381,30 @@
         }
 
         .csv-preview-table {
-            width: 100%;
             border-collapse: collapse;
             background: white;
             box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            table-layout: auto;
         }
 
         .csv-preview-table th,
         .csv-preview-table td {
-            padding: 0.75rem;
+            padding: 0.75rem 1rem;
             border: 1px solid #e2e8f0;
             text-align: left;
             font-size: 0.9rem;
+            min-width: 120px;
+            max-width: 350px;
+            word-wrap: break-word;
+            white-space: normal;
         }
 
         .csv-preview-table th {
             background-color: #f8fafc;
             font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
         }
 
         .resource-viewer-controls {
@@ -853,13 +861,38 @@
                     ctx.restore();
                 },
 
+                parseCsvLine(line) {
+                    const result = [];
+                    let current = '';
+                    let inQuotes = false;
+                    for (let i = 0; i < line.length; i++) {
+                        const char = line[i];
+                        if (char === '"') {
+                            if (inQuotes && line[i + 1] === '"') {
+                                current += '"';
+                                i++;
+                            } else {
+                                inQuotes = !inQuotes;
+                            }
+                        } else if (char === ',' && !inQuotes) {
+                            result.push(current.trim());
+                            current = '';
+                        } else {
+                            current += char;
+                        }
+                    }
+                    result.push(current.trim());
+                    return result;
+                },
+
                 renderCsv(csvText) {
                     const lines = csvText.split('\n').filter(line => line.trim() !== '');
-                    const header = lines.length > 0 ? lines[0].split(',').map(h => h.trim()) : [];
-                    const rows = lines.length > 1 ? lines.slice(1).map(line => line.split(',').map(cell => cell.trim())) : [];
+                    const header = lines.length > 0 ? this.parseCsvLine(lines[0]) : [];
+                    const rows = lines.length > 1 ? lines.slice(1).map(line => this.parseCsvLine(line)) : [];
 
-                    let html = `<thead><tr>${header.map(h => `<th>${h}</th>`).join('')}</tr></thead>`;
-                    html += `<tbody>${rows.map(row => `<tr>${row.map(cell => `<td title="${cell}">${cell}</td>`).join('')}</tr>`).join('')}</tbody>`;
+                    const escapeHtml = (str) => str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                    let html = `<thead><tr>${header.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr></thead>`;
+                    html += `<tbody>${rows.map(row => `<tr>${row.map(cell => `<td title="${escapeHtml(cell)}">${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}</tbody>`;
                     this.csvHtml = html;
                 },
 
