@@ -219,7 +219,7 @@ function generateApplicationLinks(applicationId) {
 }
 
 // Share job using Web Share API or fallback to copy link
-function shareJob(job) {
+function shareJob(job, btnElement) {
     const jobType = currentTable === 'Industrial Training Job Portal' ? 'industrial' :
         currentTable === 'Fresher Jobs' ? 'fresher' :
             currentTable === 'Semi Qualified Jobs' ? 'semi' : 'articleship';
@@ -237,13 +237,31 @@ https://chat.whatsapp.com/D491zsqKmv25S2YLloSUBR`;
         url: jobUrl
     };
 
-    if (navigator.share) {
-        // Native share dialog will close automatically when clicking outside
+    // Simple mobile detection
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobile && navigator.share) {
+        // Native share dialog (works well on mobile)
         navigator.share(shareData).catch(err => console.log('Share cancelled'));
     } else {
-        // Fallback: copy link
+        // Desktop: Copy to clipboard (avoids "lame" native dialog)
         navigator.clipboard.writeText(shareText).then(() => {
-            alert('Job details copied to clipboard!');
+            if (btnElement) {
+                const originalHtml = btnElement.innerHTML;
+                const originalStyles = btnElement.style.cssText;
+
+                // Visual feedback
+                btnElement.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                btnElement.style.background = '#22c55e';
+                btnElement.style.color = '#ffffff';
+
+                setTimeout(() => {
+                    btnElement.innerHTML = originalHtml;
+                    btnElement.style.cssText = originalStyles;
+                }, 2000);
+            } else {
+                alert('Job details copied to clipboard!');
+            }
         }).catch(err => {
             alert('Failed to copy details.');
         });
@@ -385,7 +403,7 @@ function showModal(job) {
     if (shareBtnInline) {
         shareBtnInline.addEventListener('click', (e) => {
             e.stopPropagation();
-            shareJob(job);
+            shareJob(job, e.currentTarget);
         });
     }
 }
