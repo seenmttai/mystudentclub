@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New Thread - My Student Club</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
     <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
@@ -23,128 +25,148 @@
             --forum-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
             --forum-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
         }
-        body { 
-            background: var(--forum-bg); 
-            color: var(--forum-text); 
+
+        body {
+            background: var(--forum-bg);
+            color: var(--forum-text);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
-        .form-container { 
-            max-width: 800px; 
-            margin: 2rem auto; 
-            padding: 2.5rem; 
-            background: var(--forum-card); 
-            border-radius: 12px; 
+
+        .form-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            background: var(--forum-card);
+            border-radius: 12px;
             box-shadow: var(--forum-shadow);
             border: 1px solid var(--forum-border);
         }
-        .form-container h1 { 
-            font-size: 1.875rem; 
-            margin-bottom: 2rem; 
-            font-weight: 800; 
+
+        .form-container h1 {
+            font-size: 1.875rem;
+            margin-bottom: 2rem;
+            font-weight: 800;
             color: var(--forum-text);
             letter-spacing: -0.025em;
         }
-        .form-group { margin-bottom: 1.75rem; }
-        .form-group label { 
-            display: block; 
-            font-weight: 600; 
-            margin-bottom: 0.625rem; 
+
+        .form-group {
+            margin-bottom: 1.75rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.625rem;
             font-size: 0.9375rem;
             color: var(--forum-text);
         }
-        .form-group input, .form-group textarea, .form-group select { 
-            width: 100%; 
-            padding: 0.875rem 1rem; 
-            border-radius: 8px; 
-            border: 1px solid var(--forum-border); 
-            font-size: 1rem; 
-            transition: all 0.15s ease; 
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--forum-border);
+            font-size: 1rem;
+            transition: all 0.15s ease;
             background-color: #fff;
             color: var(--forum-text);
             font-family: inherit;
         }
-        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { 
-            outline: none; 
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
             border-color: var(--forum-primary);
             box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
         }
-        .form-group textarea { 
-            min-height: 200px; 
+
+        .form-group textarea {
+            min-height: 200px;
             resize: vertical;
             line-height: 1.6;
         }
-        .action-button { 
-            background: var(--forum-primary); 
-            color: white; 
-            border: none; 
-            padding: 0.875rem 1.75rem; 
-            border-radius: 8px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 0.5rem; 
+
+        .action-button {
+            background: var(--forum-primary);
+            color: white;
+            border: none;
+            padding: 0.875rem 1.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             transition: all 0.2s ease;
             box-shadow: var(--forum-shadow-sm);
             text-decoration: none;
             font-size: 0.9375rem;
         }
-        .action-button:hover { 
+
+        .action-button:hover {
             background: var(--forum-primary-light);
             box-shadow: var(--forum-shadow-md);
             transform: translateY(-1px);
         }
-        .action-button:disabled { 
-            background: #94a3b8; 
-            cursor: not-allowed; 
-            transform: none; 
+
+        .action-button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
             box-shadow: none;
         }
     </style>
 </head>
+
 <body>
     <header class="site-header">
-      <div class="header-container">
-        <a href="/" class="brand-link">
-          <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
-        </a>
-        <div class="nav-actions">
-          <div class="auth-buttons-container"></div>
-          <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-          </button>
+        <div class="header-container">
+            <a href="/" class="brand-link">
+                <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
+            </a>
+            <div class="nav-actions">
+                <div class="auth-buttons-container"></div>
+                <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
         </div>
-      </div>
     </header>
 
     <div class="expanded-menu" id="expandedMenu">
-      <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-      </button>
-      <div class="menu-items-container">
-          <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
-          <a href="/articleship-guarantee-program/" class="menu-item">Articleship Program</a>
-          <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
-          <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
-          <a href="/" class="menu-item">Discussion Forum</a>
-          <div class="menu-item-dropdown">
-              <button class="menu-item" id="resourcesDropdownBtn">
-                  Resources
-                  <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                  </svg>
-              </button>
-              <div class="dropdown-content" id="resourcesDropdown">
-                  <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
-                  <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
-                  <a href="/articleship.html" class="dropdown-item">Articleship</a>
-              </div>
-          </div>
-      </div>
+        <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="menu-items-container">
+            <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
+            <a href="/articleship-program/" class="menu-item">Articleship Program</a>
+            <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My
+                Courses</a>
+            <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
+            <a href="/" class="menu-item">Discussion Forum</a>
+            <div class="menu-item-dropdown">
+                <button class="menu-item" id="resourcesDropdownBtn">
+                    Resources
+                    <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div class="dropdown-content" id="resourcesDropdown">
+                    <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
+                    <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
+                    <a href="/articleship.html" class="dropdown-item">Articleship</a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <main class="form-container">
@@ -162,7 +184,8 @@
             </div>
             <div class="form-group">
                 <label for="content">Content</label>
-                <textarea id="content" required placeholder="Describe your question or topic in detail here..."></textarea>
+                <textarea id="content" required
+                    placeholder="Describe your question or topic in detail here..."></textarea>
             </div>
             <div class="form-group">
                 <label for="tags">Tags (comma-separated)</label>
@@ -205,7 +228,7 @@
             const content = document.getElementById('content').value.trim();
             const categoryId = document.getElementById('category').value;
             const tags = document.getElementById('tags').value.split(',').map(t => t.trim()).filter(Boolean);
-            
+
             const submitBtn = form.querySelector('button[type="submit"]');
 
             if (!title || !content || !categoryId || !currentUser) {
@@ -234,7 +257,7 @@
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Post Thread';
             } else {
-                 await supabaseClient.from('forum_user_profiles').upsert({
+                await supabaseClient.from('forum_user_profiles').upsert({
                     user_id: currentUser.id,
                     username: currentUser.email.split('@')[0],
                     display_name: currentUser.email.split('@')[0]
@@ -247,17 +270,18 @@
         const menuCloseBtn = document.getElementById('menuCloseBtn');
         const expandedMenu = document.getElementById('expandedMenu');
 
-        if(menuButton && expandedMenu) {
+        if (menuButton && expandedMenu) {
             menuButton.addEventListener('click', () => {
                 expandedMenu.style.transform = 'translateX(0)';
             });
         }
 
-        if(menuCloseBtn && expandedMenu) {
+        if (menuCloseBtn && expandedMenu) {
             menuCloseBtn.addEventListener('click', () => {
                 expandedMenu.style.transform = 'translateX(100%)';
             });
         }
     </script>
 </body>
+
 </html>

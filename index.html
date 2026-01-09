@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Student Club - Industrial Training Jobs</title>
-  <meta name="description" content="Find the best industrial training, articleship, and CA fresher jobs at My Student Club's job portal. Your path to a successful CA career starts here.">
-  <meta name="keywords" content="CA jobs, industrial training, articleship, CA fresher jobs, chartered accountant, CA career">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <meta name="description"
+    content="Find the best industrial training, articleship, and CA fresher jobs at My Student Club's job portal. Your path to a successful CA career starts here.">
+  <meta name="keywords"
+    content="CA jobs, industrial training, articleship, CA fresher jobs, chartered accountant, CA career">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
   <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
@@ -16,6 +20,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
 </head>
+
 <body>
 
   <header class="site-header">
@@ -26,14 +31,16 @@
       <div class="nav-actions">
         <div class="auth-buttons-container"></div>
         <button id="notificationsBtn" class="icon-button notification-icon-btn" aria-label="Manage Notifications">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
           </svg>
           <span class="notification-badge" id="notificationBadge"></span>
         </button>
         <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
           <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
       </div>
@@ -42,59 +49,59 @@
 
   <div class="expanded-menu" id="expandedMenu">
     <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
-        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
+      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
     </button>
     <div class="menu-items-container">
-        <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
-        <a href="/articleship-guarantee-program/" class="menu-item">Articleship Program</a>
-        <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
-        <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
-        <div class="menu-item-dropdown">
-            <button class="menu-item" id="resourcesDropdownBtn">
-                Resources
-                <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
-            </button>
-            <div class="dropdown-content" id="resourcesDropdown">
-                <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
-                <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
-                <a href="/articleship.html" class="dropdown-item">Articleship</a>
-            </div>
+      <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
+      <a href="/articleship-program/" class="menu-item">Articleship Program</a>
+      <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
+      <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
+      <div class="menu-item-dropdown">
+        <button class="menu-item" id="resourcesDropdownBtn">
+          Resources
+          <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div class="dropdown-content" id="resourcesDropdown">
+          <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
+          <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
+          <a href="/articleship.html" class="dropdown-item">Articleship</a>
         </div>
+      </div>
     </div>
   </div>
 
   <div id="notificationPopup" class="notification-popup">
     <div class="notification-popup-header">
-        <h3>Notification Preferences</h3>
-        <button id="closeNotificationPopup" class="icon-button">×</button>
+      <h3>Notification Preferences</h3>
+      <button id="closeNotificationPopup" class="icon-button">×</button>
     </div>
     <div class="notification-status" id="notificationStatus"></div>
     <div id="notification-permission-status"></div>
     <button id="enable-notifications-btn" class="action-button">Enable Notifications</button>
 
     <div id="topic-selection-area">
-        <div class="all-topic-section">
-            <label>
-                <input type="checkbox" id="topic-all">
-                <span>Receive All Job Notifications</span>
-            </label>
+      <div class="all-topic-section">
+        <label>
+          <input type="checkbox" id="topic-all">
+          <span>Receive All Job Notifications</span>
+        </label>
+      </div>
+      <div class="subscription-form" id="specific-subscription-form">
+        <h4>Add Specific Subscription:</h4>
+        <div class="subscription-selectors">
+          <select id="locationSelect" class="filter-control"></select>
+          <select id="jobTypeSelect" class="filter-control"></select>
+          <button id="subscribeBtn" class="action-button" disabled>Subscribe</button>
         </div>
-        <div class="subscription-form" id="specific-subscription-form">
-            <h4>Add Specific Subscription:</h4>
-            <div class="subscription-selectors">
-                <select id="locationSelect" class="filter-control"></select>
-                <select id="jobTypeSelect" class="filter-control"></select>
-                <button id="subscribeBtn" class="action-button" disabled>Subscribe</button>
-            </div>
-        </div>
-        <div class="subscribed-topics">
-            <h4>Your Subscriptions:</h4>
-            <div id="subscribedTopicsList"></div>
-        </div>
+      </div>
+      <div class="subscribed-topics">
+        <h4>Your Subscriptions:</h4>
+        <div id="subscribedTopicsList"></div>
+      </div>
     </div>
   </div>
 
@@ -119,84 +126,92 @@
     </nav>
 
     <div class="job-portal-layout">
-        <aside class="filter-sidebar">
-            <div class="filter-sidebar-header">
-                <h3>Filters</h3>
-                <button class="reset-filters-btn" id="desktopResetBtn">Reset All</button>
-            </div>
-            <div class="filter-group">
-                <label for="sortBySelect">Sort by</label>
-                <select id="sortBySelect" class="filter-control">
-                    <option value="newest">Newest First</option>
-                    <option value="salary_desc">Stipend: High to Low</option>
-                    <option value="salary_asc">Stipend: Low to High</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label for="searchFilterDesktop">Keyword</label>
-                <div class="search-bar-wrapper">
-                    <i class="fas fa-search search-button"></i>
-                    <input type="text" id="searchFilterDesktop" placeholder="Search jobs by keyword..." class="search-input-field">
-                </div>
-            </div>
-            <div class="filter-group">
-                <label for="locationFilterDesktop">Location</label>
-                <div class="multi-select-container" data-type="location">
-                    <input type="text" id="locationFilterDesktop" class="multi-select-input" placeholder="Search cities...">
-                    <div class="multi-select-options"></div>
-                </div>
-                <div class="selected-pills-container" id="locationPillsDesktop"></div>
-            </div>
-            <div class="filter-group">
-                <label for="categoryFilterDesktop">Category</label>
-                <div class="multi-select-container" data-type="category">
-                    <input type="text" id="categoryFilterDesktop" class="multi-select-input" placeholder="Search categories...">
-                    <div class="multi-select-options"></div>
-                </div>
-                <div class="selected-pills-container" id="categoryPillsDesktop"></div>
-            </div>
-            <div class="filter-group">
-                <label for="salaryFilterDesktop">Stipend</label>
-                <select id="salaryFilterDesktop" class="filter-control"></select>
-            </div>
-            <div class="filter-group experience-filter-group" style="display: none;">
-                <label>Experience Level</label>
-                <div class="pill-options">
-                    <button class="pill-btn" data-value="Freshers">Freshers</button>
-                    <button class="pill-btn" data-value="Experienced">Experienced</button>
-                </div>
-            </div>
-            <div class="filter-group application-status-filter-group">
-                <label>Application Status</label>
-                <div class="pill-options" id="applicationStatusPills">
-                    <button class="pill-btn active" data-value="all">All Jobs</button>
-                    <button class="pill-btn" data-value="not_applied">Not Applied</button>
-                </div>
-            </div>
-        </aside>
-
-        <div class="job-listings-container">
-            <div class="mobile-controls">
-                <div class="search-bar-wrapper">
-                    <i class="fas fa-search search-button"></i>
-                    <input type="text" id="searchInputMobile" placeholder="Search jobs by keyword..." class="search-input-field">
-                </div>
-                <button id="open-filter-modal-btn" class="filter-toggle-btn">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L12 14.414V19a1 1 0 01-1.447.894l-2-1A1 1 0 018 18v-3.586L3.293 6.707A1 1 0 013 6V4z"></path></svg>
-                    <span>Filters</span>
-                </button>
-            </div>
-
-            <div class="listings-header">
-                <div id="active-filters-display" class="active-filters-container"></div>
-            </div>
-
-            <div class="job-listing-area" id="jobs"></div>
-            <div class="loader-container" id="loader"><div class="loader-spinner"></div></div>
-            <div class="load-more-wrapper">
-                <button id="loadMore" class="action-button load-more-action">Load More Jobs</button>
-            </div>
+      <aside class="filter-sidebar">
+        <div class="filter-sidebar-header">
+          <h3>Filters</h3>
+          <button class="reset-filters-btn" id="desktopResetBtn">Reset All</button>
         </div>
+        <div class="filter-group">
+          <label for="sortBySelect">Sort by</label>
+          <select id="sortBySelect" class="filter-control">
+            <option value="newest">Newest First</option>
+            <option value="salary_desc">Stipend: High to Low</option>
+            <option value="salary_asc">Stipend: Low to High</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="searchFilterDesktop">Keyword</label>
+          <div class="search-bar-wrapper">
+            <i class="fas fa-search search-button"></i>
+            <input type="text" id="searchFilterDesktop" placeholder="Search jobs by keyword..."
+              class="search-input-field">
+          </div>
+        </div>
+        <div class="filter-group">
+          <label for="locationFilterDesktop">Location</label>
+          <div class="multi-select-container" data-type="location">
+            <input type="text" id="locationFilterDesktop" class="multi-select-input" placeholder="Search cities...">
+            <div class="multi-select-options"></div>
+          </div>
+          <div class="selected-pills-container" id="locationPillsDesktop"></div>
+        </div>
+        <div class="filter-group">
+          <label for="categoryFilterDesktop">Category</label>
+          <div class="multi-select-container" data-type="category">
+            <input type="text" id="categoryFilterDesktop" class="multi-select-input" placeholder="Search categories...">
+            <div class="multi-select-options"></div>
+          </div>
+          <div class="selected-pills-container" id="categoryPillsDesktop"></div>
+        </div>
+        <div class="filter-group">
+          <label for="salaryFilterDesktop">Stipend</label>
+          <select id="salaryFilterDesktop" class="filter-control"></select>
+        </div>
+        <div class="filter-group experience-filter-group" style="display: none;">
+          <label>Experience Level</label>
+          <div class="pill-options">
+            <button class="pill-btn" data-value="Freshers">Freshers</button>
+            <button class="pill-btn" data-value="Experienced">Experienced</button>
+          </div>
+        </div>
+        <div class="filter-group application-status-filter-group">
+          <label>Application Status</label>
+          <div class="pill-options" id="applicationStatusPills">
+            <button class="pill-btn active" data-value="all">All Jobs</button>
+            <button class="pill-btn" data-value="not_applied">Not Applied</button>
+          </div>
+        </div>
+      </aside>
+
+      <div class="job-listings-container">
+        <div class="mobile-controls">
+          <div class="search-bar-wrapper">
+            <i class="fas fa-search search-button"></i>
+            <input type="text" id="searchInputMobile" placeholder="Search jobs by keyword..."
+              class="search-input-field">
+          </div>
+          <button id="open-filter-modal-btn" class="filter-toggle-btn">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L12 14.414V19a1 1 0 01-1.447.894l-2-1A1 1 0 018 18v-3.586L3.293 6.707A1 1 0 013 6V4z">
+              </path>
+            </svg>
+            <span>Filters</span>
+          </button>
+        </div>
+
+        <div class="listings-header">
+          <div id="active-filters-display" class="active-filters-container"></div>
+        </div>
+
+        <div class="job-listing-area" id="jobs"></div>
+        <div class="loader-container" id="loader">
+          <div class="loader-spinner"></div>
+        </div>
+        <div class="load-more-wrapper">
+          <button id="loadMore" class="action-button load-more-action">Load More Jobs</button>
+        </div>
+      </div>
     </div>
   </main>
 
@@ -208,75 +223,78 @@
   </div>
 
   <div class="filter-modal-overlay" id="filterModalOverlay">
-      <div class="filter-modal-content">
-          <div class="modal-header">
-              <h4>Filters</h4>
-              <button class="modal-close-action" id="closeFilterModalBtn">×</button>
-          </div>
-          <div class="modal-body">
-               <div class="filter-group">
-                <label for="sortBySelectMobile">Sort by</label>
-                <select id="sortBySelectMobile" class="filter-control">
-                    <option value="newest">Newest First</option>
-                    <option value="salary_desc">Stipend: High to Low</option>
-                    <option value="salary_asc">Stipend: Low to High</option>
-                </select>
-              </div>
-              <div class="filter-group">
-                  <label for="locationFilterMobile">Location</label>
-                  <div class="multi-select-container" data-type="location">
-                      <input type="text" id="locationFilterMobile" class="multi-select-input" placeholder="Search cities...">
-                      <div class="multi-select-options"></div>
-                  </div>
-                  <div class="selected-pills-container" id="locationPillsMobile"></div>
-              </div>
-              <div class="filter-group">
-                  <label for="categoryFilterMobile">Category</label>
-                  <div class="multi-select-container" data-type="category">
-                      <input type="text" id="categoryFilterMobile" class="multi-select-input" placeholder="Search categories...">
-                      <div class="multi-select-options"></div>
-                  </div>
-                  <div class="selected-pills-container" id="categoryPillsMobile"></div>
-              </div>
-              <div class="filter-group">
-                  <label for="salaryFilterMobile">Stipend</label>
-                  <select id="salaryFilterMobile" class="filter-control"></select>
-              </div>
-              <div class="filter-group experience-filter-group" style="display: none;">
-                  <label>Experience Level</label>
-                  <div class="pill-options">
-                      <button class="pill-btn" data-value="Freshers">Freshers</button>
-                      <button class="pill-btn" data-value="Experienced">Experienced</button>
-                  </div>
-              </div>
-              <div class="filter-group application-status-filter-group" style="display: none;">
-                <label>Application Status</label>
-                <div class="pill-options">
-                    <button class="pill-btn active" data-value="all">All Jobs</button>
-                    <button class="pill-btn" data-value="not_applied">Not Applied</button>
-                </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-              <button class="btn btn-secondary" id="mobileResetBtn">Reset</button>
-              <button class="btn btn-primary" id="applyFiltersBtn">Show Jobs</button>
-          </div>
+    <div class="filter-modal-content">
+      <div class="modal-header">
+        <h4>Filters</h4>
+        <button class="modal-close-action" id="closeFilterModalBtn">×</button>
       </div>
+      <div class="modal-body">
+        <div class="filter-group">
+          <label for="sortBySelectMobile">Sort by</label>
+          <select id="sortBySelectMobile" class="filter-control">
+            <option value="newest">Newest First</option>
+            <option value="salary_desc">Stipend: High to Low</option>
+            <option value="salary_asc">Stipend: Low to High</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="locationFilterMobile">Location</label>
+          <div class="multi-select-container" data-type="location">
+            <input type="text" id="locationFilterMobile" class="multi-select-input" placeholder="Search cities...">
+            <div class="multi-select-options"></div>
+          </div>
+          <div class="selected-pills-container" id="locationPillsMobile"></div>
+        </div>
+        <div class="filter-group">
+          <label for="categoryFilterMobile">Category</label>
+          <div class="multi-select-container" data-type="category">
+            <input type="text" id="categoryFilterMobile" class="multi-select-input" placeholder="Search categories...">
+            <div class="multi-select-options"></div>
+          </div>
+          <div class="selected-pills-container" id="categoryPillsMobile"></div>
+        </div>
+        <div class="filter-group">
+          <label for="salaryFilterMobile">Stipend</label>
+          <select id="salaryFilterMobile" class="filter-control"></select>
+        </div>
+        <div class="filter-group experience-filter-group" style="display: none;">
+          <label>Experience Level</label>
+          <div class="pill-options">
+            <button class="pill-btn" data-value="Freshers">Freshers</button>
+            <button class="pill-btn" data-value="Experienced">Experienced</button>
+          </div>
+        </div>
+        <div class="filter-group application-status-filter-group" style="display: none;">
+          <label>Application Status</label>
+          <div class="pill-options">
+            <button class="pill-btn active" data-value="all">All Jobs</button>
+            <button class="pill-btn" data-value="not_applied">Not Applied</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="mobileResetBtn">Reset</button>
+        <button class="btn btn-primary" id="applyFiltersBtn">Show Jobs</button>
+      </div>
+    </div>
   </div>
 
   <div id="loginPromptOverlay" class="modal-overlay-container" style="display: none; z-index: 2001;">
     <div class="modal-dialog" style="max-width: 400px;">
       <div style="padding: 2rem; text-align: center;">
         <h3>Login to Continue</h3>
-        <p style="margin: 1rem 0;">You've viewed our portal a few times. Please log in to continue accessing all job listings.</p>
+        <p style="margin: 1rem 0;">You've viewed our portal a few times. Please log in to continue accessing all job
+          listings.</p>
         <a href="/login.html" class="btn btn-primary" style="width: 100%;">Login / Sign Up</a>
       </div>
     </div>
   </div>
 
-  <a href="https://api.whatsapp.com/send/?phone=919313148303" target="_blank" class="whatsapp-fab" aria-label="Contact us on WhatsApp">
+  <a href="https://api.whatsapp.com/send/?phone=919313148303" target="_blank" class="whatsapp-fab"
+    aria-label="Contact us on WhatsApp">
     <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M20.463 3.488C18.217 1.24 15.231 0 12.05 0 5.495 0 .165 5.33.157 11.885c0 2.096.548 4.139 1.595 5.942L0 24l6.335-1.661a11.88 11.88 0 005.683 1.458c6.548 0 11.877-5.33 11.882-11.885.008-3.173-1.231-6.161-3.487-8.422zm-8.413 18.26h-.004a9.88 9.88 0 01-5.042-1.382l-.36-.215-3.735.978.998-3.648-.236-.374a9.883 9.883 0 01-1.518-5.221c.005-5.467 4.458-9.92 9.93-9.92 2.65.004 5.142 1.032 7.018 2.908 1.872 1.88 2.902 4.374 2.9 7.026-.008 5.467-4.457 9.92-9.931 9.92zm5.43-7.424c-.299-.149-1.772-.875-2.048-.974-.277-.099-.478-.148-.678.149-.2.298-.774.975-.95 1.174-.173.199-.347.224-.647.075-.3-.15-1.263-.465-2.408-1.483-.89-.795-1.49-1.777-1.663-2.076-.174-.298-.018-.46.13-.608.135-.133.3-.349.45-.522.15-.174.2-.298.3-.497.099-.199.05-.374-.026-.524-.075-.149-.677-1.631-.927-2.233-.244-.584-.492-.505-.676-.513-.173-.010-.374-.01-.574-.01-.2 0-.523.075-.797.374-.273.298-1.047.974-1.047 2.38 0 1.406 1.022 2.763 1.172 2.962.15.199 2.15 3.284 5.164 4.6.55.24 1.173.5 1.574.639.661.21 1.262.18 1.736.11.53-.08 1.633-.668 1.863-1.314.23-.645.23-1.2.16-1.315-.075-.15-.274-.238-.574-.397z"/>
+      <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M20.463 3.488C18.217 1.24 15.231 0 12.05 0 5.495 0 .165 5.33.157 11.885c0 2.096.548 4.139 1.595 5.942L0 24l6.335-1.661a11.88 11.88 0 005.683 1.458c6.548 0 11.877-5.33 11.882-11.885.008-3.173-1.231-6.161-3.487-8.422zm-8.413 18.26h-.004a9.88 9.88 0 01-5.042-1.382l-.36-.215-3.735.978.998-3.648-.236-.374a9.883 9.883 0 01-1.518-5.221c.005-5.467 4.458-9.92 9.93-9.92 2.65.004 5.142 1.032 7.018 2.908 1.872 1.88 2.902 4.374 2.9 7.026-.008 5.467-4.457 9.92-9.931 9.92zm5.43-7.424c-.299-.149-1.772-.875-2.048-.974-.277-.099-.478-.148-.678.149-.2.298-.774.975-.95 1.174-.173.199-.347.224-.647.075-.3-.15-1.263-.465-2.408-1.483-.89-.795-1.49-1.777-1.663-2.076-.174-.298-.018-.46.13-.608.135-.133.3-.349.45-.522.15-.174.2-.298.3-.497.099-.199.05-.374-.026-.524-.075-.149-.677-1.631-.927-2.233-.244-.584-.492-.505-.676-.513-.173-.010-.374-.01-.574-.01-.2 0-.523.075-.797.374-.273.298-1.047.974-1.047 2.38 0 1.406 1.022 2.763 1.172 2.962.15.199 2.15 3.284 5.164 4.6.55.24 1.173.5 1.574.639.661.21 1.262.18 1.736.11.53-.08 1.633-.668 1.863-1.314.23-.645.23-1.2.16-1.315-.075-.15-.274-.238-.574-.397z" />
     </svg>
     <span>Contact Us</span>
   </a>
@@ -285,13 +303,18 @@
   <div id="resumePromptModal" class="modal-overlay-container" style="display: none; z-index: 2002;">
     <div class="modal-dialog" style="max-width: 450px;">
       <div style="padding: 2rem; text-align: center;">
-        <img src="/assets/logo.png" alt="My Student Club" style="width: 180px; height: auto; margin: 0 auto 1.5rem; display: block;">
-        <h3 style="font-size: 1.35rem; font-weight: 700; color: #1f2937; margin-bottom: 0.75rem;">Welcome to My Student Club! 🎉</h3>
-        <p style="color: #6b7280; margin-bottom: 1.5rem; line-height: 1.6;">To get calls for <strong>exclusive vacancies</strong> and unlock AI-powered features, please upload your resume and complete your profile.</p>
-        <a href="/profile.html" class="btn btn-primary" style="width: 100%; padding: 0.875rem; font-size: 1rem; margin-bottom: 0.75rem;">
+        <img src="/assets/logo.png" alt="My Student Club"
+          style="width: 180px; height: auto; margin: 0 auto 1.5rem; display: block;">
+        <h3 style="font-size: 1.35rem; font-weight: 700; color: #1f2937; margin-bottom: 0.75rem;">Welcome to My Student
+          Club! 🎉</h3>
+        <p style="color: #6b7280; margin-bottom: 1.5rem; line-height: 1.6;">To get calls for <strong>exclusive
+            vacancies</strong> and unlock AI-powered features, please upload your resume and complete your profile.</p>
+        <a href="/profile.html" class="btn btn-primary"
+          style="width: 100%; padding: 0.875rem; font-size: 1rem; margin-bottom: 0.75rem;">
           Upload Resume & Complete Profile
         </a>
-        <button id="skipResumePrompt" style="background: none; border: none; color: #6b7280; cursor: pointer; font-size: 0.875rem; padding: 0.5rem;">
+        <button id="skipResumePrompt"
+          style="background: none; border: none; color: #6b7280; cursor: pointer; font-size: 0.875rem; padding: 0.5rem;">
           I'll do this later
         </button>
       </div>
@@ -303,9 +326,10 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
+    function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
     gtag('config', 'G-1450NCVE65');
   </script>
 </body>
+
 </html>

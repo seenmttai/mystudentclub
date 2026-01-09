@@ -3,140 +3,140 @@ const generateData = () => {
   const students = [
     {
       name: "Abhishek Puranik",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/abhishek-puranik221b/",
       image: baseURL + "Abhishek-Puranik.jpg",
       company: "BPCL"
     },
     {
       name: "NSR Varma",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/varmansr/",
       image: baseURL + "NSR-Varma.jpg",
       company: "Alivira"
     },
     {
       name: "Harsh Yadav",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/fcaharshyadav/",
       image: baseURL + "Harsh-Yadav.jpg",
       company: "Avery Dennison"
     },
     {
       name: "Nandana Krishnadas",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/nandana-krishnadas-120247318/",
       image: baseURL + "Nandana.jpg",
       company: "Amazon"
     },
     {
       name: "Muskan Chawla",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/muskan-chawla-b994152a9/",
       image: baseURL + "Muskan-Chawla.jpg",
       company: "Whitewater Advisory"
     },
     {
       name: "P Hritish Kumar",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/hritishkumar/",
       image: baseURL + "Hritish.jpg",
       company: "DLF"
     },
     {
       name: "Aakanksha Lolge",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/aakankshalolge/",
       image: baseURL + "Aakanksha-Lolge.jpg",
       company: "BPCL"
     },
     {
       name: "Harinee Selvam",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/harinee-selvam-a03416204/",
       image: baseURL + "Harinee-Selvam.jpg",
       company: "Flipkart"
     },
     {
       name: "Pratik Ulhas Naik",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/naik-pratik/",
       image: baseURL + "Pratik-Naik-Protiviti.jpg",
       company: "Protiviti"
     },
     {
       name: "Stephen DCosta",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/stephensn6/",
       image: baseURL + "Stephen.jpg",
       company: "UBS"
     },
     {
       name: "Khushi Tejani",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/khushitejani/",
       image: baseURL + "Khushi-Tejani-BPCL.jpg",
       company: "BPCL"
     },
     {
       name: "Yash Nema",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/yash-nema18/",
       image: baseURL + "Yash-Nema.jpg",
       company: "Amazon"
     },
     {
       name: "Prathmesh Randive",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/prathmesh-randive/",
       image: baseURL + "Prathmesh-Randive.jpg",
       company: "UBS"
     },
     {
       name: "Vivek Vardan",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/vivek-vardhan-9a05982a1/",
       image: baseURL + "Vivek-Vardhan.jpg",
       company: "UBS"
     },
     {
       name: "Vishal Jangid",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/vishall-jangid/",
       image: baseURL + "Vishal-Jangid.jpg",
       company: "PPG Asian Paints"
     },
     {
       name: "Swayam Atal",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/swayamatal/",
       image: baseURL + "Swayam-Atal.jpg",
       company: "Amazon"
     },
     {
       name: "Siddhant Naithani",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/siddhantnaithani999/",
       image: baseURL + "Siddhant-Naithani.jpg",
       company: "Signify"
     },
     {
       name: "Sanjana Sivakali",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/sanjanasivakali/",
       image: baseURL + "Sanjana-Sivakali.jpg",
       company: "Ashok Leyland"
     },
     {
       name: "Shiv Pratap Singh",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/shiv-pratap-singh-52b721222/",
       image: baseURL + "Shiv-Pratap-Singh.jpg",
       company: "1MG"
     },
     {
       name: "Aditi Tagalpallewar",
-      course: "MSC IT Guarantee Program",
+      course: "MSC IT Program",
       linkedin: "https://www.linkedin.com/in/aditi-tagalpallewar/",
       image: baseURL + "Aditi-Tagalwellakar.jpg",
       company: "UBS"
@@ -256,7 +256,7 @@ const initializeCountdown = () => {
   setInterval(updateTimer, 1000);
 };
 
-const initializeBenefitsCarousel = () => {};
+const initializeBenefitsCarousel = () => { };
 
 const initializeTestimonials = () => {
   const testimonials = [
@@ -269,7 +269,7 @@ const initializeTestimonials = () => {
       image: "https://mystudentclub.pages.dev/assets/t2.jpg"
     },
     {
-      text: "Hi everyone I'm Pragesh one of the student who enrolled under My student club Industrial Training Guarantee Program and that too in the first batch and i'm happy to share that I've been selected by HDFC bank for IT in the ECG department. Being said that it as a step taken by me without thinking anything because i didn't had much idea about MSC at that time but trust me the kind of lectures that ere conducted by Padam during the 10-12 days period having different people each time sharing different strategies and their story made it all worth it . And the kind of support that was given after the batch by Padam made it clear ho much efforts he is trying to put behind each and every person enrolled under the batch reaching them out on call on regular basis made…",
+      text: "Hi everyone I'm Pragesh one of the student who enrolled under My student club Industrial Training Program and that too in the first batch and i'm happy to share that I've been selected by HDFC bank for IT in the ECG department. Being said that it as a step taken by me without thinking anything because i didn't had much idea about MSC at that time but trust me the kind of lectures that ere conducted by Padam during the 10-12 days period having different people each time sharing different strategies and their story made it all worth it . And the kind of support that was given after the batch by Padam made it clear ho much efforts he is trying to put behind each and every person enrolled under the batch reaching them out on call on regular basis made…",
       image: "https://mystudentclub.pages.dev/assets/t3.jpg"
     },
     {
@@ -281,35 +281,35 @@ const initializeTestimonials = () => {
       image: "https://mystudentclub.pages.dev/assets/t5.jpg"
     },
     {
-      text: "Hey Padam, Thanks a lot for the MSC IT Guarantee program. My resume has been shortlisted at Flipkart, Atomberg, Morris Garages, FTI Consulting and AP Moller Maersk. All the credit goes to the resume review done by you. Coming from a small-size firm in Ranchi, I had nearly zero hopes for landing IT, but after receiving such response, I feel absolutely overwhelmed. Thanks a ton!",
+      text: "Hey Padam, Thanks a lot for the MSC IT Program. My resume has been shortlisted at Flipkart, Atomberg, Morris Garages, FTI Consulting and AP Moller Maersk. All the credit goes to the resume review done by you. Coming from a small-size firm in Ranchi, I had nearly zero hopes for landing IT, but after receiving such response, I feel absolutely overwhelmed. Thanks a ton!",
       image: "https://mystudentclub.pages.dev/assets/t6.jpg"
     },
     {
-      text: "The MSC IT Guarantee Program by My Student Club lived upto its name. The resume and cover letter sessions were top-notch, and the one-on-one review of resume provided a personal touch which most masterclasses don't.\n\nThe curated list of hiring companies and mass mailing strategy helped me land three offers before choosing Signify. Plus, interactive sessions with industry experts who have been in the same position as us in the past provided invaluable career insights beyond just industrial training.\n\nHuge thanks to My Student Club for this incredible initiative and special mention to CA Padam Bhansali for his dedication to the CA student community.",
+      text: "The MSC IT Program by My Student Club lived upto its name. The resume and cover letter sessions were top-notch, and the one-on-one review of resume provided a personal touch which most masterclasses don't.\n\nThe curated list of hiring companies and mass mailing strategy helped me land three offers before choosing Signify. Plus, interactive sessions with industry experts who have been in the same position as us in the past provided invaluable career insights beyond just industrial training.\n\nHuge thanks to My Student Club for this incredible initiative and special mention to CA Padam Bhansali for his dedication to the CA student community.",
       image: "https://mystudentclub.pages.dev/assets/t7.jpg"
     },
     {
-      text: "Good Noon Padam!\n\nThank you so much for your support and guidance on this journey!\n\nWill share this in LinkedIn and our group once I got my offer letter, the process is going...on yesterday I submitted the AC form.\n\nForever grateful to you and MSC team✨\n\nOne of my Best decisions is joining the MSC IT guarantee program💯",
+      text: "Good Noon Padam!\n\nThank you so much for your support and guidance on this journey!\n\nWill share this in LinkedIn and our group once I got my offer letter, the process is going...on yesterday I submitted the AC form.\n\nForever grateful to you and MSC team✨\n\nOne of my Best decisions is joining the MSC IT program💯",
       image: "https://mystudentclub.pages.dev/assets/t8.jpg"
     },
     {
-      text: "A transformative experience with MSC IT Guarantee Program! The comprehensive training, personalized guidance, and strategic approach made my Industrial Training journey seamless. Highly recommended for CA students seeking quality industrial training opportunities!",
+      text: "A transformative experience with MSC IT Program! The comprehensive training, personalized guidance, and strategic approach made my Industrial Training journey seamless. Highly recommended for CA students seeking quality industrial training opportunities!",
       image: "https://mystudentclub.pages.dev/assets/t9.jpeg"
     },
     {
-      text: "My journey with MSC IT Guarantee Program was nothing short of amazing. The program's holistic approach, expert mentorship, and extensive network helped me secure an incredible industrial training opportunity. The mock interviews, CV optimization, and industry insights were invaluable. Thank you, MSC, for turning my career aspirations into reality!",
+      text: "My journey with MSC IT Program was nothing short of amazing. The program's holistic approach, expert mentorship, and extensive network helped me secure an incredible industrial training opportunity. The mock interviews, CV optimization, and industry insights were invaluable. Thank you, MSC, for turning my career aspirations into reality!",
       image: "https://mystudentclub.pages.dev/assets/t10.jpeg"
     },
     {
-      text: "MSC IT Guarantee Program exceeded all my expectations! The personalized guidance, comprehensive training, and strategic placement support were game-changers in my professional journey. I'm grateful for the invaluable insights and opportunities that helped me secure my dream industrial training.",
+      text: "MSC IT Program exceeded all my expectations! The personalized guidance, comprehensive training, and strategic placement support were game-changers in my professional journey. I'm grateful for the invaluable insights and opportunities that helped me secure my dream industrial training.",
       image: "https://mystudentclub.pages.dev/assets/t11.jpeg"
     },
     {
-      text: "The MSC IT Guarantee Program is a true career catalyst. From resume building to interview preparation, every aspect was meticulously designed to help students like me succeed. The mentorship and networking opportunities were instrumental in landing my ideal industrial training role.",
+      text: "The MSC IT Program is a true career catalyst. From resume building to interview preparation, every aspect was meticulously designed to help students like me succeed. The mentorship and networking opportunities were instrumental in landing my ideal industrial training role.",
       image: "https://mystudentclub.pages.dev/assets/t12.jpeg"
     },
     {
-      text: "I was struggling to find the right industrial training opportunity until I joined the MSC IT Guarantee Program. The comprehensive approach, expert guidance, and extensive support system transformed my career trajectory. Highly recommend this program to every CA student!",
+      text: "I was struggling to find the right industrial training opportunity until I joined the MSC IT Program. The comprehensive approach, expert guidance, and extensive support system transformed my career trajectory. Highly recommend this program to every CA student!",
       image: "https://mystudentclub.pages.dev/assets/t13.jpeg"
     },
     {

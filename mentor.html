@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Find a Mentor - My Student Club</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
     <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
@@ -28,15 +30,15 @@
             --forum-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
         }
 
-        body { 
-            background: var(--forum-bg); 
+        body {
+            background: var(--forum-bg);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             color: var(--forum-text);
         }
 
-        .mentor-container { 
-            max-width: 1400px; 
-            margin: 2rem auto; 
+        .mentor-container {
+            max-width: 1400px;
+            margin: 2rem auto;
             padding: 0 1.5rem;
         }
 
@@ -75,13 +77,13 @@
             align-items: center;
             gap: 0.5rem;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             text-decoration: none;
             font-size: 0.9375rem;
         }
 
         .action-button:hover {
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
             transform: translateY(-2px);
         }
 
@@ -302,7 +304,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -416,57 +418,62 @@
         }
     </style>
 </head>
+
 <body>
     <header class="site-header">
-      <div class="header-container">
-        <a href="/" class="brand-link">
-          <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
-        </a>
-        <div class="nav-actions">
-          <div class="auth-buttons-container"></div>
-          <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-          </button>
+        <div class="header-container">
+            <a href="/" class="brand-link">
+                <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
+            </a>
+            <div class="nav-actions">
+                <div class="auth-buttons-container"></div>
+                <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
         </div>
-      </div>
     </header>
 
     <div class="expanded-menu" id="expandedMenu">
-      <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-      </button>
-      <div class="menu-items-container">
-          <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
-          <a href="/articleship-guarantee-program/" class="menu-item">Articleship Program</a>
-          <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
-          <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
-          <a href="/" class="menu-item">Discussion Forum</a>
-          <a href="/mentor.html" class="menu-item">Find a Mentor</a>
-          <a href="/mentor-dashboard.html" class="menu-item" id="mentor-dashboard-link" style="display:none;">Mentorship Dashboard</a>
-          <div class="menu-item-dropdown">
-              <button class="menu-item" id="resourcesDropdownBtn">
-                  Resources
-                  <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                  </svg>
-              </button>
-              <div class="dropdown-content" id="resourcesDropdown">
-                  <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
-                  <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
-                  <a href="/articleship.html" class="dropdown-item">Articleship</a>
-              </div>
-          </div>
-      </div>
+        <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="menu-items-container">
+            <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
+            <a href="/articleship-program/" class="menu-item">Articleship Program</a>
+            <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My
+                Courses</a>
+            <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
+            <a href="/" class="menu-item">Discussion Forum</a>
+            <a href="/mentor.html" class="menu-item">Find a Mentor</a>
+            <a href="/mentor-dashboard.html" class="menu-item" id="mentor-dashboard-link"
+                style="display:none;">Mentorship Dashboard</a>
+            <div class="menu-item-dropdown">
+                <button class="menu-item" id="resourcesDropdownBtn">
+                    Resources
+                    <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div class="dropdown-content" id="resourcesDropdown">
+                    <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
+                    <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
+                    <a href="/articleship.html" class="dropdown-item">Articleship</a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="mentor-container">
         <div class="hero-section">
             <h1>Connect with Expert Mentors</h1>
-            <p>Get personalized guidance from experienced professionals in your field. Book sessions, track progress, and accelerate your growth.</p>
+            <p>Get personalized guidance from experienced professionals in your field. Book sessions, track progress,
+                and accelerate your growth.</p>
             <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
                 <a href="/mentor-dashboard.html" class="action-button" id="dashboard-link" style="display:none;">
                     <i class="fas fa-tachometer-alt"></i> My Dashboard
@@ -518,11 +525,13 @@
                 <input type="hidden" id="selected-mentor-id">
                 <div class="form-group">
                     <label>Why do you want this mentor?</label>
-                    <textarea id="request-message" required placeholder="Explain your goals and what you hope to learn..."></textarea>
+                    <textarea id="request-message" required
+                        placeholder="Explain your goals and what you hope to learn..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>Topics you'd like to focus on:</label>
-                    <input type="text" id="request-topics" placeholder="e.g. Career planning, Interview prep (comma-separated)">
+                    <input type="text" id="request-topics"
+                        placeholder="e.g. Career planning, Interview prep (comma-separated)">
                 </div>
                 <button type="submit" class="btn-primary" style="width:100%;">Send Request</button>
             </form>
@@ -538,7 +547,8 @@
             <form id="mentor-form">
                 <div class="form-group">
                     <label>Bio *</label>
-                    <textarea id="mentor-bio" required placeholder="Tell potential mentees about yourself, your experience, and what you can help with..."></textarea>
+                    <textarea id="mentor-bio" required
+                        placeholder="Tell potential mentees about yourself, your experience, and what you can help with..."></textarea>
                 </div>
                 <div class="form-group">
                     <label>Areas of Expertise * (select multiple)</label>
@@ -628,7 +638,7 @@
             mentors = data || [];
 
             let filtered = mentors.filter(m => {
-                const matchesSearch = !searchQuery || 
+                const matchesSearch = !searchQuery ||
                     m.forum_user_profiles?.display_name?.toLowerCase().includes(searchQuery) ||
                     m.bio?.toLowerCase().includes(searchQuery) ||
                     m.expertise_areas?.some(e => e.toLowerCase().includes(searchQuery));
@@ -678,9 +688,9 @@
                         <div class="mentor-bio">${mentor.bio}</div>
 
                         <div class="mentor-expertise">
-                            ${mentor.expertise_areas.slice(0, 3).map(area => 
-                                `<span class="expertise-tag">${area}</span>`
-                            ).join('')}
+                            ${mentor.expertise_areas.slice(0, 3).map(area =>
+                    `<span class="expertise-tag">${area}</span>`
+                ).join('')}
                             ${mentor.expertise_areas.length > 3 ? `<span class="expertise-tag">+${mentor.expertise_areas.length - 3} more</span>` : ''}
                         </div>
 
@@ -700,21 +710,21 @@
                         </div>
 
                         <div style="margin-bottom: 1rem;">
-                            ${isAvailable ? 
-                                '<span class="badge-available"><i class="fas fa-check-circle"></i> Available</span>' : 
-                                '<span class="badge-full"><i class="fas fa-users"></i> Full</span>'
-                            }
+                            ${isAvailable ?
+                        '<span class="badge-available"><i class="fas fa-check-circle"></i> Available</span>' :
+                        '<span class="badge-full"><i class="fas fa-users"></i> Full</span>'
+                    }
                         </div>
 
                         <div class="mentor-actions">
                             <a href="/mentor-profile.html?id=${mentor.id}" class="btn-primary">
                                 View Profile
                             </a>
-                            ${isAvailable && currentUser ? 
-                                `<button class="btn-secondary" onclick="requestMentor('${mentor.id}')"" title="Request Mentorship">
+                            ${isAvailable && currentUser ?
+                        `<button class="btn-secondary" onclick="requestMentor('${mentor.id}')"" title="Request Mentorship">
                                     <i class="fas fa-paper-plane"></i>
                                 </button>` : ''
-                            }
+                    }
                         </div>
                     </div>
                 `;
@@ -826,13 +836,13 @@
         const menuCloseBtn = document.getElementById('menuCloseBtn');
         const expandedMenu = document.getElementById('expandedMenu');
 
-        if(menuButton && expandedMenu) {
+        if (menuButton && expandedMenu) {
             menuButton.addEventListener('click', () => {
                 expandedMenu.style.transform = 'translateX(0)';
             });
         }
 
-        if(menuCloseBtn && expandedMenu) {
+        if (menuCloseBtn && expandedMenu) {
             menuCloseBtn.addEventListener('click', () => {
                 expandedMenu.style.transform = 'translateX(100%)';
             });
@@ -853,4 +863,5 @@
         })();
     </script>
 </body>
+
 </html>

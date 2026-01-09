@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mentorship Dashboard - My Student Club</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
     <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
@@ -29,8 +31,8 @@
             --forum-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
         }
 
-        body { 
-            background: var(--forum-bg); 
+        body {
+            background: var(--forum-bg);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             color: var(--forum-text);
         }
@@ -158,19 +160,25 @@
             font-weight: 700;
         }
 
-        .request-item, .relationship-item, .session-item, .message-thread-item {
+        .request-item,
+        .relationship-item,
+        .session-item,
+        .message-thread-item {
             padding: 1.25rem;
             border: 1px solid var(--forum-border);
             border-radius: 10px;
             margin-bottom: 1rem;
             transition: all 0.15s ease;
         }
-        
+
         .message-thread-item {
             cursor: pointer;
         }
 
-        .request-item:hover, .relationship-item:hover, .session-item:hover, .message-thread-item:hover {
+        .request-item:hover,
+        .relationship-item:hover,
+        .session-item:hover,
+        .message-thread-item:hover {
             border-color: var(--forum-primary);
             box-shadow: var(--forum-shadow);
         }
@@ -313,7 +321,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -438,51 +446,54 @@
         }
     </style>
 </head>
+
 <body>
     <header class="site-header">
-      <div class="header-container">
-        <a href="/" class="brand-link">
-          <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
-        </a>
-        <div class="nav-actions">
-          <div class="auth-buttons-container"></div>
-          <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-          </button>
+        <div class="header-container">
+            <a href="/" class="brand-link">
+                <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
+            </a>
+            <div class="nav-actions">
+                <div class="auth-buttons-container"></div>
+                <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
         </div>
-      </div>
     </header>
 
     <div class="expanded-menu" id="expandedMenu">
-      <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-      </button>
-      <div class="menu-items-container">
-          <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
-          <a href="/articleship-guarantee-program/" class="menu-item">Articleship Program</a>
-          <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
-          <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
-          <a href="/" class="menu-item">Discussion Forum</a>
-          <a href="/mentor.html" class="menu-item">Find a Mentor</a>
-          <a href="/mentor-dashboard.html" class="menu-item">Mentorship Dashboard</a>
-          <div class="menu-item-dropdown">
-              <button class="menu-item" id="resourcesDropdownBtn">
-                  Resources
-                  <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                  </svg>
-              </button>
-              <div class="dropdown-content" id="resourcesDropdown">
-                  <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
-                  <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
-                  <a href="/articleship.html" class="dropdown-item">Articleship</a>
-              </div>
-          </div>
-      </div>
+        <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="menu-items-container">
+            <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
+            <a href="/articleship-program/" class="menu-item">Articleship Program</a>
+            <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My
+                Courses</a>
+            <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
+            <a href="/" class="menu-item">Discussion Forum</a>
+            <a href="/mentor.html" class="menu-item">Find a Mentor</a>
+            <a href="/mentor-dashboard.html" class="menu-item">Mentorship Dashboard</a>
+            <div class="menu-item-dropdown">
+                <button class="menu-item" id="resourcesDropdownBtn">
+                    Resources
+                    <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div class="dropdown-content" id="resourcesDropdown">
+                    <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
+                    <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
+                    <a href="/articleship.html" class="dropdown-item">Articleship</a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="dashboard-container">
@@ -621,7 +632,7 @@
             await loadMessages(relationshipId);
             openModal('chat-modal');
         }
-        
+
         window.viewMilestones = (relationshipId) => {
             alert(`Milestone feature coming soon for relationship: ${relationshipId}`);
         }
@@ -656,7 +667,7 @@
             await loadSessions();
             await loadMessageThreads();
         }
-        
+
         async function loadStats() {
             const stats = { totalRequests: 0, activeMentorships: 0, completedSessions: 0, avgRating: 0 };
             if (isMentor) {
@@ -790,7 +801,7 @@
 
         async function loadMessageThreads() {
             let query = supabaseClient.from('mentorship_relationships').select(`id, mentor:mentor_profiles!inner(*, forum_user_profiles(display_name)), mentee_profile:forum_user_profiles!mentorship_relationships_mentee_id_fkey(display_name)`).eq('status', 'active');
-            if(isMentor) { query = query.eq('mentor_id', mentorProfile.id); } else { query = query.eq('mentee_id', currentUser.id); }
+            if (isMentor) { query = query.eq('mentor_id', mentorProfile.id); } else { query = query.eq('mentee_id', currentUser.id); }
             const { data: relationships } = await query;
             const container = document.getElementById('message-threads');
             if (!relationships || relationships.length === 0) {
@@ -803,7 +814,7 @@
                 return `<div class="message-thread-item" onclick="openChat('${rel.id}', '${displayName}')"><div class="request-info"><h4>${displayName}</h4><div class="request-meta">Click to open chat</div></div></div>`;
             }).join('');
         }
-        
+
         async function loadMessages(relationshipId) {
             const container = document.getElementById('messages-container');
             container.innerHTML = '<p>Loading messages...</p>';
@@ -842,7 +853,7 @@
             btn.disabled = false;
             btn.textContent = 'Schedule';
         });
-        
+
         document.getElementById('message-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const relationshipId = document.getElementById('chat-relationship-id').value;
@@ -883,4 +894,5 @@
         })();
     </script>
 </body>
+
 </html>

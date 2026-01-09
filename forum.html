@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discussion Forum - My Student Club</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
     <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
@@ -29,583 +31,686 @@
             --forum-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
             --forum-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
         }
-        
-        body { 
-            background: var(--forum-bg); 
+
+        body {
+            background: var(--forum-bg);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             color: var(--forum-text);
             line-height: 1.6;
         }
-        
-        .forum-container { 
-            max-width: 1400px; 
-            margin: 2rem auto; 
-            padding: 0 1.5rem; 
-            display: grid; 
-            grid-template-columns: 280px 1fr 320px; 
+
+        .forum-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
             gap: 2rem;
         }
-        
-        .sidebar { 
-            position: sticky; 
-            top: 2rem; 
+
+        .sidebar {
+            position: sticky;
+            top: 2rem;
             height: fit-content;
         }
-        .sidebar-section { 
-            background: var(--forum-card); 
-            border-radius: 12px; 
-            padding: 1.5rem; 
-            margin-bottom: 1.5rem; 
+
+        .sidebar-section {
+            background: var(--forum-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
             border: 1px solid var(--forum-border);
             box-shadow: var(--forum-shadow-sm);
         }
-        .sidebar-section h3 { 
-            font-size: 0.75rem; 
-            font-weight: 700; 
-            text-transform: uppercase; 
-            color: var(--forum-text-muted); 
-            margin-bottom: 1rem; 
+
+        .sidebar-section h3 {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--forum-text-muted);
+            margin-bottom: 1rem;
             letter-spacing: 0.8px;
         }
-        .category-item { 
-            display: flex; 
-            align-items: center; 
-            padding: 0.875rem 0.75rem; 
-            border-radius: 8px; 
-            margin-bottom: 0.25rem; 
-            cursor: pointer; 
-            transition: all 0.15s ease; 
-            text-decoration: none; 
+
+        .category-item {
+            display: flex;
+            align-items: center;
+            padding: 0.875rem 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.25rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-decoration: none;
             color: var(--forum-text-secondary);
             font-weight: 500;
             font-size: 0.875rem;
         }
-        .category-item:hover { 
+
+        .category-item:hover {
             background: var(--forum-hover);
             color: var(--forum-primary);
         }
-        .category-item.active { 
+
+        .category-item.active {
             background: rgba(30, 64, 175, 0.08);
             color: var(--forum-primary);
             font-weight: 600;
         }
-        .category-icon { 
-            font-size: 1.125rem; 
+
+        .category-icon {
+            font-size: 1.125rem;
             margin-right: 0.875rem;
             opacity: 0.7;
         }
+
         .category-item.active .category-icon {
             opacity: 1;
         }
-        .category-name { 
+
+        .category-name {
             flex-grow: 1;
         }
-        .category-count { 
-            font-size: 0.75rem; 
-            color: var(--forum-text-muted); 
-            background: var(--forum-hover); 
-            padding: 0.25rem 0.625rem; 
+
+        .category-count {
+            font-size: 0.75rem;
+            color: var(--forum-text-muted);
+            background: var(--forum-hover);
+            padding: 0.25rem 0.625rem;
             border-radius: 10px;
             font-weight: 600;
         }
-        
-        .sort-options { 
-            display: flex; 
-            gap: 0.5rem; 
+
+        .sort-options {
+            display: flex;
+            gap: 0.5rem;
             flex-wrap: wrap;
         }
-        .sort-btn { 
-            padding: 0.625rem 1rem; 
-            border: 1px solid var(--forum-border); 
-            background: var(--forum-card); 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-size: 0.875rem; 
+
+        .sort-btn {
+            padding: 0.625rem 1rem;
+            border: 1px solid var(--forum-border);
+            background: var(--forum-card);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
             transition: all 0.15s ease;
             font-weight: 500;
             color: var(--forum-text-secondary);
         }
-        .sort-btn:hover { 
+
+        .sort-btn:hover {
             background: var(--forum-hover);
             border-color: var(--forum-primary);
             color: var(--forum-primary);
         }
-        .sort-btn.active { 
-            background: var(--forum-primary); 
-            color: white; 
+
+        .sort-btn.active {
+            background: var(--forum-primary);
+            color: white;
             border-color: var(--forum-primary);
             font-weight: 600;
         }
-        
-        .main-content { 
+
+        .main-content {
             min-height: 80vh;
         }
-        .forum-header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
+
+        .forum-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 2rem;
             padding-bottom: 1.5rem;
             border-bottom: 1px solid var(--forum-border);
         }
-        .forum-header h1 { 
-            font-size: 1.875rem; 
-            font-weight: 800; 
+
+        .forum-header h1 {
+            font-size: 1.875rem;
+            font-weight: 800;
             color: var(--forum-text);
             letter-spacing: -0.025em;
         }
-        .search-bar { 
-            flex-grow: 1; 
-            max-width: 500px; 
-            margin: 0 2rem; 
+
+        .search-bar {
+            flex-grow: 1;
+            max-width: 500px;
+            margin: 0 2rem;
             position: relative;
         }
-        .search-bar input { 
-            width: 100%; 
-            padding: 0.875rem 1rem 0.875rem 3rem; 
-            border: 1px solid var(--forum-border); 
-            border-radius: 10px; 
-            font-size: 0.9375rem; 
+
+        .search-bar input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            border: 1px solid var(--forum-border);
+            border-radius: 10px;
+            font-size: 0.9375rem;
             transition: all 0.15s ease;
             background: var(--forum-card);
             color: var(--forum-text);
         }
-        .search-bar input:focus { 
-            outline: none; 
+
+        .search-bar input:focus {
+            outline: none;
             border-color: var(--forum-primary);
             box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
             background: white;
         }
+
         .search-bar input::placeholder {
             color: var(--forum-text-muted);
         }
-        .search-bar i { 
-            position: absolute; 
-            left: 1rem; 
-            top: 50%; 
-            transform: translateY(-50%); 
+
+        .search-bar i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
             color: var(--forum-text-muted);
         }
-        
-        .action-button { 
+
+        .action-button {
             background: var(--forum-primary);
-            color: white; 
-            border: none; 
-            padding: 0.875rem 1.5rem; 
-            border-radius: 10px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 0.5rem; 
+            color: white;
+            border: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
             transition: all 0.2s ease;
             box-shadow: var(--forum-shadow-sm);
             text-decoration: none;
             font-size: 0.9375rem;
         }
-        .action-button:hover { 
+
+        .action-button:hover {
             background: var(--forum-primary-light);
             box-shadow: var(--forum-shadow-md);
             transform: translateY(-1px);
         }
-        
-        .quick-create { 
-            background: var(--forum-card); 
-            border-radius: 12px; 
-            padding: 1.5rem; 
-            margin-bottom: 1.5rem; 
+
+        .quick-create {
+            background: var(--forum-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
             border: 1px solid var(--forum-border);
             box-shadow: var(--forum-shadow-sm);
         }
-        .quick-create input, .quick-create textarea, .quick-create select { 
-            width: 100%; 
-            padding: 0.875rem 1rem; 
-            border: 1px solid var(--forum-border); 
-            border-radius: 8px; 
-            margin-bottom: 0.875rem; 
-            font-size: 0.9375rem; 
+
+        .quick-create input,
+        .quick-create textarea,
+        .quick-create select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--forum-border);
+            border-radius: 8px;
+            margin-bottom: 0.875rem;
+            font-size: 0.9375rem;
             transition: all 0.15s ease;
             font-family: inherit;
             color: var(--forum-text);
         }
-        .quick-create input:focus, .quick-create textarea:focus, .quick-create select:focus { 
-            outline: none; 
+
+        .quick-create input:focus,
+        .quick-create textarea:focus,
+        .quick-create select:focus {
+            outline: none;
             border-color: var(--forum-primary);
             box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
         }
-        .quick-create textarea { 
-            min-height: 100px; 
+
+        .quick-create textarea {
+            min-height: 100px;
             resize: vertical;
             line-height: 1.6;
         }
-        
-        .threads-list { 
-            display: flex; 
-            flex-direction: column; 
+
+        .threads-list {
+            display: flex;
+            flex-direction: column;
             gap: 0.75rem;
         }
-        .thread-item { 
-            background: var(--forum-card); 
-            border-radius: 12px; 
-            padding: 1.5rem; 
-            border: 1px solid var(--forum-border); 
-            display: flex; 
-            gap: 1.25rem; 
-            transition: all 0.2s ease; 
-            text-decoration: none; 
-            color: var(--forum-text); 
+
+        .thread-item {
+            background: var(--forum-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--forum-border);
+            display: flex;
+            gap: 1.25rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            color: var(--forum-text);
             position: relative;
             box-shadow: var(--forum-shadow-sm);
         }
-        .thread-item:hover { 
+
+        .thread-item:hover {
             box-shadow: var(--forum-shadow-md);
             border-color: var(--forum-primary);
             transform: translateY(-2px);
         }
-        .thread-item.pinned { 
+
+        .thread-item.pinned {
             border-left: 3px solid var(--forum-warning);
             background: linear-gradient(to right, rgba(217, 119, 6, 0.03), transparent);
         }
-        .thread-item.locked { 
+
+        .thread-item.locked {
             opacity: 0.7;
         }
-        
-        .thread-avatar { 
-            width: 48px; 
-            height: 48px; 
-            border-radius: 10px; 
+
+        .thread-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
             background: linear-gradient(135deg, var(--forum-primary), var(--forum-secondary));
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            color: white; 
-            font-weight: 700; 
-            font-size: 1.125rem; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.125rem;
             flex-shrink: 0;
             box-shadow: var(--forum-shadow);
         }
-        .thread-main { 
-            flex-grow: 1; 
+
+        .thread-main {
+            flex-grow: 1;
             min-width: 0;
         }
-        .thread-header { 
-            display: flex; 
-            align-items: center; 
-            gap: 0.75rem; 
-            margin-bottom: 0.625rem; 
+
+        .thread-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.625rem;
             flex-wrap: wrap;
         }
-        .thread-title { 
-            font-size: 1.0625rem; 
-            font-weight: 700; 
-            margin: 0; 
+
+        .thread-title {
+            font-size: 1.0625rem;
+            font-weight: 700;
+            margin: 0;
             color: var(--forum-text);
             line-height: 1.4;
             letter-spacing: -0.01em;
         }
-        .thread-badges { 
-            display: flex; 
-            gap: 0.5rem; 
+
+        .thread-badges {
+            display: flex;
+            gap: 0.5rem;
             margin-left: auto;
         }
-        .badge { 
-            padding: 0.25rem 0.75rem; 
-            border-radius: 6px; 
-            font-size: 0.75rem; 
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
             font-weight: 600;
             letter-spacing: 0.02em;
         }
-        .badge.pinned { 
-            background: #fef3c7; 
+
+        .badge.pinned {
+            background: #fef3c7;
             color: #92400e;
         }
-        .badge.locked { 
-            background: #fee2e2; 
+
+        .badge.locked {
+            background: #fee2e2;
             color: #991b1b;
         }
-        .badge.solved { 
-            background: #d1fae5; 
+
+        .badge.solved {
+            background: #d1fae5;
             color: #065f46;
         }
-        
-        .thread-meta { 
-            display: flex; 
-            align-items: center; 
-            gap: 1.25rem; 
-            font-size: 0.875rem; 
-            color: var(--forum-text-muted); 
+
+        .thread-meta {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            font-size: 0.875rem;
+            color: var(--forum-text-muted);
             flex-wrap: wrap;
         }
-        .thread-meta-item { 
-            display: flex; 
-            align-items: center; 
+
+        .thread-meta-item {
+            display: flex;
+            align-items: center;
             gap: 0.375rem;
         }
-        .thread-category { 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 0.375rem; 
-            padding: 0.25rem 0.75rem; 
-            border-radius: 6px; 
-            font-size: 0.75rem; 
+
+        .thread-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
             font-weight: 600;
         }
-        .thread-tags { 
-            display: flex; 
-            gap: 0.5rem; 
-            flex-wrap: wrap; 
+
+        .thread-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
             margin-top: 0.875rem;
         }
-        .tag { 
-            padding: 0.25rem 0.75rem; 
-            background: var(--forum-hover); 
-            border-radius: 6px; 
-            font-size: 0.75rem; 
-            color: var(--forum-text-muted); 
+
+        .tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--forum-hover);
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: var(--forum-text-muted);
             font-weight: 500;
             border: 1px solid var(--forum-border);
         }
-        
-        .thread-stats { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: flex-end; 
-            gap: 0.75rem; 
+
+        .thread-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 0.75rem;
             flex-shrink: 0;
         }
-        .stat-item { 
-            display: flex; 
-            align-items: center; 
-            gap: 0.5rem; 
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             font-size: 0.875rem;
         }
-        .stat-count { 
-            font-weight: 700; 
-            color: var(--forum-text); 
+
+        .stat-count {
+            font-weight: 700;
+            color: var(--forum-text);
             font-size: 0.9375rem;
         }
-        .stat-icon { 
+
+        .stat-icon {
             color: var(--forum-text-muted);
         }
-        
-        .vote-display { 
-            display: flex; 
-            align-items: center; 
-            gap: 0.5rem; 
-            padding: 0.5rem 0.875rem; 
-            background: var(--forum-hover); 
+
+        .vote-display {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.875rem;
+            background: var(--forum-hover);
             border-radius: 8px;
             border: 1px solid var(--forum-border);
         }
-        .vote-count { 
-            font-weight: 700; 
+
+        .vote-count {
+            font-weight: 700;
             color: var(--forum-primary);
             font-size: 0.9375rem;
         }
-        
-        .right-sidebar { 
-            position: sticky; 
-            top: 2rem; 
+
+        .right-sidebar {
+            position: sticky;
+            top: 2rem;
             height: fit-content;
         }
-        .widget { 
-            background: var(--forum-card); 
-            border-radius: 12px; 
-            padding: 1.5rem; 
-            margin-bottom: 1.5rem; 
+
+        .widget {
+            background: var(--forum-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
             border: 1px solid var(--forum-border);
             box-shadow: var(--forum-shadow-sm);
         }
-        .widget h3 { 
-            font-size: 0.9375rem; 
-            font-weight: 700; 
+
+        .widget h3 {
+            font-size: 0.9375rem;
+            font-weight: 700;
             margin-bottom: 1rem;
             color: var(--forum-text);
             letter-spacing: -0.01em;
         }
-        
-        .trending-item { 
-            padding: 0.875rem 0.75rem; 
-            border-radius: 8px; 
-            margin-bottom: 0.5rem; 
-            cursor: pointer; 
-            transition: all 0.15s ease; 
-            text-decoration: none; 
-            display: block; 
+
+        .trending-item {
+            padding: 0.875rem 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-decoration: none;
+            display: block;
             color: var(--forum-text);
             border: 1px solid transparent;
         }
-        .trending-item:hover { 
+
+        .trending-item:hover {
             background: var(--forum-hover);
             border-color: var(--forum-border);
         }
-        .trending-title { 
-            font-weight: 600; 
-            font-size: 0.875rem; 
+
+        .trending-title {
+            font-weight: 600;
+            font-size: 0.875rem;
             margin-bottom: 0.375rem;
             line-height: 1.4;
             color: var(--forum-text-secondary);
         }
-        .trending-stats { 
-            font-size: 0.75rem; 
+
+        .trending-stats {
+            font-size: 0.75rem;
             color: var(--forum-text-muted);
         }
-        
-        .top-user { 
-            display: flex; 
-            align-items: center; 
-            gap: 0.875rem; 
-            padding: 0.875rem 0.75rem; 
-            border-radius: 8px; 
+
+        .top-user {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            padding: 0.875rem 0.75rem;
+            border-radius: 8px;
             margin-bottom: 0.5rem;
             transition: all 0.15s ease;
             border: 1px solid transparent;
         }
+
         .top-user:hover {
             background: var(--forum-hover);
             border-color: var(--forum-border);
         }
-        .top-user-avatar { 
-            width: 40px; 
-            height: 40px; 
-            border-radius: 8px; 
-            background: var(--forum-hover); 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 1.125rem; 
+
+        .top-user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--forum-hover);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.125rem;
             color: var(--forum-primary);
             border: 1px solid var(--forum-border);
         }
-        .top-user-info { 
+
+        .top-user-info {
             flex-grow: 1;
         }
-        .top-user-name { 
-            font-weight: 600; 
-            font-size: 0.875rem; 
-            display: flex; 
-            align-items: center; 
+
+        .top-user-name {
+            font-weight: 600;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
             gap: 0.625rem;
             color: var(--forum-text-secondary);
         }
-        .top-user-rank { 
-            font-size: 0.75rem; 
-            font-weight: 700; 
-            color: var(--forum-text-muted); 
-            width: 24px; 
+
+        .top-user-rank {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--forum-text-muted);
+            width: 24px;
             text-align: center;
         }
-        .top-user-rep { 
-            font-size: 0.75rem; 
+
+        .top-user-rep {
+            font-size: 0.75rem;
             color: var(--forum-text-muted);
             margin-top: 0.125rem;
         }
-        
-        .empty-state { 
-            text-align: center; 
-            padding: 4rem 2rem; 
-            background: var(--forum-card); 
-            border-radius: 12px; 
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--forum-card);
+            border-radius: 12px;
             border: 2px dashed var(--forum-border);
         }
-        .empty-state-icon { 
-            font-size: 3rem; 
-            margin-bottom: 1rem; 
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
             opacity: 0.2;
             color: var(--forum-text-muted);
         }
-        
-        .filter-chips { 
-            display: flex; 
-            gap: 0.625rem; 
-            margin-bottom: 1.5rem; 
+
+        .filter-chips {
+            display: flex;
+            gap: 0.625rem;
+            margin-bottom: 1.5rem;
             flex-wrap: wrap;
         }
-        .filter-chip { 
-            padding: 0.625rem 1.125rem; 
-            background: var(--forum-card); 
-            border: 1px solid var(--forum-border); 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-size: 0.875rem; 
-            font-weight: 500; 
+
+        .filter-chip {
+            padding: 0.625rem 1.125rem;
+            background: var(--forum-card);
+            border: 1px solid var(--forum-border);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
             transition: all 0.15s ease;
             color: var(--forum-text-secondary);
         }
-        .filter-chip:hover { 
+
+        .filter-chip:hover {
             background: var(--forum-hover);
             border-color: var(--forum-primary);
             color: var(--forum-primary);
         }
-        .filter-chip.active { 
-            background: var(--forum-primary); 
-            color: white; 
+
+        .filter-chip.active {
+            background: var(--forum-primary);
+            color: white;
             border-color: var(--forum-primary);
             font-weight: 600;
         }
-        
+
         @media (max-width: 1200px) {
-            .forum-container { grid-template-columns: 1fr; }
-            .sidebar, .right-sidebar { display: none; }
+            .forum-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar,
+            .right-sidebar {
+                display: none;
+            }
         }
-        
+
         @media (max-width: 768px) {
-            .forum-header { flex-direction: column; align-items: stretch; gap: 1rem; }
-            .search-bar { margin: 0; max-width: none; }
-            .thread-item { flex-direction: column; }
-            .thread-stats { flex-direction: row; }
+            .forum-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .search-bar {
+                margin: 0;
+                max-width: none;
+            }
+
+            .thread-item {
+                flex-direction: column;
+            }
+
+            .thread-stats {
+                flex-direction: row;
+            }
         }
-        
-        .loader-container { display: flex; justify-content: center; padding: 3rem; }
-        .loader-spinner { width: 40px; height: 40px; border: 3px solid var(--forum-border); border-top-color: var(--forum-primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .loader-container {
+            display: flex;
+            justify-content: center;
+            padding: 3rem;
+        }
+
+        .loader-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--forum-border);
+            border-top-color: var(--forum-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
+
 <body>
     <header class="site-header">
-      <div class="header-container">
-        <a href="/" class="brand-link">
-          <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
-        </a>
-        <div class="nav-actions">
-          <div class="auth-buttons-container"></div>
-          <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-          </button>
+        <div class="header-container">
+            <a href="/" class="brand-link">
+                <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
+            </a>
+            <div class="nav-actions">
+                <div class="auth-buttons-container"></div>
+                <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
         </div>
-      </div>
     </header>
 
     <div class="expanded-menu" id="expandedMenu">
-      <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-      </button>
-      <div class="menu-items-container">
-          <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
-          <a href="/articleship-guarantee-program/" class="menu-item">Articleship Program</a>
-          <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
-          <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
-          <a href="/" class="menu-item">Discussion Forum</a>
-          <a href="/mentor.html" class="menu-item">Find a Mentor</a>
-          <a href="/mentor-dashboard.html" class="menu-item" id="mentor-dashboard-link" style="display:none;">Mentorship Dashboard</a>
-          <div class="menu-item-dropdown">
-              <button class="menu-item" id="resourcesDropdownBtn">
-                  Resources
-                  <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                  </svg>
-              </button>
-              <div class="dropdown-content" id="resourcesDropdown">
-                  <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
-                  <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
-                  <a href="/articleship.html" class="dropdown-item">Articleship</a>
-              </div>
-          </div>
-      </div>
+        <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="menu-items-container">
+            <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
+            <a href="/articleship-program/" class="menu-item">Articleship Program</a>
+            <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My
+                Courses</a>
+            <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
+            <a href="/" class="menu-item">Discussion Forum</a>
+            <a href="/mentor.html" class="menu-item">Find a Mentor</a>
+            <a href="/mentor-dashboard.html" class="menu-item" id="mentor-dashboard-link"
+                style="display:none;">Mentorship Dashboard</a>
+            <div class="menu-item-dropdown">
+                <button class="menu-item" id="resourcesDropdownBtn">
+                    Resources
+                    <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div class="dropdown-content" id="resourcesDropdown">
+                    <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
+                    <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
+                    <a href="/articleship.html" class="dropdown-item">Articleship</a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="forum-container">
@@ -623,7 +728,7 @@
                 </div>
             </div>
         </aside>
-        
+
         <main class="main-content">
             <div class="forum-header">
                 <h1>Discussions</h1>
@@ -635,25 +740,28 @@
                     <i class="fas fa-plus"></i> New Thread
                 </a>
             </div>
-            
+
             <div class="filter-chips">
                 <button class="filter-chip active" data-filter="all">All</button>
                 <button class="filter-chip" data-filter="unanswered">Unanswered</button>
                 <button class="filter-chip" data-filter="solved">Solved</button>
                 <button class="filter-chip" data-filter="following">Following</button>
             </div>
-            
+
             <section id="quick-create" class="quick-create">
                 <div id="quick-create-logged-out" style="text-align: center; padding: 1rem;">
                     <h3>Want to start a discussion?</h3>
-                    <p style="margin-bottom: 1rem; color: var(--forum-text-muted);">Log in to share your thoughts with the community.</p>
+                    <p style="margin-bottom: 1rem; color: var(--forum-text-muted);">Log in to share your thoughts with
+                        the community.</p>
                     <a href="/login.html" class="action-button">Login to Post</a>
                 </div>
                 <div id="quick-create-collapsed" style="display: none; cursor: pointer;">
-                    <input type="text" placeholder="Start a new discussion..." readonly style="cursor: pointer; text-align: center; font-weight: 500;">
+                    <input type="text" placeholder="Start a new discussion..." readonly
+                        style="cursor: pointer; text-align: center; font-weight: 500;">
                 </div>
                 <form id="quick-create-form" style="display: none;">
-                    <select id="qc-category" required style="width:100%;padding:.875rem;margin-bottom:1rem;border:2px solid var(--forum-border);border-radius:10px;">
+                    <select id="qc-category" required
+                        style="width:100%;padding:.875rem;margin-bottom:1rem;border:2px solid var(--forum-border);border-radius:10px;">
                         <option value="">Select Category</option>
                     </select>
                     <input id="qc-title" type="text" placeholder="Thread title" required>
@@ -662,12 +770,14 @@
                     <button type="submit" class="action-button">Create Thread</button>
                 </form>
             </section>
-            
+
             <div id="threads-list" class="threads-list">
-                <div class="loader-container"><div class="loader-spinner"></div></div>
+                <div class="loader-container">
+                    <div class="loader-spinner"></div>
+                </div>
             </div>
         </main>
-        
+
         <aside class="right-sidebar">
             <div class="widget">
                 <h3><i class="fas fa-fire"></i> Trending Now</h3>
@@ -689,7 +799,7 @@
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-   
+
         // STATE VARIABLES
         let currentUser = null;
         let currentCategory = null;
@@ -724,13 +834,13 @@
             try {
                 const { data, error } = await supabaseClient.from('forum_categories').select('*');
                 if (error) throw error;
-                
+
                 const container = document.getElementById('categories-list');
                 const select = document.getElementById('qc-category');
-                
+
                 container.innerHTML = '<a class="category-item active" data-category="all"><span class="category-icon"><i class="fas fa-folder"></i></span><span class="category-name">All Topics</span></a>';
                 select.innerHTML = '<option value="">Select Category</option>';
-                
+
                 data?.forEach(cat => {
                     container.innerHTML += `
                         <a class="category-item" data-category="${cat.id}">
@@ -741,7 +851,7 @@
                     `;
                     select.innerHTML += `<option value="${cat.id}">${cat.name}</option>`;
                 });
-                
+
                 // Attach click handlers
                 document.querySelectorAll('.category-item').forEach(item => {
                     item.addEventListener('click', (e) => {
@@ -890,11 +1000,11 @@
                     supabaseClient.from('forum_posts').select('*', { count: 'exact', head: true }),
                     supabaseClient.from('forum_user_profiles').select('*', { count: 'exact', head: true })
                 ]);
-                
+
                 const threadCount = threadRes.status === 'fulfilled' ? threadRes.value.count : 0;
                 const postCount = postRes.status === 'fulfilled' ? postRes.value.count : 0;
                 const userCount = userRes.status === 'fulfilled' ? userRes.value.count : 0;
-                
+
                 document.getElementById('forum-stats').innerHTML = `
                     <p><strong>${threadCount || 0}</strong> Threads</p>
                     <p><strong>${postCount || 0}</strong> Posts</p>
@@ -933,7 +1043,7 @@
                     .select('id')
                     .eq('user_id', currentUser.id)
                     .single();
-                
+
                 if (mentorProfile) {
                     const dashboardLink = document.getElementById('mentor-dashboard-link');
                     if (dashboardLink) dashboardLink.style.display = 'block';
@@ -949,14 +1059,14 @@
             const qcCollapsed = document.getElementById('quick-create-collapsed');
             const newThreadBtn = document.getElementById('new-thread-btn');
             const followingFilter = document.querySelector('[data-filter="following"]');
-            
+
             // Switch quick-create to logged-in state
             if (qcLoggedOut) qcLoggedOut.style.display = 'none';
             if (qcCollapsed) qcCollapsed.style.display = 'block';
-            
+
             // Show New Thread button
             if (newThreadBtn) newThreadBtn.style.display = 'inline-flex';
-            
+
             // Enable Following filter (will be functional with user-specific query)
             if (followingFilter) followingFilter.style.opacity = '1';
         }
@@ -966,15 +1076,15 @@
             const qcCollapsed = document.getElementById('quick-create-collapsed');
             const qcForm = document.getElementById('quick-create-form');
             const newThreadBtn = document.getElementById('new-thread-btn');
-            
+
             // Reset quick-create to logged-out state
             if (qcLoggedOut) qcLoggedOut.style.display = 'block';
             if (qcCollapsed) qcCollapsed.style.display = 'none';
             if (qcForm) qcForm.style.display = 'none';
-            
+
             // Hide New Thread button
             if (newThreadBtn) newThreadBtn.style.display = 'none';
-            
+
             // Stop realtime if active
             if (realtimeChannel) {
                 supabaseClient.removeChannel(realtimeChannel);
@@ -985,7 +1095,7 @@
         // REALTIME SUBSCRIPTIONS (Only after auth confirmed)
         function startRealtimeSubscriptions() {
             if (!currentUser || realtimeChannel) return;
-            
+
             try {
                 realtimeChannel = supabaseClient
                     .channel('forum_threads_changes')
@@ -1052,16 +1162,16 @@
                 alert('Please log in to create a thread.');
                 return;
             }
-            
+
             const title = document.getElementById('qc-title').value.trim();
             const content = document.getElementById('qc-content').value.trim();
             const categoryId = document.getElementById('qc-category').value;
             const tags = document.getElementById('qc-tags').value.split(',').map(t => t.trim()).filter(Boolean);
-            
+
             const btn = e.target.querySelector('button[type="submit"]');
             btn.disabled = true;
             btn.textContent = 'Creating...';
-            
+
             try {
                 const { data, error } = await supabaseClient
                     .from('forum_threads')
@@ -1084,7 +1194,7 @@
                     username: currentUser.email.split('@')[0],
                     display_name: currentUser.email.split('@')[0]
                 }, { onConflict: 'user_id' });
-                
+
                 window.location.href = `/thread.html?id=${data.id}`;
             } catch (error) {
                 console.error('Thread creation failed:', error);
@@ -1147,4 +1257,5 @@
         initAuth();
     </script>
 </body>
+
 </html>

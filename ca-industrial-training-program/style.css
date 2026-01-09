@@ -167,7 +167,7 @@ h1 {
   color: #1a1a4b;
 }
 
-.feature.placement-guarantee {
+.feature.placement-rate {
   background: white;
   color: #1a1a4b;
 }
@@ -499,7 +499,7 @@ h1 {
     order: 3;
   }
 
-  .features .feature.placement-guarantee {
+  .features .feature.placement-rate {
     order: 4;
   }
 

@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Discussion - My Student Club</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
@@ -33,129 +35,507 @@
             --forum-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
         }
 
-        body { 
-            background: var(--forum-bg); 
+        body {
+            background: var(--forum-bg);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             color: var(--forum-text);
         }
 
-        .thread-container { max-width: 1000px; margin: 2rem auto; padding: 0 1.5rem; }
-        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--forum-text-muted); text-decoration: none; margin-bottom: 1.5rem; font-weight: 600; transition: all 0.15s ease; font-size: 0.9375rem; }
-        .back-link:hover { color: var(--forum-primary); }
+        .thread-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
 
-        .thread-header-section { background: var(--forum-card); border-radius: 12px; padding: 2.5rem; margin-bottom: 1.5rem; border: 1px solid var(--forum-border); box-shadow: var(--forum-shadow); }
-        .thread-title-main { font-size: 2rem; font-weight: 800; margin-bottom: 1.25rem; line-height: 1.3; color: var(--forum-text); letter-spacing: -0.025em; }
-        .thread-meta-section { display: flex; align-items: center; gap: 1.25rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-        .thread-author { display: flex; align-items: center; gap: 0.875rem; }
-        .author-avatar { width: 48px; height: 48px; border-radius: 10px; background: linear-gradient(135deg, var(--forum-primary), var(--forum-secondary)); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.25rem; box-shadow: var(--forum-shadow); }
-        .author-info { display: flex; flex-direction: column; }
-        .author-name { font-weight: 700; color: var(--forum-text); font-size: 0.9375rem; }
-        .author-rep { font-size: 0.8125rem; color: var(--forum-text-muted); margin-top: 0.125rem; }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--forum-text-muted);
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            transition: all 0.15s ease;
+            font-size: 0.9375rem;
+        }
 
-        .thread-actions { display: flex; gap: 0.625rem; margin-top: 1.25rem; flex-wrap: wrap; }
-        .action-btn { padding: 0.75rem 1.25rem; border: 1px solid var(--forum-border); background: var(--forum-card); border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.875rem; transition: all 0.15s ease; display: inline-flex; align-items: center; gap: 0.5rem; color: var(--forum-text-secondary); }
-        .action-btn:hover { border-color: var(--forum-primary); color: var(--forum-primary); background: var(--forum-hover); }
-        .action-btn.active { background: var(--forum-primary); color: white; border-color: var(--forum-primary); }
-        .action-btn i { font-size: 1rem; }
+        .back-link:hover {
+            color: var(--forum-primary);
+        }
 
-        .vote-section { display: flex; align-items: center; gap: 1rem; }
-        .vote-btn { width: 42px; height: 42px; border: 1px solid var(--forum-border); background: var(--forum-card); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s ease; font-size: 1.125rem; color: var(--forum-text-muted); }
-        .vote-btn:hover { border-color: var(--forum-primary); color: var(--forum-primary); box-shadow: var(--forum-shadow); }
-        .vote-btn.upvoted { background: var(--forum-success); color: white; border-color: var(--forum-success); }
-        .vote-btn.downvoted { background: var(--forum-danger); color: white; border-color: var(--forum-danger); }
-        .vote-btn:disabled { cursor: not-allowed; background-color: var(--forum-hover); color: var(--forum-text-muted); border-color: var(--forum-border); transform: none; box-shadow: none; }
-        .vote-count { font-size: 1.5rem; font-weight: 800; color: var(--forum-primary); min-width: 50px; text-align: center; letter-spacing: -0.02em; }
+        .thread-header-section {
+            background: var(--forum-card);
+            border-radius: 12px;
+            padding: 2.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--forum-border);
+            box-shadow: var(--forum-shadow);
+        }
 
-        .post-container { background: var(--forum-card); border-radius: 12px; padding: 2rem; margin-bottom: 1.25rem; border: 1px solid var(--forum-border); position: relative; box-shadow: var(--forum-shadow-sm); transition: all 0.15s ease; }
-        .post-container:hover { box-shadow: var(--forum-shadow); }
-        .post-container.accepted-answer { border-left: 3px solid var(--forum-success); background: linear-gradient(to right, rgba(5, 150, 105, 0.03), transparent); }
-        .post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--forum-border); }
-        .post-author { display: flex; align-items: center; gap: 0.875rem; }
-        .post-avatar { width: 42px; height: 42px; border-radius: 8px; background: var(--forum-hover); display: flex; align-items: center; justify-content: center; color: var(--forum-text-muted); font-weight: 700; font-size: 1.125rem; border: 1px solid var(--forum-border); }
-        .post-author-info { display: flex; flex-direction: column; }
-        .post-author-name { font-weight: 700; color: var(--forum-text); font-size: 0.9375rem; }
-        .post-date { font-size: 0.8125rem; color: var(--forum-text-muted); margin-top: 0.125rem; }
+        .thread-title-main {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 1.25rem;
+            line-height: 1.3;
+            color: var(--forum-text);
+            letter-spacing: -0.025em;
+        }
 
-        .post-content { line-height: 1.8; color: var(--forum-text-secondary); font-size: 1rem; margin-bottom: 1.5rem; }
-        .post-content img { max-width: 100%; border-radius: 8px; margin: 1rem 0; box-shadow: var(--forum-shadow); }
-        .post-content pre { background: var(--forum-hover); padding: 1rem; border-radius: 8px; overflow-x: auto; border: 1px solid var(--forum-border); }
-        .post-content code { background: var(--forum-hover); padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.875rem; border: 1px solid var(--forum-border); }
+        .thread-meta-section {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
 
-        .post-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-        .post-reactions { display: flex; gap: 0.5rem; }
-        .reaction-btn { padding: 0.625rem 1rem; border: 1px solid var(--forum-border); background: var(--forum-card); border-radius: 8px; cursor: pointer; font-size: 0.875rem; transition: all 0.15s ease; display: inline-flex; align-items: center; gap: 0.5rem; color: var(--forum-text-secondary); font-weight: 500; }
-        .reaction-btn:hover { border-color: var(--forum-primary); color: var(--forum-primary); background: var(--forum-hover); }
-        .reaction-btn.active { background: var(--forum-primary); color: white; border-color: var(--forum-primary); }
+        .thread-author {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+        }
 
-        .reply-form-section { background: var(--forum-card); border-radius: 12px; padding: 2rem; margin-top: 1.5rem; border: 1px solid var(--forum-border); box-shadow: var(--forum-shadow-sm); }
-        .reply-form-section h3 { font-size: 1.125rem; font-weight: 700; margin-bottom: 1.5rem; color: var(--forum-text); letter-spacing: -0.01em; }
-        #reply-editor { min-height: 200px; background: var(--forum-card); border: 1px solid var(--forum-border); border-radius: 8px; }
+        .author-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--forum-primary), var(--forum-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.25rem;
+            box-shadow: var(--forum-shadow);
+        }
 
-        .replies-section { margin-top: 2rem; }
-        .replies-header { font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.75rem; color: var(--forum-text); letter-spacing: -0.01em; }
+        .author-info {
+            display: flex;
+            flex-direction: column;
+        }
 
-        .accept-answer-btn { position: absolute; top: 1.25rem; right: 1.25rem; padding: 0.625rem 1.125rem; background: var(--forum-success); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.875rem; transition: all 0.2s ease; box-shadow: var(--forum-shadow-sm); }
-        .accept-answer-btn:hover { background: #047857; box-shadow: var(--forum-shadow-md); transform: translateY(-1px); }
+        .author-name {
+            font-weight: 700;
+            color: var(--forum-text);
+            font-size: 0.9375rem;
+        }
 
-        .edit-indicator { font-size: 0.8125rem; color: var(--forum-text-muted); font-style: italic; }
+        .author-rep {
+            font-size: 0.8125rem;
+            color: var(--forum-text-muted);
+            margin-top: 0.125rem;
+        }
 
-        .related-threads { background: var(--forum-card); border-radius: 12px; padding: 1.5rem; margin-top: 2rem; border: 1px solid var(--forum-border); box-shadow: var(--forum-shadow-sm); }
-        .related-threads h3 { font-size: 1.0625rem; font-weight: 700; margin-bottom: 1rem; color: var(--forum-text); }
-        .related-thread-item { padding: 0.875rem 0.75rem; border-radius: 8px; margin-bottom: 0.5rem; transition: all 0.15s ease; text-decoration: none; display: block; color: var(--forum-text-secondary); border: 1px solid transparent; }
-        .related-thread-item:hover { background: var(--forum-hover); border-color: var(--forum-border); }
+        .thread-actions {
+            display: flex;
+            gap: 0.625rem;
+            margin-top: 1.25rem;
+            flex-wrap: wrap;
+        }
 
-        .action-button { background: var(--forum-primary); color: white; border: none; padding: 0.875rem 1.5rem; border-radius: 8px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease; box-shadow: var(--forum-shadow-sm); text-decoration: none; font-size: 0.9375rem; }
-        .action-button:hover { background: var(--forum-primary-light); box-shadow: var(--forum-shadow-md); transform: translateY(-1px); }
+        .action-btn {
+            padding: 0.75rem 1.25rem;
+            border: 1px solid var(--forum-border);
+            background: var(--forum-card);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--forum-text-secondary);
+        }
+
+        .action-btn:hover {
+            border-color: var(--forum-primary);
+            color: var(--forum-primary);
+            background: var(--forum-hover);
+        }
+
+        .action-btn.active {
+            background: var(--forum-primary);
+            color: white;
+            border-color: var(--forum-primary);
+        }
+
+        .action-btn i {
+            font-size: 1rem;
+        }
+
+        .vote-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .vote-btn {
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--forum-border);
+            background: var(--forum-card);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+            font-size: 1.125rem;
+            color: var(--forum-text-muted);
+        }
+
+        .vote-btn:hover {
+            border-color: var(--forum-primary);
+            color: var(--forum-primary);
+            box-shadow: var(--forum-shadow);
+        }
+
+        .vote-btn.upvoted {
+            background: var(--forum-success);
+            color: white;
+            border-color: var(--forum-success);
+        }
+
+        .vote-btn.downvoted {
+            background: var(--forum-danger);
+            color: white;
+            border-color: var(--forum-danger);
+        }
+
+        .vote-btn:disabled {
+            cursor: not-allowed;
+            background-color: var(--forum-hover);
+            color: var(--forum-text-muted);
+            border-color: var(--forum-border);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .vote-count {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--forum-primary);
+            min-width: 50px;
+            text-align: center;
+            letter-spacing: -0.02em;
+        }
+
+        .post-container {
+            background: var(--forum-card);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid var(--forum-border);
+            position: relative;
+            box-shadow: var(--forum-shadow-sm);
+            transition: all 0.15s ease;
+        }
+
+        .post-container:hover {
+            box-shadow: var(--forum-shadow);
+        }
+
+        .post-container.accepted-answer {
+            border-left: 3px solid var(--forum-success);
+            background: linear-gradient(to right, rgba(5, 150, 105, 0.03), transparent);
+        }
+
+        .post-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid var(--forum-border);
+        }
+
+        .post-author {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+        }
+
+        .post-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            background: var(--forum-hover);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--forum-text-muted);
+            font-weight: 700;
+            font-size: 1.125rem;
+            border: 1px solid var(--forum-border);
+        }
+
+        .post-author-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-author-name {
+            font-weight: 700;
+            color: var(--forum-text);
+            font-size: 0.9375rem;
+        }
+
+        .post-date {
+            font-size: 0.8125rem;
+            color: var(--forum-text-muted);
+            margin-top: 0.125rem;
+        }
+
+        .post-content {
+            line-height: 1.8;
+            color: var(--forum-text-secondary);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .post-content img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin: 1rem 0;
+            box-shadow: var(--forum-shadow);
+        }
+
+        .post-content pre {
+            background: var(--forum-hover);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid var(--forum-border);
+        }
+
+        .post-content code {
+            background: var(--forum-hover);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            border: 1px solid var(--forum-border);
+        }
+
+        .post-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .post-reactions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .reaction-btn {
+            padding: 0.625rem 1rem;
+            border: 1px solid var(--forum-border);
+            background: var(--forum-card);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--forum-text-secondary);
+            font-weight: 500;
+        }
+
+        .reaction-btn:hover {
+            border-color: var(--forum-primary);
+            color: var(--forum-primary);
+            background: var(--forum-hover);
+        }
+
+        .reaction-btn.active {
+            background: var(--forum-primary);
+            color: white;
+            border-color: var(--forum-primary);
+        }
+
+        .reply-form-section {
+            background: var(--forum-card);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 1.5rem;
+            border: 1px solid var(--forum-border);
+            box-shadow: var(--forum-shadow-sm);
+        }
+
+        .reply-form-section h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--forum-text);
+            letter-spacing: -0.01em;
+        }
+
+        #reply-editor {
+            min-height: 200px;
+            background: var(--forum-card);
+            border: 1px solid var(--forum-border);
+            border-radius: 8px;
+        }
+
+        .replies-section {
+            margin-top: 2rem;
+        }
+
+        .replies-header {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--forum-text);
+            letter-spacing: -0.01em;
+        }
+
+        .accept-answer-btn {
+            position: absolute;
+            top: 1.25rem;
+            right: 1.25rem;
+            padding: 0.625rem 1.125rem;
+            background: var(--forum-success);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            box-shadow: var(--forum-shadow-sm);
+        }
+
+        .accept-answer-btn:hover {
+            background: #047857;
+            box-shadow: var(--forum-shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .edit-indicator {
+            font-size: 0.8125rem;
+            color: var(--forum-text-muted);
+            font-style: italic;
+        }
+
+        .related-threads {
+            background: var(--forum-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border: 1px solid var(--forum-border);
+            box-shadow: var(--forum-shadow-sm);
+        }
+
+        .related-threads h3 {
+            font-size: 1.0625rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--forum-text);
+        }
+
+        .related-thread-item {
+            padding: 0.875rem 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.15s ease;
+            text-decoration: none;
+            display: block;
+            color: var(--forum-text-secondary);
+            border: 1px solid transparent;
+        }
+
+        .related-thread-item:hover {
+            background: var(--forum-hover);
+            border-color: var(--forum-border);
+        }
+
+        .action-button {
+            background: var(--forum-primary);
+            color: white;
+            border: none;
+            padding: 0.875rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            box-shadow: var(--forum-shadow-sm);
+            text-decoration: none;
+            font-size: 0.9375rem;
+        }
+
+        .action-button:hover {
+            background: var(--forum-primary-light);
+            box-shadow: var(--forum-shadow-md);
+            transform: translateY(-1px);
+        }
 
         @media (max-width: 768px) {
-            .thread-title-main { font-size: 1.5rem; }
-            .post-container { padding: 1.5rem; }
+            .thread-title-main {
+                font-size: 1.5rem;
+            }
+
+            .post-container {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
+
 <body>
     <header class="site-header">
-      <div class="header-container">
-        <a href="/" class="brand-link">
-          <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
-        </a>
-        <div class="nav-actions">
-          <div class="auth-buttons-container"></div>
-          <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-          </button>
+        <div class="header-container">
+            <a href="/" class="brand-link">
+                <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo">
+            </a>
+            <div class="nav-actions">
+                <div class="auth-buttons-container"></div>
+                <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
         </div>
-      </div>
     </header>
 
     <div class="expanded-menu" id="expandedMenu">
-      <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-      </button>
-      <div class="menu-items-container">
-          <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
-          <a href="/articleship-guarantee-program/" class="menu-item">Articleship Program</a>
-          <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
-          <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
-          <a href="/" class="menu-item">Discussion Forum</a>
-          <div class="menu-item-dropdown">
-              <button class="menu-item" id="resourcesDropdownBtn">
-                  Resources
-                  <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                  </svg>
-              </button>
-              <div class="dropdown-content" id="resourcesDropdown">
-                  <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
-                  <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
-                  <a href="/articleship.html" class="dropdown-item">Articleship</a>
-              </div>
-          </div>
-      </div>
+        <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="menu-items-container">
+            <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
+            <a href="/articleship-program/" class="menu-item">Articleship Program</a>
+            <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My
+                Courses</a>
+            <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
+            <a href="/" class="menu-item">Discussion Forum</a>
+            <div class="menu-item-dropdown">
+                <button class="menu-item" id="resourcesDropdownBtn">
+                    Resources
+                    <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div class="dropdown-content" id="resourcesDropdown">
+                    <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
+                    <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
+                    <a href="/articleship.html" class="dropdown-item">Articleship</a>
+                </div>
+            </div>
+        </div>
     </div>
 
     <main class="thread-container">
@@ -471,7 +851,7 @@
                     toolbar: [
                         ['bold', 'italic', 'underline', 'strike'],
                         ['blockquote', 'code-block'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
                         ['link', 'image'],
                         ['clean']
                     ]
@@ -518,13 +898,13 @@
             const menuCloseBtn = document.getElementById('menuCloseBtn');
             const expandedMenu = document.getElementById('expandedMenu');
 
-            if(menuButton && expandedMenu) {
+            if (menuButton && expandedMenu) {
                 menuButton.addEventListener('click', () => {
                     expandedMenu.style.transform = 'translateX(0)';
                 });
             }
 
-            if(menuCloseBtn && expandedMenu) {
+            if (menuCloseBtn && expandedMenu) {
                 menuCloseBtn.addEventListener('click', () => {
                     expandedMenu.style.transform = 'translateX(100%)';
                 });
@@ -539,4 +919,5 @@
         })();
     </script>
 </body>
+
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,177 +21,355 @@
   <link rel="stylesheet" href="cv-reviewer-styles.css">
   <style>
     .results-grid {
-        display: grid;
-        grid-template-columns: 320px 1fr;
-        gap: 2.5rem;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 2.5rem;
     }
+
     .results-sidebar {
-        background: linear-gradient(to bottom, #ffffff, #fafbfc);
-        padding: 2rem;
-        border-radius: 16px;
-        border: 1px solid var(--border);
-        align-self: start;
-        position: sticky;
-        top: 100px;
-        box-shadow: var(--shadow-md);
+      background: linear-gradient(to bottom, #ffffff, #fafbfc);
+      padding: 2rem;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      align-self: start;
+      position: sticky;
+      top: 100px;
+      box-shadow: var(--shadow-md);
     }
 
     .feedback-section {
-        background: var(--surface);
-        border-radius: 16px;
-        padding: 2rem;
-        margin-bottom: 2rem;
-        border: 1px solid var(--border);
-        box-shadow: var(--shadow-md);
-        transition: box-shadow 0.3s ease;
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-md);
+      transition: box-shadow 0.3s ease;
     }
+
     .feedback-section:hover {
-        box-shadow: var(--shadow-lg);
+      box-shadow: var(--shadow-lg);
     }
+
     .feedback-section .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
-        padding-bottom: 1rem;
-        border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
     }
+
     .feedback-section .section-header h3 {
-        font-size: 1.375rem;
-        font-weight: 700;
-        color: var(--text-primary);
-        margin-bottom: 0;
-        border-bottom: none;
-        padding-bottom: 0;
-        letter-spacing: -0.02em;
+      font-size: 1.375rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0;
+      border-bottom: none;
+      padding-bottom: 0;
+      letter-spacing: -0.02em;
     }
+
     .feedback-section .section-header .toggle-icon {
-        transition: transform 0.3s ease;
-        width: 24px;
-        height: 24px;
-        color: var(--text-secondary);
+      transition: transform 0.3s ease;
+      width: 24px;
+      height: 24px;
+      color: var(--text-secondary);
     }
+
     .feedback-section .content-area.collapsed {
-        display: none;
+      display: none;
     }
+
     .feedback-section .section-header .toggle-icon.collapsed {
-        transform: rotate(-90deg);
+      transform: rotate(-90deg);
     }
-    .feedback-point { margin-bottom: 1rem; }
-    .feedback-point h4 { font-weight: 600; color: var(--text-primary); margin-bottom: 0.5rem; font-size: 1.0625rem; letter-spacing: -0.01em; }
-    .feedback-point p, .feedback-point ul { color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.7; margin-left: 0; padding-left: 0;}
-    .feedback-point ul li { margin-bottom: 0.375rem; list-style: disc; margin-left: 1.5rem;}
-    .rewrite-suggestion { margin-left: 1.25rem; margin-top: 0.75rem; border-left: 3px solid var(--primary); padding-left: 1rem; font-style: italic; background-color: rgba(37, 99, 235, 0.04); border-radius: 6px; padding-top: 0.5rem; padding-bottom: 0.5rem; }
+
+    .feedback-point {
+      margin-bottom: 1rem;
+    }
+
+    .feedback-point h4 {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      font-size: 1.0625rem;
+      letter-spacing: -0.01em;
+    }
+
+    .feedback-point p,
+    .feedback-point ul {
+      color: var(--text-secondary);
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      margin-left: 0;
+      padding-left: 0;
+    }
+
+    .feedback-point ul li {
+      margin-bottom: 0.375rem;
+      list-style: disc;
+      margin-left: 1.5rem;
+    }
+
+    .rewrite-suggestion {
+      margin-left: 1.25rem;
+      margin-top: 0.75rem;
+      border-left: 3px solid var(--primary);
+      padding-left: 1rem;
+      font-style: italic;
+      background-color: rgba(37, 99, 235, 0.04);
+      border-radius: 6px;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+
     .rewrite-btn {
-        background-color: rgba(37, 99, 235, 0.1);
-        color: var(--primary);
-        padding: 0.375rem 0.875rem;
-        border-radius: 8px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin-left: 0.75rem;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        border: none;
+      background-color: rgba(37, 99, 235, 0.1);
+      color: var(--primary);
+      padding: 0.375rem 0.875rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-left: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
     }
-    .rewrite-btn:hover { background-color: rgba(37, 99, 235, 0.2); transform: translateY(-1px); }
-    .highlight-good { color: var(--success); font-weight: 600; display: inline-block; margin-left: 4px; }
-    .highlight-issue { color: var(--danger); font-weight: 600; display: inline-block; margin-left: 4px;}
-    .original-text { text-decoration: line-through; color: var(--danger); margin-right: 0.5rem;}
-    .corrected-text { color: var(--success); }
-    .grammar-correction { background-color: rgba(220, 38, 38, 0.05); padding: 0.75rem; border-radius: 6px; border-left: 3px solid var(--danger);}
-    .grammar-correction .corrected-text { font-weight: 600; }
-    .tooltip { position: relative; display: inline-block; cursor: help; border-bottom: 1px dotted var(--text-light); }
-    .tooltip .tooltiptext { visibility: hidden; width: 220px; background-color: #555; color: #fff; text-align: center; border-radius: 6px; padding: 5px 10px; position: absolute; z-index: 1; bottom: 125%; left: 50%; margin-left: -110px; opacity: 0; transition: opacity 0.3s; font-size: 0.8rem; font-weight: 400; }
-    .tooltip:hover .tooltiptext { visibility: visible; opacity: 1; }
-    #domainSpecializationSection { display: none; }
-    .content-area ul { list-style: disc; margin-left: 1.75rem; margin-top: 0.75rem; margin-bottom: 0.75rem; }
-    .content-area ol { list-style: decimal; margin-left: 1.75rem; margin-top: 0.75rem; margin-bottom: 0.75rem;}
-    .content-area li { margin-bottom: 0.5rem; line-height: 1.6; }
-    .content-area strong { font-weight: 700; color: var(--text-primary); }
-    .content-area em { font-style: italic; }
-    .content-area code { background-color: rgba(100, 116, 139, 0.1); padding: 0.1rem 0.3rem; border-radius: 4px; font-size: 0.85em; color: var(--text-secondary); }
-    .content-area h4 { font-size: 1.125rem; font-weight: 700; color: var(--primary); margin-top: 1.5rem; margin-bottom: 0.75rem; letter-spacing: -0.01em; }
+
+    .rewrite-btn:hover {
+      background-color: rgba(37, 99, 235, 0.2);
+      transform: translateY(-1px);
+    }
+
+    .highlight-good {
+      color: var(--success);
+      font-weight: 600;
+      display: inline-block;
+      margin-left: 4px;
+    }
+
+    .highlight-issue {
+      color: var(--danger);
+      font-weight: 600;
+      display: inline-block;
+      margin-left: 4px;
+    }
+
+    .original-text {
+      text-decoration: line-through;
+      color: var(--danger);
+      margin-right: 0.5rem;
+    }
+
+    .corrected-text {
+      color: var(--success);
+    }
+
+    .grammar-correction {
+      background-color: rgba(220, 38, 38, 0.05);
+      padding: 0.75rem;
+      border-radius: 6px;
+      border-left: 3px solid var(--danger);
+    }
+
+    .grammar-correction .corrected-text {
+      font-weight: 600;
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      cursor: help;
+      border-bottom: 1px dotted var(--text-light);
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 220px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px 10px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -110px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 0.8rem;
+      font-weight: 400;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    #domainSpecializationSection {
+      display: none;
+    }
+
+    .content-area ul {
+      list-style: disc;
+      margin-left: 1.75rem;
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .content-area ol {
+      list-style: decimal;
+      margin-left: 1.75rem;
+      margin-top: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .content-area li {
+      margin-bottom: 0.5rem;
+      line-height: 1.6;
+    }
+
+    .content-area strong {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .content-area em {
+      font-style: italic;
+    }
+
+    .content-area code {
+      background-color: rgba(100, 116, 139, 0.1);
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: var(--text-secondary);
+    }
+
+    .content-area h4 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
 
     .tabs {
-        display: flex;
-        border-bottom: 2px solid var(--border);
-        margin-bottom: 2rem;
-        gap: 0.5rem;
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 2rem;
+      gap: 0.5rem;
     }
+
     .tab-btn {
-        padding: 1rem 2rem;
-        cursor: pointer;
-        border: none;
-        background: transparent;
-        font-size: 1.0625rem;
-        font-weight: 600;
-        color: var(--text-secondary);
-        border-bottom: 3px solid transparent;
-        margin-bottom: -2px;
-        transition: all 0.3s ease;
-        border-radius: 8px 8px 0 0;
-        letter-spacing: -0.01em;
+      padding: 1rem 2rem;
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      font-size: 1.0625rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-bottom: 3px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.3s ease;
+      border-radius: 8px 8px 0 0;
+      letter-spacing: -0.01em;
     }
+
     .tab-btn:hover {
-        color: var(--primary);
-        background: rgba(37, 99, 235, 0.04);
+      color: var(--primary);
+      background: rgba(37, 99, 235, 0.04);
     }
+
     .tab-btn.active {
-        color: var(--primary);
-        border-bottom-color: var(--primary);
-        background: rgba(37, 99, 235, 0.04);
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: rgba(37, 99, 235, 0.04);
     }
+
     .tab-content {
-        display: none;
+      display: none;
     }
+
     .tab-content.active {
-        display: block;
+      display: block;
     }
 
-     @media (max-width: 1024px) {
-        .results-grid {
-            grid-template-columns: 1fr;
-        }
-        .results-sidebar {
-             position: static;
-             margin-bottom: 2.5rem;
-        }
-     }
-     @media (max-width: 768px) {
-        .results-sidebar { padding: 1.5rem; }
-        .feedback-section { padding: 1.5rem; }
-        .results-grid { gap: 2rem; }
+    @media (max-width: 1024px) {
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
 
-        /* Mobile-friendly tabs */
-        .tabs {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            gap: 0.25rem;
-            padding-bottom: 0.5rem;
-            scrollbar-width: none; /* Firefox */
-        }
-        .tabs::-webkit-scrollbar { display: none; } /* WebKit */
+      .results-sidebar {
+        position: static;
+        margin-bottom: 2.5rem;
+      }
+    }
 
-        .tab-btn {
-            flex: 0 0 auto;
-            white-space: nowrap;
-            padding: 0.75rem 1rem;
-            margin-bottom: 0;
-            border-radius: 8px;
-        }
-        .tab-btn.active {
-            border-bottom-color: transparent;
-            background: rgba(37, 99, 235, 0.08);
-        }
-     }
-     @media (max-width: 480px) {
-        .feedback-section h3 { font-size: 1.25rem; }
-        .feedback-point p, .feedback-point ul { font-size: 0.85rem; }
-        .score-circle { width: 70px; height: 70px; }
-     }
+    @media (max-width: 768px) {
+      .results-sidebar {
+        padding: 1.5rem;
+      }
+
+      .feedback-section {
+        padding: 1.5rem;
+      }
+
+      .results-grid {
+        gap: 2rem;
+      }
+
+      /* Mobile-friendly tabs */
+      .tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: 0.25rem;
+        padding-bottom: 0.5rem;
+        scrollbar-width: none;
+        /* Firefox */
+      }
+
+      .tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      /* WebKit */
+
+      .tab-btn {
+        flex: 0 0 auto;
+        white-space: nowrap;
+        padding: 0.75rem 1rem;
+        margin-bottom: 0;
+        border-radius: 8px;
+      }
+
+      .tab-btn.active {
+        border-bottom-color: transparent;
+        background: rgba(37, 99, 235, 0.08);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .feedback-section h3 {
+        font-size: 1.25rem;
+      }
+
+      .feedback-point p,
+      .feedback-point ul {
+        font-size: 0.85rem;
+      }
+
+      .score-circle {
+        width: 70px;
+        height: 70px;
+      }
+    }
   </style>
 </head>
+
 <body>
   <div class="floating-header">
     <div class="header-container">
@@ -199,52 +378,55 @@
       </a>
       <div class="auth-buttons">
         <a href="/login" class="auth-icon-btn">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
         </a>
       </div>
       <button class="menu-button" id="menuButton">
         <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
     </div>
     <div class="expanded-menu" id="expandedMenu">
       <button class="menu-close-btn" id="menuCloseBtn">
         <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
       <div class="menu-items">
         <a href="https://www.mystudentclub.com/ca-industrial-training-program" class="menu-item">
           <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253" />
           </svg>
           Industrial Training Ready Program
         </a>
-        <a href="https://www.mystudentclub.com/articleship-guarantee-program" class="menu-item">
-          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-          </svg>
-          Articleship Ready Program
+        <a href="https://www.mystudentclub.com/articleship-program" class="menu-item">
+          Articleship Program
         </a>
         <a href="https://www.mystudentclub.com/cv-reviewer/" class="menu-item">
           <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
           CV Reviewer
         </a>
         <a href="https://www.mystudentclub.com/ai-interview" class="menu-item">
           <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
           AI Interview Bot
         </a>
         <div class="menu-item-dropdown">
           <button class="menu-item" id="resourcesDropdownBtn">
             <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3">
+              </path>
             </svg>
             Resources
             <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -263,14 +445,16 @@
 
   <main class="cv-reviewer-container">
     <div class="hero-section" id="heroSection" style="display: block;">
-        <h1 class="main-heading">Evaluate Your Resume with AI Precision</h1>
-        <h2 class="sub-heading">Get instant insights on your resume's strengths and areas for improvement to enhance your job prospects.</h2>
+      <h1 class="main-heading">Evaluate Your Resume with AI Precision</h1>
+      <h2 class="sub-heading">Get instant insights on your resume's strengths and areas for improvement to enhance your
+        job prospects.</h2>
     </div>
 
     <div class="upload-section" id="uploadSection" style="display: block;">
       <div class="upload-area" id="dropArea">
         <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
         </svg>
         <h3>Upload Your CV/Resume</h3>
         <p>Drag & drop your PDF file here or click to browse</p>
@@ -281,7 +465,8 @@
       <div class="preview-area" id="previewArea" style="display: none;">
         <div class="file-info">
           <svg class="file-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
           <div class="file-details">
             <h4 id="fileName">document.pdf</h4>
@@ -291,16 +476,21 @@
         <div class="preview-thumbnail" id="previewThumbnail"></div>
         <div class="preview-actions">
           <button class="action-btn delete-btn" id="removeFileBtn">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>Remove
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>Remove
           </button>
           <button class="action-btn analyze-btn" id="proceedToReviewBtn">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>Review
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>Review
           </button>
         </div>
       </div>
     </div>
 
-<!--  <div class="upload-section" id="domainSpecializationSection" style="display: none;">
+    <!--  <div class="upload-section" id="domainSpecializationSection" style="display: none;">
         <button id="backToUploadBtn" class="text-sm text-gray-600 hover:text-primary mb-4 inline-flex items-center">
             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>Back
         </button>
@@ -333,207 +523,272 @@
                  <svg class="inline-block mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6 4l4 4m0 0l4-4"/></svg>Scan Resume
             </button>
         </div>
-    </div>-->  
+    </div>-->
 
     <div class="loading-section" id="loadingSection" style="display: none;">
-       <div class="loading-content">
-         <div class="loading-spinner"></div>
-         <h3>Evaluating Resume...</h3>
-         <p id="loadingProgressText">Hang tight as we prepare the next steps!</p>
-       </div>
-     </div>
+      <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <h3>Evaluating Resume...</h3>
+        <p id="loadingProgressText">Hang tight as we prepare the next steps!</p>
+      </div>
+    </div>
 
     <div class="results-section" id="resultsSection" style="display: none;">
-        <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
-             <h2 class="text-2xl font-semibold text-primary">Resume Analysis Report</h2>
-             <div></div>
-        </div>
+      <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
+        <h2 class="text-2xl font-semibold text-primary">Resume Analysis Report</h2>
+        <div></div>
+      </div>
 
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="analysis">Analysis</button>
-            <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
-            <button class="tab-btn" data-tab="history">My History</button>
-        </div>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="analysis">Analysis</button>
+        <button class="tab-btn" data-tab="leaderboard">Leaderboard</button>
+        <button class="tab-btn" data-tab="history">My History</button>
+      </div>
 
-        <div id="tab-analysis" class="tab-content active">
-            <div class="results-grid">
-                <div class="results-sidebar">
-                    <h3 class="text-lg font-semibold mb-4 text-center">Overall Score</h3>
-                    <div class="score-card mb-6 justify-center">
-                        <div class="score-circle">
-                          <svg viewBox="0 0 36 36" class="score-chart">
-                            <defs>
-                               <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                 <stop offset="0%" stop-color="#818cf8" />
-                                 <stop offset="100%" stop-color="#4f46e5" />
-                               </linearGradient>
-                             </defs>
-                            <path class="score-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            <path id="scoreProgress" class="score-progress" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                            <text x="18" y="20.5" class="score-text" id="scoreText">0</text>
-                          </svg>
-                        </div>
-                    </div>
-
-                    <h3 class="text-lg font-semibold mb-4 text-center">Score Breakdown</h3>
-                    <div class="breakdown-categories space-y-3">
-                         <div class="category-item" data-category="structure">
-                           <div class="category-header"><h4>Structure & Completeness</h4><span class="points text-sm font-medium text-primary">0/20 pts</span></div>
-                           <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
-                         </div>
-                         <div class="category-item" data-category="impact">
-                            <div class="category-header"><h4>Impact Demonstration</h4><span class="points text-sm font-medium text-primary">0/25 pts</span></div>
-                            <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
-                          </div>
-                         <div class="category-item" data-category="expertise">
-                           <div class="category-header"><h4>Professional Expertise</h4><span class="points text-sm font-medium text-primary">0/25 pts</span></div>
-                           <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
-                         </div>
-                        <div class="category-item" data-category="experience">
-                            <div class="category-header"><h4>Experience Description</h4><span class="points text-sm font-medium text-primary">0/20 pts</span></div>
-                            <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
-                        </div>
-                        <div class="category-item" data-category="presentation">
-                            <div class="category-header"><h4>Overall Presentation</h4><span class="points text-sm font-medium text-primary">0/10 pts</span></div>
-                            <div class="category-bar"><div class="category-fill" style="width: 0%"></div></div>
-                        </div>
-                     </div>
-                     <div class="mt-4 pt-4 border-t border-border">
-                         <h4 class="font-semibold text-sm mb-1">Score Justification:</h4>
-                         <p class="text-xs text-text-secondary" id="scoreJustification">Loading...</p>
-                     </div>
-                </div>
-
-                <div class="results-main">
-                     <div class="feedback-section" id="recruiterTipsSection">
-                        <div class="section-header">
-                            <h3>Recruiter Tips</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="measurableResultsSection">
-                        <div class="section-header">
-                            <h3>Measurable Results</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="phrasesSuggestionsSection">
-                        <div class="section-header">
-                            <h3>Phrases Suggestions</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="hardSkillsSection">
-                        <div class="section-header">
-                            <h3>Hard Skills Analysis</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="softSkillsSection">
-                        <div class="section-header">
-                            <h3>Soft Skills Analysis</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="actionVerbsSection">
-                        <div class="section-header">
-                            <h3>Action Verbs Usage</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="grammarCheckSection">
-                        <div class="section-header">
-                            <h3>Grammar & Proofreading</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="formattingSection">
-                        <div class="section-header">
-                            <h3>Formatting & Readability</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="educationSection">
-                        <div class="section-header">
-                            <h3>Education & Qualification</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="articleshipSection">
-                        <div class="section-header">
-                            <h3>Articleship Experience</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="interviewQuestionsSection">
-                        <div class="section-header">
-                            <h3>Predicted Interview Questions</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-                     <div class="feedback-section" id="finalRecommendationsSection">
-                        <div class="section-header">
-                            <h3>Final Recommendations</h3>
-                            <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </div>
-                        <div class="content-area">Loading...</div>
-                     </div>
-
-                     <div class="action-buttons mt-6">
-                       <button class="primary-btn" id="downloadReportBtn">
-                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>Download Report
-                       </button>
-                       <button class="secondary-btn" id="startOverBtn">
-                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>Analyze Another CV
-                       </button>
-                     </div>
-                </div>
+      <div id="tab-analysis" class="tab-content active">
+        <div class="results-grid">
+          <div class="results-sidebar">
+            <h3 class="text-lg font-semibold mb-4 text-center">Overall Score</h3>
+            <div class="score-card mb-6 justify-center">
+              <div class="score-circle">
+                <svg viewBox="0 0 36 36" class="score-chart">
+                  <defs>
+                    <linearGradient id="scoreGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#818cf8" />
+                      <stop offset="100%" stop-color="#4f46e5" />
+                    </linearGradient>
+                  </defs>
+                  <path class="score-bg"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <path id="scoreProgress" class="score-progress" stroke-dasharray="0, 100"
+                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                  <text x="18" y="20.5" class="score-text" id="scoreText">0</text>
+                </svg>
+              </div>
             </div>
-        </div>
 
-        <div id="tab-leaderboard" class="tab-content">
-            <h3 class="text-xl font-semibold text-primary mb-4">Top Resumes</h3>
-            <div id="leaderboardContent" class="space-y-2">Loading...</div>
-        </div>
+            <h3 class="text-lg font-semibold mb-4 text-center">Score Breakdown</h3>
+            <div class="breakdown-categories space-y-3">
+              <div class="category-item" data-category="structure">
+                <div class="category-header">
+                  <h4>Structure & Completeness</h4><span class="points text-sm font-medium text-primary">0/20 pts</span>
+                </div>
+                <div class="category-bar">
+                  <div class="category-fill" style="width: 0%"></div>
+                </div>
+              </div>
+              <div class="category-item" data-category="impact">
+                <div class="category-header">
+                  <h4>Impact Demonstration</h4><span class="points text-sm font-medium text-primary">0/25 pts</span>
+                </div>
+                <div class="category-bar">
+                  <div class="category-fill" style="width: 0%"></div>
+                </div>
+              </div>
+              <div class="category-item" data-category="expertise">
+                <div class="category-header">
+                  <h4>Professional Expertise</h4><span class="points text-sm font-medium text-primary">0/25 pts</span>
+                </div>
+                <div class="category-bar">
+                  <div class="category-fill" style="width: 0%"></div>
+                </div>
+              </div>
+              <div class="category-item" data-category="experience">
+                <div class="category-header">
+                  <h4>Experience Description</h4><span class="points text-sm font-medium text-primary">0/20 pts</span>
+                </div>
+                <div class="category-bar">
+                  <div class="category-fill" style="width: 0%"></div>
+                </div>
+              </div>
+              <div class="category-item" data-category="presentation">
+                <div class="category-header">
+                  <h4>Overall Presentation</h4><span class="points text-sm font-medium text-primary">0/10 pts</span>
+                </div>
+                <div class="category-bar">
+                  <div class="category-fill" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 pt-4 border-t border-border">
+              <h4 class="font-semibold text-sm mb-1">Score Justification:</h4>
+              <p class="text-xs text-text-secondary" id="scoreJustification">Loading...</p>
+            </div>
+          </div>
 
-        <div id="tab-history" class="tab-content">
-            <h3 class="text-xl font-semibold text-primary mb-4">My Past Reviews</h3>
-            <div id="historyContent" class="space-y-2">Loading...</div>
-            <div id="historyDetailContent" class="mt-4" style="display:none;"></div>
+          <div class="results-main">
+            <div class="feedback-section" id="recruiterTipsSection">
+              <div class="section-header">
+                <h3>Recruiter Tips</h3>
+                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <div class="content-area">Loading...</div>
+            </div>
+            <div class="feedback-section" id="measurableResultsSection">
+              <div class="section-header">
+                <h3>Measurable Results</h3>
+                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <div class="content-area">Loading...</div>
+            </div>
+            <div class="feedback-section" id="phrasesSuggestionsSection">
+              <div class="section-header">
+                <h3>Phrases Suggestions</h3>
+                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <div class="content-area">Loading...</div>
+            </div>
+            <div class="feedback-section" id="hardSkillsSection">
+              <div class="section-header">
+                <h3>Hard Skills Analysis</h3>
+                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <div class="content-area">Loading...</div>
+            </div>
+            <div class="feedback-section" id="softSkillsSection">
+              <div class="section-header">
+                <h3>Soft Skills Analysis</h3>
+                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <div class="content-area">Loading...</div>
+            </div>
+            <div class="feedback-section" id="actionVerbsSection">
+              <div class="section-header">
+                <h3>Action Verbs Usage</h3>
+                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <div class="content-area">Loading...</div>
+            </div>
+            <div class="feedback-section" id="grammarCheckSection">
+              <div class="section-header">
+                <h3>Grammar & Proofreading</h3>
+                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <div class="content-area">Loading...</div>
+            </div>
+            <div class="feedback-section" id="formattingSection">
+              <div class="section-header">
+                <h3>Formatting & Readability</h3>
+                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <div class="content-area">Loading...</div>
+            </div>
+            <div class="feedback-section" id="educationSection">
+              <div class="section-header">
+                <h3>Education & Qualification</h3>
+                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <div class="content-area">Loading...</div>
+            </div>
+            <div class="feedback-section" id="articleshipSection">
+              <div class="section-header">
+                <h3>Articleship Experience</h3>
+                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <div class="content-area">Loading...</div>
+            </div>
+            <div class="feedback-section" id="interviewQuestionsSection">
+              <div class="section-header">
+                <h3>Predicted Interview Questions</h3>
+                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <div class="content-area">Loading...</div>
+            </div>
+            <div class="feedback-section" id="finalRecommendationsSection">
+              <div class="section-header">
+                <h3>Final Recommendations</h3>
+                <svg class="toggle-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </div>
+              <div class="content-area">Loading...</div>
+            </div>
+
+            <div class="action-buttons mt-6">
+              <button class="primary-btn" id="downloadReportBtn">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>Download Report
+              </button>
+              <button class="secondary-btn" id="startOverBtn">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>Analyze Another CV
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div id="tab-leaderboard" class="tab-content">
+        <h3 class="text-xl font-semibold text-primary mb-4">Top Resumes</h3>
+        <div id="leaderboardContent" class="space-y-2">Loading...</div>
+      </div>
+
+      <div id="tab-history" class="tab-content">
+        <h3 class="text-xl font-semibold text-primary mb-4">My Past Reviews</h3>
+        <div id="historyContent" class="space-y-2">Loading...</div>
+        <div id="historyDetailContent" class="mt-4" style="display:none;"></div>
+      </div>
     </div>
 
     <div class="tips-section" id="tipsSection" style="display: none;">
       <h2>Pro Tips for Accounting & Finance CVs</h2>
       <div class="tips-grid">
         <div class="tip-card">
-          <div class="tip-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+          <div class="tip-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg></div>
           <h3>Quantify Your Impact</h3>
-          <p>Use numbers and percentages to show the scale of your work (e.g., "Audited 20+ clients with ₹500Cr+ revenue")</p>
+          <p>Use numbers and percentages to show the scale of your work (e.g., "Audited 20+ clients with ₹500Cr+
+            revenue")</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+          <div class="tip-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg></div>
           <h3>Technical Terminology</h3>
           <p>Include relevant standards (Ind AS/IFRS), regulations, and software tools to pass ATS screening</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m-6 8a2 2 0 100-4m0-4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg></div>
+          <div class="tip-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 6V4m0 2a2 2 0 100 4m-6 8a2 2 0 100-4m0-4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg></div>
           <h3>Keep It Concise</h3>
           <p>Limit your resume to one page with focused, relevant experience and achievements</p>
         </div>
         <div class="tip-card">
-          <div class="tip-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+          <div class="tip-icon"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg></div>
           <h3>Highlight Certifications</h3>
           <p>Showcase additional certifications like NISM, Excel proficiency, or ICAI achievements</p>
         </div>
@@ -549,16 +804,16 @@
     const dropdownIcon = resourcesBtn.querySelector('.dropdown-icon');
 
     resourcesBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        resourcesDropdown.classList.toggle('active');
-        dropdownIcon.classList.toggle('open');
+      e.preventDefault();
+      resourcesDropdown.classList.toggle('active');
+      dropdownIcon.classList.toggle('open');
     });
 
     document.addEventListener('click', (e) => {
-        if (!resourcesBtn.contains(e.target) && !resourcesDropdown.contains(e.target)) {
-            resourcesDropdown.classList.remove('active');
-            dropdownIcon.classList.remove('open');
-        }
+      if (!resourcesBtn.contains(e.target) && !resourcesDropdown.contains(e.target)) {
+        resourcesDropdown.classList.remove('active');
+        dropdownIcon.classList.remove('open');
+      }
     });
 
     const pdfPreviewModal = document.getElementById('pdfPreviewModal');
@@ -567,7 +822,7 @@
     const pdfPreviewDownloadBtn = document.getElementById('pdfPreviewDownloadBtn');
 
     pdfPreviewCloseBtn.addEventListener('click', () => {
-        pdfPreviewModal.style.display = 'none';
+      pdfPreviewModal.style.display = 'none';
     });
 
     pdfPreviewDownloadBtn.addEventListener('click', () => {
@@ -575,16 +830,22 @@
   </script>
 
   <div id="pdfPreviewModal" style="display:none; position:fixed; inset:0; z-index:1200; background:rgba(0,0,0,0.35);">
-    <div style="max-width:900px; width:90%; margin:60px auto; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 12px 24px rgba(0,0,0,0.12);">
-      <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #e5e7eb;">
+    <div
+      style="max-width:900px; width:90%; margin:60px auto; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 12px 24px rgba(0,0,0,0.12);">
+      <div
+        style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #e5e7eb;">
         <h3 style="margin:0; font-weight:700; color:#0f172a;">Preview: CV Analysis Report</h3>
-        <button id="pdfPreviewCloseBtn" style="border:none; background:#f3f4f6; color:#475569; padding:8px 12px; border-radius:8px; cursor:pointer;">Close</button>
+        <button id="pdfPreviewCloseBtn"
+          style="border:none; background:#f3f4f6; color:#475569; padding:8px 12px; border-radius:8px; cursor:pointer;">Close</button>
       </div>
       <div id="pdfPreviewContainer" style="max-height:65vh; overflow:auto; padding:20px;"></div>
       <div style="display:flex; justify-content:flex-end; gap:10px; padding:16px 20px; border-top:1px solid #e5e7eb;">
-        <button id="pdfPreviewDownloadBtn" style="background:#2563eb; color:#fff; border:1px solid #2563eb; padding:10px 16px; border-radius:10px; font-weight:600; cursor:pointer;">Download PDF</button>
+        <button id="pdfPreviewDownloadBtn"
+          style="background:#2563eb; color:#fff; border:1px solid #2563eb; padding:10px 16px; border-radius:10px; font-weight:600; cursor:pointer;">Download
+          PDF</button>
       </div>
     </div>
   </div>
 </body>
+
 </html>
