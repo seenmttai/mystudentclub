@@ -290,12 +290,9 @@ function generateApplyButtons(applyInfo, job) {
         const simpleMailto = constructMailto(job, currentTableName);
         return `
             <div class="email-apply-buttons">
-                <a href="${simpleMailto}" class="btn-large btn-secondary-large" id="simpleApplyBtn">
-                    <i class="fas fa-envelope"></i> Simple Apply
-                </a>
-                <button class="btn-large btn-ai-apply" id="aiApplyBtn">
+                <button class="btn-large btn-ai-apply" id="aiApplyBtn" style="width: 100%;">
                     <i class="fas fa-magic"></i>
-                    <span class="btn-text">AI Powered Apply</span>
+                    <span class="btn-text">Apply Now</span>
                     <i class="fas fa-spinner fa-spin"></i>
                 </button>
             </div>
@@ -334,8 +331,8 @@ async function handleAiApply(job, buttonElement, tableName) {
     }
 
     if (!isProfileComplete()) {
-        alert("Your profile is incomplete. Please upload your resume to use the AI Apply feature.");
-        window.location.href = `/profile.html?redirect=${encodeURIComponent(window.location.href)}`;
+        const fallbackBody = generateFallbackEmail(job);
+        window.location.href = constructMailto(job, tableName, fallbackBody);
         return;
     }
 
@@ -353,8 +350,8 @@ async function handleAiApply(job, buttonElement, tableName) {
         window.location.href = constructMailto(job, tableName, emailBody);
     } catch (e) {
         console.error('AI Apply error:', e);
-        alert("Could not generate AI email. Opening a standard email draft.");
-        window.location.href = constructMailto(job, tableName, "");
+        const fallbackBody = generateFallbackEmail(job);
+        window.location.href = constructMailto(job, tableName, fallbackBody);
     } finally {
         buttonElement.classList.remove('loading');
         btnText.textContent = originalText;
