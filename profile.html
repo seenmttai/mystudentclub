@@ -152,7 +152,7 @@
 
             <div class="profile-section">
                 <h2>Section 5: Experience</h2>
-                <div class="form-grid">
+                <div class="form-grid" style="position: relative;">
                     <div class="form-group">
                         <label for="articleship_firm_type">Articleship Firm Type</label>
                         <select id="articleship_firm_type" name="articleship_firm_type">
@@ -165,18 +165,28 @@
                             <option>Small Size Firm</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="position: relative;">
                         <label for="articleship_domain">Articleship Domain</label>
-                        <select id="articleship_domain" name="articleship_domain">
-                            <option value="">Select Domain</option>
-                            <option>Statutory Audit</option>
-                            <option>Internal Audit</option>
-                            <option>Direct Tax</option>
-                            <option>Indirect Tax</option>
-                            <option>Overall Exposure</option>
-                            <option>Other</option>
-                        </select>
+                        <div style="display: flex; gap: 0.75rem; align-items: center;">
+                            <select id="articleship_domain" name="articleship_domain" style="width: 180px; flex-shrink: 0;">
+                                <option value="">Select Domain</option>
+                                <option>Statutory Audit</option>
+                                <option>Internal Audit</option>
+                                <option>Direct Tax</option>
+                                <option>Indirect Tax</option>
+                                <option>Overall Exposure</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <input type="text" id="articleship_domain_other" name="articleship_domain_other" 
+                            placeholder="Please specify your domain" 
+                            style="display: none; position: absolute; top: 28px; left: 195px; right: -100%; width: calc(200% - 175px);">
                     </div>
+                </div>
+                <div class="form-group">
+                    <label for="articleship_firm_name">Articleship Firm Name</label>
+                    <input type="text" id="articleship_firm_name" name="articleship_firm_name"
+                        placeholder="e.g., Deloitte, KPMG, S.R. Batliboi">
                 </div>
                 <div class="form-group">
                     <label for="industrial_training_company">Industrial Training Company (if any)</label>

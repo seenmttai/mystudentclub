@@ -54,7 +54,7 @@ body {
 }
 
 .header-container {
-  max-width: 1300px;
+  max-width: 1800px;
   margin: 0 auto;
   padding: 0 1.5rem;
   height: 100%;
@@ -341,9 +341,9 @@ body {
 }
 
 .main-content-area {
-  max-width: 1300px;
+  max-width: 1800px;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 1.5rem 1.5rem;
 }
 
 .banner-section {
@@ -387,7 +387,7 @@ body {
   margin: 0 auto 1.5rem;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   border: 1px solid var(--border-light);
-  max-width: 1300px;
+  width: 100%;
 }
 
 .portal-nav-bar .footer-tab {
@@ -439,9 +439,7 @@ body {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
-  max-width: 1300px;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
 }
 
 .filter-sidebar {
@@ -1488,12 +1486,15 @@ body {
 }
 
 .user-email {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  word-break: break-all;
-  padding-bottom: 0.5rem;
-  margin-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border-light);
+  font-size: 1rem;
+  font-weight: 600;
+  color: black;
+  text-align: center;
+  word-break: break-word;
+  background-color: #e7e8ea7e;
+  padding: 0.1rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
 }
 
 .profile-link-btn {

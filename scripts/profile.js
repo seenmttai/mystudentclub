@@ -111,6 +111,11 @@ function populateForm(profileData) {
             }
         }
     }
+    // Show "Other" input if articleship_domain is set to "Other"
+    const domainOtherInput = document.getElementById('articleship_domain_other');
+    if (domainOtherInput && profileData.articleship_domain === 'Other') {
+        domainOtherInput.style.display = 'block';
+    }
 }
 
 function showFileDisplay(type, filename) {
@@ -330,6 +335,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (user) {
         document.getElementById('email').value = user.email;
         loadProfile();
+
+        // Handle "Other" option for Articleship Domain
+        const domainSelect = document.getElementById('articleship_domain');
+        const domainOtherInput = document.getElementById('articleship_domain_other');
+        if (domainSelect && domainOtherInput) {
+            domainSelect.addEventListener('change', () => {
+                domainOtherInput.style.display = domainSelect.value === 'Other' ? 'block' : 'none';
+                if (domainSelect.value !== 'Other') {
+                    domainOtherInput.value = '';
+                }
+            });
+        }
+
         ['resume', 'cover_letter'].forEach(type => {
             const config = fileConfig[type];
             if (!config) return;
@@ -377,8 +395,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         const authButtonsContainer = document.querySelector('.auth-buttons-container');
 
         if (user) {
-            let initial = user.email.charAt(0).toUpperCase();
-            authButtonsContainer.innerHTML = `<div class="user-profile-container"><div class="user-icon-wrapper"><div class="user-icon" data-email="${user.email}">${initial}</div><div class="user-hover-card"><div class="user-hover-content"><p class="user-email">${user.email}</p><button id="logoutBtn" class="logout-btn">Logout</button></div></div></div></div>`;
+            // Try to get name from stored profile data
+            let displayName = user.email;
+            try {
+                const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
+                if (profileData.name && profileData.name.trim()) {
+                    displayName = profileData.name.trim();
+                }
+            } catch (e) {}
+            let initial = displayName.charAt(0).toUpperCase();
+            authButtonsContainer.innerHTML = `<div class="user-profile-container"><div class="user-icon-wrapper"><div class="user-icon" data-email="${user.email}">${initial}</div><div class="user-hover-card"><div class="user-hover-content"><p class="user-email">${displayName}</p><a href="/profile.html" class="profile-link-btn">Edit Profile</a><button id="logoutBtn" class="logout-btn">Logout</button></div></div></div></div>`;
+            
+            // Add click handler for dropdown toggle
+            const userIconWrapper = authButtonsContainer.querySelector('.user-icon-wrapper');
+            const userHoverCard = authButtonsContainer.querySelector('.user-hover-card');
+            if (userIconWrapper && userHoverCard) {
+                userIconWrapper.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    userHoverCard.classList.toggle('show');
+                });
+            }
+            
             document.getElementById('logoutBtn').addEventListener('click', async () => {
                 await supabaseClient.auth.signOut();
                 window.location.href = '/login.html';
