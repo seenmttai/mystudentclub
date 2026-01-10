@@ -841,14 +841,24 @@ function updateHeaderAuth(session) {
     if (!dom.authButtonsContainer) return;
     if (session) {
         let email = session.user.email || 'User';
-        let initial = email.charAt(0).toUpperCase();
+        // Try to get name from stored profile data
+        let displayName = email;
+        try {
+            const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
+            if (profileData.name && profileData.name.trim()) {
+                displayName = profileData.name.trim();
+            }
+        } catch (e) {
+            // Fall back to email if profile data parsing fails
+        }
+        let initial = displayName.charAt(0).toUpperCase();
         dom.authButtonsContainer.innerHTML = `
             <div class="user-profile-container">
                 <div class="user-icon-wrapper">
                     <div class="user-icon" data-email="${email}">${initial}</div>
                     <div class="user-hover-card">
                         <div class="user-hover-content">
-                            <p class="user-email">${email}</p>
+                            <p class="user-email">${displayName}</p>
                             <a href="/profile.html" class="profile-link-btn">Edit Profile</a>
                             <button id="logoutBtn" class="logout-btn">Logout</button>
                         </div>
