@@ -86,6 +86,12 @@ body {
     }
 }
 
+/* Articleship Domain "Other" input styling */
+.domain-other-input {
+    display: none;
+    margin-top: 0.5rem;
+}
+
 .form-group {
     display: flex;
     flex-direction: column;
