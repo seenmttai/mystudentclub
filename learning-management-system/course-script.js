@@ -464,7 +464,86 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const selectVideo = (videoId) => {
+    const initializePlyr = (qualityConfig = null) => {
+        if (state.plyrPlayer) {
+            state.plyrPlayer.destroy();
+            state.plyrPlayer = null;
+        }
+
+        const options = {
+            controls: ['play-large', 'rewind', 'play', 'fast-forward', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
+            settings: ['speed'],
+            speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
+            seekTime: 10,
+            keyboard: { focused: true, global: true },
+            tooltips: { controls: true, seek: true },
+            hideControls: true,
+            clickToPlay: true,
+            resetOnEnd: false
+        };
+
+        if (qualityConfig) {
+            options.settings.push('quality');
+            options.quality = qualityConfig;
+            options.i18n = { qualityLabel: { 0: 'Auto' } };
+            // Add labels for resolutions
+            qualityConfig.options.forEach(opt => {
+                if (opt !== 0) options.i18n.qualityLabel[opt] = `${opt}p`;
+            });
+        }
+
+        state.plyrPlayer = new Plyr(DOMElements.videoPlayer, options);
+
+        // Re-attach event listeners
+        state.plyrPlayer.on('play', () => { state.isPlaying = true; });
+        state.plyrPlayer.on('pause', () => { state.isPlaying = false; });
+        state.plyrPlayer.on('ended', markVideoCompleted);
+        state.plyrPlayer.on('enterfullscreen', () => { state.isFullscreen = true; });
+        state.plyrPlayer.on('exitfullscreen', () => { state.isFullscreen = false; });
+
+        // Debounce seeking/inputs logic...
+        const seekInput = state.plyrPlayer.elements.inputs.seek;
+        let seekTimeout;
+        if (seekInput) {
+            seekInput.addEventListener('input', (e) => {
+                e.stopImmediatePropagation();
+                e.target.style.setProperty('--value', `${e.target.value}%`);
+                clearTimeout(seekTimeout);
+                seekTimeout = setTimeout(() => {
+                    if (state.plyrPlayer.duration) {
+                        state.plyrPlayer.currentTime = (e.target.value / 100) * state.plyrPlayer.duration;
+                    }
+                }, 700);
+            }, { capture: true });
+        }
+
+        const plyrContainer = state.plyrPlayer.elements.container;
+        let seekAccumulator = 0;
+        let buttonSeekTimeout;
+        if (plyrContainer) {
+            plyrContainer.addEventListener('click', (e) => {
+                const target = e.target.closest('button[data-plyr="rewind"], button[data-plyr="fast-forward"]');
+                if (target) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    const isRewind = target.getAttribute('data-plyr') === 'rewind';
+                    const seekStep = 10;
+                    seekAccumulator += isRewind ? -seekStep : seekStep;
+                    clearTimeout(buttonSeekTimeout);
+                    buttonSeekTimeout = setTimeout(() => {
+                        if (state.plyrPlayer.duration) {
+                            state.plyrPlayer.currentTime = Math.max(0, Math.min(state.plyrPlayer.duration, state.plyrPlayer.currentTime + seekAccumulator));
+                        }
+                        seekAccumulator = 0;
+                    }, 700);
+                }
+            }, { capture: true });
+        }
+    };
+
+
+
+        const selectVideo = (videoId) => {
         state.retryCount = 0;
         DOMElements.videoLoadingOverlay.style.display = 'flex';
         state.currentVideoId = videoId;
@@ -500,25 +579,39 @@ document.addEventListener('DOMContentLoaded', () => {
                     state.hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
                         DOMElements.videoLoadingOverlay.style.display = 'none';
 
+                        let qualityConfig = null;
+                        
                         // Update Plyr quality options with HLS levels
-                        if (state.plyrPlayer && state.hlsInstance.levels.length > 0) {
+                        if (state.hlsInstance.levels.length > 0) {
                             const levels = state.hlsInstance.levels;
                             const availableQualities = levels.map(l => l.height);
                             // Get unique qualities sorted descending, add 0 for Auto
                             const uniqueQualities = [...new Set(availableQualities)].sort((a, b) => b - a);
                             const qualityOptions = [0, ...uniqueQualities]; // 0 = Auto
 
-                            // Update i18n labels for quality menu
-                            state.plyrPlayer.config.i18n.qualityLabel = { 0: 'Auto' };
-                            uniqueQualities.forEach(q => {
-                                state.plyrPlayer.config.i18n.qualityLabel[q] = `${q}p`;
-                            });
-
-                            // Update quality options in Plyr config
-                            state.plyrPlayer.config.quality.options = qualityOptions;
-
-                            // Set default to Auto
-                            state.hlsInstance.currentLevel = -1;
+                            qualityConfig = {
+                                default: 0,
+                                options: qualityOptions,
+                                forced: true,
+                                onChange: (quality) => {
+                                    if (state.hlsInstance) {
+                                        if (quality === 0) {
+                                            state.hlsInstance.currentLevel = -1;
+                                        } else {
+                                            const idx = state.hlsInstance.levels.findIndex(l => l.height === quality);
+                                            if (idx !== -1) state.hlsInstance.currentLevel = idx;
+                                        }
+                                    }
+                                }
+                            };
+                        }
+                        
+                        // Initialize Plyr now that we have quality options
+                        initializePlyr(qualityConfig);
+                        try {
+                            state.plyrPlayer.play();
+                        } catch (e) {
+                            console.log("Autoplay failed", e);
                         }
                     });
 
@@ -541,12 +634,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else if (DOMElements.videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
                     // Safari native HLS
                     DOMElements.videoPlayer.src = hlsUrl;
-                    DOMElements.videoPlayer.load();
+                    initializePlyr(null); // No manual quality control for native HLS usually
+                    state.plyrPlayer.play();
                 }
             } else {
                 // Regular MP4 streaming
                 DOMElements.videoPlayer.src = `https://advertisement.bhansalimanan55.workers.dev/stream/${encodeURIComponent(currentVideo.fileName)}`;
-                DOMElements.videoPlayer.load();
+                initializePlyr(null);
+                state.plyrPlayer.load();
+                // MP4 loads might not autopaly until loaded, handled by listeners
             }
         } else {
             DOMElements.videoPlayerContainer.style.display = 'none';
@@ -993,108 +1089,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const video = DOMElements.videoPlayer;
 
-        // Initialize Plyr video player with quality settings for HLS
-        state.plyrPlayer = new Plyr(video, {
-            controls: ['play-large', 'rewind', 'play', 'fast-forward', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
-            settings: ['quality', 'speed'],
-            speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
-            quality: {
-                default: 0, // 0 = Auto
-                options: [0], // Will be populated by HLS
-                forced: true,
-                onChange: (quality) => {
-                    // Handle quality change for HLS streams
-                    if (state.hlsInstance) {
-                        if (quality === 0) {
-                            // Auto quality
-                            state.hlsInstance.currentLevel = -1;
-                        } else {
-                            // Find the level index matching the selected quality height
-                            const levelIndex = state.hlsInstance.levels.findIndex(level => level.height === quality);
-                            if (levelIndex !== -1) {
-                                state.hlsInstance.currentLevel = levelIndex;
-                            }
-                        }
-                    }
-                }
-            },
-            i18n: {
-                qualityLabel: {
-                    0: 'Auto'
-                }
-            },
-            seekTime: 10,
-            keyboard: { focused: true, global: true },
-            tooltips: { controls: true, seek: true },
-            hideControls: true,
-            clickToPlay: true,
-            resetOnEnd: false
-        });
-
-        // Debounce seeking to prevent 429 errors
-        const seekInput = state.plyrPlayer.elements.inputs.seek;
-        let seekTimeout;
-
-        if (seekInput) {
-            seekInput.addEventListener('input', (e) => {
-                // Stop Plyr from updating video immediately
-                e.stopImmediatePropagation();
-
-                // 1. Visually update the slider thumb/fill
-                const value = e.target.value;
-                // Plyr uses CSS variables for the progress fill
-                e.target.style.setProperty('--value', `${value}%`);
-
-                // 2. Debounce the actual video seek
-                clearTimeout(seekTimeout);
-                seekTimeout = setTimeout(() => {
-                    const duration = state.plyrPlayer.duration;
-                    if (duration) {
-                        state.plyrPlayer.currentTime = (value / 100) * duration;
-                    }
-                }, 700); // Wait 700ms before requesting new frame
-            }, { capture: true });
-        }
-
-        // Debounce forward/rewind buttons to prevent 429 loops
-        const plyrContainer = state.plyrPlayer.elements.container;
-        let seekAccumulator = 0;
-        let buttonSeekTimeout;
-
-        if (plyrContainer) {
-            plyrContainer.addEventListener('click', (e) => {
-                // Find if the click target is a rewind/forward button (or inside one)
-                const target = e.target.closest('button[data-plyr="rewind"], button[data-plyr="fast-forward"]');
-
-                if (target) {
-                    // Prevent Plyr's default handler
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-
-                    const isRewind = target.getAttribute('data-plyr') === 'rewind';
-                    // Default seek time is 10s as per config
-                    const seekStep = 10;
-
-                    seekAccumulator += isRewind ? -seekStep : seekStep;
-
-                    clearTimeout(buttonSeekTimeout);
-                    buttonSeekTimeout = setTimeout(() => {
-                        if (state.plyrPlayer.duration) {
-                            state.plyrPlayer.currentTime = Math.max(0, Math.min(state.plyrPlayer.duration, state.plyrPlayer.currentTime + seekAccumulator));
-                        }
-                        seekAccumulator = 0;
-                    }, 700); // Wait 700ms to accumulate clicks
-                    return;
-                }
-            }, { capture: true });
-        }
-
-        // Plyr events for state tracking
-        state.plyrPlayer.on('play', () => { state.isPlaying = true; });
-        state.plyrPlayer.on('pause', () => { state.isPlaying = false; });
-        state.plyrPlayer.on('ended', markVideoCompleted);
-        state.plyrPlayer.on('enterfullscreen', () => { state.isFullscreen = true; });
-        state.plyrPlayer.on('exitfullscreen', () => { state.isFullscreen = false; });
+        // Plyr initialization moved to initializePlyr function and called in selectVideo
 
         // Keep loading overlay logic
         video.addEventListener('loadedmetadata', () => {
