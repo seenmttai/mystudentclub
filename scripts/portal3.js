@@ -130,12 +130,11 @@ function renderJobCard(job) {
                 <h3 class="job-card-company">${job.Company || 'N/A'}</h3>
                 <p class="job-card-posted">Posted ${postedDate}</p>
             </div>
-            <div class="job-card-meta">
                 <span class="job-tag">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     ${job.Location || 'N/A'}
                 </span>
-                ${job.Salary ? `<span class="job-tag"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>₹${job.Salary}</span>` : ''}
+                ${(job.Salary && (currentTable === 'Articleship Jobs' ? job.Salary >= 1000 : job.Salary >= 5000)) ? `<span class="job-tag"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>₹${job.Salary}</span>` : ''}
                 ${job.Category ? `<span class="job-tag">${job.Category}</span>` : ''}
             </div>
         </div>
@@ -346,7 +345,7 @@ function showModal(job) {
             </div>
         </div>
         <div class="modal-meta-tags">
-            ${job.Salary ? `<span class="job-tag">Stipend: ₹${job.Salary}</span>` : ''}
+            ${(job.Salary && (currentTable === 'Articleship Jobs' ? job.Salary >= 1000 : job.Salary >= 5000)) ? `<span class="job-tag">Stipend: ₹${job.Salary}</span>` : ''}
             <span class="job-tag">Posted: ${postedDate}</span>
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
         </div>
@@ -473,9 +472,6 @@ async function fetchJobs() {
         }
 
         let query = supabaseClient.from(currentTable).select(selectColumns);
-
-        // Filter out salaries less than 5000
-        query = query.gte('Salary', 5000);
 
         // Optimize keyword query building - pre-process terms once
         if (state.keywords.length > 0) {
@@ -611,6 +607,7 @@ function populateSalaryFilter() {
     ];
     else if (currentTable === "Articleship Jobs") options = [
         { value: '', text: 'Any Stipend' },
+        { value: '0-5000', text: 'Below ₹5k' },
         { value: '5000-10000', text: '₹5k - ₹10k' },
         { value: '10000-15000', text: '₹10k - ₹15k' },
         { value: '15000+', text: '₹15k+' }
