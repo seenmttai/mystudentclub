@@ -522,6 +522,8 @@ document.addEventListener('DOMContentLoaded', () => {
             state.hlsInstance.destroy();
             state.hlsInstance = null;
         }
+        DOMElements.videoPlayer.removeAttribute('src');
+        DOMElements.videoPlayer.load(); // Stop previous video buffering
 
         // Check if video has HLS path (industrial training) or regular file
         if (currentVideo && (currentVideo.hlsPath || currentVideo.fileName)) {
