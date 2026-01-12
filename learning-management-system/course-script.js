@@ -522,6 +522,9 @@ document.addEventListener('DOMContentLoaded', () => {
             state.hlsInstance.destroy();
             state.hlsInstance = null;
         }
+
+        // Re-query video element after Plyr destruction (Plyr may have replaced/moved it)
+        DOMElements.videoPlayer = document.getElementById('video-player');
         DOMElements.videoPlayer.removeAttribute('src');
         DOMElements.videoPlayer.load(); // Stop previous video buffering
 
