@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
 
     // HLS streaming base URL for industrial training
-        // HLS streaming base URLs with QUIC fallback
+    // HLS streaming base URLs with QUIC fallback
     const QUIC_BASE_URL = 'https://quic.skirro.com';
     const TCP_BASE_URL = 'https://norm.skirro.com';
 
@@ -512,8 +512,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.target.style.setProperty('--value', `${e.target.value}%`);
                 clearTimeout(seekTimeout);
                 seekTimeout = setTimeout(() => {
-                    if (state.plyrPlayer.duration) {
-                        state.plyrPlayer.currentTime = (e.target.value / 100) * state.plyrPlayer.duration;
+                    const duration = state.plyrPlayer.duration;
+                    if (duration && duration > 0) {
+                        state.plyrPlayer.currentTime = (e.target.value / 100) * duration;
                     }
                 }, 700);
             }, { capture: true });
@@ -545,7 +546,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-            const selectVideo = (videoId) => {
+    const selectVideo = (videoId) => {
         state.retryCount = 0;
         DOMElements.videoLoadingOverlay.style.display = 'flex';
         state.currentVideoId = videoId;
@@ -560,6 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
             state.hlsInstance.destroy();
             state.hlsInstance = null;
         }
+        DOMElements.videoPlayer.removeAttribute('src'); // Clear blob reference
 
         // Check if video has HLS path (industrial training) or regular file
         if (currentVideo && (currentVideo.hlsPath || currentVideo.fileName)) {
@@ -586,7 +588,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             DOMElements.videoLoadingOverlay.style.display = 'none';
 
                             let qualityConfig = null;
-                            
+
                             // Update Plyr quality options with HLS levels
                             if (state.hlsInstance.levels.length > 0) {
                                 const levels = state.hlsInstance.levels;
@@ -611,14 +613,20 @@ document.addEventListener('DOMContentLoaded', () => {
                                     }
                                 };
                             }
-                            
+
                             // Initialize Plyr now that we have quality options
                             initializePlyr(qualityConfig);
                             try {
-                                state.plyrPlayer.play();
-                            } catch (e) {
-                                console.log("Autoplay failed", e);
-                            }
+                                const playPromise = state.plyrPlayer.play();
+                                if (playPromise) {
+                                    playPromise.catch(e => {
+                                        // Ignore autoplay policies and aborts
+                                        if (e.name !== 'NotAllowedError' && e.name !== 'AbortError') {
+                                            console.warn("Autoplay failed", e);
+                                        }
+                                    });
+                                }
+                            } catch (e) { }
                         });
 
                         state.hlsInstance.on(Hls.Events.ERROR, (event, data) => {
@@ -648,7 +656,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Safari native HLS
                         DOMElements.videoPlayer.src = hlsUrl;
                         initializePlyr(null);
-                        
+
                         // Simple fallback for Safari native
                         const onError = (e) => {
                             if (!isRetry) {
@@ -657,11 +665,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         };
                         DOMElements.videoPlayer.addEventListener('error', onError, { once: true });
-                        
-                        state.plyrPlayer.play();
+
+                        try {
+                            const p = state.plyrPlayer.play();
+                            if (p) p.catch(e => { if (e.name !== 'NotAllowedError') console.warn(e); });
+                        } catch (e) { }
                     }
                 };
-                
+
                 // Start with QUIC
                 startHls(QUIC_BASE_URL);
 
