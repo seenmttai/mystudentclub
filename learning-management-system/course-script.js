@@ -467,10 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const initializePlyr = (qualityConfig = null) => {
-        if (state.plyrPlayer) {
-            state.plyrPlayer.destroy();
-            state.plyrPlayer = null;
-        }
+        // Plyr cleanup is now handled in selectVideo before calling this function
 
         const options = {
             controls: ['play-large', 'rewind', 'play', 'fast-forward', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
@@ -556,12 +553,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const currentVideo = findVideoById(videoId);
 
-        // Cleanup existing HLS instance
+        // Cleanup in correct order: Plyr first, then HLS, then video element
+        if (state.plyrPlayer) {
+            state.plyrPlayer.destroy();
+            state.plyrPlayer = null;
+        }
         if (state.hlsInstance) {
             state.hlsInstance.destroy();
             state.hlsInstance = null;
         }
-        DOMElements.videoPlayer.removeAttribute('src'); // Clear blob reference
+        DOMElements.videoPlayer.removeAttribute('src');
+        DOMElements.videoPlayer.load(); // Reset video element state
 
         // Check if video has HLS path (industrial training) or regular file
         if (currentVideo && (currentVideo.hlsPath || currentVideo.fileName)) {
