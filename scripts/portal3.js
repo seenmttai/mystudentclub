@@ -919,8 +919,8 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
     if (isAiApply) {
         if (!currentSession) { window.location.href = '/login.html'; return; }
         if (!isProfileComplete()) {
-            const fallbackBody = generateFallbackEmail(job);
-            window.location.href = constructMailto(job, fallbackBody);
+            alert('Please complete your profile by uploading your CV first.');
+            window.location.href = '/profile.html';
             return;
         }
 
