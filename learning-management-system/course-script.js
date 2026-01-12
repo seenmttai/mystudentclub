@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
     pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
 
+    // HLS streaming base URL for industrial training
+    const HLS_BASE_URL = 'https://zerohop.bhansalimanan55.workers.dev';
+
     let state = {
         menuActive: false, sidebarActive: false, courseSlug: null, user: null, isEnrolled: false,
         course: { title: '', description: '', thumbnail: '', progress: 0 }, courseSections: [],
@@ -13,7 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
         currentResource: null, previewType: null, isViewerVisible: false, pdfDoc: null,
         pdfCurrentPage: 1, pdfTotalPages: 1, isFullscreen: false, isPlaying: false,
         retryCount: 0, maxRetries: 5,
-        plyrPlayer: null
+        plyrPlayer: null,
+        hlsInstance: null  // HLS.js instance for streaming
     };
 
     const courses = {
@@ -308,7 +312,7 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.loadingVideosSidebar.style.display = 'block';
         try {
             const { data: videoMetadata, error: metadataError } = await supabase
-                .from('videos').select('video_number, title, description, day_number, resources')
+                .from('videos').select('video_number, title, description, day_number, resources, industrial_training_path')
                 .eq('course', state.courseSlug).order('day_number', { ascending: true })
                 .order('video_number', { ascending: true });
 
@@ -318,15 +322,26 @@ document.addEventListener('DOMContentLoaded', () => {
             if (videoMetadata && videoMetadata.length > 0) {
                 for (const meta of videoMetadata) {
                     try {
-                        const { data: rpcData, error: rpcError } = await supabase.rpc('get_video_link', {
-                            course_name_param: state.courseSlug,
-                            video_number_param: meta.video_number
-                        });
+                        // For industrial training, use HLS path; otherwise use regular video link
+                        let videoFileName = null;
+                        let hlsPath = null;
+
+                        if (meta.industrial_training_path) {
+                            hlsPath = meta.industrial_training_path;
+                        } else {
+                            const { data: rpcData, error: rpcError } = await supabase.rpc('get_video_link', {
+                                course_name_param: state.courseSlug,
+                                video_number_param: meta.video_number
+                            });
+                            videoFileName = rpcData || null;
+                        }
 
                         const day = meta.day_number || 1;
                         if (!videosByDay[day]) videosByDay[day] = [];
                         videosByDay[day].push({
-                            id: meta.video_number, fileName: rpcData || null,
+                            id: meta.video_number,
+                            fileName: videoFileName,
+                            hlsPath: hlsPath,  // HLS folder path for industrial training
                             title: meta.title || `Content for Day ${day}`,
                             description: meta.description || '', resources: meta.resources || [], completed: false
                         });
@@ -459,11 +474,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const currentVideo = findVideoById(videoId);
 
-        if (currentVideo && currentVideo.fileName) {
+        // Cleanup existing HLS instance
+        if (state.hlsInstance) {
+            state.hlsInstance.destroy();
+            state.hlsInstance = null;
+        }
+
+        // Check if video has HLS path (industrial training) or regular file
+        if (currentVideo && (currentVideo.hlsPath || currentVideo.fileName)) {
             DOMElements.videoPlayerContainer.style.display = 'block';
             DOMElements.noVideoMessagePlayer.style.display = 'none';
-            DOMElements.videoPlayer.src = `https://advertisement.bhansalimanan55.workers.dev/stream/${encodeURIComponent(currentVideo.fileName)}`;
-            DOMElements.videoPlayer.load();
+
+            if (currentVideo.hlsPath) {
+                // HLS streaming for industrial training
+                const hlsUrl = `${HLS_BASE_URL}/${encodeURIComponent(currentVideo.hlsPath)}/master.m3u8`;
+
+                if (Hls.isSupported()) {
+                    state.hlsInstance = new Hls({
+                        maxBufferLength: 30,
+                        startLevel: -1
+                    });
+                    state.hlsInstance.loadSource(hlsUrl);
+                    state.hlsInstance.attachMedia(DOMElements.videoPlayer);
+
+                    state.hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+                        DOMElements.videoLoadingOverlay.style.display = 'none';
+                    });
+
+                    state.hlsInstance.on(Hls.Events.ERROR, (event, data) => {
+                        console.error('HLS Error:', data);
+                        if (data.fatal) {
+                            switch (data.type) {
+                                case Hls.ErrorTypes.NETWORK_ERROR:
+                                    state.hlsInstance.startLoad();
+                                    break;
+                                case Hls.ErrorTypes.MEDIA_ERROR:
+                                    state.hlsInstance.recoverMediaError();
+                                    break;
+                                default:
+                                    state.hlsInstance.destroy();
+                                    break;
+                            }
+                        }
+                    });
+                } else if (DOMElements.videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                    // Safari native HLS
+                    DOMElements.videoPlayer.src = hlsUrl;
+                    DOMElements.videoPlayer.load();
+                }
+            } else {
+                // Regular MP4 streaming
+                DOMElements.videoPlayer.src = `https://advertisement.bhansalimanan55.workers.dev/stream/${encodeURIComponent(currentVideo.fileName)}`;
+                DOMElements.videoPlayer.load();
+            }
         } else {
             DOMElements.videoPlayerContainer.style.display = 'none';
             DOMElements.noVideoMessagePlayer.style.display = 'block';
