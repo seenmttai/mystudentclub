@@ -903,7 +903,14 @@ async function checkUserEnrollment() {
     } catch (error) { lmsNavLink.style.display = 'none'; }
 }
 
-function isProfileComplete() { return !!localStorage.getItem('userCVImages'); }
+function isProfileComplete() {
+    try {
+        const images = JSON.parse(localStorage.getItem('userCVImages') || '[]');
+        return Array.isArray(images) && images.length > 0;
+    } catch (e) {
+        return false;
+    }
+}
 
 async function handleApplyClick(job, buttonElement, isAiApply = false) {
 

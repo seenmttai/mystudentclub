@@ -307,7 +307,12 @@ function generateApplyButtons(applyInfo, job) {
 }
 
 function isProfileComplete() {
-    return !!localStorage.getItem('userCVImages');
+    try {
+        const images = JSON.parse(localStorage.getItem('userCVImages') || '[]');
+        return Array.isArray(images) && images.length > 0;
+    } catch (e) {
+        return false;
+    }
 }
 
 async function getCurrentSession() {
