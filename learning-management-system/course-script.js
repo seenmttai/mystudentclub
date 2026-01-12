@@ -5,7 +5,9 @@ document.addEventListener('DOMContentLoaded', () => {
     pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js`;
 
     // HLS streaming base URL for industrial training
-    const HLS_BASE_URL = 'https://zerohop.bhansalimanan55.workers.dev';
+        // HLS streaming base URLs with QUIC fallback
+    const QUIC_BASE_URL = 'https://quic.skirro.com';
+    const TCP_BASE_URL = 'https://norm.skirro.com';
 
     let state = {
         menuActive: false, sidebarActive: false, courseSlug: null, user: null, isEnrolled: false,
@@ -543,7 +545,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-        const selectVideo = (videoId) => {
+            const selectVideo = (videoId) => {
         state.retryCount = 0;
         DOMElements.videoLoadingOverlay.style.display = 'flex';
         state.currentVideoId = videoId;
@@ -565,78 +567,104 @@ document.addEventListener('DOMContentLoaded', () => {
             DOMElements.noVideoMessagePlayer.style.display = 'none';
 
             if (currentVideo.hlsPath) {
-                // HLS streaming for industrial training
-                const hlsUrl = `${HLS_BASE_URL}/${encodeURIComponent(currentVideo.hlsPath)}/master.m3u8`;
+                // HLS streaming for industrial training with Happy Eyeballs fallback
+                const startHls = (baseUrl, isRetry = false) => {
+                    const hlsUrl = `${baseUrl}/${encodeURIComponent(currentVideo.hlsPath)}/master.m3u8`;
 
-                if (Hls.isSupported()) {
-                    state.hlsInstance = new Hls({
-                        maxBufferLength: 30,
-                        startLevel: -1
-                    });
-                    state.hlsInstance.loadSource(hlsUrl);
-                    state.hlsInstance.attachMedia(DOMElements.videoPlayer);
+                    if (Hls.isSupported()) {
+                        if (state.hlsInstance) {
+                            state.hlsInstance.destroy();
+                        }
+                        state.hlsInstance = new Hls({
+                            maxBufferLength: 30,
+                            startLevel: -1
+                        });
+                        state.hlsInstance.loadSource(hlsUrl);
+                        state.hlsInstance.attachMedia(DOMElements.videoPlayer);
 
-                    state.hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-                        DOMElements.videoLoadingOverlay.style.display = 'none';
+                        state.hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+                            DOMElements.videoLoadingOverlay.style.display = 'none';
 
-                        let qualityConfig = null;
-                        
-                        // Update Plyr quality options with HLS levels
-                        if (state.hlsInstance.levels.length > 0) {
-                            const levels = state.hlsInstance.levels;
-                            const availableQualities = levels.map(l => l.height);
-                            // Get unique qualities sorted descending, add 0 for Auto
-                            const uniqueQualities = [...new Set(availableQualities)].sort((a, b) => b - a);
-                            const qualityOptions = [0, ...uniqueQualities]; // 0 = Auto
+                            let qualityConfig = null;
+                            
+                            // Update Plyr quality options with HLS levels
+                            if (state.hlsInstance.levels.length > 0) {
+                                const levels = state.hlsInstance.levels;
+                                const availableQualities = levels.map(l => l.height);
+                                // Get unique qualities sorted descending, add 0 for Auto
+                                const uniqueQualities = [...new Set(availableQualities)].sort((a, b) => b - a);
+                                const qualityOptions = [0, ...uniqueQualities]; // 0 = Auto
 
-                            qualityConfig = {
-                                default: 0,
-                                options: qualityOptions,
-                                forced: true,
-                                onChange: (quality) => {
-                                    if (state.hlsInstance) {
-                                        if (quality === 0) {
-                                            state.hlsInstance.currentLevel = -1;
-                                        } else {
-                                            const idx = state.hlsInstance.levels.findIndex(l => l.height === quality);
-                                            if (idx !== -1) state.hlsInstance.currentLevel = idx;
+                                qualityConfig = {
+                                    default: 0,
+                                    options: qualityOptions,
+                                    forced: true,
+                                    onChange: (quality) => {
+                                        if (state.hlsInstance) {
+                                            if (quality === 0) {
+                                                state.hlsInstance.currentLevel = -1;
+                                            } else {
+                                                const idx = state.hlsInstance.levels.findIndex(l => l.height === quality);
+                                                if (idx !== -1) state.hlsInstance.currentLevel = idx;
+                                            }
                                         }
                                     }
-                                }
-                            };
-                        }
-                        
-                        // Initialize Plyr now that we have quality options
-                        initializePlyr(qualityConfig);
-                        try {
-                            state.plyrPlayer.play();
-                        } catch (e) {
-                            console.log("Autoplay failed", e);
-                        }
-                    });
-
-                    state.hlsInstance.on(Hls.Events.ERROR, (event, data) => {
-                        console.error('HLS Error:', data);
-                        if (data.fatal) {
-                            switch (data.type) {
-                                case Hls.ErrorTypes.NETWORK_ERROR:
-                                    state.hlsInstance.startLoad();
-                                    break;
-                                case Hls.ErrorTypes.MEDIA_ERROR:
-                                    state.hlsInstance.recoverMediaError();
-                                    break;
-                                default:
-                                    state.hlsInstance.destroy();
-                                    break;
+                                };
                             }
-                        }
-                    });
-                } else if (DOMElements.videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-                    // Safari native HLS
-                    DOMElements.videoPlayer.src = hlsUrl;
-                    initializePlyr(null); // No manual quality control for native HLS usually
-                    state.plyrPlayer.play();
-                }
+                            
+                            // Initialize Plyr now that we have quality options
+                            initializePlyr(qualityConfig);
+                            try {
+                                state.plyrPlayer.play();
+                            } catch (e) {
+                                console.log("Autoplay failed", e);
+                            }
+                        });
+
+                        state.hlsInstance.on(Hls.Events.ERROR, (event, data) => {
+                            if (data.fatal) {
+                                // QUIC Fallback Logic
+                                if (data.type === Hls.ErrorTypes.NETWORK_ERROR && !isRetry) {
+                                    console.warn("QUIC connection failed, falling back to TCP (Happy Eyeballs)...");
+                                    startHls(TCP_BASE_URL, true);
+                                    return;
+                                }
+
+                                console.error('HLS Error:', data);
+                                switch (data.type) {
+                                    case Hls.ErrorTypes.NETWORK_ERROR:
+                                        state.hlsInstance.startLoad();
+                                        break;
+                                    case Hls.ErrorTypes.MEDIA_ERROR:
+                                        state.hlsInstance.recoverMediaError();
+                                        break;
+                                    default:
+                                        state.hlsInstance.destroy();
+                                        break;
+                                }
+                            }
+                        });
+                    } else if (DOMElements.videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+                        // Safari native HLS
+                        DOMElements.videoPlayer.src = hlsUrl;
+                        initializePlyr(null);
+                        
+                        // Simple fallback for Safari native
+                        const onError = (e) => {
+                            if (!isRetry) {
+                                console.warn("Safari Native HLS failed, trying fallback...");
+                                startHls(TCP_BASE_URL, true);
+                            }
+                        };
+                        DOMElements.videoPlayer.addEventListener('error', onError, { once: true });
+                        
+                        state.plyrPlayer.play();
+                    }
+                };
+                
+                // Start with QUIC
+                startHls(QUIC_BASE_URL);
+
             } else {
                 // Regular MP4 streaming
                 DOMElements.videoPlayer.src = `https://advertisement.bhansalimanan55.workers.dev/stream/${encodeURIComponent(currentVideo.fileName)}`;
