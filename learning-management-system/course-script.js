@@ -499,46 +499,6 @@ document.addEventListener('DOMContentLoaded', () => {
         state.plyrPlayer.on('ended', markVideoCompleted);
         state.plyrPlayer.on('enterfullscreen', () => { state.isFullscreen = true; });
         state.plyrPlayer.on('exitfullscreen', () => { state.isFullscreen = false; });
-
-        // Debounce seeking/inputs logic...
-        const seekInput = state.plyrPlayer.elements.inputs.seek;
-        let seekTimeout;
-        if (seekInput) {
-            seekInput.addEventListener('input', (e) => {
-                e.stopImmediatePropagation();
-                e.target.style.setProperty('--value', `${e.target.value}%`);
-                clearTimeout(seekTimeout);
-                seekTimeout = setTimeout(() => {
-                    const duration = state.plyrPlayer.duration;
-                    if (duration && duration > 0) {
-                        state.plyrPlayer.currentTime = (e.target.value / 100) * duration;
-                    }
-                }, 700);
-            }, { capture: true });
-        }
-
-        const plyrContainer = state.plyrPlayer.elements.container;
-        let seekAccumulator = 0;
-        let buttonSeekTimeout;
-        if (plyrContainer) {
-            plyrContainer.addEventListener('click', (e) => {
-                const target = e.target.closest('button[data-plyr="rewind"], button[data-plyr="fast-forward"]');
-                if (target) {
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                    const isRewind = target.getAttribute('data-plyr') === 'rewind';
-                    const seekStep = 10;
-                    seekAccumulator += isRewind ? -seekStep : seekStep;
-                    clearTimeout(buttonSeekTimeout);
-                    buttonSeekTimeout = setTimeout(() => {
-                        if (state.plyrPlayer.duration) {
-                            state.plyrPlayer.currentTime = Math.max(0, Math.min(state.plyrPlayer.duration, state.plyrPlayer.currentTime + seekAccumulator));
-                        }
-                        seekAccumulator = 0;
-                    }, 700);
-                }
-            }, { capture: true });
-        }
     };
 
 
@@ -553,7 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const currentVideo = findVideoById(videoId);
 
-        // Cleanup in correct order: Plyr first, then HLS, then video element
+        // Cleanup in correct order: Plyr first, then HLS
         if (state.plyrPlayer) {
             state.plyrPlayer.destroy();
             state.plyrPlayer = null;
@@ -562,8 +522,6 @@ document.addEventListener('DOMContentLoaded', () => {
             state.hlsInstance.destroy();
             state.hlsInstance = null;
         }
-        DOMElements.videoPlayer.removeAttribute('src');
-        DOMElements.videoPlayer.load(); // Reset video element state
 
         // Check if video has HLS path (industrial training) or regular file
         if (currentVideo && (currentVideo.hlsPath || currentVideo.fileName)) {
