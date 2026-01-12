@@ -474,6 +474,9 @@ async function fetchJobs() {
 
         let query = supabaseClient.from(currentTable).select(selectColumns);
 
+        // Filter out salaries less than 5000
+        query = query.gte('Salary', 5000);
+
         // Optimize keyword query building - pre-process terms once
         if (state.keywords.length > 0) {
             const keywordOrs = [];
@@ -608,7 +611,6 @@ function populateSalaryFilter() {
     ];
     else if (currentTable === "Articleship Jobs") options = [
         { value: '', text: 'Any Stipend' },
-        { value: '0-5000', text: 'Below ₹5k' },
         { value: '5000-10000', text: '₹5k - ₹10k' },
         { value: '10000-15000', text: '₹10k - ₹15k' },
         { value: '15000+', text: '₹15k+' }
