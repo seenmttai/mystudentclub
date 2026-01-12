@@ -499,6 +499,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     state.hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
                         DOMElements.videoLoadingOverlay.style.display = 'none';
+
+                        // Update Plyr quality options with HLS levels
+                        if (state.plyrPlayer && state.hlsInstance.levels.length > 0) {
+                            const levels = state.hlsInstance.levels;
+                            const availableQualities = levels.map(l => l.height);
+                            // Get unique qualities sorted descending, add 0 for Auto
+                            const uniqueQualities = [...new Set(availableQualities)].sort((a, b) => b - a);
+                            const qualityOptions = [0, ...uniqueQualities]; // 0 = Auto
+
+                            // Update i18n labels for quality menu
+                            state.plyrPlayer.config.i18n.qualityLabel = { 0: 'Auto' };
+                            uniqueQualities.forEach(q => {
+                                state.plyrPlayer.config.i18n.qualityLabel[q] = `${q}p`;
+                            });
+
+                            // Update quality options in Plyr config
+                            state.plyrPlayer.config.quality.options = qualityOptions;
+
+                            // Set default to Auto
+                            state.hlsInstance.currentLevel = -1;
+                        }
                     });
 
                     state.hlsInstance.on(Hls.Events.ERROR, (event, data) => {
@@ -972,16 +993,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const video = DOMElements.videoPlayer;
 
-        // Initialize Plyr video player
+        // Initialize Plyr video player with quality settings for HLS
         state.plyrPlayer = new Plyr(video, {
             controls: ['play-large', 'rewind', 'play', 'fast-forward', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
-            settings: ['speed'],
+            settings: ['quality', 'speed'],
             speed: { selected: 1, options: [0.5, 0.75, 1, 1.25, 1.5, 2] },
+            quality: {
+                default: 0, // 0 = Auto
+                options: [0], // Will be populated by HLS
+                forced: true,
+                onChange: (quality) => {
+                    // Handle quality change for HLS streams
+                    if (state.hlsInstance) {
+                        if (quality === 0) {
+                            // Auto quality
+                            state.hlsInstance.currentLevel = -1;
+                        } else {
+                            // Find the level index matching the selected quality height
+                            const levelIndex = state.hlsInstance.levels.findIndex(level => level.height === quality);
+                            if (levelIndex !== -1) {
+                                state.hlsInstance.currentLevel = levelIndex;
+                            }
+                        }
+                    }
+                }
+            },
+            i18n: {
+                qualityLabel: {
+                    0: 'Auto'
+                }
+            },
             seekTime: 10,
             keyboard: { focused: true, global: true },
             tooltips: { controls: true, seek: true },
             hideControls: true,
-            clickToPlay: true, // Enable tap/click to play/pause
+            clickToPlay: true,
             resetOnEnd: false
         });
 
