@@ -16,24 +16,24 @@
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://mystudentclub.pages.dev/scripts/style.css">
+  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="cv-reviewer-styles.css">
   <style>
     .results-grid {
       display: grid;
-      grid-template-columns: 320px 1fr;
-      gap: 2.5rem;
+      grid-template-columns: 280px 1fr;
+      gap: 2rem;
     }
 
     .results-sidebar {
       background: linear-gradient(to bottom, #ffffff, #fafbfc);
-      padding: 2rem;
+      padding: 1.5rem;
       border-radius: 16px;
       border: 1px solid var(--border);
       align-self: start;
       position: sticky;
-      top: 100px;
+      top: 80px;
       box-shadow: var(--shadow-md);
     }
 
@@ -298,6 +298,22 @@
       display: block;
     }
 
+    /* Large screens (1400px+) */
+    @media (min-width: 1400px) {
+      .results-grid {
+        grid-template-columns: 320px 1fr;
+        gap: 2.5rem;
+      }
+      
+      .results-sidebar {
+        padding: 2rem;
+      }
+      
+      .feedback-section {
+        padding: 2.5rem;
+      }
+    }
+
     @media (max-width: 1024px) {
       .results-grid {
         grid-template-columns: 1fr;
@@ -472,21 +488,21 @@
             <h4 id="fileName">document.pdf</h4>
             <p id="fileSize">0 KB</p>
           </div>
+          <div class="preview-actions">
+            <button class="action-btn delete-btn" id="removeFileBtn">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>Remove
+            </button>
+            <button class="action-btn analyze-btn" id="proceedToReviewBtn">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>Review
+            </button>
+          </div>
         </div>
         <div class="preview-thumbnail" id="previewThumbnail"></div>
-        <div class="preview-actions">
-          <button class="action-btn delete-btn" id="removeFileBtn">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>Remove
-          </button>
-          <button class="action-btn analyze-btn" id="proceedToReviewBtn">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>Review
-          </button>
-        </div>
       </div>
     </div>
 

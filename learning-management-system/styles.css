@@ -332,12 +332,13 @@ body {
 .hero-content {
     position: relative;
     z-index: 2;
-    max-width: 1400px;
+    max-width: 1800px;
     margin: 0 auto;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--space-12);
     align-items: center;
+    padding: 0 var(--space-6);
 }
 
 .hero-text {
@@ -483,9 +484,9 @@ body {
 }
 
 .section-container {
-    max-width: 1400px;
+    max-width: 1800px;
     margin: 0 auto;
-    padding: var(--space-16) var(--space-4);
+    padding: var(--space-16) var(--space-6);
 }
 
 .section-header-enhanced {
