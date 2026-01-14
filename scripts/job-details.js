@@ -287,12 +287,15 @@ let currentTableName = 'Industrial Training Job Portal';
 
 function generateApplyButtons(applyInfo, job) {
     if (applyInfo.isEmail) {
-        const simpleMailto = constructMailto(job, currentTableName);
+        const simpleMailto = constructMailto(job, currentTableName, generateFallbackEmail(job));
         return `
             <div class="email-apply-buttons">
-                <button class="btn-large btn-ai-apply" id="aiApplyBtn" style="width: 100%;">
+                <a href="${simpleMailto}" class="btn-large btn-secondary-large" id="simpleApplyBtn">
+                    <i class="fas fa-envelope"></i> Simple Apply
+                </a>
+                <button class="btn-large btn-ai-apply" id="aiApplyBtn">
                     <i class="fas fa-magic"></i>
-                    <span class="btn-text">Apply Now</span>
+                    <span class="btn-text">AI Powered Apply</span>
                     <i class="fas fa-spinner fa-spin"></i>
                 </button>
             </div>
