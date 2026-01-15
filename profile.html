@@ -198,6 +198,18 @@
                 <h2>Section 6: Job Preferences</h2>
                 <div class="form-grid">
                     <div class="form-group">
+                        <label for="job_preference">Default Job Portal</label>
+                        <select id="job_preference" name="job_preference">
+                            <option value="">Select Preference</option>
+                            <option value="industrial">Industrial Training</option>
+                            <option value="articleship">Articleship</option>
+                            <option value="fresher_fresher">CA Fresher (Fresher)</option>
+                            <option value="fresher_experienced">CA Fresher (Experienced)</option>
+                            <option value="semi_fresher">Semi Qualified (Fresher)</option>
+                            <option value="semi_experienced">Semi Qualified (Experienced)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label for="current_location">Current Location</label>
                         <input type="text" id="current_location" name="current_location" placeholder="e.g., Mumbai">
                     </div>
@@ -220,7 +232,7 @@
         </form>
     </main>
 
-    <script type="module" src="https://www.mystudentclub.com/scripts/profile.js"></script>
+    <script type="module" src="scripts/profile.js"></script>
 </body>
 
 </html>
