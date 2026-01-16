@@ -286,11 +286,17 @@ function showModal(job) {
     // Connect to Peers Logic
     let connectLink = checkConnectLink(job);
     if (!connectLink) {
-        // Extract first two words of company name (avoid Ltd, Pvt, etc.)
-        const companyWords = companyName.split(/\s+/).slice(0, 2).join(' ');
+        const suffixPattern = /\b(pvt|private|ltd|limited|llp|llc|co|company|inc|incorporated|corp|corporation|org|organization|foundation|group|holdings|enterprises|solutions|services|consulting|consultancy|associates|partners|international|india|technologies?|tech)\b\.?/gi;
+        let cleanedCompany = companyName.replace(suffixPattern, '').replace(/[.,&\-]+/g, ' ').replace(/\s+/g, ' ').trim();
+        const companyWords = cleanedCompany.split(/\s+/).filter(w => w.length > 1).slice(0, 3).join(' ') || companyName.split(/\s+/).slice(0, 2).join(' ');
         const encodedCompany = encodeURIComponent(`"${companyWords}"`);
-        // LinkedIn search with CA Finalist / Industrial Training filters
-        connectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodedCompany}%20AND%20(%22CA%20Finalist%22%20OR%20%22Industrial%20Trainee%22%20OR%20%22Industrial%20Training%22)&origin=FACETED_SEARCH&schoolFilter=%5B%221968486%22%2C%22272365%22%5D&sid=~vG`;
+        if (currentTable === 'Articleship Jobs') {
+            connectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodedCompany}%20AND%20%22CA%20Finalist%22&origin=FACETED_SEARCH&schoolFilter=%5B%221968486%22%2C%22272365%22%5D&sid=Chv`;
+        } else if (currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs') {
+            connectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodedCompany}%20AND%20(%22CA%22%20OR%20%22Chartered%20Accountant%22)&origin=GLOBAL_SEARCH_HEADER&schoolFilter=%5B%221968486%22%2C%22272365%22%5D&sid=%3Avx`;
+        } else {
+            connectLink = `https://www.linkedin.com/search/results/people/?keywords=${encodedCompany}%20AND%20(%22CA%20Finalist%22%20OR%20%22Industrial%20Trainee%22%20OR%20%22Industrial%20Training%22)&origin=FACETED_SEARCH&schoolFilter=%5B%221968486%22%2C%22272365%22%5D&sid=~vG`;
+        }
     }
 
     let actionsHtml = '';
@@ -838,6 +844,16 @@ function processAndApplySearch(inputElement) {
 async function checkAuth() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     currentSession = session;
+    
+    // If logged in, fetch and cache profile data
+    if (session?.user?.id) {
+        // Check if profile data needs to be fetched (not in localStorage)
+        const cachedProfile = localStorage.getItem('userProfileData');
+        if (!cachedProfile) {
+            fetchAndCacheProfileData(); // Don't await, let it run in background
+        }
+    }
+    
     return session;
 }
 
@@ -885,7 +901,29 @@ function updateHeaderAuth(session) {
 }
 
 window.handleLogout = async () => {
+    // Sign out from Supabase
     await supabaseClient.auth.signOut();
+    
+    // Clear all user-specific localStorage data
+    localStorage.removeItem('userJobPreference');
+    localStorage.removeItem('userProfileData');
+    localStorage.removeItem('userCVFileName');
+    localStorage.removeItem('userCVText');
+    localStorage.removeItem('userCVImages');
+    localStorage.removeItem('subscribedTopics');
+    localStorage.removeItem('newUserSignup');
+    localStorage.removeItem('newUserEmail');
+    
+    const keysToRemove = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
+            keysToRemove.push(key);
+        }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+    
+    // Reset app state
     currentSession = null;
     appliedJobIds.clear();
     updateHeaderAuth(null);
@@ -893,7 +931,10 @@ window.handleLogout = async () => {
     const lmsNavLink = document.getElementById('lms-nav-link');
     if (lmsNavLink) lmsNavLink.style.display = 'none';
     state.applicationStatus = 'all';
-    resetAndFetch();
+    state.experience = 'All';
+    
+    // Redirect to home page
+    window.location.href = '/';
 };
 
 async function checkUserEnrollment() {
@@ -1103,7 +1144,32 @@ async function loadBanners() {
 
 function showNotifStatus(message, type = 'info') { if (dom.notificationStatusEl) { dom.notificationStatusEl.textContent = message; dom.notificationStatusEl.className = `notification-status status-${type}`; dom.notificationStatusEl.style.display = 'block'; if (type !== 'error') setTimeout(() => { dom.notificationStatusEl.style.display = 'none'; }, 3000); } }
 function getSubscribedTopics() { return JSON.parse(localStorage.getItem('subscribedTopics') || '[]'); }
-function saveSubscribedTopics(topics) { localStorage.setItem('subscribedTopics', JSON.stringify(topics)); updateNotificationBadge(); }
+async function saveSubscribedTopics(topics) {
+    localStorage.setItem('subscribedTopics', JSON.stringify(topics));
+    updateNotificationBadge();
+    
+    // Also save to Supabase profile if logged in
+    if (currentSession?.user?.id) {
+        try {
+            const { data: existingProfile } = await supabaseClient
+                .from('profiles')
+                .select('profile')
+                .eq('uuid', currentSession.user.id)
+                .single();
+            
+            const profileData = existingProfile?.profile || {};
+            profileData.notification_subscriptions = topics;
+            
+            await supabaseClient.from('profiles').upsert({
+                uuid: currentSession.user.id,
+                profile: profileData,
+                updated_at: new Date().toISOString()
+            });
+        } catch (e) {
+            console.log('Could not save subscriptions to profile:', e);
+        }
+    }
+}
 function updateNotificationBadge() { if (dom.notificationBadge) dom.notificationBadge.style.visibility = getSubscribedTopics().length > 0 ? 'visible' : 'hidden'; }
 
 function renderSubscribedTopics() {
@@ -1737,4 +1803,272 @@ document.getElementById('resumePromptModal')?.addEventListener('click', (e) => {
     if (e.target.id === 'resumePromptModal') {
         document.getElementById('resumePromptModal').style.display = 'none';
     }
+});
+
+const JOB_PREFERENCE_KEY = 'userJobPreference';
+
+// Map preference values to redirect URLs
+const PREFERENCE_REDIRECT_MAP = {
+    'industrial': '/',
+    'articleship': '/articleship.html',
+    'fresher_fresher': '/fresher.html',
+    'fresher_experienced': '/fresher.html',
+    'semi_fresher': '/semi-qualified.html',
+    'semi_experienced': '/semi-qualified.html'
+};
+
+function getCurrentPagePreference() {
+    const path = window.location.pathname;
+    if (path.includes('/articleship')) return 'articleship';
+    if (path.includes('/fresher')) return state.experience === 'Experienced' ? 'fresher_experienced' : 'fresher_fresher';
+    if (path.includes('/semi-qualified')) return state.experience === 'Experienced' ? 'semi_experienced' : 'semi_fresher';
+    return 'industrial';
+}
+
+// Get saved job preference
+function getJobPreference() {
+    return localStorage.getItem(JOB_PREFERENCE_KEY);
+}
+
+// Save job preference
+async function saveJobPreference(preference) {
+    localStorage.setItem(JOB_PREFERENCE_KEY, preference);
+    
+    // Also save to Supabase profile if logged in
+    if (currentSession?.user?.id) {
+        try {
+            const { data: existingProfile } = await supabaseClient
+                .from('profiles')
+                .select('profile')
+                .eq('uuid', currentSession.user.id)
+                .single();
+            
+            const profileData = existingProfile?.profile || {};
+            profileData.job_preference = preference;
+            
+            await supabaseClient.from('profiles').upsert({
+                uuid: currentSession.user.id,
+                profile: profileData,
+                updated_at: new Date().toISOString()
+            });
+        } catch (e) {
+            console.log('Could not save preference to profile:', e);
+        }
+    }
+}
+
+// Fetch and cache user profile data from Supabase on login
+async function fetchAndCacheProfileData() {
+    if (!currentSession?.user?.id) return null;
+    
+    try {
+        const { data } = await supabaseClient
+            .from('profiles')
+            .select('profile')
+            .eq('uuid', currentSession.user.id)
+            .single();
+        
+        if (data?.profile) {
+            localStorage.setItem('userProfileData', JSON.stringify(data.profile));
+            
+            if (data.profile.job_preference) {
+                localStorage.setItem(JOB_PREFERENCE_KEY, data.profile.job_preference);
+            }
+            
+            if (data.profile.notification_subscriptions && Array.isArray(data.profile.notification_subscriptions)) {
+                localStorage.setItem('subscribedTopics', JSON.stringify(data.profile.notification_subscriptions));
+                updateNotificationBadge();
+            }
+            
+            return data.profile;
+        }
+    } catch (e) {
+        console.log('Could not fetch profile data:', e);
+    }
+    return null;
+}
+
+// Load job preference from profile if not in localStorage
+async function loadJobPreferenceFromProfile() {
+    if (getJobPreference()) return getJobPreference();
+    
+    if (currentSession?.user?.id) {
+        try {
+            const cachedProfile = localStorage.getItem('userProfileData');
+            if (cachedProfile) {
+                const profile = JSON.parse(cachedProfile);
+                if (profile.job_preference) {
+                    localStorage.setItem(JOB_PREFERENCE_KEY, profile.job_preference);
+                    return profile.job_preference;
+                }
+            }
+            
+            const profile = await fetchAndCacheProfileData();
+            if (profile?.job_preference) {
+                return profile.job_preference;
+            }
+        } catch (e) {
+            console.log('Could not load preference from profile:', e);
+        }
+    }
+    return null;
+}
+
+// Redirect to preferred portal if not already on it
+function redirectToPreferredPortal(preference) {
+    const currentPref = getCurrentPagePreference();
+    const targetUrl = PREFERENCE_REDIRECT_MAP[preference];
+    
+    if (currentPref === preference) return false;
+    
+    const referrer = document.referrer;
+    if (referrer) {
+        try {
+            const referrerUrl = new URL(referrer);
+            const currentHost = window.location.hostname;
+            if (referrerUrl.hostname === currentHost) {
+                return false;
+            }
+        } catch (e) {
+            // Invalid referrer URL, continue with redirect logic
+        }
+    }
+    
+    // For fresher variants, check if we're on fresher page
+    if ((preference === 'fresher_fresher' || preference === 'fresher_experienced') && 
+        (currentPref === 'fresher_fresher' || currentPref === 'fresher_experienced')) {
+        // We're on fresher page, just need to set experience filter
+        if (preference === 'fresher_experienced') {
+            state.experience = 'Experienced';
+        } else {
+            state.experience = 'Freshers';
+        }
+        syncFiltersUI();
+        resetAndFetch();
+        return false;
+    }
+    
+    if ((preference === 'semi_fresher' || preference === 'semi_experienced') && 
+        (currentPref === 'semi_fresher' || currentPref === 'semi_experienced')) {
+        if (preference === 'semi_experienced') {
+            state.experience = 'Experienced';
+        } else {
+            state.experience = 'Freshers';
+        }
+        syncFiltersUI();
+        resetAndFetch();
+        return false;
+    }
+    
+    if (targetUrl) {
+        window.location.href = targetUrl;
+        return true;
+    }
+    return false;
+}
+
+// Show job preference modal
+function showJobPreferenceModal() {
+    const modal = document.getElementById('jobPreferenceModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+// Hide job preference modal
+function hideJobPreferenceModal() {
+    const modal = document.getElementById('jobPreferenceModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Initialize preference modal event listeners
+function initJobPreferenceModal() {
+    const preferenceOptions = document.querySelectorAll('.pref-option-btn');
+    
+    preferenceOptions.forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const preference = btn.dataset.preference;
+            if (!preference) return;
+            
+            preferenceOptions.forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            
+            await saveJobPreference(preference);
+            
+            setTimeout(() => {
+                hideJobPreferenceModal();
+                
+                if (preference === 'fresher_experienced' || preference === 'semi_experienced') {
+                    state.experience = 'Experienced';
+                } else if (preference === 'fresher_fresher' || preference === 'semi_fresher') {
+                    state.experience = 'Freshers';
+                }
+                
+                // Redirect to preferred portal
+                if (!redirectToPreferredPortal(preference)) {
+                    syncFiltersUI();
+                    resetAndFetch();
+                }
+            }, 200);
+        });
+    });
+    
+    // Skip button handler - set industrial as default and redirect
+    const skipBtn = document.getElementById('skipPreferenceBtn');
+    if (skipBtn) {
+        skipBtn.addEventListener('click', async () => {
+            await saveJobPreference('industrial');
+            hideJobPreferenceModal();
+            
+            const path = window.location.pathname;
+            if (path !== '/' && path !== '/index.html') {
+                window.location.href = '/';
+            }
+        });
+    }
+    
+    // Close modal on background click
+    const modal = document.getElementById('jobPreferenceModal');
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            // Don't close on background click - user must select an option
+        });
+    }
+}
+
+// Check and handle job preference on page load
+document.addEventListener('DOMContentLoaded', async () => {
+    setTimeout(async () => {
+        const preference = await loadJobPreferenceFromProfile();
+        
+        if (currentSession && !preference) {
+            const path = window.location.pathname;
+            if (path === '/' || path === '/index.html' || 
+                path.includes('/articleship') || path.includes('/fresher') || 
+                path.includes('/semi-qualified')) {
+                showJobPreferenceModal();
+            }
+        } else if (currentSession && preference) {
+            if (preference === 'fresher_experienced' && currentTable === 'Fresher Jobs') {
+                state.experience = 'Experienced';
+                syncFiltersUI();
+            } else if (preference === 'fresher_fresher' && currentTable === 'Fresher Jobs') {
+                state.experience = 'Freshers';
+                syncFiltersUI();
+            } else if (preference === 'semi_experienced' && currentTable === 'Semi Qualified Jobs') {
+                state.experience = 'Experienced';
+                syncFiltersUI();
+            } else if (preference === 'semi_fresher' && currentTable === 'Semi Qualified Jobs') {
+                state.experience = 'Freshers';
+                syncFiltersUI();
+            }
+            
+            redirectToPreferredPortal(preference);
+        }
+        
+        // Initialize modal event listeners
+        initJobPreferenceModal();
+    }, 500);
 });

@@ -418,6 +418,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             document.getElementById('logoutBtn').addEventListener('click', async () => {
                 await supabaseClient.auth.signOut();
+                
+                localStorage.removeItem('userJobPreference');
+                localStorage.removeItem('userProfileData');
+                localStorage.removeItem('userCVFileName');
+                localStorage.removeItem('userCVText');
+                localStorage.removeItem('userCVImages');
+                localStorage.removeItem('subscribedTopics');
+                localStorage.removeItem('newUserSignup');
+                localStorage.removeItem('newUserEmail');
+                
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
+                        keysToRemove.push(key);
+                    }
+                }
+                keysToRemove.forEach(key => localStorage.removeItem(key));
+                
                 window.location.href = '/login.html';
             });
         }
