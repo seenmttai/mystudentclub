@@ -54,23 +54,45 @@
       </svg>
     </button>
     <div class="menu-items-container">
-      <a href="/ca-industrial-training-program/" class="menu-item">CA Industrial Training Program</a>
-      <a href="/articleship-program/" class="menu-item">Articleship Program</a>
       <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
-      <a href="/ai-interview.html" class="menu-item">AI Interview Bot</a>
+      
+      <div class="menu-item-dropdown always-open">
+        <span class="menu-item menu-heading">Mentorship Programs</span>
+        <div class="dropdown-content">
+          <a href="/ca-fresher-training-program/" class="dropdown-item">CA Fresher Program</a>
+          <a href="/ca-industrial-training-program/" class="dropdown-item">Industrial Training Program</a>
+          <a href="/articleship-program/" class="dropdown-item">Articleship Program</a>
+        </div>
+      </div>
+      
       <div class="menu-item-dropdown">
         <button class="menu-item" id="resourcesDropdownBtn">
-          Resources
+          Free Resources
           <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
         </button>
         <div class="dropdown-content" id="resourcesDropdown">
-          <a href="/fresher.html" class="dropdown-item">CA Freshers</a>
-          <a href="/ca-industrial-training-resources.html" class="dropdown-item">CA Industrial Training</a>
+          <a href="/fresher.html" class="dropdown-item">CA Fresher</a>
+          <a href="/ca-industrial-training-resources.html" class="dropdown-item">Industrial Training</a>
           <a href="/articleship.html" class="dropdown-item">Articleship</a>
         </div>
       </div>
+      
+      <div class="menu-item-dropdown">
+        <button class="menu-item" id="toolsDropdownBtn">
+          Tools
+          <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div class="dropdown-content" id="toolsDropdown">
+          <a href="/cv-reviewer/" class="dropdown-item">AI CV Reviewer</a>
+          <a href="/ai-interview.html" class="dropdown-item">AI Mock Interview Bot</a>
+          <a href="/ICAI-Campus-Shortlisting-Predictor/index.html" class="dropdown-item">Campus Shortlisting Predictor</a>
+        </div>
+      </div>
+      
       <a href="/contact.html" class="menu-item">Contact Us</a>
     </div>
   </div>

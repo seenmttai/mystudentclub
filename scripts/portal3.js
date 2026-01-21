@@ -355,7 +355,7 @@ function showModal(job) {
             </div>
         </div>
         <div class="modal-meta-tags">
-            ${job.Salary ? `<span class="job-tag">Stipend: ₹${job.Salary}</span>` : ''}
+            ${job.Salary ? `<span class="job-tag">${(currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
             <span class="job-tag">Posted: ${postedDate}</span>
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
         </div>
@@ -1476,6 +1476,17 @@ function setupEventListeners() {
         });
     }
 
+    const toolsBtn = document.getElementById('toolsDropdownBtn');
+    if (toolsBtn) {
+        const toolsDropdown = document.getElementById('toolsDropdown');
+        const dropdownIcon = toolsBtn.querySelector('.dropdown-icon');
+        toolsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toolsDropdown.classList.toggle('active');
+            if (dropdownIcon) dropdownIcon.classList.toggle('open');
+        });
+    }
+
     document.addEventListener('click', (e) => {
         if (dom.expandedMenu && dom.expandedMenu.classList.contains('active') && !dom.expandedMenu.contains(e.target) && !dom.menuButton.contains(e.target)) dom.expandedMenu.classList.remove('active');
         if (dom.notificationPopup && dom.notificationPopup.style.display === 'flex' && !dom.notificationPopup.contains(e.target) && !dom.notificationsBtn.contains(e.target)) dom.notificationPopup.style.display = 'none';
@@ -1484,6 +1495,12 @@ function setupEventListeners() {
         if (resourcesDropdown && resourcesDropdown.classList.contains('active') && !resourcesDropdown.contains(e.target) && !resourcesBtn.contains(e.target)) {
             resourcesDropdown.classList.remove('active');
             if (resourcesBtn.querySelector('.dropdown-icon')) resourcesBtn.querySelector('.dropdown-icon').classList.remove('open');
+        }
+        const toolsDropdown = document.getElementById('toolsDropdown');
+        const toolsBtn = document.getElementById('toolsDropdownBtn');
+        if (toolsDropdown && toolsDropdown.classList.contains('active') && !toolsDropdown.contains(e.target) && !toolsBtn.contains(e.target)) {
+            toolsDropdown.classList.remove('active');
+            if (toolsBtn.querySelector('.dropdown-icon')) toolsBtn.querySelector('.dropdown-icon').classList.remove('open');
         }
 
         const userProfileContainer = document.querySelector('.user-profile-container');
