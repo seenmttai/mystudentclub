@@ -256,6 +256,144 @@ const initializeCountdown = () => {
   setInterval(updateTimer, 1000);
 };
 
+const initializeLinkedInPosts = () => {
+  const linkedInPosts = [
+    {
+      name: "Abhishek Puranik",
+      title: "CA Articleship at BPCL",
+      avatar: "https://mystudentclub.pages.dev/assets/Abhishek-Puranik.jpg",
+      content: "Thrilled to share that I've started my Articleship at BPCL! 🚀\n\nA huge thanks to CA Padam Bhansali and the MSC team for their incredible guidance throughout my placement journey. The MSC Articleship Program truly transformed my approach to interviews!",
+      reactions: 245,
+      linkedinUrl: "https://www.linkedin.com/in/abhishek-puranik221b/"
+    },
+    {
+      name: "Harinee Selvam",
+      title: "CA Articleship at Flipkart",
+      avatar: "https://mystudentclub.pages.dev/assets/Harinee-Selvam.jpg",
+      content: "Excited to announce that I've joined Flipkart for my Articleship! ✨\n\nThis wouldn't have been possible without the structured guidance from MSC. The mock interviews and CV review sessions were game-changers. Forever grateful to CA Padam Bhansali!",
+      reactions: 312,
+      linkedinUrl: "https://www.linkedin.com/in/harinee-selvam-a03416204/"
+    },
+    {
+      name: "Stephen DCosta",
+      title: "CA Articleship at UBS",
+      avatar: "https://mystudentclub.pages.dev/assets/Stephen.jpg",
+      content: "Happy to share that I've started my Articleship journey at UBS! 🎯\n\nThe MSC Articleship Program was instrumental in preparing me for this role. The exclusive job listings and personalized mentorship made all the difference. Thank you MSC team!",
+      reactions: 287,
+      linkedinUrl: "https://www.linkedin.com/in/stephensn6/"
+    },
+    {
+      name: "Yash Nema",
+      title: "CA Articleship at Amazon",
+      avatar: "https://mystudentclub.pages.dev/assets/Yash-Nema.jpg",
+      content: "Delighted to share that I've joined Amazon for my Articleship! 🌟\n\nThe MSC program provided me with all the tools I needed - from resume optimization to interview preparation. The personalized mentorship from CA Padam Bhansali was invaluable!",
+      reactions: 298,
+      linkedinUrl: "https://www.linkedin.com/in/yash-nema18/"
+    },
+    {
+      name: "Prathmesh Randive",
+      title: "CA Articleship at UBS",
+      avatar: "https://mystudentclub.pages.dev/assets/Prathmesh-Randive.jpg",
+      content: "Excited to announce that I've started my Articleship at UBS! 💼\n\nThe structured approach of MSC's program helped me crack interviews at top firms. The mock interviews and industry insights were exactly what I needed!",
+      reactions: 256,
+      linkedinUrl: "https://www.linkedin.com/in/prathmesh-randive/"
+    },
+    {
+      name: "Khushi Tejani",
+      title: "CA Articleship at BPCL",
+      avatar: "https://mystudentclub.pages.dev/assets/Khushi-Tejani-BPCL.jpg",
+      content: "Happy to share that I've joined BPCL for my Articleship! 🎉\n\nThe MSC Articleship Program was a game-changer in my placement journey. The CV review sessions and exclusive job listings made the process so much smoother!",
+      reactions: 234,
+      linkedinUrl: "https://www.linkedin.com/in/khushitejani/"
+    },
+    {
+      name: "Swayam Atal",
+      title: "CA Articleship at Amazon",
+      avatar: "https://mystudentclub.pages.dev/assets/Swayam-Atal.jpg",
+      content: "Thrilled to announce that I've started my Articleship at Amazon! ✨\n\nGrateful to MSC and CA Padam Bhansali for their incredible support throughout. The program's comprehensive approach to placement preparation truly made a difference!",
+      reactions: 321,
+      linkedinUrl: "https://www.linkedin.com/in/swayamatal/"
+    },
+    {
+      name: "Siddhant Naithani",
+      title: "CA Articleship at Signify",
+      avatar: "https://mystudentclub.pages.dev/assets/Siddhant-Naithani.jpg",
+      content: "Excited to share that I've joined Signify for my Articleship! 🚀\n\nThe MSC program exceeded all my expectations. From personal CV reviews to mock interviews, every aspect was designed to help students succeed!",
+      reactions: 267,
+      linkedinUrl: "https://www.linkedin.com/in/siddhantnaithani999/"
+    },
+    {
+      name: "Aditi Tagalpallewar",
+      title: "CA Articleship at UBS",
+      avatar: "https://mystudentclub.pages.dev/assets/Aditi-Tagalwellakar.jpg",
+      content: "Happy to announce that I've started my Articleship journey at UBS! 🌟\n\nThe MSC program's personalized mentorship and comprehensive preparation resources helped me land my dream role. Forever grateful to the MSC team!",
+      reactions: 289,
+      linkedinUrl: "https://www.linkedin.com/in/aditi-tagalpallewar/"
+    }
+  ];
+
+  const carousel = document.getElementById('linkedinCarousel');
+  const prevBtn = document.querySelector('.linkedin-posts .prev-btn');
+  const nextBtn = document.querySelector('.linkedin-posts .next-btn');
+  
+  if (!carousel) return;
+
+  linkedInPosts.forEach(post => {
+    const card = document.createElement('div');
+    card.className = 'linkedin-card';
+    card.innerHTML = `
+      <div class="linkedin-card-header">
+        <img src="${post.avatar}" alt="${post.name}" class="linkedin-avatar" onerror="this.src='https://via.placeholder.com/48'">
+        <div class="linkedin-user-info">
+          <p class="linkedin-user-name">${post.name}</p>
+          <p class="linkedin-user-title">${post.title}</p>
+        </div>
+      </div>
+      <div class="linkedin-card-content">
+        ${post.content.replace(/\n/g, '<br>')}
+      </div>
+      <div class="linkedin-reactions">
+        <div class="linkedin-reaction-icons">
+          <span class="linkedin-reaction-icon like">👍</span>
+          <span class="linkedin-reaction-icon celebrate">🎉</span>
+          <span class="linkedin-reaction-icon love">❤️</span>
+        </div>
+        <span>${post.reactions}</span>
+      </div>
+      <div class="linkedin-actions">
+        <button class="linkedin-action-btn">
+          <svg viewBox="0 0 24 24"><path d="M19.46 11l-3.91-3.91a7 7 0 01-1.69-2.74l-.49-1.47A2.76 2.76 0 0010.76 1 2.75 2.75 0 008 3.74v1.12a9.19 9.19 0 00.46 2.85L8.89 9H4.12A2.12 2.12 0 002 11.12a2.16 2.16 0 00.92 1.76A2.11 2.11 0 002 14.62a2.14 2.14 0 001.28 2 2 2 0 00-.28 1 2.12 2.12 0 002 2.12v.14A2.12 2.12 0 007.12 22h7.49a8.08 8.08 0 003.58-.84l.31-.16H21V11zM19 19h-1l-.73.37a6.14 6.14 0 01-2.69.63H7.72a1 1 0 01-.72-.31.38.38 0 010-.06l.35-.34-.34-.34a.38.38 0 010-.06 1 1 0 01.72-.31.75.75 0 000-1.5 1 1 0 01-.72-.31.38.38 0 010-.06l.35-.34-.34-.34a.38.38 0 010-.06 1 1 0 01.72-.31.75.75 0 000-1.5A1.12 1.12 0 017 12.62a.38.38 0 010-.06l.35-.34-.35-.34A1.13 1.13 0 018.12 10H9a.75.75 0 00.71-.51l-.53-1.59a7.66 7.66 0 01-.38-2.37V3.74a1.25 1.25 0 011.26-1.24 1.26 1.26 0 011.19.89l.49 1.47a8.48 8.48 0 002.06 3.33L17.71 12H19z"/></svg>
+          Like
+        </button>
+        <button class="linkedin-action-btn">
+          <svg viewBox="0 0 24 24"><path d="M7 9h10v1H7zm0 3h7v1H7zm16-8v13c0 1.1-.9 2-2 2H7l-5 5V4c0-1.1.9-2 2-2h17c1.1 0 2 .9 2 2zm-2 0H4v14l2-2h15V4z"/></svg>
+          Comment
+        </button>
+        <button class="linkedin-action-btn" onclick="window.open('${post.linkedinUrl}', '_blank')">
+          <svg viewBox="0 0 24 24"><path d="M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z"/></svg>
+          Share
+        </button>
+      </div>
+    `;
+    carousel.appendChild(card);
+  });
+
+  // Navigation
+  const scrollAmount = 384; // card width + gap
+  
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+  }
+  
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+  }
+};
+
 const initializeBenefitsCarousel = () => { };
 
 const initializeTestimonials = () => {
@@ -421,6 +559,7 @@ function safe(fn, label) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  safe(initializeLinkedInPosts, 'linkedinPosts');
   safe(initializeTestimonials, 'testimonials');
   safe(initializeCarousel, 'carousel');
   safe(initializeCountdown, 'count-down');
