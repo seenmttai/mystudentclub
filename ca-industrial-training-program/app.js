@@ -283,10 +283,14 @@ const initializeLinkedInPosts = () => {
   ];
 
   const carousel = document.getElementById('linkedinCarousel');
-  const prevBtn = document.querySelector('.linkedin-posts .prev-btn');
-  const nextBtn = document.querySelector('.linkedin-posts .next-btn');
   
   if (!carousel) return;
+
+  const getCardWidth = () => {
+    if (window.innerWidth < 480) return 304;
+    if (window.innerWidth < 768) return 324;
+    return 384;
+  };
 
   linkedInPosts.forEach(post => {
     const card = document.createElement('div');
@@ -328,20 +332,65 @@ const initializeLinkedInPosts = () => {
     carousel.appendChild(card);
   });
 
-  // Navigation
-  const scrollAmount = 384; // card width + gap
-  
-  if (prevBtn) {
-    prevBtn.addEventListener('click', () => {
-      carousel.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    });
+  const cards = [...carousel.children];
+  cards.forEach(card => {
+    const clone = card.cloneNode(true);
+    carousel.appendChild(clone);
+  });
+
+  let position = 0;
+  let speed = 2;
+  let animationId;
+  let lastTime = 0;
+
+  function animate(currentTime) {
+    if (!lastTime) lastTime = currentTime;
+    const delta = currentTime - lastTime;
+
+    if (true) {
+      position -= speed * (delta / 16);
+      if (position <= -(getCardWidth() * cards.length)) {
+        position = 0;
+      }
+      carousel.style.transform = `translateX(${position}px)`;
+    }
+
+    lastTime = currentTime;
+    animationId = requestAnimationFrame(animate);
   }
-  
-  if (nextBtn) {
-    nextBtn.addEventListener('click', () => {
-      carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    });
+
+  let dragging = false;
+  let startX = 0;
+  let dragStartPosition = 0;
+
+  carousel.addEventListener('mousedown', (e) => {
+    dragging = true;
+    startX = e.pageX - carousel.offsetLeft;
+    dragStartPosition = position;
+    carousel.style.cursor = 'grabbing';
+    cancelAnimationFrame(animationId);
+  });
+
+  carousel.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+    e.preventDefault();
+    const x = e.pageX - carousel.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    position = dragStartPosition + walk;
+    carousel.style.transform = `translateX(${position}px)`;
+  });
+
+  function endDrag() {
+    dragging = false;
+    carousel.style.cursor = 'grab';
+    lastTime = 0;
+    animate(performance.now());
   }
+
+  carousel.addEventListener('mouseup', endDrag);
+  carousel.addEventListener('mouseleave', endDrag);
+
+  animate(performance.now());
 };
 
 const initializeCertificate = () => {

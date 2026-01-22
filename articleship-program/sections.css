@@ -917,10 +917,7 @@
 }
 
 .linkedin-carousel-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
+  overflow: hidden;
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 20px;
@@ -929,12 +926,8 @@
 .linkedin-carousel {
   display: flex;
   gap: 24px;
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
   padding: 20px 0;
-  flex: 1;
+  width: max-content;
 }
 
 .linkedin-carousel::-webkit-scrollbar {
@@ -1136,12 +1129,10 @@
   }
 
   .linkedin-carousel-container {
-    flex-direction: column;
     padding: 0 10px;
   }
 
   .linkedin-carousel {
-    width: 100%;
     padding: 10px 0;
   }
 
