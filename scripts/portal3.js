@@ -2029,18 +2029,13 @@ function redirectToPreferredPortal(preference) {
 
     if (currentPref === preference) return false;
 
-    const referrer = document.referrer;
-    if (referrer) {
-        try {
-            const referrerUrl = new URL(referrer);
-            const currentHost = window.location.hostname;
-            if (referrerUrl.hostname === currentHost) {
-                return false;
-            }
-        } catch (e) {
-            // Invalid referrer URL, continue with redirect logic
-        }
+    const hasNavigatedInSession = sessionStorage.getItem('msc_session_active');
+    
+    if (hasNavigatedInSession) {
+        return false;
     }
+    
+    sessionStorage.setItem('msc_session_active', 'true');
 
     // For fresher variants, check if we're on fresher page
     if ((preference === 'fresher_fresher' || preference === 'fresher_experienced') &&
