@@ -1913,3 +1913,28 @@ body {
   transform: none;
   box-shadow: none;
 }
+
+/* Job Preference Modal Styles */
+.pref-option-btn:hover {
+  border-color: #4f46e5 !important;
+  background: #f8f7ff !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(79, 70, 229, 0.12);
+}
+
+.pref-option-btn.selected {
+  border-color: #4f46e5 !important;
+  background: #eef2ff !important;
+}
+
+/* Remove bottom padding for pages with portal-nav-bar (not fixed footer) */
+/* Using :has() selector - for better browser support, add class to body if needed */
+body:has(.portal-nav-bar) {
+  padding-bottom: 0 !important;
+}
+
+@media (max-width: 768px) {
+  body:has(.portal-nav-bar) {
+    padding-bottom: 0 !important;
+  }
+}
