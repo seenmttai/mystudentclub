@@ -217,76 +217,68 @@ const initializeCarousel = () => {
 const initializeLinkedInPosts = () => {
   const linkedInPosts = [
     {
-      name: "Vedang Sawant",
-      title: "CA Fresher at Flipkart",
-      avatar: "https://www.mystudentclub.com/assets/vedang.jpg",
-      content: "Thrilled to share that I've started my Industrial Training at Flipkart! 🚀\n\nA huge thanks to CA Padam Bhansali and the MSC team for their incredible guidance throughout my placement journey. The CA Industrial Training Program truly transformed my approach to interviews and helped me land my dream opportunity.",
-      reactions: 289,
-      linkedinUrl: "https://www.linkedin.com/in/vedangsawant/"
+      name: "Priyanka Sharma",
+      title: "CA Finalist at Grasim Industries Ltd.",
+      avatar: "https://www.mystudentclub.com/assets/priyanka-sharma.png",
+      content: "Excited to share that I’ve begun my CA Industrial Training at GRASIM INDUSTRIES LIMITED ( ADITYA BIRLA GROUP) 💫\n\nAn important milestone where learning shifts from theory to real business impact. This phase is about responsibility, perspective, and building the mindset required to perform in the corporate world.\n\nGrateful to my mentor CA Padam Bhansali for their guidance and trust 🤝 their support has been instrumental in reaching this step.\n\nLooking ahead with focus, confidence, and a strong intent to learn and deliver ✨",
+      reactions: 216,
+      linkedinUrl: "https://www.linkedin.com/in/priyanka-sharma-s6/"
     },
     {
       name: "Khushi Gandhi",
-      title: "CA Fresher at Morgan Stanley",
+      title: "CA Finalist at Morgan Stanley",
       avatar: "https://www.mystudentclub.com/assets/khushi.jpg",
-      content: "Excited to announce that I've joined Morgan Stanley for my Industrial Training! ✨\n\nThis wouldn't have been possible without the structured guidance from MSC. The mock interviews and CV review sessions were game-changers. Forever grateful to CA Padam Bhansali for this opportunity!",
-      reactions: 356,
+      content: "✨ Sometimes, you know exactly where you want to begin - and where you want to stay ✨\n\nI'm happy to share that I've joined Morgan Stanley as an Industrial Trainee in the Financial control group - Product Control Department 🌟\n\nWhile many around me went through multiple interviews and acceptance cycles, my journey was quite the opposite. When the opportunity at Morgan Stanley opened up, it became the first interview I appeared for, and I genuinely hoped it would also be my last. Grateful that it turned out to be exactly that 💫\n\nI'm sincerely thankful to CA Padam Bhansali and My Student Club for their guidance and reassurance, especially during the Interview and acceptance phase 😇",
+      reactions: 691,
       linkedinUrl: "https://www.linkedin.com/in/khushi-gandhi-40a37a242/"
     },
     {
-      name: "Gaurav Jaat",
-      title: "CA Fresher at DE Shaw",
-      avatar: "https://www.mystudentclub.com/assets/gaurav.jpg",
-      content: "Happy to share that I've started my Industrial Training journey at DE Shaw! 🎯\n\nThe MSC CA Industrial Training Program was instrumental in preparing me for this role. The exclusive job listings and personalized mentorship made all the difference. Thank you MSC team!",
-      reactions: 412,
-      linkedinUrl: "https://www.linkedin.com/in/gauravjaat/"
+      name: "Tamanna Gaur",
+      title: "CA Industrial Trainee at HCL Technologies",
+      avatar: "https://www.mystudentclub.com/assets/tamanna-gaur.jpg",
+      content: "Excited to share that I've started my journey as a CA Industrial Trainee at HCL Technologies✨\n\nGrateful to Lakshya Bansal for genuinely helping me through the process.\n\nAlso thankful to CA Padam Bhansali for the guidance and help that made this step possible.\n\nLooking forward to learning and growing in this new phase🤍💫",
+      reactions: 161,
+      linkedinUrl: "https://www.linkedin.com/in/tamanna-gaur/"
     },
     {
-      name: "Kanchan Kulhria",
-      title: "CA Fresher at Amazon",
-      avatar: "https://www.mystudentclub.com/assets/kanchan.jpg",
-      content: "Delighted to share that I've joined Amazon for my Industrial Training! 🌟\n\nThe MSC IT Program provided me with all the tools I needed - from resume optimization to interview preparation. The personalized mentorship from CA Padam Bhansali was invaluable!",
-      reactions: 324,
-      linkedinUrl: "https://www.linkedin.com/in/kanchankulhria/"
+      name: "Rupesh Machha",
+      title: "CA Industrial Trainee at Cipla",
+      avatar: "https://www.mystudentclub.com/assets/rupesh-machha.jpg",
+      content: "I'm pleased to share that I've joined Cipla as a CA Industrial Trainee in the Business Finance Department.\n\nLooking forward to strengthening my finance skill set while sharpening my soft skills and interpersonal capabilities through real-world exposure.\n\nGrateful for the opportunity. Onward and upward.\n\nA Special Mention To CA Padam Bhansali for pushing me to give my best of the efforts. It Won't Have Been Possible Without Him.",
+      reactions: 784,
+      linkedinUrl: "https://www.linkedin.com/in/ca-rupesh-machha-/"
     },
     {
-      name: "Ishaan Isham",
-      title: "CA Fresher at UBS",
-      avatar: "https://www.mystudentclub.com/assets/ishaan.jpg",
-      content: "Excited to announce that I've started my Industrial Training at UBS! 💼\n\nThe structured approach of MSC's program helped me crack interviews at top companies. The mock interviews and industry insights were exactly what I needed. Thank you MSC team!",
-      reactions: 278,
-      linkedinUrl: "https://www.linkedin.com/in/ishaanisham/"
+      name: "Siddhant Pandey",
+      title: "CA Industrial Trainee at UBS",
+      avatar: "https://www.mystudentclub.com/assets/sidhant-pandey.jpg",
+      content: "Excited to share that I've begun a new chapter at UBS as an Industrial Trainee in the Liquidity and Funding domain. This opportunity represents a meaningful step in my professional journey.\n\nI'm grateful for the chance to learn in a global, fast-paced environment and to work alongside experienced professionals who bring deep expertise to the table.\n\nA special note of thanks to CA Padam Bhansali, whose constant guidance and support throughout my IT hunt made this journey possible.",
+      reactions: 330,
+      linkedinUrl: "https://www.linkedin.com/in/siddhant-pandeyy/"
     },
     {
-      name: "Virali Doshi",
-      title: "CA Fresher at Deutsche Bank",
-      avatar: "https://www.mystudentclub.com/assets/virali.jpg",
-      content: "Happy to share that I've joined Deutsche Bank for my Industrial Training! 🎉\n\nThe MSC CA Industrial Training Program was a game-changer in my placement journey. The CV review sessions and exclusive job listings made the process so much smoother!",
-      reactions: 345,
-      linkedinUrl: "https://www.linkedin.com/in/virali-doshi1905"
+      name: "Sanyam Khatter",
+      title: "CA Industrial Trainee at CARS24",
+      avatar: "https://www.mystudentclub.com/assets/sanyam-khatter.png",
+      content: "Kicking off the New Year with an exciting new professional journey.\n\nI'm pleased to share that I have joined CARS24 as a CA Industrial Trainee. This marks an important step in my CA journey, and I'm looking forward to gaining hands-on exposure in a fast-paced, tech-driven environment.\n\nAfter completing a valuable one-year Articleship at BDO India, I'm eager to apply the learning gained while further developing my understanding of finance operations, business processes, and decision-making at scale.\n\nSpecial thanks to CA Padam Bhansali for the guidance and support during this transition — truly appreciated.\n\nGrateful for the opportunity and looking forward to learning, contributing, and growing along the way.\n\nThankful to everyone who has guided and supported me throughout this journey.",
+      reactions: 360,
+      linkedinUrl: "https://www.linkedin.com/in/sanyam-khatter/"
     },
     {
-      name: "Chery Lunia",
-      title: "CA Fresher at Goldman Sachs",
-      avatar: "https://www.mystudentclub.com/assets/Chery.jpeg",
-      content: "Thrilled to announce that I've started my Industrial Training at Goldman Sachs! ✨\n\nGrateful to MSC and CA Padam Bhansali for their incredible support throughout. The program's comprehensive approach to placement preparation truly made a difference!",
-      reactions: 398,
-      linkedinUrl: "https://www.linkedin.com/in/cheryluniya/"
+      name: "Surbhi Priya",
+      title: "CA Industrial Trainee at Kotak Mahindra Bank",
+      avatar: "https://www.mystudentclub.com/assets/surbhi-priya.png",
+      content: "I am delighted to share an important milestone in my professional journey — I have joined Kotak Mahindra Bank as an Industrial Trainee.\n\nI would like to express my sincere gratitude to Rahul ranjan Sir and Priyank sinha Sir for giving me this valuable opportunity and for placing their trust in me. I am also thankful to Lekhram Vishwakarma for ensuring a smooth and seamless onboarding experience.\n\nI extend my heartfelt thanks to MGC Global Risk Advisory LLP and KB Chandna & Co. for providing me with a strong professional foundation and valuable exposure during my articleship, which has played a crucial role in shaping my learning and growth.\n\nI am deeply grateful to My Student Club and CA Padam Bhansali for their continuous guidance, encouragement, and unwavering support throughout this journey.\n\nAnother special thanks to my friend and senior Shivam for all the encouragement and support to uplift me throughout the process.",
+      reactions: 232,
+      linkedinUrl: "https://www.linkedin.com/in/surbhipriya1/"
     },
     {
-      name: "Dev Mundra",
-      title: "CA Fresher at UBS",
-      avatar: "https://www.mystudentclub.com/assets/Dev.jpg",
-      content: "Excited to share that I've joined UBS for my Industrial Training! 🚀\n\nThe MSC IT Program exceeded all my expectations. From personal CV reviews to mock interviews, every aspect was designed to help students succeed. Highly recommend!",
-      reactions: 267,
-      linkedinUrl: "https://www.linkedin.com/in/devmundra2003/"
-    },
-    {
-      name: "Priya Jain",
-      title: "CA Fresher at Amazon",
-      avatar: "https://www.mystudentclub.com/assets/Priya.jpg",
-      content: "Happy to announce that I've started my Industrial Training journey at Amazon! 🌟\n\nThe MSC program's personalized mentorship and comprehensive preparation resources helped me land my dream role. Forever grateful to the MSC team!",
-      reactions: 312,
-      linkedinUrl: "https://www.linkedin.com/in/priyaaajain/"
+      name: "Vedang Sawant",
+      title: "CA Industrial Trainee at Flipkart",
+      avatar: "https://www.mystudentclub.com/assets/vedang.jpg",
+      content: "I am excited to announce the beginning of my Industrial Training journey with Flipkart!\n\nThis opportunity has been made possible by the continuous support and guidance from Pratik Verma, Sidddharth Awasthi, and Shivaang Mishra. Thank you for believing in me and assisting me throughout this process.\n\nI would also like to express my gratitude to CA Padam Bhansali for his unwavering support, mentorship, and motivation at every step. Your guidance has really made a significant impact.\n\nAs I embark on this new role, I look forward to a year filled with learning, growth, meaningful challenges, creative problem-solving, and engaging brainstorming sessions. I am eager to learn, contribute, and grow in this dynamic environment.",
+      reactions: 383,
+      linkedinUrl: "https://www.linkedin.com/in/vedangsawant/"
     }
   ];
 
@@ -319,11 +311,11 @@ const initializeLinkedInPosts = () => {
         <span>${post.reactions}</span>
       </div>
       <div class="linkedin-actions">
-        <button class="linkedin-action-btn">
+        <button class="linkedin-action-btn" onclick="window.open('${post.linkedinUrl}', '_blank')">
           <svg viewBox="0 0 24 24"><path d="M19.46 11l-3.91-3.91a7 7 0 01-1.69-2.74l-.49-1.47A2.76 2.76 0 0010.76 1 2.75 2.75 0 008 3.74v1.12a9.19 9.19 0 00.46 2.85L8.89 9H4.12A2.12 2.12 0 002 11.12a2.16 2.16 0 00.92 1.76A2.11 2.11 0 002 14.62a2.14 2.14 0 001.28 2 2 2 0 00-.28 1 2.12 2.12 0 002 2.12v.14A2.12 2.12 0 007.12 22h7.49a8.08 8.08 0 003.58-.84l.31-.16H21V11zM19 19h-1l-.73.37a6.14 6.14 0 01-2.69.63H7.72a1 1 0 01-.72-.31.38.38 0 010-.06l.35-.34-.34-.34a.38.38 0 010-.06 1 1 0 01.72-.31.75.75 0 000-1.5 1 1 0 01-.72-.31.38.38 0 010-.06l.35-.34-.34-.34a.38.38 0 010-.06 1 1 0 01.72-.31.75.75 0 000-1.5A1.12 1.12 0 017 12.62a.38.38 0 010-.06l.35-.34-.35-.34A1.13 1.13 0 018.12 10H9a.75.75 0 00.71-.51l-.53-1.59a7.66 7.66 0 01-.38-2.37V3.74a1.25 1.25 0 011.26-1.24 1.26 1.26 0 011.19.89l.49 1.47a8.48 8.48 0 002.06 3.33L17.71 12H19z"/></svg>
           Like
         </button>
-        <button class="linkedin-action-btn">
+        <button class="linkedin-action-btn" onclick="window.open('${post.linkedinUrl}', '_blank')">
           <svg viewBox="0 0 24 24"><path d="M7 9h10v1H7zm0 3h7v1H7zm16-8v13c0 1.1-.9 2-2 2H7l-5 5V4c0-1.1.9-2 2-2h17c1.1 0 2 .9 2 2zm-2 0H4v14l2-2h15V4z"/></svg>
           Comment
         </button>
