@@ -2027,17 +2027,25 @@ function redirectToPreferredPortal(preference) {
     const currentPref = getCurrentPagePreference();
     const targetUrl = PREFERENCE_REDIRECT_MAP[preference];
 
-    // Check if user has been navigating within this session
-    // This works reliably in both browsers and WebViews (unlike document.referrer)
-    const hasNavigatedInSession = sessionStorage.getItem('msc_session_active');
-    
-    sessionStorage.setItem('msc_session_active', 'true');
-    
-    if (hasNavigatedInSession) {
+    if (currentPref === preference) return false;
+
+    // Skip auto-redirect when running inside Flutter WebView app
+    if (window.flutter_app?.isReady) {
         return false;
     }
 
-    if (currentPref === preference) return false;
+    const referrer = document.referrer;
+    if (referrer) {
+        try {
+            const referrerUrl = new URL(referrer);
+            const currentHost = window.location.hostname;
+            if (referrerUrl.hostname === currentHost) {
+                return false;
+            }
+        } catch (e) {
+            // Invalid referrer URL, continue with redirect logic
+        }
+    }
 
     // For fresher variants, check if we're on fresher page
     if ((preference === 'fresher_fresher' || preference === 'fresher_experienced') &&
