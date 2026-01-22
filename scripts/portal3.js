@@ -2027,15 +2027,17 @@ function redirectToPreferredPortal(preference) {
     const currentPref = getCurrentPagePreference();
     const targetUrl = PREFERENCE_REDIRECT_MAP[preference];
 
-    if (currentPref === preference) return false;
-
+    // Check if user has been navigating within this session
+    // This works reliably in both browsers and WebViews (unlike document.referrer)
     const hasNavigatedInSession = sessionStorage.getItem('msc_session_active');
+    
+    sessionStorage.setItem('msc_session_active', 'true');
     
     if (hasNavigatedInSession) {
         return false;
     }
-    
-    sessionStorage.setItem('msc_session_active', 'true');
+
+    if (currentPref === preference) return false;
 
     // For fresher variants, check if we're on fresher page
     if ((preference === 'fresher_fresher' || preference === 'fresher_experienced') &&
