@@ -2031,16 +2031,12 @@ function redirectToPreferredPortal(preference) {
     // This works reliably in both browsers and WebViews (unlike document.referrer)
     const hasNavigatedInSession = sessionStorage.getItem('msc_session_active');
     
-    // Always mark session as active on any portal page load
-    // This must happen BEFORE any early returns
     sessionStorage.setItem('msc_session_active', 'true');
     
-    // If user has already navigated in this session, respect their choice
     if (hasNavigatedInSession) {
         return false;
     }
 
-    // Already on preferred portal, no redirect needed
     if (currentPref === preference) return false;
 
     // For fresher variants, check if we're on fresher page
