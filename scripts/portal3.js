@@ -899,7 +899,7 @@ function processAndApplySearch(inputElement) {
 async function checkAuth() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     currentSession = session;
-    
+
     // If logged in, fetch and cache profile data
     if (session?.user?.id) {
         // Check if profile data needs to be fetched (not in localStorage)
@@ -908,7 +908,7 @@ async function checkAuth() {
             fetchAndCacheProfileData(); // Don't await, let it run in background
         }
     }
-    
+
     return session;
 }
 
@@ -958,7 +958,7 @@ function updateHeaderAuth(session) {
 window.handleLogout = async () => {
     // Sign out from Supabase
     await supabaseClient.auth.signOut();
-    
+
     // Clear all user-specific localStorage data
     localStorage.removeItem('userJobPreference');
     localStorage.removeItem('userProfileData');
@@ -968,7 +968,7 @@ window.handleLogout = async () => {
     localStorage.removeItem('subscribedTopics');
     localStorage.removeItem('newUserSignup');
     localStorage.removeItem('newUserEmail');
-    
+
     const keysToRemove = [];
     for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -977,7 +977,7 @@ window.handleLogout = async () => {
         }
     }
     keysToRemove.forEach(key => localStorage.removeItem(key));
-    
+
     // Reset app state
     currentSession = null;
     appliedJobIds.clear();
@@ -987,7 +987,7 @@ window.handleLogout = async () => {
     if (lmsNavLink) lmsNavLink.style.display = 'none';
     state.applicationStatus = 'all';
     state.experience = 'All';
-    
+
     // Redirect to home page
     window.location.href = '/';
 };
@@ -1230,7 +1230,7 @@ function getSubscribedTopics() { return JSON.parse(localStorage.getItem('subscri
 async function saveSubscribedTopics(topics) {
     localStorage.setItem('subscribedTopics', JSON.stringify(topics));
     updateNotificationBadge();
-    
+
     // Also save to Supabase profile if logged in
     if (currentSession?.user?.id) {
         try {
@@ -1239,10 +1239,10 @@ async function saveSubscribedTopics(topics) {
                 .select('profile')
                 .eq('uuid', currentSession.user.id)
                 .single();
-            
+
             const profileData = existingProfile?.profile || {};
             profileData.notification_subscriptions = topics;
-            
+
             await supabaseClient.from('profiles').upsert({
                 uuid: currentSession.user.id,
                 profile: profileData,
@@ -1846,8 +1846,13 @@ function checkAndOpenSharedJob() {
     const jobType = urlParams.get('type');
 
     if (jobId && jobType) {
-        // Fetch and open the specific job
+        // Set proper table based on type
+        if (jobType === 'semi') currentTable = 'Semi Qualified Jobs';
+        else if (jobType === 'fresher') currentTable = 'Fresher Jobs';
+        else if (jobType === 'articleship') currentTable = 'Articleship Jobs';
+        // else Default stays Industrial
 
+        // Fetch and open the specific job
         fetchSharedJob(jobId);
 
         // Clean URL without reloading
@@ -1936,7 +1941,7 @@ function getJobPreference() {
 // Save job preference
 async function saveJobPreference(preference) {
     localStorage.setItem(JOB_PREFERENCE_KEY, preference);
-    
+
     // Also save to Supabase profile if logged in
     if (currentSession?.user?.id) {
         try {
@@ -1945,10 +1950,10 @@ async function saveJobPreference(preference) {
                 .select('profile')
                 .eq('uuid', currentSession.user.id)
                 .single();
-            
+
             const profileData = existingProfile?.profile || {};
             profileData.job_preference = preference;
-            
+
             await supabaseClient.from('profiles').upsert({
                 uuid: currentSession.user.id,
                 profile: profileData,
@@ -1963,26 +1968,26 @@ async function saveJobPreference(preference) {
 // Fetch and cache user profile data from Supabase on login
 async function fetchAndCacheProfileData() {
     if (!currentSession?.user?.id) return null;
-    
+
     try {
         const { data } = await supabaseClient
             .from('profiles')
             .select('profile')
             .eq('uuid', currentSession.user.id)
             .single();
-        
+
         if (data?.profile) {
             localStorage.setItem('userProfileData', JSON.stringify(data.profile));
-            
+
             if (data.profile.job_preference) {
                 localStorage.setItem(JOB_PREFERENCE_KEY, data.profile.job_preference);
             }
-            
+
             if (data.profile.notification_subscriptions && Array.isArray(data.profile.notification_subscriptions)) {
                 localStorage.setItem('subscribedTopics', JSON.stringify(data.profile.notification_subscriptions));
                 updateNotificationBadge();
             }
-            
+
             return data.profile;
         }
     } catch (e) {
@@ -1994,7 +1999,7 @@ async function fetchAndCacheProfileData() {
 // Load job preference from profile if not in localStorage
 async function loadJobPreferenceFromProfile() {
     if (getJobPreference()) return getJobPreference();
-    
+
     if (currentSession?.user?.id) {
         try {
             const cachedProfile = localStorage.getItem('userProfileData');
@@ -2005,7 +2010,7 @@ async function loadJobPreferenceFromProfile() {
                     return profile.job_preference;
                 }
             }
-            
+
             const profile = await fetchAndCacheProfileData();
             if (profile?.job_preference) {
                 return profile.job_preference;
@@ -2021,9 +2026,9 @@ async function loadJobPreferenceFromProfile() {
 function redirectToPreferredPortal(preference) {
     const currentPref = getCurrentPagePreference();
     const targetUrl = PREFERENCE_REDIRECT_MAP[preference];
-    
+
     if (currentPref === preference) return false;
-    
+
     const referrer = document.referrer;
     if (referrer) {
         try {
@@ -2036,9 +2041,9 @@ function redirectToPreferredPortal(preference) {
             // Invalid referrer URL, continue with redirect logic
         }
     }
-    
+
     // For fresher variants, check if we're on fresher page
-    if ((preference === 'fresher_fresher' || preference === 'fresher_experienced') && 
+    if ((preference === 'fresher_fresher' || preference === 'fresher_experienced') &&
         (currentPref === 'fresher_fresher' || currentPref === 'fresher_experienced')) {
         // We're on fresher page, just need to set experience filter
         if (preference === 'fresher_experienced') {
@@ -2050,8 +2055,8 @@ function redirectToPreferredPortal(preference) {
         resetAndFetch();
         return false;
     }
-    
-    if ((preference === 'semi_fresher' || preference === 'semi_experienced') && 
+
+    if ((preference === 'semi_fresher' || preference === 'semi_experienced') &&
         (currentPref === 'semi_fresher' || currentPref === 'semi_experienced')) {
         if (preference === 'semi_experienced') {
             state.experience = 'Experienced';
@@ -2062,7 +2067,7 @@ function redirectToPreferredPortal(preference) {
         resetAndFetch();
         return false;
     }
-    
+
     if (targetUrl) {
         window.location.href = targetUrl;
         return true;
@@ -2089,26 +2094,26 @@ function hideJobPreferenceModal() {
 // Initialize preference modal event listeners
 function initJobPreferenceModal() {
     const preferenceOptions = document.querySelectorAll('.pref-option-btn');
-    
+
     preferenceOptions.forEach(btn => {
         btn.addEventListener('click', async () => {
             const preference = btn.dataset.preference;
             if (!preference) return;
-            
+
             preferenceOptions.forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
-            
+
             await saveJobPreference(preference);
-            
+
             setTimeout(() => {
                 hideJobPreferenceModal();
-                
+
                 if (preference === 'fresher_experienced' || preference === 'semi_experienced') {
                     state.experience = 'Experienced';
                 } else if (preference === 'fresher_fresher' || preference === 'semi_fresher') {
                     state.experience = 'Freshers';
                 }
-                
+
                 // Redirect to preferred portal
                 if (!redirectToPreferredPortal(preference)) {
                     syncFiltersUI();
@@ -2117,21 +2122,21 @@ function initJobPreferenceModal() {
             }, 200);
         });
     });
-    
+
     // Skip button handler - set industrial as default and redirect
     const skipBtn = document.getElementById('skipPreferenceBtn');
     if (skipBtn) {
         skipBtn.addEventListener('click', async () => {
             await saveJobPreference('industrial');
             hideJobPreferenceModal();
-            
+
             const path = window.location.pathname;
             if (path !== '/' && path !== '/index.html') {
                 window.location.href = '/';
             }
         });
     }
-    
+
     // Close modal on background click
     const modal = document.getElementById('jobPreferenceModal');
     if (modal) {
@@ -2145,11 +2150,11 @@ function initJobPreferenceModal() {
 document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(async () => {
         const preference = await loadJobPreferenceFromProfile();
-        
+
         if (currentSession && !preference) {
             const path = window.location.pathname;
-            if (path === '/' || path === '/index.html' || 
-                path.includes('/articleship') || path.includes('/fresher') || 
+            if (path === '/' || path === '/index.html' ||
+                path.includes('/articleship') || path.includes('/fresher') ||
                 path.includes('/semi-qualified')) {
                 showJobPreferenceModal();
             }
@@ -2167,10 +2172,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 state.experience = 'Freshers';
                 syncFiltersUI();
             }
-            
+
             redirectToPreferredPortal(preference);
         }
-        
+
         // Initialize modal event listeners
         initJobPreferenceModal();
     }, 500);

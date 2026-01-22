@@ -73,6 +73,30 @@
             z-index: 20;
             pointer-events: none;
             white-space: pre-wrap;
+            transition: background 0.2s ease;
+        }
+
+        .subtitles-overlay.user-speaking {
+            background: rgba(79, 70, 229, 0.75);
+            border: 1px solid rgba(99, 102, 241, 0.5);
+        }
+
+        /* Live message typing indicator */
+        .message.live .message-content {
+            border: 1px solid rgba(99, 102, 241, 0.5);
+            animation: live-pulse 1.5s ease-in-out infinite;
+        }
+
+        .message.live .message-author::after {
+            content: ' (speaking...)';
+            color: var(--primary-light);
+            font-weight: 400;
+            font-size: 0.75rem;
+        }
+
+        @keyframes live-pulse {
+            0%, 100% { border-color: rgba(99, 102, 241, 0.3); }
+            50% { border-color: rgba(99, 102, 241, 0.8); }
         }
 
 
@@ -557,11 +581,64 @@
             border-radius: 50%;
             background: var(--success);
             box-shadow: 0 0 8px var(--success);
+            transition: all 0.3s ease;
         }
 
         .status-indicator.muted {
             background: var(--error);
             box-shadow: 0 0 8px var(--error);
+        }
+
+        .status-indicator.listening {
+            background: var(--primary-light);
+            box-shadow: 0 0 12px var(--primary-light);
+            animation: pulse-listening 1.2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-listening {
+            0%, 100% { 
+                transform: scale(1);
+                box-shadow: 0 0 8px var(--primary-light);
+            }
+            50% { 
+                transform: scale(1.3);
+                box-shadow: 0 0 16px var(--primary-light), 0 0 24px rgba(99, 102, 241, 0.4);
+            }
+        }
+
+        .user-video.listening {
+            border: 2px solid var(--primary-light);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .listening-label {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            animation: fade-in 0.2s ease;
+        }
+
+        .listening-label.visible {
+            display: flex;
+        }
+
+        .listening-label .mic-icon {
+            width: 12px;
+            height: 12px;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(-4px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .sidebar {
@@ -1300,8 +1377,14 @@
             </div>
 
             <aside class="sidebar">
-                <div class="user-video">
+                <div class="user-video" id="user-video-container">
                     <video id="user-video" autoplay muted playsinline></video>
+                    <div id="listening-label" class="listening-label">
+                        <svg class="mic-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z"/>
+                        </svg>
+                        Listening...
+                    </div>
                     <div class="video-overlay" style="bottom: 0.5rem; left: 0.5rem; right: 0.5rem;">
                         <div class="participant-info" style="font-size: 0.8rem;">
                             You
@@ -1322,8 +1405,7 @@
             <div class="footer-controls">
                 <button id="subtitles-btn" class="footer-btn subtitles" title="Toggle Subtitles">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path
-                            d="M19 4H5c-1.66 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.79-.73-1.68-1.36-2.66-1.85-.33-.16-.56-.51-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z" />
+                        <path d="M19 4H5c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-8 7H9.5v-.5h-2v3h2V13H11v1c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3c.55 0 1 .45 1 1v1zm7 0h-1.5v-.5h-2v3h2V13H18v1c0 .55-.45 1-1 1h-3c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3c.55 0 1 .45 1 1v1z"/>
                     </svg>
                 </button>
                 <button id="end-call-btn" class="footer-btn end-call" title="End Interview">
@@ -1612,7 +1694,7 @@
 
                 this.audioSpeechSource.onended = () => {
                     // Small buffer before listening again to clear room echo
-                    setTimeout(() => this.finishSpeaking(), 800);
+                    setTimeout(() => this.finishSpeaking(), 300);
                 };
             }
 
@@ -1644,6 +1726,7 @@
 
         // --- GLOBAL LOGIC ---
         let avatar, userStream, isModelLoaded = false, areSubtitlesOn = true, interviewConfig = {}, messages = [], speechRecognition, isWaitingForAIResponse = false;
+        let liveUserMessageEl = null; // For live updating the user's message in chat
 
         const EMOJI_CHAR = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
         function extractEmojisAndSanitize(text = "") {
@@ -1674,16 +1757,30 @@
             window.addEventListener('resize', () => { if (avatar) avatar.onResize(); });
         }
 
-        // --- GLOBAL MIC CONTROLS (THE HARD FIX) ---
+        // --- GLOBAL MIC CONTROLS ---
+        const userVideoContainer = document.getElementById('user-video-container');
+        const userAudioStatus = document.getElementById('user-audio-status');
+        const listeningLabel = document.getElementById('listening-label');
+
+        function setListeningUI(isListening) {
+            if (userVideoContainer) userVideoContainer.classList.toggle('listening', isListening);
+            if (userAudioStatus) userAudioStatus.classList.toggle('listening', isListening);
+            if (listeningLabel) listeningLabel.classList.toggle('visible', isListening);
+        }
+
         window.startListening = function () {
             if (speechRecognition && !isWaitingForAIResponse) {
-                try { speechRecognition.start(); } catch (e) { /* ignore already started errors */ }
+                try { 
+                    speechRecognition.start(); 
+                    setListeningUI(true);
+                } catch (e) { /* ignore already started errors */ }
             }
         };
 
         window.stopListening = function () {
             if (speechRecognition) {
                 try { speechRecognition.stop(); } catch (e) { }
+                setListeningUI(false);
             }
         };
 
@@ -1701,16 +1798,36 @@
                         return; // Ignore inputs completely
                     }
 
+                    let interimTranscript = '';
                     let finalTranscript = '';
+
                     for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        const transcript = event.results[i][0].transcript;
                         if (event.results[i].isFinal) {
-                            const spoken = event.results[i][0].transcript.trim();
-                            if (spoken) handleSpeechInput(spoken);
+                            finalTranscript += transcript;
+                        } else {
+                            interimTranscript += transcript;
                         }
+                    }
+
+                    // Show live transcription in chat message
+                    const liveText = (finalTranscript + interimTranscript).trim();
+                    if (liveText) {
+                        updateLiveUserMessage(liveText);
+                    }
+
+                    // When we have a final result, process it
+                    if (finalTranscript.trim()) {
+                        handleSpeechInput(finalTranscript.trim());
                     }
                 };
 
+                speechRecognition.onstart = () => {
+                    setListeningUI(true);
+                };
+
                 speechRecognition.onend = () => {
+                    setListeningUI(false);
                     // Auto-restart if we are supposed to be listening (not speaking)
                     if (!interviewScreen.classList.contains('hidden') && avatar && !avatar.isSpeaking && !isWaitingForAIResponse) {
                         try { speechRecognition.start(); } catch (e) { }
@@ -1723,9 +1840,44 @@
             if (!text.trim() || isWaitingForAIResponse) return;
             // Ignore short noise/echo remnants
             if (text.length < 3 && !['no', 'yes', 'ok'].includes(text.toLowerCase())) return;
-            addChatMessage('user', 'You', text);
+            
+            // Finalize the live message if it exists
+            if (liveUserMessageEl) {
+                const contentEl = liveUserMessageEl.querySelector('.message-content');
+                if (contentEl) contentEl.textContent = text;
+                liveUserMessageEl.classList.remove('live');
+                liveUserMessageEl = null;
+            } else {
+                addChatMessage('user', 'You', text);
+            }
+            
             window.stopListening(); // Stop immediately once we have a sentence
             sendToAI(text);
+        }
+
+        // Live transcription helper functions
+        let scrollTimeout = null;
+        function scrollToBottom() {
+            if (scrollTimeout) return;
+            scrollTimeout = setTimeout(() => {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                scrollTimeout = null;
+            }, 50);
+        }
+
+        function updateLiveUserMessage(text) {
+            if (!liveUserMessageEl) {
+                // Create a new live message element
+                liveUserMessageEl = document.createElement('div');
+                liveUserMessageEl.className = 'message user live';
+                liveUserMessageEl.innerHTML = `<div class="message-author">You</div><div class="message-content">${text}</div>`;
+                chatMessages.appendChild(liveUserMessageEl);
+            } else {
+                // Update existing live message
+                const contentEl = liveUserMessageEl.querySelector('.message-content');
+                if (contentEl) contentEl.textContent = text;
+            }
+            scrollToBottom();
         }
 
         function updateSpeechStatus(t, v) { speechStatus.textContent = t; speechStatus.classList.toggle('visible', v); }
@@ -1765,16 +1917,45 @@
             setTimeout(() => avatar && avatar.onResize(), 50);
 
             const welcome = "Hello, I'm Aditya. Let's get started. Please walk me through your background.";
-            addChatMessage('ai', 'Aditya Chourasia', welcome);
+            const welcomeTimepoints = [{ word: "Hello,", time_seconds: 0 }, { word: "I'm", time_seconds: 0.3 }, { word: "Aditya.", time_seconds: 0.5 }, { word: "Let's", time_seconds: 1.0 }, { word: "get", time_seconds: 1.2 }, { word: "started.", time_seconds: 1.5 }, { word: "Please", time_seconds: 2.0 }, { word: "walk", time_seconds: 2.2 }, { word: "me", time_seconds: 2.4 }, { word: "through", time_seconds: 2.5 }, { word: "your", time_seconds: 2.7 }, { word: "background.", time_seconds: 2.9 }];
+            addLiveAIChatMessage('Aditya Chourasia');
             if (avatar) avatar.speakText(welcome);
-            if (areSubtitlesOn) scheduleAISubtitles([{ word: "Hello,", time_seconds: 0 }, { word: "I'm", time_seconds: 0.3 }, { word: "Aditya.", time_seconds: 0.5 }, { word: "Let's", time_seconds: 1.0 }, { word: "get", time_seconds: 1.2 }, { word: "started.", time_seconds: 1.5 }], 3.0, 0);
+            scheduleAISubtitles(welcomeTimepoints, 4.0, 0);
         }
 
         function addChatMessage(type, author, content) {
             const el = document.createElement('div');
             el.className = `message ${type}`;
             el.innerHTML = `<div class="message-author">${author}</div><div class="message-content">${content}</div>`;
-            chatMessages.appendChild(el); chatMessages.scrollTop = chatMessages.scrollHeight;
+            chatMessages.appendChild(el); scrollToBottom();
+            return el;
+        }
+
+        let liveAIMessageEl = null;
+        function addLiveAIChatMessage(author) {
+            liveAIMessageEl = document.createElement('div');
+            liveAIMessageEl.className = 'message ai live';
+            liveAIMessageEl.innerHTML = `<div class="message-author">${author}</div><div class="message-content"></div>`;
+            chatMessages.appendChild(liveAIMessageEl);
+            scrollToBottom();
+            return liveAIMessageEl;
+        }
+
+        function updateLiveAIChatMessage(text) {
+            if (liveAIMessageEl) {
+                const contentEl = liveAIMessageEl.querySelector('.message-content');
+                if (contentEl) contentEl.textContent = text;
+                scrollToBottom();
+            }
+        }
+
+        function finalizeLiveAIChatMessage(fullText) {
+            if (liveAIMessageEl) {
+                const contentEl = liveAIMessageEl.querySelector('.message-content');
+                if (contentEl) contentEl.textContent = fullText;
+                liveAIMessageEl.classList.remove('live');
+                liveAIMessageEl = null;
+            }
         }
 
         async function sendToAI(message) {
@@ -1791,12 +1972,12 @@
                         messages.push({ role: 'assistant', content: aiMessage });
                         addChatMessage('ai', 'System', `<b>Interview Report Generated</b><div style="font-size:0.85em; margin-top:5px; white-space:pre-wrap; opacity:0.9">${report}</div>`);
                         if (clean.length > 2) {
-                            addChatMessage('ai', 'Aditya Chourasia', clean);
+                            addLiveAIChatMessage('Aditya Chourasia');
                             if (avatar && isModelLoaded) avatar.speakText(clean);
                         }
                     } else {
                         messages.push({ role: 'assistant', content: aiMessage });
-                        addChatMessage('ai', 'Aditya Chourasia', clean);
+                        addLiveAIChatMessage('Aditya Chourasia');
                         if (avatar && isModelLoaded) {
                             emojis.forEach((e, i) => setTimeout(() => avatar.speakEmoji(e), i * 500));
                             avatar.speakText(clean);
@@ -1813,18 +1994,34 @@
             subtitlesOverlay.classList.add('hidden');
         };
         window.scheduleAISubtitles = function (timepoints, duration, startTime) {
-            if (!areSubtitlesOn) return;
             window.clearAISubtitles();
             let currentLine = "";
+            let fullChatText = "";
+            
             timepoints.forEach((tp) => {
                 const delay = (tp.time_seconds * 1000);
                 subtitlesOverlay._sched.push(setTimeout(() => {
-                    if (currentLine.length > 60 || /[.!?]/.test(tp.word)) if (/[.!?]/.test(tp.word)) currentLine = "";
-                    currentLine += " " + tp.word;
-                    showSubtitles(currentLine.trim());
+                    // Update subtitle overlay (if enabled)
+                    if (areSubtitlesOn) {
+                        if (currentLine.length > 60 || /[.!?]/.test(tp.word)) {
+                            if (/[.!?]/.test(tp.word)) currentLine = "";
+                        }
+                        currentLine += " " + tp.word;
+                        showSubtitles(currentLine.trim());
+                    }
+                    
+                    // Update live AI chat message
+                    fullChatText += (fullChatText ? " " : "") + tp.word;
+                    updateLiveAIChatMessage(fullChatText);
                 }, delay));
             });
-            subtitlesOverlay._sched.push(setTimeout(() => subtitlesOverlay.classList.add('hidden'), duration * 1000 + 1000));
+            
+            // Finalize and hide subtitle overlay when done
+            const fullText = timepoints.map(tp => tp.word).join(' ');
+            subtitlesOverlay._sched.push(setTimeout(() => {
+                subtitlesOverlay.classList.add('hidden');
+                finalizeLiveAIChatMessage(fullText);
+            }, duration * 1000 + 500));
         };
 
         function toggleSubtitles() { areSubtitlesOn = !areSubtitlesOn; subtitlesBtn.classList.toggle('active', areSubtitlesOn); if (!areSubtitlesOn) subtitlesOverlay.classList.add('hidden'); }
