@@ -71,10 +71,20 @@ const JOB_TITLE_MAP = {
 
 const EMAIL_SUBJECT_MAP = {
     "Industrial Training Job Portal": "Application for CA Industrial Training",
-    "Fresher Jobs": "Application for CA Fresher",
-    "Semi Qualified Jobs": "Application for Semi Qualified CA",
+    "Fresher Jobs": "Application for CA Fresher Position",
+    "Semi Qualified Jobs": "Application for Semi Qualified CA Position",
     "Articleship Jobs": "Application for CA Articleship"
 };
+
+function isExperiencedFresherPortal() {
+    const path = window.location.pathname.toLowerCase();
+    return path.includes('/experienced-ca');
+}
+
+function isFresherPortal() {
+    const path = window.location.pathname.toLowerCase();
+    return path.includes('/fresher');
+}
 
 function setActivePortalTab() {
     const path = window.location.pathname;
@@ -92,10 +102,16 @@ function setActivePortalTab() {
         currentTable = 'Semi Qualified Jobs';
         activeSelector = 'a[href="/semi-qualified.html"]';
         experienceFilterGroups.forEach(el => el.style.display = 'block');
+    } else if (path.toLowerCase().includes('/experienced-ca')) {
+        currentTable = 'Fresher Jobs';
+        activeSelector = 'a[href="/experienced-ca.html"]';
+        state.experience = 'Experienced';
+        experienceFilterGroups.forEach(el => el.style.display = 'none');
     } else if (path.includes('/fresher')) {
         currentTable = 'Fresher Jobs';
         activeSelector = 'a[href="/fresher.html"]';
-        experienceFilterGroups.forEach(el => el.style.display = 'block');
+        state.experience = 'Freshers';
+        experienceFilterGroups.forEach(el => el.style.display = 'none');
     } else {
         currentTable = 'Industrial Training Job Portal';
         activeSelector = 'a[href="/"]';
@@ -523,7 +539,14 @@ async function fetchJobs() {
             }
         }
 
-        if (state.experience && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
+        // Experience filter:
+        // - Semi Qualified: optional filter via UI
+        // - Fresher: locked to Freshers
+        // - Experienced CA: locked to Experienced
+        if (currentTable === "Fresher Jobs") {
+            const lockedValue = isExperiencedFresherPortal() ? 'Experienced' : 'Freshers';
+            query = query.eq('Experience', lockedValue);
+        } else if (state.experience && currentTable === "Semi Qualified Jobs") {
             query = query.eq('Experience', state.experience);
         }
 
@@ -771,6 +794,38 @@ function setupMultiSelect(container) {
 
     input.addEventListener('input', () => renderOptions(input.value));
     input.addEventListener('focus', () => renderOptions(input.value));
+    
+    // Add Enter key handler to apply filter (similar to keyword search)
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const filterValue = input.value.trim();
+            if (filterValue) {
+                const stateKey = type === 'location' ? 'locations' : 'categories';
+                // Check if it's an exact match from the source list
+                const source = type === 'location' ? allLocations : (allCategories[currentTable] || []);
+                const exactMatch = source.find(item => item.toLowerCase() === filterValue.toLowerCase());
+                
+                if (exactMatch && !state[stateKey].includes(exactMatch)) {
+                    // Use the exact match from source (preserves casing)
+                    state[stateKey].push(exactMatch);
+                } else if (!state[stateKey].includes(filterValue)) {
+                    // Add as custom filter
+                    state[stateKey].push(filterValue);
+                }
+                
+                renderPills(pillsContainer, state[stateKey], stateKey);
+                input.value = '';
+                optionsContainer.classList.remove('show');
+                
+                // Trigger fetch if in sidebar (not modal)
+                if (container.closest('.filter-sidebar')) {
+                    resetAndFetch();
+                }
+            }
+        }
+    });
+    
     document.addEventListener('click', (e) => {
         if (!container.contains(e.target)) optionsContainer.classList.remove('show');
     });
@@ -965,7 +1020,7 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
         if (!currentSession) { window.location.href = '/login.html'; return; }
         if (!isProfileComplete()) {
             const fallbackBody = generateFallbackEmail(job);
-            window.location.href = constructMailto(job, fallbackBody);
+            openMailtoLink(constructMailto(job, fallbackBody));
             return;
         }
 
@@ -980,10 +1035,10 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
             const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
             const cvImages = JSON.parse(localStorage.getItem('userCVImages') || '[]');
             const emailBody = await generateEmailBody(profileData, cvImages, job);
-            window.location.href = constructMailto(job, emailBody);
+            openMailtoLink(constructMailto(job, emailBody));
         } catch (e) {
             const fallbackBody = generateFallbackEmail(job);
-            window.location.href = constructMailto(job, fallbackBody);
+            openMailtoLink(constructMailto(job, fallbackBody));
         } finally {
             btnText.textContent = originalText;
             if (spinner) spinner.style.display = 'none';
@@ -993,7 +1048,7 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
         const applyLink = getApplicationLink(job['Application ID']);
         if (applyLink.startsWith('mailto:')) {
             const fallbackBody = generateFallbackEmail(job);
-            window.location.href = constructMailto(job, fallbackBody);
+            openMailtoLink(constructMailto(job, fallbackBody));
         }
     }
 }
@@ -1068,6 +1123,34 @@ function constructMailto(job, body = "") {
     const subjectBase = EMAIL_SUBJECT_MAP[currentTable] || `Application for the role`;
     const subject = `${subjectBase} at ${job.Company} (Ref: My Student Club)`;
     return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+/**
+ * Opens a mailto link using a temporary anchor element to avoid browser security warnings.
+ * This preserves the user gesture context and prevents "blocked from automatically composing email" warnings.
+ * @param {string} mailtoUrl - The mailto: URL to open
+ */
+function openMailtoLink(mailtoUrl) {
+    if (!mailtoUrl || mailtoUrl === '#') return;
+    
+    try {
+        const link = document.createElement('a');
+        link.href = mailtoUrl;
+        link.style.display = 'none';
+        link.setAttribute('target', '_self');
+        document.body.appendChild(link);
+        link.click();
+        // Remove the element after a short delay to ensure the click is processed
+        setTimeout(() => {
+            if (link.parentNode) {
+                document.body.removeChild(link);
+            }
+        }, 100);
+    } catch (error) {
+        console.error('Error opening mailto link:', error);
+        // Fallback to window.location.href if the anchor method fails
+        window.location.href = mailtoUrl;
+    }
 }
 
 function getApplicationLink(id, companyName = 'the company') {
@@ -1394,7 +1477,7 @@ function setupEventListeners() {
             state.applicationStatus = 'all';
             if (dom.searchInputMobile) dom.searchInputMobile.value = '';
             if (currentTable === 'Fresher Jobs') {
-                state.experience = 'Freshers';
+                state.experience = isExperiencedFresherPortal() ? 'Experienced' : 'Freshers';
             }
             if (dom.searchInputDesktop) dom.searchInputDesktop.value = '';
             syncAndFetch();
@@ -1404,9 +1487,11 @@ function setupEventListeners() {
 
     if (dom.salaryFilterDesktop) dom.salaryFilterDesktop.addEventListener('change', () => updateState({ salary: dom.salaryFilterDesktop.value }));
 
+    // Experience filter UI is only meaningful for Semi Qualified now.
     document.querySelectorAll('.experience-filter-group .pill-options').forEach(group => {
         group.addEventListener('click', (e) => {
             if (e.target.classList.contains('pill-btn')) {
+                if (currentTable !== 'Semi Qualified Jobs') return;
                 const value = e.target.dataset.value;
                 state.experience = state.experience === value ? '' : value;
                 syncAndFetch();
@@ -1829,7 +1914,7 @@ const PREFERENCE_REDIRECT_MAP = {
     'industrial': '/',
     'articleship': '/articleship.html',
     'fresher_fresher': '/fresher.html',
-    'fresher_experienced': '/fresher.html',
+    'fresher_experienced': '/experienced-ca.html',
     'semi_fresher': '/semi-qualified.html',
     'semi_experienced': '/semi-qualified.html'
 };
@@ -1837,7 +1922,8 @@ const PREFERENCE_REDIRECT_MAP = {
 function getCurrentPagePreference() {
     const path = window.location.pathname;
     if (path.includes('/articleship')) return 'articleship';
-    if (path.includes('/fresher')) return state.experience === 'Experienced' ? 'fresher_experienced' : 'fresher_fresher';
+    if (path.toLowerCase().includes('/experienced-ca')) return 'fresher_experienced';
+    if (path.includes('/fresher')) return 'fresher_fresher';
     if (path.includes('/semi-qualified')) return state.experience === 'Experienced' ? 'semi_experienced' : 'semi_fresher';
     return 'industrial';
 }
