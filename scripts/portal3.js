@@ -2031,7 +2031,6 @@ function redirectToPreferredPortal(preference) {
 
     // Skip auto-redirect when running inside Flutter WebView app
     if (window.flutter_app?.isReady) {
-        console.log('Redirect Debug: Inside Flutter app, skipping');
         return false;
     }
 
