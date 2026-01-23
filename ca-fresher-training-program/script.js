@@ -138,7 +138,6 @@ const initializeCarousel = () => {
         <img src="${student.image}" alt="${student.name}" loading="lazy" />
       </div>
       <h3>${student.name}</h3>
-      <p>${student.course}</p>
       <p class="company-info">Placed at:<br><strong>${student.company}</strong></p>
       ${student.linkedin && student.linkedin !== 'N/A' ? `<a href="${student.linkedin}" class="linkedin-button" target="_blank">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="linkedin-icon">
@@ -283,7 +282,7 @@ const initializeLinkedInPosts = () => {
   ];
 
   const carousel = document.getElementById('linkedinCarousel');
-  
+
   if (!carousel) return;
 
   const getCardWidth = () => {
@@ -404,7 +403,7 @@ const initializeLinkedInPosts = () => {
   // However, since `getCardWidth` is called inside `animate`, it acts dynamically if window resizes, 
   // assuming `window.innerWidth` changes. 
   // Note: `animate` loop calls `getCardWidth()` every frame. This is slightly inefficient but fine for this scope.
-  
+
   animate(performance.now());
 };
 
