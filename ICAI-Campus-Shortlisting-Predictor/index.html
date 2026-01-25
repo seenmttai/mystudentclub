@@ -1,6 +1,6 @@
-
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -8,21 +8,99 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/scripts/portal-style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    .hero {
+      margin-top: 80px;
+    }
+
+    /* Override any local header styles if necessary */
+    header {
+      background: white;
+      /* Ensure bg is white */
+    }
+  </style>
 </head>
+
 <body>
-  <header>
-    <div class="container">
-      <a href="https://mystudentclub.com" class="logo-link">
-        <img src="https://mystudentclub.com/assets/logo.png" alt="My Student Club Logo">
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/" class="brand-link">
+        <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
       </a>
+      <div class="header-actions">
+        <div class="auth-buttons-container"></div>
+        <button class="menu-button-style" aria-label="Open menu" id="menuButton">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
     </div>
   </header>
+
+  <div class="expanded-menu" id="expandedMenu">
+    <button class="menu-close-btn" id="menuCloseBtn">
+      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+    <div class="menu-items">
+      <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
+
+      <div class="menu-item-dropdown">
+        <button class="menu-item" style="width: 100%; justify-content: space-between;">
+          Mentorship Programs
+          <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+          <a href="/ca-fresher-training-program/" class="menu-item">CA Fresher Program</a>
+          <a href="/ca-industrial-training-program/" class="menu-item">Industrial Training Program</a>
+          <a href="/articleship-program/" class="menu-item">Articleship Program</a>
+        </div>
+      </div>
+
+      <div class="menu-item-dropdown">
+        <button class="menu-item" style="width: 100%; justify-content: space-between;">
+          Free Resources
+          <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+          <a href="/ca-fresher-training-resources.html" class="menu-item">CA Fresher</a>
+          <a href="/ca-industrial-training-resources.html" class="menu-item">Industrial Training</a>
+          <a href="/articleship.html" class="menu-item">Articleship</a>
+        </div>
+      </div>
+
+      <div class="menu-item-dropdown">
+        <button class="menu-item" style="width: 100%; justify-content: space-between;">
+          Tools
+          <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+          <a href="/cv-reviewer/" class="menu-item">AI CV Reviewer</a>
+          <a href="/ai-interview.html" class="menu-item">AI Mock Interview Bot</a>
+          <a href="/ICAI-Campus-Shortlisting-Predictor/index.html" class="menu-item">Campus Shortlisting Predictor</a>
+        </div>
+      </div>
+
+      <a href="/contact.html" class="menu-item">Contact Us</a>
+    </div>
+  </div>
 
   <main id="app" class="container">
     <div class="hero">
       <h1>ICAI Campus Shortlist Predictor</h1>
-      <p>Explore placement data with two powerful views: a dynamic Tabular analysis of averages, or our personalized AI Predictor.</p>
+      <p>Explore placement data with two powerful views: a dynamic Tabular analysis of averages, or our personalized AI
+        Predictor.</p>
       <a href="https://www.mystudentclub.com/fresher" class="hero-cta-button" target="_blank" rel="noopener noreferrer">
         Explore Latest Job Openings for CA Freshers
       </a>
@@ -61,13 +139,44 @@
                 <option value="Other">Other</option>
               </select>
             </div>
-            <div class="field"><label>Articleship Firm Tier</label><select id="tier"><option>Big4</option><option>Big6</option><option>Mid Size</option><option>Small Size</option><option>Other</option></select></div>
-            <div class="field"><label>Articleship Domain</label><select id="domain"><option value="">Any Domain (Optional)</option><option>Statutory Audit</option><option>Internal Audit</option><option>Direct Taxation</option><option>Indirect Taxation</option><option>Mixed Exposure</option></select></div>
-            <div class="field"><label>CA Final Score (%)</label><select id="score"><option>50-55</option><option>55-60</option><option>60-65</option><option>65-70</option><option>70+</option></select></div>
-            <div class="field"><label>CA Final Attempts</label><select id="attempts"><option>1</option><option>2</option><option>3</option><option>4</option><option>5+</option></select></div>
+            <div class="field"><label>Articleship Firm Tier</label><select id="tier">
+                <option>Big4</option>
+                <option>Big6</option>
+                <option>Mid Size</option>
+                <option>Small Size</option>
+                <option>Other</option>
+              </select></div>
+            <div class="field"><label>Articleship Domain</label><select id="domain">
+                <option value="">Any Domain (Optional)</option>
+                <option>Statutory Audit</option>
+                <option>Internal Audit</option>
+                <option>Direct Taxation</option>
+                <option>Indirect Taxation</option>
+                <option>Mixed Exposure</option>
+              </select></div>
+            <div class="field"><label>CA Final Score (%)</label><select id="score">
+                <option>50-55</option>
+                <option>55-60</option>
+                <option>60-65</option>
+                <option>65-70</option>
+                <option>70+</option>
+              </select></div>
+            <div class="field"><label>CA Final Attempts</label><select id="attempts">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5+</option>
+              </select></div>
             <div class="row">
-              <div class="field"><label>Completed Industrial Training?</label><select id="it_present"><option value="false">No</option><option value="true">Yes</option></select></div>
-              <div class="field"><label>Are you a Rank Holder?</label><select id="rank_present"><option value="false">No</option><option value="true">Yes</option></select></div>
+              <div class="field"><label>Completed Industrial Training?</label><select id="it_present">
+                  <option value="false">No</option>
+                  <option value="true">Yes</option>
+                </select></div>
+              <div class="field"><label>Are you a Rank Holder?</label><select id="rank_present">
+                  <option value="false">No</option>
+                  <option value="true">Yes</option>
+                </select></div>
             </div>
             <button type="submit" class="primary">Reveal My Placement Chances</button>
           </form>
@@ -80,5 +189,53 @@
   </main>
 
   <script type="module" src="./app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Menu Toggle
+      const menuButton = document.getElementById('menuButton');
+      const expandedMenu = document.getElementById('expandedMenu');
+      const menuCloseBtn = document.getElementById('menuCloseBtn');
+
+      if (menuButton && expandedMenu) {
+        menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
+      }
+      if (menuCloseBtn && expandedMenu) {
+        menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+      }
+
+      // Dropdowns
+      const dropdowns = document.querySelectorAll('.menu-item-dropdown button');
+      dropdowns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const content = btn.nextElementSibling;
+          if (content) {
+            content.style.display = content.style.display === 'block' ? 'none' : 'block';
+            btn.classList.toggle('active');
+          }
+        });
+      });
+
+      // Auth Check
+      if (typeof supabase !== 'undefined') {
+        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const sb = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        const { data: { session } } = await sb.auth.getSession();
+        const authContainer = document.querySelector('.auth-buttons-container');
+        const lmsLink = document.getElementById('lms-nav-link');
+
+        if (authContainer) {
+          if (session) {
+            authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn"><i class="fas fa-user"></i></a>';
+            if (lmsLink) lmsLink.style.display = 'flex';
+          } else {
+            authContainer.innerHTML = '<a href="/login.html" class="auth-icon-btn"><i class="fas fa-sign-in-alt"></i></a>';
+          }
+        }
+      }
+    });
+  </script>
 </body>
+
 </html>

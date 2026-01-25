@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Privacy Policy - My Student Club</title>
     <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/scripts/portal-style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
         :root {
             --primary-text: #2d3748;
             --secondary-text: #718096;
@@ -15,14 +20,23 @@
             --background-light: #f7fafc;
             --background-white: #ffffff;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--background-light);
             color: var(--primary-text);
             line-height: 1.7;
             padding: 2rem 1rem;
+            padding-top: 80px;
+            /* Space for fixed header */
         }
+
         .container {
             max-width: 850px;
             margin: 0 auto;
@@ -31,27 +45,177 @@
             border-radius: 12px;
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
         }
-        header { text-align: center; margin-bottom: 2.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); }
-        h1 { font-size: 2.25rem; font-weight: 700; margin-bottom: 0.5rem; }
-        header p { font-size: 1rem; color: var(--secondary-text); }
-        section { margin-bottom: 2.5rem; }
-        h2 { font-size: 1.5rem; font-weight: 600; color: var(--accent-color); padding-bottom: 0.5rem; margin-bottom: 1.5rem; border-bottom: 2px solid var(--accent-color); display: inline-block; }
-        h3 { font-size: 1.1rem; font-weight: 600; color: var(--primary-text); margin-top: 1.5rem; margin-bottom: 0.75rem; }
-        ul { list-style-position: inside; padding-left: 0.5rem; }
-        li { margin-bottom: 0.75rem; color: var(--secondary-text); }
-        a { color: #3B82F6; text-decoration: none; }
-        a:hover { text-decoration: underline; }
-        strong { font-weight: 600; color: var(--primary-text); }
-        code { font-family: monospace; background-color: #edf2f7; padding: 0.2em 0.4em; border-radius: 4px; font-size: 0.9em; }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h1 {
+            font-size: 2.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            font-size: 1rem;
+            color: var(--secondary-text);
+        }
+
+        section {
+            margin-bottom: 2.5rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent-color);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--accent-color);
+            display: inline-block;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary-text);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        ul {
+            list-style-position: inside;
+            padding-left: 0.5rem;
+        }
+
+        li {
+            margin-bottom: 0.75rem;
+            color: var(--secondary-text);
+        }
+
+        a {
+            color: #3B82F6;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        strong {
+            font-weight: 600;
+            color: var(--primary-text);
+        }
+
+        code {
+            font-family: monospace;
+            background-color: #edf2f7;
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
         @media (max-width: 768px) {
-            body { padding: 1rem 0.5rem; }
-            .container { padding: 1.5rem; }
-            h1 { font-size: 1.8rem; }
-            h2 { font-size: 1.3rem; }
+            body {
+                padding: 1rem 0.5rem;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.3rem;
+            }
         }
     </style>
 </head>
+
 <body>
+    <header class="site-header">
+        <div class="header-container">
+            <a href="/" class="brand-link">
+                <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
+            </a>
+            <div class="header-actions">
+                <div class="auth-buttons-container"></div>
+                <button class="menu-button-style" aria-label="Open menu" id="menuButton">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="expanded-menu" id="expandedMenu">
+        <button class="menu-close-btn" id="menuCloseBtn">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="menu-items">
+            <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My
+                Courses</a>
+
+            <div class="menu-item-dropdown">
+                <button class="menu-item" style="width: 100%; justify-content: space-between;">
+                    Mentorship Programs
+                    <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+                    <a href="/ca-fresher-training-program/" class="menu-item">CA Fresher Program</a>
+                    <a href="/ca-industrial-training-program/" class="menu-item">Industrial Training Program</a>
+                    <a href="/articleship-program/" class="menu-item">Articleship Program</a>
+                </div>
+            </div>
+
+            <div class="menu-item-dropdown">
+                <button class="menu-item" style="width: 100%; justify-content: space-between;">
+                    Free Resources
+                    <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+                    <a href="/ca-fresher-training-resources.html" class="menu-item">CA Fresher</a>
+                    <a href="/ca-industrial-training-resources.html" class="menu-item">Industrial Training</a>
+                    <a href="/articleship.html" class="menu-item">Articleship</a>
+                </div>
+            </div>
+
+            <div class="menu-item-dropdown">
+                <button class="menu-item" style="width: 100%; justify-content: space-between;">
+                    Tools
+                    <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+                    <a href="/cv-reviewer/" class="menu-item">AI CV Reviewer</a>
+                    <a href="/ai-interview.html" class="menu-item">AI Mock Interview Bot</a>
+                    <a href="/ICAI-Campus-Shortlisting-Predictor/index.html" class="menu-item">Campus Shortlisting
+                        Predictor</a>
+                </div>
+            </div>
+
+            <a href="/contact.html" class="menu-item">Contact Us</a>
+        </div>
+    </div>
+
     <div class="container">
         <header>
             <h1>Privacy Policy</h1>
@@ -60,19 +224,35 @@
 
         <section>
             <h2>1. Introduction</h2>
-            <p>Welcome to My Student Club. We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains what information we collect, how we use it, and what rights you have in relation to it. This policy applies to all information collected through our website (mystudentclub.com) and any related services, sales, marketing, or events.</p>
+            <p>Welcome to My Student Club. We are committed to protecting your personal information and your right to
+                privacy. This Privacy Policy explains what information we collect, how we use it, and what rights you
+                have in relation to it. This policy applies to all information collected through our website
+                (mystudentclub.com) and any related services, sales, marketing, or events.</p>
         </section>
 
         <section>
             <h2>2. Information We Collect</h2>
-            <p>We collect personal information that you voluntarily provide to us when you register on the website, express an interest in obtaining information about us or our products and services, when you participate in activities on the website, or otherwise when you contact us.</p>
+            <p>We collect personal information that you voluntarily provide to us when you register on the website,
+                express an interest in obtaining information about us or our products and services, when you participate
+                in activities on the website, or otherwise when you contact us.</p>
             <ul>
-                <li><strong>Account Information:</strong> We collect your email address and password for account creation and login. If you use Google Sign-In, we receive your email address and basic profile information from Google.</li>
-                <li><strong>Professional Profile Information:</strong> To provide our AI-powered services, we collect your full name, contact number, LinkedIn URL, resume/CV content, CA education details (level, attempts), achievements, work experience, and job preferences. This information is stored in your profile.</li>
-                <li><strong>Application Data:</strong> We track which jobs you apply for through our portal to help you manage your applications and to improve our services.</li>
-                <li><strong>Payment Information:</strong> When you purchase a course, your payment is processed by our third-party payment processor (e.g., PayU). We do not store your full credit card or financial details on our servers.</li>
-                <li><strong>Device and Notification Information:</strong> If you opt-in for push notifications, we collect a Firebase Cloud Messaging (FCM) token associated with your device to send you job alerts.</li>
-                <li><strong>Usage Information:</strong> We may collect information about your interactions with our website through analytics providers like Google Analytics.</li>
+                <li><strong>Account Information:</strong> We collect your email address and password for account
+                    creation and login. If you use Google Sign-In, we receive your email address and basic profile
+                    information from Google.</li>
+                <li><strong>Professional Profile Information:</strong> To provide our AI-powered services, we collect
+                    your full name, contact number, LinkedIn URL, resume/CV content, CA education details (level,
+                    attempts), achievements, work experience, and job preferences. This information is stored in your
+                    profile.</li>
+                <li><strong>Application Data:</strong> We track which jobs you apply for through our portal to help you
+                    manage your applications and to improve our services.</li>
+                <li><strong>Payment Information:</strong> When you purchase a course, your payment is processed by our
+                    third-party payment processor (e.g., PayU). We do not store your full credit card or financial
+                    details on our servers.</li>
+                <li><strong>Device and Notification Information:</strong> If you opt-in for push notifications, we
+                    collect a Firebase Cloud Messaging (FCM) token associated with your device to send you job alerts.
+                </li>
+                <li><strong>Usage Information:</strong> We may collect information about your interactions with our
+                    website through analytics providers like Google Analytics.</li>
             </ul>
         </section>
 
@@ -80,52 +260,126 @@
             <h2>3. How We Use Your Information</h2>
             <p>We use the information we collect for various business purposes, including:</p>
             <ul>
-                <li><strong>To provide and manage our services:</strong> This includes creating and managing your account, providing access to job portals, and delivering purchased courses through our Learning Management System (LMS).</li>
-                <li><strong>To power AI features:</strong> Your resume and profile information are sent to our secure AI models to provide services like the CV Reviewer, AI-Powered Apply, AI Interview Coach, and LinkedIn Note Generator.</li>
-                <li><strong>To send notifications:</strong> We use your FCM token and subscription preferences to send you relevant job alerts.</li>
-                <li><strong>To process transactions:</strong> We use enrollment information to grant access to paid content.</li>
-                <li><strong>To communicate with you:</strong> We may use your contact information to respond to your inquiries and provide support.</li>
-                <li><strong>To improve our services:</strong> We analyze usage data to understand how our services are used and to make improvements.</li>
+                <li><strong>To provide and manage our services:</strong> This includes creating and managing your
+                    account, providing access to job portals, and delivering purchased courses through our Learning
+                    Management System (LMS).</li>
+                <li><strong>To power AI features:</strong> Your resume and profile information are sent to our secure AI
+                    models to provide services like the CV Reviewer, AI-Powered Apply, AI Interview Coach, and LinkedIn
+                    Note Generator.</li>
+                <li><strong>To send notifications:</strong> We use your FCM token and subscription preferences to send
+                    you relevant job alerts.</li>
+                <li><strong>To process transactions:</strong> We use enrollment information to grant access to paid
+                    content.</li>
+                <li><strong>To communicate with you:</strong> We may use your contact information to respond to your
+                    inquiries and provide support.</li>
+                <li><strong>To improve our services:</strong> We analyze usage data to understand how our services are
+                    used and to make improvements.</li>
             </ul>
         </section>
 
         <section>
             <h2>4. Data Sharing and Disclosure</h2>
-            <p>We do not sell your personal information. We may share your information with third-party vendors, service providers, or agents who perform services for us or on our behalf and require access to such information to do that work.</p>
+            <p>We do not sell your personal information. We may share your information with third-party vendors, service
+                providers, or agents who perform services for us or on our behalf and require access to such information
+                to do that work.</p>
             <h3>Our key third-party services include:</h3>
             <ul>
-                <li><strong>Supabase:</strong> Provides our backend infrastructure, including database hosting for profiles, jobs, and applications, as well as user authentication services.</li>
-                <li><strong>Google (Firebase & Analytics):</strong> Used for sending push notifications (Firebase Cloud Messaging) and for analyzing website traffic (Google Analytics).</li>
-                <li><strong>Cloudflare:</strong> Hosts our AI models on secure servers (Cloudflare Workers) to process data for features like the CV Reviewer and AI Apply.</li>
+                <li><strong>Supabase:</strong> Provides our backend infrastructure, including database hosting for
+                    profiles, jobs, and applications, as well as user authentication services.</li>
+                <li><strong>Google (Firebase & Analytics):</strong> Used for sending push notifications (Firebase Cloud
+                    Messaging) and for analyzing website traffic (Google Analytics).</li>
+                <li><strong>Cloudflare:</strong> Hosts our AI models on secure servers (Cloudflare Workers) to process
+                    data for features like the CV Reviewer and AI Apply.</li>
                 <li><strong>PayU (or similar):</strong> Processes payments for our paid courses.</li>
             </ul>
-            <p>We may also disclose your information where we are legally required to do so in order to comply with applicable law, governmental requests, or legal process.</p>
+            <p>We may also disclose your information where we are legally required to do so in order to comply with
+                applicable law, governmental requests, or legal process.</p>
         </section>
 
         <section>
             <h2>5. Your Data Rights</h2>
             <p>You have certain rights regarding your personal information:</p>
             <ul>
-                <li><strong>Access and Update:</strong> You can review and update your personal information at any time by logging into your account and navigating to the <strong>Profile</strong> page.</li>
-                <li><strong>Opt-out of Notifications:</strong> You can manage your push notification preferences from the notification icon on the job portal pages or through your browser settings.</li>
-                <li><strong>Data Deletion:</strong> If you wish to delete your account and personal data, please contact us at the email address provided below. We will take steps to delete your information from our active databases.</li>
+                <li><strong>Access and Update:</strong> You can review and update your personal information at any time
+                    by logging into your account and navigating to the <strong>Profile</strong> page.</li>
+                <li><strong>Opt-out of Notifications:</strong> You can manage your push notification preferences from
+                    the notification icon on the job portal pages or through your browser settings.</li>
+                <li><strong>Data Deletion:</strong> If you wish to delete your account and personal data, please contact
+                    us at the email address provided below. We will take steps to delete your information from our
+                    active databases.</li>
             </ul>
         </section>
-        
+
         <section>
             <h2>6. Data Security</h2>
-            <p>We have implemented appropriate technical and organizational security measures designed to protect the security of any personal information we process. We use reputable third-party services like Supabase for data storage and authentication. However, despite our safeguards and efforts to secure your information, no electronic transmission over the Internet or information storage technology can be guaranteed to be 100% secure.</p>
+            <p>We have implemented appropriate technical and organizational security measures designed to protect the
+                security of any personal information we process. We use reputable third-party services like Supabase for
+                data storage and authentication. However, despite our safeguards and efforts to secure your information,
+                no electronic transmission over the Internet or information storage technology can be guaranteed to be
+                100% secure.</p>
         </section>
-        
+
         <section>
             <h2>7. Changes to This Policy</h2>
-            <p>We may update this privacy policy from time to time. The updated version will be indicated by a revised "Last Updated" date. We encourage you to review this privacy policy frequently to be informed of how we are protecting your information.</p>
+            <p>We may update this privacy policy from time to time. The updated version will be indicated by a revised
+                "Last Updated" date. We encourage you to review this privacy policy frequently to be informed of how we
+                are protecting your information.</p>
         </section>
 
         <section>
             <h2>8. Contact Us</h2>
-            <p>If you have questions or comments about this policy, you may email us at <strong>padam@mystudentclub.com</strong>.</p>
+            <p>If you have questions or comments about this policy, you may email us at
+                <strong>padam@mystudentclub.com</strong>.</p>
         </section>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Menu Toggle
+            const menuButton = document.getElementById('menuButton');
+            const expandedMenu = document.getElementById('expandedMenu');
+            const menuCloseBtn = document.getElementById('menuCloseBtn');
+
+            if (menuButton && expandedMenu) {
+                menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
+            }
+            if (menuCloseBtn && expandedMenu) {
+                menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+            }
+
+            // Dropdowns
+            const dropdowns = document.querySelectorAll('.menu-item-dropdown button');
+            dropdowns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const content = btn.nextElementSibling;
+                    if (content) {
+                        content.style.display = content.style.display === 'block' ? 'none' : 'block';
+                        btn.classList.toggle('active');
+                    }
+                });
+            });
+
+            // Auth Check
+            if (window.supabase) {
+                const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+                const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+                const { data: { session } } = await supabase.auth.getSession();
+                const authContainer = document.querySelector('.auth-buttons-container');
+                const lmsLink = document.getElementById('lms-nav-link');
+
+                if (authContainer) {
+                    if (session) {
+                        authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn"><i class="fas fa-user"></i></a>';
+                        if (lmsLink) lmsLink.style.display = 'flex';
+                    } else {
+                        authContainer.innerHTML = '<a href="/login.html" class="auth-icon-btn"><i class="fas fa-sign-in-alt"></i></a>';
+                    }
+                }
+            }
+        });
+    </script>
 </body>
+
 </html>

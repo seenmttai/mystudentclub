@@ -9,228 +9,354 @@
   <link rel="stylesheet" href="sections.css">
   <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/scripts/portal-style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
-  <div class="hero">
-    <div class="badge">Limited Seats Left!</div>
-    <h1>MSC Articleship<br>Program</h1>
 
-    <div class="features">
-      <div class="feature">
-        <svg class="checkmark" viewBox="0 0 24 24">
-          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-        </svg>
-        All-in-one Placement Workshop
-      </div>
-      <div class="feature">
-        <svg class="checkmark" viewBox="0 0 24 24">
-          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-        </svg>
-        Trusted By 1000+ Students
-      </div>
-      <div class="feature rating">
-        <span class="stars">★★★★★</span>
-        4.9 / 5 Rated Workshop
-      </div>
-      <div class="feature placement-rate">
-        <svg class="checkmark" viewBox="0 0 24 24">
-          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-        </svg>
-        100% Placement Rate
-      </div>
-    </div>
-
-    <div class="stats">
-
-    </div>
-  </div>
-
-  <section class="success-stories">
-    <div class="section-bg">
-      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_pwohahvd.json" background="transparent"
-        speed="1" style="width: 100%; height: 100%;" loop autoplay>
-      </lottie-player>
-    </div>
-    <h2>Our Oct'25 Batch <span class="highlight">Students</span> placed in Top Companies</h2>
-    <div class="carousel-container">
-      <div class="carousel" id="studentCarousel"></div>
-    </div>
-  </section>
-
-  <section class="pain-points">
-    <div class="section-bg">
-      <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_kkflmtur.json" background="transparent"
-        speed="1" style="width: 100%; height: 100%;" loop autoplay>
-      </lottie-player>
-    </div>
-    <div class="pain-points-content">
-      <h2>Are you too Struggling?</h2>
-      <div class="struggles">
-        <div class="struggle-item">No Interview Calls for Articleship?</div>
-        <div class="struggle-item">Want to Land your dream opportunity?</div>
-        <div class="struggle-item">Want to earn Good Stipend?</div>
-        <div class="struggle-item">Want to add a brand to your CV for post qualification?</div>
-      </div>
-      <p class="solution">That's why we created a program to ensure you land your dream opportunity</p>
-    </div>
-  </section>
-
-  <section class="benefits">
-    <div class="section-bg">
-      <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_47frevky.json" background="transparent"
-        speed="1" style="width: 100%; height: 100%;" loop autoplay>
-      </lottie-player>
-    </div>
-    <div class="benefits-content">
-      <h2>Why Enroll?</h2>
-      <div class="benefits-grid">
-        <div class="benefit-card">Access to 100+ Exclusive Vacancies</div>
-        <div class="benefit-card">Personal CV Evaluation by Founder</div>
-        <div class="benefit-card">6 Day Masterclass on CV Preparation to Placement</div>
-        <div class="benefit-card">Get Referrals in Top Firm</div>
-        <div class="benefit-card">Mock Interviews</div>
-        <div class="benefit-card">1000+ HR Mail IDs List</div>
-        <div class="benefit-card">MSC LMS - Videos of Trainees from Top Orgs</div>
-        <div class="benefit-card">Personal Mentor</div>
-        <div class="benefit-card">Regular One-One Call with Founder</div>
-      </div>
-    </div>
-  </section>
-
-  <section class="curriculum">
-    <div class="section-bg">
-      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_pwohahvd.json" background="transparent"
-        speed="1" style="width: 100%; height: 100%;" loop autoplay>
-      </lottie-player>
-    </div>
-    <h2>What will you Learn?</h2>
-    <div class="days-grid">
-      <div class="day-card">
-        <h3>Day 1: Roles in Articleship</h3>
-        <ul>
-          <li>Understanding what different roles are</li>
-          <li>Finding what suits you</li>
-          <li>Finding Firms* hiring for that role</li>
-        </ul>
-      </div>
-      <div class="day-card">
-        <h3>Day 2: Crafting Perfect CV</h3>
-        <ul>
-          <li>Making the Perfect CV</li>
-          <li>Personal CV Review</li>
-          <li>MSC AI CV Reviewer</li>
-        </ul>
-      </div>
-      <div class="day-card">
-        <h3>Day 3: Building LinkedIn</h3>
-        <ul>
-          <li>LinkedIn Profile Optimisation</li>
-          <li>Using Connection Notes</li>
-          <li>Other LinkedIn Hacks</li>
-        </ul>
-      </div>
-      <div class="day-card">
-        <h3>Day 4: Application Hacks</h3>
-        <ul>
-          <li>Right way to Apply</li>
-          <li>Using Job Portals</li>
-          <li>Getting References</li>
-          <li>Following Up</li>
-        </ul>
-      </div>
-      <div class="day-card">
-        <h3>Day 5: Cracking Interviews</h3>
-        <ul>
-          <li>Interview Guidebook</li>
-          <li>Staying Confident</li>
-          <li>MSC LMS</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <section class="linkedin-posts">
-    <h2>What <span class="highlight">LinkedIn</span> Has To Say...</h2>
-    <div class="linkedin-carousel-container">
-      <div class="linkedin-carousel" id="linkedinCarousel">
-        <!-- Cards will be populated by JavaScript -->
-      </div>
-    </div>
-  </section>
-
-  <section class="get-certified" data-aos="fade-up">
-    <h2 data-aos="zoom-in">Get <span class="highlight">Certified</span></h2>
-    <p data-aos="zoom-in" data-aos-delay="100">Level up your career with MSC's industry recognised certificate.</p>
-    <div class="certificate-container" data-aos="flip-left" data-aos-delay="200">
-      <div class="certificate-frame rotated">
-        <div class="certificate-back"></div>
-        <div class="certificate-frame-border"></div>
-        <div class="certificate-glass">
-          <div class="certificate-content">
-            <img class="certificate-image" src="https://mystudentclub.pages.dev/assets/certificate2.png"
-              alt="MSC Certificate" />
-            <div class="certificate-overlay"></div>
-            <div class="shine-effect"></div>
-          </div>
-          <div class="certificate-corner corner-tl"></div>
-          <div class="certificate-corner corner-tr"></div>
-          <div class="certificate-corner corner-bl"></div>
-          <div class="certificate-corner corner-br"></div>
-          <div class="floating-emblem">
-            <svg class="award-icon" viewBox="0 0 24 24">
-              <path
-                d="M12 2L8 6H3v5l-2 4 2 4v5h5l4 2 4-2h5v-5l2-4-2-4V6h-5L12 2zm0 3l2.5 2.5H15v3l1.5 3-1.5 3v3h-3l-3 1.5L6 17H3v-3L1.5 11 3 8V5h3l3-2.5L12 5z" />
+  <body>
+    <header class="site-header">
+      <div class="header-container">
+        <a href="/" class="brand-link">
+          <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
+        </a>
+        <div class="header-actions">
+          <div class="auth-buttons-container"></div>
+          <button class="menu-button-style" aria-label="Open menu" id="menuButton">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="expanded-menu" id="expandedMenu">
+      <button class="menu-close-btn" id="menuCloseBtn">
+        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+      <div class="menu-items">
+        <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
+
+        <div class="menu-item-dropdown">
+          <button class="menu-item" style="width: 100%; justify-content: space-between;">
+            Mentorship Programs
+            <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+            <a href="/ca-fresher-training-program/" class="menu-item">CA Fresher Program</a>
+            <a href="/ca-industrial-training-program/" class="menu-item">Industrial Training Program</a>
+            <a href="/articleship-program/" class="menu-item">Articleship Program</a>
           </div>
         </div>
-        <div class="certificate-shadow"></div>
-      </div>
-    </div>
-    <a href="#" class="action-btn" data-aos="fade-up" data-aos-delay="400">Get Your Certificate</a>
-  </section>
 
-  <section class="mentor">
-    <div class="section-bg">
-      <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_kkflmtur.json" background="transparent"
-        speed="1" style="width: 100%; height: 100%;" loop autoplay>
-      </lottie-player>
-    </div>
-    <div class="mentor-profile">
-      <div class="mentor-image">
-        <img src="https://mystudentclub.pages.dev/assets/mentor_transparent.png" alt="CA Padam Bhansali"
-          class="mentor-img">
+        <div class="menu-item-dropdown">
+          <button class="menu-item" style="width: 100%; justify-content: space-between;">
+            Free Resources
+            <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+            <a href="/ca-fresher-training-resources.html" class="menu-item">CA Fresher</a>
+            <a href="/ca-industrial-training-resources.html" class="menu-item">Industrial Training</a>
+            <a href="/articleship.html" class="menu-item">Articleship</a>
+          </div>
+        </div>
+
+        <div class="menu-item-dropdown">
+          <button class="menu-item" style="width: 100%; justify-content: space-between;">
+            Tools
+            <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+            <a href="/cv-reviewer/" class="menu-item">AI CV Reviewer</a>
+            <a href="/ai-interview.html" class="menu-item">AI Mock Interview Bot</a>
+            <a href="/ICAI-Campus-Shortlisting-Predictor/index.html" class="menu-item">Campus Shortlisting Predictor</a>
+          </div>
+        </div>
+
+        <a href="/contact.html" class="menu-item">Contact Us</a>
       </div>
-      <div class="mentor-info">
-        <h2>Meet your <span class="highlight">Mentor</span></h2>
-        <h3>CA Padam Bhansali</h3>
-        <p class="mentor-title">Founder, My Student Club</p>
-        <p class="mentor-description">
-          CA Padam Bhansali, Founder of My Student Club, has helped thousands of CA students secure their dream roles in
-          top companies for stipends upto 1.25L! He did his Industrial Training from Flipkart in Business Finance domain
-          and has conducted 100+ guidance sessions positively impacting 35,000+ students.<br><br>
-          Want to secure your dream role? Join the MSC Articleship Program for priority access to top opportunities!
-        </p>
-        <div class="mentor-achievements">
-          <div class="achievement">Helped 100+ Companies</div>
-          <div class="achievement">Placed 1000+ Students</div>
-          <div class="achievement">35k+ LinkedIn Followers</div>
+    </div>
+
+    <div class="hero" style="margin-top: 80px;">
+      <div class="badge">Limited Seats Left!</div>
+      <h1>MSC Articleship<br>Program</h1>
+
+      <div class="features">
+        <div class="feature">
+          <svg class="checkmark" viewBox="0 0 24 24">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+          </svg>
+          All-in-one Placement Workshop
+        </div>
+        <div class="feature">
+          <svg class="checkmark" viewBox="0 0 24 24">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+          </svg>
+          Trusted By 1000+ Students
+        </div>
+        <div class="feature rating">
+          <span class="stars">★★★★★</span>
+          4.9 / 5 Rated Workshop
+        </div>
+        <div class="feature placement-rate">
+          <svg class="checkmark" viewBox="0 0 24 24">
+            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+          </svg>
+          100% Placement Rate
         </div>
       </div>
-    </div>
-  </section>
 
-  <div class="fixed-cta">
-    <div class="timer-container">
-      <span>Registration Closed</span>
-    </div>
-    <div class="price">
-      <span class="original">₹2999</span> <span class="discounted">Free</span>
-    </div>
-  </div>
+      <div class="stats">
 
-  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-  <script src="app.js" type="module"></script>
-</body>
+      </div>
+    </div>
+
+    <section class="success-stories">
+      <div class="section-bg">
+        <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_pwohahvd.json" background="transparent"
+          speed="1" style="width: 100%; height: 100%;" loop autoplay>
+        </lottie-player>
+      </div>
+      <h2>Our Oct'25 Batch <span class="highlight">Students</span> placed in Top Companies</h2>
+      <div class="carousel-container">
+        <div class="carousel" id="studentCarousel"></div>
+      </div>
+    </section>
+
+    <section class="pain-points">
+      <div class="section-bg">
+        <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_kkflmtur.json" background="transparent"
+          speed="1" style="width: 100%; height: 100%;" loop autoplay>
+        </lottie-player>
+      </div>
+      <div class="pain-points-content">
+        <h2>Are you too Struggling?</h2>
+        <div class="struggles">
+          <div class="struggle-item">No Interview Calls for Articleship?</div>
+          <div class="struggle-item">Want to Land your dream opportunity?</div>
+          <div class="struggle-item">Want to earn Good Stipend?</div>
+          <div class="struggle-item">Want to add a brand to your CV for post qualification?</div>
+        </div>
+        <p class="solution">That's why we created a program to ensure you land your dream opportunity</p>
+      </div>
+    </section>
+
+    <section class="benefits">
+      <div class="section-bg">
+        <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_47frevky.json" background="transparent"
+          speed="1" style="width: 100%; height: 100%;" loop autoplay>
+        </lottie-player>
+      </div>
+      <div class="benefits-content">
+        <h2>Why Enroll?</h2>
+        <div class="benefits-grid">
+          <div class="benefit-card">Access to 100+ Exclusive Vacancies</div>
+          <div class="benefit-card">Personal CV Evaluation by Founder</div>
+          <div class="benefit-card">6 Day Masterclass on CV Preparation to Placement</div>
+          <div class="benefit-card">Get Referrals in Top Firm</div>
+          <div class="benefit-card">Mock Interviews</div>
+          <div class="benefit-card">1000+ HR Mail IDs List</div>
+          <div class="benefit-card">MSC LMS - Videos of Trainees from Top Orgs</div>
+          <div class="benefit-card">Personal Mentor</div>
+          <div class="benefit-card">Regular One-One Call with Founder</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="curriculum">
+      <div class="section-bg">
+        <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_pwohahvd.json" background="transparent"
+          speed="1" style="width: 100%; height: 100%;" loop autoplay>
+        </lottie-player>
+      </div>
+      <h2>What will you Learn?</h2>
+      <div class="days-grid">
+        <div class="day-card">
+          <h3>Day 1: Roles in Articleship</h3>
+          <ul>
+            <li>Understanding what different roles are</li>
+            <li>Finding what suits you</li>
+            <li>Finding Firms* hiring for that role</li>
+          </ul>
+        </div>
+        <div class="day-card">
+          <h3>Day 2: Crafting Perfect CV</h3>
+          <ul>
+            <li>Making the Perfect CV</li>
+            <li>Personal CV Review</li>
+            <li>MSC AI CV Reviewer</li>
+          </ul>
+        </div>
+        <div class="day-card">
+          <h3>Day 3: Building LinkedIn</h3>
+          <ul>
+            <li>LinkedIn Profile Optimisation</li>
+            <li>Using Connection Notes</li>
+            <li>Other LinkedIn Hacks</li>
+          </ul>
+        </div>
+        <div class="day-card">
+          <h3>Day 4: Application Hacks</h3>
+          <ul>
+            <li>Right way to Apply</li>
+            <li>Using Job Portals</li>
+            <li>Getting References</li>
+            <li>Following Up</li>
+          </ul>
+        </div>
+        <div class="day-card">
+          <h3>Day 5: Cracking Interviews</h3>
+          <ul>
+            <li>Interview Guidebook</li>
+            <li>Staying Confident</li>
+            <li>MSC LMS</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="linkedin-posts">
+      <h2>What <span class="highlight">LinkedIn</span> Has To Say...</h2>
+      <div class="linkedin-carousel-container">
+        <div class="linkedin-carousel" id="linkedinCarousel">
+          <!-- Cards will be populated by JavaScript -->
+        </div>
+      </div>
+    </section>
+
+    <section class="get-certified" data-aos="fade-up">
+      <h2 data-aos="zoom-in">Get <span class="highlight">Certified</span></h2>
+      <p data-aos="zoom-in" data-aos-delay="100">Level up your career with MSC's industry recognised certificate.</p>
+      <div class="certificate-container" data-aos="flip-left" data-aos-delay="200">
+        <div class="certificate-frame rotated">
+          <div class="certificate-back"></div>
+          <div class="certificate-frame-border"></div>
+          <div class="certificate-glass">
+            <div class="certificate-content">
+              <img class="certificate-image" src="https://mystudentclub.pages.dev/assets/certificate2.png"
+                alt="MSC Certificate" />
+              <div class="certificate-overlay"></div>
+              <div class="shine-effect"></div>
+            </div>
+            <div class="certificate-corner corner-tl"></div>
+            <div class="certificate-corner corner-tr"></div>
+            <div class="certificate-corner corner-bl"></div>
+            <div class="certificate-corner corner-br"></div>
+            <div class="floating-emblem">
+              <svg class="award-icon" viewBox="0 0 24 24">
+                <path
+                  d="M12 2L8 6H3v5l-2 4 2 4v5h5l4 2 4-2h5v-5l2-4-2-4V6h-5L12 2zm0 3l2.5 2.5H15v3l1.5 3-1.5 3v3h-3l-3 1.5L6 17H3v-3L1.5 11 3 8V5h3l3-2.5L12 5z" />
+              </svg>
+            </div>
+          </div>
+          <div class="certificate-shadow"></div>
+        </div>
+      </div>
+      <a href="#" class="action-btn" data-aos="fade-up" data-aos-delay="400">Get Your Certificate</a>
+    </section>
+
+    <section class="mentor">
+      <div class="section-bg">
+        <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_kkflmtur.json" background="transparent"
+          speed="1" style="width: 100%; height: 100%;" loop autoplay>
+        </lottie-player>
+      </div>
+      <div class="mentor-profile">
+        <div class="mentor-image">
+          <img src="https://mystudentclub.pages.dev/assets/mentor_transparent.png" alt="CA Padam Bhansali"
+            class="mentor-img">
+        </div>
+        <div class="mentor-info">
+          <h2>Meet your <span class="highlight">Mentor</span></h2>
+          <h3>CA Padam Bhansali</h3>
+          <p class="mentor-title">Founder, My Student Club</p>
+          <p class="mentor-description">
+            CA Padam Bhansali, Founder of My Student Club, has helped thousands of CA students secure their dream roles
+            in
+            top companies for stipends upto 1.25L! He did his Industrial Training from Flipkart in Business Finance
+            domain
+            and has conducted 100+ guidance sessions positively impacting 35,000+ students.<br><br>
+            Want to secure your dream role? Join the MSC Articleship Program for priority access to top opportunities!
+          </p>
+          <div class="mentor-achievements">
+            <div class="achievement">Helped 100+ Companies</div>
+            <div class="achievement">Placed 1000+ Students</div>
+            <div class="achievement">35k+ LinkedIn Followers</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="fixed-cta">
+      <div class="timer-container">
+        <span>Registration Closed</span>
+      </div>
+      <div class="price">
+        <span class="original">₹2999</span> <span class="discounted">Free</span>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="app.js" type="module"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        // Menu Toggle
+        const menuButton = document.getElementById('menuButton');
+        const expandedMenu = document.getElementById('expandedMenu');
+        const menuCloseBtn = document.getElementById('menuCloseBtn');
+
+        if (menuButton && expandedMenu) {
+          menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
+        }
+        if (menuCloseBtn && expandedMenu) {
+          menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+        }
+
+        // Dropdowns
+        const dropdowns = document.querySelectorAll('.menu-item-dropdown button');
+        dropdowns.forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const content = btn.nextElementSibling;
+            if (content) {
+              content.style.display = content.style.display === 'block' ? 'none' : 'block';
+              btn.classList.toggle('active');
+            }
+          });
+        });
+
+        // Auth Check
+        if (typeof supabase !== 'undefined') {
+          const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+          const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+          const sb = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+          const { data: { session } } = await sb.auth.getSession();
+          const authContainer = document.querySelector('.auth-buttons-container');
+          const lmsLink = document.getElementById('lms-nav-link');
+
+          if (authContainer) {
+            if (session) {
+              authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn"><i class="fas fa-user"></i></a>';
+              if (lmsLink) lmsLink.style.display = 'flex';
+            } else {
+              authContainer.innerHTML = '<a href="/login.html" class="auth-icon-btn"><i class="fas fa-sign-in-alt"></i></a>';
+            }
+          }
+        }
+      });
+    </script>
+  </body>
 
 </html>

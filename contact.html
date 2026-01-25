@@ -11,6 +11,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
+    <link rel="stylesheet" href="/scripts/portal-style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
@@ -604,21 +605,97 @@
         .contact-info {
             padding: 0.5rem 1rem;
         }
+
+        .contact-info {
+            padding: 0.5rem 1rem;
+        }
+
+        /* Override portal-style fixed header for this specific grid layout */
+        .site-header {
+            position: relative !important;
+            top: auto !important;
+            width: 100%;
+        }
     </style>
 </head>
 
 <body>
-    <header>
+    <header class="site-header">
         <div class="header-container">
-            <a href="/">
-                <img src="/assets/logo.png" alt="My Student Club" class="logo">
+            <a href="/" class="brand-link">
+                <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
             </a>
-            <a href="/" class="back-link">
-                <i class="fas fa-arrow-left"></i>
-                <span>Back to Home</span>
-            </a>
+            <div class="header-actions">
+                <div class="auth-buttons-container"></div>
+                <button class="menu-button-style" aria-label="Open menu" id="menuButton">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
         </div>
     </header>
+
+    <div class="expanded-menu" id="expandedMenu">
+        <button class="menu-close-btn" id="menuCloseBtn">
+            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="menu-items">
+            <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My
+                Courses</a>
+
+            <div class="menu-item-dropdown">
+                <button class="menu-item" style="width: 100%; justify-content: space-between;">
+                    Mentorship Programs
+                    <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+                    <a href="/ca-fresher-training-program/" class="menu-item">CA Fresher Program</a>
+                    <a href="/ca-industrial-training-program/" class="menu-item">Industrial Training Program</a>
+                    <a href="/articleship-program/" class="menu-item">Articleship Program</a>
+                </div>
+            </div>
+
+            <div class="menu-item-dropdown">
+                <button class="menu-item" style="width: 100%; justify-content: space-between;">
+                    Free Resources
+                    <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+                    <a href="/ca-fresher-training-resources.html" class="menu-item">CA Fresher</a>
+                    <a href="/ca-industrial-training-resources.html" class="menu-item">Industrial Training</a>
+                    <a href="/articleship.html" class="menu-item">Articleship</a>
+                </div>
+            </div>
+
+            <div class="menu-item-dropdown">
+                <button class="menu-item" style="width: 100%; justify-content: space-between;">
+                    Tools
+                    <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+                    <a href="/cv-reviewer/" class="menu-item">AI CV Reviewer</a>
+                    <a href="/ai-interview.html" class="menu-item">AI Mock Interview Bot</a>
+                    <a href="/ICAI-Campus-Shortlisting-Predictor/index.html" class="menu-item">Campus Shortlisting
+                        Predictor</a>
+                </div>
+            </div>
+
+            <a href="/contact.html" class="menu-item">Contact Us</a>
+        </div>
+    </div>
 
     <main>
         <div class="contact-image-section">
@@ -798,23 +875,68 @@
             });
 
             document.addEventListener('click', (e) => {
-                if (!e.target.closest('.custom-select-wrapper')) {
-                    document.querySelectorAll('.custom-select-wrapper.open').forEach(wrapper => {
-                        wrapper.classList.remove('open');
-                        const opts = wrapper.querySelector('.custom-options');
-                        if (opts) {
-                            opts.style.opacity = '0';
-                            setTimeout(() => opts.style.display = 'none', 200);
-                        }
-                    });
+                if (!wrapper.contains(e.target)) {
+                    wrapper.classList.remove('open');
+                    optionsList.style.opacity = '0';
+                    setTimeout(() => optionsList.style.display = 'none', 200);
                 }
             });
         }
 
-        // Initialize dropdown after DOM is fully ready
-        setTimeout(() => {
-            initCustomSelect();
-        }, 100);
+        document.addEventListener('DOMContentLoaded', initCustomSelect);
+
+        // Standard Menu Script
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Menu Toggle
+            const menuButton = document.getElementById('menuButton');
+            const expandedMenu = document.getElementById('expandedMenu');
+            const menuCloseBtn = document.getElementById('menuCloseBtn');
+
+            if (menuButton && expandedMenu) {
+                menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
+            }
+            if (menuCloseBtn && expandedMenu) {
+                menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+            }
+
+            // Dropdowns
+            const dropdowns = document.querySelectorAll('.menu-item-dropdown button');
+            dropdowns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const content = btn.nextElementSibling;
+                    if (content) {
+                        content.style.display = content.style.display === 'block' ? 'none' : 'block';
+                        btn.classList.toggle('active');
+                    }
+                });
+            });
+
+            // Auth Check - Reuse existing supabaseClient if available
+            if (window.supabase || typeof supabaseClient !== 'undefined') {
+                // If global window.supabase exists, use it to ensure consistent session state if supabaseClient is local to this script?
+                // Actually this script block is after the contact form script which defines `supabaseClient`.
+                // Ideally we use the same client to share state?
+                // But auth state is persisted in localStorage so separate clients are fine.
+                // We'll create a fresh one or use what's available.
+                // Let's create a fresh one to be safe and independent.
+                const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+                const sb = window.supabase ? window.supabase.createClient(supabaseUrl, supabaseKey) : supabaseClient;
+
+                const { data: { session } } = await sb.auth.getSession();
+                const authContainer = document.querySelector('.auth-buttons-container');
+                const lmsLink = document.getElementById('lms-nav-link');
+
+                if (authContainer) {
+                    if (session) {
+                        authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn"><i class="fas fa-user"></i></a>';
+                        if (lmsLink) lmsLink.style.display = 'flex';
+                    } else {
+                        authContainer.innerHTML = '<a href="/login.html" class="auth-icon-btn"><i class="fas fa-sign-in-alt"></i></a>';
+                    }
+                }
+            }
+        });
 
         // Form validation
         function validateForm() {
@@ -902,16 +1024,7 @@
             form.reset();
             form.style.display = 'flex';
             successMessage.classList.remove('show');
-
-            if (currentUser) {
-                document.getElementById('email').value = currentUser.email;
-                if (currentUser.user_metadata?.full_name) {
-                    document.getElementById('name').value = currentUser.user_metadata.full_name;
-                } else if (currentUser.user_metadata?.first_name) {
-                    document.getElementById('name').value = currentUser.user_metadata.first_name;
-                }
-            }
-
+            checkAuth();
             document.querySelectorAll('.form-group').forEach(g => g.classList.remove('error'));
         });
 

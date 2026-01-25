@@ -304,11 +304,11 @@
         grid-template-columns: 320px 1fr;
         gap: 2.5rem;
       }
-      
+
       .results-sidebar {
         padding: 2rem;
       }
-      
+
       .feedback-section {
         padding: 2.5rem;
       }
@@ -414,26 +414,51 @@
         </svg>
       </button>
       <div class="menu-items">
-        <a href="https://www.mystudentclub.com/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">
-          <svg class="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253" />
-          </svg>
-          My Courses
-        </a>
-        <div class="menu-item" style="font-weight: 600; color: #1e293b; pointer-events: none;">Mentorship Programs</div>
-        <a href="https://www.mystudentclub.com/ca-fresher-program/" class="menu-item" style="padding-left: 2rem;">CA Fresher Program</a>
-        <a href="https://www.mystudentclub.com/ca-industrial-training-program/" class="menu-item" style="padding-left: 2rem;">Industrial Training Program</a>
-        <a href="https://www.mystudentclub.com/articleship-program/" class="menu-item" style="padding-left: 2rem;">Articleship Program</a>
-        <div class="menu-item" style="font-weight: 600; color: #1e293b; pointer-events: none; margin-top: 0.5rem;">Free Resources</div>
-        <a href="https://www.mystudentclub.com/ca-fresher-training-resources.html" class="menu-item" style="padding-left: 2rem;">CA Fresher</a>
-        <a href="https://www.mystudentclub.com/ca-industrial-training-resources.html" class="menu-item" style="padding-left: 2rem;">Industrial Training</a>
-        <a href="https://www.mystudentclub.com/articleship.html" class="menu-item" style="padding-left: 2rem;">Articleship</a>
-        <div class="menu-item" style="font-weight: 600; color: #1e293b; pointer-events: none; margin-top: 0.5rem;">Tools</div>
-        <a href="https://www.mystudentclub.com/cv-reviewer/" class="menu-item" style="padding-left: 2rem;">AI CV Reviewer</a>
-        <a href="https://www.mystudentclub.com/ai-interview.html" class="menu-item" style="padding-left: 2rem;">AI Mock Interview Bot</a>
-        <a href="https://www.mystudentclub.com/ICAI-Campus-Shortlisting-Predictor/index.html" class="menu-item" style="padding-left: 2rem;">Campus Shortlisting Predictor</a>
-        <a href="https://www.mystudentclub.com/contact.html" class="menu-item" style="margin-top: 0.5rem;">Contact Us</a>
+        <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
+
+        <div class="menu-item-dropdown">
+          <button class="menu-item" style="width: 100%; justify-content: space-between;">
+            Mentorship Programs
+            <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+            <a href="/ca-fresher-training-program/" class="menu-item">CA Fresher Program</a>
+            <a href="/ca-industrial-training-program/" class="menu-item">Industrial Training Program</a>
+            <a href="/articleship-program/" class="menu-item">Articleship Program</a>
+          </div>
+        </div>
+
+        <div class="menu-item-dropdown">
+          <button class="menu-item" style="width: 100%; justify-content: space-between;">
+            Free Resources
+            <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+            <a href="/ca-fresher-training-resources.html" class="menu-item">CA Fresher</a>
+            <a href="/ca-industrial-training-resources.html" class="menu-item">Industrial Training</a>
+            <a href="/articleship.html" class="menu-item">Articleship</a>
+          </div>
+        </div>
+
+        <div class="menu-item-dropdown">
+          <button class="menu-item" style="width: 100%; justify-content: space-between;">
+            Tools
+            <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+            <a href="/cv-reviewer/" class="menu-item">AI CV Reviewer</a>
+            <a href="/ai-interview.html" class="menu-item">AI Mock Interview Bot</a>
+            <a href="/ICAI-Campus-Shortlisting-Predictor/index.html" class="menu-item">Campus Shortlisting Predictor</a>
+          </div>
+        </div>
+
+        <a href="/contact.html" class="menu-item">Contact Us</a>
       </div>
     </div>
   </div>
