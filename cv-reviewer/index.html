@@ -819,69 +819,71 @@
   <script src="https://unpkg.com/markdown-pdfjs@1.0.1/dist/markdown-pdf.umd.js"></script>
   <script type="module" src="cv-reviewer.js"></script>
   <script>
-    // Menu toggle functionality
-    const menuButton = document.getElementById('menuButton');
-    const expandedMenu = document.getElementById('expandedMenu');
-    const menuCloseBtn = document.getElementById('menuCloseBtn');
+    document.addEventListener('DOMContentLoaded', () => {
+      // Menu toggle functionality
+      const menuButton = document.getElementById('menuButton');
+      const expandedMenu = document.getElementById('expandedMenu');
+      const menuCloseBtn = document.getElementById('menuCloseBtn');
 
-    if (menuButton && expandedMenu) {
-      menuButton.addEventListener('click', () => {
-        expandedMenu.classList.add('active');
-      });
-    }
+      if (menuButton && expandedMenu) {
+        menuButton.addEventListener('click', () => {
+          expandedMenu.classList.add('active');
+        });
+      }
 
-    if (menuCloseBtn && expandedMenu) {
-      menuCloseBtn.addEventListener('click', () => {
-        expandedMenu.classList.remove('active');
-      });
-    }
+      if (menuCloseBtn && expandedMenu) {
+        menuCloseBtn.addEventListener('click', () => {
+          expandedMenu.classList.remove('active');
+        });
+      }
 
-    // Dropdown menu functionality for all menu-item-dropdown elements
-    document.querySelectorAll('.menu-item-dropdown').forEach(dropdown => {
-      const button = dropdown.querySelector('button.menu-item');
-      const content = dropdown.querySelector('.dropdown-content');
-      const icon = dropdown.querySelector('.dropdown-icon');
+      // Dropdown menu functionality for all menu-item-dropdown elements
+      document.querySelectorAll('.menu-item-dropdown').forEach(dropdown => {
+        const button = dropdown.querySelector('button.menu-item');
+        const content = dropdown.querySelector('.dropdown-content');
+        const icon = dropdown.querySelector('.dropdown-icon');
 
-      if (button && content) {
-        button.addEventListener('click', (e) => {
-          e.preventDefault();
-          e.stopPropagation();
+        if (button && content) {
+          button.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
 
-          // Toggle the current dropdown
-          const isOpen = content.style.display === 'block';
+            // Toggle the current dropdown
+            const isOpen = content.style.display === 'block';
 
-          // Close all other dropdowns first
-          document.querySelectorAll('.menu-item-dropdown .dropdown-content').forEach(otherContent => {
-            otherContent.style.display = 'none';
+            // Close all other dropdowns first
+            document.querySelectorAll('.menu-item-dropdown .dropdown-content').forEach(otherContent => {
+              otherContent.style.display = 'none';
+            });
+            document.querySelectorAll('.menu-item-dropdown .dropdown-icon').forEach(otherIcon => {
+              otherIcon.classList.remove('open');
+            });
+
+            // Toggle current dropdown
+            content.style.display = isOpen ? 'none' : 'block';
+            if (icon) {
+              icon.classList.toggle('open', !isOpen);
+            }
           });
-          document.querySelectorAll('.menu-item-dropdown .dropdown-icon').forEach(otherIcon => {
-            otherIcon.classList.remove('open');
-          });
+        }
+      });
 
-          // Toggle current dropdown
-          content.style.display = isOpen ? 'none' : 'block';
-          if (icon) {
-            icon.classList.toggle('open', !isOpen);
-          }
+      const pdfPreviewModal = document.getElementById('pdfPreviewModal');
+      const pdfPreviewCloseBtn = document.getElementById('pdfPreviewCloseBtn');
+      const pdfPreviewContainer = document.getElementById('pdfPreviewContainer');
+      const pdfPreviewDownloadBtn = document.getElementById('pdfPreviewDownloadBtn');
+
+      if (pdfPreviewCloseBtn) {
+        pdfPreviewCloseBtn.addEventListener('click', () => {
+          pdfPreviewModal.style.display = 'none';
+        });
+      }
+
+      if (pdfPreviewDownloadBtn) {
+        pdfPreviewDownloadBtn.addEventListener('click', () => {
         });
       }
     });
-
-    const pdfPreviewModal = document.getElementById('pdfPreviewModal');
-    const pdfPreviewCloseBtn = document.getElementById('pdfPreviewCloseBtn');
-    const pdfPreviewContainer = document.getElementById('pdfPreviewContainer');
-    const pdfPreviewDownloadBtn = document.getElementById('pdfPreviewDownloadBtn');
-
-    if (pdfPreviewCloseBtn) {
-      pdfPreviewCloseBtn.addEventListener('click', () => {
-        pdfPreviewModal.style.display = 'none';
-      });
-    }
-
-    if (pdfPreviewDownloadBtn) {
-      pdfPreviewDownloadBtn.addEventListener('click', () => {
-      });
-    }
   </script>
 
   <div id="pdfPreviewModal" style="display:none; position:fixed; inset:0; z-index:1200; background:rgba(0,0,0,0.35);">
