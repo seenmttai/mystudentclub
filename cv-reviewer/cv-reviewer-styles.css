@@ -10,7 +10,7 @@
   --warning: #f59e0b;
   --danger: #dc2626;
   --background: #fafbfc;
-  --background-light: #ffffff; 
+  --background-light: #ffffff;
   --surface: #ffffff;
   --text-primary: #0f172a;
   --text-secondary: #475569;
@@ -31,7 +31,7 @@ body {
 .cv-reviewer-container {
   max-width: 1600px;
   margin: 0 auto;
-  padding: 1.5rem 2rem 2rem;
+  padding: 4.5rem 2rem 2rem;
   min-height: calc(100vh - 50px);
 }
 
@@ -57,7 +57,7 @@ body {
   color: var(--text-primary);
   font-size: 1rem;
   transition: all 0.3s ease;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .form-group input:focus,
@@ -90,6 +90,7 @@ body {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
+
 .submit-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -147,7 +148,8 @@ body {
   background: linear-gradient(to bottom, rgba(37, 99, 235, 0.01), rgba(37, 99, 235, 0.03));
 }
 
-.upload-area:hover, .upload-area.dragover {
+.upload-area:hover,
+.upload-area.dragover {
   background: linear-gradient(to bottom, rgba(37, 99, 235, 0.03), rgba(37, 99, 235, 0.06));
   border-color: var(--primary-light);
   transform: translateY(-2px);
@@ -159,15 +161,15 @@ body {
     max-width: 1800px;
     padding: 5rem 3rem 4rem;
   }
-  
+
   .upload-section {
     padding: 3rem;
   }
-  
+
   .upload-area {
     padding: 4rem 2rem;
   }
-  
+
   .results-grid {
     grid-template-columns: 350px 1fr;
     gap: 3rem;
@@ -179,16 +181,16 @@ body {
   .cv-reviewer-container {
     padding: 4.5rem 1.5rem 3rem;
   }
-  
+
   .hero-section {
     margin-bottom: 2rem;
     padding: 1.5rem 0;
   }
-  
+
   .upload-section {
     padding: 2rem;
   }
-  
+
   .upload-area {
     padding: 2.5rem 1.5rem;
   }
@@ -357,11 +359,13 @@ body {
   color: white;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
+
 .analyze-btn:hover {
   background: var(--primary-dark);
   transform: translateY(-3px);
   box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
 }
+
 .analyze-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
@@ -395,7 +399,9 @@ body {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-section h3 {
@@ -414,8 +420,8 @@ body {
 }
 
 .results-section {
-  background: transparent; 
-  padding: 1rem; 
+  background: transparent;
+  padding: 1rem;
   margin-bottom: 3rem;
   border: none;
   box-shadow: none;
@@ -439,10 +445,10 @@ body {
 .score-card {
   display: flex;
   align-items: center;
-  justify-content: center; 
-  gap: 1rem; 
-  padding: 0; 
-  background: none; 
+  justify-content: center;
+  gap: 1rem;
+  padding: 0;
+  background: none;
   border-radius: 0;
   border: none;
 }
@@ -462,16 +468,16 @@ body {
 
 .score-bg {
   fill: none;
-  stroke: #e2e8f0; 
-  stroke-width: 3.5; 
+  stroke: #e2e8f0;
+  stroke-width: 3.5;
 }
 
 .score-progress {
   fill: none;
   stroke: url(#scoreGradient);
-  stroke-width: 3.5; 
+  stroke-width: 3.5;
   stroke-linecap: round;
-  transition: stroke-dasharray 1.5s cubic-bezier(0.4, 0, 0.2, 1); 
+  transition: stroke-dasharray 1.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .score-text {
@@ -486,19 +492,19 @@ body {
 }
 
 .results-breakdown {
-  margin-bottom: 1.5rem; 
+  margin-bottom: 1.5rem;
 }
 
 .breakdown-categories {
   display: grid;
-  gap: 1rem; 
+  gap: 1rem;
 }
 
 .category-item {
-  border: none; 
-  border-radius: 10px; 
-  padding: 0; 
-  background: none; 
+  border: none;
+  border-radius: 10px;
+  padding: 0;
+  background: none;
   transition: none;
 }
 
@@ -511,32 +517,32 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 0.5rem; 
+  margin-bottom: 0.5rem;
 }
 
 .category-header h4 {
   font-weight: 600;
-  font-size: 0.95rem; 
-  color: var(--text-primary); 
+  font-size: 0.95rem;
+  color: var(--text-primary);
   letter-spacing: -0.01em;
 }
 
 .points {
-  font-weight: 700; 
-  font-size: 0.875rem; 
+  font-weight: 700;
+  font-size: 0.875rem;
   color: var(--primary);
 }
 
 .category-bar {
   height: 8px;
-  background: #f1f5f9; 
+  background: #f1f5f9;
   border-radius: 4px;
   overflow: hidden;
 }
 
 .category-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--primary), var(--primary-light)); 
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
   transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 4px;
 }
@@ -549,21 +555,23 @@ body {
   flex-wrap: wrap;
 }
 
-.primary-btn, .secondary-btn {
-  display: inline-flex; 
+.primary-btn,
+.secondary-btn {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.625rem;
-  padding: 1rem 2rem; 
+  padding: 1rem 2rem;
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid transparent; 
+  border: 1px solid transparent;
   font-size: 1rem;
 }
 
-.primary-btn svg, .secondary-btn svg {
+.primary-btn svg,
+.secondary-btn svg {
   width: 20px;
   height: 20px;
 }
@@ -585,7 +593,7 @@ body {
 .secondary-btn {
   background: var(--surface);
   color: var(--primary);
-  border: 1.5px solid var(--border); 
+  border: 1.5px solid var(--border);
   box-shadow: var(--shadow-sm);
 }
 
@@ -601,7 +609,7 @@ body {
   border-radius: 20px;
   box-shadow: var(--shadow-lg);
   padding: 3rem;
-  margin-top: 4rem; 
+  margin-top: 4rem;
   border: 1px solid var(--border);
 }
 
@@ -668,7 +676,7 @@ body {
   color: var(--text-secondary);
   font-size: 0.9375rem;
   line-height: 1.6;
-  flex-grow: 1; 
+  flex-grow: 1;
 }
 
 @media (max-width: 768px) {
@@ -684,7 +692,9 @@ body {
     font-size: 1rem;
   }
 
-  .upload-section, .loading-section, .tips-section {
+  .upload-section,
+  .loading-section,
+  .tips-section {
     padding: 1.25rem;
   }
 
@@ -694,10 +704,13 @@ body {
 
   .results-header {
     flex-direction: column;
-    align-items: center; 
-     text-align: center;
+    align-items: center;
+    text-align: center;
   }
-  .results-header h2 { font-size: 1.3rem; }
+
+  .results-header h2 {
+    font-size: 1.3rem;
+  }
 
   .tips-grid {
     grid-template-columns: 1fr;
@@ -712,30 +725,30 @@ body {
     flex-wrap: wrap;
     padding: 1rem;
   }
-  
+
   .file-info .file-icon {
     width: 28px;
     height: 28px;
   }
-  
+
   .file-info .file-details {
     flex: 1;
     min-width: 0;
   }
-  
+
   .file-info .file-details h4 {
     font-size: 0.85rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  
+
   .file-info .preview-actions {
     width: 100%;
     margin-top: 0.75rem;
     flex-direction: row;
   }
-  
+
   .file-info .action-btn {
     flex: 1;
     justify-content: center;
@@ -743,100 +756,109 @@ body {
     font-size: 0.8rem;
   }
 
-   .action-buttons {
-     flex-direction: column;
-   }
-   .primary-btn, .secondary-btn {
-     width: 100%;
-   }
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .primary-btn,
+  .secondary-btn {
+    width: 100%;
+  }
 }
 
 
-    /* Compact severity badges */
-    .severity-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 2px 8px;
-        border-radius: 4px;
-        font-size: 0.7rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.025em;
-        margin-left: 6px;
-        vertical-align: middle;
-    }
-    .severity-critical {
-        background-color: rgba(220, 38, 38, 0.12);
-        color: #dc2626;
-        border: 1px solid rgba(220, 38, 38, 0.25);
-    }
-    .severity-high {
-        background-color: rgba(234, 88, 12, 0.12);
-        color: #ea580c;
-        border: 1px solid rgba(234, 88, 12, 0.25);
-    }
-    .severity-moderate {
-        background-color: rgba(202, 138, 4, 0.12);
-        color: #ca8a04;
-        border: 1px solid rgba(202, 138, 4, 0.25);
-    }
-    .severity-low {
-        background-color: rgba(100, 116, 139, 0.12);
-        color: #64748b;
-        border: 1px solid rgba(100, 116, 139, 0.25);
-    }
+/* Compact severity badges */
+.severity-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  margin-left: 6px;
+  vertical-align: middle;
+}
 
-    /* Improved content readability */
-    .content-area .feedback-bullet {
-        display: block;
-        padding-left: 2rem;
-        position: relative;
-        line-height: 1.3;
-    }
-    .content-area .feedback-bullet::before {
-        content: "•";
-        position: absolute;
-        left: 1rem;
-        color: #000000;
-        font-weight: bold;
-    }
-    
-    /* Remove default list-style from paragraphs that might inherit it */
-    .content-area p.feedback-bullet {
-        list-style: none;
-        margin-left: 0;
-    }
-    
-    /* Numbered items - same as bullet but no ::before since number is in content */
-    .content-area .feedback-numbered {
-        display: block;
-        margin: 0.4rem 0;
-        padding-left: 1.25rem;
-        line-height: 1.6;
-    }
-    
-    /* Feedback section labels */
-    .feedback-label {
-        display: block;
-        margin: 0.25rem 0 0.5rem 0;
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: var(--primary);
-    }
-    .content-area h4.feedback-label {
-        border-bottom: 1px solid rgba(37, 99, 235, 0.2);
-        padding-bottom: 0.25rem;
-        margin-left: 0;
-    }
-    
-    /* Ensure consistent alignment for all content in content-area */
-    .content-area {
-        padding-left: 0;
-    }
-    .content-area > p,
-    .content-area > div {
-        margin-left: 0;
-    }
+.severity-critical {
+  background-color: rgba(220, 38, 38, 0.12);
+  color: #dc2626;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+}
+
+.severity-high {
+  background-color: rgba(234, 88, 12, 0.12);
+  color: #ea580c;
+  border: 1px solid rgba(234, 88, 12, 0.25);
+}
+
+.severity-moderate {
+  background-color: rgba(202, 138, 4, 0.12);
+  color: #ca8a04;
+  border: 1px solid rgba(202, 138, 4, 0.25);
+}
+
+.severity-low {
+  background-color: rgba(100, 116, 139, 0.12);
+  color: #64748b;
+  border: 1px solid rgba(100, 116, 139, 0.25);
+}
+
+/* Improved content readability */
+.content-area .feedback-bullet {
+  display: block;
+  padding-left: 2rem;
+  position: relative;
+  line-height: 1.3;
+}
+
+.content-area .feedback-bullet::before {
+  content: "•";
+  position: absolute;
+  left: 1rem;
+  color: #000000;
+  font-weight: bold;
+}
+
+/* Remove default list-style from paragraphs that might inherit it */
+.content-area p.feedback-bullet {
+  list-style: none;
+  margin-left: 0;
+}
+
+/* Numbered items - same as bullet but no ::before since number is in content */
+.content-area .feedback-numbered {
+  display: block;
+  margin: 0.4rem 0;
+  padding-left: 1.25rem;
+  line-height: 1.6;
+}
+
+/* Feedback section labels */
+.feedback-label {
+  display: block;
+  margin: 0.25rem 0 0.5rem 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.content-area h4.feedback-label {
+  border-bottom: 1px solid rgba(37, 99, 235, 0.2);
+  padding-bottom: 0.25rem;
+  margin-left: 0;
+}
+
+/* Ensure consistent alignment for all content in content-area */
+.content-area {
+  padding-left: 0;
+}
+
+.content-area>p,
+.content-area>div {
+  margin-left: 0;
+}
 
 @media (max-width: 480px) {
   .main-heading {
@@ -847,7 +869,8 @@ body {
     margin-bottom: 1rem;
   }
 
-  .form-group input, .form-group select {
+  .form-group input,
+  .form-group select {
     padding: 0.6rem 0.8rem;
     font-size: 0.95rem;
   }
@@ -856,16 +879,56 @@ body {
     padding: 0.75rem 1rem;
     font-size: 0.95rem;
   }
-  .upload-icon { width: 56px; height: 56px; }
-  .upload-area h3 { font-size: 1.25rem; }
-  .upload-area p { font-size: 0.9rem; }
-  .file-icon { width: 32px; height: 32px; }
-  .file-details h4 { font-size: 0.9rem; }
-  .action-btn { padding: 0.6rem 1rem; font-size: 0.85rem; }
-  .loading-section h3 { font-size: 1.3rem; }
-  .tip-card { padding: 1rem; }
-  .tip-card h3 { font-size: 0.95rem; }
-  .tip-card p { font-size: 0.85rem; }
-  .score-circle { width: 100px; height: 100px; }
-  .score-text { font-size: 12px; }
+
+  .upload-icon {
+    width: 56px;
+    height: 56px;
+  }
+
+  .upload-area h3 {
+    font-size: 1.25rem;
+  }
+
+  .upload-area p {
+    font-size: 0.9rem;
+  }
+
+  .file-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .file-details h4 {
+    font-size: 0.9rem;
+  }
+
+  .action-btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .loading-section h3 {
+    font-size: 1.3rem;
+  }
+
+  .tip-card {
+    padding: 1rem;
+  }
+
+  .tip-card h3 {
+    font-size: 0.95rem;
+  }
+
+  .tip-card p {
+    font-size: 0.85rem;
+  }
+
+  .score-circle {
+    width: 100px;
+    height: 100px;
+  }
+
+  .score-text {
+    font-size: 12px;
+  }
 }
