@@ -607,6 +607,8 @@
         <span>Contact Us</span>
     </a>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/scripts/resource-form-collector.js"></script>
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js';
 
@@ -652,7 +654,18 @@
                 card.querySelector('.view-pdf-button').addEventListener('click', (e) => {
                     const obfuscatedUrl = e.target.dataset.obfuscated;
                     const actualUrl = deobfuscatePath(obfuscatedUrl, PDF_OBFUSCATION_KEY, PDF_OBFUSCATION_OFFSET);
-                    openPdfViewer(actualUrl, resource.title);
+                    
+                    // Use Lead Capture Form
+                    if (window.resourceFormCollector) {
+                        window.resourceFormCollector.checkAndAccess(
+                            resource.title,
+                            actualUrl,
+                            () => openPdfViewer(actualUrl, resource.title)
+                        );
+                    } else {
+                        // Fallback if collector not loaded
+                        openPdfViewer(actualUrl, resource.title);
+                    }
                 });
                 pdfResourcesList.appendChild(card);
             });
