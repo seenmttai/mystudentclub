@@ -1,4 +1,13 @@
-const PDF_URL = 'https://www.mystudentclub.com/assets/doc.pdf';
+// Parse URL parameters to get the PDF path
+const urlParams = new URLSearchParams(window.location.search);
+const paramPdf = urlParams.get('pdf');
+
+// Default or fallback (optional)
+const PDF_URL = paramPdf ? decodeURIComponent(paramPdf) : 'https://www.mystudentclub.com/assets/doc.pdf';
+
+if (!paramPdf) {
+    console.warn("No PDF specified in URL parameters, loading default.");
+}
 
 const prevButton = document.getElementById('prev-page');
 const nextButton = document.getElementById('next-page');
@@ -18,8 +27,12 @@ const searchInfo = document.getElementById('search-info');
 const gotoInput = document.getElementById('goto-input');
 const gotoBtn = document.getElementById('goto-page-btn');
 
+const zoomOutBtn = document.getElementById('zoom-out');
+const zoomInBtn = document.getElementById('zoom-in');
+
 let pdfDoc = null;
 let currentPageNum = 1;
+let scaleState = 'auto'; // 'auto' (fit width) or number (custom scale)
 let pageRendering = false;
 let pageNumPending = null;
 let searchMatches = [];
@@ -36,17 +49,28 @@ function renderPage(num) {
 
     pdfDoc.getPage(num).then(function(page) {
         const DYNAMIC_SCALE_PADDING = 0.98; 
-        let dynamicScale = 1; 
+        const viewportRaw = page.getViewport({ scale: 1 });
+        let finalScale = 1;
 
-        if (canvasContainer.clientWidth > 0) {
-            const pageWidth = page.getViewport({ scale: 1 }).width;
-            dynamicScale = (canvasContainer.clientWidth * DYNAMIC_SCALE_PADDING) / pageWidth;
+        if (scaleState === 'auto') {
+            if (canvasContainer.clientWidth > 0) {
+                finalScale = (canvasContainer.clientWidth * DYNAMIC_SCALE_PADDING) / viewportRaw.width;
+            }
+        } else {
+            finalScale = scaleState;
         }
 
-        const scale = dynamicScale * (window.devicePixelRatio || 1);
-        const viewport = page.getViewport({ scale: scale });
+        // Adjust for device pixel ratio for sharp rendering
+        const outputScale = finalScale * (window.devicePixelRatio || 1);
+        const viewport = page.getViewport({ scale: outputScale });
+        
+        // Update canvas size
         canvas.height = viewport.height;
         canvas.width = viewport.width;
+
+        // Reset display size so it matches the viewport, ensuring correct scaling on screen
+        canvas.style.width = `${viewport.width / (window.devicePixelRatio || 1)}px`;
+        canvas.style.height = `${viewport.height / (window.devicePixelRatio || 1)}px`;
 
         const renderContext = {
             canvasContext: ctx,
@@ -219,13 +243,51 @@ function onGotoPage() {
     queueRenderPage(val);
 }
 
+function onZoomIn() {
+    if (!pdfDoc) return;
+    
+    // If getting out of auto mode, calculate current fit-width scale first
+    if (scaleState === 'auto') {
+        const page = document.querySelector('.pdf-page'); // Assuming we can access page dimensions, but easier to just use container
+        // Approximate current scale based on container width
+         pdfDoc.getPage(currentPageNum).then(page => {
+             const viewport = page.getViewport({ scale: 1 });
+             const fitScale = (canvasContainer.clientWidth * 0.98) / viewport.width;
+             scaleState = fitScale * 1.2;
+             queueRenderPage(currentPageNum);
+         });
+    } else {
+        scaleState = scaleState * 1.2;
+        queueRenderPage(currentPageNum);
+    }
+}
+
+function onZoomOut() {
+    if (!pdfDoc) return;
+    
+    if (scaleState === 'auto') {
+         pdfDoc.getPage(currentPageNum).then(page => {
+             const viewport = page.getViewport({ scale: 1 });
+             const fitScale = (canvasContainer.clientWidth * 0.98) / viewport.width;
+             scaleState = fitScale / 1.2;
+             queueRenderPage(currentPageNum);
+         });
+    } else {
+        scaleState = scaleState / 1.2;
+        queueRenderPage(currentPageNum);
+    }
+}
+
 if (typeof pdfjsLib === 'undefined') {
     console.error("PDF.js library is not loaded. Check script tags.");
     alert("PDF.js library failed to load. Please check your internet connection or script configuration.");
-    pdfUpload.disabled = true;
+    // pdfUpload.disabled = true; // Not defined in this snippet
 } else {
     prevButton.addEventListener('click', onPrevPage);
     nextButton.addEventListener('click', onNextPage);
+    zoomInBtn.addEventListener('click', onZoomIn);
+    zoomOutBtn.addEventListener('click', onZoomOut);
+    
     searchInput.addEventListener('keydown', e => {
         if (e.key === 'Enter') {
             searchDocument(searchInput.value.trim());

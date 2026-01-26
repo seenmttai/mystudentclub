@@ -17,7 +17,9 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, {
 class ResourceFormCollector {
     constructor(programType) {
         this.programType = programType; // 'ca-fresher', 'industrial-training', 'articleship'
-        this.formSubmitted = new Set(); // Track submitted resources to avoid duplicate prompts
+        this.formSubmitted = new Set(); // Track session-based submissions
+        this.isGlobalSubmitted = !!sessionStorage.getItem('msc_lead_submitted'); // Check session storage (clears on browser close)
+        this.pendingCallback = null; // Callback to execute after successful submission
         this.init();
     }
 
@@ -42,6 +44,21 @@ class ResourceFormCollector {
             return 'articleship';
         }
         return 'unknown';
+    }
+
+    /**
+     * Manual access check for buttons/interactions that aren't simple links
+     * @param {string} title - Resource title
+     * @param {string} url - Resource URL or Identifier
+     * @param {Function} successCallback - Function to run on successful access/submission
+     */
+    checkAndAccess(title, url, successCallback) {
+        if (this.isGlobalSubmitted || this.formSubmitted.has(url)) {
+            successCallback();
+        } else {
+            this.pendingCallback = successCallback;
+            this.showForm(title, url, null);
+        }
     }
 
     /**
@@ -273,21 +290,14 @@ class ResourceFormCollector {
         return names[this.programType] || this.programType;
     }
 
-    /**
-     * Attach event listeners to resource links
-     */
     attachEventListeners() {
-        // Use event delegation to handle dynamically added resource links
         document.addEventListener('click', (e) => {
-            // Check if clicked element is a resource link
             let resourceLink = e.target.closest('a[href]');
             
-            // If clicked element is the link itself, use it directly
             if (!resourceLink && e.target.tagName === 'A') {
                 resourceLink = e.target;
             }
             
-            // Also check if it's a link within a resource card
             if (!resourceLink) {
                 const card = e.target.closest('.resource-card');
                 if (card) {
@@ -295,16 +305,17 @@ class ResourceFormCollector {
                 }
             }
             
-            // Check if it's a resource link that should trigger the form
             if (resourceLink && resourceLink.href && this.isResourceLink(resourceLink.href)) {
                 const resourceTitle = this.getResourceTitle(resourceLink);
                 const resourceUrl = resourceLink.href;
 
-                // Check if we should show the form
-                if (!this.formSubmitted.has(resourceUrl)) {
-                    e.preventDefault();
-                    e.stopPropagation();
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (!this.isGlobalSubmitted && !this.formSubmitted.has(resourceUrl)) {
                     this.showForm(resourceTitle, resourceUrl, resourceLink);
+                } else {
+                    this.openResource(resourceUrl);
                 }
             }
         });
@@ -335,9 +346,6 @@ class ResourceFormCollector {
         });
     }
 
-    /**
-     * Check if a URL is a resource link (Google Docs, Drive, PDF, local assets, etc.)
-     */
     isResourceLink(url) {
         if (!url) return false;
         const lowerUrl = url.toLowerCase();
@@ -368,9 +376,6 @@ class ResourceFormCollector {
         return false;
     }
 
-    /**
-     * Get resource title from link or parent element
-     */
     getResourceTitle(link) {
         // Try to find title in parent card
         const card = link.closest('.resource-card');
@@ -384,14 +389,10 @@ class ResourceFormCollector {
         if (link.title) {
             return link.title;
         }
-        // Fallback to link text or URL
         const linkText = link.textContent.trim();
         return linkText || link.href.split('/').pop() || 'Resource';
     }
 
-    /**
-     * Show the form modal
-     */
     showForm(resourceTitle, resourceUrl, originalLink) {
         const modal = document.getElementById('resourceFormModal');
         const form = document.getElementById('resourceForm');
@@ -408,6 +409,13 @@ class ResourceFormCollector {
         // Set program type
         if (programInput) {
             programInput.value = this.getProgramDisplayName();
+        }
+
+        // RESET BUTTON STATE (Fix for "still submitting" issue)
+        const submitBtn = form.querySelector('.btn-submit');
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Access Resource';
         }
 
         // Store the original link and URL for later use
@@ -486,46 +494,69 @@ class ResourceFormCollector {
             // Save to Supabase
             const { data: insertData, error } = await supabaseClient
                 .from('resource_access_logs')
-                .insert([data])
-                .select();
+                .insert([data]);
 
             if (error) {
                 console.error('Error saving resource access:', error);
                 // Check if it's a table not found error
                 if (error.message && error.message.includes('does not exist')) {
-                    console.warn('Table "resource_access_logs" does not exist. Please run the SQL script in Supabase.');
+                    // console.warn('Table "resource_access_logs" does not exist. Please run the SQL script in Supabase.');
                 }
-                // Still allow access even if save fails
             } else {
-                console.log('Resource access logged successfully:', insertData);
+                // console.log('Resource access logged successfully:', insertData);
             }
 
             // Mark as submitted
             this.formSubmitted.add(resourceUrl);
+            this.isGlobalSubmitted = true;
+            sessionStorage.setItem('msc_lead_submitted', 'true');
 
             // Hide form
             this.hideForm();
 
-            // Open the resource
-            window.open(resourceUrl, '_blank', 'noopener,noreferrer');
+            if (this.pendingCallback) {
+                this.pendingCallback();
+                this.pendingCallback = null;
+            } else {
+                this.openResource(resourceUrl);
+            }
 
         } catch (error) {
             console.error('Error submitting form:', error);
             // Still allow access even on error
             alert('There was an error saving your information, but you can still access the resource.');
             
-            // Mark as submitted to avoid repeated prompts
+            // Mark as submitted
             this.formSubmitted.add(resourceUrl);
+            this.isGlobalSubmitted = true;
+            sessionStorage.setItem('msc_lead_submitted', 'true');
             
             // Hide form and open resource
             this.hideForm();
-            window.open(resourceUrl, '_blank', 'noopener,noreferrer');
+            this.openResource(resourceUrl);
             
             // Re-enable submit button (though form is hidden)
             if (submitBtn) {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Access Resource';
             }
+        }
+    }
+
+    openResource(url) {
+        if (!url) return;
+        
+        // Check if it's a PDF (and not a Google Drive/Doc link which are already viewers)
+        const lowerUrl = url.toLowerCase();
+        const isPdf = lowerUrl.endsWith('.pdf') || (lowerUrl.includes('.pdf') && !lowerUrl.includes('drive.google.com'));
+
+        if (isPdf) {
+            // Redirect to dedicated viewer (use relative path for better compatibility)
+            const viewerUrl = `ca-resource/index.html?pdf=${encodeURIComponent(url)}`;
+            window.open(viewerUrl, '_blank', 'noopener,noreferrer');
+        } else {
+            // Open directly
+            window.open(url, '_blank', 'noopener,noreferrer');
         }
     }
 }
