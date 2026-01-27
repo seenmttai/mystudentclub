@@ -229,10 +229,10 @@ function renderJob(job, tableName) {
     container.style.display = 'block';
 
     if (applyInfo.isEmail) {
-        const aiApplyBtn = document.getElementById('aiApplyBtn');
-        if (aiApplyBtn) {
-            aiApplyBtn.addEventListener('click', () => handleAiApply(job, aiApplyBtn, tableName));
-        }
+        const aiApplyButtons = container.querySelectorAll('.btn-ai-apply');
+        aiApplyButtons.forEach(btn => {
+            btn.addEventListener('click', () => handleAiApply(job, btn, tableName));
+        });
     }
 
     const copyBtn = container.querySelector('.copy-btn');
@@ -293,7 +293,7 @@ function generateApplyButtons(applyInfo, job) {
                 <a href="${simpleMailto}" class="btn-large btn-secondary-large" id="simpleApplyBtn">
                     <i class="fas fa-envelope"></i> Simple Apply
                 </a>
-                <button class="btn-large btn-ai-apply" id="aiApplyBtn">
+                <button class="btn-large btn-ai-apply">
                     <i class="fas fa-magic"></i>
                     <span class="btn-text">AI Powered Apply</span>
                     <i class="fas fa-spinner fa-spin"></i>
