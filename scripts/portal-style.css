@@ -2042,3 +2042,107 @@ body:has(.portal-nav-bar) {
     padding-bottom: 0 !important;
   }
 }
+
+/* CV Upload Required Popup */
+.cv-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.cv-popup-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cv-popup-card {
+  background: white;
+  width: 90%;
+  max-width: 400px;
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  transform: translateY(20px);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.cv-popup-overlay.show .cv-popup-card {
+  transform: translateY(0);
+}
+
+.cv-popup-icon {
+  width: 64px;
+  height: 64px;
+  background: #EFF6FF;
+  color: var(--primary-brand);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-size: 1.5rem;
+}
+
+.cv-popup-card h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+}
+
+.cv-popup-card p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.cv-popup-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cv-popup-btn-primary {
+  background: var(--primary-brand);
+  color: white;
+  border: none;
+  padding: 0.875rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-decoration: none;
+}
+
+.cv-popup-btn-primary:hover {
+  background: var(--primary-hover);
+}
+
+.cv-popup-btn-secondary {
+  background: #F3F4F6;
+  color: var(--text-secondary);
+  border: none;
+  padding: 0.875rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cv-popup-btn-secondary:hover {
+  background: #E5E7EB;
+}
