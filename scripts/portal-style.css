@@ -2042,3 +2042,126 @@ body:has(.portal-nav-bar) {
     padding-bottom: 0 !important;
   }
 }
+
+/* Toast Notification */
+.toast-notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #333;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 11000 !important;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+    opacity: 0;
+    font-size: 0.95rem;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.toast-notification.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toast-error {
+    background: #ef4444; /* Red for errors */
+}
+
+.toast-success {
+    background: #22c55e; /* Green for success */
+}
+
+.toast-info {
+    background: #1f2937; /* Dark gray for info */
+}
+
+/* ========================================
+   Custom Scrollbar Styling
+   ======================================== */
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.filter-sidebar::-webkit-scrollbar,
+.expanded-menu::-webkit-scrollbar,
+.notification-popup::-webkit-scrollbar,
+.multi-select-options::-webkit-scrollbar,
+.job-listings-container::-webkit-scrollbar,
+#modal-body-content::-webkit-scrollbar,
+.modal-dialog::-webkit-scrollbar,
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.filter-sidebar::-webkit-scrollbar-track,
+.expanded-menu::-webkit-scrollbar-track,
+.notification-popup::-webkit-scrollbar-track,
+.multi-select-options::-webkit-scrollbar-track,
+.job-listings-container::-webkit-scrollbar-track,
+#modal-body-content::-webkit-scrollbar-track,
+.modal-dialog::-webkit-scrollbar-track,
+.modal-body::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+  margin: 4px 0;
+}
+
+.filter-sidebar::-webkit-scrollbar-thumb,
+.expanded-menu::-webkit-scrollbar-thumb,
+.notification-popup::-webkit-scrollbar-thumb,
+.multi-select-options::-webkit-scrollbar-thumb,
+.job-listings-container::-webkit-scrollbar-thumb,
+#modal-body-content::-webkit-scrollbar-thumb,
+.modal-dialog::-webkit-scrollbar-thumb,
+.modal-body::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #cbd5e1 0%, #94a3b8 100%);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+
+.filter-sidebar::-webkit-scrollbar-thumb:hover,
+.expanded-menu::-webkit-scrollbar-thumb:hover,
+.notification-popup::-webkit-scrollbar-thumb:hover,
+.multi-select-options::-webkit-scrollbar-thumb:hover,
+.job-listings-container::-webkit-scrollbar-thumb:hover,
+#modal-body-content::-webkit-scrollbar-thumb:hover,
+.modal-dialog::-webkit-scrollbar-thumb:hover,
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #94a3b8 0%, #64748b 100%);
+}
+
+.filter-sidebar::-webkit-scrollbar-thumb:active,
+.expanded-menu::-webkit-scrollbar-thumb:active,
+.notification-popup::-webkit-scrollbar-thumb:active,
+.multi-select-options::-webkit-scrollbar-thumb:active,
+.job-listings-container::-webkit-scrollbar-thumb:active,
+#modal-body-content::-webkit-scrollbar-thumb:active,
+.modal-dialog::-webkit-scrollbar-thumb:active,
+.modal-body::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #64748b 0%, #475569 100%);
+}
+
+/* Firefox */
+.filter-sidebar,
+.expanded-menu,
+.notification-popup,
+.multi-select-options,
+.job-listings-container,
+#modal-body-content,
+.modal-dialog,
+.modal-body {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}

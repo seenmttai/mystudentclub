@@ -439,3 +439,51 @@ main.container { padding-bottom: 80px; }
 main.container.no-banner {
   padding-top: 80px;
 }
+
+/* ========================================
+   Custom Scrollbar Styling
+   ======================================== */
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.modal::-webkit-scrollbar,
+.filter-container::-webkit-scrollbar,
+.job-grid::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.modal::-webkit-scrollbar-track,
+.filter-container::-webkit-scrollbar-track,
+.job-grid::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+.modal::-webkit-scrollbar-thumb,
+.filter-container::-webkit-scrollbar-thumb,
+.job-grid::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #94a3b8 0%, #64748b 100%);
+  border-radius: 10px;
+  border: 2px solid #f1f5f9;
+  transition: background 0.3s ease;
+}
+
+.modal::-webkit-scrollbar-thumb:hover,
+.filter-container::-webkit-scrollbar-thumb:hover,
+.job-grid::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #64748b 0%, #475569 100%);
+}
+
+.modal::-webkit-scrollbar-thumb:active,
+.filter-container::-webkit-scrollbar-thumb:active,
+.job-grid::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #475569 0%, #334155 100%);
+}
+
+/* Firefox */
+.modal,
+.filter-container,
+.job-grid {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
