@@ -116,6 +116,12 @@ function populateForm(profileData) {
     if (domainOtherInput && profileData.articleship_domain === 'Other') {
         domainOtherInput.style.display = 'block';
     }
+
+    // Trigger change event for job_preference to update dynamic fields
+    const jobPref = document.getElementById('job_preference');
+    if (jobPref) {
+        jobPref.dispatchEvent(new Event('change'));
+    }
 }
 
 function showFileDisplay(type, filename) {
@@ -334,6 +340,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     const user = await checkAuth();
     if (user) {
         document.getElementById('email').value = user.email;
+
+        // Job Preference Dynamic Fields Logic
+        const jobPreferenceSelect = document.getElementById('job_preference');
+        const joiningDateGroup = document.getElementById('earliest_joining_date_group');
+        const articleshipCompletionGroup = document.getElementById('articleship_completion_date_group');
+
+        function handleJobPreferenceChange() {
+            const value = jobPreferenceSelect.value;
+            if (joiningDateGroup) joiningDateGroup.style.display = 'none';
+            if (articleshipCompletionGroup) articleshipCompletionGroup.style.display = 'none';
+
+            if (value === 'industrial') {
+                if (articleshipCompletionGroup) articleshipCompletionGroup.style.display = 'block';
+            } else if (['articleship', 'fresher_fresher', 'fresher_experienced', 'semi_fresher', 'semi_experienced'].includes(value)) {
+                if (joiningDateGroup) joiningDateGroup.style.display = 'block';
+            }
+        }
+
+        if (jobPreferenceSelect) {
+            jobPreferenceSelect.addEventListener('change', handleJobPreferenceChange);
+        }
+
         loadProfile();
 
         // Handle "Other" option for Articleship Domain
@@ -402,10 +430,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (profileData.name && profileData.name.trim()) {
                     displayName = profileData.name.trim();
                 }
-            } catch (e) {}
+            } catch (e) { }
             let initial = displayName.charAt(0).toUpperCase();
             authButtonsContainer.innerHTML = `<div class="user-profile-container"><div class="user-icon-wrapper"><div class="user-icon" data-email="${user.email}">${initial}</div><div class="user-hover-card"><div class="user-hover-content"><p class="user-email">${displayName}</p><a href="/profile.html" class="profile-link-btn">Edit Profile</a><button id="logoutBtn" class="logout-btn">Logout</button></div></div></div></div>`;
-            
+
             // Add click handler for dropdown toggle
             const userIconWrapper = authButtonsContainer.querySelector('.user-icon-wrapper');
             const userHoverCard = authButtonsContainer.querySelector('.user-hover-card');
@@ -415,10 +443,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     userHoverCard.classList.toggle('show');
                 });
             }
-            
+
             document.getElementById('logoutBtn').addEventListener('click', async () => {
                 await supabaseClient.auth.signOut();
-                
+
                 localStorage.removeItem('userJobPreference');
                 localStorage.removeItem('userProfileData');
                 localStorage.removeItem('userCVFileName');
@@ -427,7 +455,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 localStorage.removeItem('subscribedTopics');
                 localStorage.removeItem('newUserSignup');
                 localStorage.removeItem('newUserEmail');
-                
+
                 const keysToRemove = [];
                 for (let i = 0; i < localStorage.length; i++) {
                     const key = localStorage.key(i);
@@ -436,7 +464,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     }
                 }
                 keysToRemove.forEach(key => localStorage.removeItem(key));
-                
+
                 window.location.href = '/login.html';
             });
         }
