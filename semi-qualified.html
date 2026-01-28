@@ -342,6 +342,26 @@
     </div>
   </div>
 
+  <!-- Profile Incomplete Modal for AI Apply -->
+  <div id="profileIncompleteModal" class="modal-overlay-container" style="display: none; z-index: 2002;">
+    <div class="modal-dialog" style="max-width: 450px;">
+      <button class="modal-close-action">×</button>
+      <div style="padding: 2rem; text-align: center;">
+        <i class="fas fa-file-pdf" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+        <h3 style="font-size: 1.35rem; font-weight: 700; color: #1f2937; margin-bottom: 0.75rem;">Your profile is incomplete</h3>
+        <p style="color: #6b7280; margin-bottom: 1.5rem; line-height: 1.6;">Please upload your CV to PDF to use <strong>AI Powered Apply</strong>.</p>
+        <a href="/profile.html" class="btn btn-primary"
+          style="width: 100%; padding: 0.875rem; font-size: 1rem; margin-bottom: 0.75rem;">
+          Go to Profile
+        </a>
+        <button id="closeProfileIncomplete"
+          style="background: none; border: none; color: #6b7280; cursor: pointer; font-size: 0.875rem; padding: 0.5rem;">
+          I'll do this later
+        </button>
+      </div>
+    </div>
+  </div>
+
   <script type="module" src="https://www.mystudentclub.com/scripts/portal3.js"></script>
   <script type="module" src="https://www.mystudentclub.com/scripts/date-utils.js"></script>
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65"></script>
