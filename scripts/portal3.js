@@ -939,7 +939,7 @@ function setupMultiSelect(container) {
 
     input.addEventListener('input', () => renderOptions(input.value));
     input.addEventListener('focus', () => renderOptions(input.value));
-    
+
     // Add Enter key handler to apply filter (similar to keyword search)
     input.addEventListener('keydown', (e) => {
         if (e.key === 'Enter') {
@@ -950,7 +950,7 @@ function setupMultiSelect(container) {
                 // Check if it's an exact match from the source list
                 const source = type === 'location' ? allLocations : (allCategories[currentTable] || []);
                 const exactMatch = source.find(item => item.toLowerCase() === filterValue.toLowerCase());
-                
+
                 if (exactMatch && !state[stateKey].includes(exactMatch)) {
                     // Use the exact match from source (preserves casing)
                     state[stateKey].push(exactMatch);
@@ -958,11 +958,11 @@ function setupMultiSelect(container) {
                     // Add as custom filter
                     state[stateKey].push(filterValue);
                 }
-                
+
                 renderPills(pillsContainer, state[stateKey], stateKey);
                 input.value = '';
                 optionsContainer.classList.remove('show');
-                
+
                 // Trigger fetch if in sidebar (not modal)
                 if (container.closest('.filter-sidebar')) {
                     resetAndFetch();
@@ -970,7 +970,7 @@ function setupMultiSelect(container) {
             }
         }
     });
-    
+
     document.addEventListener('click', (e) => {
         if (!container.contains(e.target)) optionsContainer.classList.remove('show');
     });
@@ -1157,8 +1157,7 @@ async function handleApplyClick(job, buttonElement, isAiApply = false) {
     if (isAiApply) {
         if (!currentSession) { window.location.href = '/login.html'; return; }
         if (!isProfileComplete()) {
-            const fallbackBody = generateFallbackEmail(job);
-            openMailtoLink(constructMailto(job, fallbackBody));
+            showCvUploadPopup();
             return;
         }
 
@@ -1246,7 +1245,7 @@ function constructMailto(job, body = "") {
  */
 function openMailtoLink(mailtoUrl) {
     if (!mailtoUrl || mailtoUrl === '#') return;
-    
+
     try {
         const link = document.createElement('a');
         link.href = mailtoUrl;
@@ -1266,6 +1265,47 @@ function openMailtoLink(mailtoUrl) {
         window.location.href = mailtoUrl;
     }
 }
+
+function showCvUploadPopup() {
+    // Remove existing if any
+    const existing = document.querySelector('.cv-popup-overlay');
+    if (existing) existing.remove();
+
+    const popupHtml = `
+        <div class="cv-popup-overlay">
+            <div class="cv-popup-card">
+                <div class="cv-popup-icon">
+                    <i class="fas fa-file-upload"></i>
+                </div>
+                <h3>CV Upload Required</h3>
+                <p>Please upload your CV in your profile to enable AI Powered Apply. This allows our AI to personalize your application materials.</p>
+                <div class="cv-popup-btns">
+                    <a href="/profile.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}" class="cv-popup-btn-primary">Upload CV Now</a>
+                    <button class="cv-popup-btn-secondary" id="closeCvPopup">Maybe Later</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', popupHtml);
+
+    // Trigger animation
+    const overlay = document.querySelector('.cv-popup-overlay');
+    setTimeout(() => overlay.classList.add('show'), 10);
+
+    // Close logic
+    const closeBtn = document.getElementById('closeCvPopup');
+    const closePopup = () => {
+        overlay.classList.remove('show');
+        setTimeout(() => overlay.remove(), 300);
+    };
+
+    closeBtn.addEventListener('click', closePopup);
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closePopup();
+    });
+}
+
 
 function getApplicationLink(id, companyName = 'the company') {
     if (!id) return '#';

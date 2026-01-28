@@ -231,10 +231,10 @@ function renderJob(job, tableName) {
     container.style.display = 'block';
 
     if (applyInfo.isEmail) {
-        const aiApplyBtn = document.getElementById('aiApplyBtn');
-        if (aiApplyBtn) {
-            aiApplyBtn.addEventListener('click', () => handleAiApply(job, aiApplyBtn, tableName));
-        }
+        const aiApplyButtons = container.querySelectorAll('.btn-ai-apply');
+        aiApplyButtons.forEach(btn => {
+            btn.addEventListener('click', () => handleAiApply(job, btn, tableName));
+        });
     }
 
     const copyBtn = container.querySelector('.copy-btn');
@@ -295,7 +295,7 @@ function generateApplyButtons(applyInfo, job) {
                 <a href="${simpleMailto}" class="btn-large btn-secondary-large" id="simpleApplyBtn">
                     <i class="fas fa-envelope"></i> Simple Apply
                 </a>
-                <button class="btn-large btn-ai-apply" id="aiApplyBtn">
+                <button class="btn-large btn-ai-apply">
                     <i class="fas fa-magic"></i>
                     <span class="btn-text">AI Powered Apply</span>
                     <i class="fas fa-spinner fa-spin"></i>
@@ -373,7 +373,48 @@ function formatDescription(text) {
     return text.replace(/\n/g, '<br>');
 }
 
+function showCvUploadPopup() {
+    // Remove existing if any
+    const existing = document.querySelector('.cv-popup-overlay');
+    if (existing) existing.remove();
+
+    const popupHtml = `
+        <div class="cv-popup-overlay">
+            <div class="cv-popup-card">
+                <div class="cv-popup-icon">
+                    <i class="fas fa-file-upload"></i>
+                </div>
+                <h3>CV Upload Required</h3>
+                <p>Please upload your CV in your profile to enable AI Powered Apply. This allows our AI to personalize your application materials.</p>
+                <div class="cv-popup-btns">
+                    <a href="/profile.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}" class="cv-popup-btn-primary">Upload CV Now</a>
+                    <button class="cv-popup-btn-secondary" id="closeCvPopup">Maybe Later</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', popupHtml);
+
+    // Trigger animation
+    const overlay = document.querySelector('.cv-popup-overlay');
+    setTimeout(() => overlay.classList.add('show'), 10);
+
+    // Close logic
+    const closeBtn = document.getElementById('closeCvPopup');
+    const closePopup = () => {
+        overlay.classList.remove('show');
+        setTimeout(() => overlay.remove(), 300);
+    };
+
+    closeBtn.addEventListener('click', closePopup);
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closePopup();
+    });
+}
+
 function showError(msg) {
+
     const loadingState = document.getElementById('loadingState');
     loadingState.innerHTML = `<div style="text-align:center; padding: 2rem; color: #ef4444;">
         <i class="fas fa-exclamation-circle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
