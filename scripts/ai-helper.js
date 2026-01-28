@@ -178,18 +178,28 @@ export function showToast(message, type = 'info') {
  * Shows a modal redirecting the user to the profile page.
  */
 export function showResumeRedirectModal() {
-    // Check if we can reuse the existing #resumePromptModal in index.html
-    const existingModal = document.getElementById('resumePromptModal');
+    // Check if we can use the existing #profileIncompleteModal in index.html
+    const profileModal = document.getElementById('profileIncompleteModal');
     
-    if (existingModal) {
+    if (profileModal) {
         // Reuse existing modal
-        existingModal.style.display = 'flex';
+        profileModal.style.display = 'flex';
         
         // Ensure the "I'll do this later" button closes it
-        const skipBtn = existingModal.querySelector('#skipResumePrompt');
-        if (skipBtn) {
-            skipBtn.onclick = () => { existingModal.style.display = 'none'; };
+        const closeBtn = profileModal.querySelector('#closeProfileIncomplete');
+        const modalCloseAction = profileModal.querySelector('.modal-close-action');
+        
+        if (closeBtn) {
+            closeBtn.onclick = () => { profileModal.style.display = 'none'; };
         }
+        if (modalCloseAction) {
+            modalCloseAction.onclick = () => { profileModal.style.display = 'none'; };
+        }
+        
+        // Close on overlay click
+        profileModal.onclick = (e) => { 
+            if (e.target === profileModal) profileModal.style.display = 'none'; 
+        };
         return;
     }
 
@@ -205,12 +215,12 @@ export function showResumeRedirectModal() {
                 <button class="modal-close-action">×</button>
                  <div style="padding: 2rem; text-align: center;">
                     <i class="fas fa-file-pdf" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
-                    <h3>Resume Required</h3>
+                    <h3>Your profile is incomplete</h3>
                     <p style="margin: 1rem 0; color: #6b7280;">
-                        To use <strong>AI Powered Apply</strong>, we need your resume to generate a personalized email.
+                        Please upload your CV to PDF to use <strong>AI Powered Apply</strong>.
                     </p>
                     <a href="/profile.html?redirect=${encodeURIComponent(window.location.href)}" class="btn btn-primary" style="width: 100%;">
-                        Upload Resume in Profile
+                        Go to Profile
                     </a>
                 </div>
             </div>
