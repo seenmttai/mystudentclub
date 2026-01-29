@@ -120,7 +120,7 @@ const state = {
     categories: [],
     salary: '',
     experience: '',
-    sortBy: 'popular',
+    sortBy: 'newest',
     applicationStatus: 'all'
 };
 
@@ -198,7 +198,6 @@ function renderJobCard(job) {
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     const isApplied = appliedJobIds.has(job.id);
-    const isPopular = (job.application_count || 0) > 50;
     const buttonText = isApplied ? 'Applied' : 'View Details';
     const buttonClass = isApplied ? 'applied' : '';
     const applyLink = getApplicationLink(job['Application ID']);
@@ -211,7 +210,6 @@ function renderJobCard(job) {
                 <h3 class="job-card-company">${job.Company || 'N/A'}</h3>
                 <p class="job-card-posted">Posted ${postedDate}</p>
             </div>
-                ${isPopular ? `<span class="job-tag" style="background-color: #fef3c7; color: #d97706; border: 1px solid #fcd34d;">Popular</span>` : ''}
                 <span class="job-tag">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     ${job.Location || 'N/A'}
