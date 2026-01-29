@@ -25,35 +25,35 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
 
     try {
         const emailBody = await generateEmailBody(job, tableName);
-        
+
         // Construct mailto with AI body
         const rawLink = job['Application ID'];
         const emailMatch = rawLink.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
         const email = emailMatch ? emailMatch[0] : '';
         const subject = simpleMailtoLink.split('subject=')[1]?.split('&')[0] || `Application for ${job.Category} (Ref: My Student Club)`;
-        
+
         const aiMailto = `mailto:${email}?subject=${subject}&body=${encodeURIComponent(emailBody)}`;
-        
+
         await recordApplication(job, btnElement);
         window.open(aiMailto, '_blank');
-        
+
     } catch (error) {
         console.error("AI Apply Failed:", error);
         showToast("Server busy, reverting to simple apply", "error");
-        
+
         // Use the existing logic for getting the email and subject
         const rawLink = job['Application ID'];
         const emailMatch = rawLink.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
         const email = emailMatch ? emailMatch[0] : '';
         const subject = simpleMailtoLink.split('subject=')[1]?.split('&')[0] || `Application for ${job.Category} (Ref: My Student Club)`;
-        
+
         // Revert to simple apply (no body, or just standard subject)
         const simpleMailto = `mailto:${email}?subject=${subject}`;
-        
+
         await recordApplication(job, btnElement);
         // Delay to let the toast be seen/processed
         setTimeout(() => {
-             window.open(simpleMailto, '_blank');
+            window.open(simpleMailto, '_blank');
         }, 3000);
     } finally {
         // Reset button state
@@ -198,7 +198,7 @@ function renderJobCard(job) {
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     const isApplied = appliedJobIds.has(job.id);
-    const isPopular = (job.application_count || 0) > 10;
+    const isPopular = (job.application_count || 0) > 50;
     const buttonText = isApplied ? 'Applied' : 'View Details';
     const buttonClass = isApplied ? 'applied' : '';
     const applyLink = getApplicationLink(job['Application ID']);
@@ -361,7 +361,7 @@ async function recordApplication(job, btnElement) {
 
     const originalText = btnElement.innerHTML;
     btnElement.innerHTML = '<div class="loader-spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>';
-    
+
     try {
         const { error } = await supabaseClient
             .from('job_applications')
@@ -383,13 +383,13 @@ async function recordApplication(job, btnElement) {
             appliedJobIds.add(job.id);
             // Update local count if possible for immediate feedback (optional)
         }
-        
+
         btnElement.classList.add('applied');
         btnElement.innerHTML = `
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg>
             Applied
         `;
-        return true; 
+        return true;
     } catch (e) {
         console.error('Application exception:', e);
         btnElement.innerHTML = originalText;
@@ -699,7 +699,7 @@ async function fetchJobs() {
         if (state.sortBy === 'salary_asc') { sortCol = 'Salary'; isAsc = true; }
         else if (state.sortBy === 'salary_desc') { sortCol = 'Salary'; isAsc = false; }
         // For 'popular' (default) and 'newest', we fetch by Created_At DESC from DB to get latest batch
-        
+
         query = query.order(sortCol, {
             ascending: isAsc,
             nullsFirst: false
