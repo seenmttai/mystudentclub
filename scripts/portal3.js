@@ -1,4 +1,68 @@
 import { getDaysAgo } from './date-utils.js';
+import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
+
+async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) {
+    if (!currentSession) {
+        window.location.href = '/login.html';
+        return;
+    }
+
+    if (!isProfileComplete()) {
+        showResumeRedirectModal();
+        return;
+    }
+
+    const btnText = btnElement.querySelector('.btn-text');
+    const spinner = btnElement.querySelector('.fa-spinner');
+    const originalText = btnText.textContent;
+    const originalPointerEvents = btnElement.style.pointerEvents;
+
+    // Show loading state
+    btnElement.classList.add('loading');
+    btnText.textContent = 'Preparing...';
+    if (spinner) spinner.style.display = 'inline-block';
+    btnElement.style.pointerEvents = 'none';
+
+    try {
+        const emailBody = await generateEmailBody(job, tableName);
+        
+        // Construct mailto with AI body
+        const rawLink = job['Application ID'];
+        const emailMatch = rawLink.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+        const email = emailMatch ? emailMatch[0] : '';
+        const subject = simpleMailtoLink.split('subject=')[1]?.split('&')[0] || `Application for ${job.Category} (Ref: My Student Club)`;
+        
+        const aiMailto = `mailto:${email}?subject=${subject}&body=${encodeURIComponent(emailBody)}`;
+        
+        await recordApplication(job, btnElement);
+        window.open(aiMailto, '_blank');
+        
+    } catch (error) {
+        console.error("AI Apply Failed:", error);
+        showToast("Server busy, reverting to simple apply", "error");
+        
+        // Use the existing logic for getting the email and subject
+        const rawLink = job['Application ID'];
+        const emailMatch = rawLink.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+        const email = emailMatch ? emailMatch[0] : '';
+        const subject = simpleMailtoLink.split('subject=')[1]?.split('&')[0] || `Application for ${job.Category} (Ref: My Student Club)`;
+        
+        // Revert to simple apply (no body, or just standard subject)
+        const simpleMailto = `mailto:${email}?subject=${subject}`;
+        
+        await recordApplication(job, btnElement);
+        // Delay to let the toast be seen/processed
+        setTimeout(() => {
+             window.open(simpleMailto, '_blank');
+        }, 3000);
+    } finally {
+        // Reset button state
+        btnElement.classList.remove('loading');
+        btnText.textContent = originalText;
+        if (spinner) spinner.style.display = 'none';
+        btnElement.style.pointerEvents = originalPointerEvents;
+    }
+}
 
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
@@ -56,7 +120,7 @@ const state = {
     categories: [],
     salary: '',
     experience: '',
-    sortBy: 'newest',
+    sortBy: 'popular',
     applicationStatus: 'all'
 };
 
@@ -134,6 +198,7 @@ function renderJobCard(job) {
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     const isApplied = appliedJobIds.has(job.id);
+    const isPopular = (job.application_count || 0) > 10;
     const buttonText = isApplied ? 'Applied' : 'View Details';
     const buttonClass = isApplied ? 'applied' : '';
     const applyLink = getApplicationLink(job['Application ID']);
@@ -146,6 +211,7 @@ function renderJobCard(job) {
                 <h3 class="job-card-company">${job.Company || 'N/A'}</h3>
                 <p class="job-card-posted">Posted ${postedDate}</p>
             </div>
+                ${isPopular ? `<span class="job-tag" style="background-color: #fef3c7; color: #d97706; border: 1px solid #fcd34d;">Popular</span>` : ''}
                 <span class="job-tag">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     ${job.Location || 'N/A'}
@@ -290,10 +356,52 @@ function checkConnectLink(job) {
     return null;
 }
 
+async function recordApplication(job, btnElement) {
+    if (!currentSession) return true; // Allow default navigation if not logged in
+
+    const originalText = btnElement.innerHTML;
+    btnElement.innerHTML = '<div class="loader-spinner" style="width: 20px; height: 20px; border-width: 2px;"></div>';
+    
+    try {
+        const { error } = await supabaseClient
+            .from('job_applications')
+            .insert({
+                user_id: currentSession.user.id,
+                job_id: job.id,
+                job_table: currentTable,
+                applied_at: new Date().toISOString()
+            });
+
+        if (error) {
+            if (error.code === '23505') { // Unique violation (already applied)
+                // Just proceed
+            } else {
+                console.error('Error recording application:', error);
+            }
+        } else {
+            // Success
+            appliedJobIds.add(job.id);
+            // Update local count if possible for immediate feedback (optional)
+        }
+        
+        btnElement.classList.add('applied');
+        btnElement.innerHTML = `
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg>
+            Applied
+        `;
+        return true; 
+    } catch (e) {
+        console.error('Application exception:', e);
+        btnElement.innerHTML = originalText;
+        return true; // Still allow navigation
+    }
+}
+
 function showModal(job) {
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
+    const applyCount = job.application_count || 0;
     const applyLink = getApplicationLink(job['Application ID'], job.Company);
     const isMailto = applyLink.startsWith('mailto:');
     const isApplied = appliedJobIds.has(job.id);
@@ -371,6 +479,7 @@ function showModal(job) {
             </div>
         </div>
         <div class="modal-meta-tags">
+            ${(job.application_count || 0) > 0 ? `<span class="job-tag" style="background-color: #fee2e2; color: #dc2626;">🔥 ${job.application_count} applicants</span>` : ''}
             ${job.Salary ? `<span class="job-tag">${(currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
             <span class="job-tag">Posted: ${postedDate}</span>
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
@@ -395,10 +504,37 @@ function showModal(job) {
     document.body.style.overflow = 'hidden';
 
     if (isMailto) {
-        document.getElementById('modalSimpleApplyBtn').addEventListener('click', (e) => handleApplyClick(job, e.currentTarget, false));
-        document.getElementById('modalAiApplyBtn').addEventListener('click', (e) => handleApplyClick(job, e.currentTarget, true));
+        const modalSimpleApplyBtn = document.getElementById('modalSimpleApplyBtn');
+        const modalAiApplyBtn = document.getElementById('modalAiApplyBtn');
+
+        if (modalSimpleApplyBtn) {
+            modalSimpleApplyBtn.addEventListener('click', async (e) => {
+                e.preventDefault(); // Prevent default mailto behavior initially
+                const shouldProceed = await recordApplication(job, e.currentTarget);
+                if (shouldProceed) {
+                    window.open(applyLink, '_blank'); // Open mailto link
+                }
+            });
+        }
+        if (modalAiApplyBtn) {
+            // Import the helper dynamically or assume it's available via module
+            // Since this is a module, we should import at top, but for inline replacement:
+            modalAiApplyBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                await handleAiApplyClick(job, e.currentTarget, currentTable, applyLink);
+            });
+        }
     } else {
-        document.getElementById('modalExternalApplyBtn').addEventListener('click', (e) => handleApplyClick(job, e.currentTarget));
+        const modalExternalApplyBtn = document.getElementById('modalExternalApplyBtn');
+        if (modalExternalApplyBtn) {
+            modalExternalApplyBtn.addEventListener('click', async (e) => {
+                e.preventDefault(); // Prevent default navigation initially
+                const shouldProceed = await recordApplication(job, e.currentTarget);
+                if (shouldProceed) {
+                    window.open(applyLink, '_blank'); // Open external link
+                }
+            });
+        }
     }
 
     // Attach copy button event listeners (multiple buttons for comma-separated links)
@@ -493,7 +629,7 @@ async function fetchJobs() {
     // if (dom.loadMoreButton) dom.loadMoreButton.style.display = 'none'; // Removed
 
     try {
-        let selectColumns = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID"';
+        let selectColumns = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID", application_count';
         if (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs") {
             selectColumns += ', Experience';
         }
@@ -557,15 +693,24 @@ async function fetchJobs() {
             query = query.not('id', 'in', tupleString);
         }
 
-        const [sortCol, sortDir] = state.sortBy.split('_');
-        const isAsc = sortDir === 'asc';
-        query = query.order(sortCol === 'newest' ? 'Created_At' : 'Salary', {
+        let sortCol = 'Created_At';
+        let isAsc = false;
+
+        if (state.sortBy === 'salary_asc') { sortCol = 'Salary'; isAsc = true; }
+        else if (state.sortBy === 'salary_desc') { sortCol = 'Salary'; isAsc = false; }
+        // For 'popular' (default) and 'newest', we fetch by Created_At DESC from DB to get latest batch
+        
+        query = query.order(sortCol, {
             ascending: isAsc,
             nullsFirst: false
         }).order('id', { ascending: false });
 
         query = query.range(page * limit, (page + 1) * limit - 1);
-        const { data, error } = await query;
+        let { data, error } = await query;
+
+        if (!error && data && state.sortBy === 'popular') {
+            data.sort((a, b) => (b.application_count || 0) - (a.application_count || 0));
+        }
 
         if (error) throw error;
 
@@ -1003,14 +1148,7 @@ async function checkUserEnrollment() {
     } catch (error) { lmsNavLink.style.display = 'none'; }
 }
 
-function isProfileComplete() {
-    try {
-        const images = JSON.parse(localStorage.getItem('userCVImages') || '[]');
-        return Array.isArray(images) && images.length > 0;
-    } catch (e) {
-        return false;
-    }
-}
+
 
 async function handleApplyClick(job, buttonElement, isAiApply = false) {
 
@@ -1087,31 +1225,7 @@ async function markJobAsApplied(job) {
     }
 }
 
-async function generateEmailBody(profileData, cvImages, job) {
-    const workerUrl = 'https://emailgenerator.bhansalimanan55.workers.dev/';
-    try {
-        const response = await fetch(workerUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                images: cvImages,
-                profile_data: profileData,
-                job_details: {
-                    company_name: job.Company,
-                    job_description: job.Description,
-                    job_location: job.Location,
-                    job_title: JOB_TITLE_MAP[currentTable] || 'the role'
-                }
-            })
-        });
-        if (!response.ok) throw new Error(`AI worker responded with status: ${response.status}`);
-        const data = await response.json();
-        return data.email_body || "";
-    } catch (error) {
-        console.error('generateEmailBody error:', error);
-        return "";
-    }
-}
+
 
 function constructMailto(job, body = "") {
     const rawLink = job['Application ID'];
@@ -1209,23 +1323,23 @@ function getApplicationLink(id, companyName = 'the company') {
     return `https://www.google.com/search?q=${encodeURIComponent(trimmedId + ' careers')}`;
 }
 
-function generateFallbackEmail(job) {
-    return `Dear Hiring Manager,
+// function generateFallbackEmail(job) {
+//     return `Dear Hiring Manager,
 
-I am writing to express my interest in the ${job.Category || 'Articleship'} position at ${job.Company}.
+// I am writing to express my interest in the ${job.Category || 'Articleship'} position at ${job.Company}.
 
-With my academic background and passion for the field, I am confident that I would be a valuable addition to your team.
+// With my academic background and passion for the field, I am confident that I would be a valuable addition to your team.
 
-I have attached my resume for your review. I would welcome the opportunity to discuss how my skills can contribute to your organization's success.
+// I have attached my resume for your review. I would welcome the opportunity to discuss how my skills can contribute to your organization's success.
 
-Thank you for considering my application.
+// Thank you for considering my application.
 
-Best regards,
-[Your Name]
+// Best regards,
+// [Your Name]
 
----
-Application submitted via My Student Club`;
-}
+// ---
+// Application submitted via My Student Club`;
+// }
 
 async function loadBanners() {
     const carousel = document.querySelector('.carousel');
@@ -1458,7 +1572,30 @@ async function initializeUserFeatures() {
     }
 }
 
+function updateSortOptions() {
+    ['sortBySelect', 'sortBySelectMobile'].forEach(id => {
+        const select = document.getElementById(id);
+        if (select) {
+            // Check if options already exist to avoid duplicates
+            if (!select.querySelector('option[value="popular"]')) {
+                const popularOpt = document.createElement('option');
+                popularOpt.value = 'popular';
+                popularOpt.textContent = 'Sort by Trending';
+                select.insertBefore(popularOpt, select.firstChild);
+            }
+            // Rename 'newest' to 'Sort by Last Created' or Update text
+            const newestOpt = select.querySelector('option[value="newest"]');
+            if (newestOpt) {
+                newestOpt.textContent = 'Sort by Last Created';
+            }
+            // Ensure default is popular
+            if (select.value === 'newest') select.value = 'popular';
+        }
+    });
+}
+
 function setupEventListeners() {
+    updateSortOptions();
     dom.modalOverlay.addEventListener('click', (e) => { if (e.target === dom.modalOverlay) closeModal(); });
     dom.modalCloseBtn.addEventListener('click', closeModal);
     // dom.loadMoreButton.addEventListener('click', () => fetchJobs()); // Removed

@@ -1,4 +1,6 @@
+
 import { getDaysAgo } from './date-utils.js';
+import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
@@ -287,7 +289,7 @@ let currentTableName = 'Industrial Training Job Portal';
 
 function generateApplyButtons(applyInfo, job) {
     if (applyInfo.isEmail) {
-        const simpleMailto = constructMailto(job, currentTableName, generateFallbackEmail(job));
+        const simpleMailto = constructMailto(job, currentTableName, generateFallbackEmail(job, currentTableName));
         return `
             <div class="email-apply-buttons">
                 <a href="${simpleMailto}" class="btn-large btn-secondary-large" id="simpleApplyBtn">
@@ -306,15 +308,6 @@ function generateApplyButtons(applyInfo, job) {
                 <i class="fas fa-external-link-alt"></i> Apply Now
             </a>
         `;
-    }
-}
-
-function isProfileComplete() {
-    try {
-        const images = JSON.parse(localStorage.getItem('userCVImages') || '[]');
-        return Array.isArray(images) && images.length > 0;
-    } catch (e) {
-        return false;
     }
 }
 
@@ -339,7 +332,7 @@ async function handleAiApply(job, buttonElement, tableName) {
     }
 
     if (!isProfileComplete()) {
-        showCvUploadPopup();
+        showResumeRedirectModal();
         return;
     }
 
@@ -349,76 +342,24 @@ async function handleAiApply(job, buttonElement, tableName) {
     buttonElement.disabled = true;
 
     try {
-        const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
-        const cvImages = JSON.parse(localStorage.getItem('userCVImages') || '[]');
-
-        const emailBody = await generateEmailBody(profileData, cvImages, job, tableName);
-
+        const emailBody = await generateEmailBody(job, tableName);
         window.location.href = constructMailto(job, tableName, emailBody);
     } catch (e) {
         console.error('AI Apply error:', e);
-        const fallbackBody = generateFallbackEmail(job);
-        window.location.href = constructMailto(job, tableName, fallbackBody);
+        showToast("Server busy, reverting to simple apply", "error");
+        
+        // Use timeout to allow toast to render before opening mailto (which might block UI thread briefly)
+        setTimeout(() => {
+             // Revert to simple apply (no body)
+            window.location.href = constructMailto(job, tableName, "");
+        }, 3000);
+        
     } finally {
         buttonElement.classList.remove('loading');
         btnText.textContent = originalText;
         if (spinner) spinner.style.display = 'none';
         buttonElement.disabled = false;
     }
-}
-
-async function generateEmailBody(profileData, cvImages, job, tableName) {
-    const workerUrl = 'https://emailgenerator.bhansalimanan55.workers.dev/';
-    try {
-        const response = await fetch(workerUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                images: cvImages,
-                profile_data: profileData,
-                job_details: {
-                    company_name: job.Company,
-                    job_description: job.Description,
-                    job_location: job.Location,
-                    job_title: JOB_TITLE_MAP[tableName] || job.Category || 'the role'
-                }
-            })
-        });
-
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`AI worker responded with status: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        if (data.email_body && data.email_body.trim() !== '') {
-            return data.email_body;
-        } else {
-            return generateFallbackEmail(job);
-        }
-    } catch (error) {
-        console.error('generateEmailBody error:', error);
-        return generateFallbackEmail(job);
-    }
-}
-
-function generateFallbackEmail(job) {
-    return `Dear Hiring Manager,
-
-I am writing to express my interest in the ${job.Category || 'Articleship'} position at ${job.Company}.
-
-With my academic background and passion for the field, I am confident that I would be a valuable addition to your team.
-
-I have attached my resume for your review. I would welcome the opportunity to discuss how my skills can contribute to your organization's success.
-
-Thank you for considering my application.
-
-Best regards,
-[Your Name]
-
----
-Application submitted via My Student Club`;
 }
 
 function checkConnectLink(job) {
@@ -480,7 +421,7 @@ function showError(msg) {
         <h3>Error</h3>
         <p>${msg}</p>
         <a href="/" class="btn-large btn-secondary-large" style="margin-top: 1rem; display: inline-flex; width: auto;">Go Home</a>
-    </div>`;
+        </div>`;
 }
 
 init();

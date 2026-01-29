@@ -2043,106 +2043,125 @@ body:has(.portal-nav-bar) {
   }
 }
 
-/* CV Upload Required Popup */
-.cv-popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 2000;
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease;
+/* Toast Notification */
+.toast-notification {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: #333;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 11000 !important;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+    opacity: 0;
+    font-size: 0.95rem;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Poppins', sans-serif;
 }
 
-.cv-popup-overlay.show {
-  opacity: 1;
-  visibility: visible;
+.toast-notification.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
 }
 
-.cv-popup-card {
-  background: white;
-  width: 90%;
-  max-width: 400px;
-  border-radius: var(--radius-xl);
-  padding: 2rem;
-  text-align: center;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-  transform: translateY(20px);
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.cv-popup-overlay.show .cv-popup-card {
-  transform: translateY(0);
+.toast-error {
+    background: #ef4444; /* Red for errors */
 }
 
-.cv-popup-icon {
-  width: 64px;
-  height: 64px;
-  background: #EFF6FF;
-  color: var(--primary-brand);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-  font-size: 1.5rem;
+.toast-success {
+    background: #22c55e; /* Green for success */
 }
 
-.cv-popup-card h3 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-  color: var(--text-primary);
+.toast-info {
+    background: #1f2937; /* Dark gray for info */
 }
 
-.cv-popup-card p {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin-bottom: 1.5rem;
+/* ========================================
+   Custom Scrollbar Styling
+   ======================================== */
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+.filter-sidebar::-webkit-scrollbar,
+.expanded-menu::-webkit-scrollbar,
+.notification-popup::-webkit-scrollbar,
+.multi-select-options::-webkit-scrollbar,
+.job-listings-container::-webkit-scrollbar,
+#modal-body-content::-webkit-scrollbar,
+.modal-dialog::-webkit-scrollbar,
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-.cv-popup-btns {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
+.filter-sidebar::-webkit-scrollbar-track,
+.expanded-menu::-webkit-scrollbar-track,
+.notification-popup::-webkit-scrollbar-track,
+.multi-select-options::-webkit-scrollbar-track,
+.job-listings-container::-webkit-scrollbar-track,
+#modal-body-content::-webkit-scrollbar-track,
+.modal-dialog::-webkit-scrollbar-track,
+.modal-body::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+  margin: 4px 0;
 }
 
-.cv-popup-btn-primary {
-  background: var(--primary-brand);
-  color: white;
-  border: none;
-  padding: 0.875rem;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-  text-decoration: none;
+.filter-sidebar::-webkit-scrollbar-thumb,
+.expanded-menu::-webkit-scrollbar-thumb,
+.notification-popup::-webkit-scrollbar-thumb,
+.multi-select-options::-webkit-scrollbar-thumb,
+.job-listings-container::-webkit-scrollbar-thumb,
+#modal-body-content::-webkit-scrollbar-thumb,
+.modal-dialog::-webkit-scrollbar-thumb,
+.modal-body::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #cbd5e1 0%, #94a3b8 100%);
+  border-radius: 10px;
+  transition: background 0.3s ease;
 }
 
-.cv-popup-btn-primary:hover {
-  background: var(--primary-hover);
+.filter-sidebar::-webkit-scrollbar-thumb:hover,
+.expanded-menu::-webkit-scrollbar-thumb:hover,
+.notification-popup::-webkit-scrollbar-thumb:hover,
+.multi-select-options::-webkit-scrollbar-thumb:hover,
+.job-listings-container::-webkit-scrollbar-thumb:hover,
+#modal-body-content::-webkit-scrollbar-thumb:hover,
+.modal-dialog::-webkit-scrollbar-thumb:hover,
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #94a3b8 0%, #64748b 100%);
 }
 
-.cv-popup-btn-secondary {
-  background: #F3F4F6;
-  color: var(--text-secondary);
-  border: none;
-  padding: 0.875rem;
-  border-radius: var(--radius-md);
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
+.filter-sidebar::-webkit-scrollbar-thumb:active,
+.expanded-menu::-webkit-scrollbar-thumb:active,
+.notification-popup::-webkit-scrollbar-thumb:active,
+.multi-select-options::-webkit-scrollbar-thumb:active,
+.job-listings-container::-webkit-scrollbar-thumb:active,
+#modal-body-content::-webkit-scrollbar-thumb:active,
+.modal-dialog::-webkit-scrollbar-thumb:active,
+.modal-body::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #64748b 0%, #475569 100%);
 }
 
-.cv-popup-btn-secondary:hover {
-  background: #E5E7EB;
+/* Firefox */
+.filter-sidebar,
+.expanded-menu,
+.notification-popup,
+.multi-select-options,
+.job-listings-container,
+#modal-body-content,
+.modal-dialog,
+.modal-body {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
 }

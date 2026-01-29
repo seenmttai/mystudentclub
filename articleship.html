@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="scripts/portal-style.css">
+  <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
   <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
   <link rel="canonical" href="https://www.mystudentclub.com/articleship.html" />
   <meta name="robots" content="index, follow">
@@ -338,6 +338,26 @@
           <button class="pref-option-btn" data-preference="semi_experienced" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 0.75rem; border: 2px solid #e5e7eb; border-radius: 10px; background: white; cursor: pointer; transition: all 0.2s; text-align: left;"><div style="width: 32px; height: 32px; min-width: 32px; background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div><div style="font-weight: 600; font-size: 0.9rem; color: #1f2937;">Semi Qualified (Experienced)</div></button>
         </div>
         <p style="text-align: center; margin-top: 0.75rem; font-size: 0.7rem; color: #9ca3af;">You can change this later from your profile</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Incomplete Modal for AI Apply -->
+  <div id="profileIncompleteModal" class="modal-overlay-container" style="display: none; z-index: 2002;">
+    <div class="modal-dialog" style="max-width: 450px;">
+      <button class="modal-close-action">×</button>
+      <div style="padding: 2rem; text-align: center;">
+        <i class="fas fa-file-pdf" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
+        <h3 style="font-size: 1.35rem; font-weight: 700; color: #1f2937; margin-bottom: 0.75rem;">Your profile is incomplete</h3>
+        <p style="color: #6b7280; margin-bottom: 1.5rem; line-height: 1.6;">Please upload your CV to PDF to use <strong>AI Powered Apply</strong>.</p>
+        <a href="/profile.html" class="btn btn-primary"
+          style="width: 100%; padding: 0.875rem; font-size: 1rem; margin-bottom: 0.75rem;">
+          Go to Profile
+        </a>
+        <button id="closeProfileIncomplete"
+          style="background: none; border: none; color: #6b7280; cursor: pointer; font-size: 0.875rem; padding: 0.5rem;">
+          I'll do this later
+        </button>
       </div>
     </div>
   </div>
