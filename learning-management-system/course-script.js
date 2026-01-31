@@ -387,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 DOMElements.coursePageContent.style.display = 'block';
                 DOMElements.footer.style.display = 'block';
                 await loadCourseVideos();
-                checkAndShowCVPopup();
+
             }
         } catch (error) {
             state.isEnrolled = false;
@@ -397,28 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const checkAndShowCVPopup = () => {
-        if (state.courseSlug !== 'industrial-training-mastery') return;
-        const dismissedKey = `cvReviewPopupDismissed_${state.courseSlug}`;
-        const isDismissed = localStorage.getItem(dismissedKey);
-        if (!isDismissed) {
-            const cvPopup = document.getElementById('cv-review-popup');
-            if (cvPopup) {
-                setTimeout(() => {
-                    cvPopup.classList.add('active');
-                }, 1000);
-            }
-        }
-    };
 
-    const dismissCVPopup = () => {
-        const cvPopup = document.getElementById('cv-review-popup');
-        if (cvPopup) {
-            cvPopup.classList.remove('active');
-            const dismissedKey = `cvReviewPopupDismissed_${state.courseSlug}`;
-            localStorage.setItem(dismissedKey, 'true');
-        }
-    };
 
     const checkAuth = async () => {
         const { data: { session } } = await supabase.auth.getSession();
@@ -1028,10 +1007,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = 'https://www.mystudentclub.com/login';
         });
 
-        const cvDismissBtn = document.getElementById('cv-popup-dismiss-btn');
-        if (cvDismissBtn) {
-            cvDismissBtn.addEventListener('click', dismissCVPopup);
-        }
+
         DOMElements.enrollRedirectBtn.addEventListener('click', () => {
             window.location.href = 'https://www.mystudentclub.com/login';
         });
