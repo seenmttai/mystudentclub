@@ -57,24 +57,7 @@
       transform: translateY(-2px);
     }
 
-    .btn-whatsapp {
-      background-color: #10b981;
-      color: white;
-      transition: all 0.3s ease;
-      display: block;
-      text-align: center;
-      text-decoration: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 0.5rem;
-      font-weight: 600;
-      font-size: 1.125rem;
-      margin-bottom: 1rem;
-    }
 
-    .btn-whatsapp:hover {
-      background-color: #059669;
-      transform: translateY(-2px);
-    }
 
     .credentials-box {
       display: none;
@@ -114,52 +97,7 @@
       margin-top: 1rem;
     }
 
-    .date-selector {
-      background-color: #f0f9ff;
-      border: 1px solid #bae6fd;
-      border-left: 4px solid #0284c7;
-      padding: 1.5rem;
-      margin: 2rem 0;
-      border-radius: 8px;
-      text-align: left;
-    }
 
-    .date-selector h3 {
-      color: #075985;
-      font-weight: 600;
-      margin-bottom: 1rem;
-      font-size: 1rem;
-    }
-
-    .date-input {
-      width: 100%;
-      display: block;
-      padding: 0.75rem;
-      border: 2px solid #e5e7eb;
-      border-radius: 8px;
-      font-size: 1rem;
-      margin-top: 0.5rem;
-      transition: all 0.3s ease;
-      background-color: white;
-      min-height: 52px;
-      /* Improve touch target for mobile */
-      -webkit-appearance: none;
-      /* remove iOS default styles */
-      appearance: none;
-    }
-
-    .date-input:focus {
-      outline: none;
-      border-color: #0284c7;
-      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
-    }
-
-    .date-input:disabled {
-      background-color: #f3f4f6;
-      cursor: not-allowed;
-      border-color: #e5e7eb;
-      color: #6b7280;
-    }
 
     .login-status {
       display: none;
@@ -184,32 +122,7 @@
       color: #991b1b;
     }
 
-    .whatsapp-section {
-      display: none;
-    }
 
-    .whatsapp-section.show {
-      display: block;
-    }
-
-    .message-box {
-      display: none;
-      background-color: #fef3c7;
-      border: 1px solid #fde68a;
-      border-left: 4px solid #f59e0b;
-      padding: 1.5rem;
-      margin: 2rem 0;
-      border-radius: 8px;
-      text-align: left;
-      white-space: pre-line;
-      line-height: 1.6;
-      font-size: 0.95rem;
-      color: #78350f;
-    }
-
-    .message-box.show {
-      display: block;
-    }
 
     @media (max-width: 420px) {
       .success-card {
@@ -310,17 +223,12 @@
 
     <div id="login-status" class="login-status"></div>
 
-    <div class="date-selector">
-      <h3>When are you completing your 1-year articleship?</h3>
-      <p style="font-size: 0.875rem; color: #64748b; margin-bottom: 0.75rem;">
-        Select your expected completion date to join the appropriate WhatsApp group.
-      </p>
-      <input type="date" id="completion-date" class="date-input" onchange="updateWhatsAppLink()">
-    </div>
-
-    <div id="whatsapp-section" class="whatsapp-section">
-      <a id="whatsapp-link" href="#" target="_blank" rel="noopener" class="btn-whatsapp">
-        Join the WhatsApp Group for Updates
+    <div
+      style="margin: 2rem 0; padding: 1.5rem; background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; text-align: center;">
+      <p class="text-gray-800 font-bold mb-3" style="font-size: 1.1rem;">Please Fill This Form Immediately:</p>
+      <a href="https://forms.gle/zwH99ZDe2jYQWdwK6" target="_blank" class="btn-primary"
+        style="background-color: #2563eb; margin-bottom: 0;">
+        Fill Form Here
       </a>
     </div>
 
@@ -333,7 +241,7 @@
       </p>
     </div>
 
-    <div id="message-box" class="message-box"></div>
+
 
     <a href="https://www.mystudentclub.com/learning-management-system/" class="btn-primary">
       Go to Learning Portal
@@ -347,77 +255,7 @@
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-    const messages = {
-      from2026: `Hey,
 
-Thanks a lot for registering into MSC CA Industrial Training Program. So ab toh Industrial done na Padam, No:(
-
-I need two things from you consistency + patience and Industrial Training done hai. Just blindly follow the process I am asking you to and your dream Industrial offer is not far away.
-
-Masterclass starts on 17th Dec 9 PM daily, recordings will be given but will recommend joining live, It's not just 6 day Masterclass, I will be there till your placement happens and I get to repost your joining post. 
-
-If you get any queries in this journey, Please drop me a personal whatsapp text, not in group, will try responding back ASAP or max within 24 hours. In case of something really really urgent, can also call.
-
-It's a 3-month journey. Major responses come in the last 3 weeks only — but only if efforts are made from Day 1. 
-
-I'll do everything possible from my end to get you placed, but if I feel you aren't putting in effort, I'll step back. 
-
-You may get demotivated in mid and it's normal, but I am just a text away. And trust me you have all the skills required, hojayega sab, don't worry. 
-
-Let's crack this. All the best❤️`,
-      before2026: `Hey,
-
-Thanks a lot for Enrolling in MSC Industrial Training Program, so ab toh Industrial done na Padam? Nahi, I need one thing from your side, consistent efforts.
-
-Just watch all the 6 day recorded lectures ASAP, and start following the process.
-
-Make a Perfect CV, Send it to my Review by uploading in the Google form
-
-Apply using LinkedIn, Naukri, ICAI SSP Portal and make a rule of reaching out to 10 people in each company for referral.
-
-Follow Up Follow Up Follow Up
-
-And keep me updated daily over whatsapp text, you all are already eligible and we have to find your dream opportunity super soon.
-
-We have to ensure we next year we start in our dream Industrial Training Company and it's not at all difficult.
-
-We will do it together, just finish the lectures, follow the process and keep me updated on a daily basis where you need my help.
-
-All the best!! Let's crack it❤️`
-    };
-
-    const whatsAppLinks = {
-      before2026: 'https://chat.whatsapp.com/KCpmIpxXIHw76Thxj3nzxx?mode=hqrt3',
-      from2026: 'https://chat.whatsapp.com/LxZ71AySaIvLE7bXRG6TfC?mode=hqrt3'
-    };
-
-    function updateWhatsAppLink() {
-      const dateInput = document.getElementById('completion-date');
-      const selectedDate = new Date(dateInput.value);
-      const cutoffDate = new Date('2025-12-31');
-
-      const whatsappSection = document.getElementById('whatsapp-section');
-      const whatsappLink = document.getElementById('whatsapp-link');
-      const messageBox = document.getElementById('message-box');
-
-      if (dateInput.value) {
-        if (selectedDate <= cutoffDate) {
-          whatsappLink.href = whatsAppLinks.before2026;
-          messageBox.textContent = messages.before2026;
-        } else {
-          whatsappLink.href = whatsAppLinks.from2026;
-          messageBox.textContent = messages.from2026;
-        }
-        whatsappSection.classList.add('show');
-        messageBox.classList.add('show');
-
-        // Disable the input to prevent changing it again
-        dateInput.disabled = true;
-      } else {
-        whatsappSection.classList.remove('show');
-        messageBox.classList.remove('show');
-      }
-    }
 
     async function attemptAutoLogin(email, password) {
       const loginStatus = document.getElementById('login-status');
