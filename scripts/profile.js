@@ -2,7 +2,6 @@ const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-
 const WORKER_URL = 'https://storer.bhansalimanan55.workers.dev';
 
 const profileForm = document.getElementById('profile-form');
@@ -89,7 +88,7 @@ async function loadProfile() {
         });
 
     } catch (e) {
-        console.error("Error loading profile:", e);
+        console.error(e);
         const localProfile = localStorage.getItem('userProfileData');
         if (localProfile) populateForm(JSON.parse(localProfile));
     } finally {
@@ -108,6 +107,7 @@ function populateForm(profileData) {
             }
         }
     }
+
     const domainOtherInput = document.getElementById('articleship_domain_other');
     if (domainOtherInput && profileData.articleship_domain === 'Other') {
         domainOtherInput.style.display = 'block';
@@ -161,17 +161,14 @@ async function handleFile(file, type) {
 
         if (file.type === 'application/pdf') {
             const arrayBuffer = await file.arrayBuffer();
-            // Load PDF document
             const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 
-            // Extract Text
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
                 const text = await page.getTextContent();
                 textContent += text.items.map(s => s.str).join(' ');
             }
 
-            // Extract Images (for Resume)
             if (type === 'resume') {
                 showLoading(true, "Converting resume to images...");
                 images = await convertPdfToImages(pdf);
@@ -180,14 +177,18 @@ async function handleFile(file, type) {
                     try {
                         localStorage.setItem(config.storageKeyImages, JSON.stringify(images));
                     } catch (e) {
-                        console.error("Error caching images (localStorage quota):", e);
-                        alert('Resume is too large to cache. AI Apply may not work correctly.');
+                        alert('Resume is too large. Please reupload your resume.');
                     }
 
-                    showLoading(true, "Autofilling details using AI...");
-                    const extractedData = await extractProfileData(images, textContent);
-                    if (extractedData) {
-                        populateForm(extractedData);
+                    showLoading(true, "Validating and Autofilling details...");
+                    const extractResult = await extractProfileData(images, textContent);
+
+                    if (extractResult && extractResult.is_valid === false) {
+                        alert(extractResult.message);
+                        hideFileDisplay('resume');
+                        return;
+                    } else if (extractResult && extractResult.data) {
+                        populateForm(extractResult.data);
                         alert('Profile auto-filled from your resume! Please review the details.');
                     }
                 }
@@ -196,10 +197,15 @@ async function handleFile(file, type) {
             textContent = await file.text();
             if (type === 'resume') {
                 localStorage.setItem(config.storageKeyImages, JSON.stringify([]));
-                showLoading(true, "Autofilling details using AI...");
-                const extractedData = await extractProfileData([], textContent);
-                if (extractedData) {
-                    populateForm(extractedData);
+                showLoading(true, "Validating and Autofilling details...");
+                const extractResult = await extractProfileData([], textContent);
+
+                if (extractResult && extractResult.is_valid === false) {
+                    alert(extractResult.message);
+                    hideFileDisplay('resume');
+                    return;
+                } else if (extractResult && extractResult.data) {
+                    populateForm(extractResult.data);
                     alert('Profile auto-filled from your resume! Please review the details.');
                 }
             }
@@ -212,7 +218,7 @@ async function handleFile(file, type) {
         localStorage.setItem(config.storageKeyName, file.name);
         showFileDisplay(type, file.name);
     } catch (error) {
-        console.error("Error processing file:", error);
+        console.error(error);
         alert(`Could not process your ${type.replace('_', ' ')}. Please try a different file.`);
     } finally {
         showLoading(false);
@@ -235,21 +241,19 @@ async function convertPdfToImages(pdf) {
             images.push(base64);
         }
     } catch (e) {
-        console.error("Error converting PDF to images", e);
+        console.error(e);
     }
     return images;
 }
 
 async function extractProfileData(images, text) {
-    if (!currentUser) return null; // Safety check
+    if (!currentUser) return null;
 
     try {
         const payload = {
-            user_id: currentUser.id, // REQUIRED for Worker to name the file in Supabase
+            user_id: currentUser.id,
             images: images,
-            pdf_text: text,
-            domain: "Finance & Accounting",
-            specialization: "Accountant"
+            pdf_text: text
         };
 
         const response = await fetch(WORKER_URL, {
@@ -260,17 +264,23 @@ async function extractProfileData(images, text) {
             body: JSON.stringify(payload)
         });
 
-        if (!response.ok) {
-            console.warn("Worker API returned error:", response.status);
-            return null;
-        }
+        if (!response.ok) return null;
 
         const data = await response.json();
+
+        if (data.ok && data.is_cv === false) {
+            return { is_valid: false, message: data.message };
+        }
+
         if (data.ok && data.response) {
-            return parseGeminiJson(data.response);
+            const parsed = parseGeminiJson(data.response);
+            if (parsed.is_valid_cv === false) {
+                return { is_valid: false, message: "The uploaded file does not appear to be a valid Resume/CV." };
+            }
+            return { is_valid: true, data: parsed };
         }
     } catch (e) {
-        console.error("Error calling worker:", e);
+        console.error(e);
     }
     return null;
 }
@@ -280,7 +290,6 @@ function parseGeminiJson(text) {
         const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
         return JSON.parse(cleaned);
     } catch (e) {
-        console.error("Failed to parse JSON from AI response", e);
         return null;
     }
 }
@@ -309,11 +318,10 @@ async function handleSave(e) {
     localStorage.setItem('userProfileData', JSON.stringify(profileData));
 
     try {
-        // Upsert both the profile JSON and the invisible ocr_cv column
         const { error } = await supabaseClient.from('profiles').upsert({
             uuid: currentUser.id,
             profile: profileData,
-            ocr_cv: ocrText, // This goes to the new column you created
+            ocr_cv: ocrText,
             updated_at: new Date().toISOString()
         });
 
@@ -326,7 +334,7 @@ async function handleSave(e) {
         }
 
     } catch (e) {
-        console.error("Error saving profile to database:", e);
+        console.error(e);
         alert('Profile saved to your browser, but failed to sync to the server. You can continue using the site.');
     } finally {
         btnText.textContent = originalText;
@@ -441,7 +449,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             document.getElementById('logoutBtn').addEventListener('click', async () => {
                 await supabaseClient.auth.signOut();
-                localStorage.clear(); // Simpler clear for logout
+                localStorage.clear();
                 window.location.href = '/login.html';
             });
         }
