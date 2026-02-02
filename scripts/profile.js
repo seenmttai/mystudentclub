@@ -2,7 +2,8 @@ const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-const WORKER_URL = 'https://profill.bhansalimanan55.workers.dev';
+
+const WORKER_URL = 'https://storer.bhansalimanan55.workers.dev';
 
 const profileForm = document.getElementById('profile-form');
 const loadingOverlay = document.getElementById('loading-overlay');
@@ -12,7 +13,6 @@ let currentUser = null;
 const fileConfig = {
     resume: {
         input: document.getElementById('resume'),
-        dropZone: document.querySelector('.file-drop-zone'),
         dropZone: document.getElementById('resume').closest('.file-drop-zone'),
         displayArea: document.getElementById('resume-display-area'),
         filenameEl: document.getElementById('resume-filename'),
@@ -31,7 +31,6 @@ const fileConfig = {
         storageKeyName: 'userCoverLetterFileName'
     }
 };
-
 
 async function checkAuth() {
     const { data: { session } } = await supabaseClient.auth.getSession();
@@ -75,8 +74,6 @@ async function loadProfile() {
 
         ['resume', 'cover_letter'].forEach(type => {
             const config = fileConfig[type];
-            // For resume, require images to be cached (not just filename)
-            // For cover letter, filename is sufficient
             if (type === 'resume') {
                 const cachedImages = localStorage.getItem(config.storageKeyImages);
                 const cachedName = localStorage.getItem(config.storageKeyName);
@@ -111,13 +108,11 @@ function populateForm(profileData) {
             }
         }
     }
-    // Show "Other" input if articleship_domain is set to "Other"
     const domainOtherInput = document.getElementById('articleship_domain_other');
     if (domainOtherInput && profileData.articleship_domain === 'Other') {
         domainOtherInput.style.display = 'block';
     }
 
-    // Trigger change event for job_preference to update dynamic fields
     const jobPref = document.getElementById('job_preference');
     if (jobPref) {
         jobPref.dispatchEvent(new Event('change'));
@@ -169,7 +164,7 @@ async function handleFile(file, type) {
             // Load PDF document
             const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
 
-            // Extract Text (still used for cover letter)
+            // Extract Text
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
                 const text = await page.getTextContent();
@@ -181,7 +176,6 @@ async function handleFile(file, type) {
                 showLoading(true, "Converting resume to images...");
                 images = await convertPdfToImages(pdf);
 
-                // Cache images to localStorage for AI Apply
                 if (images.length > 0) {
                     try {
                         localStorage.setItem(config.storageKeyImages, JSON.stringify(images));
@@ -190,7 +184,6 @@ async function handleFile(file, type) {
                         alert('Resume is too large to cache. AI Apply may not work correctly.');
                     }
 
-                    // Autofill profile from resume
                     showLoading(true, "Autofilling details using AI...");
                     const extractedData = await extractProfileData(images, textContent);
                     if (extractedData) {
@@ -202,7 +195,6 @@ async function handleFile(file, type) {
         } else if (file.type === 'text/plain') {
             textContent = await file.text();
             if (type === 'resume') {
-                // For text files, we can't convert to images, so just store empty array
                 localStorage.setItem(config.storageKeyImages, JSON.stringify([]));
                 showLoading(true, "Autofilling details using AI...");
                 const extractedData = await extractProfileData([], textContent);
@@ -239,7 +231,6 @@ async function convertPdfToImages(pdf) {
             canvas.width = viewport.width;
 
             await page.render({ canvasContext: context, viewport: viewport }).promise;
-            // Get base64 without prefix
             const base64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
             images.push(base64);
         }
@@ -250,12 +241,15 @@ async function convertPdfToImages(pdf) {
 }
 
 async function extractProfileData(images, text) {
+    if (!currentUser) return null; // Safety check
+
     try {
         const payload = {
+            user_id: currentUser.id, // REQUIRED for Worker to name the file in Supabase
             images: images,
             pdf_text: text,
-            domain: "Finance & Accounting", // default
-            specialization: "Accountant" // default
+            domain: "Finance & Accounting",
+            specialization: "Accountant"
         };
 
         const response = await fetch(WORKER_URL, {
@@ -310,14 +304,19 @@ async function handleSave(e) {
     delete profileData.resume;
     delete profileData.cover_letter;
 
+    const ocrText = localStorage.getItem('userCVText') || "";
+
     localStorage.setItem('userProfileData', JSON.stringify(profileData));
 
     try {
+        // Upsert both the profile JSON and the invisible ocr_cv column
         const { error } = await supabaseClient.from('profiles').upsert({
             uuid: currentUser.id,
             profile: profileData,
+            ocr_cv: ocrText, // This goes to the new column you created
             updated_at: new Date().toISOString()
         });
+
         if (error) throw error;
         alert('Profile saved successfully!');
 
@@ -341,7 +340,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (user) {
         document.getElementById('email').value = user.email;
 
-        // Job Preference Dynamic Fields Logic
         const jobPreferenceSelect = document.getElementById('job_preference');
         const joiningDateGroup = document.getElementById('earliest_joining_date_group');
         const articleshipCompletionGroup = document.getElementById('articleship_completion_date_group');
@@ -364,7 +362,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         loadProfile();
 
-        // Handle "Other" option for Articleship Domain
         const domainSelect = document.getElementById('articleship_domain');
         const domainOtherInput = document.getElementById('articleship_domain_other');
         if (domainSelect && domainOtherInput) {
@@ -423,7 +420,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         const authButtonsContainer = document.querySelector('.auth-buttons-container');
 
         if (user) {
-            // Try to get name from stored profile data
             let displayName = user.email;
             try {
                 const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
@@ -434,7 +430,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             let initial = displayName.charAt(0).toUpperCase();
             authButtonsContainer.innerHTML = `<div class="user-profile-container"><div class="user-icon-wrapper"><div class="user-icon" data-email="${user.email}">${initial}</div><div class="user-hover-card"><div class="user-hover-content"><p class="user-email">${displayName}</p><a href="/profile.html" class="profile-link-btn">Edit Profile</a><button id="logoutBtn" class="logout-btn">Logout</button></div></div></div></div>`;
 
-            // Add click handler for dropdown toggle
             const userIconWrapper = authButtonsContainer.querySelector('.user-icon-wrapper');
             const userHoverCard = authButtonsContainer.querySelector('.user-hover-card');
             if (userIconWrapper && userHoverCard) {
@@ -446,25 +441,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             document.getElementById('logoutBtn').addEventListener('click', async () => {
                 await supabaseClient.auth.signOut();
-
-                localStorage.removeItem('userJobPreference');
-                localStorage.removeItem('userProfileData');
-                localStorage.removeItem('userCVFileName');
-                localStorage.removeItem('userCVText');
-                localStorage.removeItem('userCVImages');
-                localStorage.removeItem('subscribedTopics');
-                localStorage.removeItem('newUserSignup');
-                localStorage.removeItem('newUserEmail');
-
-                const keysToRemove = [];
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key && (key.startsWith('sb-') || key.includes('supabase'))) {
-                        keysToRemove.push(key);
-                    }
-                }
-                keysToRemove.forEach(key => localStorage.removeItem(key));
-
+                localStorage.clear(); // Simpler clear for logout
                 window.location.href = '/login.html';
             });
         }
