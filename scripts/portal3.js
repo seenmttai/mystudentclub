@@ -1435,6 +1435,13 @@ function renderSubscribedTopics() {
 
 function formatTopicForDisplay(topic) {
     if (topic === 'all') return { location: 'All', jobType: 'Notifications' };
+
+    // Check for specific All India topics
+    if (topic === 'Industrial-all') return { location: 'All India', jobType: 'Industrial Training' };
+    if (topic === 'fresher-all') return { location: 'All India', jobType: 'Fresher' };
+    if (topic === 'semi-all') return { location: 'All India', jobType: 'Semi Qualified' };
+    if (topic === 'articleship-all') return { location: 'All India', jobType: 'Articleship' };
+
     const parts = topic.split('-');
     if (parts.length < 2) return { location: topic, jobType: '' };
     const jobTypeVal = parts.pop();
@@ -1521,7 +1528,7 @@ function updatePermissionStatusUI() {
     }
     dom.permissionStatusDiv.style.display = 'block';
 }
-function populateNotificationDropdowns() { if (dom.locationSelectEl) { dom.locationSelectEl.innerHTML = '<option value="" disabled selected>Select Location</option>'; LOCATIONS_NOTIF.sort().forEach(loc => { const opt = document.createElement('option'); opt.value = loc; opt.textContent = loc.charAt(0).toUpperCase() + loc.slice(1); dom.locationSelectEl.appendChild(opt); }); } if (dom.jobTypeSelectEl) { dom.jobTypeSelectEl.innerHTML = '<option value="" disabled selected>Select Job Type</option>'; JOB_TYPES_NOTIF.forEach(type => { const opt = document.createElement('option'); opt.value = type.value; opt.textContent = type.label; dom.jobTypeSelectEl.appendChild(opt); }); } }
+function populateNotificationDropdowns() { if (dom.locationSelectEl) { dom.locationSelectEl.innerHTML = '<option value="" disabled selected>Select Location</option><option value="all">All India</option>'; LOCATIONS_NOTIF.sort().forEach(loc => { const opt = document.createElement('option'); opt.value = loc; opt.textContent = loc.charAt(0).toUpperCase() + loc.slice(1); dom.locationSelectEl.appendChild(opt); }); } if (dom.jobTypeSelectEl) { dom.jobTypeSelectEl.innerHTML = '<option value="" disabled selected>Select Job Type</option>'; JOB_TYPES_NOTIF.forEach(type => { const opt = document.createElement('option'); opt.value = type.value; opt.textContent = type.label; dom.jobTypeSelectEl.appendChild(opt); }); } }
 
 async function initializeFCM() {
     if (window.flutter_app.isReady) {
@@ -1721,7 +1728,36 @@ function setupEventListeners() {
             }
         });
     }
-    if (dom.subscribeBtnEl) dom.subscribeBtnEl.addEventListener('click', async () => { const location = dom.locationSelectEl.value; const jobType = dom.jobTypeSelectEl.value; if (!location || !jobType) return; const topicName = `${location}-${jobType}`; if (await subscribeToTopic(topicName)) { dom.locationSelectEl.selectedIndex = 0; dom.jobTypeSelectEl.selectedIndex = 0; dom.subscribeBtnEl.disabled = true; } });
+    if (dom.subscribeBtnEl) dom.subscribeBtnEl.addEventListener('click', async () => {
+        const location = dom.locationSelectEl.value;
+        const jobType = dom.jobTypeSelectEl.value;
+        if (!location || !jobType) return;
+
+        let topicName;
+        if (location === 'all') {
+            if (jobType === 'industrial') topicName = 'Industrial-all';
+            else if (jobType === 'fresher') topicName = 'fresher-all';
+            else if (jobType === 'semi') topicName = 'semi-all';
+            else if (jobType === 'articleship') topicName = 'articleship-all';
+        } else {
+            topicName = `${location}-${jobType}`;
+        }
+
+        if (await subscribeToTopic(topicName)) {
+            dom.locationSelectEl.selectedIndex = 0;
+            dom.jobTypeSelectEl.selectedIndex = 0;
+            dom.subscribeBtnEl.disabled = true;
+            // Reset custom select UI if present
+            if (dom.locationSelectEl.parentElement.classList.contains('custom-select-wrapper')) {
+                dom.locationSelectEl.parentElement.querySelector('.custom-select-trigger span').textContent = 'Select Location';
+                dom.locationSelectEl.parentElement.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+            }
+            if (dom.jobTypeSelectEl.parentElement.classList.contains('custom-select-wrapper')) {
+                dom.jobTypeSelectEl.parentElement.querySelector('.custom-select-trigger span').textContent = 'Select Job Type';
+                dom.jobTypeSelectEl.parentElement.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
+            }
+        }
+    });
     if (dom.locationSelectEl && dom.jobTypeSelectEl && dom.subscribeBtnEl) {
         const updateSubBtn = () => { dom.subscribeBtnEl.disabled = !(dom.locationSelectEl.value && dom.jobTypeSelectEl.value); };
         dom.locationSelectEl.addEventListener('change', updateSubBtn);
