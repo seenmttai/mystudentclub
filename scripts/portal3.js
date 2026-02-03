@@ -67,6 +67,7 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+const WORKER_URL = 'https://storer.bhansalimanan55.workers.dev';
 
 window.flutter_app = {
     isReady: false,
@@ -1569,6 +1570,7 @@ async function initializeUserFeatures() {
     } catch (error) {
         console.error('Error fetching applied jobs:', error);
     }
+    checkAndSyncCVBackground(); // Run background sync check
 }
 
 function updateSortOptions() {
@@ -2300,11 +2302,10 @@ function initJobPreferenceModal() {
                     syncFiltersUI();
                     resetAndFetch();
                 }
-            }, 200);
+            }, 300);
         });
     });
 
-    // Skip button handler - set industrial as default and redirect
     const skipBtn = document.getElementById('skipPreferenceBtn');
     if (skipBtn) {
         skipBtn.addEventListener('click', async () => {
@@ -2318,7 +2319,6 @@ function initJobPreferenceModal() {
         });
     }
 
-    // Close modal on background click
     const modal = document.getElementById('jobPreferenceModal');
     if (modal) {
         modal.addEventListener('click', (e) => {
@@ -2326,6 +2326,72 @@ function initJobPreferenceModal() {
         });
     }
 }
+function isCloudSynced() {
+    return localStorage.getItem('cv_cloud_synced') === 'true' ||
+        document.cookie.split(';').some(c => c.trim().startsWith('cv_cloud_synced=true'));
+}
+
+function setCloudSyncFlag() {
+    localStorage.setItem('cv_cloud_synced', 'true');
+    document.cookie = "cv_cloud_synced=true; max-age=31536000; path=/";
+}
+
+async function checkAndSyncCVBackground() {
+    if (!currentSession || isCloudSynced()) return;
+
+    // Check if we have cached CV data to sync
+    const userCVImages = localStorage.getItem('userCVImages');
+    let userCVText = localStorage.getItem('userCVText');
+
+    if (!userCVImages) return; // Nothing to sync
+
+    try {
+        console.log("Background Sync: Uploading cached CV to storer...");
+        const images = JSON.parse(userCVImages);
+
+        const payload = {
+            user_id: currentSession.user.id,
+            images: images,
+            pdf_text: userCVText || ""
+        };
+
+        const response = await fetch(WORKER_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) return;
+
+        const data = await response.json();
+
+        if (data.ok && data.response) {
+            let finalOcrText = userCVText || "";
+            if (data.ocr_text) {
+                finalOcrText = data.ocr_text;
+                localStorage.setItem('userCVText', finalOcrText);
+            }
+
+            // Update Supabase
+            await supabaseClient.from('profiles').upsert({
+                uuid: currentSession.user.id,
+                ocr_cv: finalOcrText,
+                updated_at: new Date().toISOString()
+            });
+
+            setCloudSyncFlag();
+            console.log("Background Sync: Complete.");
+        }
+    } catch (e) {
+        console.error("Background Sync Failed:", e);
+    }
+}
+
+
+// Skip button handler - set industrial as default and redirect
+
 
 // Check and handle job preference on page load
 document.addEventListener('DOMContentLoaded', async () => {

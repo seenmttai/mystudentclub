@@ -285,6 +285,11 @@ async function extractProfileData(images, text) {
     return null;
 }
 
+function setCloudSyncFlag() {
+    localStorage.setItem('cv_cloud_synced', 'true');
+    document.cookie = "cv_cloud_synced=true; max-age=31536000; path=/";
+}
+
 function parseGeminiJson(text) {
     try {
         const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -326,6 +331,7 @@ async function handleSave(e) {
         });
 
         if (error) throw error;
+        setCloudSyncFlag();
         alert('Profile saved successfully!');
 
         const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
