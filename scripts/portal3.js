@@ -41,17 +41,14 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
         console.error("AI Apply Failed:", error);
         showToast("Server busy, reverting to simple apply", "error");
 
-        // Use the existing logic for getting the email and subject
         const rawLink = job['Application ID'];
         const emailMatch = rawLink.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
         const email = emailMatch ? emailMatch[0] : '';
         const subject = simpleMailtoLink.split('subject=')[1]?.split('&')[0] || `Application for ${job.Category} (Ref: My Student Club)`;
 
-        // Revert to simple apply (no body, or just standard subject)
         const simpleMailto = `mailto:${email}?subject=${subject}`;
 
         await recordApplication(job, btnElement);
-        // Delay to let the toast be seen/processed
         setTimeout(() => {
             window.open(simpleMailto, '_blank');
         }, 3000);
