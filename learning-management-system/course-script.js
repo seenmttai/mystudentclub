@@ -574,10 +574,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
 
                         state.hlsInstance.on(Hls.Events.ERROR, (event, data) => {
+                            // Aggressive Fallback for Initial Connection
+                            // If we can't load the manifest via QUIC (timeout or error), switch to TCP immediately.
+                            // We don't want to wait for HLS.js to retry QUIC multiple times.
+                            const isManifestError = data.details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR ||
+                                data.details === Hls.ErrorDetails.MANIFEST_LOAD_TIMEOUT;
+
+                            if (isManifestError && !isRetry) {
+                                console.warn(`QUIC manifest load failed (${data.details}), switching to TCP immediately...`);
+                                startHls(TCP_BASE_URL, true);
+                                return;
+                            }
+
                             if (data.fatal) {
-                                // QUIC Fallback Logic
+                                // Other Fatal Errors
                                 if (data.type === Hls.ErrorTypes.NETWORK_ERROR && !isRetry) {
-                                    console.warn("QUIC connection failed, falling back to TCP (Happy Eyeballs)...");
+                                    console.warn("Fatal network error on QUIC, switching to TCP...");
                                     startHls(TCP_BASE_URL, true);
                                     return;
                                 }
