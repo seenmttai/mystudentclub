@@ -294,27 +294,12 @@ document.addEventListener('DOMContentLoaded', () => {
             screen: `${window.screen.width}x${window.screen.height}`
         });
 
-        let safeMessage = message;
-        if (typeof message === 'object') {
-            try {
-                // If it's a CustomEvent or Event, try to get some useful info
-                if (message.constructor && message.constructor.name.includes('Event')) {
-                    safeMessage = `[${message.constructor.name}] type: ${message.type}`;
-                    if (message.detail) safeMessage += ` | detail: ${JSON.stringify(message.detail)}`;
-                } else {
-                    safeMessage = JSON.stringify(message);
-                }
-            } catch (e) {
-                safeMessage = '[Unserializable Object]';
-            }
-        }
-
         try {
             await supabase
                 .from('frontend_errors')
                 .insert({
                     user_id: state.user ? state.user.id : null,
-                    error_message: `Source: ${source} | Message: ${safeMessage || 'Unknown Error'} | Context: ${contextData}`,
+                    error_message: `Source: ${source} | Message: ${message || 'Unknown Error'} | Context: ${contextData}`,
                     stack_trace: stack || 'No Stack Trace',
                     url: window.location.href,
                     user_agent: navigator.userAgent
@@ -538,8 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         state.hlsInstance = new Hls({
                             maxBufferLength: 30,
-                            startLevel: -1,
-                            enableWorker: false // Disable worker to prevent Blob URL errors
+                            startLevel: -1
                         });
                         state.hlsInstance.loadSource(hlsUrl);
                         state.hlsInstance.attachMedia(DOMElements.videoPlayer);
@@ -732,10 +716,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             DOMElements.tabContents.resources.innerHTML = resourcesHTML;
 
-            DOMElements.tabContents.resources.querySelectorAll('button.resource-btn-view').forEach(btn => {
+            DOMElements.tabContents.resources.querySelectorAll('.resource-btn-view').forEach(btn => {
                 btn.addEventListener('click', () => handleResourceClick(JSON.parse(btn.dataset.resource)));
             });
-            DOMElements.tabContents.resources.querySelectorAll('button.resource-btn-download').forEach(btn => {
+            DOMElements.tabContents.resources.querySelectorAll('.resource-btn-download').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     downloadResource(JSON.parse(btn.dataset.resource));
@@ -835,7 +819,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const a = document.createElement('a');
                 a.href = url; a.download = filename;
                 document.body.appendChild(a); a.click();
-                setTimeout(() => { window.URL.revokeObjectURL(url); a.remove(); }, 100);
+                window.URL.revokeObjectURL(url); a.remove();
             }
         } catch (err) {
             console.error('Download error:', err);
@@ -991,16 +975,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const toggleFullscreen = () => {
         if (!document.fullscreenElement) {
-            if (DOMElements.viewerContent.requestFullscreen) {
-                DOMElements.viewerContent.requestFullscreen().catch(err => {
-                    alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-                });
-            } else if (DOMElements.viewerContent.webkitRequestFullscreen) {
-                DOMElements.viewerContent.webkitRequestFullscreen();
-            } else {
-                // Determine if it is a video (which might work natively on iOS) or other content
-                console.warn('Fullscreen API not supported on this device/element.');
-            }
+            DOMElements.viewerContent.requestFullscreen().catch(err => {
+                alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+            });
         } else {
             document.exitFullscreen();
         }
