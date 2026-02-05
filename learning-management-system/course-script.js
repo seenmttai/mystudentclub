@@ -294,27 +294,12 @@ document.addEventListener('DOMContentLoaded', () => {
             screen: `${window.screen.width}x${window.screen.height}`
         });
 
-        let safeMessage = message;
-        if (typeof message === 'object') {
-            try {
-                // If it's a CustomEvent or Event, try to get some useful info
-                if (message.constructor && message.constructor.name.includes('Event')) {
-                    safeMessage = `[${message.constructor.name}] type: ${message.type}`;
-                    if (message.detail) safeMessage += ` | detail: ${JSON.stringify(message.detail)}`;
-                } else {
-                    safeMessage = JSON.stringify(message);
-                }
-            } catch (e) {
-                safeMessage = '[Unserializable Object]';
-            }
-        }
-
         try {
             await supabase
                 .from('frontend_errors')
                 .insert({
                     user_id: state.user ? state.user.id : null,
-                    error_message: `Source: ${source} | Message: ${safeMessage || 'Unknown Error'} | Context: ${contextData}`,
+                    error_message: `Source: ${source} | Message: ${message || 'Unknown Error'} | Context: ${contextData}`,
                     stack_trace: stack || 'No Stack Trace',
                     url: window.location.href,
                     user_agent: navigator.userAgent
@@ -533,22 +518,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     const hlsUrl = `${baseUrl}/${encodeURIComponent(currentVideo.hlsPath)}/master.m3u8`;
 
                     if (Hls.isSupported()) {
-                        // Destroy any existing instance first
                         if (state.hlsInstance) {
                             state.hlsInstance.destroy();
-                            state.hlsInstance = null;
                         }
-
-                        // Create new HLS instance with proper configuration
                         state.hlsInstance = new Hls({
                             maxBufferLength: 30,
-                            startLevel: -1,
-                            enableWorker: true, // Re-enable worker 
-                            xhrSetup: function (xhr, url) {
-                                // Optional: Add any custom headers here if needed
-                            }
+                            startLevel: -1
                         });
-
                         state.hlsInstance.loadSource(hlsUrl);
                         state.hlsInstance.attachMedia(DOMElements.videoPlayer);
 
@@ -557,11 +533,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                             let qualityConfig = null;
 
+                            // Update Plyr quality options with HLS levels
                             if (state.hlsInstance.levels.length > 0) {
                                 const levels = state.hlsInstance.levels;
                                 const availableQualities = levels.map(l => l.height);
+                                // Get unique qualities sorted descending, add 0 for Auto
                                 const uniqueQualities = [...new Set(availableQualities)].sort((a, b) => b - a);
-                                const qualityOptions = [0, ...uniqueQualities];
+                                const qualityOptions = [0, ...uniqueQualities]; // 0 = Auto
 
                                 qualityConfig = {
                                     default: 0,
@@ -580,35 +558,26 @@ document.addEventListener('DOMContentLoaded', () => {
                                 };
                             }
 
+                            // Initialize Plyr now that we have quality options
                             initializePlyr(qualityConfig);
-
                             try {
                                 const playPromise = state.plyrPlayer.play();
                                 if (playPromise) {
                                     playPromise.catch(e => {
+                                        // Ignore autoplay policies and aborts
                                         if (e.name !== 'NotAllowedError' && e.name !== 'AbortError') {
                                             console.warn("Autoplay failed", e);
                                         }
                                     });
                                 }
-                            } catch (e) {
-                                console.warn("Play error:", e);
-                            }
+                            } catch (e) { }
                         });
 
                         state.hlsInstance.on(Hls.Events.ERROR, (event, data) => {
-                            const isManifestError = data.details === Hls.ErrorDetails.MANIFEST_LOAD_ERROR ||
-                                data.details === Hls.ErrorDetails.MANIFEST_LOAD_TIMEOUT;
-
-                            if (isManifestError && !isRetry) {
-                                console.warn(`QUIC manifest load failed (${data.details}), switching to TCP...`);
-                                startHls(TCP_BASE_URL, true);
-                                return;
-                            }
-
                             if (data.fatal) {
+                                // QUIC Fallback Logic
                                 if (data.type === Hls.ErrorTypes.NETWORK_ERROR && !isRetry) {
-                                    console.warn("Fatal network error on QUIC, switching to TCP...");
+                                    console.warn("QUIC connection failed, falling back to TCP (Happy Eyeballs)...");
                                     startHls(TCP_BASE_URL, true);
                                     return;
                                 }
@@ -616,55 +585,35 @@ document.addEventListener('DOMContentLoaded', () => {
                                 console.error('HLS Error:', data);
                                 switch (data.type) {
                                     case Hls.ErrorTypes.NETWORK_ERROR:
-                                        console.log('Network error, trying to recover...');
                                         state.hlsInstance.startLoad();
                                         break;
                                     case Hls.ErrorTypes.MEDIA_ERROR:
-                                        console.log('Media error, trying to recover...');
                                         state.hlsInstance.recoverMediaError();
                                         break;
                                     default:
-                                        console.error('Fatal error, destroying HLS instance');
                                         state.hlsInstance.destroy();
-                                        DOMElements.videoLoadingOverlay.style.display = 'none';
-                                        alert('Unable to load video. Please try again.');
                                         break;
                                 }
                             }
                         });
-
                     } else if (DOMElements.videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
                         // Safari native HLS
                         DOMElements.videoPlayer.src = hlsUrl;
                         initializePlyr(null);
 
-                        const onCanPlay = () => {
-                            DOMElements.videoLoadingOverlay.style.display = 'none';
-                            try {
-                                const p = state.plyrPlayer.play();
-                                if (p) p.catch(e => {
-                                    if (e.name !== 'NotAllowedError') console.warn(e);
-                                });
-                            } catch (e) {
-                                console.warn("Play error:", e);
-                            }
-                        };
-
+                        // Simple fallback for Safari native
                         const onError = (e) => {
                             if (!isRetry) {
-                                console.warn("Safari Native HLS failed, trying TCP fallback...");
+                                console.warn("Safari Native HLS failed, trying fallback...");
                                 startHls(TCP_BASE_URL, true);
-                            } else {
-                                DOMElements.videoLoadingOverlay.style.display = 'none';
-                                alert('Unable to load video. Please check your connection.');
                             }
                         };
-
-                        DOMElements.videoPlayer.addEventListener('canplay', onCanPlay, { once: true });
                         DOMElements.videoPlayer.addEventListener('error', onError, { once: true });
-                    } else {
-                        alert('HLS video playback is not supported in your browser.');
-                        DOMElements.videoLoadingOverlay.style.display = 'none';
+
+                        try {
+                            const p = state.plyrPlayer.play();
+                            if (p) p.catch(e => { if (e.name !== 'NotAllowedError') console.warn(e); });
+                        } catch (e) { }
                     }
                 };
 
@@ -755,10 +704,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             DOMElements.tabContents.resources.innerHTML = resourcesHTML;
 
-            DOMElements.tabContents.resources.querySelectorAll('button.resource-btn-view').forEach(btn => {
+            DOMElements.tabContents.resources.querySelectorAll('.resource-btn-view').forEach(btn => {
                 btn.addEventListener('click', () => handleResourceClick(JSON.parse(btn.dataset.resource)));
             });
-            DOMElements.tabContents.resources.querySelectorAll('button.resource-btn-download').forEach(btn => {
+            DOMElements.tabContents.resources.querySelectorAll('.resource-btn-download').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     downloadResource(JSON.parse(btn.dataset.resource));
@@ -858,7 +807,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const a = document.createElement('a');
                 a.href = url; a.download = filename;
                 document.body.appendChild(a); a.click();
-                setTimeout(() => { window.URL.revokeObjectURL(url); a.remove(); }, 100);
+                window.URL.revokeObjectURL(url); a.remove();
             }
         } catch (err) {
             console.error('Download error:', err);
@@ -1014,16 +963,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const toggleFullscreen = () => {
         if (!document.fullscreenElement) {
-            if (DOMElements.viewerContent.requestFullscreen) {
-                DOMElements.viewerContent.requestFullscreen().catch(err => {
-                    alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-                });
-            } else if (DOMElements.viewerContent.webkitRequestFullscreen) {
-                DOMElements.viewerContent.webkitRequestFullscreen();
-            } else {
-                // Determine if it is a video (which might work natively on iOS) or other content
-                console.warn('Fullscreen API not supported on this device/element.');
-            }
+            DOMElements.viewerContent.requestFullscreen().catch(err => {
+                alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+            });
         } else {
             document.exitFullscreen();
         }
