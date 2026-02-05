@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const TCP_BASE_URL = 'https://norm.skirro.com';
 
     let state = {
-        hlsSmartRetry: { count: 0, banned: false },
         menuActive: false, sidebarActive: false, courseSlug: null, user: null, isEnrolled: false,
         course: { title: '', description: '', thumbnail: '', progress: 0 }, courseSections: [],
         currentVideoId: null, activeTab: 'overview', comments: [],
@@ -499,7 +498,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const selectVideo = (videoId) => {
         state.retryCount = 0;
-        state.hlsSmartRetry = { count: 0, banned: false };
         DOMElements.videoLoadingOverlay.style.display = 'flex';
         state.currentVideoId = videoId;
 
@@ -537,97 +535,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (state.hlsInstance) {
                             state.hlsInstance.destroy();
                         }
-
-                        class CustomLoader extends Hls.DefaultConfig.loader {
-                            constructor(config) {
-                                super(config);
-                                this.load = this.customLoad.bind(this);
-                            }
-
-                            customLoad(context, config, callbacks) {
-                                const { url } = context;
-                                let xhr, timer;
-                                const _this = this;
-
-                                const getStats = (trequest) => {
-                                    const now = performance.now();
-                                    return {
-                                        trequest: trequest,
-                                        tfirst: now,
-                                        tload: now,
-                                        tparsed: now,
-                                        length: xhr ? xhr.response.byteLength : 0
-                                    };
-                                };
-
-                                const executeRequest = (isRetryAttempt) => {
-                                    xhr = new XMLHttpRequest();
-                                    // Walltime timeouts: 2s for first attempt, 1s for retry
-                                    const timeoutLimit = isRetryAttempt ? 1000 : 2000;
-                                    const trequest = performance.now();
-
-                                    xhr.open('GET', url, true);
-                                    if (context.responseType) xhr.responseType = context.responseType;
-
-                                    timer = setTimeout(() => {
-                                        if (xhr) xhr.abort();
-                                        if (!isRetryAttempt) {
-                                            // First attempt timed out (>2s)
-                                            if (!state.hlsSmartRetry.banned) {
-                                                console.warn(`HLS Custom Timeout (2s). Retrying... ${url}`);
-                                                executeRequest(true);
-                                            } else {
-                                                console.warn(`HLS Timeout (2s). Retry banned for user. ${url}`);
-                                                callbacks.onTimeout({ type: 'networkTimeout' }, context);
-                                            }
-                                        } else {
-                                            // Retry attempt timed out (>1s)
-                                            state.hlsSmartRetry.count++;
-                                            console.warn(`HLS Retry Timeout (1s). Strike ${state.hlsSmartRetry.count}. ${url}`);
-                                            if (state.hlsSmartRetry.count >= 3) {
-                                                state.hlsSmartRetry.banned = true;
-                                                console.warn("HLS Smart Retry kicked in: Stopping retries for this user.");
-                                            }
-                                            callbacks.onTimeout({ type: 'networkTimeout' }, context);
-                                        }
-                                    }, timeoutLimit);
-
-                                    xhr.onreadystatechange = function () {
-                                        if (xhr.readyState === 4) {
-                                            clearTimeout(timer);
-                                            if (xhr.status >= 200 && xhr.status < 300) {
-                                                callbacks.onSuccess({
-                                                    url: xhr.responseURL || url,
-                                                    data: xhr.response
-                                                }, getStats(trequest), context);
-                                            } else {
-                                                if (xhr.status === 0) return; // Aborted
-                                                callbacks.onError({ code: xhr.status, text: xhr.statusText }, context, xhr);
-                                            }
-                                        }
-                                    };
-
-                                    xhr.send();
-                                    _this.xhr = xhr;
-                                };
-
-                                executeRequest(false);
-                            }
-
-                            abort() {
-                                if (this.xhr) this.xhr.abort();
-                            }
-
-                            destroy() {
-                                if (this.xhr) this.xhr.abort();
-                            }
-                        }
-
                         state.hlsInstance = new Hls({
                             maxBufferLength: 30,
                             startLevel: -1,
-                            enableWorker: false, // Disable worker to prevent Blob URL errors
-                            loader: CustomLoader
+                            enableWorker: false // Disable worker to prevent Blob URL errors
                         });
                         state.hlsInstance.loadSource(hlsUrl);
                         state.hlsInstance.attachMedia(DOMElements.videoPlayer);
