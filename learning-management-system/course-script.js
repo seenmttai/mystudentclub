@@ -541,7 +541,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             startLevel: -1,
                             enableWorker: false // Disable worker to prevent Blob URL errors
                         });
-                        state.hlsInstance.loadSource(hlsUrl);
+
+                        state.hlsInstance.on(Hls.Events.MEDIA_ATTACHED, () => {
+                            state.hlsInstance.loadSource(hlsUrl);
+                        });
                         state.hlsInstance.attachMedia(DOMElements.videoPlayer);
 
                         state.hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
