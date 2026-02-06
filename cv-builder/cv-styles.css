@@ -69,6 +69,10 @@
             background: #3b82f6;
             color: white;
             border: none;
+            text-shadow: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-weight: 600;
         }
         
         .driver-popover.cv-tour-popover .driver-popover-next-btn:hover {
