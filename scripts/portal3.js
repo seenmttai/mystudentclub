@@ -24,7 +24,7 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
     btnElement.style.pointerEvents = 'none';
 
     try {
-        const emailBody = await generateEmailBody(job, tableName);
+        const emailBody = await generateEmailBody(job, tableName, supabaseClient, currentSession?.user);
 
         // Construct mailto with AI body
         const rawLink = job['Application ID'];

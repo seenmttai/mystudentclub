@@ -57,15 +57,20 @@ async function loadProfile() {
     try {
         const { data, error } = await supabaseClient
             .from('profiles')
-            .select('profile')
+            .select('profile, ocr_cv')
             .eq('uuid', currentUser.id)
             .single();
 
         if (error && error.code !== 'PGRST116') throw error;
 
-        if (data && data.profile) {
-            populateForm(data.profile);
-            localStorage.setItem('userProfileData', JSON.stringify(data.profile));
+        if (data) {
+            if (data.profile) {
+                populateForm(data.profile);
+                localStorage.setItem('userProfileData', JSON.stringify(data.profile));
+            }
+            if (data.ocr_cv) {
+                localStorage.setItem('userCVText', data.ocr_cv);
+            }
         } else {
             const localProfile = localStorage.getItem('userProfileData');
             if (localProfile) populateForm(JSON.parse(localProfile));

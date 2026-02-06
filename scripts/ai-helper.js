@@ -44,23 +44,70 @@ export function getJobPayload(job, tableName) {
  * Calls the worker to generate the email body.
  * @param {Object} job 
  * @param {string} tableName 
+ * @param {Object} supabaseClient - Supabase client instance
+ * @param {Object} user - Current user object
  * @returns {Promise<string>} The generated email body.
  */
-export async function generateEmailBody(job, tableName) {
+export async function generateEmailBody(job, tableName, supabaseClient, user) {
     const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
-    const cvImages = JSON.parse(localStorage.getItem('userCVImages') || '[]');
-    const cvText = localStorage.getItem('userCVText') || '';
+    let cvText = localStorage.getItem('userCVText') || '';
+
+    // 1. If text is missing locally, try fetching from Supabase (OCR_CV)
+    if (!cvText && user) {
+        try {
+            const { data, error } = await supabaseClient
+                .from('profiles')
+                .select('ocr_cv')
+                .eq('uuid', user.id)
+                .single();
+
+            if (data && data.ocr_cv) {
+                cvText = data.ocr_cv;
+                localStorage.setItem('userCVText', cvText); // Cache it
+            }
+        } catch (e) {
+            console.warn("Retrying fetch of ocr_cv failed", e);
+        }
+    }
+
+    // 2. Decide payload
+    const payload = {
+        profile_data: profileData,
+        job_details: getJobPayload(job, tableName)
+    };
+
+    if (cvText && cvText.trim().length > 0) {
+        // Option A: Use OCR Text
+        payload.pdf_text = cvText;
+        payload.ocr_text = cvText; // Send as both for compatibility
+        payload.images = [];
+    } else {
+        // Option B: Fallback to Images
+        const cvImages = JSON.parse(localStorage.getItem('userCVImages') || '[]');
+        if (cvImages.length > 0) {
+            payload.images = cvImages;
+
+            // Background Report: Missing OCR Text
+            if (user) {
+                // Fire and forget report
+                supabaseClient.from('course_reports').insert({
+                    user_id: user.id,
+                    course_slug: 'ai-apply-fallback',
+                    description: `OCR Text missing for user ${user.id} (${user.email}). Used legacy image cache.`,
+                    page_url: window.location.href
+                }).then(() => { }).catch(err => console.error("Report error", err));
+            }
+        } else {
+            // Option C: No data at all
+            throw new Error("No CV data found (Text or Images)");
+        }
+    }
 
     try {
         const response = await fetch(AI_WORKER_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                images: cvImages,
-                pdf_text: cvText, // Send text if images are missing (e.g. for TXT files)
-                profile_data: profileData,
-                job_details: getJobPayload(job, tableName)
-            })
+            body: JSON.stringify(payload)
         });
 
         if (!response.ok) {
@@ -180,25 +227,25 @@ export function showToast(message, type = 'info') {
 export function showResumeRedirectModal() {
     // Check if we can use the existing #profileIncompleteModal in index.html
     const profileModal = document.getElementById('profileIncompleteModal');
-    
+
     if (profileModal) {
         // Reuse existing modal
         profileModal.style.display = 'flex';
-        
+
         // Ensure the "I'll do this later" button closes it
         const closeBtn = profileModal.querySelector('#closeProfileIncomplete');
         const modalCloseAction = profileModal.querySelector('.modal-close-action');
-        
+
         if (closeBtn) {
             closeBtn.onclick = () => { profileModal.style.display = 'none'; };
         }
         if (modalCloseAction) {
             modalCloseAction.onclick = () => { profileModal.style.display = 'none'; };
         }
-        
+
         // Close on overlay click
-        profileModal.onclick = (e) => { 
-            if (e.target === profileModal) profileModal.style.display = 'none'; 
+        profileModal.onclick = (e) => {
+            if (e.target === profileModal) profileModal.style.display = 'none';
         };
         return;
     }
@@ -230,7 +277,7 @@ export function showResumeRedirectModal() {
         // Attach close handlers
         const closeBtn = modal.querySelector('.modal-close-action');
         closeBtn.onclick = () => { modal.style.display = 'none'; };
-        modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
+        modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
     }
 
     modal.style.display = 'flex';
