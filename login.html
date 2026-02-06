@@ -369,6 +369,12 @@
       color: #9ca3af;
     }
 
+    /* Hide native password toggles in Edge/IE */
+    input[type="password"]::-ms-reveal,
+    input[type="password"]::-ms-clear {
+      display: none;
+    }
+
     .password-wrapper {
       position: relative;
     }
