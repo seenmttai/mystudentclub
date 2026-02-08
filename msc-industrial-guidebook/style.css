@@ -134,6 +134,16 @@ h1 {
     }
 }
 
+@keyframes spin-relative {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 #extra-controls {
     margin-bottom: 20px;
     display: flex;
