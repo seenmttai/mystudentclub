@@ -1,0 +1,620 @@
+/* Portal Tabs Container - Fixed at Top */
+.portal-tabs-container {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 70px; /* Below the 70px header */
+  z-index: 99;
+  background: #F9FAFB; /* Solid, non-transparent */
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.portal-tabs-container .portal-filter-pills {
+  display: flex;
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 0.35rem;
+  gap: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+.portal-tabs-container .portal-pill {
+  flex: 1;
+  min-width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  border-radius: var(--radius-lg);
+  position: relative;
+}
+
+/* Vertical Dividers between items */
+.portal-tabs-container .portal-pill:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 25%;
+  height: 50%;
+  width: 1px;
+  background-color: var(--border-light);
+}
+
+/* Remove divider active item and the one before it */
+.portal-tabs-container .portal-pill.active::after,
+.portal-tabs-container .portal-pill.active + .portal-pill::after {
+  display: none;
+}
+
+.portal-tabs-container .portal-pill:hover {
+  color: var(--primary-brand);
+  background: rgba(59, 130, 246, 0.02);
+}
+
+.portal-tabs-container .portal-pill.active {
+  color: var(--primary-brand);
+  background: #eff6ff; /* Light blue background */
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.portal-tabs-container .portal-pill .pill-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 0.35rem;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.portal-tabs-container .portal-pill.active .pill-count {
+  background: rgba(59, 130, 246, 0.15);
+  color: var(--primary-brand);
+}
+
+/* Inline Page Header (Beside Logo) */
+.page-header-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: 1.25rem;
+  padding-left: 1.25rem;
+  border-left: 1px solid #cbd5e1;
+  height: 32px;
+}
+
+.inline-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.inline-count {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  min-width: 20px;
+  text-align: center;
+  background: var(--primary-brand);
+  color: white;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .page-header-inline {
+    display: none;
+  }
+}
+
+/* Sidebar Header */
+.filter-sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.filter-sidebar-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.reset-filters-btn {
+  background: none;
+  border: none;
+  color: var(--primary-brand);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.reset-filters-btn:hover {
+  text-decoration: underline;
+}
+
+/* Layout - Content Area */
+.job-portal-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+  margin-top: 90px; /* Reduced to fix gap */
+  padding-left: 0;
+  margin-left: 0;
+}
+
+.filter-sidebar {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 1.25rem;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 185px; /* Matches layout margin-top exactly */
+  height: fit-content;
+  /* max-height: calc(100vh - 145px);  Removed to prevent clipping */
+  overflow: visible; /* Allow dropdown to spill out */
+  z-index: 90;
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.08));
+  width: 100%;
+  left: auto;
+}
+
+/* History Content */
+.history-content {
+  min-height: 400px;
+}
+
+/* Portal Section */
+.portal-section {
+  margin-bottom: 2rem;
+}
+
+.portal-section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.portal-section-header h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.portal-section-header .portal-badge {
+  padding: 0.25rem 0.6rem;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--primary-brand);
+}
+
+/* Application Cards */
+.application-card {
+  background: var(--surface-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.application-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05));
+  border-color: var(--border-light); /* Keep border color subtle or consistent */
+}
+
+/* Actions Container */
+.application-card-actions {
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+
+/* View Details Button (Matches .apply-now-card-btn) */
+.view-details-btn {
+  padding: 0.5rem 1rem;
+  background-color: white; /* Secondary style by default */
+  color: var(--text-primary);
+  border: 1px solid var(--border-light); /* Explicit border matches screenshot */
+  border-radius: var(--radius-full);
+  font-weight: 500; /* Slightly lighter weight */
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.25rem; /* Sizing adjustment */
+}
+
+/* Secondary Button Style - Reinforce */
+.view-details-btn.secondary {
+  background: white;
+  color: var(--text-primary);
+  border: 1px solid rgb(232, 232, 232);
+  font-weight: bold;
+}
+
+.view-details-btn.secondary:hover {
+  background: var(--neutral-bg);
+  border-color: var(--primary-brand); /* Blue border on hover */
+  color: var(--primary-brand);
+  transform: none;
+}
+
+/* Company Logo */
+.application-card-logo {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: var(--radius-md);
+  background-color: var(--neutral-bg, #f3f4f6);
+  color: var(--primary-brand);
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.application-card-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.application-card-header {
+  margin-bottom: 0.5rem;
+}
+
+.application-card-company {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.2rem 0;
+}
+
+.application-card-applied {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.application-card-applied svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Meta Tags */
+.application-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Applied Badge */
+.app-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.6rem;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 1px solid #fbbf24;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.app-status-badge svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Portal Tag */
+.app-portal-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  background: rgba(59, 130, 246, 0.1);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--primary-brand);
+}
+
+/* Job Tags */
+.application-card-meta .job-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  background: var(--neutral-bg);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.application-card-meta .job-tag svg {
+  width: 12px;
+  height: 12px;
+  opacity: 0.6;
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.empty-state-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1.25rem;
+  color: var(--text-muted);
+  opacity: 0.4;
+}
+
+.empty-state h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.empty-state-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--primary-brand);
+  color: white;
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.empty-state-cta:hover {
+  background: #2563eb;
+}
+
+/* Loading */
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 0;
+}
+
+.loader-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border-light);
+  border-top-color: var(--primary-brand);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Mobile */
+/* Mobile Controls - Hidden on Desktop */
+.mobile-controls,
+.close-sidebar-btn,
+.mobile-only-filter {
+  display: none;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 900px) {
+  .job-portal-layout {
+    grid-template-columns: 1fr;
+    display: block; /* Stack content */
+  }
+
+  .mobile-only-filter {
+    display: block;
+  }
+
+  /* Mobile Controls - Fixed Position */
+  .mobile-controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    position: fixed;
+    top: 60px; /* Below the 60px mobile header */
+    left: 0;
+    right: 0;
+    background: #ffffff;
+    padding: 1rem;
+    z-index: 90;
+    border-bottom: 1px solid var(--border-light);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  }
+
+  .mobile-controls .search-bar-wrapper {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .mobile-controls .search-input-field {
+    width: 100%;
+    padding: 0.6rem 1rem 0.6rem 2.5rem;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-full);
+    font-size: 0.9rem;
+    outline: none;
+    background: var(--neutral-bg);
+  }
+
+  .mobile-controls .search-icon {
+    position: absolute;
+    left: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .filter-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1rem;
+    background: white;
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-full);
+    font-weight: 500;
+    color: var(--text-primary);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  /* Sidebar as Slide-over Modal */
+  .filter-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    z-index: 1000;
+    max-height: none;
+    border-radius: 0;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    display: block; /* Override none if set, but transform hides it */
+    visibility: hidden; /* Hide completely when closed */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding-bottom: 200px; /* Space for dropdowns to expand */
+  }
+
+  .filter-sidebar.active {
+    transform: translateX(0);
+    visibility: visible;
+    box-shadow: 0 0 0 100vw rgba(0, 0, 0, 0.5); /* Backdrop hack */
+  }
+
+  /* Close Button in Sidebar */
+  .close-sidebar-btn {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 0.2rem;
+  }
+
+  .filter-sidebar-header {
+    justify-content: space-between;
+    margin-top: 0;
+  }
+
+  /* Hide Portal Tabs and Page Header on Mobile */
+  .portal-tabs-container,
+  .page-header {
+    display: none;
+  }
+
+  /* Adjust Layout for Fixed Header + Fixed Mobile Controls */
+  .job-portal-layout {
+    margin-top: 70px; /* 60px Header + ~70px Mobile Controls */
+    padding-top: 1rem;
+  }
+}
+
+/* Mobile Card Layout */
+@media (max-width: 768px) {
+  .application-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .application-card-actions {
+    margin-left: 0;
+    margin-top: 0.5rem;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end; /* View Details matches index */
+  }
+
+  .view-details-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .job-portal-layout {
+     margin-top: 60px;
+  }
+  
+  .application-card-logo {
+     width: 40px;
+     height: 40px;
+     min-width: 40px;
+     font-size: 1.2rem;
+  }
+}
