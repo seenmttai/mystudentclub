@@ -1143,6 +1143,12 @@ async function checkUserEnrollment() {
         if (error) throw error;
         lmsNavLink.style.display = count > 0 ? 'flex' : 'none';
     } catch (error) { lmsNavLink.style.display = 'none'; }
+    
+    // Show My Applications link for logged in users
+    const historyNavLink = document.getElementById('history-nav-link');
+    if (historyNavLink && currentSession) {
+        historyNavLink.style.display = 'flex';
+    }
 }
 
 
@@ -1212,10 +1218,24 @@ async function markJobAsApplied(job) {
         }
     }
 
+    // Hack for UUIDs in BigInt column (Frontend-only solution)
+    let dbJobId = job.id;
+    let dbJobTable = currentTable;
+
+    // Check if ID is UUID/String (non-numeric)
+    if (isNaN(job.id)) {
+        // Generate a random safe integer to satisfy BigInt constraint and Unique Constraint
+        // Using timestamp + random to minimize collision
+        dbJobId = Date.now() + Math.floor(Math.random() * 1000); 
+        
+        // Store the REAL UUID in the table name column (Piggyback)
+        dbJobTable = `${currentTable}|${job.id}`;
+    }
+
     try {
         const { error } = await supabaseClient
             .from('job_applications')
-            .insert({ user_id: currentSession.user.id, job_id: job.id, job_table: currentTable });
+            .insert({ user_id: currentSession.user.id, job_id: dbJobId, job_table: dbJobTable });
         if (error) throw error;
     } catch (error) {
         console.error('Failed to save application status:', error);
@@ -1566,11 +1586,19 @@ async function initializeUserFeatures() {
     try {
         const { data, error } = await supabaseClient
             .from('job_applications')
-            .select('job_id')
+            .select('job_id, job_table')
             .eq('user_id', currentSession.user.id)
-            .eq('job_table', currentTable);
+            .like('job_table', `${currentTable}%`); // Use LIKE to match both "Table" and "Table|UUID"
+            
         if (error) throw error;
-        appliedJobIds = new Set(data.map(app => app.job_id));
+        
+        // Extract IDs: If piggybacked (contains |), use the UUID part. Otherwise use normal job_id.
+        appliedJobIds = new Set(data.map(app => {
+            if (app.job_table.includes('|')) {
+                return app.job_table.split('|')[1]; // Return the UUID
+            }
+            return app.job_id;
+        }));
     } catch (error) {
         console.error('Error fetching applied jobs:', error);
     }
