@@ -541,14 +541,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const switchDomainOnLag = () => {
                     const oldDomain = activeHlsDomain;
-                    if (activeHlsDomain === HLS_DOMAINS.SKIRRO) {
-                        activeHlsDomain = HLS_DOMAINS.ZEROHOP;
-                    } else if (activeHlsDomain === HLS_DOMAINS.ZEROHOP) {
+
+                    // REVISED LOGIC:
+                    // Primary loop: ZEROHOP <-> SKIRRO
+                    // If we are already on SKIRRO and lag persists, try NORM.
+                    // If NORM fails, go back to ZEROHOP.
+
+                    if (activeHlsDomain === HLS_DOMAINS.ZEROHOP) {
                         activeHlsDomain = HLS_DOMAINS.SKIRRO;
+                    } else if (activeHlsDomain === HLS_DOMAINS.SKIRRO) {
+                        // Both primary and secondary have issues? Try backup (NORM)
+                        activeHlsDomain = HLS_DOMAINS.NORM;
                     } else if (activeHlsDomain === HLS_DOMAINS.NORM) {
+                        // Backup failed? Reset to primary
                         activeHlsDomain = HLS_DOMAINS.ZEROHOP;
                     } else {
-                        // Fallback for any other state
                         activeHlsDomain = HLS_DOMAINS.ZEROHOP;
                     }
                     console.log(`Lag detected. Switching domain from ${oldDomain} to ${activeHlsDomain}`);
@@ -556,21 +563,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const startHls = (initialBaseUrl) => {
                     // Initial load always uses the passed base URL (usually ZEROHOP)
-                    // But we start the race immediately to switch to the fastest one
                     activeHlsDomain = initialBaseUrl;
 
-                    // Race the domains to find the fastest one
+                    // Race only the PRIMARY and SECONDARY domains
                     const raceDomains = async () => {
                         try {
                             const ping = (url) => fetch(url, { method: 'HEAD', mode: 'no-cors' }).then(() => url);
 
-                            // We use a non-existent path or root to test connectivity
-                            // Note: We need a path that returns headers quickly. 
-                            // Using the domains roots.
+                            // Exclude NORM from the race. It is only for backup.
                             const winner = await Promise.any([
                                 ping(HLS_DOMAINS.ZEROHOP),
-                                ping(HLS_DOMAINS.SKIRRO),
-                                ping(HLS_DOMAINS.NORM)
+                                ping(HLS_DOMAINS.SKIRRO)
                             ]);
 
                             console.log(`Happy Eyeballs race winner: ${winner}`);
@@ -579,7 +582,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (activeHlsDomain !== winner) {
                                 console.log(`Switching active domain to winner: ${winner}`);
                                 activeHlsDomain = winner;
-                                // We don't need to force reload here; xhrSetup will pick it up for next segments
                             }
                         } catch (e) {
                             console.warn("Happy Eyeballs race failed", e);
