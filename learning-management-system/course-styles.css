@@ -139,9 +139,12 @@
     height: calc(100vh - 200px);
     position: sticky;
     top: 80px;
-    overflow-y: auto;
+    /* overflow-y: auto;  REMOVED: Handled by inner modules container */
+    overflow: hidden; /* Prevent outer scroll */
     transition: var(--transition);
     z-index: 100;
+    display: flex;
+    flex-direction: column;
 }
 
 .sidebar-header {
@@ -194,6 +197,9 @@
 
 .course-modules {
     padding: 1rem 0;
+    flex-grow: 1;
+    overflow-y: auto;
+    min-height: 0; /* Important for firefox flex scroll */
 }
 
 .course-module {
@@ -1037,7 +1043,33 @@
 }
 
 .logo-enhanced:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
+}
+
+.certificate-btn {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-size: 0.9rem;
+}
+
+.certificate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    background: linear-gradient(135deg, #fbbf24, #d97706);
+}
+
+.certificate-btn i {
+    font-size: 1rem;
 }
 
 
@@ -1424,4 +1456,61 @@
 
 .info-popup-btn:hover {
     background-color: #1d4ed8;
+}
+
+/* Sidebar Certificate Button */
+.sidebar-certificate-section {
+    padding: 1rem;
+    border-top: 1px solid #e2e8f0;
+    /* margin-top: auto; No longer needed with flex-grow on modules, but keeps it safe */
+    background: #f8fafc;
+    text-align: center;
+    flex-shrink: 0; /* Ensure it doesn't shrink */
+    z-index: 5;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+}
+
+.sidebar-cert-btn {
+    width: 100%;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Locked State */
+.sidebar-cert-btn.locked {
+    background-color: #e2e8f0;
+    color: #94a3b8;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Unlocked State */
+.sidebar-cert-btn:not(.locked) {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.3);
+}
+
+.sidebar-cert-btn:not(.locked):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px -1px rgba(245, 158, 11, 0.4);
+}
+
+.cert-lock-msg {
+    font-size: 0.75rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
+
+.sidebar-cert-btn:not(.locked) + .cert-lock-msg {
+    display: none; /* Hide message when unlocked */
 }

@@ -5,12 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Details | My Student Club LMS</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="course-styles.css">
+    <link rel="stylesheet" href="https://www.mystudentclub.com/learning-management-system/styles.css">
+    <link rel="stylesheet" href="https://www.mystudentclub.com/learning-management-system/course-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Plyr Video Player -->
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+    <!-- jsPDF for Certificate Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- HLS.js for streaming -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <!-- Other Libraries -->
@@ -113,15 +115,28 @@
                             <h3>Course Content</h3>
                             <button class="sidebar-close" id="sidebar-close-btn"><i class="fas fa-times"></i></button>
                         </div>
-                        <div class="course-progress-container">
-                            <div class="progress-bar" id="sidebar-progress-bar" style="width: 0%;"></div>
-                            <span id="sidebar-progress-text">0% Complete</span>
+                        <div class="sidebar-progress">
+                             <div class="course-progress-container">
+                                <span id="sidebar-progress-text">0% Complete</span>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="sidebar-progress-bar" style="width: 0%"></div>
+                                </div>
+                            </div>
                         </div>
                         <div class="course-modules" id="course-modules-container">
                             <div id="loading-videos-sidebar" class="loading-content">
                                 <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i></div>
                                 <p>Loading course content...</p>
                             </div>
+                        </div>
+                        
+                        <!-- Certificate Section (Sidebar Footer) -->
+                        <div id="sidebar-certificate-container" class="sidebar-certificate-section" style="display: none;">
+                            <button id="download-certificate-btn" class="sidebar-cert-btn locked" disabled>
+                                <i class="fas fa-lock"></i>
+                                <span>Certificate Locked</span>
+                            </button>
+                            <p class="cert-lock-msg">Complete 100% to unlock</p>
                         </div>
                     </aside>
 
@@ -294,7 +309,7 @@
             </div>
         </footer>
     </div>
-    <script src="course-script.js"></script>
+    <script src="https://www.mystudentclub.com/learning-management-system/course-script.js"></script>
 </body>
 
 </html>
