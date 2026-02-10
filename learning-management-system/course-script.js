@@ -513,18 +513,102 @@ document.addEventListener('DOMContentLoaded', () => {
             DOMElements.noVideoMessagePlayer.style.display = 'none';
 
             if (currentVideo.hlsPath) {
-                // HLS streaming for industrial training with Happy Eyeballs fallback
-                const startHls = (baseUrl, isRetry = false) => {
-                    const hlsUrl = `${baseUrl}/${encodeURIComponent(currentVideo.hlsPath)}/master.m3u8`;
+                // HLS streaming for industrial training with Happy Eyeballs logic
+                const HLS_DOMAINS = {
+                    ZEROHOP: 'https://zerohop.bhansalimanan55.workers.dev',
+                    SKIRRO: 'https://skirro-main.com',
+                    NORM: 'https://norm.skirro.com'
+                };
+
+                // Current active domain, defaults to ZEROHOP
+                let activeHlsDomain = HLS_DOMAINS.ZEROHOP;
+
+                const getUrlWithActiveDomain = (url) => {
+                    try {
+                        const urlObj = new URL(url);
+                        // If the URL matches one of our domains, replace it with the active one
+                        if (Object.values(HLS_DOMAINS).some(d => url.startsWith(d))) {
+                            const activeUrlObj = new URL(activeHlsDomain);
+                            urlObj.hostname = activeUrlObj.hostname;
+                            urlObj.protocol = activeUrlObj.protocol;
+                            return urlObj.toString();
+                        }
+                        return url;
+                    } catch (e) {
+                        return url;
+                    }
+                };
+
+                const switchDomainOnLag = () => {
+                    const oldDomain = activeHlsDomain;
+                    if (activeHlsDomain === HLS_DOMAINS.SKIRRO) {
+                        activeHlsDomain = HLS_DOMAINS.ZEROHOP;
+                    } else if (activeHlsDomain === HLS_DOMAINS.ZEROHOP) {
+                        activeHlsDomain = HLS_DOMAINS.SKIRRO;
+                    } else if (activeHlsDomain === HLS_DOMAINS.NORM) {
+                        activeHlsDomain = HLS_DOMAINS.ZEROHOP;
+                    } else {
+                        // Fallback for any other state
+                        activeHlsDomain = HLS_DOMAINS.ZEROHOP;
+                    }
+                    console.log(`Lag detected. Switching domain from ${oldDomain} to ${activeHlsDomain}`);
+                };
+
+                const startHls = (initialBaseUrl) => {
+                    // Initial load always uses the passed base URL (usually ZEROHOP)
+                    // But we start the race immediately to switch to the fastest one
+                    activeHlsDomain = initialBaseUrl;
+
+                    // Race the domains to find the fastest one
+                    const raceDomains = async () => {
+                        try {
+                            const ping = (url) => fetch(url, { method: 'HEAD', mode: 'no-cors' }).then(() => url);
+
+                            // We use a non-existent path or root to test connectivity
+                            // Note: We need a path that returns headers quickly. 
+                            // Using the domains roots.
+                            const winner = await Promise.any([
+                                ping(HLS_DOMAINS.ZEROHOP),
+                                ping(HLS_DOMAINS.SKIRRO),
+                                ping(HLS_DOMAINS.NORM)
+                            ]);
+
+                            console.log(`Happy Eyeballs race winner: ${winner}`);
+
+                            // Update active domain to the winner
+                            if (activeHlsDomain !== winner) {
+                                console.log(`Switching active domain to winner: ${winner}`);
+                                activeHlsDomain = winner;
+                                // We don't need to force reload here; xhrSetup will pick it up for next segments
+                            }
+                        } catch (e) {
+                            console.warn("Happy Eyeballs race failed", e);
+                        }
+                    };
+
+                    // Start the race in background
+                    raceDomains();
+
+                    const hlsUrl = `${activeHlsDomain}/${encodeURIComponent(currentVideo.hlsPath)}/master.m3u8`;
 
                     if (Hls.isSupported()) {
                         if (state.hlsInstance) {
                             state.hlsInstance.destroy();
                         }
+
+                        // Configure HLS with xhrSetup to use the active domain
                         state.hlsInstance = new Hls({
                             maxBufferLength: 30,
-                            startLevel: -1
+                            startLevel: -1,
+                            xhrSetup: function (xhr, url) {
+                                // Rewrite URL to use the currently active domain
+                                const newUrl = getUrlWithActiveDomain(url);
+                                if (newUrl !== url) {
+                                    xhr.open('GET', newUrl, true);
+                                }
+                            }
                         });
+
                         state.hlsInstance.loadSource(hlsUrl);
                         state.hlsInstance.attachMedia(DOMElements.videoPlayer);
 
@@ -575,18 +659,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         state.hlsInstance.on(Hls.Events.ERROR, (event, data) => {
                             if (data.fatal) {
-                                // QUIC Fallback Logic
-                                if (data.type === Hls.ErrorTypes.NETWORK_ERROR && !isRetry) {
-                                    console.warn("QUIC connection failed, falling back to TCP (Happy Eyeballs)...");
-                                    startHls(TCP_BASE_URL, true);
+                                console.error('HLS Fatal Error:', data);
+
+                                // Handle Network Errors with our Specific Lag Logic
+                                if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+                                    console.warn("Network error detected (lag/timeout). Checking fallback logic...");
+                                    switchDomainOnLag();
+                                    state.hlsInstance.startLoad(); // Try loading again with new domain
                                     return;
                                 }
 
-                                console.error('HLS Error:', data);
                                 switch (data.type) {
-                                    case Hls.ErrorTypes.NETWORK_ERROR:
-                                        state.hlsInstance.startLoad();
-                                        break;
                                     case Hls.ErrorTypes.MEDIA_ERROR:
                                         state.hlsInstance.recoverMediaError();
                                         break;
@@ -597,15 +680,18 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         });
                     } else if (DOMElements.videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-                        // Safari native HLS
+                        // Safari native HLS logic
+                        // Note: Safari Native doesn't support the background domain switching easily
+                        // We will just use the initial URL and simple error fallback
+
                         DOMElements.videoPlayer.src = hlsUrl;
                         initializePlyr(null);
 
-                        // Simple fallback for Safari native
                         const onError = (e) => {
-                            if (!isRetry) {
-                                console.warn("Safari Native HLS failed, trying fallback...");
-                                startHls(TCP_BASE_URL, true);
+                            console.warn("Safari Native HLS error", e);
+                            // Simple toggle for Safari native if it fails completely
+                            if (activeHlsDomain === HLS_DOMAINS.ZEROHOP) {
+                                startHls(HLS_DOMAINS.SKIRRO);
                             }
                         };
                         DOMElements.videoPlayer.addEventListener('error', onError, { once: true });
@@ -617,7 +703,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 };
 
-                // Start with QUIC
+                // Start with QUIC/Default
                 startHls(QUIC_BASE_URL);
 
             } else {
