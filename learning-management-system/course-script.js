@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // HLS streaming base URL for industrial training
     // HLS streaming base URLs with QUIC fallback
-    const QUIC_BASE_URL = 'https://skirro-main.com';
+    const QUIC_BASE_URL = 'https://zerohop.bhansalimanan55.workers.dev';
     const TCP_BASE_URL = 'https://norm.skirro.com';
 
     let state = {
@@ -68,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
         noVideoSelectedPlaceholder: document.getElementById('no-video-selected-placeholder'),
         videoPlayerContainer: document.getElementById('video-player-container'),
         videoPlayer: document.getElementById('video-player'),
-        downloadCertificateBtn: document.getElementById('download-certificate-btn'),
         videoLoadingOverlay: document.getElementById('video-loading-overlay'),
         noVideoMessagePlayer: document.getElementById('no-video-message-player'),
         prevVideoBtn: document.getElementById('prev-video-btn'),
@@ -152,26 +151,6 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.courseProgressMeta.textContent = `${progress}% Complete`;
         DOMElements.sidebarProgressText.textContent = `${progress}% Complete`;
         DOMElements.sidebarProgressBar.style.width = `${progress}%`;
-        if (state.courseSlug === 'industrial-training-mastery') {
-            const sidebarCertContainer = document.getElementById('sidebar-certificate-container');
-            const certBtn = document.getElementById('download-certificate-btn');
-            
-            if (sidebarCertContainer && certBtn) {
-                sidebarCertContainer.style.display = 'block'; // Ensure container is visible
-                
-                if (progress === 100) {
-                    // Unlock
-                    certBtn.classList.remove('locked');
-                    certBtn.disabled = false;
-                    certBtn.innerHTML = '<i class="fas fa-certificate"></i> <span>Download Certificate</span>';
-                } else {
-                    // Lock
-                    certBtn.classList.add('locked');
-                    certBtn.disabled = true;
-                    certBtn.innerHTML = '<i class="fas fa-lock"></i> <span>Certificate Locked</span>';
-                }
-            }
-        }
     };
 
     const saveVideoProgress = () => {
@@ -836,117 +815,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const generateCertificate = async () => {
-        if (!state.user) {
-            alert('Please log in to download the certificate.');
-            return;
-        }
-
-        try {
-            const { jsPDF } = window.jspdf;
-            // A4 Landscape: 297mm x 210mm. In pixels (approx 96dpi or arbitrary units)
-            // We use 'pt' or 'px'. Let's use 'px' for easier image mapping.
-            const doc = new jsPDF({
-                orientation: 'landscape',
-                unit: 'px',
-                format: [842, 595] // Standard A4 landscape in points (1 point = 1/72 inch). 842x595 is standard A4 pt.
-            });
-
-            const width = doc.internal.pageSize.getWidth();
-            const height = doc.internal.pageSize.getHeight();
-
-            const img = new Image();
-            // Assuming the user will upload it here. Using a query param to bust cache if needed?
-            img.src = '../assets/certificate_template.png'; 
-            img.crossOrigin = 'Anonymous';
-
-            img.onload = () => {
-                doc.addImage(img, 'PNG', 0, 0, width, height);
-
-                let studentName = state.user.user_metadata.full_name || state.user.email.split('@')[0];
-                
-                // Try getting name from local storage as requested
-                try {
-                    const localProfile = localStorage.getItem('userProfileData');
-                    if (localProfile) {
-                        const parsed = JSON.parse(localProfile);
-                        // Check common name fields
-                        if (parsed.full_name) studentName = parsed.full_name;
-                        else if (parsed.name) studentName = parsed.name;
-                        else if (parsed.first_name && parsed.last_name) studentName = `${parsed.first_name} ${parsed.last_name}`;
-                    }
-                } catch (e) {
-                    console.error("Error reading name from localStorage", e);
-                }
-
-                const completionTime = new Date().toLocaleDateString('en-GB', {
-                    day: 'numeric', month: 'long', year: 'numeric'
-                });
-
-                // Name - Moved down to sit in the empty space
-                doc.setFontSize(45);
-                doc.setFont("times", "bold"); // Changed to Times (Serif)
-                doc.setTextColor(0, 0, 0); // Black
-                // Adjusted vertical position to ~53% (was 45%) to avoid overlap with "Presented to"
-                doc.text(studentName.toUpperCase(), width / 1.9, height * 0.50, { align: 'center' }); 
-
-                // Date - Moved to bottom right to match the "Date" line
-                doc.setFontSize(14);
-                doc.setFont("helvetica", "bold");
-                doc.setTextColor(0, 0, 0); // Black
-                // Positioned at ~81% height and ~75% width to sit on the line
-                doc.text(`${completionTime}`, width * 0.68, height * 0.82, { align: 'center' });
-
-                doc.save(`${studentName.replace(/\s+/g, '_')}_Certificate.pdf`);
-            };
-
-            img.onerror = () => {
-                // Fallback check for JPG
-                const imgJPG = new Image();
-                imgJPG.src = '../assets/certificate_template.jpg';
-                imgJPG.crossOrigin = 'Anonymous';
-                imgJPG.onload = () => {
-                     doc.addImage(imgJPG, 'JPG', 0, 0, width, height);
-                     
-                     // Get name again for fallback (scoped differently)
-                     let studentNameFallback = studentName;
-                     
-                     // Re-calculating name for JPG path
-                     studentNameFallback = state.user.user_metadata.full_name || state.user.email.split('@')[0];
-                     try {
-                        const localProfile = localStorage.getItem('userProfileData');
-                        if (localProfile) {
-                            const parsed = JSON.parse(localProfile);
-                            if (parsed.full_name) studentNameFallback = parsed.full_name;
-                            else if (parsed.name) studentNameFallback = parsed.name;
-                            else if (parsed.first_name && parsed.last_name) studentNameFallback = `${parsed.first_name} ${parsed.last_name}`;
-                        }
-                     } catch (e) {}
-
-                     const completionTime = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-                     
-                     doc.setFontSize(45); doc.setFont("times", "bold"); doc.setTextColor(0, 0, 0);
-                     doc.text(studentNameFallback.toUpperCase(), width / 1.9, height * 0.50, { align: 'center' }); 
-                     
-                     doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(0, 0, 0);
-                     doc.text(`${completionTime}`, width * 0.68, height * 0.82, { align: 'center' });
-                     
-                     doc.save(`${studentNameFallback.replace(/\s+/g, '_')}_Certificate.pdf`);
-                };
-                imgJPG.onerror = () => {
-                    alert('Certificate template not found. Please ensure "certificate_template.png" or "certificate_template.jpg" exists in the assets folder.');
-                };
-            };
-
-        } catch (e) {
-            console.error("Certificate generation failed", e);
-            alert("Failed to generate certificate functionality. Please try again.");
-        }
-    };
-
-    const certBtn = document.getElementById('download-certificate-btn');
-    if (certBtn) certBtn.addEventListener('click', generateCertificate);
-
     const openResourceViewer = async (resource, type) => {
         state.pdfDoc = null; state.csvData = null; state.pdfCurrentPage = 1; state.pdfTotalPages = 1;
         const ctx = DOMElements.pdfCanvas.getContext('2d');
@@ -1143,11 +1011,6 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.enrollRedirectBtn.addEventListener('click', () => {
             window.location.href = 'https://www.mystudentclub.com/login';
         });
-
-        if (DOMElements.downloadCertificateBtn) {
-            DOMElements.downloadCertificateBtn.addEventListener('click', generateCertificate);
-        }
-
         DOMElements.sidebarToggleBtn.addEventListener('click', () => DOMElements.courseSidebar.classList.add('active'));
         DOMElements.sidebarCloseBtn.addEventListener('click', () => DOMElements.courseSidebar.classList.remove('active'));
 
