@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // HLS streaming base URL for industrial training
     // HLS streaming base URLs with QUIC fallback
-    const QUIC_BASE_URL = 'https://skirro-main.com';
+    const QUIC_BASE_URL = 'https://zerohop.bhansalimanan55.workers.dev';
     const TCP_BASE_URL = 'https://norm.skirro.com';
 
     let state = {
