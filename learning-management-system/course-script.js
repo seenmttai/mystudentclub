@@ -609,6 +609,44 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         });
 
+                        // Buffer Stall Detection with Incremental Backoff
+                        let stallTimeout = null;
+                        let currentStallThreshold = 1000; // Start at 1 second
+
+                        const clearStallTimer = () => {
+                            if (stallTimeout) {
+                                clearTimeout(stallTimeout);
+                                stallTimeout = null;
+                            }
+                        };
+
+                        state.hlsInstance.on(Hls.Events.FRAG_BUFFERED, () => {
+                            clearStallTimer();
+                            // Successful buffer resets the threshold back to 1s
+                            currentStallThreshold = 1000;
+                        });
+
+                        state.hlsInstance.on(Hls.Events.FRAG_LOADED, () => {
+                            clearStallTimer();
+                        });
+
+                        state.hlsInstance.on(Hls.Events.BUFFER_STALLED, () => {
+                            if (!stallTimeout) {
+                                console.log(`Buffer stalled. Waiting ${currentStallThreshold}ms before switching...`);
+                                stallTimeout = setTimeout(() => {
+                                    console.warn(`Buffer stalled for >${currentStallThreshold}ms. Switching domain...`);
+                                    switchDomainOnLag();
+
+                                    // Increment threshold for next time to prevent rapid looping
+                                    // 1s -> 2s -> 3s -> 4s ...
+                                    currentStallThreshold += 1000;
+
+                                    state.hlsInstance.startLoad();
+                                    stallTimeout = null;
+                                }, currentStallThreshold);
+                            }
+                        });
+
                         state.hlsInstance.loadSource(hlsUrl);
                         state.hlsInstance.attachMedia(DOMElements.videoPlayer);
 
