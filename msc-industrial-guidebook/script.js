@@ -42,7 +42,7 @@ function renderPage(num) {
     showSpinner(true);
     canvas.style.display = 'none';
 
-    // Clear existing annotations
+    // Clear existing annotation links
     const existingLayer = pageWrapper.querySelector('.annotationLayer');
     if (existingLayer) {
         existingLayer.remove();
@@ -63,13 +63,15 @@ function renderPage(num) {
 
         const outputScale = finalScale * (window.devicePixelRatio || 1);
         const viewport = page.getViewport({ scale: outputScale });
-        const annotationViewport = page.getViewport({ scale: finalScale });
 
         canvas.height = viewport.height;
         canvas.width = viewport.width;
 
-        canvas.style.width = `${viewport.width / (window.devicePixelRatio || 1)}px`;
-        canvas.style.height = `${viewport.height / (window.devicePixelRatio || 1)}px`;
+        const cssWidth = viewport.width / (window.devicePixelRatio || 1);
+        const cssHeight = viewport.height / (window.devicePixelRatio || 1);
+
+        canvas.style.width = `${cssWidth}px`;
+        canvas.style.height = `${cssHeight}px`;
 
         const renderContext = {
             canvasContext: ctx,
@@ -82,37 +84,66 @@ function renderPage(num) {
             showSpinner(false);
             canvas.style.display = 'block';
 
-            // Setup Annotation Layer
-            const annotationLayerDiv = document.createElement('div');
-            annotationLayerDiv.className = 'annotationLayer';
-            annotationLayerDiv.style.width = canvas.style.width;
-            annotationLayerDiv.style.height = canvas.style.height;
-            annotationLayerDiv.style.left = '0';
-            annotationLayerDiv.style.top = '0';
-
-            pageWrapper.appendChild(annotationLayerDiv);
-
+            // Manually create clickable links from PDF annotations
             page.getAnnotations().then(function (annotations) {
-                if (annotations.length > 0) {
-                    // console.log("Found annotations:", annotations);
-                    pdfjsLib.AnnotationLayer.render({
-                        viewport: annotationViewport.clone({ dontFlip: true }),
-                        div: annotationLayerDiv,
-                        annotations: annotations,
-                        page: page,
-                        linkService: {
-                            getDestinationHash: (dest) => '#',
-                            getAnchorUrl: (hash) => hash,
-                            setHash: (hash) => { },
-                            executeNamedAction: (action) => { },
-                            cachePageRef: (ref, pageNumber) => { },
-                            isPageVisible: (pageNumber) => true
-                        },
-                        renderInteractiveForms: false
+                const linkAnnotations = annotations.filter(function (a) {
+                    return a.subtype === 'Link' && (a.url || a.dest);
+                });
+
+                if (linkAnnotations.length > 0) {
+                    const annotationLayerDiv = document.createElement('div');
+                    annotationLayerDiv.className = 'annotationLayer';
+                    annotationLayerDiv.style.width = cssWidth + 'px';
+                    annotationLayerDiv.style.height = cssHeight + 'px';
+                    annotationLayerDiv.style.position = 'absolute';
+                    annotationLayerDiv.style.left = '0';
+                    annotationLayerDiv.style.top = '0';
+                    annotationLayerDiv.style.pointerEvents = 'none';
+
+                    linkAnnotations.forEach(function (annotation) {
+                        // annotation.rect is [x1, y1, x2, y2] in PDF coordinate space (bottom-left origin)
+                        var rect = annotation.rect;
+                        if (!rect || rect.length < 4) return;
+
+                        // Transform PDF coordinates to CSS pixel coordinates
+                        // PDF origin is bottom-left, CSS origin is top-left
+                        var pdfPageHeight = viewportRaw.height;
+                        var pdfPageWidth = viewportRaw.width;
+
+                        var left = (rect[0] / pdfPageWidth) * cssWidth;
+                        var bottom = (rect[1] / pdfPageHeight) * cssHeight;
+                        var right = (rect[2] / pdfPageWidth) * cssWidth;
+                        var top = (rect[3] / pdfPageHeight) * cssHeight;
+
+                        // Convert from bottom-origin to top-origin
+                        var cssTop = cssHeight - top;
+                        var linkWidth = right - left;
+                        var linkHeight = top - bottom;
+
+                        var link = document.createElement('a');
+                        if (annotation.url) {
+                            link.href = annotation.url;
+                            link.target = '_blank';
+                            link.rel = 'noopener noreferrer';
+                        }
+                        link.style.position = 'absolute';
+                        link.style.left = left + 'px';
+                        link.style.top = cssTop + 'px';
+                        link.style.width = linkWidth + 'px';
+                        link.style.height = linkHeight + 'px';
+                        link.style.pointerEvents = 'auto';
+                        link.style.cursor = 'pointer';
+                        link.style.zIndex = '10';
+                        // Transparent but detectable
+                        link.style.background = 'transparent';
+                        link.title = annotation.url || 'Link';
+
+                        annotationLayerDiv.appendChild(link);
                     });
+
+                    pageWrapper.appendChild(annotationLayerDiv);
                 }
             });
-
 
             if (pageNumPending !== null) {
                 renderPage(pageNumPending);
