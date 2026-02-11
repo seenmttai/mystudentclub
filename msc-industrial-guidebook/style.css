@@ -192,3 +192,18 @@ h1 {
     font-size: 0.9em;
     color: #495057;
 }
+
+#page-wrapper {
+    margin: 0 auto;
+    display: inline-block;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.annotationLayer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}

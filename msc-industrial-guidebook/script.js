@@ -35,10 +35,18 @@ function showSpinner(show) {
     loadingSpinner.style.display = show ? 'block' : 'none';
 }
 
+const pageWrapper = document.getElementById('page-wrapper');
+
 function renderPage(num) {
     pageRendering = true;
     showSpinner(true);
     canvas.style.display = 'none';
+
+    // Clear existing annotations
+    const existingLayer = pageWrapper.querySelector('.annotationLayer');
+    if (existingLayer) {
+        existingLayer.remove();
+    }
 
     pdfDoc.getPage(num).then(function (page) {
         const DYNAMIC_SCALE_PADDING = 0.98;
@@ -72,6 +80,28 @@ function renderPage(num) {
             pageRendering = false;
             showSpinner(false);
             canvas.style.display = 'block';
+
+            // Setup Annotation Layer
+            const annotationLayerDiv = document.createElement('div');
+            annotationLayerDiv.className = 'annotationLayer';
+            annotationLayerDiv.style.width = canvas.style.width;
+            annotationLayerDiv.style.height = canvas.style.height;
+            annotationLayerDiv.style.left = '0';
+            annotationLayerDiv.style.top = '0';
+
+            pageWrapper.appendChild(annotationLayerDiv);
+
+            page.getAnnotations().then(function (annotations) {
+                pdfjsLib.AnnotationLayer.render({
+                    viewport: viewport.clone({ dontFlip: true }),
+                    div: annotationLayerDiv,
+                    annotations: annotations,
+                    page: page,
+                    linkService: null, // Basic external links work without a full LinkService
+                    renderInteractiveForms: false
+                });
+            });
+
 
             if (pageNumPending !== null) {
                 renderPage(pageNumPending);
@@ -291,7 +321,14 @@ function addObscureOverlay(canvasElem) {
         lockOverlay.style.zIndex = 99;
         lockOverlay.setAttribute('aria-hidden', 'true');
         lockOverlay.title = "Content protected";
-        canvasElem.parentElement.appendChild(lockOverlay);
+
+        // Attach to the wrapper instead of the canvas parent directly to cover annotations too
+        const wrapper = document.getElementById('page-wrapper');
+        if (wrapper) {
+            wrapper.appendChild(lockOverlay);
+        } else {
+            canvasElem.parentElement.appendChild(lockOverlay);
+        }
     }
 }
 function removeObscureOverlay() {
