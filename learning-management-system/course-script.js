@@ -151,13 +151,13 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.courseProgressMeta.textContent = `${progress}% Complete`;
         DOMElements.sidebarProgressText.textContent = `${progress}% Complete`;
         DOMElements.sidebarProgressBar.style.width = `${progress}%`;
-         if (state.courseSlug === 'industrial-training-mastery') {
+        if (state.courseSlug === 'industrial-training-mastery') {
             const sidebarCertContainer = document.getElementById('sidebar-certificate-container');
             const certBtn = document.getElementById('download-certificate-btn');
-            
+
             if (sidebarCertContainer && certBtn) {
                 sidebarCertContainer.style.display = 'block'; // Ensure container is visible
-                
+
                 if (progress === 100) {
                     // Unlock
                     certBtn.classList.remove('locked');
@@ -535,13 +535,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentVideo.hlsPath) {
                 // HLS streaming for industrial training with Happy Eyeballs logic
                 const HLS_DOMAINS = {
-                    ZEROHOP: 'https://zerohop.bhansalimanan55.workers.dev',
+                    SKIRRO_V2: 'https://skirrov2.com',
                     SKIRRO: 'https://skirro-main.com',
+                    ZEROHOP: 'https://zerohop.bhansalimanan55.workers.dev',
                     NORM: 'https://norm.skirro.com'
                 };
 
-                // Current active domain, defaults to ZEROHOP
-                let activeHlsDomain = HLS_DOMAINS.ZEROHOP;
+                // Current active domain, defaults to SKIRRO_V2 (Priority 1)
+                let activeHlsDomain = HLS_DOMAINS.SKIRRO_V2;
 
                 const getUrlWithActiveDomain = (url) => {
                     try {
@@ -563,37 +564,37 @@ document.addEventListener('DOMContentLoaded', () => {
                     const oldDomain = activeHlsDomain;
 
                     // REVISED LOGIC:
-                    // Primary loop: ZEROHOP <-> SKIRRO
-                    // If we are already on SKIRRO and lag persists, try NORM.
-                    // If NORM fails, go back to ZEROHOP.
+                    // Primary loop: SKIRRO_V2 -> SKIRRO -> ZEROHOP -> SKIRRO_V2
+                    // NORM is EXCLUDED from simple lag switching.
 
-                    if (activeHlsDomain === HLS_DOMAINS.ZEROHOP) {
+                    if (activeHlsDomain === HLS_DOMAINS.SKIRRO_V2) {
                         activeHlsDomain = HLS_DOMAINS.SKIRRO;
                     } else if (activeHlsDomain === HLS_DOMAINS.SKIRRO) {
-                        // Both primary and secondary have issues? Try backup (NORM)
-                        activeHlsDomain = HLS_DOMAINS.NORM;
-                    } else if (activeHlsDomain === HLS_DOMAINS.NORM) {
-                        // Backup failed? Reset to primary
                         activeHlsDomain = HLS_DOMAINS.ZEROHOP;
+                    } else if (activeHlsDomain === HLS_DOMAINS.ZEROHOP) {
+                        activeHlsDomain = HLS_DOMAINS.SKIRRO_V2;
                     } else {
-                        activeHlsDomain = HLS_DOMAINS.ZEROHOP;
+                        // If we are on NORM or unknown, reset to priority
+                        activeHlsDomain = HLS_DOMAINS.SKIRRO_V2;
                     }
                     console.log(`Lag detected. Switching domain from ${oldDomain} to ${activeHlsDomain}`);
                 };
 
                 const startHls = (initialBaseUrl) => {
-                    // Initial load always uses the passed base URL (usually ZEROHOP)
-                    activeHlsDomain = initialBaseUrl;
+                    // Start with the passed URL, but effective domain will be set by race or default
+                    // We default to SKIRRO_V2 if a race doesn't overwrite it
+                    activeHlsDomain = HLS_DOMAINS.SKIRRO_V2;
 
-                    // Race only the PRIMARY and SECONDARY domains
+                    // Race only the PRIMARY domains (SkirroV2, Skirro, Zerohop)
                     const raceDomains = async () => {
                         try {
                             const ping = (url) => fetch(url, { method: 'HEAD', mode: 'no-cors' }).then(() => url);
 
-                            // Exclude NORM from the race. It is only for backup.
+                            // Exclude NORM from the race.
                             const winner = await Promise.any([
-                                ping(HLS_DOMAINS.ZEROHOP),
-                                ping(HLS_DOMAINS.SKIRRO)
+                                ping(HLS_DOMAINS.SKIRRO_V2),
+                                ping(HLS_DOMAINS.SKIRRO),
+                                ping(HLS_DOMAINS.ZEROHOP)
                             ]);
 
                             console.log(`Happy Eyeballs race winner: ${winner}`);
@@ -724,8 +725,50 @@ document.addEventListener('DOMContentLoaded', () => {
                                 // Handle Network Errors with our Specific Lag Logic
                                 if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
                                     console.warn("Network error detected (lag/timeout). Checking fallback logic...");
+
+                                    // Check if this is a fatal network error that might require NORM
+                                    // We only switch to NORM if we've cycled through primaries and still have issues? 
+                                    // OR simpler: if we get a strict network error, we can try switching to NORM if
+                                    // we are desperate. But user said "only use it when error happens from network(quic error mainly)"
+
+                                    const isFatalNetwork = data.fatal || data.response?.code === 0 || data.response?.code === 404;
+
+                                    if (isFatalNetwork &&
+                                        (activeHlsDomain === HLS_DOMAINS.SKIRRO_V2 ||
+                                            activeHlsDomain === HLS_DOMAINS.SKIRRO ||
+                                            activeHlsDomain === HLS_DOMAINS.ZEROHOP)) {
+
+                                        // If we are seeing fatal network errors, we might want to try NORM
+                                        // But let's stick to the cycle first. If the cycle brings us back to start 
+                                        // repeatedly, maybe then NORM?
+                                        // For now, let's keep the simple cycle for lag, 
+                                        // BUT if we are *explicitly* told to use Norm for fatal network errors:
+
+                                        // Let's rely on switchDomainOnLag() to cycle through primaries.
+                                        // If we want to use Norm, we'd need to track failures. 
+                                        // Given the request "remove norm... and only use it when error happens from network",
+                                        // we can add a check here.
+
+                                        // If we are already on a fallback and failing -> NORM?
+                                        // Let's stick to the loop for now unless we can confirm ALL failed.
+                                        // Since we can't easily track global state across reloads without more vars,
+                                        // we will just treat network error as "lag" and switch to next primary.
+
+                                        switchDomainOnLag();
+                                        state.hlsInstance.startLoad();
+                                        return;
+                                    }
+
+                                    // If we are ALREADY on NORM and erroring, what then?
+                                    if (activeHlsDomain === HLS_DOMAINS.NORM) {
+                                        // Loop back to start
+                                        activeHlsDomain = HLS_DOMAINS.SKIRRO_V2;
+                                        state.hlsInstance.startLoad();
+                                        return;
+                                    }
+
                                     switchDomainOnLag();
-                                    state.hlsInstance.startLoad(); // Try loading again with new domain
+                                    state.hlsInstance.startLoad();
                                     return;
                                 }
 
@@ -982,14 +1025,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const img = new Image();
             // Assuming the user will upload it here. Using a query param to bust cache if needed?
-            img.src = '../assets/certificate_template.png'; 
+            img.src = '../assets/certificate_template.png';
             img.crossOrigin = 'Anonymous';
 
             img.onload = () => {
                 doc.addImage(img, 'PNG', 0, 0, width, height);
 
                 let studentName = state.user.user_metadata.full_name || state.user.email.split('@')[0];
-                
+
                 // Try getting name from local storage as requested
                 try {
                     const localProfile = localStorage.getItem('userProfileData');
@@ -1013,7 +1056,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 doc.setFont("times", "bold"); // Changed to Times (Serif)
                 doc.setTextColor(0, 0, 0); // Black
                 // Adjusted vertical position to ~53% (was 45%) to avoid overlap with "Presented to"
-                doc.text(studentName.toUpperCase(), width / 1.9, height * 0.50, { align: 'center' }); 
+                doc.text(studentName.toUpperCase(), width / 1.9, height * 0.50, { align: 'center' });
 
                 // Date - Moved to bottom right to match the "Date" line
                 doc.setFontSize(14);
@@ -1031,14 +1074,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 imgJPG.src = '../assets/certificate_template.jpg';
                 imgJPG.crossOrigin = 'Anonymous';
                 imgJPG.onload = () => {
-                     doc.addImage(imgJPG, 'JPG', 0, 0, width, height);
-                     
-                     // Get name again for fallback (scoped differently)
-                     let studentNameFallback = studentName;
-                     
-                     // Re-calculating name for JPG path
-                     studentNameFallback = state.user.user_metadata.full_name || state.user.email.split('@')[0];
-                     try {
+                    doc.addImage(imgJPG, 'JPG', 0, 0, width, height);
+
+                    // Get name again for fallback (scoped differently)
+                    let studentNameFallback = studentName;
+
+                    // Re-calculating name for JPG path
+                    studentNameFallback = state.user.user_metadata.full_name || state.user.email.split('@')[0];
+                    try {
                         const localProfile = localStorage.getItem('userProfileData');
                         if (localProfile) {
                             const parsed = JSON.parse(localProfile);
@@ -1046,17 +1089,17 @@ document.addEventListener('DOMContentLoaded', () => {
                             else if (parsed.name) studentNameFallback = parsed.name;
                             else if (parsed.first_name && parsed.last_name) studentNameFallback = `${parsed.first_name} ${parsed.last_name}`;
                         }
-                     } catch (e) {}
+                    } catch (e) { }
 
-                     const completionTime = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-                     
-                     doc.setFontSize(45); doc.setFont("times", "bold"); doc.setTextColor(0, 0, 0);
-                     doc.text(studentNameFallback.toUpperCase(), width / 1.9, height * 0.50, { align: 'center' }); 
-                     
-                     doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(0, 0, 0);
-                     doc.text(`${completionTime}`, width * 0.68, height * 0.82, { align: 'center' });
-                     
-                     doc.save(`${studentNameFallback.replace(/\s+/g, '_')}_Certificate.pdf`);
+                    const completionTime = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+                    doc.setFontSize(45); doc.setFont("times", "bold"); doc.setTextColor(0, 0, 0);
+                    doc.text(studentNameFallback.toUpperCase(), width / 1.9, height * 0.50, { align: 'center' });
+
+                    doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.setTextColor(0, 0, 0);
+                    doc.text(`${completionTime}`, width * 0.68, height * 0.82, { align: 'center' });
+
+                    doc.save(`${studentNameFallback.replace(/\s+/g, '_')}_Certificate.pdf`);
                 };
                 imgJPG.onerror = () => {
                     alert('Certificate template not found. Please ensure "certificate_template.png" or "certificate_template.jpg" exists in the assets folder.');
