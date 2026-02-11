@@ -1,0 +1,35 @@
+name: Generate Jobs
+
+on:
+  schedule:
+    - cron: '0 */3 * * *' # Run every 3 hours
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install Dependencies
+      run: npm install
+      
+    - name: Generate Jobs
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+      run: node scripts/generate-jobs.js
+      
+    - name: Commit and Push Changes
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        git add jobs/ jobs/sync-state.json jobs-sitemap.xml
+        git commit -m "Auto-generated jobs update" || echo "No changes to commit"
+        git push

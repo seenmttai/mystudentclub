@@ -1,0 +1,26 @@
+{
+  "name": "mystudentclub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "firebase-messaging-sw.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "generate-jobs": "node scripts/generate-jobs.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aniket-patill/mystudentclub.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/aniket-patill/mystudentclub/issues"
+  },
+  "homepage": "https://github.com/aniket-patill/mystudentclub#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.95.3",
+    "dotenv": "^17.2.4"
+  }
+}
