@@ -63,6 +63,7 @@ function renderPage(num) {
 
         const outputScale = finalScale * (window.devicePixelRatio || 1);
         const viewport = page.getViewport({ scale: outputScale });
+        const annotationViewport = page.getViewport({ scale: finalScale });
 
         canvas.height = viewport.height;
         canvas.width = viewport.width;
@@ -92,14 +93,24 @@ function renderPage(num) {
             pageWrapper.appendChild(annotationLayerDiv);
 
             page.getAnnotations().then(function (annotations) {
-                pdfjsLib.AnnotationLayer.render({
-                    viewport: viewport.clone({ dontFlip: true }),
-                    div: annotationLayerDiv,
-                    annotations: annotations,
-                    page: page,
-                    linkService: null, // Basic external links work without a full LinkService
-                    renderInteractiveForms: false
-                });
+                if (annotations.length > 0) {
+                    // console.log("Found annotations:", annotations);
+                    pdfjsLib.AnnotationLayer.render({
+                        viewport: annotationViewport.clone({ dontFlip: true }),
+                        div: annotationLayerDiv,
+                        annotations: annotations,
+                        page: page,
+                        linkService: {
+                            getDestinationHash: (dest) => '#',
+                            getAnchorUrl: (hash) => hash,
+                            setHash: (hash) => { },
+                            executeNamedAction: (action) => { },
+                            cachePageRef: (ref, pageNumber) => { },
+                            isPageVisible: (pageNumber) => true
+                        },
+                        renderInteractiveForms: false
+                    });
+                }
             });
 
 
