@@ -1077,12 +1077,6 @@ async function generateJobs() {
 
             fs.writeFileSync(filePath, htmlContent);
         }
-
-        // --- Cleanup Logic ---
-        // 1. Get all files in the directory.
-        // 2. Sort them by modification time (Newest First).
-        // 3. Keep top FOLDER_LIMIT (2800).
-        // 4. Delete the rest.
         
         let allFiles = fs.readdirSync(folderPath).map(file => {
             return {
@@ -1095,17 +1089,40 @@ async function generateJobs() {
         // Filter only HTML files to avoid deleting system files if any
         allFiles = allFiles.filter(f => f.name.endsWith('.html'));
 
-        // Sort desc (newest first)
+        // Sort desc (newest first) to check limit
         allFiles.sort((a, b) => b.mtime - a.mtime);
 
         if (allFiles.length > FOLDER_LIMIT) {
-            const filesToDelete = allFiles.slice(FOLDER_LIMIT);
-            console.log(`Folder limit exceeded (${allFiles.length} > ${FOLDER_LIMIT}). Deleting ${filesToDelete.length} old files...`);
+            console.log(`Folder limit exceeded (${allFiles.length} > ${FOLDER_LIMIT}). Initiating bulk cleanup...`);
+            
+            // 1. Identify the oldest file (last in the sorted array)
+            const oldestFile = allFiles[allFiles.length - 1];
+            const oldestDate = new Date(oldestFile.mtime);
+            
+            console.log(`Oldest file found: ${oldestFile.name} (Dated: ${oldestDate.toISOString()})`);
+            
+            // 2. Calculate the purge cutoff date (Oldest Date + 7 Days)
+            // We want to delete everything from the "oldest date" up to "oldest date + 7 days"
+            // effectively clearing a week's worth of the oldest data.
+            const purgeCutoff = new Date(oldestDate);
+            purgeCutoff.setDate(purgeCutoff.getDate() + 7);
+            
+            console.log(`Purging files older than or equal to: ${purgeCutoff.toISOString()} (7-day buffer)`);
+            
+            // 3. Filter files to delete: Any file OLDER than the cutoff (mtime < purgeCutoff)
+            // Note: Since 'allFiles' contains everything, we just act on the full list.
+            const filesToDelete = allFiles.filter(f => f.mtime <= purgeCutoff);
+            
+            console.log(`Identified ${filesToDelete.length} files to delete.`);
             
             for (const file of filesToDelete) {
-                fs.unlinkSync(file.path);
+                try {
+                    fs.unlinkSync(file.path);
+                } catch (err) {
+                    console.error(`Failed to delete ${file.name}:`, err);
+                }
             }
-            console.log(`Cleanup complete.`);
+            console.log(`Bulk cleanup complete. Deleted ${filesToDelete.length} files.`);
         } else {
             console.log(`Folder check passed: ${allFiles.length} files (Limit: ${FOLDER_LIMIT}).`);
         }
@@ -1129,16 +1146,19 @@ async function generateSitemap(jobsDir) {
 
     const today = new Date().toISOString().split('T')[0];
     
-    // Calculate cutoff date (60 days ago)
+    // Calculate cutoff date (3 days ago)
     const cutoffDate = new Date();
-    cutoffDate.setDate(cutoffDate.getDate() - 60);
+    cutoffDate.setDate(cutoffDate.getDate() - 3);
     console.log(`Sitemap cutoff date: ${cutoffDate.toISOString().split('T')[0]} (Only including jobs posted/created after this)`);
 
+    let totalExpired = 0;
+    
     for (const [tableName, folderName] of Object.entries(TABLE_MAP)) {
         const folderPath = path.join(jobsDir, folderName);
         if (fs.existsSync(folderPath)) {
             const files = fs.readdirSync(folderPath).filter(file => file.endsWith('.html'));
             let addedCount = 0;
+            let expiredCount = 0;
             
             for (const file of files) {
                 const filePath = path.join(folderPath, file);
@@ -1153,25 +1173,73 @@ async function generateSitemap(jobsDir) {
                         
                         // Compare job posted date with cutoff
                         if (jobDate > cutoffDate) {
+                            // Fresh job - add to sitemap
                             const url = `${DOMAIN}/jobs/${folderName}/${file}`;
                             sitemapContent += `   <url>\n      <loc>${url}</loc>\n      <lastmod>${today}</lastmod>\n      <changefreq>daily</changefreq>\n      <priority>0.7</priority>\n   </url>\n`;
                             addedCount++;
+                        } else {
+                            // Job is expired - remove JSON-LD and inject noindex meta
+                            // Check if JSON-LD still exists or if noindex meta is missing
+                            const hasJsonLd = content.includes('<script type="application/ld+json">');
+                            const hasNoindexMeta = content.includes('<meta name="robots" content="noindex');
+                            
+                            if (hasJsonLd || !hasNoindexMeta) {
+                                // Get original file stats to preserve mtime
+                                const stats = fs.statSync(filePath);
+                                const originalMtime = stats.mtime;
+                                const originalAtime = stats.atime;
+                                
+                                let updatedContent = content;
+                                
+                                // Remove JSON-LD block if exists
+                                if (hasJsonLd) {
+                                    updatedContent = updatedContent.replace(
+                                        /<script type="application\/ld\+json">[\s\S]*?<\/script>/,
+                                        ''
+                                    );
+                                }
+                                
+                                // Inject noindex meta tag if not present
+                                if (!hasNoindexMeta) {
+                                    // Insert after the viewport meta tag (or first meta tag)
+                                    updatedContent = updatedContent.replace(
+                                        /(<meta name="viewport"[^>]*>)/,
+                                        '$1\n    <meta name="robots" content="noindex, follow">'
+                                    );
+                                }
+                                
+                                // Write updated content
+                                fs.writeFileSync(filePath, updatedContent);
+                                
+                                // Restore original timestamps
+                                fs.utimesSync(filePath, originalAtime, originalMtime);
+                                
+                                expiredCount++;
+                            }
+                            // Skip adding to sitemap (expired)
                         }
                     } else {
-                        // Fallback: If date not found in content, check file mtime
+                        // No JSON-LD found (already processed or invalid)
+                        // Check file mtime as fallback
                         const stats = fs.statSync(filePath);
                         if (stats.mtime > cutoffDate) {
                             const url = `${DOMAIN}/jobs/${folderName}/${file}`;
                             sitemapContent += `   <url>\n      <loc>${url}</loc>\n      <lastmod>${today}</lastmod>\n      <changefreq>daily</changefreq>\n      <priority>0.7</priority>\n   </url>\n`;
                             addedCount++;
                         }
+                        // If old and no JSON-LD, it's already been processed - skip
                     }
                 } catch (err) {
-                    console.error(`Error reading file ${file} for sitemap:`, err);
+                    console.error(`Error processing file ${file}:`, err);
                 }
             }
-            console.log(`Added ${addedCount}/${files.length} jobs for ${folderName} to sitemap.`);
+            console.log(`${folderName}: Added ${addedCount} to sitemap, Removed JSON-LD from ${expiredCount} expired jobs (Total files: ${files.length})`);
+            totalExpired += expiredCount;
         }
+    }
+    
+    if (totalExpired > 0) {
+        console.log(`Total expired jobs processed (JSON-LD removed): ${totalExpired}`);
     }
 
     sitemapContent += `</urlset>`;
