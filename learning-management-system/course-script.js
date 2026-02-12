@@ -536,13 +536,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 // HLS streaming for industrial training with Happy Eyeballs logic
                 const HLS_DOMAINS = {
                     SKIRRO_V2: 'https://skirrov2.com',
+                    ONE_SKIRRO_V2: 'https://one.skirrov2.com',
                     SKIRRO: 'https://skirro-main.com',
                     ZEROHOP: 'https://zerohop.bhansalimanan55.workers.dev',
                     NORM: 'https://norm.skirro.com'
                 };
 
-                // Current active domain, defaults to SKIRRO_V2 (Priority 1)
+                // Current active domain, defaults to SKIRRO_V2
                 let activeHlsDomain = HLS_DOMAINS.SKIRRO_V2;
+
+                // Sorted list of domains by speed (fastest first)
+                // Default order until race completes
+                let sortedHlsDomains = [
+                    HLS_DOMAINS.SKIRRO_V2,
+                    HLS_DOMAINS.ONE_SKIRRO_V2,
+                    HLS_DOMAINS.SKIRRO,
+                    HLS_DOMAINS.ZEROHOP
+                ];
 
                 const getUrlWithActiveDomain = (url) => {
                     try {
@@ -567,50 +577,66 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Primary loop: SKIRRO_V2 -> SKIRRO -> ZEROHOP -> SKIRRO_V2
                     // NORM is EXCLUDED from simple lag switching.
 
-                    if (activeHlsDomain === HLS_DOMAINS.SKIRRO_V2) {
-                        activeHlsDomain = HLS_DOMAINS.SKIRRO;
-                    } else if (activeHlsDomain === HLS_DOMAINS.SKIRRO) {
-                        activeHlsDomain = HLS_DOMAINS.ZEROHOP;
-                    } else if (activeHlsDomain === HLS_DOMAINS.ZEROHOP) {
-                        activeHlsDomain = HLS_DOMAINS.SKIRRO_V2;
+                    if (sortedHlsDomains.length === 0) {
+                        console.warn("All primary domains failed race/checks. Switching to NORM (last resort).");
+                        activeHlsDomain = HLS_DOMAINS.NORM;
                     } else {
-                        // If we are on NORM or unknown, reset to priority
-                        activeHlsDomain = HLS_DOMAINS.SKIRRO_V2;
+                        let currentIndex = sortedHlsDomains.indexOf(activeHlsDomain);
+                        // If current valid, move to next. If -1, start at 0.
+                        let nextIndex = (currentIndex + 1) % sortedHlsDomains.length;
+                        if (currentIndex === -1) nextIndex = 0;
+
+                        activeHlsDomain = sortedHlsDomains[nextIndex];
                     }
                     console.log(`Lag detected. Switching domain from ${oldDomain} to ${activeHlsDomain}`);
                 };
 
                 const startHls = (initialBaseUrl) => {
-                    // Start with the passed URL, but effective domain will be set by race or default
-                    // We default to SKIRRO_V2 if a race doesn't overwrite it
-                    activeHlsDomain = HLS_DOMAINS.SKIRRO_V2;
+                    // Start with the passed URL, but effective domain will be set by race
+                    activeHlsDomain = initialBaseUrl;
 
-                    // Race only the PRIMARY domains (SkirroV2, Skirro, Zerohop)
-                    const raceDomains = async () => {
-                        try {
-                            const ping = (url) => fetch(url, { method: 'HEAD', mode: 'no-cors' }).then(() => url);
+                    // Race and Sort domains
+                    const runDynamicRace = () => {
+                        const domains = [
+                            HLS_DOMAINS.SKIRRO_V2,
+                            HLS_DOMAINS.ONE_SKIRRO_V2,
+                            HLS_DOMAINS.SKIRRO,
+                            HLS_DOMAINS.ZEROHOP
+                        ];
 
-                            // Exclude NORM from the race.
-                            const winner = await Promise.any([
-                                ping(HLS_DOMAINS.SKIRRO_V2),
-                                ping(HLS_DOMAINS.SKIRRO),
-                                ping(HLS_DOMAINS.ZEROHOP)
-                            ]);
+                        const newSortedList = [];
+                        let firstWinnerFound = false;
 
-                            console.log(`Happy Eyeballs race winner: ${winner}`);
+                        domains.forEach(domain => {
+                            fetch(domain, { method: 'HEAD', mode: 'no-cors' })
+                                .then(() => {
+                                    // Success - Push to list in order of arrival
+                                    newSortedList.push(domain);
 
-                            // Update active domain to the winner
-                            if (activeHlsDomain !== winner) {
-                                console.log(`Switching active domain to winner: ${winner}`);
-                                activeHlsDomain = winner;
-                            }
-                        } catch (e) {
-                            console.warn("Happy Eyeballs race failed", e);
-                        }
+                                    // If this is the FIRST one to return, it's our winner (fastest)
+                                    if (!firstWinnerFound) {
+                                        firstWinnerFound = true;
+                                        console.log(`Fastest domain found: ${domain}`);
+                                        if (activeHlsDomain !== domain) {
+                                            activeHlsDomain = domain;
+                                            console.log(`Switching active domain to: ${domain}`);
+                                        }
+                                        // Immediately likely to be the only one for a split second, so enable it
+                                        sortedHlsDomains = [domain];
+                                    } else {
+                                        // As others return, update the full list
+                                        sortedHlsDomains = [...newSortedList];
+                                    }
+                                })
+                                .catch((e) => {
+                                    console.warn(`Domain ${domain} unreachable/failed`, e);
+                                    // Do NOT add to list.
+                                });
+                        });
                     };
 
                     // Start the race in background
-                    raceDomains();
+                    runDynamicRace();
 
                     const hlsUrl = `${activeHlsDomain}/${encodeURIComponent(currentVideo.hlsPath)}/master.m3u8`;
 
