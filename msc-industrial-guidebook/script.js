@@ -91,6 +91,9 @@ function renderPage(num) {
                 });
 
                 if (linkAnnotations.length > 0) {
+                    // Create viewport scaled to CSS dimensions for correct coordinate conversion
+                    const cssViewport = page.getViewport({ scale: finalScale });
+
                     const annotationLayerDiv = document.createElement('div');
                     annotationLayerDiv.className = 'annotationLayer';
                     annotationLayerDiv.style.width = cssWidth + 'px';
@@ -98,43 +101,42 @@ function renderPage(num) {
                     annotationLayerDiv.style.position = 'absolute';
                     annotationLayerDiv.style.left = '0';
                     annotationLayerDiv.style.top = '0';
-                    annotationLayerDiv.style.pointerEvents = 'none';
+                    annotationLayerDiv.style.pointerEvents = 'none'; // Allow clicks to pass through empty areas
 
                     linkAnnotations.forEach(function (annotation) {
-                        // annotation.rect is [x1, y1, x2, y2] in PDF coordinate space (bottom-left origin)
-                        var rect = annotation.rect;
-                        if (!rect || rect.length < 4) return;
+                        if (!annotation.rect) return;
 
-                        // Transform PDF coordinates to CSS pixel coordinates
-                        // PDF origin is bottom-left, CSS origin is top-left
-                        var pdfPageHeight = viewportRaw.height;
-                        var pdfPageWidth = viewportRaw.width;
+                        // Use convertToViewportRectangle to handle rotation and scaling correctly
+                        // Returns [xMin, yMin, xMax, yMax] with top-left origin
+                        const rect = cssViewport.convertToViewportRectangle(annotation.rect);
 
-                        var left = (rect[0] / pdfPageWidth) * cssWidth;
-                        var bottom = (rect[1] / pdfPageHeight) * cssHeight;
-                        var right = (rect[2] / pdfPageWidth) * cssWidth;
-                        var top = (rect[3] / pdfPageHeight) * cssHeight;
+                        const x = Math.min(rect[0], rect[2]);
+                        const y = Math.min(rect[1], rect[3]);
+                        const width = Math.abs(rect[2] - rect[0]);
+                        const height = Math.abs(rect[3] - rect[1]);
 
-                        // Convert from bottom-origin to top-origin
-                        var cssTop = cssHeight - top;
-                        var linkWidth = right - left;
-                        var linkHeight = top - bottom;
+                        const link = document.createElement('a');
 
-                        var link = document.createElement('a');
                         if (annotation.url) {
                             link.href = annotation.url;
                             link.target = '_blank';
                             link.rel = 'noopener noreferrer';
+                        } else {
+                            // Skip internal links for now as they require complex navigation logic
+                            return;
                         }
+
                         link.style.position = 'absolute';
-                        link.style.left = left + 'px';
-                        link.style.top = cssTop + 'px';
-                        link.style.width = linkWidth + 'px';
-                        link.style.height = linkHeight + 'px';
+                        link.style.left = x + 'px';
+                        link.style.top = y + 'px';
+                        link.style.width = width + 'px';
+                        link.style.height = height + 'px';
+
+                        // Styling to make sure it's interactive but invisible
                         link.style.pointerEvents = 'auto';
                         link.style.cursor = 'pointer';
-                        link.style.zIndex = '10';
-                        // Transparent but detectable
+                        link.style.zIndex = '100'; // Ensure it's above the overlay
+                        link.style.background = 'rgba(0, 255, 0, 0.05)'; // Faint green debug tint, or transparent
                         link.style.background = 'transparent';
                         link.title = annotation.url || 'Link';
 
