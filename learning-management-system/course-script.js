@@ -158,17 +158,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sidebarCertContainer && certBtn) {
                 sidebarCertContainer.style.display = 'block'; // Ensure container is visible
 
-                if (progress === 100) {
-                    // Unlock
-                    certBtn.classList.remove('locked');
-                    certBtn.disabled = false;
-                    certBtn.innerHTML = '<i class="fas fa-certificate"></i> <span>Download Certificate</span>';
-                } else {
-                    // Lock
-                    certBtn.classList.add('locked');
-                    certBtn.disabled = true;
-                    certBtn.innerHTML = '<i class="fas fa-lock"></i> <span>Certificate Locked</span>';
-                }
+                // Always allow certificate download for industrial training students
+                certBtn.classList.remove('locked');
+                certBtn.disabled = false;
+                certBtn.innerHTML = '<i class="fas fa-certificate"></i> <span>Download Certificate</span>';
+
+                // Hide the lock message if present
+                const lockMsg = sidebarCertContainer.querySelector('.cert-lock-msg');
+                if (lockMsg) lockMsg.style.display = 'none';
             }
         }
     };
