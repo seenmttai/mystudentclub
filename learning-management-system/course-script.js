@@ -547,8 +547,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Sorted list of domains by speed (fastest first)
                 // Default order until race completes
                 let sortedHlsDomains = [
-                    HLS_DOMAINS.SKIRRO_V2,
-                    HLS_DOMAINS.ONE_SKIRRO_V2,
                     HLS_DOMAINS.TWO_SKIRRO_V2,
                     HLS_DOMAINS.THREE_SKIRRO_V2,
                     HLS_DOMAINS.FOUR_SKIRRO_V2,
