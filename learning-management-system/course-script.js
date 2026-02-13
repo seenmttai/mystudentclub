@@ -660,7 +660,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         // Buffer Stall Detection with Incremental Backoff
                         let stallTimeout = null;
-                        let currentStallThreshold = 1000; // Start at 1 second
+                        let currentStallThreshold = 4000; // Start at 4 seconds to avoid startup false positives
 
                         const clearStallTimer = () => {
                             if (stallTimeout) {
@@ -671,7 +671,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         state.hlsInstance.on(Hls.Events.FRAG_BUFFERED, () => {
                             clearStallTimer();
-                            // Successful buffer resets the threshold back to 1s
+                            // Successful buffer resets the threshold back to 1s (strict lag logic after start)
                             currentStallThreshold = 1000;
                         });
 
