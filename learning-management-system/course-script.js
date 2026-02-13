@@ -532,6 +532,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (currentVideo.hlsPath) {
                 // HLS streaming for industrial training with Happy Eyeballs logic
                 const HLS_DOMAINS = {
+                    SKIRRO_V2: 'https://skirrov2.com',
+                    ONE_SKIRRO_V2: 'https://one.skirrov2.com',
                     TWO_SKIRRO_V2: 'https://two.skirrov2.com',
                     THREE_SKIRRO_V2: 'https://three.skirrov2.com',
                     FOUR_SKIRRO_V2: 'https://four.skirrov2.com',
@@ -547,6 +549,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Sorted list of domains by speed (fastest first)
                 // Default order until race completes
                 let sortedHlsDomains = [
+                    HLS_DOMAINS.SKIRRO_V2,
+                    HLS_DOMAINS.ONE_SKIRRO_V2,
                     HLS_DOMAINS.TWO_SKIRRO_V2,
                     HLS_DOMAINS.THREE_SKIRRO_V2,
                     HLS_DOMAINS.FOUR_SKIRRO_V2,
