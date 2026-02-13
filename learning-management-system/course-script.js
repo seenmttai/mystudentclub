@@ -534,6 +534,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const HLS_DOMAINS = {
                     SKIRRO_V2: 'https://skirrov2.com',
                     ONE_SKIRRO_V2: 'https://one.skirrov2.com',
+                    TWO_SKIRRO_V2: 'https://two.skirrov2.com',
+                    THREE_SKIRRO_V2: 'https://three.skirrov2.com',
+                    FOUR_SKIRRO_V2: 'https://four.skirrov2.com',
+                    FIVE_SKIRRO_V2: 'https://five.skirrov2.com',
                     SKIRRO: 'https://skirro-main.com',
                     ZEROHOP: 'https://zerohop.bhansalimanan55.workers.dev',
                     NORM: 'https://norm.skirro.com'
@@ -547,6 +551,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 let sortedHlsDomains = [
                     HLS_DOMAINS.SKIRRO_V2,
                     HLS_DOMAINS.ONE_SKIRRO_V2,
+                    HLS_DOMAINS.TWO_SKIRRO_V2,
+                    HLS_DOMAINS.THREE_SKIRRO_V2,
+                    HLS_DOMAINS.FOUR_SKIRRO_V2,
+                    HLS_DOMAINS.FIVE_SKIRRO_V2,
                     HLS_DOMAINS.SKIRRO,
                     HLS_DOMAINS.ZEROHOP
                 ];
@@ -597,6 +605,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         const domains = [
                             HLS_DOMAINS.SKIRRO_V2,
                             HLS_DOMAINS.ONE_SKIRRO_V2,
+                            HLS_DOMAINS.TWO_SKIRRO_V2,
+                            HLS_DOMAINS.THREE_SKIRRO_V2,
+                            HLS_DOMAINS.FOUR_SKIRRO_V2,
+                            HLS_DOMAINS.FIVE_SKIRRO_V2,
                             HLS_DOMAINS.SKIRRO,
                             HLS_DOMAINS.ZEROHOP
                         ];
