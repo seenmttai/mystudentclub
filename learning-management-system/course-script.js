@@ -559,6 +559,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     HLS_DOMAINS.ZEROHOP
                 ];
 
+                // Stats for TTFB tracking
+                let domainStats = {};
+                Object.values(HLS_DOMAINS).forEach(d => {
+                    domainStats[d] = { totalTtfb: 0, count: 0, avgTtfb: 0, failures: 0 };
+                });
+                let consecutiveStatsFailures = 0;
+                let isRelaxedMode = false;
+
                 const getUrlWithActiveDomain = (url) => {
                     try {
                         const urlObj = new URL(url);
@@ -578,16 +586,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 const switchDomainOnLag = () => {
                     const oldDomain = activeHlsDomain;
 
-                    // REVISED LOGIC:
-                    // Primary loop: SKIRRO_V2 -> SKIRRO -> ZEROHOP -> SKIRRO_V2
-                    // NORM is EXCLUDED from simple lag switching.
-
                     if (sortedHlsDomains.length === 0) {
-                        console.warn("All primary domains failed race/checks. Switching to NORM (last resort).");
                         activeHlsDomain = HLS_DOMAINS.NORM;
                     } else {
+                        // RELAXED MODE CHECK:
+                        // If we have cycled through all domains and they all failed strict check (or seem slow),
+                        // switch to the "Best Average" domain and relax the timeout.
+                        if (!isRelaxedMode && consecutiveStatsFailures >= sortedHlsDomains.length) {
+                            console.warn("All domains failing strict 1.5s check. Entering RELAXED MODE.");
+                            isRelaxedMode = true;
+
+                            let bestDomain = null;
+                            let minAvg = Infinity;
+
+                            sortedHlsDomains.forEach(d => {
+                                const stats = domainStats[d];
+                                if (stats && stats.count > 0 && stats.avgTtfb < minAvg) {
+                                    minAvg = stats.avgTtfb;
+                                    bestDomain = d;
+                                }
+                            });
+
+                            if (bestDomain) {
+                                activeHlsDomain = bestDomain;
+                                console.log(`Relaxed Mode: Switching to best average domain: ${bestDomain} (Avg: ${minAvg.toFixed(0)}ms)`);
+                                return; // Done switching
+                            }
+                        }
+
+                        // Normal Cyclical Switch
                         let currentIndex = sortedHlsDomains.indexOf(activeHlsDomain);
-                        // If current valid, move to next. If -1, start at 0.
                         let nextIndex = (currentIndex + 1) % sortedHlsDomains.length;
                         if (currentIndex === -1) nextIndex = 0;
 
@@ -678,14 +706,71 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         };
 
+                        // TTFB Monitoring (Strict 1.5s)
+                        let ttfbTimer = null;
+                        let ttfbStartTime = 0;
+                        let strictThreshold = 1500; // 1.5s Strict default
+
+                        // In Relaxed Mode, give more time based on average
+                        if (isRelaxedMode) {
+                            const stats = domainStats[activeHlsDomain];
+                            if (stats && stats.avgTtfb > 0) {
+                                strictThreshold = Math.max(1500, stats.avgTtfb * 1.5);
+                            } else {
+                                strictThreshold = 3000;
+                            }
+                            console.log(`Relaxed Mode active. Strict Threshold increased to ${strictThreshold.toFixed(0)}ms`);
+                        }
+
+                        state.hlsInstance.on(Hls.Events.FRAG_LOADING, () => {
+                            ttfbStartTime = performance.now();
+                            if (ttfbTimer) clearTimeout(ttfbTimer);
+
+                            ttfbTimer = setTimeout(() => {
+                                const elapsed = performance.now() - ttfbStartTime;
+                                console.warn(`Strict TTFB Timeout! Domain ${activeHlsDomain} took >${strictThreshold}ms. Switching...`);
+
+                                consecutiveStatsFailures++;
+                                state.hlsInstance.stopLoad(); // Abort
+                                switchDomainOnLag();
+                                state.hlsInstance.startLoad(); // Restart on new domain
+                            }, strictThreshold);
+                        });
+
+                        state.hlsInstance.on(Hls.Events.FRAG_LOAD_PROGRESS, () => {
+                            // First byte received, clear strict timer
+                            if (ttfbTimer) {
+                                clearTimeout(ttfbTimer);
+                                ttfbTimer = null;
+                            }
+                        });
+
+
                         state.hlsInstance.on(Hls.Events.FRAG_BUFFERED, () => {
                             clearStallTimer();
                             // Successful buffer resets the threshold back to 1s (strict lag logic after start)
                             currentStallThreshold = 1000;
                         });
 
-                        state.hlsInstance.on(Hls.Events.FRAG_LOADED, () => {
+                        state.hlsInstance.on(Hls.Events.FRAG_LOADED, (event, data) => {
                             clearStallTimer();
+                            if (ttfbTimer) { clearTimeout(ttfbTimer); ttfbTimer = null; }
+
+                            // Update Stats
+                            if (data.stats) {
+                                const ttfb = data.stats.tfirst - data.stats.trequest;
+                                const stats = domainStats[activeHlsDomain];
+                                if (stats) {
+                                    stats.totalTtfb += ttfb;
+                                    stats.count++;
+                                    stats.avgTtfb = stats.totalTtfb / stats.count;
+                                }
+                            }
+
+                            // If successful in strict mode, reset failure count
+                            if (!isRelaxedMode) {
+                                consecutiveStatsFailures = 0;
+                            }
                         });
 
                         state.hlsInstance.on(Hls.Events.BUFFER_STALLED, () => {
