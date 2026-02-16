@@ -738,10 +738,27 @@ document.addEventListener('DOMContentLoaded', () => {
                         });
 
                         state.hlsInstance.on(Hls.Events.FRAG_LOAD_PROGRESS, () => {
-                            // First byte received, clear strict timer
+                            // First byte received, clear strict TTFB timer (1.5s)
                             if (ttfbTimer) {
                                 clearTimeout(ttfbTimer);
                                 ttfbTimer = null;
+                            }
+
+                            // Buffer Stall Heartbeat: 
+                            // If we were stalled, but data is arriving, extend the timeout.
+                            // This prevents switching domains just because download is slow (>1s) but steady.
+                            if (stallTimeout) {
+                                clearTimeout(stallTimeout);
+                                stallTimeout = setTimeout(() => {
+                                    console.warn(`Buffer stalled (no progress) for >${currentStallThreshold}ms. Switching domain...`);
+                                    switchDomainOnLag();
+
+                                    // Increment threshold
+                                    currentStallThreshold += 1000;
+
+                                    state.hlsInstance.startLoad();
+                                    stallTimeout = null;
+                                }, currentStallThreshold);
                             }
                         });
 
