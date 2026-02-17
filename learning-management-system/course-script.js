@@ -697,10 +697,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-                        // TTFB Monitoring (Strict 1.5s)
+                        // TTFB Monitoring (Strict 20s as per user request)
                         let ttfbTimer = null;
                         let ttfbStartTime = 0;
-                        let strictThreshold = 1500; // 1.5s Strict default
+                        let strictThreshold = 20000; // 20s Strict default
 
                         // In Relaxed Mode, give more time based on average
                         if (isRelaxedMode) {
