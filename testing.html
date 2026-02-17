@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
             padding: 20px;
             line-height: 1.6;
         }
+
         .container {
             max-width: 600px;
             margin: auto;
@@ -19,14 +21,17 @@
             border: 1px solid #ccc;
             border-radius: 8px;
         }
+
         .form-group {
             margin-bottom: 15px;
         }
+
         label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
         }
+
         input[type="text"],
         input[type="email"],
         input[type="password"],
@@ -36,6 +41,7 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+
         button {
             padding: 10px 15px;
             background-color: #007bff;
@@ -45,36 +51,43 @@
             cursor: pointer;
             margin-right: 10px;
         }
+
         button:hover {
             background-color: #0056b3;
         }
+
         #result {
             margin-top: 20px;
             padding: 15px;
             border-radius: 4px;
             background-color: #e9ecef;
             border: 1px solid #ced4da;
-            word-wrap: break-word; 
+            word-wrap: break-word;
         }
+
         #result.error {
             background-color: #f8d7da;
             border-color: #f5c6cb;
             color: #721c24;
         }
+
         #result.success {
-             background-color: #d4edda;
+            background-color: #d4edda;
             border-color: #c3e6cb;
             color: #155724;
         }
+
         .hidden {
             display: none;
         }
+
         #auth-status {
             margin-bottom: 15px;
             font-style: italic;
         }
     </style>
 </head>
+
 <body>
 
     <div class="container">
@@ -96,11 +109,11 @@
             <p><small>You need to be logged in to fetch video links.</small></p>
         </div>
 
-         <button id="logout-button" class="hidden">Logout</button>
+        <button id="logout-button" class="hidden">Logout</button>
 
         <div id="video-fetch-form" class="hidden">
             <h2>Get Video</h2>
-             <div class="form-group">
+            <div class="form-group">
                 <label for="course-name">Course Name:</label>
                 <input type="text" id="course-name" required>
             </div>
@@ -115,7 +128,7 @@
     </div>
 
     <script>
-        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseUrl = 'https://api.mystudentclub.com';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 
         const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -149,16 +162,16 @@
                 authStatusDiv.textContent = `Logged in as: ${session.user.email}`;
                 loginForm.classList.add('hidden');
                 logoutButton.classList.remove('hidden');
-                videoFetchForm.classList.remove('hidden'); 
+                videoFetchForm.classList.remove('hidden');
                 if (passwordInput) passwordInput.value = '';
             } else {
                 authStatusDiv.textContent = 'You are not logged in.';
-                loginForm.classList.remove('hidden'); 
+                loginForm.classList.remove('hidden');
                 logoutButton.classList.add('hidden');
                 videoFetchForm.classList.add('hidden');
             }
             resultDiv.textContent = 'Result will appear here...';
-            resultDiv.className = ''; 
+            resultDiv.className = '';
         };
 
         loginButton.addEventListener('click', async (e) => {
@@ -170,9 +183,9 @@
             const password = passwordInput.value;
 
             if (!email || !password) {
-                 resultDiv.textContent = 'Please enter both email and password.';
-                 resultDiv.className = 'error';
-                 return;
+                resultDiv.textContent = 'Please enter both email and password.';
+                resultDiv.className = 'error';
+                return;
             }
 
             const { error } = await supabase.auth.signInWithPassword({
@@ -185,8 +198,8 @@
                 resultDiv.textContent = `Login failed: ${error.message}`;
                 resultDiv.className = 'error';
             } else {
-                 resultDiv.textContent = 'Login successful!';
-                 resultDiv.className = 'success';
+                resultDiv.textContent = 'Login successful!';
+                resultDiv.className = 'success';
             }
         });
 
@@ -195,18 +208,18 @@
             resultDiv.className = '';
             const { error } = await supabase.auth.signOut();
             if (error) {
-                 console.error('Logout Error:', error);
-                 resultDiv.textContent = `Logout failed: ${error.message}`;
-                 resultDiv.className = 'error';
+                console.error('Logout Error:', error);
+                resultDiv.textContent = `Logout failed: ${error.message}`;
+                resultDiv.className = 'error';
             } else {
-                 resultDiv.textContent = 'Logged out successfully.';
-                 resultDiv.className = 'success';
+                resultDiv.textContent = 'Logged out successfully.';
+                resultDiv.className = 'success';
             }
         });
 
         supabase.auth.onAuthStateChange((_event, session) => {
-             console.log('Auth state changed:', _event, session);
-             checkUser(); 
+            console.log('Auth state changed:', _event, session);
+            checkUser();
         });
 
         fetchButton.addEventListener('click', async () => {
@@ -221,13 +234,13 @@
 
             const videoNumber = parseInt(videoNumberStr, 10);
             if (isNaN(videoNumber) || videoNumber <= 0) {
-                 resultDiv.textContent = 'Please enter a valid positive Video Number.';
-                 resultDiv.className = 'error';
-                 return;
+                resultDiv.textContent = 'Please enter a valid positive Video Number.';
+                resultDiv.className = 'error';
+                return;
             }
 
             resultDiv.textContent = 'Fetching video link...';
-            resultDiv.className = ''; 
+            resultDiv.className = '';
 
             try {
                 const { data, error } = await supabase.rpc('get_video_link', {
@@ -244,12 +257,12 @@
                     const link = document.createElement('a');
                     link.href = data;
                     link.textContent = data;
-                    link.target = '_blank'; 
+                    link.target = '_blank';
                     resultDiv.appendChild(link);
                     resultDiv.className = 'success';
                 } else {
-                     resultDiv.textContent = 'No data returned, but no specific error.';
-                     resultDiv.className = 'error';
+                    resultDiv.textContent = 'No data returned, but no specific error.';
+                    resultDiv.className = 'error';
                 }
 
             } catch (err) {
@@ -264,4 +277,5 @@
     </script>
 
 </body>
+
 </html>

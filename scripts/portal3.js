@@ -61,7 +61,7 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
     }
 }
 
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://api.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 const WORKER_URL = 'https://storer.bhansalimanan55.workers.dev';
@@ -1143,7 +1143,7 @@ async function checkUserEnrollment() {
         if (error) throw error;
         lmsNavLink.style.display = count > 0 ? 'flex' : 'none';
     } catch (error) { lmsNavLink.style.display = 'none'; }
-    
+
     // Show My Applications link for logged in users
     const historyNavLink = document.getElementById('history-nav-link');
     if (historyNavLink && currentSession) {
@@ -1226,8 +1226,8 @@ async function markJobAsApplied(job) {
     if (isNaN(job.id)) {
         // Generate a random safe integer to satisfy BigInt constraint and Unique Constraint
         // Using timestamp + random to minimize collision
-        dbJobId = Date.now() + Math.floor(Math.random() * 1000); 
-        
+        dbJobId = Date.now() + Math.floor(Math.random() * 1000);
+
         // Store the REAL UUID in the table name column (Piggyback)
         dbJobTable = `${currentTable}|${job.id}`;
     }
@@ -1589,9 +1589,9 @@ async function initializeUserFeatures() {
             .select('job_id, job_table')
             .eq('user_id', currentSession.user.id)
             .like('job_table', `${currentTable}%`); // Use LIKE to match both "Table" and "Table|UUID"
-            
+
         if (error) throw error;
-        
+
         // Extract IDs: If piggybacked (contains |), use the UUID part. Otherwise use normal job_id.
         appliedJobIds = new Set(data.map(app => {
             if (app.job_table.includes('|')) {
@@ -2124,7 +2124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hasResume = localStorage.getItem('userCVText');
 
     if (isNewUser === 'true') {
-        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseUrl = 'https://api.mystudentclub.com';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 

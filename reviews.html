@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Firm & Stipend Reviews - My Student Club</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cal+Sans:wght@600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cal+Sans:wght@600&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/portal-style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -22,10 +25,10 @@
             --text-secondary: #4a5568;
             --text-muted: #718096;
             --border-color: #e2e8f0;
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
-            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
-            --shadow-xl: 0 20px 40px rgba(0,0,0,0.12);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.12);
         }
 
         body {
@@ -86,11 +89,11 @@
         }
 
         .stat-card {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
             padding: 1.5rem;
             border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .stat-value {
@@ -173,7 +176,8 @@
             letter-spacing: 0.5px;
         }
 
-        .filter-group input, .filter-group select {
+        .filter-group input,
+        .filter-group select {
             width: 100%;
             padding: 0.75rem 1rem;
             border: 2px solid var(--border-color);
@@ -183,7 +187,8 @@
             background: white;
         }
 
-        .filter-group input:focus, .filter-group select:focus {
+        .filter-group input:focus,
+        .filter-group select:focus {
             outline: none;
             border-color: var(--accent-blue);
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -267,7 +272,9 @@
             color: var(--text-secondary);
         }
 
-        .form-group input, .form-group select, .form-group textarea {
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 0.875rem 1rem;
             border: 2px solid var(--border-color);
@@ -277,7 +284,9 @@
             font-family: inherit;
         }
 
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: var(--accent-blue);
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
@@ -307,9 +316,9 @@
             transition: all 0.2s;
         }
 
-        .rating-group input:checked ~ label,
+        .rating-group input:checked~label,
         .rating-group label:hover,
-        .rating-group label:hover ~ label {
+        .rating-group label:hover~label {
             color: #fbbf24;
             transform: scale(1.1);
         }
@@ -647,8 +656,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .modal {
@@ -766,7 +780,8 @@
                 margin: 1rem;
             }
 
-            .modal-header, .modal-body {
+            .modal-header,
+            .modal-body {
                 padding: 1.5rem;
             }
         }
@@ -808,13 +823,13 @@
         }
 
         .mobile-controls {
-            display: none; 
+            display: none;
             margin-bottom: 1.5rem;
         }
 
         .filter-toggle-btn {
             width: 100%;
-            display: flex; 
+            display: flex;
             justify-content: center;
             padding: 0.875rem;
             gap: 0.5rem;
@@ -823,23 +838,107 @@
             color: var(--text-secondary);
             background-color: white;
             border: 1px solid var(--border-color);
-            border-radius: 12px; 
+            border-radius: 12px;
             cursor: pointer;
         }
 
-        .filter-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1050; display: flex; justify-content: center; align-items: flex-end; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s 0.3s; }
-        .filter-modal-overlay.show { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
-        .filter-modal-content { background-color: white; width: 100%; max-height: 85vh; border-radius: 16px 16px 0 0; display: flex; flex-direction: column; transform: translateY(100%); transition: transform 0.3s ease; overflow: hidden; }
-        .filter-modal-overlay.show .filter-modal-content { transform: translateY(0); }
-        .filter-modal-content .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background: var(--gradient-primary); color: white; border-radius: 16px 16px 0 0; }
-        .filter-modal-content .modal-header h4 { font-size: 1.1rem; font-weight: 600; margin: 0; }
-        .modal-close-action { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: white; opacity: 0.8; }
-        .modal-close-action:hover { opacity: 1; }
-        .filter-modal-content .modal-body { padding: 1.5rem; overflow-y: auto; }
-        .filter-modal-content .modal-footer { display: flex; gap: 1rem; padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); }
-        .btn { flex: 1; padding: 0.75rem 1rem; border-radius: 8px; font-weight: 600; border: none; cursor: pointer; } 
-        .btn.btn-secondary { background-color: #e2e8f0; color: var(--text-primary); }
-        .btn.btn-primary { background: var(--gradient-primary); color: white; }
+        .filter-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1050;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0s 0.3s;
+        }
+
+        .filter-modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.3s ease;
+        }
+
+        .filter-modal-content {
+            background-color: white;
+            width: 100%;
+            max-height: 85vh;
+            border-radius: 16px 16px 0 0;
+            display: flex;
+            flex-direction: column;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+            overflow: hidden;
+        }
+
+        .filter-modal-overlay.show .filter-modal-content {
+            transform: translateY(0);
+        }
+
+        .filter-modal-content .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            background: var(--gradient-primary);
+            color: white;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .filter-modal-content .modal-header h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .modal-close-action {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: white;
+            opacity: 0.8;
+        }
+
+        .modal-close-action:hover {
+            opacity: 1;
+        }
+
+        .filter-modal-content .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .filter-modal-content .modal-footer {
+            display: flex;
+            gap: 1rem;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn.btn-secondary {
+            background-color: #e2e8f0;
+            color: var(--text-primary);
+        }
+
+        .btn.btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+        }
 
         details {
             transition: all 0.2s ease-in-out;
@@ -847,19 +946,20 @@
 
         details summary {
             cursor: pointer;
-            list-style: none; 
+            list-style: none;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         details summary::-webkit-details-marker {
-            display: none; 
+            display: none;
         }
 
         details[open] .details-arrow {
             transform: rotate(180deg);
         }
+
         .details-arrow {
             transition: transform 0.2s ease-in-out;
             font-size: 1.25rem;
@@ -870,6 +970,7 @@
             #desktop-filter-container {
                 display: none;
             }
+
             #mobile-filter-trigger {
                 display: block;
             }
@@ -886,7 +987,8 @@
                 margin: 1rem;
             }
 
-            .modal-header, .modal-body {
+            .modal-header,
+            .modal-body {
                 padding: 1.5rem;
             }
         }
@@ -898,29 +1000,39 @@
         }
     </style>
 </head>
+
 <body>
     <header class="site-header">
-         <div class="header-container">
-            <a href="/" class="brand-link"><img src="https://mystudentclub.com/assets/logo.png" alt="My Student Club" class="brand-logo"></a>
+        <div class="header-container">
+            <a href="/" class="brand-link"><img src="https://mystudentclub.com/assets/logo.png" alt="My Student Club"
+                    class="brand-logo"></a>
             <div class="nav-actions">
                 <div class="auth-buttons-container"></div>
-                <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+                <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu"><svg width="24"
+                        height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg></button>
             </div>
         </div>
     </header>
-     <div class="expanded-menu" id="expandedMenu">
-        <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu"><svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    <div class="expanded-menu" id="expandedMenu">
+        <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu"><svg width="24" height="24"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg></button>
         <div class="menu-items-container">
-             <a href="/" class="menu-item">Job Portal</a>
-             <a href="/profile.html" class="menu-item">My Profile</a>
-             <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
-             <a href="/firm-reviews.html" class="menu-item">Firm Reviews</a>
+            <a href="/" class="menu-item">Job Portal</a>
+            <a href="/profile.html" class="menu-item">My Profile</a>
+            <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My
+                Courses</a>
+            <a href="/firm-reviews.html" class="menu-item">Firm Reviews</a>
         </div>
     </div>
 
     <main class="main-content-area">
         <div class="create-review-section">
-             <button id="open-review-form-btn" class="submit-btn">
+            <button id="open-review-form-btn" class="submit-btn">
                 <i class="fas fa-pen-to-square"></i> Share Your Experience
             </button>
         </div>
@@ -932,8 +1044,11 @@
                     <button class="modal-close" id="review-modal-close-btn">×</button>
                 </div>
                 <div class="modal-body">
-                    <div id="review-form-login-prompt" style="display: none; margin-bottom: 2rem; text-align: center; background: #f0f4ff; padding: 1rem; border-radius: 12px;">
-                        <p><strong>Please <a href="/login.html" style="color: var(--accent-blue); text-decoration: underline;">log in</a> to share your experience.</strong></p>
+                    <div id="review-form-login-prompt"
+                        style="display: none; margin-bottom: 2rem; text-align: center; background: #f0f4ff; padding: 1rem; border-radius: 12px;">
+                        <p><strong>Please <a href="/login.html"
+                                    style="color: var(--accent-blue); text-decoration: underline;">log in</a> to share
+                                your experience.</strong></p>
                     </div>
                     <form id="review-form">
                         <fieldset id="review-form-fieldset">
@@ -988,41 +1103,61 @@
                                     <div class="form-group rating-group">
                                         <label>Overall Rating *</label>
                                         <div class="stars">
-                                            <input type="radio" id="overall-5" name="overall_rating" value="5" required><label for="overall-5"><i class="fas fa-star"></i></label>
-                                            <input type="radio" id="overall-4" name="overall_rating" value="4"><label for="overall-4"><i class="fas fa-star"></i></label>
-                                            <input type="radio" id="overall-3" name="overall_rating" value="3"><label for="overall-3"><i class="fas fa-star"></i></label>
-                                            <input type="radio" id="overall-2" name="overall_rating" value="2"><label for="overall-2"><i class="fas fa-star"></i></label>
-                                            <input type="radio" id="overall-1" name="overall_rating" value="1"><label for="overall-1"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="overall-5" name="overall_rating" value="5"
+                                                required><label for="overall-5"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="overall-4" name="overall_rating" value="4"><label
+                                                for="overall-4"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="overall-3" name="overall_rating" value="3"><label
+                                                for="overall-3"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="overall-2" name="overall_rating" value="2"><label
+                                                for="overall-2"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="overall-1" name="overall_rating" value="1"><label
+                                                for="overall-1"><i class="fas fa-star"></i></label>
                                         </div>
                                     </div>
                                     <div class="form-group rating-group">
                                         <label>Work-Life Balance</label>
                                         <div class="stars">
-                                            <input type="radio" id="wlb-5" name="work_life_balance_rating" value="5"><label for="wlb-5"><i class="fas fa-star"></i></label>
-                                            <input type="radio" id="wlb-4" name="work_life_balance_rating" value="4"><label for="wlb-4"><i class="fas fa-star"></i></label>
-                                            <input type="radio" id="wlb-3" name="work_life_balance_rating" value="3"><label for="wlb-3"><i class="fas fa-star"></i></label>
-                                            <input type="radio" id="wlb-2" name="work_life_balance_rating" value="2"><label for="wlb-2"><i class="fas fa-star"></i></label>
-                                            <input type="radio" id="wlb-1" name="work_life_balance_rating" value="1"><label for="wlb-1"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="wlb-5" name="work_life_balance_rating"
+                                                value="5"><label for="wlb-5"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="wlb-4" name="work_life_balance_rating"
+                                                value="4"><label for="wlb-4"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="wlb-3" name="work_life_balance_rating"
+                                                value="3"><label for="wlb-3"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="wlb-2" name="work_life_balance_rating"
+                                                value="2"><label for="wlb-2"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="wlb-1" name="work_life_balance_rating"
+                                                value="1"><label for="wlb-1"><i class="fas fa-star"></i></label>
                                         </div>
                                     </div>
                                     <div class="form-group rating-group">
                                         <label>Learning Experience</label>
                                         <div class="stars">
-                                            <input type="radio" id="learning-5" name="learning_experience_rating" value="5"><label for="learning-5"><i class="fas fa-star"></i></label>
-                                            <input type="radio" id="learning-4" name="learning_experience_rating" value="4"><label for="learning-4"><i class="fas fa-star"></i></label>
-                                            <input type="radio" id="learning-3" name="learning_experience_rating" value="3"><label for="learning-3"><i class="fas fa-star"></i></label>
-                                            <input type="radio" id="learning-2" name="learning_experience_rating" value="2"><label for="learning-2"><i class="fas fa-star"></i></label>
-                                            <input type="radio" id="learning-1" name="learning_experience_rating" value="1"><label for="learning-1"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="learning-5" name="learning_experience_rating"
+                                                value="5"><label for="learning-5"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="learning-4" name="learning_experience_rating"
+                                                value="4"><label for="learning-4"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="learning-3" name="learning_experience_rating"
+                                                value="3"><label for="learning-3"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="learning-2" name="learning_experience_rating"
+                                                value="2"><label for="learning-2"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="learning-1" name="learning_experience_rating"
+                                                value="1"><label for="learning-1"><i class="fas fa-star"></i></label>
                                         </div>
                                     </div>
                                     <div class="form-group rating-group">
                                         <label>Interview Difficulty</label>
                                         <div class="stars">
-                                            <input type="radio" id="interview-5" name="interview_difficulty_rating" value="5"><label for="interview-5"><i class="fas fa-star"></i></label>
-                                            <input type="radio" id="interview-4" name="interview_difficulty_rating" value="4"><label for="interview-4"><i class="fas fa-star"></i></label>
-                                            <input type="radio" id="interview-3" name="interview_difficulty_rating" value="3"><label for="interview-3"><i class="fas fa-star"></i></label>
-                                            <input type="radio" id="interview-2" name="interview_difficulty_rating" value="2"><label for="interview-2"><i class="fas fa-star"></i></label>
-                                            <input type="radio" id="interview-1" name="interview_difficulty_rating" value="1"><label for="interview-1"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="interview-5" name="interview_difficulty_rating"
+                                                value="5"><label for="interview-5"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="interview-4" name="interview_difficulty_rating"
+                                                value="4"><label for="interview-4"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="interview-3" name="interview_difficulty_rating"
+                                                value="3"><label for="interview-3"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="interview-2" name="interview_difficulty_rating"
+                                                value="2"><label for="interview-2"><i class="fas fa-star"></i></label>
+                                            <input type="radio" id="interview-1" name="interview_difficulty_rating"
+                                                value="1"><label for="interview-1"><i class="fas fa-star"></i></label>
                                         </div>
                                     </div>
                                 </div>
@@ -1030,7 +1165,8 @@
 
                             <div class="form-section">
                                 <details>
-                                    <summary class="form-section-title" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+                                    <summary class="form-section-title"
+                                        style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
                                         <span>Company Culture (Select all that apply)</span>
                                         <span class="details-arrow">▼</span>
                                     </summary>
@@ -1115,11 +1251,13 @@
                                 <div class="form-section-title">Your Experience</div>
                                 <div class="form-group">
                                     <label for="review_text">Review (Pros, Cons, etc.)</label>
-                                    <textarea id="review_text" rows="5" placeholder="Share your experience..."></textarea>
+                                    <textarea id="review_text" rows="5"
+                                        placeholder="Share your experience..."></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for="interview_questions">Interview Questions (if any)</label>
-                                    <textarea id="interview_questions" rows="3" placeholder="What questions were you asked?"></textarea>
+                                    <textarea id="interview_questions" rows="3"
+                                        placeholder="What questions were you asked?"></textarea>
                                 </div>
                             </div>
                         </fieldset>
@@ -1140,7 +1278,7 @@
             </button>
         </div>
 
-        <div id="desktop-filter-container"> 
+        <div id="desktop-filter-container">
             <details class="controls-section" open>
                 <summary class="controls-header">
                     <h2><i class="fas fa-filter"></i> Filter & Sort</h2>
@@ -1198,7 +1336,8 @@
                 <div class="tags-container">
                     <div class="tag" data-tag="Flexible Hours"><i class="fas fa-clock"></i> Flexible Hours</div>
                     <div class="tag" data-tag="Remote Work"><i class="fas fa-house-laptop"></i> Remote Work</div>
-                    <div class="tag" data-tag="Good Mentorship"><i class="fas fa-chalkboard-teacher"></i> Good Mentorship</div>
+                    <div class="tag" data-tag="Good Mentorship"><i class="fas fa-chalkboard-teacher"></i> Good
+                        Mentorship</div>
                     <div class="tag" data-tag="Fast-Paced"><i class="fas fa-bolt"></i> Fast-Paced</div>
                     <div class="tag" data-tag="Collaborative"><i class="fas fa-users"></i> Collaborative</div>
                     <div class="tag" data-tag="Growth Opportunities"><i class="fas fa-chart-line"></i> Growth</div>
@@ -1207,8 +1346,10 @@
                     <div class="tag" data-tag="Innovative"><i class="fas fa-lightbulb"></i> Innovative</div>
                     <div class="tag" data-tag="Traditional"><i class="fas fa-landmark"></i> Traditional</div>
                     <div class="tag" data-tag="Team Outings"><i class="fas fa-glass-cheers"></i> Team Outings</div>
-                    <div class="tag" data-tag="Performance Bonus"><i class="fas fa-money-bill-wave"></i> Performance Bonus</div>
-                    <div class="tag" data-tag="Flexible Leave"><i class="fas fa-plane-departure"></i> Flexible Leave</div>
+                    <div class="tag" data-tag="Performance Bonus"><i class="fas fa-money-bill-wave"></i> Performance
+                        Bonus</div>
+                    <div class="tag" data-tag="Flexible Leave"><i class="fas fa-plane-departure"></i> Flexible Leave
+                    </div>
                     <div class="tag" data-tag="Learning Budget"><i class="fas fa-book-open"></i> Learning Budget</div>
                     <div class="tag" data-tag="Gym Membership"><i class="fas fa-dumbbell"></i> Gym Membership</div>
                     <div class="tag" data-tag="Free Food"><i class="fas fa-utensils"></i> Free Food</div>
@@ -1283,7 +1424,7 @@
     </div>
 
     <script type="module">
-        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseUrl = 'https://api.mystudentclub.com';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -1334,14 +1475,14 @@
             const card = document.createElement('div');
             card.className = 'review-card';
 
-            const salaryFormatted = review.salary 
-                ? `₹${new Intl.NumberFormat('en-IN').format(review.salary)}/${review.salary_period === 'yearly' ? 'yr' : 'mo'}` 
+            const salaryFormatted = review.salary
+                ? `₹${new Intl.NumberFormat('en-IN').format(review.salary)}/${review.salary_period === 'yearly' ? 'yr' : 'mo'}`
                 : 'N/A';
 
-            const date = new Date(review.created_at).toLocaleDateString('en-GB', { 
-                day: 'numeric', 
-                month: 'short', 
-                year: 'numeric' 
+            const date = new Date(review.created_at).toLocaleDateString('en-GB', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
             });
 
             const tags = review.culture_tags && typeof review.culture_tags === 'string' ? JSON.parse(review.culture_tags) : (review.culture_tags || []);
@@ -1557,13 +1698,13 @@
             }
 
             try {
-                if (isActive) { 
+                if (isActive) {
                     const { error } = await supabaseClient
                         .from('review_helpful_votes')
                         .delete()
                         .match({ review_id: reviewId, user_id: currentUser.id });
                     if (error) throw error;
-                } else { 
+                } else {
                     const { error } = await supabaseClient
                         .from('review_helpful_votes')
                         .insert({ review_id: reviewId, user_id: currentUser.id });
@@ -1573,12 +1714,12 @@
                 console.error('Error toggling helpful:', error);
 
                 alert('Could not save your vote. Please try again.');
-                button.classList.toggle('active'); 
-                if(countSpan) {
+                button.classList.toggle('active');
+                if (countSpan) {
                     countSpan.textContent = currentCount;
-                } else { 
+                } else {
                     const addedSpan = button.querySelector('.helpful-count');
-                    if(addedSpan) addedSpan.remove();
+                    if (addedSpan) addedSpan.remove();
                 }
             }
         }
@@ -1622,7 +1763,7 @@
 
                 document.getElementById('modal-review-count').textContent = reviewCount;
                 document.getElementById('modal-avg-rating').textContent = reviewCount > 0 ? avgRating.toFixed(1) : 'N/A';
-                document.getElementById('modal-avg-salary').textContent = avgSalary > 0 
+                document.getElementById('modal-avg-salary').textContent = avgSalary > 0
                     ? '₹' + Math.round(avgSalary).toLocaleString('en-IN')
                     : 'N/A';
                 document.getElementById('modal-wlb-rating').textContent = avgWlb ? avgWlb.toFixed(1) : 'N/A';
@@ -1779,7 +1920,7 @@
                 `;
                 document.getElementById('logoutBtn').addEventListener('click', async () => {
                     await supabaseClient.auth.signOut();
-                    
+
                     localStorage.removeItem('userJobPreference');
                     localStorage.removeItem('userProfileData');
                     localStorage.removeItem('userCVFileName');
@@ -1788,7 +1929,7 @@
                     localStorage.removeItem('subscribedTopics');
                     localStorage.removeItem('newUserSignup');
                     localStorage.removeItem('newUserEmail');
-                    
+
                     const keysToRemove = [];
                     for (let i = 0; i < localStorage.length; i++) {
                         const key = localStorage.key(i);
@@ -1797,7 +1938,7 @@
                         }
                     }
                     keysToRemove.forEach(key => localStorage.removeItem(key));
-                    
+
                     window.location.href = '/';
                 });
             } else {
@@ -1982,4 +2123,5 @@
         });
     </script>
 </body>
+
 </html>

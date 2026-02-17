@@ -1,6 +1,6 @@
 import { getDaysAgo } from './date-utils.js';
 
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://api.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, { global: { headers: { 'apikey': supabaseKey } } });
 const jobsContainer = document.getElementById('jobs');
@@ -90,7 +90,7 @@ function renderJobCard(job, table) {
   return jobCard;
 }
 
-function showModal(job) { 
+function showModal(job) {
   let postedInfo = '';
   if (job.Created_At) {
     const daysAgo = getDaysAgo(job.Created_At);
@@ -126,37 +126,37 @@ function showModal(job) {
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
         </svg>Apply</a>` : 'Contact details are in description'}
     </section>
-  `; modal.style.display = 'flex'; document.body.style.overflow = 'hidden' 
+  `; modal.style.display = 'flex'; document.body.style.overflow = 'hidden'
 }
 
-window.closeModal = function(event) {
+window.closeModal = function (event) {
   if (event && (event.target === modal || event.target.classList.contains('modal-close'))) {
     modal.style.display = 'none';
     document.body.style.overflow = 'auto';
   }
 }
 
-function getApplicationLink(id) { 
-  if (isValidUrl(id)) return id; 
-  let emails = id.split(/,|\s/).filter(e => e); 
-  let email = emails[0]; 
-  let subject = ""; 
-  if (currentTable === "Industrial Training Job Portal") subject = "Application for CA Industrial Training (Ref - My Student Club)"; 
-  else if (currentTable === "Articleship Jobs") subject = "Application for Articleship (Ref - My Student Club)"; 
-  else if (currentTable === "Fresher Jobs") subject = "Application for Role of CA Fresher in your Organization (Ref - My Student Club)"; 
-  else if (currentTable === "Semi Qualified Jobs") subject = "Application for Semi Qualified Roles in your Organization (Ref - My Student Club)"; 
-  return `mailto:${email}?subject=${encodeURIComponent(subject)}` 
+function getApplicationLink(id) {
+  if (isValidUrl(id)) return id;
+  let emails = id.split(/,|\s/).filter(e => e);
+  let email = emails[0];
+  let subject = "";
+  if (currentTable === "Industrial Training Job Portal") subject = "Application for CA Industrial Training (Ref - My Student Club)";
+  else if (currentTable === "Articleship Jobs") subject = "Application for Articleship (Ref - My Student Club)";
+  else if (currentTable === "Fresher Jobs") subject = "Application for Role of CA Fresher in your Organization (Ref - My Student Club)";
+  else if (currentTable === "Semi Qualified Jobs") subject = "Application for Semi Qualified Roles in your Organization (Ref - My Student Club)";
+  return `mailto:${email}?subject=${encodeURIComponent(subject)}`
 }
 
 let currentTable = 'Industrial Training Job Portal';
 const footerTabs = document.querySelectorAll('.footer-tab');
 const opportunitiesText = document.getElementById('opportunitiesText');
-function updateOpportunitiesTextDisplay(table) { 
-  if (table === "Industrial Training Job Portal" || table === "Articleship Jobs") { 
-    opportunitiesText.style.display = 'block' 
-  } else { 
-    opportunitiesText.style.display = 'none' 
-  } 
+function updateOpportunitiesTextDisplay(table) {
+  if (table === "Industrial Training Job Portal" || table === "Articleship Jobs") {
+    opportunitiesText.style.display = 'block'
+  } else {
+    opportunitiesText.style.display = 'none'
+  }
 }
 footerTabs.forEach(tab => {
   tab.addEventListener('click', () => {
@@ -168,9 +168,9 @@ footerTabs.forEach(tab => {
     jobsContainer.innerHTML = '';
     hasMoreData = true;
     loadMoreButton.style.display = 'none';
-    fetchJobs(); 
+    fetchJobs();
     updateOpportunitiesTextDisplay(currentTable);
-    loadBanners(); 
+    loadBanners();
     fetchCategories();
   });
 });
@@ -238,9 +238,9 @@ async function fetchJobs() {
     query = query.range(page * limit, (page + 1) * limit - 1);
     const { data, error } = await query;
 
-    if (error) { 
-      jobsContainer.textContent = 'Failed to load jobs. Please try again.'; 
-      return 
+    if (error) {
+      jobsContainer.textContent = 'Failed to load jobs. Please try again.';
+      return
     }
 
     if (data && data.length > 0) {
@@ -248,30 +248,30 @@ async function fetchJobs() {
         let card = renderJobCard(job, currentTable);
         jobsContainer.appendChild(card);
       });
-      page++; 
-      hasMoreData = data.length === limit; 
+      page++;
+      hasMoreData = data.length === limit;
       loadMoreButton.style.display = hasMoreData ? 'block' : 'none';
-    } else { 
-      hasMoreData = false; 
-      loadMoreButton.style.display = 'none'; 
-      if (page === 0) jobsContainer.textContent = 'No jobs found.' 
+    } else {
+      hasMoreData = false;
+      loadMoreButton.style.display = 'none';
+      if (page === 0) jobsContainer.textContent = 'No jobs found.'
     }
-  } catch (e) { 
-    jobsContainer.textContent = 'Failed to load jobs. Please check your connection.' 
-  } finally { 
-    isFetching = false; 
-    loader.style.display = 'none'; 
-    loadMoreButton.disabled = false 
+  } catch (e) {
+    jobsContainer.textContent = 'Failed to load jobs. Please check your connection.'
+  } finally {
+    isFetching = false;
+    loader.style.display = 'none';
+    loadMoreButton.disabled = false
   }
 }
 
-function isValidUrl(s) { 
-  try { 
-    new URL(s); 
-    return true 
-  } catch (_) { 
-    return false 
-  } 
+function isValidUrl(s) {
+  try {
+    new URL(s);
+    return true
+  } catch (_) {
+    return false
+  }
 }
 
 async function fetchCategories() {
@@ -324,11 +324,11 @@ async function fetchCategories() {
 
 let lastScrollY = 0;
 const header = document.querySelector('.floating-header');
-function handleScroll() { 
-  let cur = window.scrollY; 
-  if (cur > lastScrollY && cur > 100) header.classList.add('header-hidden'); 
-  else header.classList.remove('header-hidden'); 
-  lastScrollY = cur 
+function handleScroll() {
+  let cur = window.scrollY;
+  if (cur > lastScrollY && cur > 100) header.classList.add('header-hidden');
+  else header.classList.remove('header-hidden');
+  lastScrollY = cur
 }
 
 async function loadBanners() {
@@ -341,8 +341,8 @@ async function loadBanners() {
 
     const relevantBanners = banners.filter(banner => {
       let currentType = currentTable === "Semi Qualified Jobs" ? "Semi-Qualified" :
-                       currentTable === "Fresher Jobs" ? "Freshers" :
-                       currentTable.split(' ')[0]; 
+        currentTable === "Fresher Jobs" ? "Freshers" :
+          currentTable.split(' ')[0];
 
       return banner.Type === 'All' || banner.Type === currentType;
     });
@@ -365,27 +365,27 @@ async function loadBanners() {
       const img = document.createElement('img');
       img.src = banner.Image;
       img.alt = `Banner ${i + 1}`;
-      a.appendChild(img); 
+      a.appendChild(img);
       carousel.appendChild(a);
     });
 
     slides = document.querySelectorAll('.carousel-item');
     totalSlides = slides.length;
     currentSlide = 0;
-    if (totalSlides > 0) { 
-      showSlide(0); 
+    if (totalSlides > 0) {
+      showSlide(0);
       setInterval(() => showSlide(currentSlide + 1), 5000);
     }
   } catch (e) { }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const session = await checkAuth(); 
-  updateHeaderAuth(session); 
-  await loadBanners(); 
-  populateSalaryFilter(currentTable); 
-  fetchJobs(); 
-  fetchCategories(); 
+  const session = await checkAuth();
+  updateHeaderAuth(session);
+  await loadBanners();
+  populateSalaryFilter(currentTable);
+  fetchJobs();
+  fetchCategories();
   updateOpportunitiesTextDisplay(currentTable);
 
   const resourcesBtn = document.getElementById('resourcesDropdownBtn');
@@ -406,9 +406,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 });
 
-async function checkAuth() { 
-  const { data: { session } } = await supabaseClient.auth.getSession(); 
-  return session 
+async function checkAuth() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  return session
 }
 
 export function updateHeaderAuth(session) {
@@ -435,14 +435,14 @@ export function updateHeaderAuth(session) {
   }
 }
 
-window.handleLogout = async () => { 
-  await supabaseClient.auth.signOut(); 
-  window.location.reload() 
+window.handleLogout = async () => {
+  await supabaseClient.auth.signOut();
+  window.location.reload()
 }
 
 export { showModal, getApplicationLink };
 
-window.showAddJobModal = function() {
+window.showAddJobModal = function () {
   const modal = document.getElementById('job-edit-modal');
   document.getElementById('job-edit-title').textContent = 'Add New Job';
   document.getElementById('job-form').reset();
@@ -457,46 +457,46 @@ window.showAddJobModal = function() {
   document.body.style.overflow = 'hidden';
 }
 
-searchInput.addEventListener('input', (e) => { 
-  clearTimeout(timeout); 
-  timeout = setTimeout(() => { 
-    page = 0; 
-    jobsContainer.innerHTML = ''; 
-    hasMoreData = true; 
-    loadMoreButton.style.display = 'none'; 
-    fetchJobs() 
-  }, 300) 
+searchInput.addEventListener('input', (e) => {
+  clearTimeout(timeout);
+  timeout = setTimeout(() => {
+    page = 0;
+    jobsContainer.innerHTML = '';
+    hasMoreData = true;
+    loadMoreButton.style.display = 'none';
+    fetchJobs()
+  }, 300)
 });
 
-locationSearchInput.addEventListener('input', (e) => { 
-  clearTimeout(timeout); 
-  timeout = setTimeout(() => { 
-    page = 0; 
-    jobsContainer.innerHTML = ''; 
-    hasMoreData = true; 
-    loadMoreButton.style.display = 'none'; 
-    fetchJobs() 
-  }, 300) 
+locationSearchInput.addEventListener('input', (e) => {
+  clearTimeout(timeout);
+  timeout = setTimeout(() => {
+    page = 0;
+    jobsContainer.innerHTML = '';
+    hasMoreData = true;
+    loadMoreButton.style.display = 'none';
+    fetchJobs()
+  }, 300)
 });
 
-salaryFilter.addEventListener('change', () => { 
-  page = 0; 
-  jobsContainer.innerHTML = ''; 
-  hasMoreData = true; 
-  loadMoreButton.style.display = 'none'; 
-  fetchJobs() 
+salaryFilter.addEventListener('change', () => {
+  page = 0;
+  jobsContainer.innerHTML = '';
+  hasMoreData = true;
+  loadMoreButton.style.display = 'none';
+  fetchJobs()
 });
 
-categoryFilter.addEventListener('change', () => { 
-  page = 0; 
-  jobsContainer.innerHTML = ''; 
-  hasMoreData = true; 
-  loadMoreButton.style.display = 'none'; 
-  fetchJobs() 
+categoryFilter.addEventListener('change', () => {
+  page = 0;
+  jobsContainer.innerHTML = '';
+  hasMoreData = true;
+  loadMoreButton.style.display = 'none';
+  fetchJobs()
 });
 
-loadMoreButton.addEventListener('click', () => { 
-  fetchJobs() 
+loadMoreButton.addEventListener('click', () => {
+  fetchJobs()
 });
 
 window.addEventListener('scroll', handleScroll);

@@ -1,6 +1,6 @@
 import { getDaysAgo } from './date-utils.js';
 
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://api.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -123,7 +123,7 @@ async function fetchApplications() {
                         return {
                             ...app,
                             // Fix: Ensure we use the clean table name for grouping/filtering later
-                            job_table: targetTable, 
+                            job_table: targetTable,
                             job_id: targetJobId,
                             job: {
                                 id: targetJobId,
@@ -141,21 +141,21 @@ async function fetchApplications() {
                     return {
                         ...app,
                         // Fix: Normalize the app object with clean data
-                        job_table: targetTable, 
+                        job_table: targetTable,
                         job_id: targetJobId,
                         job: jobData
                     };
                 } catch (err) {
                     console.error('Error fetching job details:', err);
                     return {
-                         ...app,
-                         job: {
-                             id: app.job_id,
-                             Company: 'Error Loading',
-                             Category: 'Error',
-                             Description: 'Failed to load job details.',
-                             "Application ID": '#'
-                         }
+                        ...app,
+                        job: {
+                            id: app.job_id,
+                            Company: 'Error Loading',
+                            Category: 'Error',
+                            Description: 'Failed to load job details.',
+                            "Application ID": '#'
+                        }
                     };
                 }
             })
@@ -175,7 +175,7 @@ function renderApplicationCard(application) {
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const appliedDate = application.applied_at ? getDaysAgo(application.applied_at) : 'N/A';
-    
+
     // Determine Portal Name dynamically
     let portalName = PORTAL_DISPLAY_NAMES[application.job_table] || application.job_table;
     if (application.job_table === 'Fresher Jobs' && job.Experience === 'Experienced') {
@@ -186,7 +186,7 @@ function renderApplicationCard(application) {
     card.className = 'application-card';
     card.dataset.applicationId = application.id;
     card.dataset.jobId = application.job_id;
-    
+
     // Set data-portal for filtering
     if (application.job_table === 'Fresher Jobs' && job.Experience === 'Experienced') {
         card.dataset.jobTable = 'Experienced CA Jobs'; // Custom tag for filtering
@@ -262,7 +262,7 @@ function showJobModal(application) {
         if (!applicationId) return '<p class="modal-description">No Application ID Available</p>';
         const links = applicationId.split(',').map(link => link.trim()).filter(link => link);
         if (links.length === 0) return '<p class="modal-description">No Application ID Available</p>';
-        
+
         return links.map((link, index) => `
             <div style="display: flex; align-items: center; gap: 0.75rem; background: #f8fafc; padding: 0.4rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: ${index < links.length - 1 ? '0.75rem' : '0'};">
                 <p class="modal-description" style="flex: 1; margin: 0; word-break: break-all; font-size: 0.95rem;">${link}</p>
@@ -429,7 +429,7 @@ function renderApplications() {
 
     // Show all in flat list (no grouping)
     dom.historyContent.innerHTML = '';
-    
+
     // Create a container for the grid/list if needed, or append directly
     // Using direct append for now to match existing style
     filteredApplications.forEach(app => {
@@ -440,7 +440,7 @@ function renderApplications() {
 // Initialize page
 async function initializePage() {
     initializeDOM();
-    
+
     const isAuthenticated = await checkAuth();
     if (!isAuthenticated) return;
 
@@ -491,7 +491,7 @@ function setupEventListeners() {
                 pills.forEach(p => p.classList.remove('active'));
                 pill.classList.add('active');
                 currentPortalFilter = pill.dataset.portal;
-                
+
                 // Sync mobile dropdown
                 if (dom.portalSelectMobile) {
                     dom.portalSelectMobile.value = currentPortalFilter;
@@ -506,7 +506,7 @@ function setupEventListeners() {
     if (dom.portalSelectMobile) {
         dom.portalSelectMobile.addEventListener('change', (e) => {
             currentPortalFilter = e.target.value;
-            
+
             // Sync desktop pills
             if (dom.portalFilters) {
                 const pills = dom.portalFilters.querySelectorAll('.portal-pill');
@@ -518,7 +518,7 @@ function setupEventListeners() {
                     }
                 });
             }
-            
+
             filterAndSortApplications();
         });
     }
@@ -574,7 +574,7 @@ function setupEventListeners() {
     // Sync Mobile Search with Desktop Search Logic
     if (mobileSearchInput) {
         mobileSearchInput.addEventListener('input', (e) => {
-            const searchFilter = document.getElementById('searchFilter') || document.getElementById('searchInput'); 
+            const searchFilter = document.getElementById('searchFilter') || document.getElementById('searchInput');
             if (searchFilter) {
                 searchFilter.value = e.target.value;
                 // Trigger the existing search logic

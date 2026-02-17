@@ -1,196 +1,340 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI LinkedIn Note Generator - My Student Club</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
   <style>
     :root {
 
-      --primary: #3b82f6; 
-      --primary-light: #60a5fa; 
-      --primary-dark: #2563eb; 
+      --primary: #3b82f6;
+      --primary-light: #60a5fa;
+      --primary-dark: #2563eb;
 
-      --secondary: #10b981; 
-      --accent: #d97706; 
-      --success: #10b981; 
-      --warning: #f59e0b; 
-      --error: #ef4444; 
+      --secondary: #10b981;
+      --accent: #d97706;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
 
-      --bg-primary: #f8fafc; 
-      --bg-secondary: #ffffff; 
-      --bg-tertiary: #e2e8f0; 
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #e2e8f0;
 
-      --text-primary: #1e293b; 
-      --text-secondary: #475569; 
-      --text-muted: #64748b; 
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
 
-      --border-color: #cbd5e1; 
-      --border-radius: 12px; 
-      --transition: all 0.3s ease; 
+      --border-color: #cbd5e1;
+      --border-radius: 12px;
+      --transition: all 0.3s ease;
 
       --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
       --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
       --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Inter', sans-serif; background-color: var(--bg-primary); color: var(--text-primary); min-height: 100vh; overflow-x: hidden; }
-    #app-container { min-height: 100vh; display: flex; flex-direction: column; position: relative; }
 
-    .glass-card { 
-        background: var(--bg-secondary); 
-        border: 1px solid var(--border-color); 
-        border-radius: var(--border-radius); 
-        box-shadow: var(--shadow-md); 
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    .main-content { 
-        flex: 1; 
-        padding: 4rem 2rem; 
-        max-width: 1200px; 
-        margin: 0 auto; 
-        width: 100%; 
+    html {
+      scroll-behavior: smooth;
     }
 
-    .btn { 
-        padding: 0.75rem 1.5rem; 
-        border: none; 
-        border-radius: 8px; 
-        font-weight: 600; 
-        font-size: 1rem; 
-        cursor: pointer; 
-        transition: var(--transition); 
-        display: inline-flex; 
-        align-items: center; 
-        justify-content: center; 
-        gap: 0.5rem; 
-        box-shadow: var(--shadow-sm); 
-    }
-    .btn-primary { 
-        background: var(--primary); 
-        color: white; 
-    }
-    .btn-primary:hover:not(:disabled) { 
-        background: var(--primary-dark); 
-        transform: translateY(-2px); 
-        box-shadow: var(--shadow-md); 
-    }
-    .btn:disabled { 
-        opacity: 0.6; 
-        cursor: not-allowed; 
-        transform: none; 
-        box-shadow: var(--shadow-sm);
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
     }
 
-    .generator-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
-    .page-header { text-align: center; margin-bottom: 3rem; }
-    .page-title { 
-        font-size: 3rem; 
-        font-weight: 800; 
-        margin-bottom: 1rem; 
+    #app-container {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
 
-        background: linear-gradient(135deg, var(--primary), var(--primary-dark)); 
-        -webkit-background-clip: text; 
-        -webkit-text-fill-color: transparent; 
-        background-clip: text; 
+    .glass-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-md);
     }
-    .page-subtitle { font-size: 1.2rem; color: var(--text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.6; }
 
-    .form-group label { 
-        display: block; 
-        margin-bottom: 0.5rem; 
-        font-weight: 500; 
-        color: var(--text-secondary); 
-        font-size: 0.9rem; 
+    .main-content {
+      flex: 1;
+      padding: 4rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      width: 100%;
     }
-    .form-input { 
-        width: 100%; 
-        padding: 0.8rem 1rem; 
-        background: var(--bg-tertiary); 
-        border: 1px solid var(--border-color); 
-        border-radius: 8px; 
-        color: var(--text-primary); 
-        font-size: 1rem; 
-        transition: var(--transition); 
-    }
-    .form-input:focus { 
-        outline: none; 
-        border-color: var(--primary); 
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); 
-    }
-    textarea.form-input { resize: vertical; min-height: 100px; }
 
-    .output-card { display: flex; flex-direction: column; }
-    .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-    .output-header h3 { font-size: 1.2rem; font-weight: 600; color: var(--primary); }
-    .output-area { 
-        flex-grow: 1; 
-        padding: 1.5rem; 
-        background: var(--bg-tertiary); 
-        border-radius: 8px; 
-        border: 1px solid var(--border-color); 
-        color: var(--text-primary); 
-        line-height: 1.7; 
-        min-height: 250px; 
-        white-space: pre-wrap; 
-        box-shadow: inset var(--shadow-sm); 
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: var(--shadow-sm);
     }
-    .output-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
-    #char-count { font-size: 0.85rem; color: var(--text-muted); }
-    #copy-btn { 
-        background: var(--bg-tertiary); 
-        color: var(--text-primary); 
-        border: 1px solid var(--border-color); 
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
     }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .generator-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .page-title {
+      font-size: 3rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .page-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-secondary);
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+    }
+
+    textarea.form-input {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    .output-card {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .output-header h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .output-area {
+      flex-grow: 1;
+      padding: 1.5rem;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      line-height: 1.7;
+      min-height: 250px;
+      white-space: pre-wrap;
+      box-shadow: inset var(--shadow-sm);
+    }
+
+    .output-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+    }
+
+    #char-count {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    #copy-btn {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
     #copy-btn:hover {
-        background-color: var(--border-color); 
-        transform: translateY(-2px);
+      background-color: var(--border-color);
+      transform: translateY(-2px);
     }
-    .status-box { padding: 1.5rem; border-radius: var(--border-radius); text-align: center; border: 1px solid; margin-bottom: 2rem; }
-    .status-box a { color: var(--primary); text-decoration: underline; font-weight: 600; }
-    .status-box-error { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3); color: var(--error); }
 
-    .loading-spinner { 
-        width: 20px; 
-        height: 20px; 
-        border: 2px solid rgba(255,255,255,0.3); 
-        border-radius: 50%; 
-        border-top-color: white; 
-        animation: spin 0.8s linear infinite; 
+    .status-box {
+      padding: 1.5rem;
+      border-radius: var(--border-radius);
+      text-align: center;
+      border: 1px solid;
+      margin-bottom: 2rem;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .hidden { display: none !important; }
+
+    .status-box a {
+      color: var(--primary);
+      text-decoration: underline;
+      font-weight: 600;
+    }
+
+    .status-box-error {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: var(--error);
+    }
+
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
 
     @media (max-width: 1024px) {
-      .generator-layout { grid-template-columns: 1fr; }
-      .page-title { font-size: 2.5rem; }
-      .main-content { padding: 2rem 1rem; }
+      .generator-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .page-title {
+        font-size: 2.5rem;
+      }
+
+      .main-content {
+        padding: 2rem 1rem;
+      }
     }
+
     @media (max-width: 480px) {
-        .page-title { font-size: 2rem; }
-        .page-subtitle { font-size: 1rem; }
-        .form-group label { font-size: 0.85rem; }
-        .form-input, textarea.form-input { padding: 0.7rem 0.9rem; font-size: 0.95rem; }
-        .btn { padding: 0.7rem 1.2rem; font-size: 0.95rem; }
-        .output-area { padding: 1rem; min-height: 200px; font-size: 0.95rem; }
-        .output-header h3 { font-size: 1.1rem; }
-        #char-count { font-size: 0.8rem; }
-        #copy-btn { padding: 0.6rem 1rem; font-size: 0.9rem; }
+      .page-title {
+        font-size: 2rem;
+      }
+
+      .page-subtitle {
+        font-size: 1rem;
+      }
+
+      .form-group label {
+        font-size: 0.85rem;
+      }
+
+      .form-input,
+      textarea.form-input {
+        padding: 0.7rem 0.9rem;
+        font-size: 0.95rem;
+      }
+
+      .btn {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.95rem;
+      }
+
+      .output-area {
+        padding: 1rem;
+        min-height: 200px;
+        font-size: 0.95rem;
+      }
+
+      .output-header h3 {
+        font-size: 1.1rem;
+      }
+
+      #char-count {
+        font-size: 0.8rem;
+      }
+
+      #copy-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+      }
     }
   </style>
 </head>
+
 <body>
   <div id="app-container">
-    
+
 
     <main class="main-content">
       <div class="page-header">
         <h1 class="page-title">Craft the Perfect Connection Note</h1>
-        <p class="page-subtitle">Our AI analyzes your profile and your target's details to generate a personalized, professional, and concise (under 300 characters) note to help you build meaningful connections.</p>
+        <p class="page-subtitle">Our AI analyzes your profile and your target's details to generate a personalized,
+          professional, and concise (under 300 characters) note to help you build meaningful connections.</p>
       </div>
 
       <div id="status-box" class="status-box hidden"></div>
@@ -205,7 +349,8 @@
               </div>
               <div class="form-group">
                 <label for="target-headline">Target's Headline</label>
-                <input type="text" id="target-headline" class="form-input" placeholder="e.g., CEO at Microsoft" required>
+                <input type="text" id="target-headline" class="form-input" placeholder="e.g., CEO at Microsoft"
+                  required>
               </div>
               <div class="form-group">
                 <label for="target-company">Target's Current Company</label>
@@ -213,7 +358,8 @@
               </div>
               <div class="form-group">
                 <label for="target-details">Additional Details (The "Hook")</label>
-                <textarea id="target-details" class="form-input" placeholder="e.g., Mention a recent post, a project they led, a shared university, or a common interest to make your note stand out."></textarea>
+                <textarea id="target-details" class="form-input"
+                  placeholder="e.g., Mention a recent post, a project they led, a shared university, or a common interest to make your note stand out."></textarea>
               </div>
               <button type="submit" id="generate-btn" class="btn btn-primary">
                 <span id="generate-btn-text">Generate Note</span>
@@ -230,8 +376,11 @@
           <div class="output-footer">
             <span id="char-count">0 / 300 characters</span>
             <button id="copy-btn" class="btn">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-                <span id="copy-btn-text">Copy</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                  d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+              </svg>
+              <span id="copy-btn-text">Copy</span>
             </button>
           </div>
         </div>
@@ -240,7 +389,7 @@
   </div>
 
   <script>
-    const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+    const supabaseUrl = 'https://api.mystudentclub.com';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -340,7 +489,7 @@
     });
 
     dom.outputArea.addEventListener('input', (e) => {
-        updateCharCount(e.target.textContent);
+      updateCharCount(e.target.textContent);
     });
 
     function updateCharCount(text) {
@@ -363,4 +512,5 @@
     document.addEventListener('DOMContentLoaded', initialize);
   </script>
 </body>
+
 </html>

@@ -1,6 +1,6 @@
 import { updateHeaderAuth } from './portal.js';
 
-const supabaseClient = supabase.createClient('https://izsggdtdiacxdsjjncdq.supabase.co', 
+const supabaseClient = supabase.createClient('https://api.mystudentclub.com',
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0');
 
 window.addEventListener('DOMContentLoaded', async () => {
@@ -13,17 +13,17 @@ window.addEventListener('DOMContentLoaded', async () => {
   const expandedMenu = document.getElementById('expandedMenu');
   const menuCloseBtn = document.getElementById('menuCloseBtn');
 
-  menuButton.addEventListener('click', () => { 
-    expandedMenu.classList.toggle('active') 
+  menuButton.addEventListener('click', () => {
+    expandedMenu.classList.toggle('active')
   });
 
-  menuCloseBtn.addEventListener('click', () => { 
-    expandedMenu.classList.remove('active') 
+  menuCloseBtn.addEventListener('click', () => {
+    expandedMenu.classList.remove('active')
   });
 
-  document.addEventListener('click', (e) => { 
+  document.addEventListener('click', (e) => {
     if (!expandedMenu.contains(e.target) && !menuButton.contains(e.target) && expandedMenu.classList.contains('active')) {
-      expandedMenu.classList.remove('active') 
+      expandedMenu.classList.remove('active')
     }
   });
 

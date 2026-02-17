@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -8,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Driver.js for Guided Tour -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css" />
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
     <link rel="stylesheet" href="cv-styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -38,8 +39,10 @@
                     <span class="beta-badge">Beta</span>
                 </div>
                 <div style="display: flex; gap: 6px;">
-                    <button class="btn-icon" onclick="startTour()" title="Take a quick tour" style="background: #f0f4ff; border-color: var(--primary-light);">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5">
+                    <button class="btn-icon" onclick="startTour()" title="Take a quick tour"
+                        style="background: #f0f4ff; border-color: var(--primary-light);">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
+                            stroke-width="2.5">
                             <circle cx="12" cy="12" r="10"></circle>
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
                             <circle cx="12" cy="17" r="0.5" fill="currentColor"></circle>
@@ -47,7 +50,8 @@
                         <span style="color: var(--primary);">Help</span>
                     </button>
                     <button class="btn-icon btn-magic" onclick="generateAI()" title="Auto-improve with AI">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <path
                                 d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
                             </path>
@@ -129,8 +133,8 @@
                     </div>
                     <div class="form-group" data-section="tagline">
                         <label>Tagline / Current Role</label>
-                        <input type="text" class="form-control" id="inp-tagline" 
-                            placeholder="e.g. CA Final | Flipkart" oninput="updateCV()">
+                        <input type="text" class="form-control" id="inp-tagline" placeholder="e.g. CA Final | Flipkart"
+                            oninput="updateCV()">
                     </div>
                     <div class="form-group" data-section="contact">
                         <label>Contact Info</label>
@@ -139,18 +143,18 @@
                     </div>
                     <div class="form-group" data-section="phone">
                         <label>Phone</label>
-                        <input type="text" class="form-control" id="inp-phone"
-                            placeholder="+91 98765 43210" oninput="updateCV()">
+                        <input type="text" class="form-control" id="inp-phone" placeholder="+91 98765 43210"
+                            oninput="updateCV()">
                     </div>
                     <div class="form-group" data-section="email">
                         <label>Email</label>
-                        <input type="email" class="form-control" id="inp-email"
-                            placeholder="yourname@email.com" oninput="updateCV()">
+                        <input type="email" class="form-control" id="inp-email" placeholder="yourname@email.com"
+                            oninput="updateCV()">
                     </div>
                     <div class="form-group" data-section="linkedin">
                         <label>LinkedIn</label>
-                        <input type="text" class="form-control" id="inp-linkedin"
-                            placeholder="linkedin.com/in/yourname" oninput="updateCV()">
+                        <input type="text" class="form-control" id="inp-linkedin" placeholder="linkedin.com/in/yourname"
+                            oninput="updateCV()">
                     </div>
 
                     <!-- Social Links Section -->
@@ -332,9 +336,10 @@
     <div class="preview">
         <div class="template-floater" onclick="toggleTemplateSidebar(true)" style="cursor: pointer;">
             <span class="template-label">Template</span>
-            <span id="current-template-name" style="font-size: 13px; font-weight: 600; color: var(--text-main);">Modern Serif</span>
+            <span id="current-template-name" style="font-size: 13px; font-weight: 600; color: var(--text-main);">Modern
+                Serif</span>
             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M6 9l6 6 6-6"/>
+                <path d="M6 9l6 6 6-6" />
             </svg>
         </div>
 
@@ -556,7 +561,7 @@
         // Note: pdfjsLib is loaded via dynamic import below
 
         // Configuration
-        const SUPABASE_URL = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const SUPABASE_URL = 'https://api.mystudentclub.com';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 
         let supabase = null;
@@ -740,7 +745,7 @@
                 const endMarker = marker.replace('<<<', '<<<END_');
                 const content = extractSection(text, marker, endMarker);
                 const container = document.getElementById(id).querySelector('.content-area');
-                
+
                 // Special handling for sections with <<POINT>> markers
                 if (marker === '<<<MEASURABLE_RESULTS>>>' || marker === '<<<PHRASES_SUGGESTIONS>>>') {
                     container.innerHTML = formatPointSection(content);
@@ -770,32 +775,32 @@
         // Special formatter for sections with <<POINT>> markers (Measurable Results, Phrases Suggestions)
         function formatPointSection(content) {
             if (!content) return '<p class="text-muted italic">No specific feedback.</p>';
-            
+
             // Split by <<END_POINT>> or --- delimiters
             const points = content.split(/<<END_POINT>>|---/);
             let html = '';
-            
+
             points.forEach((point) => {
                 if (!point.trim()) return;
-                
+
                 // Remove <<POINT>> marker
                 point = point.replace(/<<POINT>>/g, '').trim();
                 if (!point) return;
-                
+
                 // Extract Original quote
                 const originalMatch = point.match(/Original:\s*"([\s\S]+?)"/i);
                 // Extract Critique
                 const critiqueMatch = point.match(/Critique:\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/i);
-                
+
                 html += `<div class="feedback-point" style="border: 1px solid var(--border-color); border-radius: 10px; padding: 16px; margin-bottom: 16px; background: #fafbfc;">`;
-                
+
                 if (originalMatch && originalMatch[1]) {
                     html += `<div style="margin-bottom: 12px;">
                         <span style="font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px;">Original</span>
                         <div style="margin-top: 4px; padding: 10px 12px; background: #fff; border: 1px solid var(--border-color); border-radius: 6px; font-style: italic; color: var(--text-main); line-height: 1.5;">"${originalMatch[1].trim()}"</div>
                     </div>`;
                 }
-                
+
                 if (critiqueMatch && critiqueMatch[1]) {
                     const critiqueText = critiqueMatch[1].trim();
                     html += `<div style="margin-bottom: 12px;">
@@ -803,15 +808,15 @@
                         <div style="margin-top: 4px; color: var(--text-main); line-height: 1.6;">${formatCritiqueText(critiqueText)}</div>
                     </div>`;
                 }
-                
+
                 // Extract all rewrite suggestions
                 const allSuggestions = [...point.matchAll(/Rewrite Suggestion (\d+):\s*([\s\S]+?)(?=Rewrite Suggestion \d+:|$)/gi)];
-                
+
                 if (allSuggestions.length > 0) {
                     html += `<div>
                         <span style="font-size: 10px; font-weight: 700; color: var(--success); text-transform: uppercase; letter-spacing: 0.5px;">Rewrite Suggestions</span>
                         <div style="margin-top: 8px;">`;
-                    
+
                     allSuggestions.forEach((match, idx) => {
                         const suggestionText = match[2].trim();
                         if (suggestionText) {
@@ -821,16 +826,16 @@
                             </div>`;
                         }
                     });
-                    
+
                     html += `</div></div>`;
                 }
-                
+
                 html += `</div>`;
             });
-            
+
             return html || '<p class="text-muted italic">No specific feedback.</p>';
         }
-        
+
         function formatCritiqueText(text) {
             // Escape HTML and format
             let html = escapeHtml(text);
@@ -838,7 +843,7 @@
             html = html.replace(/\n/g, '<br>');
             return html;
         }
-        
+
         function escapeHtml(text) {
             return text
                 .replace(/&/g, '&amp;')
@@ -854,7 +859,7 @@
 
             // STEP 1: Pre-process raw text before HTML conversion
             let processedText = md;
-            
+
             // Replace asterisks at the start of lines with bullet points
             processedText = processedText.replace(/^\* /gm, '• ');
             processedText = processedText.replace(/\n\* /g, '\n• ');
@@ -1058,4 +1063,5 @@
     </div>
 </body>
 <script src="cv-script.js"></script>
+
 </html>

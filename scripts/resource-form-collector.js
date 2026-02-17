@@ -3,7 +3,7 @@
  * Collects student data when resources are accessed
  */
 
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://api.mystudentclub.com';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 // Configure Supabase client to avoid storage warnings (no auth session needed for anonymous inserts)
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, {
@@ -34,8 +34,8 @@ class ResourceFormCollector {
     static detectProgramType() {
         const path = window.location.pathname.toLowerCase();
         const title = document.title.toLowerCase();
-        
-        if (path.includes('ca-fresher') || path.includes('fresher-training-resources') || 
+
+        if (path.includes('ca-fresher') || path.includes('fresher-training-resources') ||
             (path.includes('fresher') && !path.includes('semi'))) {
             return 'ca-fresher';
         } else if (path.includes('industrial-training') || path.includes('industrial-training-resources')) {
@@ -293,18 +293,18 @@ class ResourceFormCollector {
     attachEventListeners() {
         document.addEventListener('click', (e) => {
             let resourceLink = e.target.closest('a[href]');
-            
+
             if (!resourceLink && e.target.tagName === 'A') {
                 resourceLink = e.target;
             }
-            
+
             if (!resourceLink) {
                 const card = e.target.closest('.resource-card');
                 if (card) {
                     resourceLink = card.querySelector('a[href]');
                 }
             }
-            
+
             if (resourceLink && resourceLink.href && this.isResourceLink(resourceLink.href)) {
                 const resourceTitle = this.getResourceTitle(resourceLink);
                 const resourceUrl = resourceLink.href;
@@ -350,8 +350,8 @@ class ResourceFormCollector {
         if (!url) return false;
         const lowerUrl = url.toLowerCase();
         // Check for external resource links
-        if (lowerUrl.includes('google.com') || 
-            lowerUrl.includes('drive.google') || 
+        if (lowerUrl.includes('google.com') ||
+            lowerUrl.includes('drive.google') ||
             lowerUrl.includes('docs.google') ||
             lowerUrl.includes('dropbox.com') ||
             lowerUrl.includes('onedrive.com')) {
@@ -449,14 +449,14 @@ class ResourceFormCollector {
      */
     async handleSubmit(e) {
         e.preventDefault();
-        
+
         const form = e.target;
         const submitBtn = form.querySelector('.btn-submit');
         const formData = new FormData(form);
-        
+
         // Get resource URL from form dataset (not formData)
         const resourceUrl = form.dataset.resourceUrl;
-        
+
         // Validate required data
         if (!resourceUrl) {
             console.error('Resource URL is missing');
@@ -525,16 +525,16 @@ class ResourceFormCollector {
             console.error('Error submitting form:', error);
             // Still allow access even on error
             alert('There was an error saving your information, but you can still access the resource.');
-            
+
             // Mark as submitted
             this.formSubmitted.add(resourceUrl);
             this.isGlobalSubmitted = true;
             sessionStorage.setItem('msc_lead_submitted', 'true');
-            
+
             // Hide form and open resource
             this.hideForm();
             this.openResource(resourceUrl);
-            
+
             // Re-enable submit button (though form is hidden)
             if (submitBtn) {
                 submitBtn.disabled = false;
@@ -545,7 +545,7 @@ class ResourceFormCollector {
 
     openResource(url) {
         if (!url) return;
-        
+
         // Check if it's a PDF (and not a Google Drive/Doc link which are already viewers)
         const lowerUrl = url.toLowerCase();
         const isPdf = lowerUrl.endsWith('.pdf') || (lowerUrl.includes('.pdf') && !lowerUrl.includes('drive.google.com'));

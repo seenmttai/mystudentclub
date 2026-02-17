@@ -1,50 +1,53 @@
 <html>
+
 <head>
-<title>Testing payment of payu</title>
-<style>
-    #login{
-        background-color: #000000;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        color: #ffffff;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        border-radius: 10px;
-        max-width: 50vw;
-        padding: 20px;
-    }
-
-</style>
-<link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/ssets/icon-70x70.png">
+    <title>Testing payment of payu</title>
+    <style>
+        #login {
+            background-color: #000000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 10px;
+            max-width: 50vw;
+            padding: 20px;
+        }
+    </style>
+    <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/ssets/icon-70x70.png">
 </head>
+
 <body>
-<button onclick="window.open('https://pmny.in/PAYUMN/trWKBCqTHWuK', '_blank', 'width=500,height=500'); check(); return false;">Pay</button>
-<div id="login">
-    <h3>Login To Buy Course</h3>
-    <a href="/login.html"><button>Login?</button></a>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, { global: { headers: { 'apikey': supabaseKey } } });
-async function getAuthDetails(){
-const { data: { session } } = await supabaseClient.auth.getSession(); 
-return session;
-}
-async function check(){
-session = await getAuthDetails();
-if(session){
-console.log(session.user.email);}
-else{
+    <button
+        onclick="window.open('https://pmny.in/PAYUMN/trWKBCqTHWuK', '_blank', 'width=500,height=500'); check(); return false;">Pay</button>
+    <div id="login">
+        <h3>Login To Buy Course</h3>
+        <a href="/login.html"><button>Login?</button></a>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://api.mystudentclub.com';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey, { global: { headers: { 'apikey': supabaseKey } } });
+        async function getAuthDetails() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            return session;
+        }
+        async function check() {
+            session = await getAuthDetails();
+            if (session) {
+                console.log(session.user.email);
+            }
+            else {
 
-}
-}
-</script>
+            }
+        }
+    </script>
 </body>
-</html>
 
+</html>

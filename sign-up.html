@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -143,30 +144,37 @@
     .google-btn:hover {
       background: #f8f8f8;
       border-color: #aaa;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
 
     .google-btn svg {
-        width: 20px;
-        height: 20px;
+      width: 20px;
+      height: 20px;
     }
 
     .divider {
-        text-align: center;
-        margin: 1.5rem 0;
-        color: #aaa;
-        font-size: 0.875rem;
-        display: flex;
-        align-items: center;
+      text-align: center;
+      margin: 1.5rem 0;
+      color: #aaa;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
     }
+
     .divider::before,
     .divider::after {
-        content: '';
-        flex: 1;
-        border-bottom: 1px solid #eee;
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid #eee;
     }
-    .divider::before { margin-right: .5em; }
-    .divider::after { margin-left: .5em; }
+
+    .divider::before {
+      margin-right: .5em;
+    }
+
+    .divider::after {
+      margin-left: .5em;
+    }
 
 
     .message {
@@ -179,6 +187,7 @@
       margin-bottom: 1.5rem;
       display: none;
     }
+
     .message.show {
       display: block;
     }
@@ -219,10 +228,27 @@
     }
 
     @keyframes shake {
-      10%, 90% { transform: translateX(-1px); }
-      20%, 80% { transform: translateX(2px); }
-      30%, 50%, 70% { transform: translateX(-4px); }
-      40%, 60% { transform: translateX(4px); }
+
+      10%,
+      90% {
+        transform: translateX(-1px);
+      }
+
+      20%,
+      80% {
+        transform: translateX(2px);
+      }
+
+      30%,
+      50%,
+      70% {
+        transform: translateX(-4px);
+      }
+
+      40%,
+      60% {
+        transform: translateX(4px);
+      }
     }
 
     .loading-spinner {
@@ -244,7 +270,9 @@
     }
 
     @keyframes spin {
-      100% { transform: translateY(-50%) rotate(360deg); }
+      100% {
+        transform: translateY(-50%) rotate(360deg);
+      }
     }
 
     .back-to-home {
@@ -269,13 +297,14 @@
     }
   </style>
 </head>
+
 <body>
   <div class="signup-page">
     <header class="signup-header">
       <div class="container mx-auto px-4 py-2 flex items-center">
         <a href="/" class="back-to-home">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
           Back to Home
         </a>
@@ -309,14 +338,23 @@
         <div class="divider">OR</div>
 
         <button type="button" id="google-signin-btn" class="google-btn">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: block;">
-                <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path>
-                <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path>
-                <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path>
-                <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path>
-                <path fill="none" d="M0 0h48v48H0z"></path>
-            </svg>
-            Continue with Google
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"
+            xmlns:xlink="http://www.w3.org/1999/xlink" style="display: block;">
+            <path fill="#EA4335"
+              d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z">
+            </path>
+            <path fill="#4285F4"
+              d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z">
+            </path>
+            <path fill="#FBBC05"
+              d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z">
+            </path>
+            <path fill="#34A853"
+              d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z">
+            </path>
+            <path fill="none" d="M0 0h48v48H0z"></path>
+          </svg>
+          Continue with Google
         </button>
 
         <div class="login-link">
@@ -327,7 +365,7 @@
   </div>
 
   <script>
-    const supabaseClient = supabase.createClient('https://izsggdtdiacxdsjjncdq.supabase.co',
+    const supabaseClient = supabase.createClient('https://api.mystudentclub.com',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0');
 
     const signupForm = document.getElementById('signup-form');
@@ -365,9 +403,9 @@
       }
 
       if (password.length < 6) {
-          errorMessage.textContent = 'Password must be at least 6 characters long.';
-          errorMessage.classList.add('show');
-          return;
+        errorMessage.textContent = 'Password must be at least 6 characters long.';
+        errorMessage.classList.add('show');
+        return;
       }
 
       signupButton.classList.add('loading');
@@ -384,24 +422,24 @@
         }
 
         if (data.user && !data.session) {
-             successMessage.textContent = 'Sign up successful! Please check your email to confirm your account.';
-             successMessage.classList.add('show');
-             signupForm.reset();
+          successMessage.textContent = 'Sign up successful! Please check your email to confirm your account.';
+          successMessage.classList.add('show');
+          signupForm.reset();
         } else if (data.session) {
-             window.location.href = '/';
+          window.location.href = '/';
         } else {
-            errorMessage.textContent = 'An unexpected issue occurred during signup. Please try again.';
-            errorMessage.classList.add('show');
+          errorMessage.textContent = 'An unexpected issue occurred during signup. Please try again.';
+          errorMessage.classList.add('show');
         }
 
       } catch (error) {
         console.error('Signup Error:', error);
         if (error.message.includes("User already registered")) {
-            errorMessage.textContent = "This email is already registered. Please log in instead.";
+          errorMessage.textContent = "This email is already registered. Please log in instead.";
         } else if (error.message.includes("Password should be at least 6 characters")) {
-            errorMessage.textContent = "Password must be at least 6 characters long.";
+          errorMessage.textContent = "Password must be at least 6 characters long.";
         } else {
-            errorMessage.textContent = error.message || 'Failed to sign up. Please try again.';
+          errorMessage.textContent = error.message || 'Failed to sign up. Please try again.';
         }
         errorMessage.classList.add('show');
       } finally {
@@ -411,44 +449,45 @@
     });
 
     googleSignInButton.addEventListener('click', async () => {
-        errorMessage.classList.remove('show');
-        successMessage.classList.remove('show');
-        try {
-            const { data, error } = await supabaseClient.auth.signInWithOAuth({
-                provider: 'google',
-                 options: {}
-            });
-            if (error) {
-                throw error;
-            }
-        } catch (error) {
-            console.error('Google Sign-In Error:', error);
-            errorMessage.textContent = error.message || 'Failed to sign in with Google. Please try again.';
-            errorMessage.classList.add('show');
+      errorMessage.classList.remove('show');
+      successMessage.classList.remove('show');
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithOAuth({
+          provider: 'google',
+          options: {}
+        });
+        if (error) {
+          throw error;
         }
+      } catch (error) {
+        console.error('Google Sign-In Error:', error);
+        errorMessage.textContent = error.message || 'Failed to sign in with Google. Please try again.';
+        errorMessage.classList.add('show');
+      }
     });
 
-    window.handleGoogleSignInToken = async function(id_token) {
-        if (!id_token) {
-            console.error("Native Google Sign-In did not provide a token.");
-            return;
-        }
-        try {
-            const { error } = await supabaseClient.auth.signInWithIdToken({
-                provider: 'google',
-                token: id_token
-            });
+    window.handleGoogleSignInToken = async function (id_token) {
+      if (!id_token) {
+        console.error("Native Google Sign-In did not provide a token.");
+        return;
+      }
+      try {
+        const { error } = await supabaseClient.auth.signInWithIdToken({
+          provider: 'google',
+          token: id_token
+        });
 
-            if (error) {
-                console.error('Supabase sign-in with Google token failed:', error.message);
-                alert('Could not complete Google Sign-In: ' + error.message);
-            } else {
-                window.location.href = '/'; 
-            }
-        } catch (e) {
-            console.error("An unexpected error occurred during Google Sign-In:", e);
+        if (error) {
+          console.error('Supabase sign-in with Google token failed:', error.message);
+          alert('Could not complete Google Sign-In: ' + error.message);
+        } else {
+          window.location.href = '/';
         }
+      } catch (e) {
+        console.error("An unexpected error occurred during Google Sign-In:", e);
+      }
     };
   </script>
 </body>
+
 </html>

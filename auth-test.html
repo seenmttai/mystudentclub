@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,6 +16,7 @@
             background-color: #f4f4f9;
             margin: 0;
         }
+
         .container {
             background-color: #fff;
             padding: 30px 40px;
@@ -22,10 +24,12 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
+
         h1 {
             color: #333;
             margin-bottom: 25px;
         }
+
         button {
             padding: 12px 25px;
             font-size: 16px;
@@ -37,13 +41,16 @@
             transition: background-color 0.3s ease;
             margin-bottom: 20px;
         }
+
         button:hover {
             background-color: #0056b3;
         }
+
         button:disabled {
             background-color: #cccccc;
             cursor: not-allowed;
         }
+
         #resultArea {
             margin-top: 20px;
             padding: 15px;
@@ -57,16 +64,19 @@
             color: #495057;
             border: 1px solid #ced4da;
         }
+
         #resultArea.success {
             background-color: #d4edda;
             color: #155724;
             border-color: #c3e6cb;
         }
+
         #resultArea.error {
             background-color: #f8d7da;
             color: #721c24;
             border-color: #f5c6cb;
         }
+
         #resultArea.info {
             background-color: #cce5ff;
             color: #004085;
@@ -74,6 +84,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Check Admin Status</h1>
@@ -86,13 +97,13 @@
         const resultArea = document.getElementById('resultArea');
         const workerUrl = 'https://auth-check.bhansalimanan55.workers.dev';
 
-        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseUrl = 'https://api.mystudentclub.com';
         const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 
         if (!supabaseUrl || supabaseUrl === 'YOUR_SUPABASE_URL' || !supabaseAnonKey || supabaseAnonKey === 'YOUR_SUPABASE_ANON_KEY') {
-             resultArea.textContent = 'Supabase URL or Key not configured in the HTML.';
-             resultArea.className = 'error';
-             checkAdminBtn.disabled = true;
+            resultArea.textContent = 'Supabase URL or Key not configured in the HTML.';
+            resultArea.className = 'error';
+            checkAdminBtn.disabled = true;
         }
 
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
@@ -132,8 +143,8 @@
                     resultArea.textContent = 'Access Denied: You are NOT a super admin.';
                     resultArea.className = 'error';
                 } else {
-                     resultArea.textContent = `Error: ${result.error || response.statusText || 'Unknown error'}`;
-                     resultArea.className = 'error';
+                    resultArea.textContent = `Error: ${result.error || response.statusText || 'Unknown error'}`;
+                    resultArea.className = 'error';
                 }
 
             } catch (error) {
@@ -146,4 +157,5 @@
         });
     </script>
 </body>
+
 </html>

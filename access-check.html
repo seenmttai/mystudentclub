@@ -1,33 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Course Access Checker</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 2rem; background-color: #f7fafc; }
-        .container { background-color: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 600px; }
-        h1 { margin-top: 0; color: #2d3748; }
-        #auth-status { font-style: italic; color: #718096; margin-bottom: 1rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 1rem; }
-        #access-status { margin-top: 1rem; padding: 1rem; border-radius: 6px; font-weight: 500; }
-        #access-status.loading { background-color: #e2e8f0; color: #4a5568; }
-        #access-status.granted { background-color: #c6f6d5; color: #2f855a; }
-        #access-status.denied { background-color: #fed7d7; color: #c53030; }
-        #paid-course-access { display: none; margin-top: 1.5rem; padding: 1.5rem; background-color: #ebf8ff; border: 1px solid #bee3f8; border-radius: 8px; }
-        #paid-course-access h2 { margin-top: 0; color: #2c5282; }
-        #paid-course-access a { background-color: #3182ce; color: white; padding: 0.75rem 1.5rem; text-decoration: none; border-radius: 6px; display: inline-block; margin-top: 1rem; transition: background-color 0.2s; }
-        #paid-course-access a:hover { background-color: #2b6cb0; }
-        button { padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer; background-color: #4299e1; color: white; }
-        button#logout-btn { background-color: #e53e3e; }
-        .hidden { display: none; }
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            background-color: #f7fafc;
+        }
+
+        .container {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+
+        #auth-status {
+            font-style: italic;
+            color: #718096;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 1rem;
+        }
+
+        #access-status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        #access-status.loading {
+            background-color: #e2e8f0;
+            color: #4a5568;
+        }
+
+        #access-status.granted {
+            background-color: #c6f6d5;
+            color: #2f855a;
+        }
+
+        #access-status.denied {
+            background-color: #fed7d7;
+            color: #c53030;
+        }
+
+        #paid-course-access {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background-color: #ebf8ff;
+            border: 1px solid #bee3f8;
+            border-radius: 8px;
+        }
+
+        #paid-course-access h2 {
+            margin-top: 0;
+            color: #2c5282;
+        }
+
+        #paid-course-access a {
+            background-color: #3182ce;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            text-decoration: none;
+            border-radius: 6px;
+            display: inline-block;
+            margin-top: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        #paid-course-access a:hover {
+            background-color: #2b6cb0;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #4299e1;
+            color: white;
+        }
+
+        button#logout-btn {
+            background-color: #e53e3e;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="container">
         <h1>Dynamic Course Access</h1>
-        <p>This page demonstrates dynamically showing content based on whether a logged-in user is enrolled in a paid course.</p>
+        <p>This page demonstrates dynamically showing content based on whether a logged-in user is enrolled in a paid
+            course.</p>
         <div id="auth-status">Checking authentication status...</div>
         <button id="logout-btn" class="hidden">Logout</button>
         <div id="access-status" class="loading">Checking access...</div>
@@ -40,7 +126,7 @@
     </div>
 
     <script>
-        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseUrl = 'https://api.mystudentclub.com';
         const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
         const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 
@@ -69,7 +155,7 @@
                 if (error) {
                     throw error;
                 }
-                
+
                 if (count > 0) {
                     accessStatusDiv.textContent = 'Access Granted: You are enrolled in one or more courses.';
                     accessStatusDiv.className = 'granted';
@@ -104,7 +190,7 @@
 
         logoutBtn.addEventListener('click', async () => {
             await supabase.auth.signOut();
-            
+
             localStorage.removeItem('userJobPreference');
             localStorage.removeItem('userProfileData');
             localStorage.removeItem('userCVFileName');
@@ -113,7 +199,7 @@
             localStorage.removeItem('subscribedTopics');
             localStorage.removeItem('newUserSignup');
             localStorage.removeItem('newUserEmail');
-            
+
             const keysToRemove = [];
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
@@ -122,10 +208,11 @@
                 }
             }
             keysToRemove.forEach(key => localStorage.removeItem(key));
-            
+
             window.location.href = '/';
         });
 
     </script>
 </body>
+
 </html>

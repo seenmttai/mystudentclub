@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 // --- Configuration ---
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://api.mystudentclub.com';
 const SUPABASE_KEY = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const DOMAIN = 'https://www.mystudentclub.com';
 
@@ -58,7 +58,7 @@ function getDaysAgo(dateString) {
     const now = new Date();
     const diffTime = Math.abs(now - date);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Yesterday';
     return `${diffDays} days ago`;
@@ -77,7 +77,7 @@ function renderMarkdown(text) {
         .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>')
         .replace(/\n\n/g, '</p><p>')
         .replace(/\n/g, '<br>');
-    
+
     return '<p>' + html + '</p>';
 }
 
@@ -118,7 +118,7 @@ function constructMailto(job, tableName) {
 
 function generateJsonLd(job, jobId, categorySlug) {
     const datePosted = formatDate(job.Created_At);
-    const description = job.Description 
+    const description = job.Description
         ? JSON.stringify(String(job.Description).replace(/\n/g, '\\n').replace(/"/g, '\\"'))
         : '"No description available"';
 
@@ -173,7 +173,7 @@ const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
     const category = job.Category || 'General';
     const descriptionHtml = renderMarkdown(job.Description);
     const applyInfo = getApplicationLink(job['Application ID']);
-    
+
     // Connect Link Logic
     let connectLink = job.connect_link || job['connect_link'];
     if (!connectLink || String(connectLink).trim() === '') {
@@ -1003,7 +1003,7 @@ async function generateJobs() {
 
     for (const [tableName, folderName] of Object.entries(TABLE_MAP)) {
         console.log(`Processing: ${tableName} -> jobs/${folderName}`);
-        
+
         const folderPath = path.join(jobsDir, folderName);
         if (!fs.existsSync(folderPath)) fs.mkdirSync(folderPath);
 
@@ -1016,11 +1016,11 @@ async function generateJobs() {
             if (existingFiles.length > 0) {
                 const ids = existingFiles.map(f => parseInt(f.replace('.html', '')));
                 const validIds = ids.filter(id => !isNaN(id));
-                
+
                 if (validIds.length > 0) {
                     const maxId = Math.max(...validIds);
                     console.log(`No sync state. Found max ID ${maxId} in folder. Fetching its timestamp...`);
-                    
+
                     const { data: lastJobData, error: lastJobError } = await supabase
                         .from(tableName)
                         .select('Created_At')
@@ -1077,7 +1077,7 @@ async function generateJobs() {
 
             fs.writeFileSync(filePath, htmlContent);
         }
-        
+
         let allFiles = fs.readdirSync(folderPath).map(file => {
             return {
                 name: file,
@@ -1085,7 +1085,7 @@ async function generateJobs() {
                 mtime: fs.statSync(path.join(folderPath, file)).mtime
             };
         });
-        
+
         // Filter only HTML files to avoid deleting system files if any
         allFiles = allFiles.filter(f => f.name.endsWith('.html'));
 
@@ -1094,27 +1094,27 @@ async function generateJobs() {
 
         if (allFiles.length > FOLDER_LIMIT) {
             console.log(`Folder limit exceeded (${allFiles.length} > ${FOLDER_LIMIT}). Initiating bulk cleanup...`);
-            
+
             // 1. Identify the oldest file (last in the sorted array)
             const oldestFile = allFiles[allFiles.length - 1];
             const oldestDate = new Date(oldestFile.mtime);
-            
+
             console.log(`Oldest file found: ${oldestFile.name} (Dated: ${oldestDate.toISOString()})`);
-            
+
             // 2. Calculate the purge cutoff date (Oldest Date + 7 Days)
             // We want to delete everything from the "oldest date" up to "oldest date + 7 days"
             // effectively clearing a week's worth of the oldest data.
             const purgeCutoff = new Date(oldestDate);
             purgeCutoff.setDate(purgeCutoff.getDate() + 7);
-            
+
             console.log(`Purging files older than or equal to: ${purgeCutoff.toISOString()} (7-day buffer)`);
-            
+
             // 3. Filter files to delete: Any file OLDER than the cutoff (mtime < purgeCutoff)
             // Note: Since 'allFiles' contains everything, we just act on the full list.
             const filesToDelete = allFiles.filter(f => f.mtime <= purgeCutoff);
-            
+
             console.log(`Identified ${filesToDelete.length} files to delete.`);
-            
+
             for (const file of filesToDelete) {
                 try {
                     fs.unlinkSync(file.path);
@@ -1126,7 +1126,7 @@ async function generateJobs() {
         } else {
             console.log(`Folder check passed: ${allFiles.length} files (Limit: ${FOLDER_LIMIT}).`);
         }
-        
+
         console.log(`Finished ${folderName}.`);
     }
 
@@ -1145,32 +1145,32 @@ async function generateSitemap(jobsDir) {
     let sitemapContent = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
 
     const today = new Date().toISOString().split('T')[0];
-    
+
     // Calculate cutoff date (3 days ago)
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - 3);
     console.log(`Sitemap cutoff date: ${cutoffDate.toISOString().split('T')[0]} (Only including jobs posted/created after this)`);
 
     let totalExpired = 0;
-    
+
     for (const [tableName, folderName] of Object.entries(TABLE_MAP)) {
         const folderPath = path.join(jobsDir, folderName);
         if (fs.existsSync(folderPath)) {
             const files = fs.readdirSync(folderPath).filter(file => file.endsWith('.html'));
             let addedCount = 0;
             let expiredCount = 0;
-            
+
             for (const file of files) {
                 const filePath = path.join(folderPath, file);
-                
+
                 try {
                     const content = fs.readFileSync(filePath, 'utf8');
                     // Extract datePosted from JSON-LD
                     const dateMatch = content.match(/"datePosted":\s*"(\d{4}-\d{2}-\d{2})"/);
-                    
+
                     if (dateMatch && dateMatch[1]) {
                         const jobDate = new Date(dateMatch[1]);
-                        
+
                         // Compare job posted date with cutoff
                         if (jobDate > cutoffDate) {
                             // Fresh job - add to sitemap
@@ -1182,15 +1182,15 @@ async function generateSitemap(jobsDir) {
                             // Check if JSON-LD still exists or if noindex meta is missing
                             const hasJsonLd = content.includes('<script type="application/ld+json">');
                             const hasNoindexMeta = content.includes('<meta name="robots" content="noindex');
-                            
+
                             if (hasJsonLd || !hasNoindexMeta) {
                                 // Get original file stats to preserve mtime
                                 const stats = fs.statSync(filePath);
                                 const originalMtime = stats.mtime;
                                 const originalAtime = stats.atime;
-                                
+
                                 let updatedContent = content;
-                                
+
                                 // Remove JSON-LD block if exists
                                 if (hasJsonLd) {
                                     updatedContent = updatedContent.replace(
@@ -1198,7 +1198,7 @@ async function generateSitemap(jobsDir) {
                                         ''
                                     );
                                 }
-                                
+
                                 // Inject noindex meta tag if not present
                                 if (!hasNoindexMeta) {
                                     // Insert after the viewport meta tag (or first meta tag)
@@ -1207,13 +1207,13 @@ async function generateSitemap(jobsDir) {
                                         '$1\n    <meta name="robots" content="noindex, follow">'
                                     );
                                 }
-                                
+
                                 // Write updated content
                                 fs.writeFileSync(filePath, updatedContent);
-                                
+
                                 // Restore original timestamps
                                 fs.utimesSync(filePath, originalAtime, originalMtime);
-                                
+
                                 expiredCount++;
                             }
                             // Skip adding to sitemap (expired)
@@ -1237,7 +1237,7 @@ async function generateSitemap(jobsDir) {
             totalExpired += expiredCount;
         }
     }
-    
+
     if (totalExpired > 0) {
         console.log(`Total expired jobs processed (JSON-LD removed): ${totalExpired}`);
     }
