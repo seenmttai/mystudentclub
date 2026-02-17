@@ -695,16 +695,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         });
 
-                        // Buffer Stall Detection with Incremental Backoff
-                        let stallTimeout = null;
-                        let currentStallThreshold = 4000; // Start at 4 seconds to avoid startup false positives
 
-                        const clearStallTimer = () => {
-                            if (stallTimeout) {
-                                clearTimeout(stallTimeout);
-                                stallTimeout = null;
-                            }
-                        };
 
                         // TTFB Monitoring (Strict 1.5s)
                         let ttfbTimer = null;
@@ -744,33 +735,13 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ttfbTimer = null;
                             }
 
-                            // Buffer Stall Heartbeat: 
-                            // If we were stalled, but data is arriving, extend the timeout.
-                            // This prevents switching domains just because download is slow (>1s) but steady.
-                            if (stallTimeout) {
-                                clearTimeout(stallTimeout);
-                                stallTimeout = setTimeout(() => {
-                                    console.warn(`Buffer stalled (no progress) for >${currentStallThreshold}ms. Switching domain...`);
-                                    switchDomainOnLag();
 
-                                    // Increment threshold
-                                    currentStallThreshold += 1000;
-
-                                    state.hlsInstance.startLoad();
-                                    stallTimeout = null;
-                                }, currentStallThreshold);
-                            }
                         });
 
 
-                        state.hlsInstance.on(Hls.Events.FRAG_BUFFERED, () => {
-                            clearStallTimer();
-                            // Successful buffer resets the threshold back to 1s (strict lag logic after start)
-                            currentStallThreshold = 1000;
-                        });
+
 
                         state.hlsInstance.on(Hls.Events.FRAG_LOADED, (event, data) => {
-                            clearStallTimer();
                             if (ttfbTimer) { clearTimeout(ttfbTimer); ttfbTimer = null; }
 
                             // Update Stats
@@ -790,22 +761,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             }
                         });
 
-                        state.hlsInstance.on(Hls.Events.BUFFER_STALLED, () => {
-                            if (!stallTimeout) {
-                                console.log(`Buffer stalled. Waiting ${currentStallThreshold}ms before switching...`);
-                                stallTimeout = setTimeout(() => {
-                                    console.warn(`Buffer stalled for >${currentStallThreshold}ms. Switching domain...`);
-                                    switchDomainOnLag();
 
-                                    // Increment threshold for next time to prevent rapid looping
-                                    // 1s -> 2s -> 3s -> 4s ...
-                                    currentStallThreshold += 1000;
-
-                                    state.hlsInstance.startLoad();
-                                    stallTimeout = null;
-                                }, currentStallThreshold);
-                            }
-                        });
 
                         state.hlsInstance.loadSource(hlsUrl);
                         state.hlsInstance.attachMedia(DOMElements.videoPlayer);
