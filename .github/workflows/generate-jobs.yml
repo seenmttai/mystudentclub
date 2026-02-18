@@ -10,26 +10,43 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     
     - name: Setup Node.js
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@v3
       with:
-        node-version: '18'
+        node-version: '20'
         
-    - name: Install Dependencies
-      run: npm install
+    - name: Install Astro Dependencies
+      run: cd jobs-builder && npm install
       
-    - name: Generate Jobs
+    - name: Build New Job Pages (Astro)
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-      run: node scripts/generate-jobs.js
-      
+      run: cd jobs-builder && npx astro build
+
+    - name: Update Sync State
+      run: cd jobs-builder && npm run sync:update
+
+    - name: Copy New Pages to Jobs Folder
+      run: |
+        mkdir -p jobs/industrial jobs/fresher jobs/semi-qualified jobs/articleship
+        cp -r jobs-builder/dist/jobs/* jobs/
+
+    - name: Run Folder Cleanup (3000 limit)
+      run: cd jobs-builder && npm run cleanup
+
+    - name: Run Job Expiration (3-day soft delete)
+      run: cd jobs-builder && npm run expire
+
+    - name: Generate Sitemap
+      run: cd jobs-builder && npm run sitemap
+
     - name: Commit and Push Changes
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-        git add jobs/ jobs/sync-state.json jobs-sitemap.xml
-        git commit -m "Auto-generated jobs update" || echo "No changes to commit"
+        git add jobs/ jobs-sitemap.xml jobs-builder/scripts/sync-state.json
+        git commit -m "Auto-generated jobs update (Astro SSG)" || echo "No changes to commit"
         git push

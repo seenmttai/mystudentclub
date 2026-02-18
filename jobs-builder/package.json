@@ -1,0 +1,24 @@
+{
+  "name": "jobs-builder",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "cleanup": "node scripts/cleanup-folders.js",
+    "expire": "node scripts/expire-old-jobs.js",
+    "sitemap": "node scripts/generate-sitemap.js",
+    "sync:update": "node scripts/update-sync-state.js",
+    "build:full": "npm run build && npm run sync:update && npm run cleanup && npm run expire && npm run sitemap"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.6",
+    "@supabase/supabase-js": "^2.95.3",
+    "astro": "^5.17.1",
+    "dotenv": "^17.2.4",
+    "typescript": "^5.9.3"
+  }
+}
