@@ -8,8 +8,7 @@
   padding: 60px 20px;
   box-sizing: border-box;
   text-align: center;
-  background:
-    linear-gradient(180deg, #ffffff 0%, #fafbfe 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #fafbfe 100%);
   position: relative;
   overflow: hidden;
 }
@@ -60,7 +59,7 @@
 }
 
 .highlight {
-  color: #4CAF50;
+  color: #4caf50;
 }
 
 .carousel-container {
@@ -112,7 +111,7 @@
   background: #444;
   background-size: cover;
   background-position: center;
-  border: 3px solid #4CAF50;
+  border: 3px solid #4caf50;
   box-shadow: 0 8px 20px rgba(76, 175, 80, 0.15);
 }
 
@@ -226,7 +225,6 @@
 
 .days-grid .day-card {
   width: 100%;
-  height: 320px;
   display: flex;
   flex-direction: column;
 }
@@ -242,15 +240,10 @@
   text-align: left;
 }
 
-.day-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-}
-
 .day-card h3 {
-  color: #4CAF50;
+  color: #4caf50;
   font-size: 18px;
-  margin: 0 0 16px 0;
+  margin: 0;
   font-weight: 600;
   line-height: 1.3;
 }
@@ -260,7 +253,6 @@
   padding: 0;
   margin: 0;
   flex: 1;
-  overflow: hidden;
 }
 
 .day-card li {
@@ -276,17 +268,13 @@
   content: "✓";
   position: absolute;
   left: 0;
-  color: #4CAF50;
+  color: #4caf50;
   font-weight: bold;
 }
 
 @media (max-width: 992px) {
   .days-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .days-grid .day-card {
-    height: 300px;
   }
 }
 
@@ -295,7 +283,7 @@
     grid-template-columns: 1fr;
     padding: 0 15px;
   }
-  
+
   .days-grid .day-card {
     height: auto;
     min-height: 200px;
@@ -364,7 +352,7 @@
 }
 
 .mentor-profile .mentor-image .mentor-placeholder {
-  fill: #4CAF50;
+  fill: #4caf50;
 }
 
 .mentor-profile h2 {
@@ -375,7 +363,7 @@
 
 .mentor-profile h3 {
   font-size: 24px;
-  color: #4CAF50;
+  color: #4caf50;
 }
 
 .mentor-profile .mentor-title {
@@ -406,7 +394,7 @@
 }
 
 .linkedin-button {
-  background-color: #0077B5;
+  background-color: #0077b5;
   color: white;
   padding: 8px 16px;
   border-radius: 4px;
@@ -554,7 +542,7 @@
 }
 
 .testimonials h2 .highlight {
-  color: #4CAF50;
+  color: #4caf50;
 }
 
 .testimonials-container {
@@ -676,9 +664,9 @@
   }
 }
 
-@media(min-width:500px) {
+@media (min-width: 500px) {
   .mobile-testimonial-title {
-    display: none
+    display: none;
   }
 }
 
@@ -728,7 +716,7 @@
   background-color: rgba(76, 175, 80, 0.05);
   padding: 15px;
   border-radius: 10px;
-  border-left: 4px solid #4CAF50;
+  border-left: 4px solid #4caf50;
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
@@ -828,7 +816,9 @@
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  background: radial-gradient(circle,
+      rgba(255, 255, 255, 0.3) 0%,
+      transparent 70%);
   transform: rotate(30deg);
   pointer-events: none;
 }
@@ -1018,7 +1008,7 @@
 }
 
 .linkedin-posts h2 .highlight {
-  color: #4CAF50;
+  color: #4caf50;
 }
 
 .linkedin-carousel-container {
@@ -1034,7 +1024,8 @@
   gap: 24px;
   /* Removed overflow/scroll properties */
   padding: 20px 0;
-  width: max-content; /* Allow content to expand */
+  width: max-content;
+  /* Allow content to expand */
 }
 
 .linkedin-carousel::-webkit-scrollbar {
@@ -1052,13 +1043,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
 
 .linkedin-nav-btn:hover {
   background: #f3f6f8;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transform: scale(1.05);
 }
 
@@ -1075,17 +1066,12 @@
   background: white;
   border-radius: 12px;
   border: 1px solid #e0e0e0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   transition: all 0.3s ease;
   text-align: left;
   display: flex;
   flex-direction: column;
-}
-
-.linkedin-card:hover {
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  transform: translateY(-4px);
 }
 
 .linkedin-card-header {
@@ -1142,7 +1128,7 @@
 }
 
 .linkedin-card-content::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
@@ -1182,17 +1168,17 @@
 }
 
 .linkedin-reaction-icon.like {
-  background: #0077B5;
+  background: #0077b5;
   color: white;
 }
 
 .linkedin-reaction-icon.celebrate {
-  background: #44712E;
+  background: #44712e;
   color: white;
 }
 
 .linkedin-reaction-icon.love {
-  background: #DF704D;
+  background: #df704d;
   color: white;
 }
 
@@ -1265,5 +1251,611 @@
   .linkedin-card {
     flex: 0 0 280px;
     min-width: 260px;
+  }
+}
+
+/* Hero Decorations */
+.hero-decorations {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hero-decor {
+  position: absolute;
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.1));
+  animation: float 6s ease-in-out infinite;
+  opacity: 0.9;
+}
+
+.hero-cloud-1 {
+  width: 120px;
+  top: 15%;
+  left: 5%;
+  animation-duration: 8s;
+  animation-delay: 1s;
+}
+
+.hero-cloud-2 {
+  width: 150px;
+  top: 60%;
+  right: -5%;
+  animation-duration: 10s;
+  animation-delay: 2s;
+  opacity: 0.6;
+}
+
+.hero-arrow {
+  width: 90px;
+  top: 65%;
+  left: 10%;
+  animation-duration: 7s;
+  animation-delay: 0.5s;
+  transform: rotate(-15deg);
+}
+
+.hero-airplane {
+  width: 100px;
+  top: 10%;
+  right: 15%;
+  animation-duration: 9s;
+  animation-delay: -2s;
+}
+
+.hero-trophy {
+  width: 110px;
+  bottom: 5%;
+  right: 15%;
+  animation-duration: 6.5s;
+  animation-delay: 1.5s;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-20px) rotate(2deg);
+  }
+
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+/* Scrollytelling Section Styling */
+.hero-journey {
+  background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+  padding: 80px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.journey-container {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 60px;
+  align-items: flex-start;
+  position: relative;
+}
+
+.journey-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 150px;
+  padding: 40px 0 300px 0;
+  z-index: 2;
+}
+
+.journey-step {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  padding: 40px;
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  transform: translateY(20px);
+  transition: all 0.5s ease;
+}
+
+.journey-step h2 {
+  font-size: 32px;
+  color: #1a1a4b;
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+.struggles-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.struggle-bullet {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 18px;
+  color: #4a4a8f;
+  background: white;
+  padding: 16px 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+  transition: transform 0.3s ease;
+}
+
+.struggle-bullet i {
+  color: #ff6b6b;
+  font-size: 20px;
+}
+
+.journey-visual {
+  flex: 1;
+  position: sticky;
+  top: 120px;
+  height: 500px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.visual-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-width: 500px;
+}
+
+.journey-img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  width: 100%;
+  max-width: 450px;
+  opacity: 0;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, 0.1));
+}
+
+.journey-img.active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+  z-index: 2;
+}
+
+@media (max-width: 991px) {
+  .journey-container {
+    flex-direction: column;
+  }
+
+  .journey-text {
+    padding: 0;
+    gap: 40px;
+  }
+
+  .journey-visual {
+    position: relative;
+    top: 0;
+    height: 350px;
+    width: 100%;
+    margin-top: -20px;
+    order: -1;
+  }
+}
+
+.benefits-grid .benefit-card {
+  border-radius: 24px !important;
+  padding: 40px 30px !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(230, 235, 245, 0.7) !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+  min-height: auto !important;
+}
+
+.benefit-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 5px;
+}
+
+.benefit-icon {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+}
+
+.benefit-card span {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a4b;
+  line-height: 1.4;
+}
+
+/* Day Cards Curriculum */
+.day-card-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.day-icon {
+  width: 45px;
+  height: 45px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+/* Final CTA Section */
+.final-cta-section {
+  padding: 80px 20px;
+  background: linear-gradient(135deg, #1a1a4b 0%, #29297a 100%);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+
+.final-cta-section::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center,
+      rgba(76, 175, 80, 0.15) 0%,
+      transparent 50%);
+  animation: pulseRotate 15s linear infinite;
+}
+
+@keyframes pulseRotate {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+
+  50% {
+    transform: rotate(180deg) scale(1.1);
+  }
+
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+.cta-content {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: center;
+  gap: 60px;
+  position: relative;
+  z-index: 2;
+}
+
+.cta-text {
+  flex: 1;
+  color: white;
+  text-align: left;
+}
+
+.cta-text h2 {
+  font-size: 48px;
+  margin-bottom: 20px;
+  background: linear-gradient(to right, #fff, #a7f3d0);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.1;
+  color: white;
+}
+
+.cta-text p {
+  font-size: 20px;
+  line-height: 1.6;
+  opacity: 0.9;
+  margin-bottom: 40px;
+}
+
+.cta-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.cta-image img {
+  width: 100%;
+  max-width: 500px;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.4));
+  animation: float 6s ease-in-out infinite;
+}
+
+.inline-cta {
+  font-size: 20px;
+  padding: 20px 50px;
+  border-radius: 50px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+  color: white;
+  border: none;
+  font-weight: 800;
+  letter-spacing: 1px;
+  box-shadow: 0 10px 20px rgba(76, 175, 80, 0.4);
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.inline-cta:hover {
+  transform: translateY(-5px) scale(1.05);
+  box-shadow: 0 15px 30px rgba(76, 175, 80, 0.6);
+}
+
+@media (max-width: 991px) {
+  .cta-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .cta-text {
+    text-align: center;
+  }
+
+  .cta-text h2 {
+    font-size: 36px;
+  }
+}
+
+/* ========================================
+   Lottie Scrollytelling — One Card at a Time
+   ======================================== */
+.lottie-scrolly-wrapper {
+  background-color: #050505;
+  height: 400vh;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+}
+
+.lottie-scrolly-sticky {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background-color: #050505;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 80px;
+  box-sizing: border-box;
+}
+
+.lottie-scrolly-sticky.is-pinned {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 5;
+}
+
+.lottie-scrolly-sticky.is-unpinned {
+  position: absolute;
+  bottom: 0;
+  top: auto;
+}
+
+/* Header */
+.ls-points-header {
+  text-align: center;
+  padding: 0 20px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.ls-points-header h2 {
+  font-size: 36px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.ls-points-header p {
+  font-size: 15px;
+  color: #888;
+  margin: 0;
+}
+
+/* Progress dots */
+.ls-progress {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 24px;
+  flex-shrink: 0;
+}
+
+.ls-progress-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: all 0.35s ease;
+}
+
+.ls-progress-dot.active {
+  background: #4f8cff;
+  transform: scale(1.4);
+  box-shadow: 0 0 8px rgba(79, 140, 255, 0.5);
+}
+
+/* Main row: Lottie left, card right */
+.lottie-scrolly-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 1100px;
+  padding: 0 40px;
+  gap: 50px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+/* Left Col — Lottie */
+.ls-lottie-col {
+  flex: 0 0 42%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-height: 50vh;
+}
+
+/* Right Col — one card shown at a time */
+.ls-content-col {
+  flex: 1;
+  position: relative;
+  min-height: 140px;
+}
+
+/* Cards: absolutely positioned, stacked */
+.ls-benefit-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-start;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 24px 28px;
+  gap: 20px;
+  opacity: 0;
+  transform: translateY(40px);
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ls-benefit-item.active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.ls-benefit-item.past {
+  opacity: 0;
+  transform: translateY(-40px);
+  pointer-events: none;
+}
+
+.ls-icon {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 8px;
+}
+
+.ls-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.ls-text h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.ls-text p {
+  font-size: 15px;
+  color: #bbb;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Next section covers pinned panel */
+.lottie-scrolly-wrapper+section,
+.lottie-scrolly-wrapper+.curriculum {
+  position: relative;
+  z-index: 2;
+  background: linear-gradient(180deg, #ffffff 0%, #fafbfe 100%);
+}
+
+/* ---- Mobile ---- */
+@media (max-width: 900px) {
+  .lottie-scrolly-wrapper {
+    height: 500vh;
+  }
+
+  .lottie-scrolly-sticky {
+    padding-top: 70px;
+    justify-content: flex-start;
+  }
+
+  .ls-points-header h2 {
+    font-size: 26px;
+  }
+
+  .ls-points-header p {
+    font-size: 13px;
+  }
+
+  .ls-progress {
+    margin-bottom: 16px;
+  }
+
+  .lottie-scrolly-row {
+    flex-direction: column;
+    padding: 0 20px;
+    gap: 20px;
+  }
+
+  .ls-lottie-col {
+    flex: none;
+    width: 55%;
+  }
+
+  .ls-content-col {
+    width: 100%;
+    min-height: 130px;
+  }
+
+  .ls-benefit-item {
+    padding: 18px 20px;
+    gap: 14px;
+  }
+
+  .ls-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .ls-text h3 {
+    font-size: 17px;
+  }
+
+  .ls-text p {
+    font-size: 13px;
   }
 }

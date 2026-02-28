@@ -7,11 +7,11 @@
   <link rel="icon" type="image/png" href="https://mystudentclub.pages.dev/assets/icon-70x70.png">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="sections.css">
-  <link rel="stylesheet" href="footer.css">
   <link
     href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap"
     rel="stylesheet">
   <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+  <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
   <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/scripts/portal-style.css">
@@ -90,111 +90,197 @@
     </div>
   </div>
 
-  <div class="hero" style="margin-top: 80px;">
-    <div class="parallax" aria-hidden="true">
-      <span class="layer l1" data-depth="0.03"></span>
-      <span class="layer l2" data-depth="0.06"></span>
-      <span class="layer l3" data-depth="0.10"></span>
-    </div>
-    <h1>MSC CA Freshers<br>Program</h1>
-    <!-- <a href="https://pmny.in/hJp6TrgwXbL4" class="register-btn pulse-btn hero-cta" id="registerButtonHero">Register Now</a>  -->
+  <div class="hero modern-hero">
+    <div class="hero-glow"></div>
+    <div class="hero-container">
+      <div class="hero-content">
+        <h1 class="hero-title" data-aos="fade-up" data-aos-delay="100">
+          Launch Your <span class="text-gradient">Dream Finance Career</span>
+        </h1>
+        <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">
+          Stop getting ignored by recruiters. Master your CV, crack technical interviews, and negotiate the package you
+          deserve in our intensive 9-day masterclass.
+        </p>
+        <div class="hero-cta-group" data-aos="fade-up" data-aos-delay="300">
+          <button onclick="document.getElementById('cta-footer').scrollIntoView({behavior: 'smooth'})"
+            class="primary-btn">
+            Enroll Now
+            <i class="fas fa-arrow-right"></i>
+          </button>
+          <a href="#curriculum" class="secondary-btn"
+            onclick="document.querySelector('.curriculum').scrollIntoView({behavior: 'smooth'})">View Curriculum</a>
+        </div>
+        <div class="hero-stats-strip" data-aos="fade-up" data-aos-delay="400">
+          <div class="hero-stat-item">
+            <span class="hero-stat-number">1000+</span>
+            <span class="hero-stat-label">Students Placed</span>
+          </div>
+          <div class="hero-stat-divider"></div>
+          <div class="hero-stat-item">
+            <span class="hero-stat-number">500+</span>
+            <span class="hero-stat-label">Recruiting Partners</span>
+          </div>
+          <div class="hero-stat-divider"></div>
+          <div class="hero-stat-item">
+            <span class="hero-stat-number">₹11 LPA</span>
+            <span class="hero-stat-label">Avg. CTC</span>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual" data-aos="zoom-in" data-aos-delay="200">
+        <div class="glass-card main-stats-card">
+          <div class="card-header">
+            <h3>Highest Package Delivered</h3>
+          </div>
+          <div class="card-body">
+            <div class="huge-number">₹25L <span class="unit">CTC</span></div>
+            <div class="stat-bar-chart">
+              <div class="bar-col">
+                <div class="bar" style="height: 40%"></div><span>Fresher</span>
+              </div>
+              <div class="bar-col">
+                <div class="bar" style="height: 60%"></div><span>Avg</span>
+              </div>
+              <div class="bar-col">
+                <div class="bar active" style="height: 100%"></div><span>MSC Grad</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <div class="features">
-      <div class="feature">
-        <svg class="checkmark" viewBox="0 0 24 24">
-          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-        </svg>
-        All-in-one Placement Workshop
-      </div>
-      <div class="feature">
-        <svg class="checkmark" viewBox="0 0 24 24">
-          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-        </svg>
-        Trusted By 1000s of CAs
-      </div>
-      <div class="feature rating">
-        <span class="stars">★★★★★</span>
-        4.9 / 5 Rated Program
-      </div>
-    </div>
-
-    <div class="stats">
-      <div class="stat">
-        <div class="number">1000+ Students Placed</div>
-      </div>
-      <div class="stat">
-        <div class="number">₹25L Highest CTC Offered</div>
-      </div>
-      <div class="stat">
-        <div class="number">500+ Recruiting Organizations</div>
-      </div>
-      <div class="stat">
-        <div class="number">₹11 LPA Average CTC</div>
       </div>
     </div>
   </div>
 
   <section class="success-stories">
-    <div class="section-bg">
-      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_pwohahvd.json" background="transparent"
-        speed="1" style="width: 100%; height: 100%;" loop autoplay>
-      </lottie-player>
-    </div>
     <h2>Our October batch <span class="highlight">Students</span> placed in Top Companies</h2>
     <div class="carousel-container">
       <div class="carousel" id="studentCarousel"></div>
     </div>
   </section>
 
-  <section class="pain-points">
-    <div class="section-bg">
-      <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_kkflmtur.json" background="transparent"
-        speed="1" style="width: 100%; height: 100%;" loop autoplay>
-      </lottie-player>
-    </div>
-    <div class="pain-points-content">
-      <h2>The Reality Check: Are You Struggling?</h2>
-      <div class="struggles">
-        <div class="struggle-item">Cleared CA but hearing "No Vacancy"?</div>
-        <div class="struggle-item">Confused between Industry vs. Big 4?</div>
-        <div class="struggle-item">Want to break into your dream domain?</div>
-        <div class="struggle-item">Scared of Technical Interview rounds?</div>
-        <div class="struggle-item">Don't know how to negotiate your first salary?</div>
+  <section class="hero-journey scrollytelling">
+    <div class="journey-container">
+      <div class="journey-text">
+        <div class="journey-step step-1">
+          <h2>The Reality Check: Are You Struggling?</h2>
+          <div class="struggles-list">
+            <div class="struggle-bullet"><i class="fas fa-times-circle"></i> Cleared CA but hearing "No Vacancy"?</div>
+            <div class="struggle-bullet"><i class="fas fa-question-circle"></i> Confused between Industry vs. Big 4?
+            </div>
+            <div class="struggle-bullet"><i class="fas fa-chart-pie"></i> Want to break into your dream domain?</div>
+            <div class="struggle-bullet"><i class="fas fa-user-tie"></i> Scared of Technical Interview rounds?</div>
+            <div class="struggle-bullet"><i class="fas fa-money-bill-wave"></i> Don't know how to negotiate your first
+              salary?</div>
+          </div>
+        </div>
+        <div class="journey-step step-2">
+          <h2>Launch Your Career 🚀</h2>
+          <p class="solution">That's why we created the MSC CA Freshers Program. We ensure you don't just get a job, but
+            launch a career you love, with our 9-day intensive masterclass and mentorship.</p>
+        </div>
       </div>
-      <p class="solution">That's why we created the MSC CA Freshers Program. We ensure you don't just get a job, but
-        launch a career.</p>
+      <div class="journey-visual">
+        <div class="visual-wrapper" id="heroJourneyVisual"
+          style="position: relative; width: 100%; max-width: 350px; aspect-ratio: 1; margin: 0 auto;">
+          <img id="svg1" src="assets/scrollytelling1.svg"
+            style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit: contain; transition: opacity 0.3s; opacity: 1; transform: none;">
+          <img id="svg2" src="assets/scrollytelling2offerletterinhand.svg"
+            style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit: contain; transition: opacity 0.3s; opacity: 0; transform: none;">
+          <canvas id="morphCanvas" width="700" height="700"
+            style="position: absolute; top:-50%; left:-50%; width: 200%; height: 200%; display: block; opacity: 0; transition: opacity 0.3s; pointer-events: none;"></canvas>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section class="benefits">
-    <div class="section-bg">
-      <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_47frevky.json" background="transparent"
-        speed="1" style="width: 100%; height: 100%;" loop autoplay>
-      </lottie-player>
-    </div>
-    <div class="benefits-content">
-      <h2>Why Enroll?</h2>
-      <div class="benefits-grid">
-        <div class="benefit-card">✅ Access to 9 Day Masterclass</div>
-        <div class="benefit-card">✅ Personal Mentorship</div>
-        <div class="benefit-card">✅ CV Review</div>
-        <div class="benefit-card">✅ Mock Interviews</div>
-        <div class="benefit-card">✅ Access to Exclusive Vacancies</div>
-        <div class="benefit-card">✅ Tonnes of Resources</div>
+  <section class="lottie-scrolly-wrapper">
+    <div class="lottie-scrolly-sticky">
+      <div class="ls-points-header">
+        <h2>Why Enroll?</h2>
+        <p>Unlock an ecosystem redesigned for your hyper-growth.</p>
+      </div>
+      <div class="ls-progress" id="lsProgressDots">
+        <span class="ls-progress-dot active"></span>
+        <span class="ls-progress-dot"></span>
+        <span class="ls-progress-dot"></span>
+        <span class="ls-progress-dot"></span>
+        <span class="ls-progress-dot"></span>
+        <span class="ls-progress-dot"></span>
+      </div>
+      <div class="lottie-scrolly-row">
+        <!-- Left side: Lottie Animation -->
+        <div class="ls-lottie-col">
+          <dotlottie-player id="scrollLottiePlayer" src="assets/job cv.lottie" background="transparent" speed="1"
+            style="width: 100%; height: 100%; max-width: 300px; max-height: 300px; margin: auto;">
+          </dotlottie-player>
+        </div>
+
+        <!-- Right side: Content Points -->
+        <div class="ls-content-col" id="lottiePointsContainer">
+          <div class="ls-benefit-item" data-index="0">
+            <div class="ls-icon"><img src="assets/9dayclass.svg" alt="9-Day Class"></div>
+            <div class="ls-text">
+              <h3>9-Day Intensive Masterclass</h3>
+              <p>Immerse yourself in a meticulously crafted curriculum pushing you beyond the standard CA syllabus.</p>
+            </div>
+          </div>
+
+          <div class="ls-benefit-item" data-index="1">
+            <div class="ls-icon"><img src="assets/owlfriend.svg" alt="Mentorship"></div>
+            <div class="ls-text">
+              <h3>Personal Mentorship</h3>
+              <p>Get guided 1:1 by industry veterans. Learn the unspoken rules of the corporate ladder.</p>
+            </div>
+          </div>
+
+          <div class="ls-benefit-item" data-index="2">
+            <div class="ls-icon"><img src="assets/giantpencilcheckmark.svg" alt="CV Review"></div>
+            <div class="ls-text">
+              <h3>Premium CV Review</h3>
+              <p>Transform your CV from a generic summary to a compelling professional narrative.</p>
+            </div>
+          </div>
+
+          <div class="ls-benefit-item" data-index="3">
+            <div class="ls-icon"><img src="assets/retromike.svg" alt="Mock Interviews"></div>
+            <div class="ls-text">
+              <h3>Hyper-Realistic Mock Interviews</h3>
+              <p>Undergo intensive mock technical and HR rounds with immediate, constructive feedback.</p>
+            </div>
+          </div>
+
+          <div class="ls-benefit-item" data-index="4">
+            <div class="ls-icon"><img src="assets/keywithcase.svg" alt="Exclusive Vacancies"></div>
+            <div class="ls-text">
+              <h3>Exclusive Vacancies</h3>
+              <p>Gain priority access to off-campus drives, hidden roles, and direct referrals.</p>
+            </div>
+          </div>
+
+          <div class="ls-benefit-item" data-index="5">
+            <div class="ls-icon"><img src="assets/overflowingfolder.svg" alt="Resources"></div>
+            <div class="ls-text">
+              <h3>A Vault of Resources</h3>
+              <p>Gain unlimited access to our repository of technical guides and interview cheat sheets.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="curriculum">
-    <div class="section-bg">
-      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_pwohahvd.json" background="transparent"
-        speed="1" style="width: 100%; height: 100%;" loop autoplay>
-      </lottie-player>
-    </div>
     <h2>What will you Learn?</h2>
     <div class="days-grid">
       <div class="day-card">
-        <h3>Day 1: Crafting Perfect CV</h3>
+        <div class="day-card-header">
+
+          <img src="assets/smilingpaper.svg" alt="Day 1" class="day-icon">
+
+          <h3>Day 1: Crafting Perfect CV</h3>
+
+        </div>
         <ul>
           <li>Structuring a High-Impact CV: Move beyond basic formats to "Recruiter-Ready" layouts</li>
           <li>Beating the ATS: Keywords and formatting to pass ATS</li>
@@ -203,7 +289,13 @@
         </ul>
       </div>
       <div class="day-card">
-        <h3>Day 2: Navigating LinkedIn & Unknown Tricks</h3>
+        <div class="day-card-header">
+
+          <img src="assets/magnet.svg" alt="Day 2" class="day-icon">
+
+          <h3>Day 2: Navigating LinkedIn & Unknown Tricks</h3>
+
+        </div>
         <ul>
           <li>Profile Optimization - Creating an Impactful Personal Profile</li>
           <li>Right way to Apply - How to find jobs that aren't posted publicly</li>
@@ -212,7 +304,13 @@
         </ul>
       </div>
       <div class="day-card">
-        <h3>Day 3: Mastering Naukri</h3>
+        <div class="day-card-header">
+
+          <img src="assets/chubbymagnifyingglass.svg" alt="Day 3" class="day-icon">
+
+          <h3>Day 3: Mastering Naukri</h3>
+
+        </div>
         <ul>
           <li>Profile Ranking: How to appear on the first page of recruiter searches</li>
           <li>The Recruiter's View: Understanding what HR actually sees on their dashboard</li>
@@ -220,7 +318,13 @@
         </ul>
       </div>
       <div class="day-card">
-        <h3>Day 4: Automating Applications & Cold Mailing</h3>
+        <div class="day-card-header">
+
+          <img src="assets/pudgyrobot.svg" alt="Day 4" class="day-icon">
+
+          <h3>Day 4: Automating Applications & Cold Mailing</h3>
+
+        </div>
         <ul>
           <li>Application Automation: Automating Mail Applications & LinkedIn</li>
           <li>Customized CVs: How to customize your CV for specific JDs instantly</li>
@@ -228,7 +332,13 @@
         </ul>
       </div>
       <div class="day-card">
-        <h3>Day 5: Domain Clarity</h3>
+        <div class="day-card-header">
+
+          <img src="assets/piechartcake.svg" alt="Day 5" class="day-icon">
+
+          <h3>Day 5: Domain Clarity</h3>
+
+        </div>
         <ul>
           <li>Decoding Roles: Understanding FP&A, Stat Audit, Internal Audit, Treasury, and all domains</li>
           <li>Fitment Analysis: Matching your personality and articleship experience to the right domain</li>
@@ -236,7 +346,13 @@
         </ul>
       </div>
       <div class="day-card">
-        <h3>Day 6: Cracking HR Rounds & Group Discussions</h3>
+        <div class="day-card-header">
+
+          <img src="assets/softspeechbubbles.svg" alt="Day 6" class="day-icon">
+
+          <h3>Day 6: Cracking HR Rounds & Group Discussions</h3>
+
+        </div>
         <ul>
           <li>The Screening Barrier: How to clear the initial 10-minute telephonic round</li>
           <li>Behavioral Interview Guide: Using the STAR method to answer "Tell me about a time..." questions</li>
@@ -245,7 +361,13 @@
         </ul>
       </div>
       <div class="day-card">
-        <h3>Day 7: Technical & Excel Mastery</h3>
+        <div class="day-card-header">
+
+          <img src="assets/excel.svg" alt="Day 7" class="day-icon">
+
+          <h3>Day 7: Technical & Excel Mastery</h3>
+
+        </div>
         <ul>
           <li>The Technical Edge: Key concepts asked in interviews (IndAS, Ratio Analysis, GST)</li>
           <li>Excel for Interviews: VLOOKUP, Pivot Tables, and other formulas you must know</li>
@@ -253,7 +375,13 @@
         </ul>
       </div>
       <div class="day-card">
-        <h3>Day 8: Salary Negotiation and Offer Letter</h3>
+        <div class="day-card-header">
+
+          <img src="assets/piggycoin.svg" alt="Day 8" class="day-icon">
+
+          <h3>Day 8: Salary Negotiation and Offer Letter</h3>
+
+        </div>
         <ul>
           <li>Decoding the CTC: Understanding the difference between different Offer Letter Terms</li>
           <li>Negotiation Scripts: Exact way to try increasing your package without risking the offer</li>
@@ -261,7 +389,13 @@
         </ul>
       </div>
       <div class="day-card">
-        <h3>Day 9: ICAI Campus Placement Strategy</h3>
+        <div class="day-card-header">
+
+          <img src="assets/universitywithcap.svg" alt="Day 9" class="day-icon">
+
+          <h3>Day 9: ICAI Campus Placement Strategy</h3>
+
+        </div>
         <ul>
           <li>Center Selection: Data-backed advice on which Campus center to choose</li>
           <li>Shortlisting Logic: How big companies filter candidates for Campus rounds</li>
@@ -328,12 +462,23 @@
       Registration Opens on Feb 1st</div>
   </div>
 
-  <section class="mentor" style="margin-bottom: 2rem;">
-    <div class="section-bg">
-      <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_kkflmtur.json" background="transparent"
-        speed="1" style="width: 100%; height: 100%;" loop autoplay>
-      </lottie-player>
+  <section class="final-cta-section">
+    <div class="cta-content">
+      <div class="cta-text">
+        <h2>Ready to Land Your Dream Job?</h2>
+        <p>Don't leave your career transition to chance. Join the 1000+ CAs who have already launched their careers
+          with
+          us. Book your spot today and unlock the ultimate placement playbook.</p>
+        <button onclick="document.getElementById('cta-footer').scrollIntoView({behavior: 'smooth'})"
+          class="register-btn pulse-btn inline-cta">Enroll Now</button>
+      </div>
+      <div class="cta-image">
+        <img src="assets/destinationdreamjob.svg" alt="Destination Dream Job">
+      </div>
     </div>
+  </section>
+
+  <section class="mentor" style="margin-bottom: 2rem;">
     <div class="mentor-profile">
       <div class="mentor-image">
         <img src="https://mystudentclub.pages.dev/assets/mentor_transparent.png" alt="CA Padam Bhansali"
@@ -407,8 +552,333 @@
           }
         }
       }
+
+      // Hero Journey Morphing Logic
+      const steps = document.querySelectorAll('.journey-step');
+      const morphCanvas = document.getElementById('morphCanvas');
+
+      if (steps.length > 0 && morphCanvas && document.getElementById('svg1')) {
+        const svg1 = document.getElementById('svg1');
+        const svg2 = document.getElementById('svg2');
+        const ctx = morphCanvas.getContext('2d', { willReadFrequently: true });
+
+        // Handle High-DPI Displays (Retina) for sharp quality
+        const dpr = window.devicePixelRatio || 1;
+
+        // The display size in CSS (matches original img layout roughly)
+        const displayWidth = 350;
+        const displayHeight = 350;
+
+        // The actual pixel resolution backing the canvas (200% larger to prevent clipping particles)
+        const canvasWidth = displayWidth * 2 * dpr;
+        const canvasHeight = displayHeight * 2 * dpr;
+
+        morphCanvas.width = canvasWidth;
+        morphCanvas.height = canvasHeight;
+
+        // Scale context so internal drawing logic uses CSS pixels
+        ctx.scale(dpr, dpr);
+        // Translate context to perfectly center the 100% drawing inside the new 200% canvas bounds
+        ctx.translate(displayWidth / 2, displayHeight / 2);
+
+        let particles = [];
+        let isLoaded = false;
+        let morphProgress = 0;
+
+        // Animation state machine
+        let currentSequenceStep = 0;
+        let isAnimating = false;
+        let lastTime = 0;
+        let inView = false;
+        let isFirstLoop = true;
+
+        // Toggles visibility of the 3 layers
+        function setVisibility(showCanvas, showIm1, showIm2) {
+          morphCanvas.style.opacity = showCanvas ? '1' : '0';
+          svg1.style.opacity = showIm1 ? '1' : '0';
+          svg2.style.opacity = showIm2 ? '1' : '0';
+        }
+
+        // Global scales calculated per image to ensure perfect sizing at rest
+        let scaleImg1 = 1;
+        let scaleImg2 = 1;
+
+        class Particle {
+          constructor(x, y, color1, destX, destY, color2) {
+            this.startX = x;
+            this.startY = y;
+            this.color1 = color1;
+            this.destX = destX;
+            this.destY = destY;
+            this.color2 = color2;
+
+            // Random explosion offsets for "pixels flying apart" feeling
+            this.randX = (Math.random() - 0.5) * 150;
+            this.randY = (Math.random() - 0.5) * 150;
+
+            // Particles enlarge dynamically in mid-air
+            this.maxAddSize = Math.random() * 10 + 4;
+          }
+
+          draw(ctx, progress) {
+            // Easing function for smoother movement
+            const easeInOutCubic = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+            let p = easeInOutCubic(progress);
+            let flyout = Math.sin(progress * Math.PI);
+
+            let currentX = this.startX + (this.destX - this.startX) * p + this.randX * flyout;
+            let currentY = this.startY + (this.destY - this.startY) * p + this.randY * flyout;
+
+            // The scale offset logic:
+            // At 0% and 100% progress, we want the particles to be pin-prick small (sub-pixel)
+            // so they merge identically with the high-res SVG without blockiness.
+            // As they fly out, they swell to their normal/enlarged size.
+
+            // Calculate how close we are to the exact start (0) or end (1). 
+            // 0 = edge, 1 = middle of animation
+            let edgeProximity = Math.sin(progress * Math.PI);
+
+            // Base size shrinks to 0.4 near edges for hyper-resolution, scales up to 1.2 mid-flight
+            let baseSize = 0.4 + (0.8 * edgeProximity);
+
+            // Add the dynamic enlargement for the "burst" effect only in the middle
+            let enlarge = baseSize + flyout * this.maxAddSize;
+
+            let r = this.color1[0] + (this.color2[0] - this.color1[0]) * p | 0;
+            let g = this.color1[1] + (this.color2[1] - this.color1[1]) * p | 0;
+            let b = this.color1[2] + (this.color2[2] - this.color1[2]) * p | 0;
+            let a = (this.color1[3] + (this.color2[3] - this.color1[3]) * p) / 255;
+
+            if (a < 0.05) return;
+
+            ctx.fillStyle = `rgba(${r},${g},${b},${a.toFixed(2)})`;
+            // Drawing the rect perfectly centered on its grid coordinate
+            ctx.fillRect(currentX - enlarge / 2, currentY - enlarge / 2, enlarge, enlarge);
+          }
+        }
+
+        const img1 = new Image();
+        const img2 = new Image();
+        img1.src = 'assets/scrollytelling1.svg';
+        img2.src = 'assets/scrollytelling2offerletterinhand.svg';
+
+        Promise.all([
+          new Promise(res => { img1.onload = res; }),
+          new Promise(res => { img2.onload = res; })
+        ]).then(() => {
+          const offMain = document.createElement('canvas');
+          offMain.width = displayWidth;
+          offMain.height = displayHeight;
+          const offCtx = offMain.getContext('2d', { willReadFrequently: true });
+
+          function getPixels(img) {
+            offCtx.clearRect(0, 0, displayWidth, displayHeight);
+
+            // Emulate object-fit: contain precisely
+            const imgRatio = img.width / img.height;
+            const boxRatio = displayWidth / displayHeight;
+
+            let drawW, drawH, drawX, drawY;
+
+            if (imgRatio > boxRatio) {
+              drawW = displayWidth;
+              drawH = displayWidth / imgRatio;
+              drawX = 0;
+              drawY = (displayHeight - drawH) / 2;
+            } else {
+              drawW = displayHeight * imgRatio;
+              drawH = displayHeight;
+              drawX = (displayWidth - drawW) / 2;
+              drawY = 0;
+            }
+
+            offCtx.drawImage(img, drawX, drawY, drawW, drawH);
+            const data = offCtx.getImageData(0, 0, displayWidth, displayHeight).data;
+            const pixels = [];
+
+            // Step size dictates resolution. Lower = sharper, higher particle count.
+            const step = 2;
+            for (let y = 0; y < displayHeight; y += step) {
+              for (let x = 0; x < displayWidth; x += step) {
+                const i = (y * displayWidth + x) * 4;
+
+                // Extremely strict alpha check (avoid sampling dropshadows/anti-aliasing 
+                // that synthetically bloat the canvas size far past the sharp SVG edge)
+                if (data[i + 3] > 150) {
+                  // We also record the actual drawn color, NOT the pre-multiplied canvas color
+                  pixels.push({ x, y, c: [data[i], data[i + 1], data[i + 2], data[i + 3]] });
+                }
+              }
+            }
+            return pixels;
+          }
+
+          let img1Pixels = getPixels(img1);
+          let img2Pixels = getPixels(img2);
+
+          let maxCount = Math.max(img1Pixels.length, img2Pixels.length);
+          if (maxCount === 0) return;
+
+          // Fill out the lesser array by randomly selecting from its own pixels
+          while (img1Pixels.length < maxCount) { img1Pixels.push(img1Pixels[Math.floor(Math.random() * img1Pixels.length)]); }
+          while (img2Pixels.length < maxCount) { img2Pixels.push(img2Pixels[Math.floor(Math.random() * img2Pixels.length)]); }
+
+          // Organic mapping: rather than full random which turns into a static mess, 
+          // we shuffle slightly to keep nearby pixels generally moving together,
+          // creating a highly structured "breaking apart" feel.
+          function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [array[i], array[j]] = [array[j], array[i]];
+            }
+          }
+          shuffleArray(img1Pixels);
+          shuffleArray(img2Pixels);
+
+          for (let i = 0; i < maxCount; i++) {
+            particles.push(new Particle(
+              img1Pixels[i].x, img1Pixels[i].y, img1Pixels[i].c,
+              img2Pixels[i].x, img2Pixels[i].y, img2Pixels[i].c
+            ));
+          }
+          isLoaded = true;
+
+          // Initialize view - Native SVG 1 showing, canvas hidden
+          morphCanvas.style.transition = 'opacity 0.5s ease-in-out';
+          svg1.style.transition = 'opacity 0.5s ease-in-out';
+          svg2.style.transition = 'opacity 0.5s ease-in-out';
+          setVisibility(false, true, false);
+
+          // If it was already in view before load finished, start it!
+          if (inView && !isAnimating) {
+            startSequence();
+          }
+        });
+
+        // The Animation Sequence Steps
+        const runSequence = (time) => {
+          if (!isLoaded || !isAnimating) return;
+
+          if (!lastTime) lastTime = time;
+          const delta = time - lastTime;
+          lastTime = time;
+
+          if (currentSequenceStep === 1 || currentSequenceStep === 3) {
+            // We are actively morphing, draw the canvas particles
+            ctx.clearRect(-displayWidth, -displayHeight, displayWidth * 3, displayHeight * 3);
+            for (let i = 0; i < particles.length; i++) {
+              particles[i].draw(ctx, morphProgress);
+            }
+          }
+
+          if (currentSequenceStep === 0) {
+            // Hold native purely clean SVG 1
+            // Start morph to SVG 2 immediately on scroll-in
+            setVisibility(false, true, false);
+
+            // Pre-draw canvas at progress 0 so it's ready for the crossfade
+            ctx.clearRect(-displayWidth, -displayHeight, displayWidth * 3, displayHeight * 3);
+            for (let i = 0; i < particles.length; i++) { particles[i].draw(ctx, 0); }
+
+            currentSequenceStep = 0.5; // transitional wait state
+
+            let holdSVG1Duration = isFirstLoop ? 0 : 3000;
+            isFirstLoop = false;
+
+            setTimeout(() => {
+              if (isAnimating) {
+                setVisibility(true, false, false); // Crossfade to Canvas
+                // Wait lightly for CSS transition to catch up before moving particles
+                setTimeout(() => {
+                  if (isAnimating) {
+                    currentSequenceStep = 1;
+                    lastTime = 0;
+                    requestAnimationFrame(runSequence);
+                  }
+                }, 200);
+              }
+            }, holdSVG1Duration); // 0 sec hold on first morph, 3 sec afterwards
+            return;
+          }
+          else if (currentSequenceStep === 1) {
+            // Morphing Canvas 1 -> 2
+            morphProgress += delta / 2000;
+            if (morphProgress >= 1) {
+              morphProgress = 1;
+
+              // Draw final frame perfectly aligned
+              ctx.clearRect(-displayWidth, -displayHeight, displayWidth * 3, displayHeight * 3);
+              for (let i = 0; i < particles.length; i++) { particles[i].draw(ctx, 1); }
+
+              currentSequenceStep = 2; // Jump to hold SVG 2
+            }
+          }
+          else if (currentSequenceStep === 2) {
+            // Hold native purely clean SVG 2
+            // Crossfade from Canvas 100% back to SVG 2
+            setVisibility(false, false, true);
+
+            // Pre-draw canvas at 100% so it's ready for next loop
+            ctx.clearRect(-displayWidth, -displayHeight, displayWidth * 3, displayHeight * 3);
+            for (let i = 0; i < particles.length; i++) { particles[i].draw(ctx, 1); }
+
+            currentSequenceStep = 2.5;
+            setTimeout(() => {
+              if (isAnimating) {
+                setVisibility(true, false, false); // Crossfade backing to Canvas
+                setTimeout(() => {
+                  if (isAnimating) {
+                    currentSequenceStep = 3;
+                    lastTime = 0;
+                    requestAnimationFrame(runSequence);
+                  }
+                }, 200);
+              }
+            }, 3000); // 3 sec hold on SVG 2
+            return;
+          }
+          else if (currentSequenceStep === 3) {
+            // Morphing Canvas 2 -> 1
+            morphProgress -= delta / 2000;
+            if (morphProgress <= 0) {
+              morphProgress = 0;
+
+              // Draw final zero frame
+              ctx.clearRect(-displayWidth, -displayHeight, displayWidth * 3, displayHeight * 3);
+              for (let i = 0; i < particles.length; i++) { particles[i].draw(ctx, 0); }
+
+              currentSequenceStep = 0; // Jump to hold SVG 1
+            }
+          }
+
+          if (isAnimating) requestAnimationFrame(runSequence);
+        };
+
+        function startSequence() {
+          isAnimating = true;
+          lastTime = 0;
+          morphProgress = 0;
+          currentSequenceStep = 0;
+          requestAnimationFrame(runSequence);
+        }
+
+        const journeySection = document.querySelector('.hero-journey');
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              inView = true;
+              if (isLoaded && !isAnimating) {
+                startSequence();
+              }
+            } else {
+              inView = false;
+              isAnimating = false;
+            }
+          });
+        }, { threshold: 0.2 });
+
+        if (journeySection) observer.observe(journeySection);
+      }
     });
   </script>
 </body>
-
-</html>

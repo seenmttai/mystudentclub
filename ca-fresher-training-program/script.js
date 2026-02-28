@@ -469,9 +469,94 @@ function initializeCurriculumCenter() {
 
 }
 
+const initializeBenefitsScrollytelling = () => {
+  const wrapper = document.querySelector('.lottie-scrolly-wrapper');
+  const stickyPanel = document.querySelector('.lottie-scrolly-sticky');
+  const lottiePlayer = document.getElementById('scrollLottiePlayer');
+  const benefitItems = document.querySelectorAll('.ls-benefit-item');
+  const progressDots = document.querySelectorAll('.ls-progress-dot');
+
+  if (!wrapper || !stickyPanel || !lottiePlayer || benefitItems.length === 0) return;
+
+  // Pause Lottie so we can manually scrub it
+  lottiePlayer.addEventListener('ready', () => { lottiePlayer.pause(); });
+  try { lottiePlayer.pause(); } catch (e) { }
+
+  let lastActiveIndex = -1;
+
+  const handleScroll = () => {
+    const wrapperRect = wrapper.getBoundingClientRect();
+    const wrapperTop = wrapperRect.top;
+    const wrapperBottom = wrapperRect.bottom;
+    const wrapperHeight = wrapperRect.height;
+    const viewportHeight = window.innerHeight;
+
+    // --- JS PINNING ---
+    if (wrapperTop >= 0) {
+      stickyPanel.classList.remove('is-pinned', 'is-unpinned');
+    } else if (wrapperBottom > viewportHeight) {
+      stickyPanel.classList.add('is-pinned');
+      stickyPanel.classList.remove('is-unpinned');
+    } else {
+      stickyPanel.classList.remove('is-pinned');
+      stickyPanel.classList.add('is-unpinned');
+    }
+
+    // --- PROGRESS (0 to 1) ---
+    const scrollableDistance = wrapperHeight - viewportHeight;
+    const scrolledPastTop = -wrapperTop;
+    let progress = scrolledPastTop / scrollableDistance;
+    progress = Math.max(0, Math.min(1, progress));
+
+    // --- LOTTIE SCRUB ---
+    try {
+      if (lottiePlayer.getLottie) {
+        const anim = lottiePlayer.getLottie();
+        if (anim && anim.totalFrames) {
+          anim.goToAndStop(progress * anim.totalFrames, true);
+        }
+      } else if (lottiePlayer.seek) {
+        lottiePlayer.seek(progress * 100 + '%');
+      }
+    } catch (e) { }
+
+    // --- ONE CARD AT A TIME ---
+    const totalItems = benefitItems.length;
+    // Which card should be active (0-based)
+    const activeIndex = Math.min(Math.floor(progress * totalItems), totalItems - 1);
+
+    // Only update DOM if the active card changed
+    if (activeIndex !== lastActiveIndex) {
+      lastActiveIndex = activeIndex;
+
+      benefitItems.forEach((item, i) => {
+        item.classList.remove('active', 'past');
+        if (i < activeIndex) {
+          item.classList.add('past');    // already scrolled past → slide up
+        } else if (i === activeIndex) {
+          item.classList.add('active');  // currently shown
+        }
+        // i > activeIndex → default hidden state (below)
+      });
+
+      // Update progress dots
+      progressDots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === activeIndex);
+      });
+    }
+  };
+
+  window.addEventListener('scroll', () => {
+    requestAnimationFrame(handleScroll);
+  }, { passive: true });
+
+  setTimeout(handleScroll, 300);
+};
+
 
 
 document.addEventListener('DOMContentLoaded', () => {
+  safe(initializeBenefitsScrollytelling, 'benefitsScrollytelling');
   safe(initializeLinkedInPosts, 'linkedinPosts');
   safe(initializeCarousel, 'carousel');
   safe(initializeCertificate, 'certificate');
