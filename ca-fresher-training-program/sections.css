@@ -1452,6 +1452,30 @@
   }
 }
 
+/* Full-width "Launch Your Career" row */
+.journey-step-full {
+  max-width: 1200px;
+  margin: 40px auto 0;
+  padding: 0 20px;
+}
+
+.journey-step-full .journey-step {
+  text-align: center;
+}
+
+.journey-step-full .journey-step h2 {
+  font-size: 36px;
+}
+
+.journey-step-full .solution {
+  max-width: 700px;
+  margin: 0 auto;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #4a4a8f;
+}
+
+
 .benefits-grid .benefit-card {
   border-radius: 24px !important;
   padding: 40px 30px !important;
