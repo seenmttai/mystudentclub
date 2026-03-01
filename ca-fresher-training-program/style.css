@@ -1444,13 +1444,14 @@ h1 {
   max-width: 1200px;
   width: 100%;
   gap: 60px;
-  align-items: center;
+  align-items: flex-start;
   position: relative;
   z-index: 1;
 }
 
 .hero-content {
-  flex: 1.1;
+  flex: 0 0 calc(100% - 500px);
+  max-width: calc(100% - 500px);
   text-align: left;
 }
 
@@ -1584,9 +1585,10 @@ h1 {
 
 /* Modern Hero Visual */
 .hero-visual {
-  flex: 0.9;
+  flex: 0 0 450px;
+  max-width: 450px;
   position: relative;
-  min-height: 500px;
+  margin-top: 15px;
 }
 
 .glass-card {

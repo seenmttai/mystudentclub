@@ -1,6 +1,6 @@
 import re
 
-with open('ca-fresher-training-program/assets/destinationdreamjob_animated.svg', 'r') as f:
+with open('msc-ca-fresher-program/assets/destinationdreamjob_animated.svg', 'r') as f:
     svg_lines = f.read().split('\n')
 
 new_svg = []
@@ -21,6 +21,6 @@ for line in svg_lines:
     else:
         new_svg.append(line)
 
-with open('ca-fresher-training-program/assets/destinationdreamjob_animated_wide.svg', 'w') as f:
+with open('msc-ca-fresher-program/assets/destinationdreamjob_animated_wide.svg', 'w') as f:
     f.write('\n'.join(new_svg))
 print('Done expanding SVG')

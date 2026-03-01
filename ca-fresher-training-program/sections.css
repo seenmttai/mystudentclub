@@ -1015,8 +1015,7 @@
   overflow: hidden;
   max-width: 1400px;
   margin: 0 auto;
-  padding: 0 20px;
-  /* Removed flex center to allow proper marquee flow */
+  padding: 0;
 }
 
 .linkedin-carousel {
@@ -1060,7 +1059,7 @@
 }
 
 .linkedin-card {
-  flex: 0 0 360px;
+  flex: 0 0 320px;
   min-width: 320px;
   height: 420px;
   background: white;
@@ -1647,7 +1646,7 @@
    ======================================== */
 .lottie-scrolly-wrapper {
   background-color: #050505;
-  height: 400vh;
+  height: 600vh;
   position: relative;
   z-index: 1;
   width: 100%;
@@ -1829,7 +1828,7 @@
 /* ---- Mobile ---- */
 @media (max-width: 900px) {
   .lottie-scrolly-wrapper {
-    height: 500vh;
+    height: 700vh;
   }
 
   .lottie-scrolly-sticky {
