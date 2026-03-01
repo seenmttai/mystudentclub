@@ -1684,6 +1684,8 @@ h1 {
     align-items: center;
     display: flex;
     flex-direction: column;
+    flex: 1 1 100%;
+    max-width: 100%;
   }
 
   .hero-title {
@@ -1715,6 +1717,11 @@ h1 {
     transform: none;
     margin: 0 auto;
   }
+
+  .hero-promo-banner {
+    width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1732,5 +1739,17 @@ h1 {
   .trust-logos {
     flex-wrap: wrap;
     gap: 15px;
+  }
+
+  .hero-promo-banner {
+    padding: 10px 12px !important;
+  }
+
+  .hero-promo-banner span:first-child {
+    font-size: 13px !important;
+  }
+
+  .hero-promo-banner span:last-child {
+    font-size: 11px !important;
   }
 }
