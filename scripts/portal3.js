@@ -2054,17 +2054,7 @@ async function initializePage() {
     const session = await checkAuth();
     updateHeaderAuth(session);
 
-    if (!session) {
-        let visitCount = parseInt(localStorage.getItem('portalVisitCount') || '0');
-        visitCount++;
-        localStorage.setItem('portalVisitCount', visitCount.toString());
-        if (visitCount >= 5) {
-            document.getElementById('loginPromptOverlay').style.display = 'flex';
-            const layout = document.querySelector('.job-portal-layout');
-            if (layout) layout.style.display = 'none';
-            return;
-        }
-    } else {
+    if (session) {
         localStorage.removeItem('portalVisitCount');
         await initializeUserFeatures();
     }
