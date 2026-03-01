@@ -474,8 +474,8 @@
         <button onclick="document.getElementById('cta-footer').scrollIntoView({behavior: 'smooth'})"
           class="register-btn pulse-btn inline-cta">Enroll Now</button>
       </div>
-      <div class="cta-image">
-        <img src="assets/destinationdreamjob.svg" alt="Destination Dream Job">
+      <div class="cta-image" id="destination-svg-container">
+        <!-- Animated SVG injected via script -->
       </div>
     </div>
   </section>
@@ -880,6 +880,17 @@
         }, { threshold: 0.2 });
 
         if (journeySection) observer.observe(journeySection);
+      }
+
+      // Fetch animated SVG
+      const ctaImageContainer = document.getElementById('destination-svg-container');
+      if (ctaImageContainer) {
+        fetch('assets/destinationdreamjob_animated.svg')
+          .then(res => res.text())
+          .then(svg => {
+            ctaImageContainer.innerHTML = svg;
+          })
+          .catch(console.error);
       }
     });
   </script>

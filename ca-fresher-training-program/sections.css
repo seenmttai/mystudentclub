@@ -1883,3 +1883,54 @@
     font-size: 13px;
   }
 }
+
+/* --- Destination Dream Job SVG Animations --- */
+.destination-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.confetti-strip {
+  opacity: 0;
+  transform-origin: center top;
+  animation: fallConfetti linear forwards infinite;
+  animation-duration: var(--sway-dur, 2.5s);
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes fallConfetti {
+  0% {
+    opacity: 0;
+    transform: translateY(-100px) translateX(0) rotate(0deg) scale(0.5);
+  }
+
+  10% {
+    opacity: 1;
+    transform: translateY(-30px) translateX(calc(var(--tx, 0px) * 0.2)) rotate(15deg) scale(1);
+  }
+
+  80% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(220px) translateX(var(--tx, 0px)) rotate(360deg) scale(1.2);
+  }
+}
+
+.go-btn-group {
+  transform-origin: 201px 197px;
+  cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
+}
+
+.go-btn-group:hover {
+  transform: scale(1.1);
+  filter: brightness(1.1) drop-shadow(0px 8px 12px rgba(92, 178, 122, 0.4));
+}
+
+.go-btn-group:active {
+  transform: scale(0.95);
+}
