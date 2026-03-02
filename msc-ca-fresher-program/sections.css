@@ -1341,7 +1341,7 @@
   max-width: 1200px;
   margin: 0 auto;
   gap: 60px;
-  align-items: flex-start;
+  align-items: center;
   position: relative;
 }
 

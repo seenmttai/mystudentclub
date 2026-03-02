@@ -529,10 +529,10 @@ const initializeBenefitsScrollytelling = () => {
 
     // --- LOTTIE SCRUB ---
     try {
-      // The Lottie animation's circle completes at frame 78 out of 148 total frames.
-      // We scale the scrolling progress so that reaching the bottom of the section
-      // maps precisely to frame 78 (52.7% of the total animation).
-      const adjustedProgress = progress * 0.527;
+      // The Lottie animation is driven linearly by the scroll progress.
+      // We want the full animation (all the way to 1.0) so the tickmarks 
+      // appear at the very bottom.
+      const adjustedProgress = progress;
 
       if (lottiePlayer.getLottie) {
         const anim = lottiePlayer.getLottie();
