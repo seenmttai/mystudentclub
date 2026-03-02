@@ -1331,7 +1331,7 @@
 /* Scrollytelling Section Styling */
 .hero-journey {
   background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
-  padding: 80px 20px;
+  padding: 40px 20px 0;
   position: relative;
   overflow: hidden;
 }
@@ -1350,7 +1350,7 @@
   display: flex;
   flex-direction: column;
   gap: 150px;
-  padding: 40px 0 40px 0;
+  padding: 0 0 40px 0;
   z-index: 2;
 }
 
@@ -1454,7 +1454,7 @@
 /* Full-width "Launch Your Career" row */
 .journey-step-full {
   max-width: 1200px;
-  margin: 40px auto 0;
+  margin: 20px auto 40px;
   padding: 0 20px;
 }
 

@@ -529,13 +529,17 @@ const initializeBenefitsScrollytelling = () => {
 
     // --- LOTTIE SCRUB ---
     try {
+      // The Lottie animation finishes its visual loading early.
+      // Scale progress to 45% max to stretch it across all features.
+      const adjustedProgress = progress * 0.45;
+
       if (lottiePlayer.getLottie) {
         const anim = lottiePlayer.getLottie();
         if (anim && anim.totalFrames) {
-          anim.goToAndStop(progress * anim.totalFrames, true);
+          anim.goToAndStop(adjustedProgress * anim.totalFrames, true);
         }
       } else if (lottiePlayer.seek) {
-        lottiePlayer.seek(progress * 100 + '%');
+        lottiePlayer.seek(adjustedProgress * 100 + '%');
       }
     } catch (e) { }
 
