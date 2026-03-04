@@ -52,6 +52,8 @@
         };
 
         const WORKER_URL = "https://cv-maker.bhansalimanan55.workers.dev";
+        // PDF Worker URL — update this after deploying cv-pdf-worker
+        const WORKER_PDF_URL = "https://cv-pdf-worker.bhansalimanan55.workers.dev";
         const HISTORY_KEY = 'cv_maker_history_v1';
         let history = [];
 
@@ -854,87 +856,74 @@
             }
         }
 
-function printCV() {
+async function printCV() {
     const frame = document.getElementById('cv-frame');
     const doc = frame?.contentDocument || frame?.contentWindow?.document;
+
+    // Safety check: make sure the iframe preview is loaded
     if (!frame || !doc) {
         alert('Preview not ready yet. Please wait a moment and try again.');
         return;
     }
-    const element = doc.getElementById('cv-page') || doc.body;
-    if (!window.html2pdf || !element) {
-        alert('PDF generator library not ready. Please refresh.');
-        return;
+
+    // Build a clean filename from the user's name (e.g. "Padam_Bhansali.pdf")
+    const filename = (cvData.personal?.name || 'cv').replace(/[^a-z0-9]/gi, '_') + '.pdf';
+
+    // Show loading spinner so the user knows something is happening
+    const overlay = document.querySelector('.loading-overlay');
+    overlay?.classList.add('active');
+
+    try {
+        // ── Step 1: Extract the FULL HTML from the iframe ─────────────
+        // We grab the entire <html>...</html> including <head> (styles/fonts)
+        // and <body> (content). This way the Worker's Chromium renders it
+        // with the exact same styling the user sees in the preview.
+        const fullHTML = '<!DOCTYPE html>' + doc.documentElement.outerHTML;
+
+        // ── Step 2: POST the HTML to our Cloudflare Worker ───────────
+        // The Worker will: launch headless Chromium → load this HTML →
+        // call page.pdf() → return real PDF bytes with selectable text
+        // and clickable links (ATS-friendly).
+        const res = await fetch(`${WORKER_PDF_URL}/pdf`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ html: fullHTML, filename }),
+        });
+
+        // ── Step 3: Handle errors from the Worker ────────────────────
+        if (!res.ok) {
+            let errMsg = 'PDF generation failed';
+            try {
+                const errJSON = await res.json();
+                errMsg = errJSON.error || errMsg;
+            } catch (_) {}
+            throw new Error(errMsg);
+        }
+
+        // ── Step 4: Trigger the download ─────────────────────────────
+        // Convert the response to a blob (binary data), create a temporary
+        // URL for it, and simulate a link click to start the download.
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+
+        // Cleanup: remove the invisible link and free the blob memory
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showToast('PDF downloaded!');
+    } catch (e) {
+        console.error('PDF generation error:', e);
+        alert('PDF download failed: ' + e.message);
+    } finally {
+        // Always hide the spinner, even on error
+        overlay?.classList.remove('active');
     }
-
-    // A4 dimensions in pixels at 96 DPI: 794 x 1123
-    // Our templates use 1000 x 1414 (scaled reference)
-    const A4_WIDTH = 1000;
-    const A4_HEIGHT = 1414;
-
-    // Read the current content-scale from the live iframe so we preserve shrink-to-fit
-    const liveScale = getComputedStyle(doc.documentElement).getPropertyValue('--content-scale').trim() || '1';
-
-    const opt = {
-        margin: [0, 0, 0, 0],
-        filename: (cvData.personal?.name || 'cv').replace(/[^a-z0-9]/gi, '_') + '.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            width: A4_WIDTH,
-            height: A4_HEIGHT,
-            windowWidth: A4_WIDTH,
-            windowHeight: A4_HEIGHT,
-            onclone: (clonedDoc) => {
-                // Copy all stylesheets from the original iframe document
-                const originalStyles = doc.querySelectorAll('style, link[rel="stylesheet"]');
-                originalStyles.forEach(style => {
-                    clonedDoc.head.appendChild(style.cloneNode(true));
-                });
-
-                const node = clonedDoc.getElementById('cv-page') || clonedDoc.body;
-                if (node) {
-                    // Reset all transforms and scaling for clean capture
-                    node.style.transform = 'none';
-                    node.style.width = A4_WIDTH + 'px';
-                    node.style.height = A4_HEIGHT + 'px';
-                    node.style.margin = '0';
-                    node.style.boxShadow = 'none';
-                    node.style.overflow = 'hidden';
-                    node.style.display = 'flex';
-                    node.style.position = 'relative';
-                    
-                    // Preserve the content-scale from the live iframe (shrink-to-fit)
-                    clonedDoc.documentElement.style.setProperty('--content-scale', liveScale);
-
-                    // Run a shrink pass on the clone to guarantee content fits
-                    let currentScale = parseFloat(liveScale);
-                    let iterations = 0;
-                    while (node.scrollHeight > A4_HEIGHT && iterations < 50) {
-                        currentScale -= 0.01;
-                        clonedDoc.documentElement.style.setProperty('--content-scale', String(currentScale));
-                        iterations++;
-                    }
-                }
-
-                // Reset zoom wrapper if it exists
-                const wrapper = clonedDoc.getElementById('zoom-wrapper');
-                if (wrapper) {
-                    wrapper.style.transform = 'none';
-                    wrapper.style.padding = '0';
-                    wrapper.style.margin = '0';
-                    wrapper.style.overflow = 'visible';
-                    wrapper.style.display = 'block';
-                    wrapper.style.width = '100%';
-                }
-            }
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    window.html2pdf().from(element).set(opt).save();
 }
 
         // AI & Import Logic
