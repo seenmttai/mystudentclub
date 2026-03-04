@@ -69,6 +69,9 @@ export default {
                     shrinkContentToFit();
                 }
 
+                // Force body visible — all templates start with opacity:0 + fade transition
+                document.body.style.opacity = "1";
+                document.body.style.transition = "none";
                 document.body.style.background = "#ffffff";
                 document.body.style.margin = "0";
                 document.body.style.padding = "0";
