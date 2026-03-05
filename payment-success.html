@@ -225,9 +225,9 @@
       <h3
         style="margin-bottom: 0.5rem; font-size: 1.1rem; display: flex; align-items: center; justify-content: space-between;">
         Your ID Password
-        <span id="login-success-tick" style="display: none; color: #10b981; font-size: 1.2rem;"
+        <span id="login-success-tick" style="display: none; color: #10b981; font-size: 0.9rem; font-weight: 500;"
           title="Successfully logged in">
-          <i class="fas fa-check-circle"></i>
+          <i class="fas fa-check-circle mr-1"></i> Successfully logged in
         </span>
       </h3>
       <p style="margin-bottom: 0.25rem;"><strong>Email:</strong> <code id="user-email"></code></p>
@@ -239,15 +239,9 @@
 
     <div id="login-status" class="login-status" style="margin: 0.5rem 0; padding: 0.75rem;"></div>
 
-    <!-- START DATE -->
     <div
-      style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid #3b82f6; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; text-align: left; font-size: 0.95rem; color: #1e3a8a;">
-      <strong>Start Date:</strong> Live sessions start on March 15th.
-    </div>
-
-    <!-- PREP WORK ETC -->
-    <div
-      style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid #3b82f6; padding: 1rem; margin: 1rem 0 2rem 0; border-radius: 8px; text-align: left; font-size: 0.95rem; color: #1e3a8a;">
+      style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid #3b82f6; padding: 1rem; margin-bottom: 2rem; border-radius: 8px; text-align: left; font-size: 0.95rem; color: #1e3a8a;">
+      <p style="margin-bottom: 0.5rem;"><strong>Start Date:</strong> Live sessions start on March 15th.</p>
       <p style="margin-bottom: 0.5rem;"><strong>Prep Work:</strong> None required! You do not need to watch any recorded
         sessions.</p>
       <p style="margin-bottom: 0;"><strong>Note:</strong> Additional resources will be added once the sessions start.
@@ -287,9 +281,8 @@
           throw error;
         }
 
-        loginStatus.textContent = '✓ Successfully logged in! You can now access the Learning Portal.';
-        loginStatus.classList.remove('error');
-        if (successTick) successTick.style.display = 'inline-block';
+        loginStatus.style.display = 'none'; // Hide the main banner on success
+        if (successTick) successTick.style.display = 'inline-flex';
 
       } catch (error) {
         console.error('Auto-login error:', error);
