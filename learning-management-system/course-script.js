@@ -913,13 +913,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             } else {
                 // Regular MP4 streaming — use native video player (no Plyr)
+                // Native player has its own loading spinner; hide our custom HTML overlay immediately
+                DOMElements.videoLoadingOverlay.style.display = 'none';
                 DOMElements.videoPlayer.setAttribute('controls', '');
                 DOMElements.videoPlayer.src = `https://advertisement.bhansalimanan55.workers.dev/stream/${encodeURIComponent(currentVideo.fileName)}`;
                 DOMElements.videoPlayer.load();
                 DOMElements.videoPlayer.addEventListener('ended', markVideoCompleted, { once: true });
-                DOMElements.videoPlayer.addEventListener('loadedmetadata', () => {
-                    DOMElements.videoLoadingOverlay.style.display = 'none';
-                }, { once: true });
             }
         } else {
             DOMElements.videoPlayerContainer.style.display = 'none';
