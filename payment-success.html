@@ -221,21 +221,28 @@
       Here is what you need to know before we begin:
     </p>
 
-    <!-- START DATE -->
-    <div
-      style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid #3b82f6; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; text-align: left; font-size: 0.95rem; color: #1e3a8a;">
-      <strong>Start Date:</strong> Live sessions start on March 15th.
-    </div>
-
-    <div id="login-status" class="login-status" style="margin: 0.5rem 0; padding: 0.75rem;"></div>
-
     <div id="credentials-box" class="credentials-box" style="margin: 0.5rem 0; padding: 1rem;">
-      <h3 style="margin-bottom: 0.5rem; font-size: 1.1rem;">Your ID Password</h3>
+      <h3
+        style="margin-bottom: 0.5rem; font-size: 1.1rem; display: flex; align-items: center; justify-content: space-between;">
+        Your ID Password
+        <span id="login-success-tick" style="display: none; color: #10b981; font-size: 1.2rem;"
+          title="Successfully logged in">
+          <i class="fas fa-check-circle"></i>
+        </span>
+      </h3>
       <p style="margin-bottom: 0.25rem;"><strong>Email:</strong> <code id="user-email"></code></p>
       <p style="margin-bottom: 0.25rem;"><strong>Password:</strong> <code id="user-password"></code></p>
       <p class="warning-text" style="margin-top: 0.5rem; font-size: 0.85rem;">
         Please copy and save these details in a safe place. This is the only time your password will be shown.
       </p>
+    </div>
+
+    <div id="login-status" class="login-status" style="margin: 0.5rem 0; padding: 0.75rem;"></div>
+
+    <!-- START DATE -->
+    <div
+      style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid #3b82f6; padding: 1rem; margin-bottom: 1rem; border-radius: 8px; text-align: left; font-size: 0.95rem; color: #1e3a8a;">
+      <strong>Start Date:</strong> Live sessions start on March 15th.
     </div>
 
     <!-- PREP WORK ETC -->
@@ -265,6 +272,7 @@
 
     async function attemptAutoLogin(email, password) {
       const loginStatus = document.getElementById('login-status');
+      const successTick = document.getElementById('login-success-tick');
 
       try {
         loginStatus.textContent = 'Logging you in automatically...';
@@ -281,11 +289,13 @@
 
         loginStatus.textContent = '✓ Successfully logged in! You can now access the Learning Portal.';
         loginStatus.classList.remove('error');
+        if (successTick) successTick.style.display = 'inline-block';
 
       } catch (error) {
         console.error('Auto-login error:', error);
         loginStatus.textContent = '⚠ Could not log you in automatically. Please use the credentials above to log in manually.';
         loginStatus.classList.add('error');
+        if (successTick) successTick.style.display = 'none';
       }
     }
 
