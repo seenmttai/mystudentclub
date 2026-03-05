@@ -356,13 +356,22 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
 
                         const day = meta.day_number || 1;
+                        let parsedResources = [];
+                        if (meta.resources) {
+                            if (typeof meta.resources === 'string') {
+                                try { parsedResources = JSON.parse(meta.resources); } catch (e) { console.warn("Error parsing resources", e); }
+                            } else if (Array.isArray(meta.resources)) {
+                                parsedResources = meta.resources;
+                            }
+                        }
+
                         if (!videosByDay[day]) videosByDay[day] = [];
                         videosByDay[day].push({
                             id: meta.video_number,
                             fileName: videoFileName,
                             hlsPath: hlsPath,  // HLS folder path for industrial training
                             title: meta.title || `Content for Day ${day}`,
-                            description: meta.description || '', resources: meta.resources || [], completed: false
+                            description: meta.description || '', resources: parsedResources, completed: false
                         });
                     } catch (err) { }
                 }
