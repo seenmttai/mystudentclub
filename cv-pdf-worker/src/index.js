@@ -33,9 +33,36 @@ export default {
 
         // Generate PDF with Puppeteer
         let browser;
+        let page;
         try {
-            browser = await puppeteer.launch(env.BROWSER);
-            const page = await browser.newPage();
+            // ── Connect & Reuse Browser Sessions to Handle Scale ──
+            // 1. Try connecting to an existing idle browser first
+            const activeSessions = await puppeteer.sessions(env.BROWSER);
+            for (const session of activeSessions) {
+                try {
+                    browser = await puppeteer.connect(env.BROWSER, session.sessionId);
+                    if (browser) break;
+                } catch (e) {
+                    continue; // session busy or dead, try next
+                }
+            }
+
+            // 2. If no browsers are free, launch a new one
+            if (!browser) {
+                try {
+                    browser = await puppeteer.launch(env.BROWSER);
+                } catch (e) {
+                    // Soft-reject if we hit Cloudflare's strict concurrency caps
+                    if (e.message.toLowerCase().includes("limit") || 
+                        e.message.toLowerCase().includes("concurrency") || 
+                        e.message.toLowerCase().includes("too many")) {
+                        return jsonResponse({ ok: false, error: "Capacity reached. Backing off." }, 429);
+                    }
+                    throw e;
+                }
+            }
+
+            page = await browser.newPage();
 
             // Match CV template design dimensions (1000×1414 = A4 ratio)
             await page.setViewport({ width: 1000, height: 1414 });
@@ -84,7 +111,10 @@ export default {
                 margin: { top: "0mm", right: "0mm", bottom: "0mm", left: "0mm" },
             });
 
-            await browser.close();
+            await page.close(); // Close the tab, but NOT the browser
+            
+            // Explicitly disconnect to free up the session for another incoming request
+            browser.disconnect();
 
             return new Response(pdfBuffer, {
                 headers: {
@@ -95,9 +125,9 @@ export default {
             });
 
         } catch (error) {
-            if (browser) {
-                try { await browser.close(); } catch (_) { }
-            }
+            if (page) try { await page.close(); } catch (_) {}
+            if (browser) try { browser.disconnect(); } catch (_) {}
+            
             console.error("PDF generation error:", error);
             return jsonResponse({ ok: false, error: error.message || "PDF generation failed" }, 500);
         }

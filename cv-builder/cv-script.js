@@ -881,14 +881,28 @@ async function printCV() {
         const fullHTML = '<!DOCTYPE html>' + doc.documentElement.outerHTML;
 
         // ── Step 2: POST the HTML to our Cloudflare Worker ───────────
-        // The Worker will: launch headless Chromium → load this HTML →
-        // call page.pdf() → return real PDF bytes with selectable text
-        // and clickable links (ATS-friendly).
-        const res = await fetch(`${WORKER_PDF_URL}/pdf`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ html: fullHTML, filename }),
-        });
+        // Includes a retry mechanism to gracefully handle high traffic (429 errors).
+        let res;
+        let retries = 3;
+        
+        while (retries > 0) {
+            res = await fetch(`${WORKER_PDF_URL}/pdf`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ html: fullHTML, filename }),
+            });
+
+            if (res.status === 429) {
+                retries--;
+                if (retries === 0) {
+                    throw new Error("Servers are currently experiencing high traffic. Please try again in a minute.");
+                }
+                // Wait 3 seconds before retrying
+                await new Promise(r => setTimeout(r, 3000));
+                continue;
+            }
+            break; // Break the loop if successful or another error occurred
+        }
 
         // ── Step 3: Handle errors from the Worker ────────────────────
         if (!res.ok) {
