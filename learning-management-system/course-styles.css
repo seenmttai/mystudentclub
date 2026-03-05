@@ -140,7 +140,8 @@
     position: sticky;
     top: 80px;
     /* overflow-y: auto;  REMOVED: Handled by inner modules container */
-    overflow: hidden; /* Prevent outer scroll */
+    overflow: hidden;
+    /* Prevent outer scroll */
     transition: var(--transition);
     z-index: 100;
     display: flex;
@@ -199,7 +200,8 @@
     padding: 1rem 0;
     flex-grow: 1;
     overflow-y: auto;
-    min-height: 0; /* Important for firefox flex scroll */
+    min-height: 0;
+    /* Important for firefox flex scroll */
 }
 
 .course-module {
@@ -374,6 +376,8 @@
     left: 0;
     width: 100%;
     height: 100%;
+    object-fit: contain;
+    background-color: #000;
 }
 
 .video-navigation {
@@ -1465,7 +1469,8 @@
     /* margin-top: auto; No longer needed with flex-grow on modules, but keeps it safe */
     background: #f8fafc;
     text-align: center;
-    flex-shrink: 0; /* Ensure it doesn't shrink */
+    flex-shrink: 0;
+    /* Ensure it doesn't shrink */
     z-index: 5;
     padding-bottom: calc(1rem + env(safe-area-inset-bottom));
 }
@@ -1511,6 +1516,7 @@
     margin-bottom: 0;
 }
 
-.sidebar-cert-btn:not(.locked) + .cert-lock-msg {
-    display: none; /* Hide message when unlocked */
+.sidebar-cert-btn:not(.locked)+.cert-lock-msg {
+    display: none;
+    /* Hide message when unlocked */
 }
