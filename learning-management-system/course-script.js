@@ -912,11 +912,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 startHls(QUIC_BASE_URL);
 
             } else {
-                // Regular MP4 streaming
+                // Regular MP4 streaming — use native video player (no Plyr)
+                DOMElements.videoPlayer.setAttribute('controls', '');
                 DOMElements.videoPlayer.src = `https://advertisement.bhansalimanan55.workers.dev/stream/${encodeURIComponent(currentVideo.fileName)}`;
-                initializePlyr(null);
-                state.plyrPlayer.load();
-                // MP4 loads might not autopaly until loaded, handled by listeners
+                DOMElements.videoPlayer.load();
+                DOMElements.videoPlayer.addEventListener('ended', markVideoCompleted, { once: true });
+                DOMElements.videoPlayer.addEventListener('loadedmetadata', () => {
+                    DOMElements.videoLoadingOverlay.style.display = 'none';
+                }, { once: true });
             }
         } else {
             DOMElements.videoPlayerContainer.style.display = 'none';
