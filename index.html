@@ -49,13 +49,15 @@
             userId = session?.user?.id || null;
           } catch (e) { }
 
+          const fallbackStack = [];
+          if (errorData.source_file) fallbackStack.push(`Source: ${errorData.source_file}`);
+          if (errorData.line_number) fallbackStack.push(`Line: ${errorData.line_number}`);
+          if (errorData.column_number) fallbackStack.push(`Col: ${errorData.column_number}`);
+
           await errorClient.from('frontend_errors').insert({
             user_id: userId,
             error_message: errorData.error_message || 'Unknown Error',
-            source_file: errorData.source_file || 'Unknown Source',
-            line_number: errorData.line_number || 0,
-            column_number: errorData.column_number || null,
-            stack_trace: errorData.stack_trace || '',
+            stack_trace: errorData.stack_trace || fallbackStack.join(' | '),
             url: window.location.href,
             user_agent: navigator.userAgent
           });
