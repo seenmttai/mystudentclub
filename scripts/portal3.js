@@ -118,7 +118,6 @@ const state = {
     categories: [],
     salary: '',
     experience: '',
-    yoe: '',
     sortBy: 'newest',
     applicationStatus: 'all'
 };
@@ -216,7 +215,6 @@ function renderJobCard(job) {
                     ${job.Location || 'N/A'}
                 </span>
                 ${job.Salary ? `<span class="job-tag"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>₹${job.Salary}</span>` : ''}
-                ${(currentTable === 'Fresher Jobs' && job.yoe !== undefined && job.yoe !== null) ? `<span class="job-tag"><i class="fas fa-briefcase" style="margin-right: 4px;"></i>${job.yoe} Yrs Exp</span>` : ''}
                 ${job.Category ? `<span class="job-tag">${job.Category}</span>` : ''}
             </div>
         </div>
@@ -480,7 +478,6 @@ function showModal(job) {
         </div>
         <div class="modal-meta-tags">
             ${job.Salary ? `<span class="job-tag">${(currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
-            ${(currentTable === 'Fresher Jobs' && job.yoe !== undefined && job.yoe !== null) ? `<span class="job-tag">Experience Req: ${job.yoe} Years</span>` : ''}
             <span class="job-tag">Posted: ${postedDate}</span>
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
         </div>
@@ -677,17 +674,8 @@ async function fetchJobs() {
             }
         }
 
-        if (state.yoe && currentTable === 'Fresher Jobs') {
-            if (state.yoe.endsWith('+')) {
-                const minYoe = parseInt(state.yoe);
-                if (!isNaN(minYoe)) query = query.gte('yoe', minYoe);
-            } else if (state.yoe.includes('-')) {
-                const [minYoe, maxYoe] = state.yoe.split('-').map(Number);
-                if (!isNaN(minYoe) && !isNaN(maxYoe)) query = query.gte('yoe', minYoe).lte('yoe', maxYoe);
-            } else {
-                const exactYoe = parseInt(state.yoe);
-                if (!isNaN(exactYoe)) query = query.eq('yoe', exactYoe);
-            }
+        if (currentTable === 'Fresher Jobs') {
+            query = query.or('yoe.is.null,yoe.lte.1');
         }
 
         // Experience filter:
@@ -893,8 +881,6 @@ function syncFiltersUI() {
 
     if (dom.salaryFilterDesktop) dom.salaryFilterDesktop.value = state.salary;
     if (dom.salaryFilterMobile) dom.salaryFilterMobile.value = state.salary;
-    if (dom.yoeFilterDesktop) dom.yoeFilterDesktop.value = state.yoe;
-    if (dom.yoeFilterMobile) dom.yoeFilterMobile.value = state.yoe;
     if (dom.sortBySelect) dom.sortBySelect.value = state.sortBy;
     if (dom.sortBySelectMobile) dom.sortBySelectMobile.value = state.sortBy;
 
@@ -1706,7 +1692,6 @@ function setupEventListeners() {
 
     dom.applyFiltersBtn.addEventListener('click', () => {
         state.salary = dom.salaryFilterMobile.value;
-        if (dom.yoeFilterMobile) state.yoe = dom.yoeFilterMobile.value;
         syncAndFetch();
         dom.filterModalOverlay.classList.remove('show');
     });
@@ -1718,7 +1703,6 @@ function setupEventListeners() {
             state.categories = [];
             state.salary = '';
             state.experience = '';
-            state.yoe = '';
             state.sortBy = 'newest';
             state.applicationStatus = 'all';
             if (dom.searchInputMobile) dom.searchInputMobile.value = '';
@@ -1732,7 +1716,6 @@ function setupEventListeners() {
     });
 
     if (dom.salaryFilterDesktop) dom.salaryFilterDesktop.addEventListener('change', () => updateState({ salary: dom.salaryFilterDesktop.value }));
-    if (dom.yoeFilterDesktop) dom.yoeFilterDesktop.addEventListener('change', () => updateState({ yoe: dom.yoeFilterDesktop.value }));
 
     // Experience filter UI is only meaningful for Semi Qualified now.
     document.querySelectorAll('.experience-filter-group .pill-options').forEach(group => {
@@ -1876,7 +1859,7 @@ function setupEventListeners() {
 
 // Optimal Custom Dropdown Implementation
 function initCustomSelects() {
-    const selectorIds = ['sortBySelect', 'salaryFilterDesktop', 'sortBySelectMobile', 'salaryFilterMobile', 'locationSelect', 'jobTypeSelect', 'yoeFilterDesktop', 'yoeFilterMobile'];
+    const selectorIds = ['sortBySelect', 'salaryFilterDesktop', 'sortBySelectMobile', 'salaryFilterMobile', 'locationSelect', 'jobTypeSelect'];
 
     // Close dropdowns on outside click
     document.addEventListener('click', (e) => {
@@ -2045,8 +2028,6 @@ async function initializePage() {
     dom.menuCloseBtn = document.getElementById('menuCloseBtn');
     dom.authButtonsContainer = document.querySelector('.auth-buttons-container');
     dom.salaryFilterDesktop = document.getElementById('salaryFilterDesktop');
-    dom.yoeFilterDesktop = document.getElementById('yoeFilterDesktop');
-    dom.yoeFilterMobile = document.getElementById('yoeFilterMobile');
     dom.locationPillsDesktop = document.getElementById('locationPillsDesktop');
     dom.categoryPillsDesktop = document.getElementById('categoryPillsDesktop');
     dom.desktopResetBtn = document.getElementById('desktopResetBtn');
