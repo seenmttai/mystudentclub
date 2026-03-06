@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 // --- Configuration ---
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://api.mystudentclub.com';
+const SUPABASE_URL = process.env.SUPABASE_URL || 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const SUPABASE_KEY = process.env.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const DOMAIN = 'https://www.mystudentclub.com';
 

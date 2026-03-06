@@ -2,18 +2,18 @@
 // Profile 2 — Naukri-inspired JS
 // ============================================
 
-const supabaseUrl = 'https://api.mystudentclub.com';
+const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/scripts/vendor/pdf.worker.min.js';
 const WORKER_URL = 'https://storer.bhansalimanan55.workers.dev';
 
 // DOM refs
-const profileForm   = document.getElementById('profile-form');
+const profileForm = document.getElementById('profile-form');
 const loadingOverlay = document.getElementById('loading-overlay');
-const saveBtn        = document.getElementById('saveBtn');
-let currentUser      = null;
-let lastUpdatedISO   = null;
+const saveBtn = document.getElementById('saveBtn');
+let currentUser = null;
+let lastUpdatedISO = null;
 
 const ENTRY_CLEAR_MAP = {
     'summary-entry-display': ['profile_summary', 'headline'],
@@ -572,16 +572,16 @@ function refreshHeader() {
 
     // Define tracked items: { label, icon, filled, boost }
     const items = [
-        { label: 'Add full name',       icon: 'fa-user',         filled: !!nameVal,                                      boost: 10 },
-        { label: 'Add mobile number',   icon: 'fa-phone-alt',    filled: !!(d.contact_number || '').trim(),               boost: 10 },
-        { label: 'Add location',        icon: 'fa-map-marker-alt', filled: !!(d.current_location || '').trim(),           boost: 2  },
-        { label: 'Add resume',          icon: 'fa-file-alt',     filled: !!localStorage.getItem('userCVText'),            boost: 10 },
-        { label: 'Add profile summary', icon: 'fa-heading',      filled: !!((d.profile_summary || d.headline || '').trim()), boost: 8  },
-        { label: 'Add CA education',    icon: 'fa-graduation-cap', filled: hasEducation,                                   boost: 10 },
-        { label: 'Add experience',      icon: 'fa-briefcase',    filled: hasExperience,                                    boost: 10 },
-        { label: 'Add notice period',   icon: 'fa-calendar-check', filled: !!(d.notice_period || '').trim(),              boost: 5  },
-        { label: 'Add current organization', icon: 'fa-building', filled: hasCurrentOrg,                                   boost: 5 },
-        { label: 'Add job preference',  icon: 'fa-bullseye',     filled: !!pref,                                          boost: 5  },
+        { label: 'Add full name', icon: 'fa-user', filled: !!nameVal, boost: 10 },
+        { label: 'Add mobile number', icon: 'fa-phone-alt', filled: !!(d.contact_number || '').trim(), boost: 10 },
+        { label: 'Add location', icon: 'fa-map-marker-alt', filled: !!(d.current_location || '').trim(), boost: 2 },
+        { label: 'Add resume', icon: 'fa-file-alt', filled: !!localStorage.getItem('userCVText'), boost: 10 },
+        { label: 'Add profile summary', icon: 'fa-heading', filled: !!((d.profile_summary || d.headline || '').trim()), boost: 8 },
+        { label: 'Add CA education', icon: 'fa-graduation-cap', filled: hasEducation, boost: 10 },
+        { label: 'Add experience', icon: 'fa-briefcase', filled: hasExperience, boost: 10 },
+        { label: 'Add notice period', icon: 'fa-calendar-check', filled: !!(d.notice_period || '').trim(), boost: 5 },
+        { label: 'Add current organization', icon: 'fa-building', filled: hasCurrentOrg, boost: 5 },
+        { label: 'Add job preference', icon: 'fa-bullseye', filled: !!pref, boost: 5 },
     ];
 
     if (needsCTC) {
@@ -794,7 +794,7 @@ function refreshSavedDisplays(d) {
             const clearMonth = (d.ca_final_clear_month || '').trim();
             const clearYear = (d.ca_final_clear_year || '').trim();
             const attType = (d.ca_final_attempts_type || '').trim();
-            
+
             if (attType) {
                 if (attType === 'Other' && d.ca_final_attempts) {
                     metaParts.push(`${d.ca_final_attempts} attempt(s)`);
@@ -965,7 +965,7 @@ function refreshSavedDisplays(d) {
         if (currentTitle && currentCompany) {
             metaParts.push(currentCompany);
         }
-        
+
         const expY = (d.emp_exp_years || '').trim();
         const expM = (d.emp_exp_months || '').trim();
         const expStr = [expY, expM].filter(Boolean).join(' ');
@@ -976,13 +976,13 @@ function refreshSavedDisplays(d) {
 
         document.getElementById('emp-org-meta').textContent = metaParts.join(' · ');
         if (addOrgLink) addOrgLink.style.display = 'none';
-        
+
         const empEditToggle = document.getElementById('empEditToggle');
         if (empEditToggle) empEditToggle.textContent = 'Edit employment';
     } else {
         orgDisplay.style.display = 'none';
         if (addOrgLink) addOrgLink.style.display = 'flex';
-        
+
         const empEditToggle = document.getElementById('empEditToggle');
         if (empEditToggle) empEditToggle.textContent = 'Add employment';
     }
@@ -1115,15 +1115,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Apply CA Final logic based on job preference
         const isAppearingStudent = ['articleship', 'industrial'].includes(v);
         document.querySelectorAll('.ca_final_cleared_fields').forEach(el => {
-            if(el.classList.contains('attempts-count-group')) {
-                 const typeDropdown = document.getElementById('ca_final_attempts_type');
-                 if(!isAppearingStudent && typeDropdown && typeDropdown.value === 'Other') {
-                     el.style.display = 'flex'; // Restore if 'Other'
-                 } else {
-                     el.style.display = 'none';
-                 }
+            if (el.classList.contains('attempts-count-group')) {
+                const typeDropdown = document.getElementById('ca_final_attempts_type');
+                if (!isAppearingStudent && typeDropdown && typeDropdown.value === 'Other') {
+                    el.style.display = 'flex'; // Restore if 'Other'
+                } else {
+                    el.style.display = 'none';
+                }
             } else {
-                 el.style.display = isAppearingStudent ? 'none' : 'flex';
+                el.style.display = isAppearingStudent ? 'none' : 'flex';
             }
         });
         document.querySelectorAll('.ca_final_appearance_fields').forEach(el => {
@@ -1144,14 +1144,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ----- Populate Years -----
     const currentYear = new Date().getFullYear();
     document.querySelectorAll('.populate-past-years').forEach(sel => {
-        for(let y = currentYear; y >= 1990; y--) {
+        for (let y = currentYear; y >= 1990; y--) {
             const opt = document.createElement('option');
             opt.value = opt.textContent = y;
             sel.appendChild(opt);
         }
     });
     document.querySelectorAll('.populate-future-years').forEach(sel => {
-        for(let y = currentYear; y <= currentYear + 10; y++) {
+        for (let y = currentYear; y <= currentYear + 10; y++) {
             const opt = document.createElement('option');
             opt.value = opt.textContent = y;
             sel.appendChild(opt);
@@ -1163,7 +1163,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         sel.addEventListener('change', (e) => {
             const targetId = e.target.getAttribute('data-target');
             const targetEl = document.getElementById(targetId);
-            if(targetEl) {
+            if (targetEl) {
                 targetEl.style.display = e.target.value === 'Other' ? 'flex' : 'none';
             }
         });
@@ -1172,19 +1172,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ----- Populate Employment Form Field Options -----
     const exp_years = document.getElementById('emp_exp_years');
     if (exp_years) {
-        for(let i=0; i<=30; i++) {
+        for (let i = 0; i <= 30; i++) {
             let opt = document.createElement('option');
-            opt.value = i + (i===1 ? ' Year' : ' Years');
-            opt.textContent = i + (i===1 ? ' Year' : ' Years');
+            opt.value = i + (i === 1 ? ' Year' : ' Years');
+            opt.textContent = i + (i === 1 ? ' Year' : ' Years');
             exp_years.appendChild(opt);
         }
     }
     const exp_months = document.getElementById('emp_exp_months');
     if (exp_months) {
-        for(let i=0; i<=11; i++) {
+        for (let i = 0; i <= 11; i++) {
             let opt = document.createElement('option');
-            opt.value = i + (i===1 ? ' Month' : ' Months');
-            opt.textContent = i + (i===1 ? ' Month' : ' Months');
+            opt.value = i + (i === 1 ? ' Month' : ' Months');
+            opt.textContent = i + (i === 1 ? ' Month' : ' Months');
             exp_months.appendChild(opt);
         }
     }
@@ -1192,12 +1192,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Employment Chips Selection
     const empChips = document.querySelectorAll('#emp_type_chips .p2-chip');
     empChips.forEach(chip => {
-        chip.addEventListener('click', function(e) {
+        chip.addEventListener('click', function (e) {
             e.preventDefault();
             empChips.forEach(c => c.classList.remove('selected'));
             this.classList.add('selected');
             const radio = this.querySelector('input[type="radio"]');
-            if(radio) radio.checked = true;
+            if (radio) radio.checked = true;
         });
     });
 
@@ -1211,7 +1211,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!skillsContainer) return;
         // clear old tags
         document.querySelectorAll('.p2-skill-tag').forEach(tag => tag.remove());
-        
+
         skillsList.forEach((skill, index) => {
             const tag = document.createElement('span');
             tag.className = 'p2-skill-tag';
@@ -1232,7 +1232,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     if (skillsInput) {
-        skillsInput.addEventListener('keydown', function(e) {
+        skillsInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' || e.key === ',') {
                 e.preventDefault();
                 const val = this.value.trim().replace(/,$/, '');
@@ -1246,14 +1246,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 renderSkills();
             }
         });
-        
-        skillsInput.addEventListener('blur', function() {
-             const val = this.value.trim().replace(/,$/, '');
-             if (val && !skillsList.includes(val)) {
-                 skillsList.push(val);
-                 renderSkills();
-             }
-             this.value = '';
+
+        skillsInput.addEventListener('blur', function () {
+            const val = this.value.trim().replace(/,$/, '');
+            if (val && !skillsList.includes(val)) {
+                skillsList.push(val);
+                renderSkills();
+            }
+            this.value = '';
         });
 
         if (skillsContainer) {
@@ -1371,9 +1371,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // ----- Load profile -----
     loadProfile().then(d => {
         // Pre-fill skills on load if existing
-        if(d && d.emp_skills_hidden) {
-            let loadedSkills = d.emp_skills_hidden.split(',').map(s=>s.trim()).filter(Boolean);
-            if(loadedSkills.length > 0) {
+        if (d && d.emp_skills_hidden) {
+            let loadedSkills = d.emp_skills_hidden.split(',').map(s => s.trim()).filter(Boolean);
+            if (loadedSkills.length > 0) {
                 skillsList = loadedSkills;
                 renderSkills();
             }
@@ -1483,14 +1483,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     function toggleForm(targetId) {
         const target = document.getElementById(targetId);
         if (!target) return;
-        
+
         // Close all other forms to ensure only one modal is active
         document.querySelectorAll('.p2-card-form:not(.collapsed)').forEach(f => {
             if (f.id !== targetId) f.classList.add('collapsed');
         });
 
         target.classList.toggle('collapsed');
-        
+
         const backdrop = document.getElementById('p2_global_backdrop');
         if (!target.classList.contains('collapsed')) {
             document.body.classList.add('p2-modal-open');

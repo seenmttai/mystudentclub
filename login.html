@@ -1106,9 +1106,9 @@
           }
           return res;
         } catch (err) {
-          if (typeof url === 'string' && url.includes('api.mystudentclub.com')) {
+          if (typeof url === 'string' && url.includes('izsggdtdiacxdsjjncdq.supabase.co')) {
             console.warn('Primary fetch failed, using fallback:', err);
-            const fallbackUrl = url.replace('api.mystudentclub.com', 'izsggdtdiacxdsjjncdq.supabase.co');
+            const fallbackUrl = url.replace('izsggdtdiacxdsjjncdq.supabase.co', 'izsggdtdiacxdsjjncdq.supabase.co');
             return fetch(fallbackUrl, options);
           }
           throw err;
@@ -1117,7 +1117,7 @@
 
       // Initialize Supabase
       const supabaseClient = supabase.createClient(
-        'https://api.mystudentclub.com',
+        'https://izsggdtdiacxdsjjncdq.supabase.co',
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0',
         {
           global: {
