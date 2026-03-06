@@ -19,6 +19,143 @@
   <script src="scripts/vendor/supabase.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
+  <script>
+    (function () {
+      const supabaseUrl = 'https://api.mystudentclub.com';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+
+      let errorClient = null;
+      if (window.supabase) {
+        errorClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+      }
+
+      const MAX_ERRORS = 15;
+      let errorCount = 0;
+      const reportedErrors = new Set();
+
+      async function logFrontendError(errorData) {
+        if (errorCount >= MAX_ERRORS || !errorClient) return;
+
+        const errorHash = `${errorData.error_message}|${errorData.source_file}|${errorData.line_number}`;
+        if (reportedErrors.has(errorHash)) return;
+        reportedErrors.add(errorHash);
+
+        errorCount++;
+
+        try {
+          let userId = null;
+          try {
+            const { data: { session } } = await errorClient.auth.getSession();
+            userId = session?.user?.id || null;
+          } catch (e) { }
+
+          await errorClient.from('frontend_errors').insert({
+            user_id: userId,
+            error_message: errorData.error_message || 'Unknown Error',
+            source_file: errorData.source_file || 'Unknown Source',
+            line_number: errorData.line_number || 0,
+            column_number: errorData.column_number || null,
+            stack_trace: errorData.stack_trace || '',
+            url: window.location.href,
+            user_agent: navigator.userAgent
+          });
+        } catch (e) {
+          console.warn("Failed to log error to Supabase", e);
+        }
+      }
+
+      window.onerror = function (message, source, lineno, colno, error) {
+        logFrontendError({
+          error_message: message,
+          source_file: source,
+          line_number: lineno,
+          column_number: colno,
+          stack_trace: error ? error.stack : null
+        });
+        return false;
+      };
+
+      window.addEventListener('unhandledrejection', function (event) {
+        let msg = event.reason ? (event.reason.message || event.reason.toString()) : 'Unhandled Promise Rejection';
+        let stack = event.reason && event.reason.stack ? event.reason.stack : '';
+        logFrontendError({
+          error_message: msg,
+          source_file: 'Promise/Async',
+          stack_trace: stack
+        });
+      });
+
+      window.addEventListener('error', function (event) {
+        if (event.target && (event.target.tagName === 'IMG' || event.target.tagName === 'SCRIPT' || event.target.tagName === 'LINK')) {
+          logFrontendError({
+            error_message: `Failed to load resource: ${event.target.tagName}`,
+            source_file: event.target.src || event.target.href,
+          });
+        }
+      }, true);
+
+      const originalFetch = window.fetch;
+      window.fetch = async function (...args) {
+        try {
+          const response = await originalFetch.apply(this, args);
+          if (!response.ok) {
+            let url = args[0] && typeof args[0] === 'string' ? args[0] : (args[0] && args[0].url ? args[0].url : 'fetch');
+            if (!url.includes('frontend_errors')) {
+              logFrontendError({
+                error_message: `Fetch failed with status: ${response.status} ${response.statusText}`,
+                source_file: url,
+              });
+            }
+          }
+          return response;
+        } catch (err) {
+          let url = args[0] && typeof args[0] === 'string' ? args[0] : (args[0] && args[0].url ? args[0].url : 'fetch');
+          if (!url.includes('frontend_errors')) {
+            logFrontendError({
+              error_message: `Fetch network/connection error: ${err.message}`,
+              source_file: url,
+              stack_trace: err.stack
+            });
+          }
+          throw err;
+        }
+      };
+
+      const origOpen = XMLHttpRequest.prototype.open;
+      const origSend = XMLHttpRequest.prototype.send;
+      XMLHttpRequest.prototype.open = function (method, url) {
+        this._url = typeof url === 'string' ? url : 'xhr';
+        return origOpen.apply(this, arguments);
+      };
+      XMLHttpRequest.prototype.send = function () {
+        this.addEventListener('error', function () {
+          if (this._url && !this._url.includes('frontend_errors')) {
+            logFrontendError({
+              error_message: `XHR Network Error`,
+              source_file: this._url
+            });
+          }
+        });
+        this.addEventListener('load', function () {
+          if (this.status >= 400 && this._url && !this._url.includes('frontend_errors')) {
+            logFrontendError({
+              error_message: `XHR failed with status: ${this.status} ${this.statusText}`,
+              source_file: this._url
+            });
+          }
+        });
+        this.addEventListener('timeout', function () {
+          if (this._url && !this._url.includes('frontend_errors')) {
+            logFrontendError({
+              error_message: `XHR Timeout Error`,
+              source_file: this._url
+            });
+          }
+        });
+        return origSend.apply(this, arguments);
+      };
+    })();
+  </script>
 </head>
 
 <body>
