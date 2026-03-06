@@ -89,9 +89,13 @@
 
       window.addEventListener('error', function (event) {
         if (event.target && (event.target.tagName === 'IMG' || event.target.tagName === 'SCRIPT' || event.target.tagName === 'LINK')) {
+          let sourceFile = event.target.src || event.target.href;
+          if (sourceFile && (sourceFile.includes('cloudflareinsights.com') || sourceFile.includes('google-analytics.com') || sourceFile.includes('googletagmanager.com'))) {
+            return;
+          }
           logFrontendError({
             error_message: `Failed to load resource: ${event.target.tagName}`,
-            source_file: event.target.src || event.target.href,
+            source_file: sourceFile,
           });
         }
       }, true);
@@ -102,7 +106,7 @@
           const response = await originalFetch.apply(this, args);
           if (!response.ok && response.type !== 'opaque' && response.status !== 0) {
             let url = args[0] && typeof args[0] === 'string' ? args[0] : (args[0] && args[0].url ? args[0].url : 'fetch');
-            if (!url.includes('frontend_errors') && !url.includes('google-analytics.com') && !url.includes('googletagmanager.com')) {
+            if (!url.includes('frontend_errors') && !url.includes('google-analytics.com') && !url.includes('googletagmanager.com') && !url.includes('cloudflareinsights.com')) {
               logFrontendError({
                 error_message: `Fetch failed with status: ${response.status} ${response.statusText}`,
                 source_file: url,
@@ -112,7 +116,7 @@
           return response;
         } catch (err) {
           let url = args[0] && typeof args[0] === 'string' ? args[0] : (args[0] && args[0].url ? args[0].url : 'fetch');
-          if (!url.includes('frontend_errors') && !url.includes('google-analytics.com') && !url.includes('googletagmanager.com')) {
+          if (!url.includes('frontend_errors') && !url.includes('google-analytics.com') && !url.includes('googletagmanager.com') && !url.includes('cloudflareinsights.com')) {
             logFrontendError({
               error_message: `Fetch network/connection error: ${err.message}`,
               source_file: url,
@@ -131,7 +135,7 @@
       };
       XMLHttpRequest.prototype.send = function () {
         this.addEventListener('error', function () {
-          if (this._url && !this._url.includes('frontend_errors') && !this._url.includes('google-analytics.com') && !this._url.includes('googletagmanager.com')) {
+          if (this._url && !this._url.includes('frontend_errors') && !this._url.includes('google-analytics.com') && !this._url.includes('googletagmanager.com') && !this._url.includes('cloudflareinsights.com')) {
             logFrontendError({
               error_message: `XHR Network Error`,
               source_file: this._url
@@ -139,7 +143,7 @@
           }
         });
         this.addEventListener('load', function () {
-          if (this.status >= 400 && this._url && !this._url.includes('frontend_errors') && !this._url.includes('google-analytics.com') && !this._url.includes('googletagmanager.com')) {
+          if (this.status >= 400 && this._url && !this._url.includes('frontend_errors') && !this._url.includes('google-analytics.com') && !this._url.includes('googletagmanager.com') && !this._url.includes('cloudflareinsights.com')) {
             logFrontendError({
               error_message: `XHR failed with status: ${this.status} ${this.statusText}`,
               source_file: this._url
@@ -147,7 +151,7 @@
           }
         });
         this.addEventListener('timeout', function () {
-          if (this._url && !this._url.includes('frontend_errors') && !this._url.includes('google-analytics.com') && !this._url.includes('googletagmanager.com')) {
+          if (this._url && !this._url.includes('frontend_errors') && !this._url.includes('google-analytics.com') && !this._url.includes('googletagmanager.com') && !this._url.includes('cloudflareinsights.com')) {
             logFrontendError({
               error_message: `XHR Timeout Error`,
               source_file: this._url
