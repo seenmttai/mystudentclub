@@ -2,7 +2,7 @@ const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/scripts/vendor/pdf.worker.min.js';
-const WORKER_URL = 'https://profile.mystudentclub.com';
+const WORKER_URL = 'https://storer.bhansalimanan55.workers.dev';
 
 const profileForm = document.getElementById('profile-form');
 const loadingOverlay = document.getElementById('loading-overlay');
