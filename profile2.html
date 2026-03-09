@@ -1,44 +1,45 @@
 <!DOCTYPE html>
+<!-- Updated Profile Page -->
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile - My Student Club</title>
-    <meta name="description" content="Manage your professional profile on My Student Club. Keep your details updated for better job matches.">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/scripts/portal-style.css">
-    <link rel="stylesheet" href="/scripts/profile2.css">
+    <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/profile-styles.css">
     <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
     <script src="scripts/vendor/pdf.min.js"></script>
     <script src="scripts/vendor/supabase.js"></script>
 </head>
 
 <body>
-    <!-- ========== SITE HEADER ========== -->
     <header class="site-header">
         <div class="header-container">
             <a href="/" class="brand-link"><img src="/assets/logo.png" alt="My Student Club" class="brand-logo"></a>
             <div class="nav-actions">
                 <div class="auth-buttons-container"></div>
-                <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
+                <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu"><svg width="24"
+                        height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                    </svg></button>
             </div>
         </div>
     </header>
     <div class="expanded-menu" id="expandedMenu">
-        <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu"><svg width="24" height="24"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-        </button>
+            </svg></button>
         <div class="menu-items-container">
-            <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
+            <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My
+                Courses</a>
             <a href="/history.html" class="menu-item" id="history-nav-link" style="display: none;">My Applications</a>
+
             <div class="menu-item-dropdown always-open">
                 <span class="menu-item menu-heading">Mentorship Programs</span>
                 <div class="dropdown-content">
@@ -47,1192 +48,238 @@
                     <a href="/articleship-program/" class="dropdown-item">Articleship Program</a>
                 </div>
             </div>
+
+            <div class="menu-item-dropdown">
+                <button class="menu-item" id="resourcesDropdownBtn">
+                    Free Resources
+                    <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div class="dropdown-content" id="resourcesDropdown">
+                    <a href="/ca-fresher-training-resources.html" class="dropdown-item">CA Fresher</a>
+                    <a href="/ca-industrial-training-resources.html" class="dropdown-item">Industrial Training</a>
+                    <a href="/ca-articleship-opportunities" class="dropdown-item">Articleship</a>
+                </div>
+            </div>
+
+            <div class="menu-item-dropdown">
+                <button class="menu-item" id="toolsDropdownBtn">
+                    Tools
+                    <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                <div class="dropdown-content" id="toolsDropdown">
+                    <a href="/cv-reviewer/" class="dropdown-item">AI CV Reviewer</a>
+                    <a href="/ai-interview.html" class="dropdown-item">AI Mock Interview Bot</a>
+                    <a href="/ICAI-Campus-Shortlisting-Predictor/index.html" class="dropdown-item">Campus Shortlisting
+                        Predictor</a>
+                </div>
+            </div>
+
             <a href="/contact.html" class="menu-item">Contact Us</a>
         </div>
     </div>
 
-    <!-- ========== LOADING OVERLAY ========== -->
-    <div id="loading-overlay" class="p2-loading-overlay">
-        <div class="p2-loader-spinner"></div>
-        <p>Loading Profile...</p>
-    </div>
+    <main class="profile-container">
+        <div id="loading-overlay" class="loading-overlay">
+            <div class="loader-spinner"></div>
+            <p>Loading Profile...</p>
+        </div>
 
-    <!-- ========== GLOBAL MODAL BACKDROP ========== -->
-    <div id="p2_global_backdrop" class="p2-global-backdrop" style="display:none;"></div>
+        <form id="profile-form">
+            <h1>My Professional Profile</h1>
+            <p class="subtitle">Keep this updated to help our AI craft the perfect job applications for you. This data
+                will be shared with companies that you match with.</p>
 
-    <!-- ========== MAIN PROFILE LAYOUT ========== -->
-    <main class="p2-main">
-
-        <!-- ===== PROFILE HEADER CARD ===== -->
-        <section class="p2-header-card" id="section-header">
-            <div class="p2-header-left">
-                <!-- Avatar + Progress Ring -->
-                <div class="p2-avatar-wrap">
-                    <svg class="p2-progress-ring" viewBox="0 0 120 120">
-                        <circle class="p2-ring-bg" cx="60" cy="60" r="54" />
-                        <circle class="p2-ring-fg" cx="60" cy="60" r="54" id="progressRing" />
-                    </svg>
-                    <div class="p2-avatar-inner">
-                        <img src="https://ui-avatars.com/api/?name=U&background=e8e8e8&color=999&size=96" alt="Profile" id="avatarImg">
+            <div class="profile-section">
+                <h2>Section 1: Personal Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" required>
                     </div>
-                    <div class="p2-pct-badge" id="pctBadge">
-                        <i class="fas fa-fire"></i> <span id="pctText">0</span>%
+                    <div class="form-group">
+                        <label for="email">Email ID (cannot be changed)</label>
+                        <input type="email" id="email" name="email" readonly disabled>
                     </div>
-                </div>
-                <!-- Info -->
-                <div class="p2-header-info">
-                    <div class="p2-name-row">
-                        <h1 class="p2-display-name" id="displayName">Your Name</h1>
-                        <a href="javascript:void(0)" class="p2-edit-pen" data-toggle="sec-personal-form" title="Edit"><i class="fas fa-pencil-alt"></i></a>
+                    <div class="form-group">
+                        <label for="contact_number">Contact Number *</label>
+                        <input type="tel" id="contact_number" name="contact_number" required>
                     </div>
-                    <div class="p2-updated" id="lastUpdated">Profile last updated - <span>Not yet</span></div>
-                    <div class="p2-header-details">
-                        <div class="p2-hd-item"><i class="fas fa-map-marker-alt"></i> <span id="hdLocation">Add location</span></div>
-                        <div class="p2-hd-item"><i class="fas fa-phone-alt"></i> <span id="hdPhone">Add mobile number</span></div>
-                        <div class="p2-hd-item"><i class="fas fa-briefcase"></i> <span id="hdExperience">Fresher</span></div>
-                        <div class="p2-hd-item"><i class="fas fa-envelope"></i> <span id="hdEmail">your@email.com</span> <i class="fas fa-check-circle p2-verified"></i></div>
-                        <div class="p2-hd-item"><i class="fas fa-calendar-check"></i> <span id="hdNotice">Add availability to join</span></div>
-                    </div>
-                    <div class="p2-header-summary" id="hdSummaryWrap" style="display:none;">
-                        <div class="p2-header-summary-label">Profile summary</div>
-                        <div class="p2-header-summary-text" id="hdSummaryText"></div>
+                    <div class="form-group">
+                        <label for="linkedin_url">LinkedIn Profile URL</label>
+                        <input type="url" id="linkedin_url" name="linkedin_url"
+                            placeholder="https://linkedin.com/in/yourprofile">
                     </div>
                 </div>
             </div>
-            <!-- Missing Details Card -->
-            <div class="p2-header-right" id="missingCard">
-                <div class="p2-missing-list" id="missingList">
-                    <!-- Dynamically populated -->
+
+            <div class="profile-section">
+                <h2>Section 2: Resume (Mandatory for AI features)</h2>
+                <div id="resume-upload-area">
+                    <label for="resume">Upload your Resume (PDF or .txt) *</label>
+                    <div class="file-drop-zone">
+                        <input type="file" id="resume" name="resume" accept=".pdf,.txt">
+                        <p>Drag & drop your file here, or click to browse.</p>
+                    </div>
                 </div>
-                <a href="#sec-personal" class="p2-missing-cta" id="missingCta">Add <span id="missingCount">0</span> missing details</a>
-            </div>
-        </section>
-
-        <!-- ===== TWO-COLUMN LAYOUT ===== -->
-        <div class="p2-body-layout">
-
-            <!-- Quick Links Sidebar -->
-            <aside class="p2-sidebar" id="quickLinksSidebar">
-                <h3>Quick links</h3>
-                <nav class="p2-sidebar-links">
-                    <a href="#sec-resume" class="p2-ql">Resume <span class="p2-ql-action">Upload</span></a>
-                    <a href="#sec-headline" class="p2-ql">Profile Summary <span class="p2-ql-action">Add</span></a>
-                    <a href="#sec-ca-education" class="p2-ql">CA Education <span class="p2-ql-action">Add</span></a>
-                    <a href="#sec-experience" class="p2-ql">Experience <span class="p2-ql-action">Add</span></a>
-                    <a href="#sec-projects" class="p2-ql">Projects <span class="p2-ql-action">Add</span></a>
-                    <a href="#sec-career" class="p2-ql">Career Profile <span class="p2-ql-action">Add</span></a>
-                    <a href="#sec-certification" class="p2-ql">Certification <span class="p2-ql-action">Add</span></a>
-                    <a href="#sec-personal" class="p2-ql">Personal Details <span class="p2-ql-action">Add</span></a>
-                </nav>
-            </aside>
-
-            <!-- Main Content -->
-            <div class="p2-content">
-                <form id="profile-form" autocomplete="off">
-
-                    <!-- ===== RESUME SECTION ===== -->
-                    <section class="p2-card" id="sec-resume">
-                        <div class="p2-card-header">
-                            <h2>Resume <span class="p2-boost" id="resumeBoost">Add 10%</span></h2>
-                        </div>
-                        <p class="p2-card-sub">70% of recruiters discover candidates through their resume</p>
-                        <div id="resume-upload-area">
-                            <div class="p2-upload-zone" id="resumeDropZone">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                                <p><strong>Upload resume</strong></p>
-                                <span>Supported Formats: PDF, TXT — Max 5 MB</span>
-                                <input type="file" id="resume" name="resume" accept=".pdf,.txt">
-                            </div>
-                        </div>
-                        <div id="resume-display-area" style="display:none;">
-                            <div class="p2-file-tag">
-                                <i class="fas fa-file-pdf"></i>
-                                <span id="resume-filename"></span>
-                                <button type="button" class="p2-remove-file" data-target="resume"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- ===== COVER LETTER SECTION ===== -->
-                    <section class="p2-card" id="sec-cover-letter">
-                        <div class="p2-card-header">
-                            <h2>Cover Letter <span class="p2-boost-optional">Optional</span></h2>
-                        </div>
-                        <p class="p2-card-sub">A well-written cover letter increases your chances</p>
-                        <div id="cover-letter-upload-area">
-                            <div class="p2-upload-zone" id="coverLetterDropZone">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                                <p><strong>Upload cover letter</strong></p>
-                                <span>Supported Format: PDF — Max 5 MB</span>
-                                <input type="file" id="cover_letter" name="cover_letter" accept=".pdf">
-                            </div>
-                        </div>
-                        <div id="cover-letter-display-area" style="display:none;">
-                            <div class="p2-file-tag">
-                                <i class="fas fa-file-pdf"></i>
-                                <span id="cover-letter-filename"></span>
-                                <button type="button" class="p2-remove-file" data-target="cover_letter"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- ===== HEADLINE ===== -->
-                    <section class="p2-card" id="sec-headline">
-                        <div class="p2-card-header">
-                            <h2>Profile Summary <span class="p2-boost" id="summaryBoost">Add 8%</span></h2>
-                            <a href="javascript:void(0)" class="p2-card-action" id="summaryEditToggle" data-toggle="sec-headline-form">Add profile summary</a>
-                        </div>
-                        <p class="p2-card-sub">Give recruiters a brief overview of your career highlights, achievements, and career goals.</p>
-                        <div class="p2-saved-display" id="summary-display">
-                            <div class="p2-saved-entry" id="summary-entry-display" style="display:none;">
-                                <div class="p2-saved-entry-header">
-                                    <div>
-                                        <div class="p2-saved-title">Summary</div>
-                                        <div class="p2-saved-meta" id="summary-text-display"></div>
-                                    </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-headline-form"><i class="fas fa-pencil-alt"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p2-card-form collapsed" id="sec-headline-form">
-                            <div class="p2-inline-form-title">Profile summary</div>
-                            <div class="p2-form-row p2-full-width">
-                                <label for="profile_summary">Summary</label>
-                                <textarea id="profile_summary" name="profile_summary" rows="6" maxlength="1000" placeholder="Type here..."></textarea>
-                                <div class="p2-char-count"><span id="summary-left">1000</span> character(s) left</div>
-                            </div>
-                            <input type="hidden" id="headline" name="headline">
-                            <div class="p2-inline-actions">
-                                <button type="button" class="p2-inline-cancel" data-close="sec-headline-form">Cancel</button>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- ===== CERTIFICATION (OPTIONAL) ===== -->
-                    <section class="p2-card" id="sec-certification">
-                        <div class="p2-card-header">
-                            <h2>Certification <span class="p2-boost-optional">Optional</span></h2>
-                            <a href="javascript:void(0)" class="p2-card-action" id="certEditToggle" data-toggle="sec-certification-form">Add</a>
-                        </div>
-                        <p class="p2-card-sub">Add details of certifications you have completed.</p>
-                        <div class="p2-saved-display" id="cert-display">
-                            <div class="p2-saved-entry" id="cert-entry-display" style="display:none;">
-                                <div class="p2-saved-entry-header">
-                                    <div>
-                                        <div class="p2-saved-title" id="cert-title-display">Certification</div>
-                                        <div class="p2-saved-meta" id="cert-meta-display"></div>
-                                    </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-certification-form"><i class="fas fa-pencil-alt"></i></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="p2-add-links" id="cert-add-links">
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-certification-form" id="addCertLink"><i class="fas fa-plus-circle"></i> Add certification details</a>
-                        </div>
-                        <div class="p2-card-form collapsed" id="sec-certification-form">
-                            <div class="p2-inline-form-title">Certification</div>
-                            <div class="p2-form-grid">
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="cert_name">Certification Name</label>
-                                    <input type="text" id="cert_name" name="cert_name" placeholder="e.g., Financial Modeling Certification">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="cert_issuer">Issuing Organization</label>
-                                    <input type="text" id="cert_issuer" name="cert_issuer" placeholder="e.g., NSE Academy">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="cert_year">Completion Year</label>
-                                    <input type="number" id="cert_year" name="cert_year" min="1990" max="2035" placeholder="e.g., 2025">
-                                </div>
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="cert_url">Credential URL (Optional)</label>
-                                    <input type="url" id="cert_url" name="cert_url" placeholder="https://...">
-                                </div>
-                            </div>
-                            <div class="p2-inline-actions">
-                                <button type="button" class="p2-inline-cancel" data-close="sec-certification-form">Cancel</button>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- ===== EDUCATION ===== -->
-                    <section class="p2-card" id="sec-ca-education">
-                        <div class="p2-card-header">
-                            <h2>Education <span class="p2-boost" id="eduBoost">Add 10%</span></h2>
-                            <a href="javascript:void(0)" class="p2-card-action" id="eduEditToggle" data-toggle="sec-other-edu-form">Add education</a>
-                        </div>
-                        <p class="p2-card-sub">Your qualifications help employers know your educational background</p>
-
-                        <!-- Saved display area -->
-                        <div class="p2-saved-display" id="edu-display">
-                            <!-- CA Final -->
-                            <div class="p2-saved-entry" id="edu-final-display" style="display:none;">
-                                <div class="p2-saved-entry-header">
-                                    <div>
-                                        <div class="p2-saved-title" id="edu-final-title">CA Final</div>
-                                        <div class="p2-saved-meta" id="edu-final-meta"></div>
-                                    </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-ca-final-form"><i class="fas fa-pencil-alt"></i></a>
-                                </div>
-                            </div>
-                            <!-- CA Inter -->
-                            <div class="p2-saved-entry" id="edu-inter-display" style="display:none;">
-                                <div class="p2-saved-entry-header">
-                                    <div>
-                                        <div class="p2-saved-title" id="edu-inter-title">CA Inter</div>
-                                        <div class="p2-saved-meta" id="edu-inter-meta"></div>
-                                    </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-ca-inter-form"><i class="fas fa-pencil-alt"></i></a>
-                                </div>
-                            </div>
-                            <!-- CA Foundation -->
-                            <div class="p2-saved-entry" id="edu-found-display" style="display:none;">
-                                <div class="p2-saved-entry-header">
-                                    <div>
-                                        <div class="p2-saved-title" id="edu-found-title">CA Foundation</div>
-                                        <div class="p2-saved-meta" id="edu-found-meta"></div>
-                                    </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-ca-foundation-form"><i class="fas fa-pencil-alt"></i></a>
-                                </div>
-                            </div>
-                            <!-- Graduation -->
-                            <div class="p2-saved-entry" id="edu-grad-display" style="display:none;">
-                                <div class="p2-saved-entry-header">
-                                    <div>
-                                        <div class="p2-saved-title" id="edu-grad-title">Graduation</div>
-                                        <div class="p2-saved-meta" id="edu-grad-meta"></div>
-                                    </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-grad-form"><i class="fas fa-pencil-alt"></i></a>
-                                </div>
-                            </div>
-                            <!-- Class XII -->
-                            <div class="p2-saved-entry" id="edu-12-display" style="display:none;">
-                                <div class="p2-saved-entry-header">
-                                    <div>
-                                        <div class="p2-saved-title" id="edu-12-title">Class XII</div>
-                                        <div class="p2-saved-meta" id="edu-12-meta"></div>
-                                    </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-12-form"><i class="fas fa-pencil-alt"></i></a>
-                                </div>
-                            </div>
-                            <!-- Class X -->
-                            <div class="p2-saved-entry" id="edu-10-display" style="display:none;">
-                                <div class="p2-saved-entry-header">
-                                    <div>
-                                        <div class="p2-saved-title" id="edu-10-title">Class X</div>
-                                        <div class="p2-saved-meta" id="edu-10-meta"></div>
-                                    </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-10-form"><i class="fas fa-pencil-alt"></i></a>
-                                </div>
-                            </div>
-                            <!-- Other Education -->
-                            <div class="p2-saved-entry" id="edu-other-display" style="display:none;">
-                                <div class="p2-saved-entry-header">
-                                    <div>
-                                        <div class="p2-saved-title" id="edu-other-title">Other Education</div>
-                                        <div class="p2-saved-meta" id="edu-other-meta"></div>
-                                    </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-other-edu-form"><i class="fas fa-pencil-alt"></i></a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Add-more links (Naukri style) -->
-                        <div class="p2-add-links" id="edu-add-links">
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-final-form" id="addFinalLink"><i class="fas fa-plus-circle"></i> Add CA Final details</a>
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-inter-form" id="addInterLink"><i class="fas fa-plus-circle"></i> Add CA Inter details</a>
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-foundation-form" id="addFoundLink"><i class="fas fa-plus-circle"></i> Add CA Foundation details</a>
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-grad-form" id="addGradLink"><i class="fas fa-plus-circle"></i> Add B.Com / Graduation (Optional)</a>
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-12-form" id="addClass12Link"><i class="fas fa-plus-circle"></i> Add Class XII details</a>
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-10-form" id="addClass10Link"><i class="fas fa-plus-circle"></i> Add Class X details</a>
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-other-edu-form" id="addOtherEduLink"><i class="fas fa-plus-circle"></i> Add other education details</a>
-                        </div>
-
-                        <!-- CA Final Form -->
-                        <div class="p2-card-form collapsed" id="sec-ca-final-form">
-                            <div class="p2-inline-form-title">CA Final</div>
-                            <div class="p2-form-grid">
-                                <div class="p2-form-row">
-                                    <label>Education</label>
-                                    <input type="text" value="Professional Course" disabled>
-                                </div>
-                                <div class="p2-form-row" id="ca_final_course_group">
-                                    <label for="ca_final_course">Course *</label>
-                                    <select id="ca_final_course" name="ca_final_course">
-                                        <option value="">Select Course</option>
-                                        <option>CA Final (Both Groups)</option>
-                                        <option>CA Final G1</option>
-                                        <option>CA Final G2</option>
-                                    </select>
-                                </div>
-                                
-                                <!-- Shown if NOT Industrial / Articleship -->
-                                <div class="p2-form-row ca_final_cleared_fields">
-                                    <label for="ca_final_attempts_type">Attempts</label>
-                                    <select id="ca_final_attempts_type" name="ca_final_attempts_type" class="attempts-dropdown" data-target="ca_final_attempts_count_group">
-                                        <option value="">Select Attempts</option>
-                                        <option value="First Attempt">First Attempt</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="p2-form-row ca_final_cleared_fields attempts-count-group" id="ca_final_attempts_count_group" style="display:none;">
-                                    <label for="ca_final_attempts">Number of Attempts</label>
-                                    <input type="number" id="ca_final_attempts" name="ca_final_attempts" min="1" placeholder="e.g., 2">
-                                </div>
-
-                                <div class="p2-form-row ca_final_cleared_fields">
-                                    <label>When did you clear</label>
-                                    <div style="display:flex; gap:0.5rem;">
-                                        <select id="ca_final_clear_month" name="ca_final_clear_month" style="flex:1;">
-                                            <option value="">Month</option>
-                                            <option>Jan</option>
-                                            <option>May</option>
-                                            <option>Sep</option>
-                                            <option>Nov</option>
-                                        </select>
-                                        <select id="ca_final_clear_year" name="ca_final_clear_year" class="populate-past-years" style="flex:1;">
-                                            <option value="">Year</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <!-- Shown IF Industrial / Articleship -->
-                                <div class="p2-form-row ca_final_appearance_fields" style="display:none;">
-                                    <label>Expected Appearance</label>
-                                    <div style="display:flex; gap:0.5rem;">
-                                        <select id="ca_final_app_month" name="ca_final_app_month" style="flex:1;">
-                                            <option value="">Month</option>
-                                            <option>Jan</option>
-                                            <option>May</option>
-                                            <option>Sep</option>
-                                        </select>
-                                        <select id="ca_final_app_year" name="ca_final_app_year" class="populate-future-years" style="flex:1;">
-                                            <option value="">Year</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p2-inline-actions">
-                                <button type="button" class="p2-inline-cancel" data-close="sec-ca-final-form">Cancel</button>
-                            </div>
-                        </div>
-
-                        <!-- CA Inter Form -->
-                        <div class="p2-card-form collapsed" id="sec-ca-inter-form">
-                            <div class="p2-inline-form-title">CA Inter</div>
-                            <div class="p2-form-grid">
-                                <div class="p2-form-row">
-                                    <label>Education</label>
-                                    <input type="text" value="Professional Course" disabled>
-                                </div>
-                                <div class="p2-form-row" id="ca_inter_course_group">
-                                    <label for="ca_inter_course">Course *</label>
-                                    <select id="ca_inter_course" name="ca_inter_course">
-                                        <option value="">Select Course</option>
-                                        <option>CA Inter (Both Groups)</option>
-                                        <option>CA Inter G1</option>
-                                        <option>CA Inter G2</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="p2-form-row">
-                                    <label for="ca_inter_attempts_type">Attempts</label>
-                                    <select id="ca_inter_attempts_type" name="ca_inter_attempts_type" class="attempts-dropdown" data-target="ca_inter_attempts_count_group">
-                                        <option value="">Select Attempts</option>
-                                        <option value="First Attempt">First Attempt</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="p2-form-row attempts-count-group" id="ca_inter_attempts_count_group" style="display:none;">
-                                    <label for="ca_inter_attempts">Number of Attempts</label>
-                                    <input type="number" id="ca_inter_attempts" name="ca_inter_attempts" min="1" placeholder="e.g., 2">
-                                </div>
-
-                                <div class="p2-form-row">
-                                    <label>When did you clear</label>
-                                    <div style="display:flex; gap:0.5rem;">
-                                        <select id="ca_inter_clear_month" name="ca_inter_clear_month" style="flex:1;">
-                                            <option value="">Month</option>
-                                            <option>Jan</option>
-                                            <option>May</option>
-                                            <option>Sep</option>
-                                            <option>Nov</option>
-                                        </select>
-                                        <select id="ca_inter_clear_year" name="ca_inter_clear_year" class="populate-past-years" style="flex:1;">
-                                            <option value="">Year</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p2-inline-actions">
-                                <button type="button" class="p2-inline-cancel" data-close="sec-ca-inter-form">Cancel</button>
-                            </div>
-                        </div>
-
-                        <!-- CA Foundation Form -->
-                        <div class="p2-card-form collapsed" id="sec-ca-foundation-form">
-                            <div class="p2-inline-form-title">CA Foundation</div>
-                            <div class="p2-form-grid">
-                                <div class="p2-form-row">
-                                    <label>Education</label>
-                                    <input type="text" value="Professional Course" disabled>
-                                </div>
-                                <div class="p2-form-row" id="ca_found_course_group">
-                                    <label for="ca_found_course">Course *</label>
-                                    <select id="ca_found_course" name="ca_found_course">
-                                        <option value="">Select Course</option>
-                                        <option>CA Foundation</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="p2-form-row">
-                                    <label for="ca_found_attempts_type">Attempts</label>
-                                    <select id="ca_found_attempts_type" name="ca_found_attempts_type" class="attempts-dropdown" data-target="ca_found_attempts_count_group">
-                                        <option value="">Select Attempts</option>
-                                        <option value="First Attempt">First Attempt</option>
-                                        <option value="Other">Other</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="p2-form-row attempts-count-group" id="ca_found_attempts_count_group" style="display:none;">
-                                    <label for="ca_found_attempts">Number of Attempts</label>
-                                    <input type="number" id="ca_found_attempts" name="ca_found_attempts" min="1" placeholder="e.g., 2">
-                                </div>
-
-                                <div class="p2-form-row">
-                                    <label>When did you clear</label>
-                                    <div style="display:flex; gap:0.5rem;">
-                                        <select id="ca_found_clear_month" name="ca_found_clear_month" style="flex:1;">
-                                            <option value="">Month</option>
-                                            <option>Jan</option>
-                                            <option>May</option>
-                                            <option>Sep</option>
-                                            <option>Nov</option>
-                                        </select>
-                                        <select id="ca_found_clear_year" name="ca_found_clear_year" class="populate-past-years" style="flex:1;">
-                                            <option value="">Year</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p2-inline-actions">
-                                <button type="button" class="p2-inline-cancel" data-close="sec-ca-foundation-form">Cancel</button>
-                            </div>
-                        </div>
-
-                        <!-- Graduation Form -->
-                        <div class="p2-card-form collapsed" id="sec-grad-form">
-                            <div class="p2-inline-form-title">Graduation (B.Com / Other)</div>
-                            <div class="p2-form-grid">
-                                <div class="p2-form-row">
-                                    <label for="grad_degree">Degree / Diploma</label>
-                                    <select id="grad_degree" name="grad_degree">
-                                        <option value="">Select Degree</option>
-                                        <option>B.Com</option>
-                                        <option>BBA</option>
-                                        <option>B.Sc</option>
-                                        <option>BA</option>
-                                        <option>BCA</option>
-                                        <option>Other</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="grad_university">University / Institute</label>
-                                    <input type="text" id="grad_university" name="grad_university" placeholder="e.g., Mumbai University">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="grad_year">Passing Year</label>
-                                    <input type="number" id="grad_year" name="grad_year" min="2000" max="2035" placeholder="e.g., 2023">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="grad_percentage">Percentage / CGPA</label>
-                                    <input type="text" id="grad_percentage" name="grad_percentage" placeholder="e.g., 78% or 8.5 CGPA">
-                                </div>
-                            </div>
-                            <div class="p2-inline-actions">
-                                <button type="button" class="p2-inline-cancel" data-close="sec-grad-form">Cancel</button>
-                            </div>
-                        </div>
-
-                        <!-- Class XII Form -->
-                        <div class="p2-card-form collapsed" id="sec-12-form">
-                            <div class="p2-inline-form-title">Class XII</div>
-                            <div class="p2-form-grid">
-                                <div class="p2-form-row">
-                                    <label for="class12_board">Board *</label>
-                                    <select id="class12_board" name="class12_board">
-                                        <option value="">Select Board</option>
-                                        <option>CBSE</option>
-                                        <option>ICSE / ISC</option>
-                                        <option>State Board</option>
-                                        <option>IB</option>
-                                        <option>Other</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="class12_school">School Name</label>
-                                    <input type="text" id="class12_school" name="class12_school" placeholder="e.g., DPS, Kendriya Vidyalaya">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="class12_year">Passing Year</label>
-                                    <input type="number" id="class12_year" name="class12_year" min="2000" max="2035" placeholder="e.g., 2020">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="class12_percentage">Percentage</label>
-                                    <input type="text" id="class12_percentage" name="class12_percentage" placeholder="e.g., 92%">
-                                </div>
-                            </div>
-                            <div class="p2-inline-actions">
-                                <button type="button" class="p2-inline-cancel" data-close="sec-12-form">Cancel</button>
-                            </div>
-                        </div>
-
-                        <!-- Class X Form -->
-                        <div class="p2-card-form collapsed" id="sec-10-form">
-                            <div class="p2-inline-form-title">Class X</div>
-                            <div class="p2-form-grid">
-                                <div class="p2-form-row">
-                                    <label for="class10_board">Board *</label>
-                                    <select id="class10_board" name="class10_board">
-                                        <option value="">Select Board</option>
-                                        <option>CBSE</option>
-                                        <option>ICSE</option>
-                                        <option>State Board</option>
-                                        <option>IB</option>
-                                        <option>Other</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="class10_school">School Name</label>
-                                    <input type="text" id="class10_school" name="class10_school" placeholder="e.g., DPS">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="class10_year">Passing Year</label>
-                                    <input type="number" id="class10_year" name="class10_year" min="2000" max="2035" placeholder="e.g., 2018">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="class10_percentage">Percentage</label>
-                                    <input type="text" id="class10_percentage" name="class10_percentage" placeholder="e.g., 95%">
-                                </div>
-                            </div>
-                            <div class="p2-inline-actions">
-                                <button type="button" class="p2-inline-cancel" data-close="sec-10-form">Cancel</button>
-                            </div>
-                        </div>
-
-                        <!-- Other Education Form -->
-                        <div class="p2-card-form collapsed" id="sec-other-edu-form">
-                            <div class="p2-inline-form-title">Other Education</div>
-                            <div class="p2-form-grid">
-                                <div class="p2-form-row">
-                                    <label for="other_edu_level">Education level *</label>
-                                    <select id="other_edu_level" name="other_edu_level">
-                                        <option value="">Select level</option>
-                                        <option>Post Graduation</option>
-                                        <option>Diploma</option>
-                                        <option>Certification</option>
-                                        <option>Other</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="other_edu_course">Course / Program *</label>
-                                    <input type="text" id="other_edu_course" name="other_edu_course" placeholder="e.g., MBA Finance">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="other_edu_institute">Institute / University</label>
-                                    <input type="text" id="other_edu_institute" name="other_edu_institute" placeholder="e.g., NMIMS">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="other_edu_year">Passing year</label>
-                                    <input type="number" id="other_edu_year" name="other_edu_year" min="2000" max="2035" placeholder="e.g., 2024">
-                                </div>
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="other_edu_score">Percentage / CGPA</label>
-                                    <input type="text" id="other_edu_score" name="other_edu_score" placeholder="e.g., 8.4 CGPA or 82%">
-                                </div>
-                            </div>
-                            <div class="p2-inline-actions">
-                                <button type="button" class="p2-inline-cancel" data-close="sec-other-edu-form">Cancel</button>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- ===== EMPLOYMENT ===== -->
-                    <section class="p2-card" id="sec-experience">
-                        <div class="p2-card-header">
-                            <h2>Employment <span class="p2-boost" id="empBoost">Add 10%</span></h2>
-                            <a href="javascript:void(0)" class="p2-card-action" id="empEditToggle" data-toggle="sec-experience-form">Add employment</a>
-                        </div>
-                        <p class="p2-card-sub">Your employment details will help recruiters understand your experience</p>
-
-                        <!-- Saved display area -->
-                        <div class="p2-saved-display" id="emp-display">
-                            <!-- Current Org -->
-                            <div class="p2-saved-entry" id="emp-org-display" style="display:none;">
-                                <div class="p2-saved-entry-header">
-                                    <div>
-                                        <div class="p2-saved-title" id="emp-org-title">Organization</div>
-                                        <div class="p2-saved-meta" id="emp-org-meta"></div>
-                                    </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-experience-form"><i class="fas fa-pencil-alt"></i></a>
-                                </div>
-                            </div>
-                            <!-- Articleship -->
-                            <div class="p2-saved-entry" id="emp-art-display" style="display:none;">
-                                <div class="p2-saved-entry-header">
-                                    <div>
-                                        <div class="p2-saved-title" id="emp-art-title">Articleship</div>
-                                        <div class="p2-saved-meta" id="emp-art-meta"></div>
-                                    </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-art-form"><i class="fas fa-pencil-alt"></i></a>
-                                </div>
-                            </div>
-                            <!-- Industrial Training -->
-                            <div class="p2-saved-entry" id="emp-it-display" style="display:none;">
-                                <div class="p2-saved-entry-header">
-                                    <div>
-                                        <div class="p2-saved-title" id="emp-it-title">Industrial Training</div>
-                                        <div class="p2-saved-meta" id="emp-it-meta"></div>
-                                    </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-it-form"><i class="fas fa-pencil-alt"></i></a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Add-more links -->
-                        <div class="p2-add-links" id="emp-add-links">
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-experience-form" id="addOrgLink"><i class="fas fa-plus-circle"></i> Add current organization</a>
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-art-form" id="addArtLink"><i class="fas fa-plus-circle"></i> Add articleship details</a>
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-it-form" id="addITLink"><i class="fas fa-plus-circle"></i> Add industrial training</a>
-                        </div>
-
-                        <!-- Current Employment Form -->
-                        <div class="p2-card-form collapsed" id="sec-experience-form">
-                            <div class="p2-inline-form-title">Employment</div>
-                            <div class="p2-card-sub" style="margin-bottom: 1rem; color: #555; font-size:0.85rem;">Details like job title, company name, etc, help employers understand your work</div>
-                            
-                            <div class="p2-form-grid">
-                                <div class="p2-form-row p2-full-width">
-                                    <label>Is this your current employment?</label>
-                                    <div class="p2-radio-group">
-                                        <label><input type="radio" name="is_current_employment" value="Yes" checked> Yes</label>
-                                        <label><input type="radio" name="is_current_employment" value="No"> No</label>
-                                    </div>
-                                </div>
-                                
-                                <div class="p2-form-row p2-full-width">
-                                    <label>Employment type</label>
-                                    <div class="p2-chip-group" id="emp_type_chips">
-                                        <label class="p2-chip selected"><input type="radio" name="employment_type" value="Full-time" checked style="display:none;"> Full-time</label>
-                                        <label class="p2-chip"><input type="radio" name="employment_type" value="Internship" style="display:none;"> Internship</label>
-                                    </div>
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label>Total experience <span style="color:var(--p2-red);">*</span></label>
-                                    <div style="display:flex; gap:0.5rem;">
-                                        <select id="emp_exp_years" name="emp_exp_years" style="flex:1;">
-                                            <option value="">Years</option>
-                                        </select>
-                                        <select id="emp_exp_months" name="emp_exp_months" style="flex:1;">
-                                            <option value="">Months</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="emp_company_name">Current company name <span style="color:var(--p2-red);">*</span></label>
-                                    <input type="text" id="emp_company_name" name="emp_company_name" placeholder="e.g. Flipkart">
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="emp_job_title">Current job title <span style="color:var(--p2-red);">*</span></label>
-                                    <input type="text" id="emp_job_title" name="emp_job_title" placeholder="e.g. Business Finance Intern">
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label>Joining date <span style="color:var(--p2-red);">*</span></label>
-                                    <div style="display:flex; gap:0.5rem;">
-                                        <select id="emp_join_year" name="emp_join_year" class="populate-past-years" style="flex:1;">
-                                            <option value="">Year</option>
-                                        </select>
-                                        <select id="emp_join_month" name="emp_join_month" style="flex:1;">
-                                            <option value="">Month</option>
-                                            <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="emp_current_salary">Current salary <span style="color:var(--p2-red);">*</span></label>
-                                    <div style="display:flex;">
-                                        <select id="emp_salary_currency" name="emp_salary_currency" style="width:75px; border-right:none; border-top-right-radius:0; border-bottom-right-radius:0; background-color:#F9F9F9;">
-                                            <option value="INR">₹</option>
-                                            <option value="USD">$</option>
-                                        </select>
-                                        <input type="text" id="emp_current_salary" name="emp_current_salary" placeholder="e.g. 12,00,000" style="flex:1; border-top-left-radius:0; border-bottom-left-radius:0;">
-                                    </div>
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="emp_salary_breakdown">Salary breakdown <span style="color:var(--p2-red);">*</span></label>
-                                    <select id="emp_salary_breakdown" name="emp_salary_breakdown">
-                                        <option value="">Select salary components</option>
-                                        <option value="Fixed">Fixed</option>
-                                        <option value="Variable">Variable</option>
-                                        <option value="Fixed + Variable">Fixed + Variable</option>
-                                    </select>
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="skills_input">Skills used <span style="color:var(--p2-red);">*</span></label>
-                                    <div class="p2-skills-container" id="skills_container">
-                                        <input type="text" id="skills_input" placeholder="Add skills (press Enter)">
-                                    </div>
-                                    <input type="hidden" id="emp_skills_hidden" name="emp_skills_hidden">
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="emp_job_profile">Job profile</label>
-                                    <div style="border:1px solid #E8E8E8; border-radius:8px; overflow:hidden;">
-                                        <div style="background:#FFF9F0; padding:0.5rem 0.8rem; border-bottom:1px solid #E8E8E8;">
-                                            <button type="button" style="background:none; border:1px solid #EAB308; color:#B45309; border-radius:12px; padding:0.15rem 0.5rem; font-size:0.75rem; font-weight:600; cursor:pointer;"><i class="fas fa-crown"></i> Improve with AI</button>
-                                        </div>
-                                        <textarea id="emp_job_profile" name="emp_job_profile" rows="5" placeholder="e.g. Assisted in identifying and implementing cost-saving strategies..." style="border:none; border-radius:0; box-shadow:none; width:100%; border-bottom:1px solid transparent;"></textarea>
-                                    </div>
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="emp_notice_period">Notice period <span style="color:var(--p2-red);">*</span></label>
-                                    <select id="emp_notice_period" name="emp_notice_period">
-                                        <option value="">Select notice period</option>
-                                        <option value="15 Days or less">15 Days or less</option>
-                                        <option value="1 Month">1 Month</option>
-                                        <option value="2 Months">2 Months</option>
-                                        <option value="3 Months">3 Months</option>
-                                        <option value="More than 3 Months">More than 3 Months</option>
-                                        <option value="Serving Notice Period">Serving Notice Period</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="p2-inline-actions">
-                                <button type="button" class="p2-inline-cancel" data-close="sec-experience-form">Cancel</button>
-                                <button type="button" class="p2-btn-save">Save</button>
-                            </div>
-                        </div>
-
-                        <!-- Articleship Form -->
-                        <div class="p2-card-form collapsed" id="sec-art-form">
-                            <div class="p2-inline-form-title">Articleship Details</div>
-                            <div class="p2-form-grid">
-                                <div class="p2-form-row">
-                                    <label for="articleship_firm_type">Firm Type *</label>
-                                    <select id="articleship_firm_type" name="articleship_firm_type">
-                                        <option value="">Select Type</option>
-                                        <option>None</option>
-                                        <option>Big 4</option>
-                                        <option>Big 6</option>
-                                        <option>Big 10</option>
-                                        <option>Mid Size Firm</option>
-                                        <option>Small Size Firm</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="articleship_firm_name">Firm Name</label>
-                                    <input type="text" id="articleship_firm_name" name="articleship_firm_name" placeholder="e.g., Deloitte, KPMG">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="articleship_domain">Domain</label>
-                                    <select id="articleship_domain" name="articleship_domain">
-                                        <option value="">Select Domain</option>
-                                        <option>Statutory Audit</option>
-                                        <option>Internal Audit</option>
-                                        <option>Direct Tax</option>
-                                        <option>Indirect Tax</option>
-                                        <option>Overall Exposure</option>
-                                        <option>Other</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row" id="articleship_domain_other_group" style="display:none;">
-                                    <label for="articleship_domain_other">Specify Domain</label>
-                                    <input type="text" id="articleship_domain_other" name="articleship_domain_other" placeholder="Please specify your domain">
-                                </div>
-                            </div>
-                            <div class="p2-inline-actions">
-                                <button type="button" class="p2-inline-cancel" data-close="sec-art-form">Cancel</button>
-                            </div>
-                        </div>
-
-                        <!-- Industrial Training Form -->
-                        <div class="p2-card-form collapsed" id="sec-it-form">
-                            <div class="p2-inline-form-title">Industrial Training</div>
-                            <div class="p2-form-grid">
-                                <div class="p2-form-row">
-                                    <label for="industrial_training_company">Company Name *</label>
-                                    <input type="text" id="industrial_training_company" name="industrial_training_company" placeholder="e.g., Goldman Sachs, HUL">
-                                </div>
-                            </div>
-                            <div class="p2-inline-actions">
-                                <button type="button" class="p2-inline-cancel" data-close="sec-it-form">Cancel</button>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- ===== PROJECTS ===== -->
-                    <section class="p2-card" id="sec-projects">
-                        <div class="p2-card-header">
-                            <h2>Projects <span class="p2-boost-optional">Optional</span></h2>
-                            <a href="javascript:void(0)" class="p2-card-action" id="projectEditToggle" data-toggle="sec-project-form">Add project</a>
-                        </div>
-                        <p class="p2-card-sub">Stand out for employers by adding project details from college, internships, or work.</p>
-
-                        <div class="p2-saved-display" id="project-display">
-                            <div class="p2-saved-entry" id="project-entry-display" style="display:none;">
-                                <div class="p2-saved-entry-header">
-                                    <div>
-                                        <div class="p2-saved-title" id="project-title-display">Project title</div>
-                                        <div class="p2-saved-meta" id="project-meta-display"></div>
-                                        <div class="p2-saved-meta" id="project-desc-display" style="margin-top:0.35rem;"></div>
-                                        <div class="p2-saved-meta" id="project-attachment-display" style="margin-top:0.35rem;"></div>
-                                    </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-project-form"><i class="fas fa-pencil-alt"></i></a>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="p2-add-links" id="project-add-links">
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-project-form" id="addProjectLink"><i class="fas fa-plus-circle"></i> Add project details</a>
-                        </div>
-
-                        <div class="p2-card-form collapsed" id="sec-project-form">
-                            <div class="p2-inline-form-title">Project</div>
-                            <div class="p2-card-sub" style="margin-bottom: 1rem; color: #555; font-size:0.85rem;">Add your project title, context and outcomes to make your profile stronger.</div>
-
-                            <div class="p2-form-grid">
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="project_title">Project title *</label>
-                                    <input type="text" id="project_title" name="project_title" placeholder="Enter project title">
-                                </div>
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="project_tag">Tag this project with employment/education</label>
-                                    <select id="project_tag" name="project_tag">
-                                        <option value="">Select employment/education</option>
-                                        <option>Employment</option>
-                                        <option>Articleship</option>
-                                        <option>Industrial Training</option>
-                                        <option>CA Final</option>
-                                        <option>CA Inter</option>
-                                        <option>Graduation</option>
-                                        <option>Other</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="project_client">Client *</label>
-                                    <input type="text" id="project_client" name="project_client" placeholder="Enter client name">
-                                </div>
-                                <div class="p2-form-row p2-full-width">
-                                    <label>Project status</label>
-                                    <div class="p2-radio-group">
-                                        <label><input type="radio" name="project_status" value="In progress" checked> In progress</label>
-                                        <label><input type="radio" name="project_status" value="Finished"> Finished</label>
-                                    </div>
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="project_worked_from_year">Worked from *</label>
-                                    <select id="project_worked_from_year" name="project_worked_from_year" class="populate-past-years">
-                                        <option value="">Select year</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="project_worked_from_month">Month</label>
-                                    <select id="project_worked_from_month" name="project_worked_from_month">
-                                        <option value="">Select month</option>
-                                        <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
-                                        <option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="project_details">Details of project *</label>
-                                    <textarea id="project_details" name="project_details" rows="6" maxlength="1000" placeholder="Type here..."></textarea>
-                                    <div class="p2-char-count"><span id="project-details-left">1000</span> character(s) left</div>
-                                </div>
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="project_attachment">Project attachment (PDF, Excel or any file)</label>
-                                    <input type="file" id="project_attachment" accept=".pdf,.xls,.xlsx,.csv,.doc,.docx,.ppt,.pptx,.txt,.zip,.rar,image/*">
-                                    <input type="hidden" id="project_attachment_name" name="project_attachment_name">
-                                    <div id="project-file-display" style="display:none; margin-top:0.5rem;">
-                                        <div class="p2-file-tag">
-                                            <i class="fas fa-paperclip"></i>
-                                            <span id="project-filename"></span>
-                                            <button type="button" class="p2-remove-file" id="project-file-remove"><i class="fas fa-times"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p2-inline-actions">
-                                <button type="button" class="p2-inline-cancel" data-close="sec-project-form">Cancel</button>
-                            </div>
-                        </div>
-                    </section>
-
-                                        <!-- ===== CAREER PROFILE / JOB PREFERENCES ===== -->
-                    <section class="p2-card" id="sec-career">
-                        <div class="p2-card-header">
-                            <h2>Career Profile <span class="p2-edit-icon"><i class="fas fa-pencil-alt"></i></span></h2>
-                            <a href="javascript:void(0)" class="p2-card-action" data-toggle="sec-career-form">Edit</a>
-                        </div>
-                        <p class="p2-card-sub">Add details about your current and preferred career profile. This helps us personalise your job recommendations.</p>
-                        <div class="p2-career-display" id="career-display">
-                            <div class="p2-career-grid">
-                                <div class="p2-career-item"><div class="p2-career-label">Current industry</div><div class="p2-career-value" id="career-current-industry">Add current industry</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Department</div><div class="p2-career-value" id="career-department">Add department</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Role category</div><div class="p2-career-value" id="career-role-category">Add role category</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Job role</div><div class="p2-career-value" id="career-job-role">Add job role</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Desired job type</div><div class="p2-career-value" id="career-desired-job-type">Add desired job type</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Desired employment type</div><div class="p2-career-value" id="career-desired-employment-type">Add desired employment type</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Preferred shift</div><div class="p2-career-value" id="career-preferred-shift">Add preferred shift</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Preferred work location</div><div class="p2-career-value" id="career-preferred-location">Add preferred location</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Expected salary</div><div class="p2-career-value" id="career-expected-salary">Add expected salary</div></div>
-                            </div>
-                        </div>
-                        <div class="p2-card-form collapsed" id="sec-career-form">
-                            <div class="p2-form-grid">
-                                <div class="p2-form-row">
-                                    <label for="job_preference">Default Job Portal</label>
-                                    <select id="job_preference" name="job_preference">
-                                        <option value="">Select Preference</option>
-                                        <option value="industrial">Industrial Training</option>
-                                        <option value="articleship">Articleship</option>
-                                        <option value="fresher_fresher">CA Fresher (Fresher)</option>
-                                        <option value="fresher_experienced">CA Fresher (Experienced)</option>
-                                        <option value="semi_fresher">Semi Qualified (Fresher)</option>
-                                        <option value="semi_experienced">Semi Qualified (Experienced)</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row" id="earliest_joining_date_group" style="display:none;">
-                                    <label for="earliest_joining_date">Earliest Joining Date</label>
-                                    <input type="date" id="earliest_joining_date" name="earliest_joining_date">
-                                </div>
-                                <div class="p2-form-row" id="articleship_completion_date_group" style="display:none;">
-                                    <label for="articleship_completion_date">Articleship 1 Year Completion Date</label>
-                                    <input type="date" id="articleship_completion_date" name="articleship_completion_date">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="current_industry">Current Industry</label>
-                                    <input type="text" id="current_industry" name="current_industry" placeholder="e.g., Internet, Banking, Consulting">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="department">Department</label>
-                                    <input type="text" id="department" name="department" placeholder="e.g., Finance & Accounting">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="role_category">Role Category</label>
-                                    <input type="text" id="role_category" name="role_category" placeholder="e.g., Finance">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="job_role">Job Role</label>
-                                    <input type="text" id="job_role" name="job_role" placeholder="e.g., Analyst - FP&A">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="desired_job_type">Desired Job Type</label>
-                                    <select id="desired_job_type" name="desired_job_type">
-                                        <option value="">Select job type</option>
-                                        <option>Permanent</option>
-                                        <option>Contractual</option>
-                                        <option>Internship</option>
-                                        <option>Freelance</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="desired_employment_type">Desired Employment Type</label>
-                                    <select id="desired_employment_type" name="desired_employment_type">
-                                        <option value="">Select employment type</option>
-                                        <option>Full-time</option>
-                                        <option>Part-time</option>
-                                        <option>Hybrid</option>
-                                        <option>Remote</option>
-                                        <option>On-site</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="preferred_shift">Preferred Shift</label>
-                                    <select id="preferred_shift" name="preferred_shift">
-                                        <option value="">Select preferred shift</option>
-                                        <option>Day shift</option>
-                                        <option>Night shift</option>
-                                        <option>Rotational shift</option>
-                                        <option>Flexible shift</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="current_location">Current Location</label>
-                                    <input type="text" id="current_location" name="current_location" placeholder="e.g., Mumbai">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="preferred_locations">Preferred Locations</label>
-                                    <input type="text" id="preferred_locations" name="preferred_locations" placeholder="e.g., Bangalore, Gurgaon, Pune">
-                                </div>
-                                <div class="p2-form-row" id="current_ctc_group" style="display:none;">
-                                    <label for="current_ctc">Current CTC (INR)</label>
-                                    <input type="text" id="current_ctc" name="current_ctc" placeholder="e.g., 12,00,000">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="expected_salary">Expected Salary (INR)</label>
-                                    <input type="text" id="expected_salary" name="expected_salary" placeholder="e.g., 15,00,000">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="notice_period">Notice Period</label>
-                                    <select id="notice_period" name="notice_period">
-                                        <option value="">Select Notice Period</option>
-                                        <option value="Immediate Joiner">Immediate Joiner</option>
-                                        <option value="15 Days or less">15 Days or less</option>
-                                        <option value="1 Month">1 Month</option>
-                                        <option value="2 Months">2 Months</option>
-                                        <option value="3 Months">3 Months</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                    <!-- ===== PERSONAL DETAILS ===== -->
-                    <section class="p2-card" id="sec-personal">
-                        <div class="p2-card-header">
-                            <h2>Personal Details</h2>
-                            <a href="javascript:void(0)" class="p2-card-action" data-toggle="sec-personal-form">Edit</a>
-                        </div>
-                        <p class="p2-card-sub">Fundamental information for your profile</p>
-                        <div class="p2-personal-display" id="personal-display">
-                            <div class="p2-personal-grid">
-                                <div class="p2-personal-item">
-                                    <div class="p2-personal-label">Personal</div>
-                                    <div class="p2-personal-value" id="pd-personal">Add more info</div>
-                                </div>
-                                <div class="p2-personal-item">
-                                    <div class="p2-personal-label">Work permit</div>
-                                    <div class="p2-personal-value" id="pd-work-permit">Add Work permit</div>
-                                </div>
-                                <div class="p2-personal-item">
-                                    <div class="p2-personal-label">Date of birth</div>
-                                    <div class="p2-personal-value" id="pd-dob">Add date of birth</div>
-                                </div>
-                                <div class="p2-personal-item">
-                                    <div class="p2-personal-label">Address</div>
-                                    <div class="p2-personal-value" id="pd-address">Add Address</div>
-                                </div>
-                                <div class="p2-personal-item">
-                                    <div class="p2-personal-label">Category</div>
-                                    <div class="p2-personal-value" id="pd-category">Add Category</div>
-                                </div>
-                            </div>
-                            <div class="p2-personal-sep"></div>
-                            <div class="p2-personal-lang-head">
-                                <h3>Languages</h3>
-                            </div>
-                            <div class="p2-lang-table-wrap">
-                                <table class="p2-lang-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Languages</th>
-                                            <th>Proficiency</th>
-                                            <th>Read</th>
-                                            <th>Write</th>
-                                            <th>Speak</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="pd-lang-body">
-                                        <tr><td colspan="5" class="p2-lang-empty">Add languages</td></tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="p2-card-form collapsed" id="sec-personal-form">
-                            <div class="p2-form-grid">
-                                <div class="p2-form-row">
-                                    <label for="name">Full Name *</label>
-                                    <input type="text" id="name" name="name" required>
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="email">Email ID (cannot be changed)</label>
-                                    <input type="email" id="email" name="email" readonly disabled>
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="contact_number">Contact Number *</label>
-                                    <input type="tel" id="contact_number" name="contact_number" required>
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="linkedin_url">LinkedIn Profile URL</label>
-                                    <input type="url" id="linkedin_url" name="linkedin_url" placeholder="https://linkedin.com/in/yourprofile">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="gender">Gender</label>
-                                    <select id="gender" name="gender">
-                                        <option value="">Select gender</option>
-                                        <option>Male</option>
-                                        <option>Female</option>
-                                        <option>Other</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="marital_status">Marital Status</label>
-                                    <select id="marital_status" name="marital_status">
-                                        <option value="">Select status</option>
-                                        <option>Single / unmarried</option>
-                                        <option>Married</option>
-                                        <option>Other</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="date_of_birth">Date of Birth</label>
-                                    <input type="date" id="date_of_birth" name="date_of_birth">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="category">Category</label>
-                                    <input type="text" id="category" name="category" placeholder="e.g., General">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="work_permit">Work Permit</label>
-                                    <input type="text" id="work_permit" name="work_permit" placeholder="e.g., India">
-                                </div>
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="address">Address</label>
-                                    <textarea id="address" name="address" rows="2" placeholder="Enter your address"></textarea>
-                                </div>
-                                <div class="p2-form-row p2-full-width">
-                                    <label>Languages</label>
-                                    <div class="p2-lang-editor">
-                                        <div class="p2-lang-editor-head">
-                                            <span>Language</span>
-                                            <span>Proficiency</span>
-                                            <span>Read</span>
-                                            <span>Write</span>
-                                            <span>Speak</span>
-                                            <span></span>
-                                        </div>
-                                        <div id="lang-editor-rows"></div>
-                                        <button type="button" class="p2-add-link" id="addLanguageRowBtn"><i class="fas fa-plus-circle"></i> Add language</button>
-                                    </div>
-                                    <input type="hidden" id="languages_json" name="languages_json">
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- ===== SAVE BUTTON ===== -->
-                    <div class="p2-save-bar">
-                        <button type="submit" class="p2-save-btn" id="saveBtn">
-                            <span class="btn-text">Save Profile</span>
-                            <i class="fas fa-spinner fa-spin" style="display: none;"></i>
+                <div id="resume-display-area" style="display: none;">
+                    <div class="file-info-tag">
+                        <span id="resume-filename"></span>
+                        <button type="button" class="remove-file-btn" data-target="resume" aria-label="Remove file">
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
-
-                </form>
+                </div>
             </div>
-        </div>
+
+            <div class="profile-section">
+                <h2>Section 3: Cover Letter (Optional)</h2>
+                <div id="cover-letter-upload-area">
+                    <label for="cover_letter">Upload your Cover Letter (PDF Only)</label>
+                    <div class="file-drop-zone" id="cover-letter-drop-zone">
+                        <input type="file" id="cover_letter" name="cover_letter" accept=".pdf">
+                        <p>Drag & drop your file here, or click to browse.</p>
+                    </div>
+                </div>
+                <div id="cover-letter-display-area" style="display: none;">
+                    <div class="file-info-tag">
+                        <span id="cover-letter-filename"></span>
+                        <button type="button" class="remove-file-btn" data-target="cover_letter"
+                            aria-label="Remove file">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2>Section 4: CA Education Details</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="ca_level">Current Level in CA Journey</label>
+                        <select id="ca_level" name="ca_level">
+                            <option value="">Select Level</option>
+                            <option>Foundation Cleared</option>
+                            <option>Inter One Group Cleared</option>
+                            <option>Inter Both Groups Cleared</option>
+                            <option>Final One Group Cleared</option>
+                            <option>Final Cleared (Qualified CA)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="foundation_attempts">CA Foundation Attempts</label>
+                        <input type="number" id="foundation_attempts" name="foundation_attempts" min="0"
+                            placeholder="e.g., 1">
+                    </div>
+                    <div class="form-group">
+                        <label for="inter_attempts">CA Inter Attempts</label>
+                        <input type="number" id="inter_attempts" name="inter_attempts" min="0" placeholder="e.g., 2">
+                    </div>
+                    <div class="form-group">
+                        <label for="final_attempts">CA Final Attempts</label>
+                        <input type="number" id="final_attempts" name="final_attempts" min="0" placeholder="e.g., 1">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="achievements">Ranks or Achievements (e.g., AIR 49 in Inter)</label>
+                    <textarea id="achievements" name="achievements" rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2>Section 5: Experience</h2>
+                <div class="form-grid" style="position: relative;">
+                    <div class="form-group">
+                        <label for="articleship_firm_type">Articleship Firm Type</label>
+                        <select id="articleship_firm_type" name="articleship_firm_type">
+                            <option value="">Select Type</option>
+                            <option>None</option>
+                            <option>Big 4</option>
+                            <option>Big 6</option>
+                            <option>Big 10</option>
+                            <option>Mid Size Firm</option>
+                            <option>Small Size Firm</option>
+                        </select>
+                    </div>
+                    <div class="form-group articleship-domain-group">
+                        <label for="articleship_domain">Articleship Domain</label>
+                        <div class="domain-input-wrapper">
+                            <select id="articleship_domain" name="articleship_domain">
+                                <option value="">Select Domain</option>
+                                <option>Statutory Audit</option>
+                                <option>Internal Audit</option>
+                                <option>Direct Tax</option>
+                                <option>Indirect Tax</option>
+                                <option>Overall Exposure</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <input type="text" id="articleship_domain_other" name="articleship_domain_other"
+                            placeholder="Please specify your domain" class="domain-other-input">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="articleship_firm_name">Articleship Firm Name</label>
+                    <input type="text" id="articleship_firm_name" name="articleship_firm_name"
+                        placeholder="e.g., Deloitte, KPMG, S.R. Batliboi">
+                </div>
+                <div class="form-group">
+                    <label for="industrial_training_company">Industrial Training Company (if any)</label>
+                    <input type="text" id="industrial_training_company" name="industrial_training_company"
+                        placeholder="e.g., Goldman Sachs, HUL">
+                </div>
+            </div>
+
+            <div class="profile-section">
+                <h2>Section 6: Job Preferences</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="job_preference">Default Job Portal</label>
+                        <select id="job_preference" name="job_preference">
+                            <option value="">Select Preference</option>
+                            <option value="industrial">Industrial Training</option>
+                            <option value="articleship">Articleship</option>
+                            <option value="fresher_fresher">CA Fresher (Fresher)</option>
+                            <option value="fresher_experienced">CA Fresher (Experienced)</option>
+                            <option value="semi_fresher">Semi Qualified (Fresher)</option>
+                            <option value="semi_experienced">Semi Qualified (Experienced)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="earliest_joining_date_group" style="display: none;">
+                        <label for="earliest_joining_date">Earliest Joining Date</label>
+                        <input type="date" id="earliest_joining_date" name="earliest_joining_date">
+                    </div>
+                    <div class="form-group" id="articleship_completion_date_group" style="display: none;">
+                        <label for="articleship_completion_date">When are you completing 1 Year Articleship?</label>
+                        <input type="date" id="articleship_completion_date" name="articleship_completion_date">
+                    </div>
+                    <div class="form-group">
+                        <label for="current_location">Current Location</label>
+                        <input type="text" id="current_location" name="current_location" placeholder="e.g., Mumbai">
+                    </div>
+                    <div class="form-group">
+                        <label for="preferred_locations">Preferred Locations (comma-separated)</label>
+                        <input type="text" id="preferred_locations" name="preferred_locations"
+                            placeholder="e.g., Bangalore, Gurgaon, Pune">
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="form-actions">
+                <button type="submit" class="save-profile-btn">
+                    <span class="btn-text">Save Profile</span>
+                    <i class="fas fa-spinner fa-spin" style="display: none;"></i>
+                </button>
+            </div>
+        </form>
     </main>
 
-    <script type="module" src="scripts/profile2.js"></script>
+    <script type="module" src="scripts/profile.js"></script>
 </body>
 
 </html>
