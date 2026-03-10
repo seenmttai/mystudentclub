@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/scripts/portal-style.css">
-    <link rel="stylesheet" href="/scripts/profile2.css">
+    <link rel="stylesheet" href="/scripts/profile.css">
     <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
     <script src="scripts/vendor/pdf.min.js"></script>
     <script src="scripts/vendor/supabase.js"></script>
@@ -92,6 +92,7 @@
                         <div class="p2-hd-item"><i class="fas fa-briefcase"></i> <span id="hdExperience">Fresher</span></div>
                         <div class="p2-hd-item"><i class="fas fa-envelope"></i> <span id="hdEmail">your@email.com</span> <i class="fas fa-check-circle p2-verified"></i></div>
                         <div class="p2-hd-item"><i class="fas fa-calendar-check"></i> <span id="hdNotice">Add availability to join</span></div>
+                        <div class="p2-hd-item" id="hdLinkedinItem" style="display:none;"><i class="fab fa-linkedin"></i> <a id="hdLinkedinLink" class="p2-hd-link" href="#" target="_blank" rel="noopener noreferrer">View LinkedIn</a></div>
                     </div>
                     <div class="p2-header-summary" id="hdSummaryWrap" style="display:none;">
                         <div class="p2-header-summary-label">Profile summary</div>
@@ -117,11 +118,11 @@
                 <nav class="p2-sidebar-links">
                     <a href="#sec-resume" class="p2-ql">Resume <span class="p2-ql-action">Upload</span></a>
                     <a href="#sec-headline" class="p2-ql">Profile Summary <span class="p2-ql-action">Add</span></a>
+                    <a href="#sec-certification" class="p2-ql">Certification <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-ca-education" class="p2-ql">CA Education <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-experience" class="p2-ql">Experience <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-projects" class="p2-ql">Projects <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-career" class="p2-ql">Career Profile <span class="p2-ql-action">Add</span></a>
-                    <a href="#sec-certification" class="p2-ql">Certification <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-personal" class="p2-ql">Personal Details <span class="p2-ql-action">Add</span></a>
                 </nav>
             </aside>
@@ -984,7 +985,7 @@
                             <a href="javascript:void(0)" class="p2-card-action" data-toggle="sec-career-form">Edit</a>
                         </div>
                         <p class="p2-card-sub">Add details about your current and preferred career profile. This helps us personalise your job recommendations.</p>
-                        <div class="p2-career-display" id="career-display">
+                        <div class="p2-career-display p2-display-clickable" id="career-display" data-toggle="sec-career-form" role="button" tabindex="0" aria-label="Edit career profile">
                             <div class="p2-career-grid">
                                 <div class="p2-career-item"><div class="p2-career-label">Current industry</div><div class="p2-career-value" id="career-current-industry">Add current industry</div></div>
                                 <div class="p2-career-item"><div class="p2-career-label">Department</div><div class="p2-career-value" id="career-department">Add department</div></div>
@@ -1103,7 +1104,7 @@
                             <a href="javascript:void(0)" class="p2-card-action" data-toggle="sec-personal-form">Edit</a>
                         </div>
                         <p class="p2-card-sub">Fundamental information for your profile</p>
-                        <div class="p2-personal-display" id="personal-display">
+                        <div class="p2-personal-display p2-display-clickable" id="personal-display" data-toggle="sec-personal-form" role="button" tabindex="0" aria-label="Edit personal details">
                             <div class="p2-personal-grid">
                                 <div class="p2-personal-item">
                                     <div class="p2-personal-label">Personal</div>
@@ -1232,7 +1233,7 @@
         </div>
     </main>
 
-    <script type="module" src="scripts/profile2.js"></script>
+    <script type="module" src="scripts/profile.js"></script>
 </body>
 
 </html>

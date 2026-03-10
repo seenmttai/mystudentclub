@@ -240,6 +240,16 @@ body {
     flex-shrink: 0;
 }
 
+.p2-hd-link {
+    color: var(--p2-blue);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+.p2-hd-link:hover {
+    text-decoration: underline;
+}
+
 .p2-verified {
     color: var(--p2-green) !important;
     font-size: 0.75rem;
@@ -851,6 +861,10 @@ body {
 
 .p2-add-link i {
     font-size: 0.85rem;
+}
+
+.p2-display-clickable {
+    cursor: pointer;
 }
 
 .p2-career-display {
