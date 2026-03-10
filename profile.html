@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/scripts/portal-style.css">
-    <link rel="stylesheet" href="/scripts/profile2.css">
+    <link rel="stylesheet" href="/scripts/profile.css">
     <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
     <script src="scripts/vendor/pdf.min.js"></script>
     <script src="scripts/vendor/supabase.js"></script>
@@ -51,22 +51,17 @@
         </div>
     </div>
 
-    <!-- ========== LOADING OVERLAY ========== -->
     <div id="loading-overlay" class="p2-loading-overlay">
         <div class="p2-loader-spinner"></div>
         <p>Loading Profile...</p>
     </div>
 
-    <!-- ========== GLOBAL MODAL BACKDROP ========== -->
     <div id="p2_global_backdrop" class="p2-global-backdrop" style="display:none;"></div>
 
-    <!-- ========== MAIN PROFILE LAYOUT ========== -->
     <main class="p2-main">
 
-        <!-- ===== PROFILE HEADER CARD ===== -->
         <section class="p2-header-card" id="section-header">
             <div class="p2-header-left">
-                <!-- Avatar + Progress Ring -->
                 <div class="p2-avatar-wrap">
                     <svg class="p2-progress-ring" viewBox="0 0 120 120">
                         <circle class="p2-ring-bg" cx="60" cy="60" r="54" />
@@ -79,7 +74,6 @@
                         <i class="fas fa-fire"></i> <span id="pctText">0</span>%
                     </div>
                 </div>
-                <!-- Info -->
                 <div class="p2-header-info">
                     <div class="p2-name-row">
                         <h1 class="p2-display-name" id="displayName">Your Name</h1>
@@ -92,6 +86,7 @@
                         <div class="p2-hd-item"><i class="fas fa-briefcase"></i> <span id="hdExperience">Fresher</span></div>
                         <div class="p2-hd-item"><i class="fas fa-envelope"></i> <span id="hdEmail">your@email.com</span> <i class="fas fa-check-circle p2-verified"></i></div>
                         <div class="p2-hd-item"><i class="fas fa-calendar-check"></i> <span id="hdNotice">Add availability to join</span></div>
+                        <div class="p2-hd-item" id="hdLinkedinItem" style="display:none;"><i class="fab fa-linkedin"></i> <a id="hdLinkedinLink" class="p2-hd-link" href="#" target="_blank" rel="noopener noreferrer">View LinkedIn</a></div>
                     </div>
                     <div class="p2-header-summary" id="hdSummaryWrap" style="display:none;">
                         <div class="p2-header-summary-label">Profile summary</div>
@@ -99,38 +94,31 @@
                     </div>
                 </div>
             </div>
-            <!-- Missing Details Card -->
             <div class="p2-header-right" id="missingCard">
                 <div class="p2-missing-list" id="missingList">
-                    <!-- Dynamically populated -->
                 </div>
                 <a href="#sec-personal" class="p2-missing-cta" id="missingCta">Add <span id="missingCount">0</span> missing details</a>
             </div>
         </section>
-
-        <!-- ===== TWO-COLUMN LAYOUT ===== -->
         <div class="p2-body-layout">
 
-            <!-- Quick Links Sidebar -->
             <aside class="p2-sidebar" id="quickLinksSidebar">
                 <h3>Quick links</h3>
                 <nav class="p2-sidebar-links">
                     <a href="#sec-resume" class="p2-ql">Resume <span class="p2-ql-action">Upload</span></a>
                     <a href="#sec-headline" class="p2-ql">Profile Summary <span class="p2-ql-action">Add</span></a>
+                    <a href="#sec-certification" class="p2-ql">Certification <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-ca-education" class="p2-ql">CA Education <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-experience" class="p2-ql">Experience <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-projects" class="p2-ql">Projects <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-career" class="p2-ql">Career Profile <span class="p2-ql-action">Add</span></a>
-                    <a href="#sec-certification" class="p2-ql">Certification <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-personal" class="p2-ql">Personal Details <span class="p2-ql-action">Add</span></a>
                 </nav>
             </aside>
 
-            <!-- Main Content -->
             <div class="p2-content">
                 <form id="profile-form" autocomplete="off">
 
-                    <!-- ===== RESUME SECTION ===== -->
                     <section class="p2-card" id="sec-resume">
                         <div class="p2-card-header">
                             <h2>Resume <span class="p2-boost" id="resumeBoost">Add 10%</span></h2>
@@ -153,7 +141,6 @@
                         </div>
                     </section>
 
-                    <!-- ===== COVER LETTER SECTION ===== -->
                     <section class="p2-card" id="sec-cover-letter">
                         <div class="p2-card-header">
                             <h2>Cover Letter <span class="p2-boost-optional">Optional</span></h2>
@@ -176,7 +163,6 @@
                         </div>
                     </section>
 
-                    <!-- ===== HEADLINE ===== -->
                     <section class="p2-card" id="sec-headline">
                         <div class="p2-card-header">
                             <h2>Profile Summary <span class="p2-boost" id="summaryBoost">Add 8%</span></h2>
@@ -208,7 +194,6 @@
                         </div>
                     </section>
 
-                    <!-- ===== CERTIFICATION (OPTIONAL) ===== -->
                     <section class="p2-card" id="sec-certification">
                         <div class="p2-card-header">
                             <h2>Certification <span class="p2-boost-optional">Optional</span></h2>
@@ -263,7 +248,6 @@
                         </div>
                         <p class="p2-card-sub">Your qualifications help employers know your educational background</p>
 
-                        <!-- Saved display area -->
                         <div class="p2-saved-display" id="edu-display">
                             <!-- CA Final -->
                             <div class="p2-saved-entry" id="edu-final-display" style="display:none;">
@@ -980,11 +964,11 @@
                                         <!-- ===== CAREER PROFILE / JOB PREFERENCES ===== -->
                     <section class="p2-card" id="sec-career">
                         <div class="p2-card-header">
-                            <h2>Career Profile <span class="p2-edit-icon"><i class="fas fa-pencil-alt"></i></span></h2>
+                            <h2>Career Profile</h2>
                             <a href="javascript:void(0)" class="p2-card-action" data-toggle="sec-career-form">Edit</a>
                         </div>
                         <p class="p2-card-sub">Add details about your current and preferred career profile. This helps us personalise your job recommendations.</p>
-                        <div class="p2-career-display" id="career-display">
+                        <div class="p2-career-display p2-display-clickable" id="career-display" data-toggle="sec-career-form" role="button" tabindex="0" aria-label="Edit career profile">
                             <div class="p2-career-grid">
                                 <div class="p2-career-item"><div class="p2-career-label">Current industry</div><div class="p2-career-value" id="career-current-industry">Add current industry</div></div>
                                 <div class="p2-career-item"><div class="p2-career-label">Department</div><div class="p2-career-value" id="career-department">Add department</div></div>
@@ -1103,7 +1087,7 @@
                             <a href="javascript:void(0)" class="p2-card-action" data-toggle="sec-personal-form">Edit</a>
                         </div>
                         <p class="p2-card-sub">Fundamental information for your profile</p>
-                        <div class="p2-personal-display" id="personal-display">
+                        <div class="p2-personal-display p2-display-clickable" id="personal-display" data-toggle="sec-personal-form" role="button" tabindex="0" aria-label="Edit personal details">
                             <div class="p2-personal-grid">
                                 <div class="p2-personal-item">
                                     <div class="p2-personal-label">Personal</div>
@@ -1232,7 +1216,7 @@
         </div>
     </main>
 
-    <script type="module" src="scripts/profile2.js"></script>
+    <script type="module" src="scripts/profile.js"></script>
 </body>
 
 </html>
