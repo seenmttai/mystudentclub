@@ -51,22 +51,17 @@
         </div>
     </div>
 
-    <!-- ========== LOADING OVERLAY ========== -->
     <div id="loading-overlay" class="p2-loading-overlay">
         <div class="p2-loader-spinner"></div>
         <p>Loading Profile...</p>
     </div>
 
-    <!-- ========== GLOBAL MODAL BACKDROP ========== -->
     <div id="p2_global_backdrop" class="p2-global-backdrop" style="display:none;"></div>
 
-    <!-- ========== MAIN PROFILE LAYOUT ========== -->
     <main class="p2-main">
 
-        <!-- ===== PROFILE HEADER CARD ===== -->
         <section class="p2-header-card" id="section-header">
             <div class="p2-header-left">
-                <!-- Avatar + Progress Ring -->
                 <div class="p2-avatar-wrap">
                     <svg class="p2-progress-ring" viewBox="0 0 120 120">
                         <circle class="p2-ring-bg" cx="60" cy="60" r="54" />
@@ -79,7 +74,6 @@
                         <i class="fas fa-fire"></i> <span id="pctText">0</span>%
                     </div>
                 </div>
-                <!-- Info -->
                 <div class="p2-header-info">
                     <div class="p2-name-row">
                         <h1 class="p2-display-name" id="displayName">Your Name</h1>
@@ -100,19 +94,14 @@
                     </div>
                 </div>
             </div>
-            <!-- Missing Details Card -->
             <div class="p2-header-right" id="missingCard">
                 <div class="p2-missing-list" id="missingList">
-                    <!-- Dynamically populated -->
                 </div>
                 <a href="#sec-personal" class="p2-missing-cta" id="missingCta">Add <span id="missingCount">0</span> missing details</a>
             </div>
         </section>
-
-        <!-- ===== TWO-COLUMN LAYOUT ===== -->
         <div class="p2-body-layout">
 
-            <!-- Quick Links Sidebar -->
             <aside class="p2-sidebar" id="quickLinksSidebar">
                 <h3>Quick links</h3>
                 <nav class="p2-sidebar-links">
@@ -127,11 +116,9 @@
                 </nav>
             </aside>
 
-            <!-- Main Content -->
             <div class="p2-content">
                 <form id="profile-form" autocomplete="off">
 
-                    <!-- ===== RESUME SECTION ===== -->
                     <section class="p2-card" id="sec-resume">
                         <div class="p2-card-header">
                             <h2>Resume <span class="p2-boost" id="resumeBoost">Add 10%</span></h2>
@@ -154,7 +141,6 @@
                         </div>
                     </section>
 
-                    <!-- ===== COVER LETTER SECTION ===== -->
                     <section class="p2-card" id="sec-cover-letter">
                         <div class="p2-card-header">
                             <h2>Cover Letter <span class="p2-boost-optional">Optional</span></h2>
@@ -177,7 +163,6 @@
                         </div>
                     </section>
 
-                    <!-- ===== HEADLINE ===== -->
                     <section class="p2-card" id="sec-headline">
                         <div class="p2-card-header">
                             <h2>Profile Summary <span class="p2-boost" id="summaryBoost">Add 8%</span></h2>
@@ -209,7 +194,6 @@
                         </div>
                     </section>
 
-                    <!-- ===== CERTIFICATION (OPTIONAL) ===== -->
                     <section class="p2-card" id="sec-certification">
                         <div class="p2-card-header">
                             <h2>Certification <span class="p2-boost-optional">Optional</span></h2>
@@ -264,7 +248,6 @@
                         </div>
                         <p class="p2-card-sub">Your qualifications help employers know your educational background</p>
 
-                        <!-- Saved display area -->
                         <div class="p2-saved-display" id="edu-display">
                             <!-- CA Final -->
                             <div class="p2-saved-entry" id="edu-final-display" style="display:none;">
