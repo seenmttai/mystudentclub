@@ -222,6 +222,12 @@
             text-decoration: underline;
         }
 
+        .project-description {
+            font-size: calc(16px * var(--content-scale));
+            margin-bottom: calc(2px * var(--content-scale));
+            font-style: italic;
+        }
+
         /* Lists */
         ul {
             list-style-type: disc;
@@ -248,6 +254,33 @@
             font-weight: bold;
         }
 
+        /* CV1 Skills: keep list alignment consistent with native section list styling */
+        .sortable-section[data-section-id="skills"] [data-field="skills"] {
+            display: block;
+            padding-left: calc(2px * var(--content-scale));
+        }
+
+        .sortable-section[data-section-id="skills"] [data-field="skills"] .cv-skills-list,
+        .sortable-section[data-section-id="skills"] [data-field="skills"] ul {
+            list-style-type: disc !important;
+            margin-left: calc(25px * var(--content-scale));
+            margin-bottom: calc(5px * var(--content-scale));
+            padding-left: 0;
+        }
+
+        .sortable-section[data-section-id="skills"] [data-field="skills"] ol {
+            list-style-type: decimal !important;
+            margin-left: calc(25px * var(--content-scale));
+            margin-bottom: calc(5px * var(--content-scale));
+            padding-left: 0;
+        }
+
+        .sortable-section[data-section-id="skills"] [data-field="skills"] .cv-skills-list li::before,
+        .sortable-section[data-section-id="skills"] [data-field="skills"] ul li::before,
+        .sortable-section[data-section-id="skills"] [data-field="skills"] ol li::before {
+            content: none !important;
+        }
+
         .cell-center {
             text-align: center;
             vertical-align: middle;
@@ -262,6 +295,15 @@
         /* Added for JS */
         .template {
             display: none !important;
+        }
+
+        /* Keep left label column only for Work Experience (if injected by shared renderer) */
+        .sortable-section:not([data-section-id="experience"]) .work-label,
+        .sortable-section:not([data-section-id="experience"]) .category-label,
+        .sortable-section:not([data-section-id="experience"]) .col-left,
+        .sortable-section:not([data-section-id="experience"]) .skills-col-label,
+        .sortable-section:not([data-section-id="experience"]) .details-label {
+            display: none;
         }
 
         .job-group {
@@ -335,66 +377,93 @@
                 </div>
             </header>
 
-            <div class="section-header">CAREER OBJECTIVE</div>
-            <p class="justify" data-field="summary"></p>
+            <div class="sortable-section" data-section-id="summary">
+                <div class="section-header">CAREER OBJECTIVE</div>
+                <p class="justify" data-field="summary"></p>
+            </div>
 
-            <div class="section-header ">EDUCATIONAL QUALIFICATION</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th class="col-course">Course</th>
-                        <th class="col-year">Year</th>
-                        <th class="col-inst">Institution</th>
-                        <th class="col-marks">Marks</th>
-                    </tr>
-                </thead>
-                <tbody id="education-list">
-                    <tr class="template">
-                        <td class="cell-center">
-                            <div data-field="degree"></div>
-                        </td>
-                        <td class="cell-center">
-                            <div data-field="year"></div>
-                        </td>
-                        <td class="cell-center">
-                            <div data-field="institution"></div>
-                        </td>
-                        <td class="cell-center">
-                            <div data-field="marks"></div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="sortable-section" data-section-id="education">
+                <div class="section-header ">EDUCATIONAL QUALIFICATION</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="col-course">Course</th>
+                            <th class="col-year">Year</th>
+                            <th class="col-inst">Institution</th>
+                            <th class="col-marks">Marks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="education-list">
+                        <tr class="template">
+                            <td class="cell-center">
+                                <div data-field="degree"></div>
+                            </td>
+                            <td class="cell-center">
+                                <div data-field="year"></div>
+                            </td>
+                            <td class="cell-center">
+                                <div data-field="institution"></div>
+                            </td>
+                            <td class="cell-center">
+                                <div data-field="marks"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-            <div class="section-header">WORK EXPERIENCE</div>
+            <div class="sortable-section" data-section-id="experience">
+                <div class="section-header">WORK EXPERIENCE</div>
 
-            <div id="experience-list">
-                <div class="job-group template">
-                    <div class="job-header" style="border-bottom: 1px solid black;">
-                        <span><span data-field="role"></span> | <span class="bold" data-field="company"></span></span>
-                        <span data-field="dates"></span>
+                <div id="experience-list">
+                    <div class="job-group template">
+                        <div class="job-header" style="border-bottom: 1px solid black;">
+                            <span><span data-field="role"></span> | <span class="bold" data-field="company"></span></span>
+                            <span data-field="dates"></span>
+                        </div>
+                        <ul data-list="bullets">
+                        </ul>
                     </div>
-                    <ul data-list="bullets">
-                    </ul>
                 </div>
             </div>
 
-            <div class="section-header">LEADERSHIP & COMMUNITY</div>
-            <ul data-list="leadership">
-            </ul>
+            <div class="sortable-section" data-section-id="projects">
+                <div class="section-header">PROJECTS</div>
 
-            <div class="section-header">ACHIEVEMENTS</div>
-            <ul data-list="achievements">
-            </ul>
+                <div id="projects-list">
+                    <div class="job-group template">
+                        <div class="job-header" style="border-bottom: 1px solid black;">
+                            <span class="project-title" data-field="title"></span>
+                        </div>
+                        <div class="project-description" data-field="description"></div>
+                        <ul data-list="bullets">
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
-            <div class="section-header">INTERESTS</div>
-            <ul data-list="interests">
-            </ul>
+            <div class="sortable-section" data-section-id="leadership">
+                <div class="section-header">LEADERSHIP & COMMUNITY</div>
+                <ul data-list="leadership">
+                </ul>
+            </div>
 
-            <div class="section-header">SKILLS</div>
-            <ul>
-                <li data-field="skills"></li>
-            </ul>
+            <div class="sortable-section" data-section-id="achievements">
+                <div class="section-header">ACHIEVEMENTS</div>
+                <ul data-list="achievements">
+                </ul>
+            </div>
+
+            <div class="sortable-section" data-section-id="interests">
+                <div class="section-header">INTERESTS</div>
+                <ul data-list="interests">
+                </ul>
+            </div>
+
+            <div class="sortable-section" data-section-id="skills">
+                <div class="section-header">SKILLS</div>
+                <div data-field="skills"></div>
+            </div>
 
         </div>
     </div>

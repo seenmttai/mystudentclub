@@ -139,6 +139,23 @@
             text-decoration: underline;
         }
 
+        .contact-item.contact-inline {
+            display: block;
+            line-height: 1.5;
+            margin-bottom: 0;
+        }
+
+        .header-right [data-field="contact"] .contact-sep {
+            display: none !important;
+        }
+
+        .header-right [data-field="contact"] .contact-icon-item {
+            display: flex !important;
+            align-items: center;
+            margin-bottom: calc(2px * var(--content-scale));
+            white-space: nowrap;
+        }
+
         /* SECTION HEADERS */
         .section-header-container {
             display: flex;
@@ -177,7 +194,7 @@
             border: 1px solid var(--blue-deep);
             padding: calc(6px * var(--content-scale));
             vertical-align: middle;
-            text-align: left;
+            text-align: center;
         }
         
         th {
@@ -319,24 +336,14 @@
                     <h2 data-field="tagline"></h2>
                 </div>
                 <div class="header-right">
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <span data-field="email"></span>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-phone-alt"></i>
-                        <span data-field="phone"></span>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fab fa-linkedin-in"></i>
-                        <span data-field="linkedin"></span>
-                    </div>
+                    <div class="contact-item contact-inline" data-field="contact"></div>
                 </div>
             </header>
 
             <div class="content-padding">
                 
                 <!-- EDUCATION SECTION -->
+                <div class="sortable-section" data-section-id="education">
                 <div class="section-header-container">
                     <div class="section-header-bar"></div>
                     <div class="section-header-title">Education</div>
@@ -363,8 +370,10 @@
                         </tr>
                     </tbody>
                 </table>
+                </div>
 
                 <!-- WORK EXPERIENCE SECTION -->
+                <div class="sortable-section" data-section-id="experience">
                 <div class="section-header-container">
                     <div class="section-header-bar"></div>
                     <div class="section-header-title">Work Experience</div>
@@ -381,27 +390,71 @@
                         <ul data-list="bullets"></ul>
                     </div>
                 </div>
+                </div>
 
-                <!-- FOOTER SECTION GRID -->
-                <div class="footer-grid">
-                    <div class="footer-col">
-                        <h3>Technical Skills</h3>
+                <div class="sortable-section" data-section-id="summary">
+                    <div class="section-header-container">
+                        <div class="section-header-bar"></div>
+                        <div class="section-header-title">Summary</div>
+                        <div class="section-header-bar"></div>
+                    </div>
+                    <div class="footer-col" style="padding: 10px 12px;">
+                        <p data-field="summary"></p>
+                    </div>
+                </div>
+
+                <div class="sortable-section" data-section-id="certifications">
+                    <div class="section-header-container">
+                        <div class="section-header-bar"></div>
+                        <div class="section-header-title">Technical Skills</div>
+                        <div class="section-header-bar"></div>
+                    </div>
+                    <div class="footer-col" style="padding: 10px 12px;">
                         <ul data-list="certifications"></ul>
                     </div>
-                    <div class="vertical-border"></div>
-                    <div class="footer-col">
-                        <h3>Achievements</h3>
+                </div>
+
+                <div class="sortable-section" data-section-id="achievements">
+                    <div class="section-header-container">
+                        <div class="section-header-bar"></div>
+                        <div class="section-header-title">Achievements</div>
+                        <div class="section-header-bar"></div>
+                    </div>
+                    <div class="footer-col" style="padding: 10px 12px;">
                         <ul data-list="achievements"></ul>
                     </div>
-                    <div class="vertical-border"></div>
-                    <div class="footer-col">
-                        <h3>Hobbies</h3>
+                </div>
+
+                <div class="sortable-section" data-section-id="interests">
+                    <div class="section-header-container">
+                        <div class="section-header-bar"></div>
+                        <div class="section-header-title">Hobbies</div>
+                        <div class="section-header-bar"></div>
+                    </div>
+                    <div class="footer-col" style="padding: 10px 12px;">
                         <ul data-list="interests"></ul>
                     </div>
-                    <div class="vertical-border"></div>
-                    <div class="footer-col">
-                        <h3>Summary</h3>
-                        <p data-field="summary"></p>
+                </div>
+
+                <div class="sortable-section" data-section-id="skills">
+                    <div class="section-header-container">
+                        <div class="section-header-bar"></div>
+                        <div class="section-header-title">Skills</div>
+                        <div class="section-header-bar"></div>
+                    </div>
+                    <div class="footer-col" style="padding: 10px 12px;">
+                        <p data-field="skills"></p>
+                    </div>
+                </div>
+
+                <div class="sortable-section" data-section-id="leadership">
+                    <div class="section-header-container">
+                        <div class="section-header-bar"></div>
+                        <div class="section-header-title">Leadership</div>
+                        <div class="section-header-bar"></div>
+                    </div>
+                    <div class="footer-col" style="padding: 10px 12px;">
+                        <ul data-list="leadership"></ul>
                     </div>
                 </div>
 

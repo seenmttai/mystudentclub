@@ -205,6 +205,18 @@
             margin-bottom: calc(5px * var(--content-scale));
         }
 
+        .project-title {
+            font-size: calc(14px * var(--content-scale));
+            font-weight: 700;
+            margin-bottom: calc(3px * var(--content-scale));
+        }
+
+        .project-description {
+            font-size: calc(13px * var(--content-scale));
+            margin-bottom: calc(4px * var(--content-scale));
+            font-style: italic;
+        }
+
         /* ---------------------------------------------------------
            BULLET LISTS
            --------------------------------------------------------- */
@@ -227,6 +239,29 @@
 
         .b {
             font-weight: 700;
+        }
+
+        /* Keep skills lists stable between live preview and PDF print layout */
+        [data-field="skills"] ul,
+        [data-field="skills"] .cv-skills-list {
+            list-style-type: disc;
+            list-style-position: outside;
+            padding-left: calc(20px * var(--content-scale));
+            margin: 0;
+        }
+
+        [data-field="skills"] ol {
+            list-style-type: decimal;
+            list-style-position: outside;
+            padding-left: calc(20px * var(--content-scale));
+            margin: 0;
+        }
+
+        [data-field="skills"] li {
+            font-size: calc(13px * var(--content-scale));
+            line-height: 1.4;
+            margin-bottom: calc(4px * var(--content-scale));
+            text-align: justify;
         }
 
         /* Added for JS Template Logic */
@@ -296,13 +331,13 @@
             <div class="contact-line"><span data-field="contact"></span><span class="tagline-separator" data-field="tagline"></span></div>
 
             <!-- ABOUT -->
-            <div class="section" data-section="summary">
+            <div class="section sortable-section" data-section="summary" data-section-id="summary">
                 <div class="section-header">About</div>
                 <p class="about-text" data-field="summary"></p>
             </div>
 
             <!-- EDUCATION -->
-            <div class="section">
+            <div class="section sortable-section" data-section-id="education">
                 <div class="section-header">Education</div>
                 <div id="education-grouped-list">
                     <!-- Will be rendered by custom grouped logic -->
@@ -310,7 +345,7 @@
             </div>
 
             <!-- PROFESSIONAL EXPERIENCE -->
-            <div class="section">
+            <div class="section sortable-section" data-section-id="experience">
                 <div class="section-header">Professional Experience</div>
                 <div id="experience-list">
                     <div class="job-group template">
@@ -324,15 +359,41 @@
                 </div>
             </div>
 
+            <div class="section sortable-section" data-section-id="projects">
+                <div class="section-header">Projects</div>
+                <div id="projects-list">
+                    <div class="job-group template">
+                        <div class="project-title" data-field="title"></div>
+                        <div class="project-description" data-field="description"></div>
+                        <ul class="bullet-list" data-list="bullets"></ul>
+                    </div>
+                </div>
+            </div>
+
             <!-- CERTIFICATIONS & RECOGNITION -->
-            <div class="section">
+            <div class="section sortable-section" data-section-id="certifications">
                 <div class="section-header">Certifications & Recognition</div>
                 <ul class="bullet-list" data-list="certifications"></ul>
             </div>
 
-            <div class="section">
-                <div class="section-header">Skills & Hobbies</div>
+            <div class="section sortable-section" data-section-id="achievements">
+                <div class="section-header">Achievements</div>
+                <ul class="bullet-list" data-list="achievements"></ul>
+            </div>
+
+            <div class="section sortable-section" data-section-id="leadership">
+                <div class="section-header">Leadership</div>
+                <ul class="bullet-list" data-list="leadership"></ul>
+            </div>
+
+            <div class="section sortable-section" data-section-id="interests">
+                <div class="section-header">Interests & Hobbies</div>
                 <ul class="bullet-list" data-list="interests"></ul>
+            </div>
+
+            <div class="section sortable-section" data-section-id="skills">
+                <div class="section-header">Skills</div>
+                <div class="about-text" data-field="skills"></div>
             </div>
 
         </div>
