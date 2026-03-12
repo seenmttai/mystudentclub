@@ -425,6 +425,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+    const loadDynamicBanner = async () => {
+        try {
+            // Fetch the most recent active banner
+            const { data: banners, error } = await supabase
+                .from('course_banner')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .single();
+
+            if (error || !banners || !banners.heading) return;
+
+            const bannerDiv = document.getElementById('course-dynamic-banner');
+            bannerDiv.innerHTML = `
+                <div class="stylish-banner">
+                    <div class="banner-content">
+                        <span class="banner-text">${banners.heading}</span>
+                        ${banners.link ? `<a href="${banners.link}" class="banner-link">Learn More <i class="fas fa-arrow-right"></i></a>` : ''}
+                    </div>
+                </div>
+            `;
+            bannerDiv.style.display = 'block';
+        } catch (err) {
+            console.warn("Dynamic banner load failed", err);
+        }
+    };
+
     const checkAuth = async () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (session && session.user) {
@@ -433,6 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
             DOMElements.profileDropdownName.textContent = session.user.user_metadata?.full_name || session.user.email.split('@')[0];
             DOMElements.profileDropdownEmail.textContent = session.user.email;
             await checkEnrollment();
+            await loadDynamicBanner();
         } else {
             window.location.href = 'https://www.mystudentclub.com/login.html';
         }
