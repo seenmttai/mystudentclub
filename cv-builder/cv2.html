@@ -237,23 +237,31 @@
         }
 
         .bullet-list {
-            list-style-type: none;
-            padding-left: calc(15px * var(--content-scale));
+            list-style-type: disc;
+            padding-left: calc(20px * var(--content-scale));
             margin: 0;
         }
 
         .bullet-list li {
-            position: relative;
             margin-bottom: calc(3px * var(--content-scale));
             line-height: 1.05;
         }
 
         .bullet-list li::before {
-            content: "▪";
-            position: absolute;
-            left: calc(-15px * var(--content-scale));
-            top: 0;
-            font-size: 1.2em;
+            content: none;
+        }
+
+        /* Skills rich text lists should match the same round marker style */
+        .sortable-section[data-section-id="skills"] [data-field="skills"] ul {
+            list-style-type: disc;
+            padding-left: calc(20px * var(--content-scale));
+            margin: 0;
+        }
+
+        .sortable-section[data-section-id="skills"] [data-field="skills"] ol {
+            list-style-type: decimal;
+            padding-left: calc(20px * var(--content-scale));
+            margin: 0;
         }
 
         .extra-table td.category {
@@ -272,6 +280,34 @@
 
         .no-top-border {
             border-top: none;
+        }
+
+        .summary-content {
+            border: 1px solid var(--border-color);
+            border-top: none;
+            padding: calc(6px * var(--content-scale)) calc(8px * var(--content-scale));
+            font-size: calc(16px * var(--content-scale));
+            line-height: 1.2;
+            text-align: left;
+        }
+
+        .project-entry {
+            border: 1px solid var(--border-color);
+            border-top: none;
+        }
+
+        .project-title-row {
+            background-color: #f2f2f2;
+            font-weight: 900;
+            text-align: left;
+            padding: calc(4px * var(--content-scale)) calc(10px * var(--content-scale));
+            border-bottom: 1px solid var(--border-color);
+            font-size: calc(17px * var(--content-scale));
+        }
+
+        .project-desc {
+            font-style: italic;
+            margin-bottom: calc(4px * var(--content-scale));
         }
 
         .template {
@@ -354,7 +390,13 @@
             <div class="contact-bar" data-field="contact">
             </div>
 
+            <div class="sortable-section" data-section-id="summary">
+                <div class="section-header">CAREER OBJECTIVE</div>
+                <div class="summary-content" data-field="summary"></div>
+            </div>
+
             <!-- QUALIFICATIONS -->
+            <div class="sortable-section" data-section-id="education">
             <div class="section-header">PROFESSIONAL & EDUCATIONAL QUALIFICATIONS</div>
             <table class="qual-table">
                 <thead>
@@ -376,8 +418,10 @@
                     </tr>
                 </tbody>
             </table>
+            </div>
 
             <!-- WORK EXPERIENCE -->
+            <div class="sortable-section" data-section-id="experience">
             <div class="section-header">WORK EXPERIENCE</div>
 
             <div id="experience-list">
@@ -397,47 +441,99 @@
                     </table>
                 </div>
             </div>
+            </div>
 
-            <!-- EXTRA CURRICULAR -->
-            <div class="section-header">EXTRA CURRICULAR ACTIVTIES, SKILLS, ACHIEVEMENTS & INTERESTS</div>
-            <table class="extra-table">
-                <tbody>
-                    <tr>
-                        <td class="category">Skills</td>
-                        <td class="details">
-                            <div data-field="skills"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="category">Achievements</td>
-                        <td class="details">
-                            <ul class="bullet-list" data-list="achievements">
-                            </ul>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="category">Certifications</td>
-                        <td class="details">
-                            <ul class="bullet-list" data-list="certifications">
-                            </ul>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="category">Interests</td>
-                        <td class="details">
-                            <ul class="bullet-list" data-list="interests">
-                            </ul>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="category">Leadership</td>
-                        <td class="details">
-                            <ul class="bullet-list" data-list="leadership">
-                            </ul>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="sortable-section" data-section-id="projects">
+                <div class="section-header">PROJECTS</div>
+                <div id="projects-list">
+                    <div class="project-entry template">
+                        <div class="project-title-row" data-field="title"></div>
+                        <table class="work-table">
+                            <tr>
+                                <td class="role-col">Description</td>
+                                <td class="desc-col">
+                                    <div class="project-desc" data-field="description"></div>
+                                    <ul class="bullet-list" data-list="bullets"></ul>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sortable-section" data-section-id="skills">
+                <div class="section-header">SKILLS</div>
+                <table class="extra-table">
+                    <tbody>
+                        <tr>
+                            <td class="category">Skills</td>
+                            <td class="details">
+                                <div data-field="skills"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sortable-section" data-section-id="achievements">
+                <div class="section-header">ACHIEVEMENTS</div>
+                <table class="extra-table">
+                    <tbody>
+                        <tr>
+                            <td class="category">Achievements</td>
+                            <td class="details">
+                                <ul class="bullet-list" data-list="achievements">
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sortable-section" data-section-id="certifications">
+                <div class="section-header">CERTIFICATIONS</div>
+                <table class="extra-table">
+                    <tbody>
+                        <tr>
+                            <td class="category">Certifications</td>
+                            <td class="details">
+                                <ul class="bullet-list" data-list="certifications">
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sortable-section" data-section-id="interests">
+                <div class="section-header">INTERESTS</div>
+                <table class="extra-table">
+                    <tbody>
+                        <tr>
+                            <td class="category">Interests</td>
+                            <td class="details">
+                                <ul class="bullet-list" data-list="interests">
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sortable-section" data-section-id="leadership">
+                <div class="section-header">LEADERSHIP</div>
+                <table class="extra-table">
+                    <tbody>
+                        <tr>
+                            <td class="category">Leadership</td>
+                            <td class="details">
+                                <ul class="bullet-list" data-list="leadership">
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
@@ -541,3 +637,4 @@
 </body>
 
 </html>
+

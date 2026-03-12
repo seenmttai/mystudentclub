@@ -665,7 +665,7 @@ body {
 @media (max-width: 600px) {
     .p2-main {
         padding: 1rem 0.5rem;
-        padding-top: calc(70px + 1rem);
+        padding-top: calc(0px + 1rem);
     }
 
     .p2-header-card {

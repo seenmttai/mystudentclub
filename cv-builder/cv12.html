@@ -224,6 +224,15 @@
             display: none !important;
         }
 
+        /* Keep left label column only for Work Experience */
+        .sortable-section:not([data-section-id="experience"]) .skills-col-label {
+            display: none;
+        }
+
+        .sortable-section:not([data-section-id="experience"]) td.skills-col-label + td {
+            width: 100% !important;
+        }
+
         .job-group {
             display: contents;
         }
@@ -255,10 +264,13 @@
             </div>
 
             <!-- SUMMARY -->
-            <div class="summary-box" data-field="summary">
+            <div class="sortable-section" data-section-id="summary">
+                <div class="summary-box" data-field="summary">
+                </div>
             </div>
 
             <!-- EDUCATION -->
+            <div class="sortable-section" data-section-id="education">
             <div class="section-header">EDUCATION</div>
             <table>
                 <thead>
@@ -280,8 +292,10 @@
                     </tr>
                 </tbody>
             </table>
+            </div>
 
             <!-- PROFESSIONAL EXPERIENCE -->
+            <div class="sortable-section" data-section-id="experience">
             <div class="section-header">PROFESSIONAL EXPERIENCE</div>
             <div id="experience-list">
                 <div class="template" style="margin-bottom: 0;">
@@ -303,41 +317,75 @@
                     </table>
                 </div>
             </div>
+            </div>
 
-            <!-- SKILLS & ACHIEVEMENTS -->
-            <div class="section-header">SKILLS & ACHIEVEMENTS</div>
-            <table>
-                <tbody>
-                    <tr>
-                        <td class="skills-col-label">Skills</td>
-                        <td class="skills-col-content" data-field="skills"></td>
-                    </tr>
-                    <tr>
-                        <td class="skills-col-label">Awards</td>
-                        <td class="skills-col-content">
-                            <ul data-list="achievements"></ul>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="skills-col-label">Certifications</td>
-                        <td class="skills-col-content">
-                            <ul data-list="certifications"></ul>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="skills-col-label">Hobbies</td>
-                        <td class="skills-col-content">
-                            <ul data-list="interests"></ul>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="skills-col-label">Leadership</td>
-                        <td class="skills-col-content">
-                            <ul data-list="leadership"></ul>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="sortable-section" data-section-id="skills">
+                <div class="section-header">SKILLS</div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="skills-col-label">Skills</td>
+                            <td class="skills-col-content" data-field="skills"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sortable-section" data-section-id="achievements">
+                <div class="section-header">AWARDS</div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="skills-col-label">Awards</td>
+                            <td class="skills-col-content">
+                                <ul data-list="achievements"></ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sortable-section" data-section-id="certifications">
+                <div class="section-header">CERTIFICATIONS</div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="skills-col-label">Certifications</td>
+                            <td class="skills-col-content">
+                                <ul data-list="certifications"></ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sortable-section" data-section-id="interests">
+                <div class="section-header">HOBBIES</div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="skills-col-label">Hobbies</td>
+                            <td class="skills-col-content">
+                                <ul data-list="interests"></ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sortable-section" data-section-id="leadership">
+                <div class="section-header">LEADERSHIP</div>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td class="skills-col-label">Leadership</td>
+                            <td class="skills-col-content">
+                                <ul data-list="leadership"></ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
         </div>
     </div>
