@@ -2505,7 +2505,7 @@ async function printCV() {
                     element: '.template-floater',
                     popover: {
                         title: '🎨 Choose Template',
-                        description: 'Browse through all templates. Every template is handcrafted to suit your needs.',
+                        description: 'Browse through all templates and customize the color theme to your liking.',
                         side: 'bottom',
                         align: 'center'
                     }
