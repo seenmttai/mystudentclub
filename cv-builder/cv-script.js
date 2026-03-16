@@ -26,6 +26,7 @@
             interests: [],
             leadership: [],
             skills: "",
+            themeAccent: "",
             customSections: [],
             sectionOrder: [...BASE_SECTION_ORDER]
         };
@@ -84,6 +85,7 @@
                 "Worked as Assistant Co-ordinator and Chief Co-ordinator of the Commerce Association in college."
             ],
             skills: "MS Excel, Word, PowerPoint, Tally, SAP, Strong communication skills, Detail-oriented, Hardworking, Focused, Independent work, Collaborative teamwork",
+            themeAccent: "",
             customSections: [
                 { id: "custom_demo_languages", title: "Languages", items: ["English", "Hindi"] }
             ],
@@ -347,9 +349,10 @@
             });
         }
 
-        function initInlineRichEditor(textarea, editorKey, onChange) {
+        function initInlineRichEditor(textarea, editorKey, onChange, options = {}) {
             if (!textarea || typeof Quill === 'undefined') return;
             if (inlineRichEditors.has(editorKey)) return;
+            const allowOrderedList = options.allowOrderedList !== false;
 
             const host = document.createElement('div');
             host.className = 'summary-rich-editor inline-rich-editor';
@@ -361,7 +364,7 @@
                 modules: {
                     toolbar: [
                         ['bold', 'italic', 'underline'],
-                        [{ list: 'bullet' }, { list: 'ordered' }],
+                        allowOrderedList ? [{ list: 'bullet' }, { list: 'ordered' }] : [{ list: 'bullet' }],
                         ['link', 'clean']
                     ]
                 }
@@ -405,6 +408,18 @@
                 const idx = Number(textarea.getAttribute('data-rich-custom-index'));
                 if (!id || Number.isNaN(idx)) return;
                 initInlineRichEditor(textarea, `custom:${id}:${idx}`, (value) => updateCustomSectionItem(id, idx, value));
+            });
+
+            document.querySelectorAll('textarea[data-rich-exp-index]').forEach((textarea) => {
+                const idx = Number(textarea.getAttribute('data-rich-exp-index'));
+                if (Number.isNaN(idx)) return;
+                initInlineRichEditor(textarea, `exp:${idx}`, (value) => updateExp(idx, 'bullets', value), { allowOrderedList: false });
+            });
+
+            document.querySelectorAll('textarea[data-rich-proj-index]').forEach((textarea) => {
+                const idx = Number(textarea.getAttribute('data-rich-proj-index'));
+                if (Number.isNaN(idx)) return;
+                initInlineRichEditor(textarea, `proj:${idx}`, (value) => updateProj(idx, 'bullets', value), { allowOrderedList: false });
             });
         }
 
@@ -557,6 +572,45 @@
             return (tmp.textContent || '').replace(/\s+/g, ' ').trim();
         }
 
+        function bulletsToRichHTML(items) {
+            const list = Array.isArray(items) ? items.filter(item => String(item || '').trim()) : [];
+            if (!list.length) return '';
+            return `<ul>${list.map(item => `<li>${sanitizeSummaryHTML(item || '') || ''}</li>`).join('')}</ul>`;
+        }
+
+        function richHTMLToBulletArray(value) {
+            const sanitized = sanitizeSummaryHTML(value || '');
+            if (!sanitized) return [];
+
+            const template = document.createElement('template');
+            template.innerHTML = sanitized;
+
+            const listItems = Array.from(template.content.querySelectorAll('li'))
+                .map(item => item.innerHTML.trim())
+                .filter(Boolean);
+            if (listItems.length) return listItems;
+
+            const paragraphs = Array.from(template.content.querySelectorAll('p'))
+                .map(item => item.innerHTML.trim())
+                .filter(Boolean);
+            if (paragraphs.length) return paragraphs;
+
+            const plain = getPlainTextFromHTML(sanitized);
+            return plain ? [plain] : [];
+        }
+
+        function normalizeExperienceMerges() {
+            if (!Array.isArray(cvData.experience)) {
+                cvData.experience = [];
+                return;
+            }
+            cvData.experience.forEach((exp, index) => {
+                if (!exp || typeof exp !== 'object') cvData.experience[index] = {};
+                if (!Array.isArray(cvData.experience[index].bullets)) cvData.experience[index].bullets = [];
+                cvData.experience[index].mergedWithPrevious = !!cvData.experience[index].mergedWithPrevious && index > 0;
+            });
+        }
+
         function getSummaryPlainText() {
             if (summaryQuill) {
                 return (summaryQuill.getText() || '').replace(/\s+/g, ' ').trim();
@@ -629,6 +683,7 @@
                     interests: [],
                     leadership: [],
                     skills: "",
+                    themeAccent: "",
                     customSections: [],
                     sectionOrder: [...BASE_SECTION_ORDER]
                 };
@@ -637,6 +692,7 @@
             if (!Array.isArray(cvData.personal.socialLinks)) cvData.personal.socialLinks = [];
             if (!Array.isArray(cvData.education)) cvData.education = [];
             if (!Array.isArray(cvData.experience)) cvData.experience = [];
+            normalizeExperienceMerges();
             if (!Array.isArray(cvData.projects)) cvData.projects = [];
             if (!Array.isArray(cvData.certifications)) cvData.certifications = [];
             if (!Array.isArray(cvData.achievements)) cvData.achievements = [];
@@ -646,6 +702,7 @@
             if (!Array.isArray(cvData.sectionOrder)) cvData.sectionOrder = [...BASE_SECTION_ORDER];
             if (typeof cvData.summary !== 'string') cvData.summary = cvData.summary ? String(cvData.summary) : '';
             if (typeof cvData.skills !== 'string') cvData.skills = cvData.skills ? String(cvData.skills) : '';
+            if (typeof cvData.themeAccent !== 'string') cvData.themeAccent = '';
         }
 
         function getSelectedTemplateFile() {
@@ -948,15 +1005,28 @@
         function renderExpInputs() {
             const container = document.getElementById('exp-container');
             container.innerHTML = '';
+            normalizeExperienceMerges();
             cvData.experience.forEach((exp, index) => {
                 const div = document.createElement('div');
                 div.className = 'list-item';
+                const isMergedChild = !!exp.mergedWithPrevious;
+                const canMergeWithPrevious = index > 0 && !isMergedChild;
+                const mergeAction = isMergedChild
+                    ? `unmergeExp(${index})`
+                    : `mergeExpWithPrevious(${index})`;
+                const mergeTitle = isMergedChild
+                    ? 'Unmerge this stint'
+                    : (canMergeWithPrevious ? 'Merge with previous stint' : 'First stint cannot merge backward');
+                const mergeStyle = !isMergedChild && !canMergeWithPrevious ? 'opacity:.35;pointer-events:none;' : '';
+                const mergeLabel = isMergedChild ? 'Unmerge' : 'Merge';
                 div.innerHTML = `
                     <div class="item-actions">
-                        <div class="action-btn" onclick="moveExp(${index}, -1)">▲</div>
-                        <div class="action-btn" onclick="moveExp(${index}, 1)">▼</div>
-                        <div class="action-btn delete" onclick="removeExp(${index})">×</div>
+                        <div class="action-btn" onclick="moveExp(${index}, -1)">&#9650;</div>
+                        <div class="action-btn" onclick="moveExp(${index}, 1)">&#9660;</div>
+                        <div class="action-btn merge-toggle ${isMergedChild ? 'active' : ''}" onclick="${mergeAction}" title="${mergeTitle}" style="${mergeStyle}">${mergeLabel}</div>
+                        <div class="action-btn delete" onclick="removeExp(${index})">&times;</div>
                     </div>
+                    ${isMergedChild ? `<div style="margin-bottom:8px; padding:8px 10px; border:1px solid #dbeafe; background:#eff6ff; border-radius:12px; color:#1d4ed8; font-size:12px;">This stint is merged with the experience above in preview and PDF.</div>` : ''}
                     <div class="form-group">
                         <label>Role</label>
                         <input class="form-control" value="${exp.role || ''}" oninput="updateExp(${index}, 'role', this.value)" placeholder="e.g. Articled Assistant">
@@ -986,11 +1056,12 @@
                         <div class="chip-container" style="margin-bottom:6px">
                             ${AUDIT_VERBS.map(v => `<span class="chip" style="font-size:10px; padding:2px 8px;" onclick="appendBullet(${index}, '${v} ')">${v}</span>`).join('')}
                         </div>
-                        <textarea id="exp-bullets-${index}" class="form-control" oninput="updateExp(${index}, 'bullets', this.value)" placeholder="One bullet per line">${(exp.bullets || []).join('\n')}</textarea>
+                        <textarea id="exp-bullets-${index}" class="form-control" data-rich-exp-index="${index}" oninput="updateExp(${index}, 'bullets', this.value)" placeholder="Add bullet points with formatting">${bulletsToRichHTML(exp.bullets || [])}</textarea>
                     </div>
                 `;
                 container.appendChild(div);
             });
+            initSectionInlineRichEditors();
         }
 
         function renderProjInputs() {
@@ -1016,11 +1087,12 @@
                     </div>
                     <div class="form-group" style="margin-bottom:0">
                         <label>Key Points (Bullets)</label>
-                        <textarea id="proj-bullets-${index}" class="form-control" oninput="updateProj(${index}, 'bullets', this.value)" placeholder="One bullet per line">${(proj.bullets || []).join('\n')}</textarea>
+                        <textarea id="proj-bullets-${index}" class="form-control" data-rich-proj-index="${index}" oninput="updateProj(${index}, 'bullets', this.value)" placeholder="Add bullet points with formatting">${bulletsToRichHTML(proj.bullets || [])}</textarea>
                     </div>
                 `;
                 container.appendChild(div);
             });
+            initSectionInlineRichEditors();
         }
 
         function renderCertInputs() {
@@ -1086,20 +1158,22 @@
 
         function updateExp(index, field, value) {
             if (field === 'bullets') {
-                cvData.experience[index].bullets = value.split('\n').filter(line => line.trim() !== '');
+                cvData.experience[index].bullets = richHTMLToBulletArray(value);
+            } else if (field === 'mergedWithPrevious') {
+                cvData.experience[index].mergedWithPrevious = !!value && index > 0;
             } else {
                 cvData.experience[index][field] = value;
             }
+            normalizeExperienceMerges();
             postToFrame();
         }
 
         function appendBullet(index, text) {
-            const ta = document.getElementById('exp-bullets-' + index);
-            if (ta) {
-                const current = ta.value;
-                ta.value = current + (current.length && !current.endsWith('\n') ? '\n' : '') + text;
-                updateExp(index, 'bullets', ta.value);
-            }
+            if (!cvData.experience[index]) return;
+            if (!Array.isArray(cvData.experience[index].bullets)) cvData.experience[index].bullets = [];
+            cvData.experience[index].bullets.push(sanitizeSummaryHTML(text));
+            renderExpInputs();
+            postToFrame();
         }
 
         function updateCert(index, field, value) {
@@ -1131,17 +1205,33 @@
         }
 
         function addExperience() {
-            cvData.experience.push({ role: "", company: "", dates: "", bullets: [] });
+            cvData.experience.push({ role: "", company: "", dates: "", category: "", bullets: [], mergedWithPrevious: false });
+            normalizeExperienceMerges();
             renderExpInputs();
             postToFrame();
         }
         function removeExp(i) {
-            if (confirm("Delete entry?")) { cvData.experience.splice(i, 1); renderExpInputs(); postToFrame(); }
+            if (confirm("Delete entry?")) { cvData.experience.splice(i, 1); normalizeExperienceMerges(); renderExpInputs(); postToFrame(); }
         }
         function moveExp(i, dir) {
             if (i + dir < 0 || i + dir >= cvData.experience.length) return;
             [cvData.experience[i], cvData.experience[i + dir]] = [cvData.experience[i + dir], cvData.experience[i]];
+            normalizeExperienceMerges();
             renderExpInputs(); postToFrame();
+        }
+        function mergeExpWithPrevious(i) {
+            if (i <= 0 || !cvData.experience[i]) return;
+            cvData.experience[i].mergedWithPrevious = true;
+            normalizeExperienceMerges();
+            renderExpInputs();
+            postToFrame();
+        }
+        function unmergeExp(i) {
+            if (i <= 0 || !cvData.experience[i]) return;
+            cvData.experience[i].mergedWithPrevious = false;
+            normalizeExperienceMerges();
+            renderExpInputs();
+            postToFrame();
         }
 
         // Social Links Management
@@ -1205,7 +1295,7 @@
         }
         function updateProj(index, field, value) {
             if (field === 'bullets') {
-                cvData.projects[index].bullets = value.split('\n').filter(line => line.trim() !== '');
+                cvData.projects[index].bullets = richHTMLToBulletArray(value);
             } else {
                 cvData.projects[index][field] = value;
             }
@@ -1588,6 +1678,69 @@
             { file: 'cv12.html', name: 'Executive Dark', accent: '#404040', style: 'dark' },
             { file: 'cv13.html', name: 'Classic Professional', accent: '#104e70', style: 'formal' }
         ];
+        const TEMPLATE_COLOR_PRESETS = ['#2b2b2b', '#0f6cbd', '#155e95', '#1f8f63', '#c0392b', '#7b4db3'];
+
+        function normalizeHexColor(value) {
+            const raw = String(value || '').trim();
+            if (!raw) return '';
+            const withHash = raw.startsWith('#') ? raw : `#${raw}`;
+            const shortMatch = /^#([0-9a-fA-F]{3})$/.exec(withHash);
+            if (shortMatch) {
+                return `#${shortMatch[1].split('').map(ch => ch + ch).join('')}`.toUpperCase();
+            }
+            const fullMatch = /^#([0-9a-fA-F]{6})$/.exec(withHash);
+            return fullMatch ? `#${fullMatch[1].toUpperCase()}` : '';
+        }
+
+        function getThemeAccent() {
+            return normalizeHexColor(cvData.themeAccent || '');
+        }
+
+        function renderThemeControls() {
+            const swatchHost = document.getElementById('template-theme-swatches');
+            const picker = document.getElementById('theme-accent-picker');
+            const text = document.getElementById('theme-accent-value');
+            const chip = document.getElementById('theme-accent-chip');
+            if (!swatchHost || !picker || !text) return;
+
+            const active = getThemeAccent();
+            swatchHost.innerHTML = TEMPLATE_COLOR_PRESETS.map(color => `
+                <button type="button" class="template-theme-swatch ${active === color.toUpperCase() ? 'active' : ''}" style="background:${color}" title="${color}" onclick="updateThemeAccent('${color}')"></button>
+            `).join('');
+
+            const fallbackColor = active || '#2F557F';
+            picker.value = fallbackColor;
+            text.value = active;
+            if (chip) {
+                chip.style.color = active || '#64748b';
+                chip.style.borderColor = active ? `${active}33` : '#dbe3ef';
+                chip.style.background = active ? `${active}14` : '#ffffff';
+            }
+        }
+
+        function updateThemeAccent(value) {
+            const normalized = normalizeHexColor(value);
+            if (!normalized) return;
+            cvData.themeAccent = normalized;
+            renderThemeControls();
+            postToFrame();
+            renderTemplateCards();
+        }
+
+        function updateThemeAccentFromText(value) {
+            const normalized = normalizeHexColor(value);
+            const text = document.getElementById('theme-accent-value');
+            if (text) text.value = value;
+            if (!normalized) return;
+            updateThemeAccent(normalized);
+        }
+
+        function resetThemeAccent() {
+            cvData.themeAccent = '';
+            renderThemeControls();
+            postToFrame();
+            renderTemplateCards();
+        }
 
         function toggleTemplateSidebar(show) {
             const sidebar = document.getElementById('template-sidebar');
@@ -1595,6 +1748,7 @@
             if (show) {
                 sidebar.classList.add('open');
                 overlay.classList.add('open');
+                renderThemeControls();
                 renderTemplateCards();
             } else {
                 sidebar.classList.remove('open');
@@ -1730,6 +1884,7 @@
             if (!payload.sectionOrder || !payload.sectionOrder.length) payload.sectionOrder = [...BASE_SECTION_ORDER];
             if (!payload.personal) payload.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
             if (!payload.personal.socialLinks) payload.personal.socialLinks = [];
+            payload.themeAccent = normalizeHexColor(payload.themeAccent || cvData.themeAccent || '');
             applyFormattedContact(payload);
             return payload;
         }
@@ -1868,6 +2023,7 @@
                     leadership: [],
                     interests: [],
                     skills: "",
+                    themeAccent: "",
                     customSections: [],
                     sectionOrder: [...BASE_SECTION_ORDER]
                 };
@@ -2439,3 +2595,4 @@ async function printCV() {
                 }
             }, 1200); // Delay to ensure page is fully loaded
         });
+

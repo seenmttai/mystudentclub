@@ -1136,6 +1136,24 @@
             <h3>Choose Template</h3>
             <button class="template-sidebar-close" onclick="toggleTemplateSidebar(false)">×</button>
         </div>
+        <div class="template-theme-panel">
+            <div class="template-theme-head">
+                <div>
+                    <div class="template-theme-title">Color Theme</div>
+                    <div class="template-theme-subtitle">Use presets or pick any accent color</div>
+                </div>
+                <button type="button" class="template-theme-reset" onclick="resetThemeAccent()">Default</button>
+            </div>
+            <div class="template-theme-swatches" id="template-theme-swatches"></div>
+            <div class="template-theme-custom">
+                <label for="theme-accent-picker">Custom RGB</label>
+                <div class="template-theme-custom-row">
+                    <input type="color" id="theme-accent-picker" onchange="updateThemeAccent(this.value)">
+                    <input type="text" id="theme-accent-value" class="form-control" placeholder="#2F557F" oninput="updateThemeAccentFromText(this.value)">
+                    <div class="template-theme-chip" id="theme-accent-chip">Accent</div>
+                </div>
+            </div>
+        </div>
         <div class="template-grid" id="template-grid">
             <!-- Cards injected by JS -->
         </div>
