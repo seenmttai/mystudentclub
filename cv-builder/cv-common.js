@@ -43,6 +43,7 @@ function renderCV(data) {
     ensureRichTextGuards();
     ensureUniversalSections();
     ensureSectionWrappers();
+    applyTemplateAccent(data.themeAccent || '');
 
     // 1. Personal Info
     setHTML('[data-field="name"]', data.personal?.name);
@@ -176,12 +177,18 @@ function renderCV(data) {
     }
 
     // 4. Experience
-    const hasExp = data.experience && data.experience.length > 0;
-    updateList('experience-list', data.experience, hasExp, (block, item) => {
+    const renderedExperience = buildRenderedExperience(data.experience || []);
+    const hasExp = renderedExperience.length > 0;
+    updateList('experience-list', renderedExperience, hasExp, (block, item) => {
         setHTMLIn(block, '[data-field="role"]', item.role);
         setHTMLIn(block, '[data-field="company"]', item.company);
         setHTMLIn(block, '[data-field="dates"]', item.dates);
         setHTMLIn(block, '[data-field="category"]', item.category); // Department/Area like "Business Finance"
+
+        const roleEl = block.querySelector('[data-field="role"]');
+        if (roleEl) roleEl.style.display = stripTags(item.role || '').trim() ? '' : 'none';
+        const categoryEl = block.querySelector('[data-field="category"]');
+        if (categoryEl) categoryEl.style.display = stripTags(item.category || '').trim() ? '' : 'none';
 
         const ul = block.querySelector('[data-list="bullets"]');
         if (ul) {
@@ -265,6 +272,7 @@ function renderCV(data) {
     // These functions exist in the templates script block
     // Use requestAnimationFrame to ensure DOM is fully updated before recalculating
     requestAnimationFrame(() => {
+        applyTemplateAccent(data.themeAccent || '');
         if (typeof window.shrinkContentToFit === 'function') {
             window.shrinkContentToFit();
         }
@@ -481,6 +489,146 @@ function renderSkillsContent(rawValue) {
 
     // Fallback to plain text with spacing
     return `<span class="cv-skills-inline">${escapeHTML(raw)}</span>`;
+}
+
+function applyTemplateAccent(accent) {
+    const color = normalizeHexColor(accent);
+    const root = document.documentElement;
+    if (!root) return;
+
+    if (!color) {
+        ['--blue-header', '--header-bg', '--accent-color', '--blue-deep', '--blue-text', '--section-bg', '--header-bg-dark', '--sub-header-bg', '--sub-bg', '--grey-bg', '--blueshade-color', '--blue-shade']
+            .forEach(name => root.style.removeProperty(name));
+        clearAccentInlineStyles();
+        return;
+    }
+
+    const light = mixHex(color, '#FFFFFF', 0.82);
+    const softer = mixHex(color, '#FFFFFF', 0.68);
+    const deep = mixHex(color, '#000000', 0.18);
+
+    root.style.setProperty('--blue-header', color);
+    root.style.setProperty('--header-bg', color);
+    root.style.setProperty('--accent-color', color);
+    root.style.setProperty('--blue-deep', color);
+    root.style.setProperty('--blue-text', color);
+    root.style.setProperty('--header-bg-dark', color);
+    root.style.setProperty('--section-bg', softer);
+    root.style.setProperty('--sub-header-bg', light);
+    root.style.setProperty('--sub-bg', light);
+    root.style.setProperty('--grey-bg', light);
+    root.style.setProperty('--blueshade-color', light);
+    root.style.setProperty('--blue-shade', softer);
+    applyAccentInlineStyles(color, light, softer, deep);
+}
+
+function normalizeHexColor(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return '';
+    const withHash = raw.startsWith('#') ? raw : `#${raw}`;
+    const shortMatch = /^#([0-9a-fA-F]{3})$/.exec(withHash);
+    if (shortMatch) {
+        return `#${shortMatch[1].split('').map(ch => ch + ch).join('')}`.toUpperCase();
+    }
+    const fullMatch = /^#([0-9a-fA-F]{6})$/.exec(withHash);
+    return fullMatch ? `#${fullMatch[1].toUpperCase()}` : '';
+}
+
+function mixHex(base, target, ratio) {
+    const a = hexToRgb(base);
+    const b = hexToRgb(target);
+    if (!a || !b) return base;
+    const t = Math.max(0, Math.min(1, Number(ratio) || 0));
+    const r = Math.round(a.r + (b.r - a.r) * t);
+    const g = Math.round(a.g + (b.g - a.g) * t);
+    const bl = Math.round(a.b + (b.b - a.b) * t);
+    return `#${[r, g, bl].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase()}`;
+}
+
+function hexToRgb(hex) {
+    const normalized = normalizeHexColor(hex);
+    if (!normalized) return null;
+    return {
+        r: parseInt(normalized.slice(1, 3), 16),
+        g: parseInt(normalized.slice(3, 5), 16),
+        b: parseInt(normalized.slice(5, 7), 16)
+    };
+}
+
+function applyAccentInlineStyles(color, light, softer, deep) {
+    setInlineStyles('.section-header, .section-header-2, .work-exp-header, .project-title-row, .header-name-box', {
+        backgroundColor: color,
+        color: '#ffffff',
+        borderColor: deep
+    });
+    setInlineStyles('.contact-bar, .work-company-row, .qual-table th, .extra-table td.category, .role-col, .summary-box, .summary-content, .header-bg-lite', {
+        backgroundColor: light,
+        borderColor: deep
+    });
+    setInlineStyles('.edu-institution', {
+        color: color
+    });
+}
+
+function clearAccentInlineStyles() {
+    clearInlineStyles('.section-header, .section-header-2, .work-exp-header, .project-title-row, .header-name-box', ['backgroundColor', 'color', 'borderColor']);
+    clearInlineStyles('.contact-bar, .work-company-row, .qual-table th, .extra-table td.category, .role-col, .summary-box, .summary-content, .header-bg-lite', ['backgroundColor', 'borderColor']);
+    clearInlineStyles('.edu-institution', ['color']);
+}
+
+function setInlineStyles(selector, styles) {
+    document.querySelectorAll(selector).forEach(node => {
+        Object.entries(styles).forEach(([key, value]) => {
+            node.style[key] = value;
+        });
+    });
+}
+
+function clearInlineStyles(selector, keys) {
+    document.querySelectorAll(selector).forEach(node => {
+        keys.forEach(key => {
+            node.style[key] = '';
+        });
+    });
+}
+
+function buildRenderedExperience(items) {
+    const source = Array.isArray(items) ? items : [];
+    const groups = [];
+
+    source.forEach((entry, index) => {
+        const safeEntry = entry && typeof entry === 'object' ? entry : {};
+        const mergeIntoPrevious = !!safeEntry.mergedWithPrevious && index > 0 && groups.length > 0;
+        if (!mergeIntoPrevious) {
+            groups.push([safeEntry]);
+            return;
+        }
+        groups[groups.length - 1].push(safeEntry);
+    });
+
+    return groups.map(group => {
+        const primary = group[0] || {};
+        if (group.length === 1) return primary;
+
+        const companyLines = group.map(item => {
+            const company = item.company || '';
+            const role = item.role || '';
+            if (company && role) return `${company} - ${role}`;
+            return company || role || '';
+        }).filter(Boolean);
+
+        const dateLines = group.map(item => item.dates || '').filter(Boolean);
+        const sharedCategory = primary.category || '';
+
+        return {
+            ...primary,
+            role: sharedCategory || '',
+            company: companyLines.join('<br>'),
+            dates: dateLines.join('<br>'),
+            category: sharedCategory,
+            bullets: Array.isArray(primary.bullets) ? primary.bullets : []
+        };
+    });
 }
 
 // Helper: Update a list of items based on a template
@@ -939,6 +1087,8 @@ function renderContactWithIcons(personal) {
     const sep = '<span class="contact-sep" style="margin:0 0.4em;opacity:0.65;">|</span>';
     const items = [];
 
+    const contactLinkStyle = 'color:#2563eb;text-decoration:none;border-bottom:1px solid rgba(37,99,235,0.45);padding-bottom:1px;font-weight:500;';
+
     if (phone) {
         const tel = phone.replace(/[^\d+]/g, '');
         items.push(`
@@ -948,7 +1098,7 @@ function renderContactWithIcons(personal) {
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.11 4.18 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.62a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.46-1.27a2 2 0 0 1 2.11-.45c.84.29 1.72.5 2.62.62A2 2 0 0 1 22 16.92z"></path>
                     </svg>
                 </span>
-                <a href="tel:${escapeAttr(tel)}" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;">${escapeHTML(phone)}</a>
+                <a href="tel:${escapeAttr(tel)}" style="${contactLinkStyle}">${escapeHTML(phone)}</a>
             </span>
         `);
     }
@@ -962,7 +1112,7 @@ function renderContactWithIcons(personal) {
                         <path d="m22 6-10 7L2 6"></path>
                     </svg>
                 </span>
-                <a href="mailto:${escapeAttr(email)}" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;">${escapeHTML(email)}</a>
+                <a href="mailto:${escapeAttr(email)}" style="${contactLinkStyle}">${escapeHTML(email)}</a>
             </span>
         `);
     }
@@ -972,12 +1122,12 @@ function renderContactWithIcons(personal) {
         if (!/^https?:\/\//i.test(href)) href = 'https://' + href;
         items.push(`
             <span class="contact-icon-item" style="display:inline-flex;align-items:center;">
-                <span style="${iconStyle}width:1.14em;height:1.14em;">
-                    <svg viewBox="0 0 24 24" width="1.14em" height="1.14em" fill="currentColor" aria-hidden="true">
+                <span style="${iconStyle}width:1.24em;height:1.24em;">
+                    <svg viewBox="0 0 24 24" width="1.24em" height="1.24em" fill="currentColor" aria-hidden="true">
                         <path d="M6.94 8.5A1.56 1.56 0 1 1 6.94 5.38 1.56 1.56 0 0 1 6.94 8.5zM5.6 9.82h2.67v8.58H5.6V9.82zm4.3 0h2.56v1.17h.04c.36-.67 1.23-1.37 2.53-1.37 2.71 0 3.21 1.79 3.21 4.11v4.67h-2.67v-4.14c0-.99-.02-2.26-1.38-2.26-1.39 0-1.6 1.08-1.6 2.19v4.21H9.9V9.82z"></path>
                     </svg>
                 </span>
-                <a href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;">${escapeHTML(linkedin)}</a>
+                <a href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="${contactLinkStyle}">${escapeHTML(linkedin)}</a>
             </span>
         `);
     }
@@ -1003,7 +1153,7 @@ function renderContactWithIcons(personal) {
         const label = (link && link.label ? String(link.label).trim() : '') || rawUrl;
         items.push(`
             <span class="contact-icon-item" style="display:inline-flex;align-items:center;">
-                <a href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;">${escapeHTML(label)}</a>
+                <a href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="${contactLinkStyle}">${escapeHTML(label)}</a>
             </span>
         `);
     });
@@ -1071,18 +1221,18 @@ function linkifyContactText(value) {
     // URL
     if (/^(https?:\/\/|www\.)/i.test(text) || /^(linkedin\.com|github\.com|x\.com|twitter\.com|medium\.com|behance\.net|dribbble\.com)/i.test(text)) {
         const href = /^https?:\/\//i.test(text) ? text : `https://${text}`;
-        return `<a href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;">${escapeHTML(text)}</a>`;
+        return `<a href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="color:#2563eb;text-decoration:none;border-bottom:1px solid rgba(37,99,235,0.45);padding-bottom:1px;font-weight:500;">${escapeHTML(text)}</a>`;
     }
 
     // Email
     if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) {
-        return `<a href="mailto:${escapeAttr(text)}" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;">${escapeHTML(text)}</a>`;
+        return `<a href="mailto:${escapeAttr(text)}" style="color:#2563eb;text-decoration:none;border-bottom:1px solid rgba(37,99,235,0.45);padding-bottom:1px;font-weight:500;">${escapeHTML(text)}</a>`;
     }
 
     // Phone-like value
     const compact = text.replace(/[^\d+]/g, '');
     if (/^\+?\d{8,15}$/.test(compact)) {
-        return `<a href="tel:${escapeAttr(compact)}" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;">${escapeHTML(text)}</a>`;
+        return `<a href="tel:${escapeAttr(compact)}" style="color:#2563eb;text-decoration:none;border-bottom:1px solid rgba(37,99,235,0.45);padding-bottom:1px;font-weight:500;">${escapeHTML(text)}</a>`;
     }
 
     return escapeHTML(text);
