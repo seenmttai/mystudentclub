@@ -1087,6 +1087,8 @@ function renderContactWithIcons(personal) {
     const sep = '<span class="contact-sep" style="margin:0 0.4em;opacity:0.65;">|</span>';
     const items = [];
 
+    const contactLinkStyle = 'color:#2563eb;text-decoration:none;border-bottom:1px solid rgba(37,99,235,0.45);padding-bottom:1px;font-weight:500;';
+
     if (phone) {
         const tel = phone.replace(/[^\d+]/g, '');
         items.push(`
@@ -1096,7 +1098,7 @@ function renderContactWithIcons(personal) {
                         <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.11 4.18 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.62a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.46-1.27a2 2 0 0 1 2.11-.45c.84.29 1.72.5 2.62.62A2 2 0 0 1 22 16.92z"></path>
                     </svg>
                 </span>
-                <a href="tel:${escapeAttr(tel)}" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;">${escapeHTML(phone)}</a>
+                <a href="tel:${escapeAttr(tel)}" style="${contactLinkStyle}">${escapeHTML(phone)}</a>
             </span>
         `);
     }
@@ -1110,7 +1112,7 @@ function renderContactWithIcons(personal) {
                         <path d="m22 6-10 7L2 6"></path>
                     </svg>
                 </span>
-                <a href="mailto:${escapeAttr(email)}" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;">${escapeHTML(email)}</a>
+                <a href="mailto:${escapeAttr(email)}" style="${contactLinkStyle}">${escapeHTML(email)}</a>
             </span>
         `);
     }
@@ -1120,12 +1122,12 @@ function renderContactWithIcons(personal) {
         if (!/^https?:\/\//i.test(href)) href = 'https://' + href;
         items.push(`
             <span class="contact-icon-item" style="display:inline-flex;align-items:center;">
-                <span style="${iconStyle}width:1.14em;height:1.14em;">
-                    <svg viewBox="0 0 24 24" width="1.14em" height="1.14em" fill="currentColor" aria-hidden="true">
+                <span style="${iconStyle}width:1.24em;height:1.24em;">
+                    <svg viewBox="0 0 24 24" width="1.24em" height="1.24em" fill="currentColor" aria-hidden="true">
                         <path d="M6.94 8.5A1.56 1.56 0 1 1 6.94 5.38 1.56 1.56 0 0 1 6.94 8.5zM5.6 9.82h2.67v8.58H5.6V9.82zm4.3 0h2.56v1.17h.04c.36-.67 1.23-1.37 2.53-1.37 2.71 0 3.21 1.79 3.21 4.11v4.67h-2.67v-4.14c0-.99-.02-2.26-1.38-2.26-1.39 0-1.6 1.08-1.6 2.19v4.21H9.9V9.82z"></path>
                     </svg>
                 </span>
-                <a href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;">${escapeHTML(linkedin)}</a>
+                <a href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="${contactLinkStyle}">${escapeHTML(linkedin)}</a>
             </span>
         `);
     }
@@ -1151,7 +1153,7 @@ function renderContactWithIcons(personal) {
         const label = (link && link.label ? String(link.label).trim() : '') || rawUrl;
         items.push(`
             <span class="contact-icon-item" style="display:inline-flex;align-items:center;">
-                <a href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;">${escapeHTML(label)}</a>
+                <a href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="${contactLinkStyle}">${escapeHTML(label)}</a>
             </span>
         `);
     });
@@ -1219,18 +1221,18 @@ function linkifyContactText(value) {
     // URL
     if (/^(https?:\/\/|www\.)/i.test(text) || /^(linkedin\.com|github\.com|x\.com|twitter\.com|medium\.com|behance\.net|dribbble\.com)/i.test(text)) {
         const href = /^https?:\/\//i.test(text) ? text : `https://${text}`;
-        return `<a href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;">${escapeHTML(text)}</a>`;
+        return `<a href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="color:#2563eb;text-decoration:none;border-bottom:1px solid rgba(37,99,235,0.45);padding-bottom:1px;font-weight:500;">${escapeHTML(text)}</a>`;
     }
 
     // Email
     if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text)) {
-        return `<a href="mailto:${escapeAttr(text)}" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;">${escapeHTML(text)}</a>`;
+        return `<a href="mailto:${escapeAttr(text)}" style="color:#2563eb;text-decoration:none;border-bottom:1px solid rgba(37,99,235,0.45);padding-bottom:1px;font-weight:500;">${escapeHTML(text)}</a>`;
     }
 
     // Phone-like value
     const compact = text.replace(/[^\d+]/g, '');
     if (/^\+?\d{8,15}$/.test(compact)) {
-        return `<a href="tel:${escapeAttr(compact)}" style="color:inherit;text-decoration:none;border-bottom:1px solid currentColor;">${escapeHTML(text)}</a>`;
+        return `<a href="tel:${escapeAttr(compact)}" style="color:#2563eb;text-decoration:none;border-bottom:1px solid rgba(37,99,235,0.45);padding-bottom:1px;font-weight:500;">${escapeHTML(text)}</a>`;
     }
 
     return escapeHTML(text);

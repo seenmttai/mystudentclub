@@ -1643,12 +1643,12 @@
                 let display = m.replace(/^https?:\/\//i, '').replace(/^www\./i, '');
                 if (display.endsWith('/')) display = display.slice(0, -1);
                 
-                return `<a href="${href}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:inherit; border-bottom:1px solid currentColor; opacity:0.9;">${display}</a>`;
+                return `<a href="${href}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#2563eb; border-bottom:1px solid rgba(37,99,235,0.45); padding-bottom:1px; font-weight:500;">${display}</a>`;
             });
 
             // 2. Emails
             const emailRegex = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi;
-            escaped = escaped.replace(emailRegex, (m) => `<a href="mailto:${m}" style="text-decoration:none; color:inherit; border-bottom:1px solid currentColor; opacity:0.9;">${m}</a>`);
+            escaped = escaped.replace(emailRegex, (m) => `<a href="mailto:${m}" style="text-decoration:none; color:#2563eb; border-bottom:1px solid rgba(37,99,235,0.45); padding-bottom:1px; font-weight:500;">${m}</a>`);
 
             // 3. Phone numbers (Handles + prefix, spaces, dashes, parentheses)
             // Simplified to look for international or standard domestic patterns
@@ -1656,7 +1656,7 @@
             escaped = escaped.replace(phoneRegex, (m) => {
                 const clean = m.replace(/[^\d+]/g, '');
                 if (clean.length < 8 || clean.length > 16) return m; // Likely not a phone number if too short/long
-                return `<a href="tel:${clean}" style="text-decoration:none; color:inherit; border-bottom:1px solid currentColor; opacity:0.9;">${m}</a>`;
+                return `<a href="tel:${clean}" style="text-decoration:none; color:#2563eb; border-bottom:1px solid rgba(37,99,235,0.45); padding-bottom:1px; font-weight:500;">${m}</a>`;
             });
 
             return escaped;
@@ -1851,7 +1851,7 @@
                         if (link.label) {
                             let href = link.url;
                             if (!/^https?:\/\//i.test(href)) href = 'https://' + (href.startsWith('www.') ? href : href);
-                            contactParts.push(`<a href="${href}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:inherit; border-bottom:1px solid currentColor; opacity:0.9;">${link.label}</a>`);
+                            contactParts.push(`<a href="${href}" target="_blank" rel="noopener noreferrer" style="text-decoration:none; color:#2563eb; border-bottom:1px solid rgba(37,99,235,0.45); padding-bottom:1px; font-weight:500;">${link.label}</a>`);
                         } else {
                             contactParts.push(autoLink(link.url));
                         }
