@@ -4,13 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CA CV Maker</title>
+    <title>My Student Club CV Builder</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Driver.js for Guided Tour -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css" />
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css">
     <link rel="stylesheet" href="cv-styles.css">
     <!-- Old image-based PDF libs (replaced by Cloudflare Worker + Puppeteer for ATS-friendly PDFs) -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> -->
@@ -27,18 +28,10 @@
     <div class="editor">
         <div class="editor-header">
             <div class="brand-row">
-                <div class="app-logo">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                    CA CV Maker
+                <a class="app-logo" href="/" title="Go to My Student Club">
+                    <img src="/assets/logo.png" alt="My Student Club logo">
                     <span class="beta-badge">Beta</span>
-                </div>
+                </a>
                 <div style="display: flex; gap: 6px;">
                     <button class="btn-icon" onclick="startTour()" title="Take a quick tour"
                         style="background: #f0f4ff; border-color: var(--primary-light);">
@@ -110,6 +103,10 @@
             <input type="file" id="file-upload" accept="image/*,application/pdf" style="display:none"
                 onchange="handleImageUpload(this)">
 
+            <div class="progress-head">
+                <span>Completion</span>
+                <span id="progress-percent">0%</span>
+            </div>
             <div class="progress-track" title="Completion">
                 <div class="progress-fill" id="progress-fill" style="width: 10%"></div>
             </div>
@@ -124,7 +121,7 @@
 
         <div class="editor-content">
 
-            <details open>
+            <details open data-section="education">
                 <summary>Personal Details</summary>
                 <div class="section-body">
                     <div class="form-group">
@@ -136,11 +133,6 @@
                         <label>Tagline / Current Role</label>
                         <input type="text" class="form-control" id="inp-tagline" placeholder="e.g. CA Final | Flipkart"
                             oninput="updateCV()">
-                    </div>
-                    <div class="form-group" data-section="contact">
-                        <label>Contact Info</label>
-                        <input type="text" class="form-control" id="inp-contact"
-                            placeholder="+91 98765 43210 | email@me.com | linkedin.com/in/user" oninput="updateCV()">
                     </div>
                     <div class="form-group" data-section="phone">
                         <label>Phone</label>
@@ -155,6 +147,11 @@
                     <div class="form-group" data-section="linkedin">
                         <label>LinkedIn</label>
                         <input type="text" class="form-control" id="inp-linkedin" placeholder="linkedin.com/in/yourname"
+                            oninput="updateCV()">
+                    </div>
+                    <div class="form-group" data-section="location">
+                        <label>Location (optional)</label>
+                        <input type="text" class="form-control" id="inp-location" placeholder="e.g. Mumbai, India"
                             oninput="updateCV()">
                     </div>
 
@@ -184,6 +181,7 @@
                                 AI refine
                             </button>
                         </div>
+                        <div id="inp-summary-editor" class="summary-rich-editor" style="display:none;"></div>
                         <textarea class="form-control" id="inp-summary"
                             placeholder="Brief summary of your professional goals..." oninput="updateCV()"
                             maxlength="500"></textarea>
@@ -192,7 +190,7 @@
                 </div>
             </details>
 
-            <details open>
+            <details open data-section="experience">
                 <summary>
                     <span>Education</span>
                     <button class="chip" onclick="prefillCAEducation(event)"
@@ -319,12 +317,24 @@
                                 AI refine
                             </button>
                         </div>
+                        <div id="inp-skills-editor" class="summary-rich-editor" style="display:none;"></div>
                         <textarea class="form-control" id="inp-skills" placeholder="List your key skills..."
                             oninput="updateCV()" maxlength="300"></textarea>
                         <div class="char-counter" id="skills-counter">0/300</div>
                     </div>
                 </div>
             </details>
+
+            <div id="custom-sections-area"></div>
+
+            <button class="btn-dashed" id="add-custom-section-btn" onclick="addCustomSection()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+                    viewBox="0 0 24 24">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add Custom Section
+            </button>
 
             <!-- Spacer for mobile nav -->
             <div style="height: 40px;"></div>
@@ -335,19 +345,51 @@
 
     <!-- RIGHT PANEL -->
     <div class="preview">
-        <div class="template-floater" onclick="toggleTemplateSidebar(true)" style="cursor: pointer;">
-            <span class="template-label">Template</span>
-            <span id="current-template-name" style="font-size: 13px; font-weight: 600; color: var(--text-main);">Modern
-                Serif</span>
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M6 9l6 6 6-6" />
-            </svg>
+        <div class="template-floater">
+            <button class="floater-pill" onclick="toggleTemplateSidebar(true)">
+                <span class="template-label">Template</span>
+                <span id="current-template-name" style="font-size: 13px; font-weight: 600; color: var(--text-main);">Classic Blue</span>
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </button>
+            <button class="floater-pill" onclick="toggleReorderDrawer(true)">
+                <span class="template-label">Layout</span>
+                <span style="font-size: 13px; font-weight: 600; color: var(--text-main);">Reorder</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M8 6h13"></path>
+                    <path d="M8 12h13"></path>
+                    <path d="M8 18h13"></path>
+                    <path d="M3 6h.01"></path>
+                    <path d="M3 12h.01"></path>
+                    <path d="M3 18h.01"></path>
+                </svg>
+            </button>
+            <div class="floater-pill undo-redo-pill">
+                <span class="template-label">History</span>
+                <div class="undo-redo-group">
+                    <button class="undo-redo-btn" id="btn-undo" data-undo-control onclick="undoChange()" title="Undo (Ctrl+Z)">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3 10h10a4 4 0 1 1 0 8h-1"></path>
+                            <path d="M3 10l3-3"></path>
+                            <path d="M3 10l3 3"></path>
+                        </svg>
+                    </button>
+                    <button class="undo-redo-btn" id="btn-redo" data-redo-control onclick="redoChange()" title="Redo (Ctrl+Y)">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M21 10H11a4 4 0 1 0 0 8h1"></path>
+                            <path d="M21 10l-3-3"></path>
+                            <path d="M21 10l-3 3"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- Hidden dropdown for legacy compatibility -->
         <select id="template-select" style="display: none;" onchange="changeTemplate()">
-            <option value="cv1.html">Modern Serif</option>
             <option value="cv2.html">Classic Blue</option>
+            <option value="cv1.html">Modern Serif</option>
             <option value="cv3.html">Grid Layout</option>
             <option value="cv4.html">Professional</option>
             <option value="cv5.html">Corporate</option>
@@ -362,11 +404,43 @@
         </select>
 
         <div class="preview-wrapper">
-            <iframe id="cv-frame" src="cv1.html"></iframe>
+            <iframe id="cv-frame" src="cv2.html"></iframe>
             <div id="ai-spinner" class="loading-overlay">
                 <div class="spinner"></div>
             </div>
         </div>
+        <div class="mobile-history-controls">
+            <button class="mobile-history-btn" data-undo-control onclick="undoChange()" title="Undo (Ctrl+Z)">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M3 10h10a4 4 0 1 1 0 8h-1"></path>
+                    <path d="M3 10l3-3"></path>
+                    <path d="M3 10l3 3"></path>
+                </svg>
+            </button>
+            <button class="mobile-history-btn" data-redo-control onclick="redoChange()" title="Redo (Ctrl+Y)">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M21 10H11a4 4 0 1 0 0 8h1"></path>
+                    <path d="M21 10l-3-3"></path>
+                    <path d="M21 10l-3 3"></path>
+                </svg>
+            </button>
+        </div>
+
+        <div id="reorder-overlay" class="reorder-overlay" onclick="toggleReorderDrawer(false)"></div>
+        <aside id="reorder-drawer" class="reorder-drawer">
+            <div class="reorder-drawer-header">
+                <div>
+                    <div class="reorder-title">Reorder Sections</div>
+                    <div class="reorder-subtitle">Drag or use arrows</div>
+                </div>
+                <button class="btn-icon" onclick="toggleReorderDrawer(false)">Close</button>
+            </div>
+            <div id="reorder-drawer-list" class="reorder-drawer-list"></div>
+            <div class="reorder-drawer-actions">
+                <button class="btn-icon" onclick="resetSectionOrder()">Reset Order</button>
+                <button class="btn-icon btn-primary" onclick="toggleReorderDrawer(false)">Done</button>
+            </div>
+        </aside>
     </div>
 
     <!-- MOBILE NAV -->
@@ -1062,11 +1136,30 @@
             <h3>Choose Template</h3>
             <button class="template-sidebar-close" onclick="toggleTemplateSidebar(false)">×</button>
         </div>
+        <div class="template-theme-panel">
+            <div class="template-theme-head">
+                <div>
+                    <div class="template-theme-title">Color Theme</div>
+                    <div class="template-theme-subtitle">Use presets or pick any accent color</div>
+                </div>
+                <button type="button" class="template-theme-reset" onclick="resetThemeAccent()">Default</button>
+            </div>
+            <div class="template-theme-swatches" id="template-theme-swatches"></div>
+            <div class="template-theme-custom">
+                <label for="theme-accent-picker">Custom RGB</label>
+                <div class="template-theme-custom-row">
+                    <input type="color" id="theme-accent-picker" onchange="updateThemeAccent(this.value)">
+                    <input type="text" id="theme-accent-value" class="form-control" placeholder="#2F557F" oninput="updateThemeAccentFromText(this.value)">
+                    <div class="template-theme-chip" id="theme-accent-chip">Accent</div>
+                </div>
+            </div>
+        </div>
         <div class="template-grid" id="template-grid">
             <!-- Cards injected by JS -->
         </div>
     </div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
 <script src="cv-script.js"></script>
 
 </html>

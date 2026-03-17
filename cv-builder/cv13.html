@@ -142,7 +142,7 @@
         }
 
         /* WIDTHS & ALIGNMENTS */
-        .col-left { width: 20%; font-weight: bold; vertical-align: top; }
+        .col-left { width: 20%; font-weight: bold; vertical-align: middle; text-align: center; }
         .col-right { width: 80%; vertical-align: top; text-align: justify; }
         .col-deg { width: 27%; text-align: center; font-weight: bold; }
         .col-board { width: 33%; text-align: center; font-weight: bold; }
@@ -164,6 +164,15 @@
         }
 
         .template { display: none !important; }
+
+        /* Keep left label column only for Work Experience */
+        .sortable-section:not([data-section-id="experience"]) .col-left {
+            display: none;
+        }
+
+        .sortable-section:not([data-section-id="experience"]) td.col-left + td.col-right {
+            width: 100% !important;
+        }
 
         /* WORK SPECIFIC */
         .work-company-row {
@@ -254,14 +263,17 @@
                 </div>
 
                 <!-- 2. CAREER OBJECTIVE -->
+                <div class="sortable-section" data-section-id="summary">
                 <table class="cv-table">
                     <tr>
                         <td class="col-left">CAREER<br>OBJECTIVE</td>
                         <td class="col-right" data-field="summary"></td>
                     </tr>
                 </table>
+                </div>
 
                 <!-- 3. EDUCATION -->
+                <div class="sortable-section" data-section-id="education">
                 <table class="cv-table">
                     <colgroup>
                         <col style="width: 27%">
@@ -287,8 +299,10 @@
                         </tr>
                     </tbody>
                 </table>
+                </div>
 
                 <!-- 4. WORK EXPERIENCE HEADER -->
+                <div class="sortable-section" data-section-id="experience">
                 <table class="cv-table">
                     <colgroup>
                         <col style="width: 20%">
@@ -321,41 +335,97 @@
                         </tr>
                     </table>
                 </div>
+                </div>
 
-                <!-- 6. EXTRAS -->
-                <table class="cv-table cv-extra-table">
-                    <colgroup>
-                        <col style="width: 20%">
-                        <col style="width: 80%">
-                    </colgroup>
-                    <tr>
-                        <td colspan="2" class="section-header">POSITION OF RESPONSIBILITY, EXTRACURRICULAR ACTIVITIES, CERTIFICATIONS AND SKILLS</td>
-                    </tr>
-                    <tr>
-                        <td class="col-left">Position of Responsibility</td>
-                        <td class="col-right">
-                            <ul data-list="leadership"></ul>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-left">Extracurricular Activities</td>
-                        <td class="col-right">
-                            <ul data-list="achievements"></ul>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-left">Technical Skill</td>
-                        <td class="col-right">
-                            <div data-field="skills"></div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-left">Certifications</td>
-                        <td class="col-right">
-                            <ul data-list="certifications"></ul>
-                        </td>
-                    </tr>
-                </table>
+                <div class="sortable-section" data-section-id="leadership">
+                    <table class="cv-table cv-extra-table">
+                        <colgroup>
+                            <col style="width: 20%">
+                            <col style="width: 80%">
+                        </colgroup>
+                        <tr>
+                            <td colspan="2" class="section-header">POSITION OF RESPONSIBILITY</td>
+                        </tr>
+                        <tr>
+                            <td class="col-left">Position of Responsibility</td>
+                            <td class="col-right">
+                                <ul data-list="leadership"></ul>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="sortable-section" data-section-id="achievements">
+                    <table class="cv-table cv-extra-table">
+                        <colgroup>
+                            <col style="width: 20%">
+                            <col style="width: 80%">
+                        </colgroup>
+                        <tr>
+                            <td colspan="2" class="section-header">EXTRACURRICULAR ACTIVITIES</td>
+                        </tr>
+                        <tr>
+                            <td class="col-left">Extracurricular Activities</td>
+                            <td class="col-right">
+                                <ul data-list="achievements"></ul>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="sortable-section" data-section-id="skills">
+                    <table class="cv-table cv-extra-table">
+                        <colgroup>
+                            <col style="width: 20%">
+                            <col style="width: 80%">
+                        </colgroup>
+                        <tr>
+                            <td colspan="2" class="section-header">SKILLS</td>
+                        </tr>
+                        <tr>
+                            <td class="col-left">Technical Skill</td>
+                            <td class="col-right">
+                                <div data-field="skills"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="sortable-section" data-section-id="certifications">
+                    <table class="cv-table cv-extra-table">
+                        <colgroup>
+                            <col style="width: 20%">
+                            <col style="width: 80%">
+                        </colgroup>
+                        <tr>
+                            <td colspan="2" class="section-header">CERTIFICATIONS</td>
+                        </tr>
+                        <tr>
+                            <td class="col-left">Certifications</td>
+                            <td class="col-right">
+                                <ul data-list="certifications"></ul>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="sortable-section" data-section-id="interests">
+                    <table class="cv-table cv-extra-table">
+                        <colgroup>
+                            <col style="width: 20%">
+                            <col style="width: 80%">
+                        </colgroup>
+                        <tr>
+                            <td colspan="2" class="section-header">INTERESTS</td>
+                        </tr>
+                        <tr>
+                            <td class="col-left">Hobbies</td>
+                            <td class="col-right">
+                                <ul data-list="interests"></ul>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
 
             </div>
         </div>

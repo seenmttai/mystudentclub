@@ -248,6 +248,10 @@
             margin-bottom: calc(2px * var(--content-scale));
         }
 
+        .date-text {
+            font-size: calc(18px * var(--content-scale));
+        }
+
         /* ---------------------------------------------------------
            PRINT STYLES - STRICT SINGLE PAGE A4
            --------------------------------------------------------- */
@@ -318,6 +322,7 @@
             </div>
 
             <!-- EDUCATION -->
+            <div class="sortable-section" data-section-id="education">
             <div class="section-header">EDUCATION</div>
             <table class="edu-table">
                 <thead>
@@ -339,8 +344,10 @@
                     </tr>
                 </tbody>
             </table>
+            </div>
 
             <!-- WORK EXPERIENCE -->
+            <div class="sortable-section" data-section-id="experience">
             <div class="section-header">WORK EXPERIENCE</div>
 
             <div id="experience-list">
@@ -351,7 +358,7 @@
                             style="padding-left: calc(7px * var(--content-scale)); font-size: calc(18px * var(--content-scale));">
                             <span data-field="company"></span> || <span data-field="role"></span>
                         </span>
-                        <span data-field="dates"></span>
+                        <span class="date-text" data-field="dates"></span>
                     </div>
                     <div class="work-exp-content">
                         <div style=" margin-bottom: 5px;"></div>
@@ -360,8 +367,10 @@
                     </div>
                 </div>
             </div>
+            </div>
 
             <!-- POSITIONS OF LEADERSHIP -->
+            <div class="sortable-section" data-section-id="leadership">
             <div class="section-header">POSITIONS OF LEADERSHIP</div>
             <table class="leadership-table">
                 <tbody>
@@ -373,15 +382,19 @@
                     </tr>
                 </tbody>
             </table>
+            </div>
 
             <!-- EXTRA-CURRICULAR -->
+            <div class="sortable-section" data-section-id="achievements">
             <div class="section-header">EXTRA-CURRICULAR ACTIVITIES & ACHIEVEMENTS</div>
             <div style="border: 1px solid var(--border-color); padding: calc(5px * var(--content-scale));">
                 <ul data-list="achievements">
                 </ul>
             </div>
+            </div>
 
             <!-- INTEREST AND HOBBIES -->
+            <div class="sortable-section" data-section-id="interests">
             <div class="section-header">INTEREST AND HOBBIES</div>
             <table class="interest-table">
                 <tbody>
@@ -392,16 +405,20 @@
                     </tr>
                 </tbody>
             </table>
+            </div>
 
             <!-- AWARDS -->
+            <div class="sortable-section" data-section-id="certifications">
             <div class="section-header">CERTIFICATIONS</div>
             <div
                 style="padding-left: calc(9px * var(--content-scale)); border: 1px solid var(--border-color); padding: calc(5px * var(--content-scale));">
                 <ul data-list="certifications">
                 </ul>
             </div>
+            </div>
 
             <!-- ADDITIONAL SKILLS -->
+            <div class="sortable-section" data-section-id="skills">
             <div class="section-header">ADDITIONAL SKILLS</div>
             <table class="skills-table">
                 <tbody>
@@ -410,6 +427,7 @@
                     </tr>
                 </tbody>
             </table>
+            </div>
 
         </div>
     </div>
