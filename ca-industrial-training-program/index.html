@@ -131,7 +131,7 @@
         speed="1" style="width: 100%; height: 100%;" loop autoplay>
       </lottie-player>
     </div>
-    <h2>Our December batch <span class="highlight">Students</span> placed in Top Companies</h2>
+    <h2>Our <span class="dynamic-batch-month-long">December</span> batch <span class="highlight">Students</span> placed in Top Companies</h2>
     <div class="carousel-container">
       <div class="carousel" id="studentCarousel"></div>
     </div>
@@ -366,7 +366,7 @@
         const authContainer = document.querySelector('.auth-buttons-container');
         const lmsLink = document.getElementById('lms-nav-link');
 
-        if (authContainer) {
+          if (authContainer) {
           if (session) {
             authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn"><i class="fas fa-user"></i></a>';
             if (lmsLink) lmsLink.style.display = 'flex';
@@ -375,6 +375,21 @@
           }
         }
       }
+
+      // Dynamic Batch Month Calculation (-2 months)
+      const d = new Date();
+      d.setMonth(d.getMonth() - 2);
+      const monthShort = d.toLocaleString('en-US', { month: 'short' });
+      const monthLong = d.toLocaleString('en-US', { month: 'long' });
+      const yearShort = d.getFullYear().toString().slice(-2);
+      
+      const batchFormat1 = `${monthShort}'${yearShort}`; // Dec'25
+      const batchFormat2 = `${monthLong}`; // December
+      const batchFormat3 = `${monthShort} '${yearShort}`; // Dec '25
+
+      document.querySelectorAll('.dynamic-batch-month').forEach(el => el.textContent = batchFormat1);
+      document.querySelectorAll('.dynamic-batch-month-long').forEach(el => el.textContent = batchFormat2);
+      document.querySelectorAll('.dynamic-batch-month-space').forEach(el => el.textContent = batchFormat3);
     });
   </script>
 </body>
