@@ -652,7 +652,12 @@
                 </div>
             </div>
 
-            <form id="contact-form" class="contact-form">
+            <form id="contact-form" class="contact-form" action="https://formsubmit.co/capadambhansali@gmail.com" method="POST">
+                <!-- FormSubmit Configuration -->
+                <input type="hidden" name="_subject" value="New Contact Form Submission - My Student Club">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_template" value="table">
+                
                 <div class="form-group">
                     <label for="name">Your Name</label>
                     <input type="text" id="name" name="name" placeholder="Full name">
@@ -912,7 +917,7 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Submitting...</span>';
 
-            const formData = {
+            const formDataJson = {
                 user_id: currentUser ? currentUser.id : null,
                 name: document.getElementById('name').value.trim(),
                 email: document.getElementById('email').value.trim(),
@@ -923,32 +928,48 @@
             };
 
             try {
-                const { error } = await supabaseClient
+                // 1. Log to Supabase (Record keeping)
+                const { error: supabaseError } = await supabaseClient
                     .from('course_reports')
                     .insert({
-                        user_id: formData.user_id,
+                        user_id: formDataJson.user_id,
                         course_slug: 'contact-form',
-                        description: `[${formData.category}] From: ${formData.name} (${formData.email})\n\n${formData.description}`,
-                        page_url: formData.page_url
+                        description: `[${formDataJson.category}] From: ${formDataJson.name} (${formDataJson.email})\n\n${formDataJson.description}`,
+                        page_url: formDataJson.page_url
                     });
 
-                if (error) {
-                    const { error: fallbackError } = await supabaseClient
-                        .from('course_reports')
-                        .insert({
-                            user_id: formData.user_id,
-                            course_slug: 'contact-form',
-                            description: `[${formData.category}] From: ${formData.name} (${formData.email})\n\n${formData.description}`,
-                            page_url: formData.page_url
-                        });
-
-                    if (fallbackError) throw fallbackError;
+                if (supabaseError) {
+                    console.warn('Supabase logging failed, but proceeding with email submission:', supabaseError);
                 }
 
-                form.style.display = 'none';
-                successMessage.classList.add('show');
+                // 2. Send Email via FormSubmit AJAX
+                const formElement = document.getElementById('contact-form');
+                const formData = new FormData(formElement);
+                
+                const formSubmitResponse = await fetch("https://formsubmit.co/ajax/capadambhansali@gmail.com", {
+                    method: "POST",
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!formSubmitResponse.ok) {
+                    throw new Error('Email submission failed');
+                }
+
+                const result = await formSubmitResponse.json();
+                
+                if (result.success === "true" || result.success === true) {
+                    form.style.display = 'none';
+                    successMessage.classList.add('show');
+                } else {
+                    throw new Error(result.message || 'Submission failed');
+                }
+
             } catch (error) {
-                alert('Something went wrong. Please try again or contact us via email.');
+                console.error('Submission error:', error);
+                alert('Something went wrong. Please try again or contact us via email at admin@mystudentclub.com.');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i><span>Submit</span>';
