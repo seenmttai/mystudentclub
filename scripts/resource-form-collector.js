@@ -294,6 +294,11 @@ class ResourceFormCollector {
         document.addEventListener('click', (e) => {
             let resourceLink = e.target.closest('a[href]');
 
+            // Don't intercept if explicitly told not to (for our programmatically triggered downloads)
+            if (resourceLink && resourceLink.dataset.noIntercept === 'true') {
+                return;
+            }
+
             if (!resourceLink && e.target.tagName === 'A') {
                 resourceLink = e.target;
             }
@@ -308,14 +313,15 @@ class ResourceFormCollector {
             if (resourceLink && resourceLink.href && this.isResourceLink(resourceLink.href)) {
                 const resourceTitle = this.getResourceTitle(resourceLink);
                 const resourceUrl = resourceLink.href;
+                const isDownload = resourceLink.hasAttribute('download');
 
                 e.preventDefault();
                 e.stopPropagation();
 
                 if (!this.isGlobalSubmitted && !this.formSubmitted.has(resourceUrl)) {
-                    this.showForm(resourceTitle, resourceUrl, resourceLink);
+                    this.showForm(resourceTitle, resourceUrl, resourceLink, isDownload);
                 } else {
-                    this.openResource(resourceUrl);
+                    this.openResource(resourceUrl, isDownload);
                 }
             }
         });
@@ -393,7 +399,7 @@ class ResourceFormCollector {
         return linkText || link.href.split('/').pop() || 'Resource';
     }
 
-    showForm(resourceTitle, resourceUrl, originalLink) {
+    showForm(resourceTitle, resourceUrl, originalLink, isDownload = false) {
         const modal = document.getElementById('resourceFormModal');
         const form = document.getElementById('resourceForm');
         const resourceTitleInput = document.getElementById('resourceTitle');
@@ -420,6 +426,7 @@ class ResourceFormCollector {
 
         // Store the original link and URL for later use
         form.dataset.resourceUrl = resourceUrl;
+        form.dataset.isDownload = isDownload ? 'true' : 'false';
         form.dataset.originalLink = originalLink ? 'true' : 'false';
 
         // Show modal
@@ -454,8 +461,9 @@ class ResourceFormCollector {
         const submitBtn = form.querySelector('.btn-submit');
         const formData = new FormData(form);
 
-        // Get resource URL from form dataset (not formData)
+        // Get resource URL and download status from form dataset
         const resourceUrl = form.dataset.resourceUrl;
+        const isDownload = form.dataset.isDownload === 'true';
 
         // Validate required data
         if (!resourceUrl) {
@@ -518,7 +526,7 @@ class ResourceFormCollector {
                 this.pendingCallback();
                 this.pendingCallback = null;
             } else {
-                this.openResource(resourceUrl);
+                this.openResource(resourceUrl, isDownload);
             }
 
         } catch (error) {
@@ -533,7 +541,7 @@ class ResourceFormCollector {
 
             // Hide form and open resource
             this.hideForm();
-            this.openResource(resourceUrl);
+            this.openResource(resourceUrl, isDownload);
 
             // Re-enable submit button (though form is hidden)
             if (submitBtn) {
@@ -543,8 +551,22 @@ class ResourceFormCollector {
         }
     }
 
-    openResource(url) {
+    openResource(url, forceDownload = false) {
         if (!url) return;
+
+        if (forceDownload) {
+            // Programmatically trigger a download by creating a temporary link
+            // and bypassing our own interception.
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = url.split('/').pop();
+            link.dataset.noIntercept = 'true';
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            return;
+        }
 
         // Check if it's a PDF (and not a Google Drive/Doc link which are already viewers)
         const lowerUrl = url.toLowerCase();
