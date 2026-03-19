@@ -928,21 +928,7 @@
             };
 
             try {
-                // 1. Log to Supabase (Record keeping)
-                const { error: supabaseError } = await supabaseClient
-                    .from('course_reports')
-                    .insert({
-                        user_id: formDataJson.user_id,
-                        course_slug: 'contact-form',
-                        description: `[${formDataJson.category}] From: ${formDataJson.name} (${formDataJson.email})\n\n${formDataJson.description}`,
-                        page_url: formDataJson.page_url
-                    });
-
-                if (supabaseError) {
-                    console.warn('Supabase logging failed, but proceeding with email submission:', supabaseError);
-                }
-
-                // 2. Send Email via FormSubmit AJAX
+                // Send Email via FormSubmit AJAX
                 const formElement = document.getElementById('contact-form');
                 const formData = new FormData(formElement);
                 
