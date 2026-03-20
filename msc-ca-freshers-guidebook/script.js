@@ -436,7 +436,7 @@ async function init() {
 
     try {
         const { data, error } = await supabase.storage
-            .from('msc-ca-freshers-program-resources')
+            .from('industrial-training-mastery-resources')
             .createSignedUrl('MSC CA Freshers Guidebook.pdf', 300);
 
         if (error) throw error;
