@@ -26,12 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
         'industrial-training-mastery': {
             title: 'CA Industrial Training Program',
             description: 'Master industrial training requirements for CA candidates with real-world case studies.',
-            thumbnail: 'https://mystudentclub.com/assets/courseimg-industrial.png'
+            thumbnail: '../assets/courseimg-industrial.png'
         },
         'msc-ca-freshers-program': {
             title: 'MSC CA Freshers Program',
             description: 'A comprehensive program for CA freshers to kickstart their career.',
-            thumbnail: 'https://mystudentclub.com/assets/courseimg-fresher.png'
+            thumbnail: '../assets/courseimg-fresher.png'
         }
     };
 
@@ -158,14 +158,25 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sidebarCertContainer && certBtn) {
                 sidebarCertContainer.style.display = 'block'; // Ensure container is visible
 
-                // Always allow certificate download for industrial training students
-                certBtn.classList.remove('locked');
-                certBtn.disabled = false;
-                certBtn.innerHTML = '<i class="fas fa-certificate"></i> <span>Download Certificate</span>';
+                if (progress === 100) {
+                    // Only allow certificate download when course is 100% complete
+                    certBtn.classList.remove('locked');
+                    certBtn.disabled = false;
+                    certBtn.innerHTML = '<i class="fas fa-certificate"></i> <span>Download Certificate</span>';
 
-                // Hide the lock message if present
-                const lockMsg = sidebarCertContainer.querySelector('.cert-lock-msg');
-                if (lockMsg) lockMsg.style.display = 'none';
+                    // Hide the lock message if present
+                    const lockMsg = sidebarCertContainer.querySelector('.cert-lock-msg');
+                    if (lockMsg) lockMsg.style.display = 'none';
+                } else {
+                    // Keep certificate locked until 100% completion
+                    certBtn.classList.add('locked');
+                    certBtn.disabled = true;
+                    certBtn.innerHTML = '<i class="fas fa-lock"></i> <span>Certificate Locked (' + progress + '% done)</span>';
+
+                    // Show the lock message if present
+                    const lockMsg = sidebarCertContainer.querySelector('.cert-lock-msg');
+                    if (lockMsg) lockMsg.style.display = 'block';
+                }
             }
         }
     };
@@ -462,7 +473,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await checkEnrollment();
             await loadDynamicBanner();
         } else {
-            window.location.href = 'https://www.mystudentclub.com/login.html';
+            window.location.href = 'https://mystudentclub.com/login';
         }
     };
 
@@ -1073,6 +1084,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Helper to check if a resource belongs to the "Cracking Interviews" section
+    const isFromCrackingInterviewsSection = (resource) => {
+        if (state.courseSlug !== 'msc-ca-freshers-program') return false;
+        for (const section of state.courseSections) {
+            if (section.mainVideo && section.mainVideo.resources) {
+                const hasResource = section.mainVideo.resources.some(r => r.title === resource.title && r.type === resource.type);
+                if (hasResource && section.title && section.title.toLowerCase().includes('cracking interview')) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+
     const handleResourceClick = async (resource) => {
         // Define all sheets that should open in the embedded viewer
         const specialSheetUrls = [
@@ -1091,8 +1116,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (resource.view_storage_path && resource.view_storage_path !== 'None') {
             const path = resource.view_storage_path.toLowerCase();
-            if (path.endsWith('.csv')) await openResourceViewer(resource, 'csv');
-            else await openResourceViewer(resource, 'pdf');
+            if (path.endsWith('.csv')) {
+                await openResourceViewer(resource, 'csv');
+            } else if (isFromCrackingInterviewsSection(resource)) {
+                // Redirect to CA Resource viewer page for Cracking Interviews PDFs
+                try {
+                    const { data, error } = await supabase.storage
+                        .from('industrial-training-mastery-resources')
+                        .createSignedUrl(resource.view_storage_path, 300);
+                    if (error) throw error;
+                    const proxyUrl = `https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`;
+                    window.open(`/ca-resource/?pdf=${encodeURIComponent(proxyUrl)}`, '_blank');
+                } catch (err) {
+                    console.error('Error generating PDF link:', err);
+                    alert('Could not open the resource. Please try again.');
+                }
+            } else {
+                await openResourceViewer(resource, 'pdf');
+            }
             return;
         }
         downloadResource(resource);
@@ -1139,6 +1180,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const generateCertificate = async () => {
         if (!state.user) {
             alert('Please log in to download the certificate.');
+            return;
+        }
+
+        // Block certificate generation if course is not 100% complete
+        if (state.course.progress < 100) {
+            alert('You must complete 100% of the course before downloading the certificate. Current progress: ' + state.course.progress + '%');
             return;
         }
 
@@ -1436,12 +1483,12 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.hamburgerMenu.addEventListener('click', () => DOMElements.navLinks.classList.toggle('active'));
         DOMElements.logoutButton.addEventListener('click', async () => {
             await supabase.auth.signOut();
-            window.location.href = 'https://www.mystudentclub.com/login';
+            window.location.href = 'https://mystudentclub.com/login';
         });
 
 
         DOMElements.enrollRedirectBtn.addEventListener('click', () => {
-            window.location.href = 'https://www.mystudentclub.com/login';
+            window.location.href = 'https://mystudentclub.com/login';
         });
 
         if (DOMElements.downloadCertificateBtn) {
@@ -1571,7 +1618,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 DOMElements.profileDropdownEmail.textContent = session.user.email;
                 if (!state.isEnrolled) await checkEnrollment();
             } else {
-                window.location.href = 'https://www.mystudentclub.com/login';
+                window.location.href = 'https://mystudentclub.com/login';
             }
         });
     };
