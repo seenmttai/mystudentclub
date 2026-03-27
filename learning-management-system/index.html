@@ -242,38 +242,11 @@
 
         <main>
             <section class="hero-enhanced">
-                <div class="hero-background">
-                    <div class="floating-elements">
-                        <div class="float-element" v-for="n in 6" :key="n" :style="getFloatingStyle(n)"></div>
-                    </div>
-                </div>
                 <div class="hero-content">
-                    <div class="hero-text">
-                        <h1 class="hero-title">
-                            Welcome Back, <span class="gradient-text">{{ getUserName() }}</span>
-                        </h1>
-                        <p class="hero-subtitle">Your journey to CA excellence continues here. Track your progress and
-                            master your skills.</p>
-
-                        <div class="hero-stats">
-                            <div class="stat-item">
-                                <div class="stat-number" v-if="!loading">{{ enrolledCourses.length }}</div>
-                                <div class="stat-number" v-else><i class="fas fa-spinner fa-spin"></i></div>
-                                <div class="stat-label">Active Courses</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-number" v-if="!loading">{{ analytics.totalVideosCompleted }}</div>
-                                <div class="stat-number" v-else><i class="fas fa-spinner fa-spin"></i></div>
-                                <div class="stat-label">Videos Completed</div>
-                            </div>
-                            <div class="stat-item">
-                                <div class="stat-number" v-if="!loading">{{ analytics.streak }}</div>
-                                <div class="stat-number" v-else><i class="fas fa-spinner fa-spin"></i></div>
-                                <div class="stat-label">Day Streak</div>
-                            </div>
-                        </div>
-                    </div>
-
+                    <h1 class="hero-title">
+                        Welcome Back, <span class="gradient-text">{{ getUserName() }}</span>
+                    </h1>
+                    <p class="hero-subtitle">Your journey to CA excellence continues here. Track your progress and master your skills.</p>
                     <div class="search-enhanced">
                         <div class="search-wrapper">
                             <i class="fas fa-search search-icon"></i>
@@ -303,11 +276,13 @@
 
             <section v-else class="courses-section-enhanced">
                 <div class="section-container">
-                    <div class="section-header-enhanced">
-                        <h2>My Learning Path</h2>
-                        <p>Pick up where you left off</p>
+                    <div class="section-header-enhanced" style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <h2>My Learning Path</h2>
+                            <p style="margin-bottom: 0;">Pick up where you left off</p>
+                        </div>
 
-                        <div class="view-controls">
+                        <div class="view-controls" style="margin-top: 0;">
                             <div class="view-toggle">
                                 <button class="view-btn" :class="{ 'active': viewMode === 'grid' }"
                                     @click="viewMode = 'grid'">
@@ -372,7 +347,23 @@
                     </div>
                     <div class="analytics-grid">
                         <div class="analytics-card">
-                            <div class="analytics-icon"><i class="fas fa-fire"></i></div>
+                            <div class="analytics-icon" style="background: linear-gradient(135deg, #2563eb, #3b82f6);"><i class="fas fa-book-open"></i></div>
+                            <div class="analytics-content">
+                                <h4>Active Courses</h4>
+                                <div class="analytics-value">{{ enrolledCourses.length }}</div>
+                                <p>Currently enrolled</p>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-icon" style="background: linear-gradient(135deg, #059669, #10b981);"><i class="fas fa-play-circle"></i></div>
+                            <div class="analytics-content">
+                                <h4>Videos Completed</h4>
+                                <div class="analytics-value">{{ analytics.totalVideosCompleted }}</div>
+                                <p>Total videos watched</p>
+                            </div>
+                        </div>
+                        <div class="analytics-card">
+                            <div class="analytics-icon" style="background: linear-gradient(135deg, #d97706, #f59e0b);"><i class="fas fa-fire"></i></div>
                             <div class="analytics-content">
                                 <h4>Learning Streak</h4>
                                 <div class="analytics-value">{{ analytics.streak }} Days</div>
@@ -380,7 +371,7 @@
                             </div>
                         </div>
                         <div class="analytics-card">
-                            <div class="analytics-icon"><i class="fas fa-trophy"></i></div>
+                            <div class="analytics-icon" style="background: linear-gradient(135deg, #7c3aed, #8b5cf6);"><i class="fas fa-trophy"></i></div>
                             <div class="analytics-content">
                                 <h4>Completion Rate</h4>
                                 <div class="analytics-value">{{ analytics.completionRate }}%</div>
@@ -415,7 +406,6 @@
                             <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo"
                                 class="logo-enhanced">
                         </a>
-                        <h4>My Student Club</h4>
                         <p>Empowering the next generation of Chartered Accountants with world-class education and
                             resources.</p>
                         <div class="social-links">
@@ -494,7 +484,7 @@
                 return {
                     menuActive: false,
                     searchQuery: '',
-                    viewMode: 'grid',
+                    viewMode: 'list',
                     user: null,
                     loading: true,
                     showReportModal: false,
@@ -505,7 +495,7 @@
                             slug: 'industrial-training-mastery',
                             title: 'Industrial Training Mastery Program',
                             description: 'Master industrial training requirements for CA candidates with real-world case studies.',
-                            thumbnail: 'https://mystudentclub.com/assets/courseimg-industrial.png',
+                            thumbnail: '../assets/courseimg-industrial.png',
                             videoCountEstimate: 7
                         },
                         {
@@ -513,7 +503,7 @@
                             slug: 'msc-ca-freshers-program',
                             title: 'MSC CA Freshers Program',
                             description: 'A comprehensive program for CA freshers to kickstart their career.',
-                            thumbnail: 'https://mystudentclub.com/assets/courseimg-fresher.png',
+                            thumbnail: '../assets/courseimg-fresher.png',
                             videoCountEstimate: 7
                         }
                     ],
@@ -663,15 +653,7 @@
                 },
 
                 getFloatingStyle(index) {
-                    const positions = [
-                        { top: '10%', left: '10%', animationDelay: '0s' },
-                        { top: '20%', right: '15%', animationDelay: '2s' },
-                        { top: '50%', left: '5%', animationDelay: '4s' },
-                        { bottom: '30%', right: '10%', animationDelay: '1s' },
-                        { bottom: '20%', left: '20%', animationDelay: '3s' },
-                        { top: '40%', right: '25%', animationDelay: '5s' }
-                    ];
-                    return positions[index - 1] || {};
+                    return {};
                 }
             },
             mounted() {
