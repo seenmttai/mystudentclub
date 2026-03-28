@@ -1461,10 +1461,248 @@
             backdrop-filter: blur(2px);
         }
 
-        .loading-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
+.loading-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.ai-prompt-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 1400;
+    padding: 20px;
+}
+
+.ai-prompt-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.ai-prompt-card {
+    width: min(92vw, 440px);
+    background: #fff;
+    border-radius: 16px;
+    padding: 18px 18px 16px;
+    box-shadow: 0 22px 50px rgba(15, 23, 42, 0.18);
+    border: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+.ai-prompt-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.ai-prompt-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.ai-prompt-close {
+    border: none;
+    background: #f8fafc;
+    color: #0f172a;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.ai-prompt-sub {
+    margin: 8px 0 12px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.ai-prompt-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 10px;
+}
+
+.ai-prompt-chip {
+    border: 1px solid #dbe5f5;
+    background: #f8fbff;
+    color: #1f3f74;
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.ai-prompt-chip:hover {
+    background: #eef5ff;
+    border-color: #c8d8f2;
+}
+
+.ai-prompt-card textarea.form-control {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.ai-prompt-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.ai-preview-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 1450;
+    padding: 20px;
+}
+
+.ai-preview-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.ai-preview-card {
+    width: min(94vw, 920px);
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.4);
+    box-shadow: 0 22px 50px rgba(15, 23, 42, 0.18);
+    padding: 16px;
+}
+
+.ai-preview-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.ai-preview-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.ai-preview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.ai-preview-pane {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fafc;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+}
+
+.ai-preview-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #64748b;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 10px 12px;
+}
+
+.ai-preview-content {
+    margin: 0;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #0f172a;
+    white-space: pre-wrap;
+    overflow: auto;
+    max-height: min(56vh, 420px);
+}
+
+.diff-line {
+    display: block;
+    padding: 3px 6px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+}
+
+.diff-unchanged {
+    background: transparent;
+}
+
+.diff-added {
+    background: #ecfdf3;
+    color: #065f46;
+    border-left: 3px solid #22c55e;
+}
+
+.diff-removed {
+    background: #fef2f2;
+    color: #991b1b;
+    border-left: 3px solid #ef4444;
+}
+
+.diff-empty {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+@media (max-width: 640px) {
+    .ai-prompt-overlay {
+        padding: 12px;
+        align-items: flex-end;
+    }
+
+    .ai-prompt-card {
+        width: 100%;
+        border-radius: 18px 18px 10px 10px;
+        padding: 16px;
+    }
+
+    .ai-preview-overlay {
+        padding: 10px;
+        align-items: flex-end;
+    }
+
+    .ai-preview-card {
+        width: 100%;
+        border-radius: 16px 16px 10px 10px;
+        padding: 12px;
+    }
+
+    .ai-preview-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .ai-preview-content {
+        max-height: 32vh;
+        font-size: 12px;
+    }
+}
 
         .spinner {
             width: 36px;

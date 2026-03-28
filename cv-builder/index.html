@@ -227,6 +227,17 @@
             <details data-section="projects">
                 <summary>Projects</summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                            <label style="margin-bottom:0;">Projects (All)</label>
+                            <button type="button" class="btn-mini" onclick="aiRefineProjects()" title="Refine project bullets with AI">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 3l2.09 4.26L19 8l-3.5 3.4L16.18 17 12 14.8 7.82 17 9 11.4 5 8l4.91-.74L12 3z"></path>
+                                </svg>
+                                AI refine
+                            </button>
+                        </div>
+                    </div>
                     <div id="proj-container"></div>
                     <button class="btn-dashed" onclick="addProject()">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
@@ -257,6 +268,17 @@
             <details data-section="achievements">
                 <summary>Achievements & Awards</summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                            <label style="margin-bottom:0;">Achievements (All)</label>
+                            <button type="button" class="btn-mini" onclick="aiRefineAchievements()" title="Refine achievements with AI">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 3l2.09 4.26L19 8l-3.5 3.4L16.18 17 12 14.8 7.82 17 9 11.4 5 8l4.91-.74L12 3z"></path>
+                                </svg>
+                                AI refine
+                            </button>
+                        </div>
+                    </div>
                     <div id="ach-container"></div>
                     <button class="btn-dashed" onclick="addListItem('achievements')">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
@@ -272,6 +294,17 @@
             <details data-section="leadership">
                 <summary>Leadership</summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                            <label style="margin-bottom:0;">Leadership (All)</label>
+                            <button type="button" class="btn-mini" onclick="aiRefineLeadership()" title="Refine leadership items with AI">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 3l2.09 4.26L19 8l-3.5 3.4L16.18 17 12 14.8 7.82 17 9 11.4 5 8l4.91-.74L12 3z"></path>
+                                </svg>
+                                AI refine
+                            </button>
+                        </div>
+                    </div>
                     <div id="lead-container"></div>
                     <button class="btn-dashed" onclick="addListItem('leadership')">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
@@ -287,6 +320,17 @@
             <details data-section="interests">
                 <summary>Interests & Hobbies</summary>
                 <div class="section-body">
+                    <div class="form-group">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                            <label style="margin-bottom:0;">Interests (All)</label>
+                            <button type="button" class="btn-mini" onclick="aiRefineInterests()" title="Refine interests with AI">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 3l2.09 4.26L19 8l-3.5 3.4L16.18 17 12 14.8 7.82 17 9 11.4 5 8l4.91-.74L12 3z"></path>
+                                </svg>
+                                AI refine
+                            </button>
+                        </div>
+                    </div>
                     <div id="int-container"></div>
                     <button class="btn-dashed" onclick="addListItem('interests')">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
@@ -407,6 +451,45 @@
             <iframe id="cv-frame" src="cv2.html"></iframe>
             <div id="ai-spinner" class="loading-overlay">
                 <div class="spinner"></div>
+            </div>
+        </div>
+        <div id="ai-prompt-overlay" class="ai-prompt-overlay" aria-hidden="true" onclick="handleAiPromptOverlayClick(event)">
+            <div class="ai-prompt-card" role="dialog" aria-modal="true" aria-labelledby="ai-prompt-title" onclick="event.stopPropagation()">
+                <div class="ai-prompt-header">
+                    <h3 id="ai-prompt-title">Optional AI instruction</h3>
+                    <button class="ai-prompt-close" type="button" onclick="closeAiPrompt('cancel')" aria-label="Close">×</button>
+                </div>
+                <p class="ai-prompt-sub">Add a short instruction for this section (optional).</p>
+                <div id="ai-prompt-suggestions" class="ai-prompt-suggestions"></div>
+                <textarea id="ai-prompt-input" class="form-control" rows="3"
+                    placeholder="e.g. Use action verbs, keep bullets under 18 words"></textarea>
+                <div class="ai-prompt-actions">
+                    <button class="btn-icon" type="button" onclick="closeAiPrompt('cancel')">Cancel</button>
+                    <button class="btn-icon" type="button" onclick="skipAiPrompt()">Skip</button>
+                    <button class="btn-icon btn-primary" type="button" onclick="submitAiPrompt()">Apply</button>
+                </div>
+            </div>
+        </div>
+        <div id="ai-preview-overlay" class="ai-preview-overlay" aria-hidden="true" onclick="handleAiPreviewOverlayClick(event)">
+            <div class="ai-preview-card" role="dialog" aria-modal="true" aria-labelledby="ai-preview-title" onclick="event.stopPropagation()">
+                <div class="ai-preview-header">
+                    <h3 id="ai-preview-title">Review AI changes</h3>
+                    <button class="ai-prompt-close" type="button" onclick="closeAiPreview(false)" aria-label="Close">×</button>
+                </div>
+                <div class="ai-preview-grid">
+                    <div class="ai-preview-pane">
+                        <div class="ai-preview-label" id="ai-preview-before-label">Before</div>
+                        <pre id="ai-preview-before" class="ai-preview-content"></pre>
+                    </div>
+                    <div class="ai-preview-pane">
+                        <div class="ai-preview-label" id="ai-preview-after-label">After</div>
+                        <pre id="ai-preview-after" class="ai-preview-content"></pre>
+                    </div>
+                </div>
+                <div class="ai-prompt-actions">
+                    <button class="btn-icon" type="button" onclick="closeAiPreview(false)">Discard</button>
+                    <button class="btn-icon btn-primary" type="button" onclick="closeAiPreview(true)">Apply Changes</button>
+                </div>
             </div>
         </div>
         <div class="mobile-history-controls">

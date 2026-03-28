@@ -2119,7 +2119,7 @@ async function printCV() {
 }
 
         // AI & Import Logic
-        async function refineSection(fieldType, text) {
+        async function refineSection(fieldType, text, customPrompt = '') {
             const trimmed = (text || '').trim();
             if (!trimmed) throw new Error('Nothing to refine');
 
@@ -2129,7 +2129,7 @@ async function printCV() {
             const response = await fetch(`${WORKER_URL}/refine-section`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: trimmed, field_type: fieldType, template_id: templateId })
+                body: JSON.stringify({ text: trimmed, field_type: fieldType, template_id: templateId, custom_prompt: customPrompt || '' })
             });
             const res = await response.json();
             if (!res.ok || !res.refined_text) {
@@ -2138,11 +2138,300 @@ async function printCV() {
             return res.refined_text;
         }
 
+        const AI_PROMPT_SUGGESTIONS = {
+            default: [
+                'Make it concise and ATS-friendly',
+                'Use stronger action verbs',
+                'Improve clarity but keep original meaning'
+            ],
+            Summary: [
+                'Keep it under 60 words',
+                'Focus on CA articleship impact',
+                'Make it ATS-friendly and concise'
+            ],
+            Skills: [
+                'Group skills by category',
+                'Prioritize audit, tax, and compliance skills',
+                'Keep clean comma-separated format'
+            ],
+            Experience: [
+                'Add measurable impact where possible',
+                'Keep exactly same bullet count',
+                'Make each bullet one strong line'
+            ],
+            Projects: [
+                'Highlight outcomes and tools used',
+                'Make bullets results-focused',
+                'Keep project language concise'
+            ],
+            Achievements: [
+                'Make each point quantifiable',
+                'Keep strong achievement-focused wording',
+                'Use action-first phrasing'
+            ],
+            Leadership: [
+                'Show ownership and initiative clearly',
+                'Keep points concise and outcome-based',
+                'Use leadership-oriented language'
+            ],
+            Interests: [
+                'Keep it professional and clean',
+                'Shorten each item to one line',
+                'Improve readability for recruiters'
+            ]
+        };
+
+        let aiPromptResolver = null;
+        let aiPreviewResolver = null;
+
+        function toPreviewText(value) {
+            return String(value || '').replace(/\r/g, '').trim();
+        }
+
+        function escapeHtml(value) {
+            return String(value || '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function splitPreviewLines(value) {
+            const text = toPreviewText(value);
+            if (!text) return [];
+            const parts = text.split('\n').map(line => line.trimEnd());
+            return parts.length ? parts : [text];
+        }
+
+        function buildLineDiff(beforeText, afterText) {
+            const beforeLines = splitPreviewLines(beforeText);
+            const afterLines = splitPreviewLines(afterText);
+            const n = beforeLines.length;
+            const m = afterLines.length;
+            const dp = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+
+            for (let i = n - 1; i >= 0; i--) {
+                for (let j = m - 1; j >= 0; j--) {
+                    if (beforeLines[i] === afterLines[j]) dp[i][j] = dp[i + 1][j + 1] + 1;
+                    else dp[i][j] = Math.max(dp[i + 1][j], dp[i][j + 1]);
+                }
+            }
+
+            const beforeStates = new Array(n).fill('removed');
+            const afterStates = new Array(m).fill('added');
+
+            let i = 0;
+            let j = 0;
+            while (i < n && j < m) {
+                if (beforeLines[i] === afterLines[j]) {
+                    beforeStates[i] = 'unchanged';
+                    afterStates[j] = 'unchanged';
+                    i++;
+                    j++;
+                } else if (dp[i + 1][j] >= dp[i][j + 1]) {
+                    i++;
+                } else {
+                    j++;
+                }
+            }
+
+            return {
+                before: beforeLines.map((line, idx) => ({ line, type: beforeStates[idx] })),
+                after: afterLines.map((line, idx) => ({ line, type: afterStates[idx] }))
+            };
+        }
+
+        function renderDiffPanel(el, entries, emptyLabel) {
+            if (!el) return;
+            if (!entries.length) {
+                el.innerHTML = `<span class="diff-line diff-empty">${escapeHtml(emptyLabel || '(empty)')}</span>`;
+                return;
+            }
+            el.innerHTML = entries.map((entry) => {
+                const cls = entry.type === 'added'
+                    ? 'diff-added'
+                    : entry.type === 'removed'
+                        ? 'diff-removed'
+                        : 'diff-unchanged';
+                return `<span class="diff-line ${cls}">${escapeHtml(entry.line || ' ')}</span>`;
+            }).join('');
+        }
+
+        function listToPreviewText(items) {
+            const arr = Array.isArray(items) ? items : [];
+            return arr.map((item, idx) => `${idx + 1}. ${String(item || '').trim()}`).join('\n');
+        }
+
+        function setAiPromptSuggestions(sectionLabel = '') {
+            const host = document.getElementById('ai-prompt-suggestions');
+            if (!host) return;
+            host.innerHTML = '';
+            const suggestions = AI_PROMPT_SUGGESTIONS[sectionLabel] || AI_PROMPT_SUGGESTIONS.default;
+            suggestions.forEach((text) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'ai-prompt-chip';
+                btn.textContent = text;
+                btn.onclick = () => {
+                    const input = document.getElementById('ai-prompt-input');
+                    if (!input) return;
+                    input.value = input.value ? `${input.value.trim()} ${text}` : text;
+                    input.focus();
+                };
+                host.appendChild(btn);
+            });
+        }
+
+        function handleAiPromptOverlayClick(event) {
+            const overlay = document.getElementById('ai-prompt-overlay');
+            if (!overlay) return;
+            if (event.target === overlay) closeAiPrompt('cancel');
+        }
+
+        function openAiPromptModal(sectionLabel = '') {
+            const overlay = document.getElementById('ai-prompt-overlay');
+            const input = document.getElementById('ai-prompt-input');
+            const title = document.getElementById('ai-prompt-title');
+            if (!overlay || !input || !title) return Promise.resolve('');
+
+            const label = sectionLabel ? ` for ${sectionLabel}` : '';
+            title.textContent = `Optional AI instruction${label}`;
+            input.value = '';
+            setAiPromptSuggestions(sectionLabel);
+
+            overlay.classList.add('open');
+            overlay.setAttribute('aria-hidden', 'false');
+
+            return new Promise((resolve) => {
+                aiPromptResolver = resolve;
+                setTimeout(() => input.focus(), 0);
+            });
+        }
+
+        function closeAiPrompt(action = 'cancel') {
+            const overlay = document.getElementById('ai-prompt-overlay');
+            const input = document.getElementById('ai-prompt-input');
+            if (!overlay || !input) return;
+            if (!aiPromptResolver) {
+                overlay.classList.remove('open');
+                overlay.setAttribute('aria-hidden', 'true');
+                return;
+            }
+            let value = null;
+            if (action === 'apply') {
+                value = String(input.value || '').trim();
+            } else if (action === 'skip') {
+                value = '';
+            } else {
+                value = null;
+            }
+            const resolve = aiPromptResolver;
+            aiPromptResolver = null;
+            overlay.classList.remove('open');
+            overlay.setAttribute('aria-hidden', 'true');
+            resolve(value);
+        }
+
+        function submitAiPrompt() {
+            closeAiPrompt('apply');
+        }
+
+        function skipAiPrompt() {
+            closeAiPrompt('skip');
+        }
+
+        async function getCustomPrompt(sectionLabel) {
+            return await openAiPromptModal(sectionLabel);
+        }
+
+        function handleAiPreviewOverlayClick(event) {
+            const overlay = document.getElementById('ai-preview-overlay');
+            if (!overlay) return;
+            if (event.target === overlay) closeAiPreview(false);
+        }
+
+        function openAiPreviewModal({ title, before, after, beforeLabel = 'Before', afterLabel = 'After' }) {
+            const overlay = document.getElementById('ai-preview-overlay');
+            const titleEl = document.getElementById('ai-preview-title');
+            const beforeEl = document.getElementById('ai-preview-before');
+            const afterEl = document.getElementById('ai-preview-after');
+            const beforeLabelEl = document.getElementById('ai-preview-before-label');
+            const afterLabelEl = document.getElementById('ai-preview-after-label');
+            if (!overlay || !titleEl || !beforeEl || !afterEl || !beforeLabelEl || !afterLabelEl) return Promise.resolve(true);
+
+            titleEl.textContent = title || 'Review AI changes';
+            beforeLabelEl.textContent = beforeLabel;
+            afterLabelEl.textContent = afterLabel;
+
+            const beforeText = toPreviewText(before);
+            const afterText = toPreviewText(after);
+            const diff = buildLineDiff(beforeText, afterText);
+            renderDiffPanel(beforeEl, diff.before, '(empty)');
+            renderDiffPanel(afterEl, diff.after, '(empty)');
+
+            overlay.classList.add('open');
+            overlay.setAttribute('aria-hidden', 'false');
+
+            return new Promise((resolve) => {
+                aiPreviewResolver = resolve;
+            });
+        }
+
+        function closeAiPreview(accept) {
+            const overlay = document.getElementById('ai-preview-overlay');
+            if (!overlay) return;
+            if (!aiPreviewResolver) {
+                overlay.classList.remove('open');
+                overlay.setAttribute('aria-hidden', 'true');
+                return;
+            }
+            const resolve = aiPreviewResolver;
+            aiPreviewResolver = null;
+            overlay.classList.remove('open');
+            overlay.setAttribute('aria-hidden', 'true');
+            resolve(Boolean(accept));
+        }
+
+        window.addEventListener('keydown', (event) => {
+            if (!aiPromptResolver) return;
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                closeAiPrompt('cancel');
+            }
+            if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                event.preventDefault();
+                submitAiPrompt();
+            }
+        });
+
+        window.addEventListener('keydown', (event) => {
+            if (!aiPreviewResolver) return;
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                closeAiPreview(false);
+            }
+            if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                event.preventDefault();
+                closeAiPreview(true);
+            }
+        });
+
         async function aiRefineSummary() {
             try {
+                const customPrompt = await getCustomPrompt('Summary');
+                if (customPrompt === null) return;
                 const overlay = document.querySelector('.loading-overlay');
                 overlay?.classList.add('active');
-                const refined = await refineSection('summary', getSummaryPlainText() || cvData.summary);
+                const refined = await refineSection('summary', getSummaryPlainText() || cvData.summary, customPrompt);
+                overlay?.classList.remove('active');
+                const originalText = getSummaryPlainText() || getPlainTextFromHTML(cvData.summary || '');
+                const refinedText = getPlainTextFromHTML(sanitizeSummaryHTML(refined));
+                const approved = await openAiPreviewModal({ title: 'Apply AI changes to Summary?', before: originalText, after: refinedText });
+                if (!approved) {
+                    showToast('AI changes discarded');
+                    return;
+                }
                 cvData.summary = sanitizeSummaryHTML(refined);
                 setSummaryEditorValue(cvData.summary);
                 updateCV();
@@ -2157,9 +2446,19 @@ async function printCV() {
 
         async function aiRefineSkills() {
             try {
+                const customPrompt = await getCustomPrompt('Skills');
+                if (customPrompt === null) return;
                 const overlay = document.querySelector('.loading-overlay');
                 overlay?.classList.add('active');
-                const refined = await refineSection('skills', getSkillsPlainText() || cvData.skills);
+                const refined = await refineSection('skills', getSkillsPlainText() || cvData.skills, customPrompt);
+                overlay?.classList.remove('active');
+                const originalText = getSkillsPlainText() || getPlainTextFromHTML(cvData.skills || '');
+                const refinedText = getPlainTextFromHTML(sanitizeSummaryHTML(refined));
+                const approved = await openAiPreviewModal({ title: 'Apply AI changes to Skills?', before: originalText, after: refinedText });
+                if (!approved) {
+                    showToast('AI changes discarded');
+                    return;
+                }
                 cvData.skills = sanitizeSummaryHTML(refined);
                 setSkillsEditorValue(cvData.skills);
                 updateCV();
@@ -2177,14 +2476,168 @@ async function printCV() {
                 if (!cvData.experience || !cvData.experience[index]) throw new Error('Experience not found');
                 const bullets = cvData.experience[index].bullets || [];
                 const raw = bullets.join('\n');
+                const customPrompt = await getCustomPrompt('Experience');
+                if (customPrompt === null) return;
                 const overlay = document.querySelector('.loading-overlay');
                 overlay?.classList.add('active');
-                const refined = await refineSection('bullets', raw);
+                const refined = await refineSection('experience_bullets', raw, customPrompt);
                 const refinedLines = refined.split('\n').map(l => l.trim()).filter(Boolean);
+                overlay?.classList.remove('active');
+                const approved = await openAiPreviewModal({
+                    title: 'Apply AI changes to Experience?',
+                    before: listToPreviewText(bullets),
+                    after: listToPreviewText(refinedLines)
+                });
+                if (!approved) {
+                    showToast('AI changes discarded');
+                    return;
+                }
                 cvData.experience[index].bullets = refinedLines;
                 renderExpInputs();
                 postToFrame();
                 showToast('Experience refined');
+            } catch (e) {
+                alert('AI refine failed: ' + e.message);
+            } finally {
+                const overlay = document.querySelector('.loading-overlay');
+                overlay?.classList.remove('active');
+            }
+        }
+
+        async function aiRefineProjects() {
+            try {
+                if (!cvData.projects || !cvData.projects.length) throw new Error('No projects found');
+                const customPrompt = await getCustomPrompt('Projects');
+                if (customPrompt === null) return;
+                const overlay = document.querySelector('.loading-overlay');
+                overlay?.classList.add('active');
+                const beforePreview = [];
+                const afterPreview = [];
+                for (let i = 0; i < cvData.projects.length; i++) {
+                    const proj = cvData.projects[i];
+                    const bullets = Array.isArray(proj.bullets) ? proj.bullets : [];
+                    if (!bullets.length) continue;
+                    const raw = bullets.join('\n');
+                    const refined = await refineSection('project_bullets', raw, customPrompt);
+                    const refinedLines = refined.split('\n').map(l => l.trim()).filter(Boolean);
+                    beforePreview.push(`${proj.title || `Project ${i + 1}`}\n${listToPreviewText(bullets)}`);
+                    afterPreview.push(`${proj.title || `Project ${i + 1}`}\n${listToPreviewText(refinedLines)}`);
+                    proj.__pendingRefinedBullets = refinedLines;
+                }
+                overlay?.classList.remove('active');
+                const approved = await openAiPreviewModal({
+                    title: 'Apply AI changes to Projects?',
+                    before: beforePreview.join('\n\n'),
+                    after: afterPreview.join('\n\n')
+                });
+                if (!approved) {
+                    cvData.projects.forEach((proj) => delete proj.__pendingRefinedBullets);
+                    showToast('AI changes discarded');
+                    return;
+                }
+                cvData.projects.forEach((proj) => {
+                    if (Array.isArray(proj.__pendingRefinedBullets)) proj.bullets = proj.__pendingRefinedBullets;
+                    delete proj.__pendingRefinedBullets;
+                });
+                renderProjInputs();
+                postToFrame();
+                showToast('Projects refined');
+            } catch (e) {
+                alert('AI refine failed: ' + e.message);
+            } finally {
+                const overlay = document.querySelector('.loading-overlay');
+                overlay?.classList.remove('active');
+            }
+        }
+
+        async function aiRefineAchievements() {
+            try {
+                const items = Array.isArray(cvData.achievements) ? cvData.achievements : [];
+                if (!items.length) throw new Error('No achievements found');
+                const customPrompt = await getCustomPrompt('Achievements');
+                if (customPrompt === null) return;
+                const overlay = document.querySelector('.loading-overlay');
+                overlay?.classList.add('active');
+                const refined = await refineSection('achievements', items.join('\n'), customPrompt);
+                const refinedItems = refined.split('\n').map(l => l.trim()).filter(Boolean);
+                overlay?.classList.remove('active');
+                const approved = await openAiPreviewModal({
+                    title: 'Apply AI changes to Achievements?',
+                    before: listToPreviewText(items),
+                    after: listToPreviewText(refinedItems)
+                });
+                if (!approved) {
+                    showToast('AI changes discarded');
+                    return;
+                }
+                cvData.achievements = refinedItems;
+                renderListInputs('achievements', 'ach-container', 'achievements');
+                postToFrame();
+                showToast('Achievements refined');
+            } catch (e) {
+                alert('AI refine failed: ' + e.message);
+            } finally {
+                const overlay = document.querySelector('.loading-overlay');
+                overlay?.classList.remove('active');
+            }
+        }
+
+        async function aiRefineLeadership() {
+            try {
+                const items = Array.isArray(cvData.leadership) ? cvData.leadership : [];
+                if (!items.length) throw new Error('No leadership items found');
+                const customPrompt = await getCustomPrompt('Leadership');
+                if (customPrompt === null) return;
+                const overlay = document.querySelector('.loading-overlay');
+                overlay?.classList.add('active');
+                const refined = await refineSection('leadership', items.join('\n'), customPrompt);
+                const refinedItems = refined.split('\n').map(l => l.trim()).filter(Boolean);
+                overlay?.classList.remove('active');
+                const approved = await openAiPreviewModal({
+                    title: 'Apply AI changes to Leadership?',
+                    before: listToPreviewText(items),
+                    after: listToPreviewText(refinedItems)
+                });
+                if (!approved) {
+                    showToast('AI changes discarded');
+                    return;
+                }
+                cvData.leadership = refinedItems;
+                renderListInputs('leadership', 'lead-container', 'leadership');
+                postToFrame();
+                showToast('Leadership refined');
+            } catch (e) {
+                alert('AI refine failed: ' + e.message);
+            } finally {
+                const overlay = document.querySelector('.loading-overlay');
+                overlay?.classList.remove('active');
+            }
+        }
+
+        async function aiRefineInterests() {
+            try {
+                const items = Array.isArray(cvData.interests) ? cvData.interests : [];
+                if (!items.length) throw new Error('No interests found');
+                const customPrompt = await getCustomPrompt('Interests');
+                if (customPrompt === null) return;
+                const overlay = document.querySelector('.loading-overlay');
+                overlay?.classList.add('active');
+                const refined = await refineSection('interests', items.join('\n'), customPrompt);
+                const refinedItems = refined.split('\n').map(l => l.trim()).filter(Boolean);
+                overlay?.classList.remove('active');
+                const approved = await openAiPreviewModal({
+                    title: 'Apply AI changes to Interests?',
+                    before: listToPreviewText(items),
+                    after: listToPreviewText(refinedItems)
+                });
+                if (!approved) {
+                    showToast('AI changes discarded');
+                    return;
+                }
+                cvData.interests = refinedItems;
+                renderListInputs('interests', 'int-container', 'interests');
+                postToFrame();
+                showToast('Interests refined');
             } catch (e) {
                 alert('AI refine failed: ' + e.message);
             } finally {
