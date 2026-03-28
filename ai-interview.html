@@ -1255,6 +1255,182 @@
                 font-weight: 600;
             }
         }
+        /* --- Character SVG Base Styling --- */
+        #character {
+            width: 100%;
+            height: 100%;
+            max-height: 400px;
+            filter: drop-shadow(0px 15px 25px rgba(0, 0, 0, 0.25));
+        }
+
+        /* Default Static Opacities */
+        #eye-closed { opacity: 0; }
+        #blush { opacity: 0; }
+        #eye-open { opacity: 1; }
+        .inner-mouth { opacity: 0; }
+        #right-eyebrow { transform-origin: 131px 88px; }
+        #left-eyebrow { transform-origin: 75px 88px; }
+        #left-eyebrow, #right-eyebrow { transition: transform 0.1s ease-out; }
+
+        /* Smooth path transitions for lip syncing */
+        #mouth path, #mouth g, #chin-line {
+            transition: d 0.05s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                opacity 0.05s ease-in-out,
+                transform 0.05s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        /* Base colors for mouth parts */
+        .mouth-cavity { fill: #0A1026; }
+        .mouth-top-lip, .mouth-bottom-lip { fill: #B7685F; }
+        .mouth-teeth { fill: #FEFFFE; }
+        .mouth-tongue { fill: #E86173; }
+        .mouth-sep-line {
+            stroke: #0A1026; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.5; fill: none;
+        }
+
+        /* --- Lip Sync Talking States --- */
+        #character.mouth-ah .mouth-cavity { d: path("M 80 152 C 95 145, 111 145, 126 152 C 120 185, 86 185, 80 152 Z"); }
+        #character.mouth-ah .mouth-top-lip { d: path("M 80 152 C 95 142, 111 142, 126 152 C 111 146, 95 146, 80 152 Z"); }
+        #character.mouth-ah .mouth-bottom-lip { d: path("M 80 152 C 86 185, 120 185, 126 152 C 118 190, 88 190, 80 152 Z"); }
+        #character.mouth-ah .mouth-teeth { d: path("M 82 152 C 95 146, 111 146, 124 152 C 111 152, 95 152, 82 152 Z"); }
+        #character.mouth-ah .mouth-tongue { d: path("M 88 174 C 95 168, 111 168, 118 174 C 110 176, 96 176, 88 174 Z"); }
+        #character.mouth-ah .mouth-sep-line { d: path("M 80 152 C 86 185, 120 185, 126 152"); opacity: 0; }
+        #character.mouth-ah .inner-mouth { opacity: 1; }
+        #character.mouth-ah #chin-line { transform: translateY(26px); }
+
+        #character.mouth-oh .mouth-cavity { d: path("M 88 155 C 92 143, 114 143, 118 155 C 114 175, 92 175, 88 155 Z"); }
+        #character.mouth-oh .mouth-top-lip { d: path("M 88 155 C 92 140, 114 140, 118 155 C 114 146, 92 146, 88 155 Z"); }
+        #character.mouth-oh .mouth-bottom-lip { d: path("M 88 155 C 92 175, 114 175, 118 155 C 114 182, 92 182, 88 155 Z"); }
+        #character.mouth-oh .mouth-teeth { d: path("M 92 155 C 95 152, 111 152, 114 155 C 111 155, 95 155, 92 155 Z"); }
+        #character.mouth-oh .mouth-tongue { d: path("M 94 165 C 98 162, 108 162, 112 165 C 108 168, 98 168, 94 165 Z"); }
+        #character.mouth-oh .mouth-sep-line { d: path("M 88 155 C 92 175, 114 175, 118 155"); opacity: 0; }
+        #character.mouth-oh .inner-mouth { opacity: 0; }
+        #character.mouth-oh #chin-line { transform: translateY(18px); }
+
+        #character.mouth-small .mouth-cavity { d: path("M 83 154 C 95 153, 111 153, 123 152 C 115 167, 91 167, 83 154 Z"); }
+        #character.mouth-small .mouth-top-lip { d: path("M 83 154 C 95 150, 111 149, 123 152 C 111 153, 95 153, 83 154 Z"); }
+        #character.mouth-small .mouth-bottom-lip { d: path("M 83 154 C 95 167, 115 167, 123 152 C 114 174, 92 174, 83 154 Z"); }
+        #character.mouth-small .mouth-teeth { d: path("M 83 154 C 95 153, 111 153, 123 152 C 115 158, 91 158, 83 154 Z"); }
+        #character.mouth-small .mouth-tongue { d: path("M 87 161 C 96 158, 109 158, 120 159 C 111 166, 95 166, 87 161 Z"); }
+        #character.mouth-small .mouth-sep-line { d: path("M 83 154 C 91 167, 115 167, 123 152"); opacity: 0; }
+        #character.mouth-small .inner-mouth { opacity: 1; }
+        #character.mouth-small #chin-line { transform: translateY(10px); }
+
+        #character.mouth-oo .mouth-cavity { d: path("M 95 155 C 96 150, 110 150, 111 155 C 110 160, 96 160, 95 155 Z"); }
+        #character.mouth-oo .mouth-top-lip { d: path("M 95 155 C 96 146, 110 146, 111 155 C 110 150, 96 150, 95 155 Z"); }
+        #character.mouth-oo .mouth-bottom-lip { d: path("M 95 155 C 96 160, 110 160, 111 155 C 110 165, 96 165, 95 155 Z"); }
+        #character.mouth-oo .mouth-teeth { d: path("M 100 155 C 101 155, 105 155, 106 155 C 105 155, 101 155, 100 155 Z"); }
+        #character.mouth-oo .mouth-tongue { d: path("M 100 155 C 101 155, 105 155, 106 155 C 105 155, 101 155, 100 155 Z"); }
+        #character.mouth-oo .mouth-sep-line { d: path("M 95 155 C 96 160, 110 160, 111 155"); opacity: 0; }
+        #character.mouth-oo .inner-mouth { opacity: 0; }
+        #character.mouth-oo #chin-line { transform: translateY(2px); }
+
+        #character.mouth-ee .mouth-cavity { d: path("M 78 155 C 95 153, 110 153, 128 155 C 110 159, 95 159, 78 155 Z"); }
+        #character.mouth-ee .mouth-top-lip { d: path("M 78 155 C 95 149, 110 149, 128 155 C 110 153, 95 153, 78 155 Z"); }
+        #character.mouth-ee .mouth-bottom-lip { d: path("M 78 155 C 95 159, 110 159, 128 155 C 110 165, 95 165, 78 155 Z"); }
+        #character.mouth-ee .mouth-teeth { d: path("M 79 155 C 95 153, 110 153, 127 155 C 110 156, 95 156, 79 155 Z"); }
+        #character.mouth-ee .mouth-tongue { d: path("M 84 157 C 95 157, 110 157, 122 157 C 110 158, 95 158, 84 157 Z"); }
+        #character.mouth-ee .mouth-sep-line { d: path("M 78 155 C 95 159, 110 159, 128 155"); opacity: 0; }
+        #character.mouth-ee .inner-mouth { opacity: 1; }
+        #character.mouth-ee #chin-line { transform: translateY(2px); }
+
+        #character.mouth-ss .mouth-cavity { d: path("M 78 155 C 95 151, 110 151, 128 155 C 110 159, 95 159, 78 155 Z"); }
+        #character.mouth-ss .mouth-top-lip { d: path("M 78 155 C 95 147, 110 147, 128 155 C 110 152, 95 152, 78 155 Z"); }
+        #character.mouth-ss .mouth-bottom-lip { d: path("M 78 155 C 95 158, 110 158, 128 155 C 110 164, 95 164, 78 155 Z"); }
+        #character.mouth-ss .mouth-teeth { d: path("M 79 155 C 95 152, 110 152, 127 155 C 110 158, 95 158, 79 155 Z"); }
+        #character.mouth-ss .mouth-tongue { d: path("M 84 157 C 95 157, 110 157, 122 157 C 110 158, 95 158, 84 157 Z"); opacity: 0; }
+        #character.mouth-ss .mouth-sep-line { d: path("M 79 155 C 95 155, 110 155, 127 155"); opacity: 1; stroke-width: 1.5; }
+        #character.mouth-ss .inner-mouth { opacity: 1; }
+        #character.mouth-ss #chin-line { transform: translateY(3px); }
+
+        #character.mouth-ch .mouth-cavity { d: path("M 86 152 C 92 147, 114 147, 120 152 C 122 158, 84 158, 86 152 Z"); }
+        #character.mouth-ch .mouth-top-lip { d: path("M 86 152 C 92 138, 114 138, 120 152 C 114 148, 92 148, 86 152 Z"); }
+        #character.mouth-ch .mouth-bottom-lip { d: path("M 86 152 C 84 158, 122 158, 120 152 C 114 168, 92 168, 86 152 Z"); }
+        #character.mouth-ch .mouth-teeth { d: path("M 87 152 C 92 149, 114 149, 119 152 C 120 156, 86 156, 87 152 Z"); }
+        #character.mouth-ch .mouth-tongue { opacity: 0; }
+        #character.mouth-ch .mouth-sep-line { d: path("M 86 154 C 92 154, 114 154, 120 154"); opacity: 1; stroke-width: 2; }
+        #character.mouth-ch .inner-mouth { opacity: 1; }
+        #character.mouth-ch #chin-line { transform: translateY(6px); }
+
+        .iris { transition: transform 0.1s ease-out; }
+
+        /* --- Keyframes --- */
+        @keyframes idle-glare {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.15; }
+        }
+        .idle-glare { animation: idle-glare 4s infinite ease-in-out; }
+
+        /* JS blinking classes */
+        .idle-blinking #left-eye-open, .idle-blinking #eye-open { opacity: 0 !important; }
+        .idle-blinking #left-eye-closed, .idle-blinking #eye-closed { opacity: 1 !important; }
+
+        /* --- Animations (Expressions) --- */
+        /* Winking */
+        .winking #eye-open { animation: hide-open-eye-once 2s forwards; }
+        .winking #eye-closed { animation: show-wink-once 2s forwards; }
+        .winking #blush { animation: show-wink-once 2s forwards; }
+        .winking #right-eyebrow { animation: brow-lower-once 2s forwards; }
+        .winking #chin-line { animation: chin-drop-once 2s forwards; }
+        .winking .mouth-cavity { animation: morph-cavity-once 2s forwards; }
+        .winking .mouth-top-lip { animation: morph-top-lip-once 2s forwards; }
+        .winking .mouth-bottom-lip { animation: morph-bottom-lip-once 2s forwards; }
+        .winking .mouth-teeth { animation: morph-teeth-once 2s forwards; }
+        .winking .mouth-tongue { animation: morph-tongue-once 2s forwards; }
+        .winking .mouth-sep-line { animation: morph-sep-line-once 2s forwards; }
+        .winking .inner-mouth { animation: fade-inner-mouth-once 2s forwards; }
+
+        @keyframes hide-open-eye-once { 0%, 15% { opacity: 1; } 20%, 80% { opacity: 0; } 85%, 100% { opacity: 1; } }
+        @keyframes show-wink-once { 0%, 15% { opacity: 0; } 20%, 80% { opacity: 1; } 85%, 100% { opacity: 0; } }
+        @keyframes brow-lower-once { 0%, 15% { transform: translateY(0) rotate(0deg); } 25%, 75% { transform: translateY(2px) rotate(4deg); } 85%, 100% { transform: translateY(0) rotate(0deg); } }
+        @keyframes chin-drop-once { 0%, 15%, 85%, 100% { transform: translateY(0); } 25%, 75% { transform: translateY(15px); } }
+        @keyframes morph-cavity-once { 0%, 15%, 85%, 100% { d: path("M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20 C 110 156.5, 95 156.5, 84.73 155.70 Z"); } 25%, 75% { d: path("M 82 153 C 95 150.5, 112 150, 125 151 C 120 178, 88 178, 82 153 Z"); } }
+        @keyframes morph-top-lip-once { 0%, 15%, 85%, 100% { d: path("M 84.73 155.70 C 95 153, 110 152, 122.19 153.20 C 110 156.5, 95 156.5, 84.73 155.70 Z"); } 25%, 75% { d: path("M 82 153 C 95 147, 112 146, 125 151 C 112 150, 95 150.5, 82 153 Z"); } }
+        @keyframes morph-bottom-lip-once { 0%, 15%, 85%, 100% { d: path("M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20 C 110 162, 95 163, 84.73 155.70 Z"); } 25%, 75% { d: path("M 82 153 C 88 178, 120 178, 125 151 C 118 186, 90 186, 82 153 Z"); } }
+        @keyframes morph-teeth-once { 0%, 15%, 85%, 100% { d: path("M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20 C 110 156.5, 95 156.5, 84.73 155.70 Z"); } 25%, 75% { d: path("M 82 153 C 95 150.5, 112 150, 125 151 C 120 160, 88 160, 82 153 Z"); } }
+        @keyframes morph-tongue-once { 0%, 15%, 85%, 100% { d: path("M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20 C 110 156.5, 95 156.5, 84.73 155.70 Z"); } 25%, 75% { d: path("M 90 168 C 98 160, 108 160, 118 165 C 112 176, 96 176, 90 168 Z"); } }
+        @keyframes morph-sep-line-once { 0%, 15%, 85%, 100% { d: path("M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20"); opacity: 1; } 25%, 75% { d: path("M 82 153 C 88 178, 120 178, 125 151"); opacity: 0; } }
+        @keyframes fade-inner-mouth-once { 0%, 15% { opacity: 0; } 20%, 80% { opacity: 1; } 85%, 100% { opacity: 0; } }
+
+        /* Surprised */
+        .surprised #left-eyebrow { animation: brow-raise-left-once 2.5s forwards; transform-origin: 60px 91px; }
+        .surprised #right-eyebrow { animation: brow-raise-right-once 2.5s forwards; transform-origin: 131px 88px; }
+        .surprised .iris path { animation: morph-iris-once 2.5s forwards; }
+        .surprised .mouth-cavity { animation: surprised-cavity-once 2.5s forwards; }
+        .surprised .mouth-top-lip { animation: surprised-top-lip-once 2.5s forwards; }
+        .surprised .mouth-bottom-lip { animation: surprised-bottom-lip-once 2.5s forwards; }
+        .surprised .mouth-teeth { animation: surprised-teeth-once 2.5s forwards; }
+        .surprised .mouth-tongue { animation: surprised-tongue-once 2.5s forwards; }
+        .surprised .mouth-sep-line { animation: surprised-sep-once 2.5s forwards; }
+        .surprised .inner-mouth { animation: show-inner-once 2.5s forwards; }
+        .surprised #chin-line { animation: chin-drop-surprised-once 2.5s forwards; }
+
+        @keyframes brow-raise-left-once { 0%, 15% { transform: translateY(0) rotate(0deg); } 25%, 75% { transform: translateY(-10px) rotate(-6deg); } 85%, 100% { transform: translateY(0) rotate(0deg); } }
+        @keyframes brow-raise-right-once { 0%, 15% { transform: translateY(0) rotate(0deg); } 25%, 75% { transform: translateY(-10px) rotate(6deg); } 85%, 100% { transform: translateY(0) rotate(0deg); } }
+        @keyframes morph-iris-once { 0%, 15%, 85%, 100% { d: path("M 77.11 98.91 C 72.93 98.91, 71.56 101.45, 71.56 105.31 C 71.56 108.75, 73.83 111.29, 77.11 111.29 C 80.66 111.29, 82.78 108.75, 82.78 105.31 C 82.78 102.11, 80.23 98.91, 77.11 98.91 Z"); } 25%, 75% { d: path("M 79.81 101.96 C 77.35 101.65, 73.62 102.71, 73.62 106.61 C 73.62 109.85, 75.75 111.21, 77.87 111.21 C 81.22 111.21, 82.95 108.58, 82.95 105.74 C 82.95 104.22, 81.56 102.16, 79.81 101.96 Z"); } }
+        @keyframes surprised-cavity-once { 0%, 15%, 85%, 100% { d: path("M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20 C 110 156.5, 95 156.5, 84.73 155.70 Z"); } 25%, 75% { d: path("M 95 160 C 95 152, 111 152, 111 160 C 111 168, 95 168, 95 160 Z"); } }
+        @keyframes surprised-top-lip-once { 0%, 15%, 85%, 100% { d: path("M 84.73 155.70 C 95 153, 110 152, 122.19 153.20 C 110 156.5, 95 156.5, 84.73 155.70 Z"); } 25%, 75% { d: path("M 95 160 C 95 148, 111 148, 111 160 C 111 152, 95 152, 95 160 Z"); } }
+        @keyframes surprised-bottom-lip-once { 0%, 15%, 85%, 100% { d: path("M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20 C 110 162, 95 163, 84.73 155.70 Z"); } 25%, 75% { d: path("M 95 160 C 95 168, 111 168, 111 160 C 111 172, 95 172, 95 160 Z"); } }
+        @keyframes surprised-teeth-once { 0%, 15%, 85%, 100% { d: path("M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20 C 110 156.5, 95 156.5, 84.73 155.70 Z"); } 25%, 75% { d: path("M 95 160 C 95 152, 111 152, 111 160 C 111 152, 95 152, 95 160 Z"); } }
+        @keyframes surprised-tongue-once { 0%, 15%, 85%, 100% { d: path("M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20 C 110 156.5, 95 156.5, 84.73 155.70 Z"); } 25%, 75% { d: path("M 98 165 C 98 162, 108 162, 108 165 C 108 168, 98 168, 98 165 Z"); } }
+        @keyframes surprised-sep-once { 0%, 15%, 85%, 100% { d: path("M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20"); opacity: 1; } 25%, 75% { d: path("M 95 160 C 95 168, 111 168, 111 160"); opacity: 0; } }
+        @keyframes chin-drop-surprised-once { 0%, 15%, 85%, 100% { transform: translateY(0); } 25%, 75% { transform: translateY(16px); } }
+
+        /* Concerned */
+        .concerned #left-eyebrow { animation: brow-sad-left-once 3s forwards; transform-origin: 75px 88px; }
+        .concerned #right-eyebrow { animation: brow-sad-right-once 3s forwards; transform-origin: 129px 88px; }
+        .concerned .mouth-cavity, .concerned .mouth-top-lip, .concerned .mouth-bottom-lip, .concerned .mouth-teeth, .concerned .mouth-tongue, .concerned .inner-mouth { animation: hide-inner-concerned-once 3s forwards; }
+        .concerned .mouth-sep-line { animation: concerned-sep-once 3s forwards; }
+
+        @keyframes brow-sad-left-once { 0%, 15%, 85%, 100% { transform: translateY(0) rotate(0deg); } 25%, 75% { transform: translateY(-3px) rotate(-15deg); } }
+        @keyframes brow-sad-right-once { 0%, 15%, 85%, 100% { transform: translateY(0) rotate(0deg); } 25%, 75% { transform: translateY(-3px) rotate(15deg); } }
+        @keyframes concerned-sep-once { 0%, 15%, 85%, 100% { d: path("M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20"); } 25%, 75% { d: path("M 84 158 C 95 155, 110 155, 122 158"); } }
+        @keyframes hide-inner-concerned-once { 0%, 15% { opacity: 1; } 20%, 80% { opacity: 0; } 85%, 100% { opacity: 1; } }
+
+        /* Attentive */
+        .pupil { transform-origin: 77.11px 105.31px; transition: transform 0.3s ease-in-out; }
+        .attentive .pupil { transform: scale(0.6); }
+
     </style>
     <script type="importmap">
     { 
@@ -1412,10 +1588,50 @@
         <main class="interview-main">
             <div class="main-video">
                 <div id="avatar-container" class="avatar-container">
-                    <div id="model-loading-overlay" class="model-loading-overlay">
-                        <div class="loading-spinner"></div>
-                        <div style="color: var(--text-secondary); margin-top: 1rem;">Loading AI Interviewer...</div>
-                    </div>
+                    <svg id="character" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" style="width: 100%; height: 100%; max-height: 400px;">
+                        <defs><clipPath id="eye-clip"><path d="m63.28 106c3.87-4.61 7.74-6.02 13.2-6.02 5.47 0 9.61 3.87 12.15 6.68-3.2 3.16-7.61 5.43-12.38 5.43-5.7 0-9.1-2.27-12.97-6.09z"/></clipPath></defs>
+                        <path d="m177.2 88.59c-1.45 5.17-5.02 6.12-8.68 6.43l-2.7 6.2c6.3 2.54 8.48 11.56 6.6 19.9-2.2 9.89-9.69 19.95-18.82 19.95l-2.48 13.9c-1.82 9.09-22.89 31.94-33.25 37.14-5.73 2.99-14.55 2.6-16.67 2.52-4.31-0.16-9.35-0.65-13.26-2.75-9.67-4.97-26.82-22.93-31.78-32.82-1.78-3.69-1.89-9.2-3.14-17.99-9.3 1.71-16.27-7.52-18.99-17.2-2.63-9.3 0.55-20.9 7.82-22.65-5-5.36-5.9-13.29-3.21-20.48-7.73 3.05-13.12-0.82-15.82-6.4 2.27 0.43 1.92 3.82 6.25 5.39 2.39 0.86 5.12 0.7 7.6-0.71-9.24-3.79-10.92-14.68-6.43-21.36 2.74-4.11 5.79-5.39 9.46-6.53-5.51-6.95-2.78-18.28 5.78-21.72 3.55-1.36 7.38-1.01 11.11-0.11-2.36-6.52 0.08-12.39 4.04-15.82 1.37-0.51 2.16 0.62 1.33 1.64-4.17 3.55-5.15 8.2-3.2 12.81 1.84-7.23 7.34-11.09 14.14-11.72 4.18-0.39 6.84 0.86 10.82 3.2 1.37-9.14 8.24-13.67 15.51-13.67 6.99 0 11.95 3.52 15.04 8.99 3.9-2.62 6.91-3.91 11.52-3.44 8.13 0.82 13.79 6.44 15.94 14.45 4.49-1.6 11.06-1.13 15.35 1.72 7.07 4.61 9.34 11.45 7.66 18.99 8.36 1.33 12.65 7.42 12.38 14.17-0.2 3.99-1.95 6.72-4.1 9.11 3.44 2.11 4.41 5 3.63 8.28-1.02 4.22-3.59 6.17-7.3 6.76 1.13 3.16 0.78 6.28-0.2 9.06 3.87-0.39 6.17-1.95 7.19-5.55 0.35-0.86 1.29-0.78 0.86 0.31z" fill="#262D40" stroke="#0A1026" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2.5"/>
+                        <path id="left-ear" d="m43.44 101.2c-7.31 0-10.35 11.06-8.4 20.2 2.23 10.47 9.77 19.21 17.34 18.75l2.03-0.24-5.27-38.24c-1.36-0.59-3.05-0.59-5.7-0.47z" fill="#DD927A" stroke="#0A1026" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2.5"/>
+                        <path id="right-ear" d="m163.9 101.9c6.21 0.47 9.18 9.5 7.81 18.17-1.64 10.58-9.77 20.86-18.05 20.23l3.56-38.08c1.68-0.9 3.51-0.55 6.68-0.32z" fill="#DD927A" stroke="#0A1026" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2.5"/>
+                        <path d="m153 83.24 0.31-0.08c-1.52 6.02-0.54 9.81 1.33 13.13l2.46-0.12 0.16 6.06-2.62 1.48-3.99 36.21-1.28 13.36c-1.56 9.46-21.72 30.98-31.45 36.95-6.01 3.75-21.68 3.75-28.48 0.94-8.2-3.39-26.29-21.99-32.11-32.15-2.53-4.41-2.57-10.19-3.51-19.1l-4.65-38.24-1.05-5.12 3.55-0.82c1.84-3.86 1.48-8.16 0.98-12.5 9.45-1.05 16.4-11.83 13.16-23.16 9.14 3.87 19.49-0.31 23.99-12.66-0.55 8.79 3.32 16.25 11.21 16.56 6.01 0.24 7.03 6.96 1.64 10.43 6.52-1.36 11.13-6.4 10.31-9.8-0.74-3.2-3.98-3.67-5.51-5.82-2.11-2.38-0.35-6.13 1.92-8.36 3.08 3.28 7.18 4.49 10.74 2.27-0.24 9.02 7.03 15.97 19.84 11.52 0.55-0.39 0.47-0.39 1.02-0.47-2.03 7.93 3.67 18.56 12.34 19.14l-0.31 0.35z" fill="#DD927A" stroke="#0A1026" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2.5"/>
+                        <path id="blush" d="m118.7 105.9c3.13-5.63 7.89-6.99 10.35-6.72-4.45-1.64-9.22 0.74-10.35 6.72z" fill="#B7685F"/>
+                        <path d="m42.11 109.3c4.49 1.36 7.03 6.64 7.03 6.64" stroke="#0A1026" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2.5"/>
+                        <path d="m49.14 118c-3.87 1.13-6.13 7.11-1.52 11.56" stroke="#0A1026" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2.5"/>
+                        <path d="m165.3 109.6c-4.18 1.64-7.96 7.93-7.96 7.93" stroke="#0A1026" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2.5"/>
+                        <path d="m157.3 119.2c4.29 1.29 4.29 7.11 0 10.35" stroke="#0A1026" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2.5"/>
+                        <g id="mouth">
+                            <path class="mouth-cavity" d="M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20 C 110 156.5, 95 156.5, 84.73 155.70 Z"/>
+                            <g class="inner-mouth">
+                                <path class="mouth-tongue" d="M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20 C 110 156.5, 95 156.5, 84.73 155.70 Z"/>
+                                <path class="mouth-teeth" d="M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20 C 110 156.5, 95 156.5, 84.73 155.70 Z"/>
+                            </g>
+                            <path class="mouth-bottom-lip" d="M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20 C 110 162, 95 163, 84.73 155.70 Z"/>
+                            <path class="mouth-top-lip" d="M 84.73 155.70 C 95 153, 110 152, 122.19 153.20 C 110 156.5, 95 156.5, 84.73 155.70 Z"/>
+                            <path class="mouth-sep-line" d="M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20"/>
+                        </g>
+                        <path id="chin-line" d="m96.29 166.4c3.87 1.36 9.84 0.82 13.79-0.67" stroke="#0A1026" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2.5"/>
+                        <path d="m98.05 100.7h9.73c2.14-4.61 5.46-6.29 18.9-7.18 10.08-0.71 21.72 0.43 25.9 2.57 3.2 1.53 1.17 12.66-1.56 21.88-1.84 5.98-4.57 7.26-15.47 7.81-6.88 0.35-15.39-0.55-17.85-2.11-4.96-3.05-7.19-14.53-8.01-17.07-1.45-4.49-10.9-4.49-11.91 0.39-0.59 3.05-2.47 14.18-5.51 17.93-2.82 2.03-4.46 4.92-2.82 11.17 0.9 2.54 4.14 3.09 6.25 1.45 1.53 0 3.09 3.32 7.27 3.16 3.55-0.15 4.73-3.16 6.95-2.89 2.03 0.9 4.69 1.02 5.67-2.54 0.66-2.03-0.47-3.16-0.94-4.18" stroke="#0A1026" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2.5"/>
+                        <path id="eye-closed" d="m118.7 108.2c5.47-3.32 15-4.18 22.54 0.28" stroke="#0A1026" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="3"/>
+                        <path d="m50.7 95.74c4.96-1.83 9.42-2.73 18.36-3.04 8.01-0.28 18.91 1.01 22.78 2.53 3.86 1.53 4.8 3.68 4.33 9.65-0.74 5.2-2.42 13.48-5.86 17.66-2.73 2.81-11.76 3.24-17.22 3.24-6.96 0-12.07-0.9-13.95-2.54-4.96-3.86-5.9-15.19-6.36-20.12-0.24-2.89-0.67-5.5-2.08-7.38z" stroke="#0A1026" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2.5"/>
+                        <path id="left-eye-closed" d="m61.2 108.2c5.47-3.32 15-4.18 22.54 0.28" stroke="#0A1026" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="3" style="opacity: 0;"/>
+                        <g id="left-eye-open">
+                            <path d="m63.28 106c3.87-4.61 7.74-6.02 13.2-6.02 5.47 0 9.61 3.87 12.15 6.68-3.2 3.16-7.61 5.43-12.38 5.43-5.7 0-9.1-2.27-12.97-6.09z" fill="#FEFFFE"/>
+                            <g clip-path="url(#eye-clip)"><g class="iris"><path d="m77.11 98.91c-4.18 0-5.55 2.54-5.55 6.4 0 3.44 2.27 5.98 5.55 5.98 3.55 0 5.67-2.54 5.67-5.98 0-3.2-2.55-6.4-5.67-6.4z" fill="#4B6A97"/><circle class="pupil" cx="77.11" cy="105.31" r="2.5" fill="#0A1026"/><circle cx="75" cy="102" r="1" fill="#FEFFFE" opacity="0.6"/></g></g>
+                        </g>
+                        <g id="eye-open">
+                            <g transform="translate(57.5, 0)">
+                                <path d="m63.28 106c3.87-4.61 7.74-6.02 13.2-6.02 5.47 0 9.61 3.87 12.15 6.68-3.2 3.16-7.61 5.43-12.38 5.43-5.7 0-9.1-2.27-12.97-6.09z" fill="#FEFFFE"/>
+                                <g clip-path="url(#eye-clip)"><g class="iris"><path d="m77.11 98.91c-4.18 0-5.55 2.54-5.55 6.4 0 3.44 2.27 5.98 5.55 5.98 3.55 0 5.67-2.54 5.67-5.98 0-3.2-2.55-6.4-5.67-6.4z" fill="#4B6A97"/><circle class="pupil" cx="77.11" cy="105.31" r="2.5" fill="#0A1026"/><circle cx="75" cy="102" r="1" fill="#FEFFFE" opacity="0.6"/></g></g>
+                            </g>
+                        </g>
+                        <path id="left-eyebrow" d="m60.39 91.72c3.16-4.45 7.03-6.68 10.55-7.15 6.52-0.9 12.5-0.43 17.97 0.31 2.54 0.47 2.54 4.03 1.6 6.84-0.35 1.02-1.37 1.02-2.89 0.55-5.98-1.53-14.61-2.82-21.53-0.55-2.54 0.86-5.07 1.8-5.7 0z" fill="#0A1026"/>
+                        <g id="right-eyebrow"><path d="m116.9 84.88c4.45-1.13 12.46-1.36 18.16-0.54 4.1 0.58 8.48 3.28 11.29 6.6 1.29 1.48-0.12 2.18-1.64 1.48-5.59-2.54-14.53-3.51-26.53-0.47-2.89 0.75-3.63-0.54-3.32-4.68 0.08-1.53 0.78-2.04 2.04-2.39z" fill="#0A1026"/></g>
+                        <path class="idle-glare" d="m147.4 100.7c-1.56-0.15-1.29 1.88-1.4 3.75-0.63 6.57-2.11 11.1-5.4 15.78-1.01 1.45 1.69 2.55 3.29 0.9 3.71-3.79 5.23-13.32 5.23-18.35 0-1.57-0.66-2-1.72-2.08z" fill="#FEFFFE" opacity=".5"/>
+                        <path class="idle-glare" d="m101 7.27c-10.08 0-15.59 8.16-14.85 16.71-5.39-5.03-4.92-6.09 0.55-12.96 3.44-4.18 8.55-5 14.3-3.75z" fill="#FEFFFE" opacity=".5"/>
+                        <path class="idle-glare" d="m57.23 32.81c-8.48-2.03-15 2.93-15 10.71 0 3.86 1.48 5.89 3.04 9.18-9.53 2.53-14.25 7.38-14.25 15.93-3.21-7.54 1.56-14.49 10.58-15.93-6.44-7.47-3.55-17.54 3.91-21.33 3.98-2.03 8.44-1.45 11.72 1.44z" fill="#FEFFFE" opacity=".5"/>
+                        <path class="idle-glare" d="m52.11 106 5.7 46.09c1.1 8.67 17.5 27.81 29.42 36.25-10-5.27-25.16-23.87-29.03-32.15-2.03-4.45-3.04-16.8-5.19-31.76-0.9-6.17-1.99-13.51-0.9-18.43z" fill="#FEFFFE" opacity=".3"/>
+                        <path class="idle-glare" d="m97.03 133c1.45-0.9 2.81-0.9 4.06-0.9 1.65 0 3.01 0.35 4.14 0.9-1.13 2.26-2.49 2.54-4.14 2.54-1.83 0-2.97-0.63-4.06-2.54z" fill="#FEFFFE" opacity=".3"/>
+                    </svg>
                 </div>
                 <div class="video-overlay">
                     <div class="participant-info">
@@ -1498,12 +1714,7 @@
     </div>
 
     <script type="module">
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-        import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
         import { LipsyncEn } from 'lipsync-en';
-        import { poses, moods, emojis, gestures } from 'https://www.mystudentclub.com/scripts/animations.js';
 
         // --- CONFIGURATION ---
         const AVATAR_URL = 'https://models.readyplayer.me/69440c84ca696e5f2fb7bfd5.glb?morphTargets=ARKit,Oculus+Visemes,mouthOpen,mouthSmile,eyesClosed,eyesLookUp,eyesLookDown';
@@ -1513,184 +1724,58 @@
         // --- GLOBAL CONTROLS ---
         window.speechRecognitionActive = false; // Flag to track state
 
-        // --- TALKING HEAD CLASS ---
-        class TalkingHead {
+        // --- SVG AVATAR CONTROLLER ---
+        class SVGAvatarController {
             constructor(node, opt = {}) {
                 this.nodeAvatar = node;
-                this.opt = { ttsEndpoint: null, lipsyncLang: 'en', cameraView: 'upper', ...opt };
-                this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-                this.renderer.setPixelRatio(window.devicePixelRatio);
-                this.renderer.setSize(node.clientWidth, node.clientHeight);
-                this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-                this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-                this.nodeAvatar.appendChild(this.renderer.domElement);
-                this.camera = new THREE.PerspectiveCamera(25, node.clientWidth / node.clientHeight, 0.1, 100);
-                this.scene = new THREE.Scene();
-
-                this.scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 0.7));
-                const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-                dirLight.position.set(0.5, 2, 2);
-                dirLight.castShadow = true;
-                this.scene.add(dirLight);
-
-                this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-                this.controls.enableZoom = false; this.controls.enablePan = false;
-                this.controls.target.set(0, 1.58, 0); this.controls.enableDamping = true;
-
-                this.animClock = 0; this.animTimeLast = 0;
-                this.avatar = null; this.armature = null; this.morphs = []; this.mixer = null;
-                this.speechQueue = []; this.isSpeaking = false; this.isRunning = false;
-                this.audioCtx = new AudioContext(); this.audioSpeechSource = null;
+                this.opt = { ttsEndpoint: null, lipsyncLang: 'en', ...opt };
+                this.characterSvg = document.getElementById('character');
+                
+                this.speechQueue = [];
+                this.isSpeaking = false;
+                this.audioCtx = new AudioContext();
+                this.audioSpeechSource = null;
                 this.lipsync = {};
-                this.visemeNames = ['viseme_sil', 'viseme_PP', 'viseme_FF', 'viseme_TH', 'viseme_DD', 'viseme_kk', 'viseme_CH', 'viseme_SS', 'viseme_nn', 'viseme_RR', 'viseme_aa', 'viseme_E', 'viseme_I', 'viseme_O', 'viseme_U'];
-
-                this.poseTemplates = poses; this.animMoods = moods; this.animEmojis = emojis; this.gestureTemplates = gestures || {};
-
-                this.animQueue = []; this.poseBase = { props: {} }; this.poseTarget = { props: {} }; this.poseAvatar = { props: {} }; this.poseDelta = { props: {} }; this.animBaseline = {};
-                this.currentPoseName = 'straight';
-                this.easing = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-
-                window.addEventListener('resize', this.onResize.bind(this));
+                this.activeTimeouts = [];
+                
+                // Mapping Visemes to SVG CSS Classes
+                this.visemeToCSSMap = {
+                    'aa': 'ah', 'E': 'ee', 'O': 'oh',
+                    'I': 'ee', 'U': 'oo',
+                    'SS': 'ss', 'TH': 'small', 'DD': 'small', 'FF': 'small',
+                    'kk': 'small', 'nn': 'small', 'RR': 'small', 'CH': 'ch',
+                    'PP': 'closed', 'sil': 'closed'
+                };
             }
 
             async init() {
                 this.lipsync[this.opt.lipsyncLang] = new LipsyncEn();
-                try {
-                    const rgbe = new RGBELoader();
-                    const tex = await new Promise((res, rej) => rgbe.load('https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/studio_small_09_1k.hdr', res, undefined, rej));
-                    tex.mapping = THREE.EquirectangularReflectionMapping; this.scene.environment = tex;
-                } catch (e) { }
+                this.startBlinking();
+                this.startIrisTracking();
             }
 
-            async showAvatar(avatar) {
-                const loader = new GLTFLoader();
-                const gltf = await loader.loadAsync(avatar.url);
-                this.armature = gltf.scene;
-                this.armature.traverse(node => {
-                    if (node.isMesh) {
-                        node.castShadow = true; node.receiveShadow = true; node.frustumCulled = false;
-                        if (node.material) { node.material.transparent = false; node.material.alphaTest = 0.5; node.material.side = THREE.FrontSide; if (node.name.toLowerCase().includes('eye')) { node.material.roughness = 0.2; node.material.metalness = 0.1; } }
-                        if (node.morphTargetDictionary) this.morphs.push(node);
-                    }
-                });
-
-                this.poseAvatar = { props: {} }; this.poseDelta = { props: {} };
-                if (!this.poseTemplates.straight) this.poseTemplates.straight = { props: {} };
-                this.poseBase = this.poseFactory(this.poseTemplates.straight);
-                this.poseTarget = this.poseFactory(this.poseTemplates.straight);
-
-                const usedBones = new Set();
-                [...Object.values(this.poseTemplates), ...Object.values(this.gestureTemplates)].forEach(t => {
-                    if (t.props) Object.keys(t.props).forEach(k => usedBones.add(k));
-                    else Object.keys(t).forEach(k => usedBones.add(k));
-                });
-
-                usedBones.forEach(key => {
-                    const [boneName, prop] = key.split('.');
-                    const bone = this.armature.getObjectByName(boneName);
-                    if (bone) {
-                        this.poseAvatar.props[key] = bone[prop];
-                        if (!this.poseBase.props[key]) this.poseBase.props[key] = bone[prop].clone();
-                        if (!this.poseTarget.props[key]) this.poseTarget.props[key] = bone[prop].clone();
-                        if (prop === 'rotation' || prop === 'quaternion') this.poseDelta.props[key] = new THREE.Euler();
-                        else this.poseDelta.props[key] = new THREE.Vector3();
-                    }
-                });
-
-                this.setPose('straight', 0);
-                this.scene.add(this.armature);
-                this.setView(this.opt.cameraView);
-                this.start();
+            async showAvatar(avatarConf) {
+                return Promise.resolve();
             }
 
-            start() { if (this.isRunning) return; this.isRunning = true; this.animTimeLast = performance.now(); this.setMood('neutral'); this.renderer.setAnimationLoop(this.animate.bind(this)); }
-            setMood(n) { if (!this.animMoods[n]) return; this.animQueue = this.animQueue.filter(a => a.loop !== -1); this.animMoods[n].anims.forEach(a => this.animQueue.push(this.animFactory(a))); if (this.animMoods[n].baseline) Object.entries(this.animMoods[n].baseline).forEach(([k, v]) => this.animBaseline[k] = { target: v, t0: this.animClock, v0: this.getValue(k) }); }
+            onResize() { }
 
-            animate() {
-                const now = performance.now(); const dt = now - this.animTimeLast; this.animClock += dt; this.animTimeLast = now; this.controls.update();
-                const cv = new Map();
-                for (let [mt, x] of Object.entries(this.animBaseline)) {
-                    if (x.t0 === undefined) { x.t0 = this.animClock; x.v0 = this.getValue(mt); }
-                    cv.set(mt, this.valueAnimationSeq([x.t0, x.t0 + 1000], [x.v0, x.target], this.animClock));
+            clearLipsync() {
+                this.activeTimeouts.forEach(clearTimeout);
+                this.activeTimeouts = [];
+                this.characterSvg.classList.remove('mouth-ah', 'mouth-oh', 'mouth-small', 'mouth-oo', 'mouth-ee', 'mouth-ss', 'mouth-ch', 'bot-talking');
+            }
+
+            setMouthShape(viseme) {
+                this.characterSvg.classList.remove('mouth-ah', 'mouth-oh', 'mouth-small', 'mouth-oo', 'mouth-ee', 'mouth-ss', 'mouth-ch');
+                const shape = this.visemeToCSSMap[viseme] || 'closed';
+                if (shape !== 'closed') {
+                    this.characterSvg.classList.add(`mouth-${shape}`);
                 }
-                for (let i = 0; i < this.animQueue.length; i++) {
-                    const anim = this.animQueue[i];
-                    if (this.animClock < anim.ts[0]) continue;
-                    Object.entries(anim.vs).forEach(([mt, vs]) => {
-                        if (vs[0] === null) vs[0] = this.getValue(mt) || 0;
-                        const val = this.valueAnimationSeq(anim.ts, vs, this.animClock);
-                        if (mt === 'pose') {
-                            const pName = vs[Math.max(0, anim.ts.findIndex(t => t > this.animClock) - 1)];
-                            if (pName && pName !== this.currentPoseName) this.setPose(pName);
-                        } else if (mt === 'gesture') {
-                            const gData = vs[Math.max(0, anim.ts.findIndex(t => t > this.animClock) - 1)];
-                            if (Array.isArray(gData) && !anim._triggered) { this.playGesture(gData[0], gData[1]); anim._triggered = true; }
-                        } else {
-                            if (Math.abs(val) >= Math.abs(cv.get(mt) || 0)) cv.set(mt, val);
-                        }
-                    });
-                    if (this.animClock >= anim.ts.at(-1)) { if (anim.loop === -1) this.animQueue[i] = this.animFactory(anim.template); else this.animQueue.splice(i--, 1); }
-                }
-                this.applyValues(cv); this.updatePoseBase(); this.renderer.render(this.scene, this.camera);
             }
-
-            applyValues(values) {
-                // SMOOTH BLENDSHAPE LOGIC (Fixes Flapping)
-                for (const mesh of this.morphs) {
-                    for (const name in mesh.morphTargetDictionary) {
-                        const idx = mesh.morphTargetDictionary[name];
-                        let targetVal = values.get(name);
-
-                        // Default decay if no target
-                        if (targetVal === undefined) {
-                            const c = mesh.morphTargetInfluences[idx] || 0;
-                            targetVal = name.startsWith('viseme_') ? 0 : c * 0.95;
-                        }
-
-                        // Cap Mouth Opening (Prevent Gaping)
-                        if (name.startsWith('viseme_')) {
-                            targetVal = Math.min(0.6, targetVal);
-                        } else {
-                            targetVal = Math.min(1.0, targetVal);
-                        }
-
-                        // LERP (Smoothing) - The key to fixing flapping
-                        const currentVal = mesh.morphTargetInfluences[idx];
-                        const smoothingSpeed = name.startsWith('viseme_') ? 0.4 : 0.1; // Higher = faster
-                        const nextVal = THREE.MathUtils.lerp(currentVal, targetVal, smoothingSpeed);
-
-                        mesh.morphTargetInfluences[idx] = Math.max(0, nextVal);
-                    }
-                }
-
-                const hX = values.get('headRotateX') || 0, hY = values.get('headRotateY') || 0, hZ = values.get('headRotateZ') || 0, chest = values.get('chestInhale') || 0;
-                if (this.poseDelta.props['Head.rotation']) this.poseDelta.props['Head.rotation'].set(hX, hY, hZ);
-                if (this.poseDelta.props['Spine1.rotation']) this.poseDelta.props['Spine1.rotation'].set(-chest * 0.05, 0, 0);
-                Object.keys(this.poseAvatar.props).forEach(k => {
-                    const b = this.poseAvatar.props[k], base = this.poseBase.props[k]; if (!b || !base) return;
-                    if (b.isQuaternion) { b.copy(base); const [n] = k.split('.'); const d = this.poseDelta.props[`${n}.rotation`]; if (d) b.multiply(new THREE.Quaternion().setFromEuler(d)); }
-                    else if (b.isVector3) { b.copy(base); if (k === 'Spine1.scale' && chest > 0) b.set(1 + (chest * 0.1), 1 + (chest * 0.1), 1 + (chest * 0.1)); }
-                });
-                const lEye = this.armature.getObjectByName('LeftEye'), rEye = this.armature.getObjectByName('RightEye');
-                if (lEye && rEye) { const eX = values.get('eyesRotateX') || 0, eY = values.get('eyesRotateY') || 0; lEye.rotation.set(eX, eY, 0); rEye.rotation.set(eX, eY, 0); }
-            }
-
-            setPose(name, ms = 2000) {
-                if (!this.poseTemplates[name]) return; this.currentPoseName = name; const t = this.poseTemplates[name], p = {};
-                Object.keys(t.props).forEach(k => { const v = t.props[k]; if (k.includes('rotation')) p[k] = new THREE.Quaternion().setFromEuler(new THREE.Euler(v.x, v.y, v.z)); else p[k] = new THREE.Vector3(v.x, v.y, v.z); });
-                this.poseTarget.props = p; Object.values(this.poseTarget.props).forEach(v => { v.t = this.animClock; v.d = ms; });
-            }
-            playGesture(name, dur = 1) {
-                const g = this.gestureTemplates[name]; if (!g) return;
-                Object.keys(g).forEach(k => { const v = g[k]; if (this.poseTarget.props[k]) { this.poseTarget.props[k].copy(new THREE.Quaternion().setFromEuler(new THREE.Euler(v.x, v.y, v.z))); this.poseTarget.props[k].t = this.animClock; this.poseTarget.props[k].d = 500; } });
-                setTimeout(() => this.setPose(this.currentPoseName, 1000), dur * 1000);
-            }
-            updatePoseBase() { for (const [k, t] of Object.entries(this.poseTarget.props)) { const b = this.poseBase.props[k]; if (!b) continue; const a = Math.min(1, (this.animClock - t.t) / t.d); if (a >= 1) b.copy(t); else { if (b.isQuaternion) b.slerp(t, this.easing(a)); else b.lerp(t, this.easing(a)); } } }
 
             async processSpeechItem(item) {
-                // HARD STOP MIC
                 if (window.stopListening) window.stopListening();
-
                 this.isSpeaking = true;
 
                 if (item.type === 'text') {
@@ -1702,37 +1787,34 @@
                         await this.playAudioWithVisemes(data.audioContent, data.timepoints);
                     } catch (e) { console.error(e); this.finishSpeaking(); }
                 } else if (item.type === 'emoji') {
-                    const anim = this.animFactory(this.animEmojis[item.content] || this.animEmojis['😊']);
-                    this.animQueue.push(anim);
-                    setTimeout(() => this.finishSpeaking(), anim.ts.at(-1) - this.animClock);
+                    this.playEmojiAnimation(item.content);
                 }
             }
 
             async playAudioWithVisemes(base64, timepoints) {
                 if (this.audioCtx.state === 'suspended') await this.audioCtx.resume();
-                this.animQueue = this.animQueue.filter(a => !Object.keys(a.vs)[0].startsWith('viseme_'));
+                this.clearLipsync();
+                this.characterSvg.classList.add('bot-talking');
 
                 const audioData = Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer;
                 const buffer = await this.audioCtx.decodeAudioData(audioData);
-                const duration = buffer.duration * 1000;
 
-                const audioStart = this.animClock + 50;
+                const startTimeOffset = 50; 
                 timepoints.forEach((tp, idx) => {
                     const next = timepoints[idx + 1];
                     const wordDur = next ? (next.time_seconds - tp.time_seconds) * 1000 : 200;
                     const vis = this.lipsync.en.wordsToVisemes(tp.word);
+                    
                     if (vis.visemes.length) {
                         const totalRel = vis.durations.reduce((a, b) => a + b, 0);
                         vis.visemes.forEach((v, i) => {
                             const absStart = (tp.time_seconds * 1000) + (vis.times[i] / totalRel * wordDur);
-                            const absDur = (vis.durations[i] / totalRel * wordDur);
-                            const finalDur = Math.max(80, absDur); // Longer duration for smoother look
-                            const t = audioStart + absStart;
-                            this.animQueue.push({
-                                ts: [t, t + (finalDur * 0.5), t + finalDur],
-                                vs: { [`viseme_${v}`]: [0, 1, 0] } // 1.0 is fine here because applyValues caps it
-                            });
+                            const delay = startTimeOffset + absStart;
+                            this.activeTimeouts.push(setTimeout(() => { this.setMouthShape(v); }, delay));
                         });
+                        
+                        const finalDelay = startTimeOffset + (tp.time_seconds * 1000) + wordDur;
+                        this.activeTimeouts.push(setTimeout(() => { this.setMouthShape('closed'); }, finalDelay));
                     }
                 });
 
@@ -1745,35 +1827,64 @@
                 if (typeof scheduleAISubtitles === 'function') scheduleAISubtitles(timepoints, buffer.duration, this.audioCtx.currentTime + 0.05);
 
                 this.audioSpeechSource.onended = () => {
-                    // Small buffer before listening again to clear room echo
+                    this.clearLipsync();
                     setTimeout(() => this.finishSpeaking(), 300);
                 };
             }
 
             stopSpeaking() {
                 if (this.audioSpeechSource) { this.audioSpeechSource.stop(); this.audioSpeechSource = null; }
-                this.speechQueue = []; this.finishSpeaking();
+                this.speechQueue = []; this.clearLipsync(); this.finishSpeaking();
             }
 
             speakText(t) { if (this.isSpeaking) { this.speechQueue.push({ type: 'text', content: t }); return; } this.processSpeechItem({ type: 'text', content: t }); }
-            speakEmoji(e) { if (this.isSpeaking) { this.speechQueue.push({ type: 'emoji', content: e }); return; } this.processSpeechItem({ type: 'emoji', content: this.animEmojis[e] }); }
+            speakEmoji(e) { if (this.isSpeaking) { this.speechQueue.push({ type: 'emoji', content: e }); return; } this.processSpeechItem({ type: 'emoji', content: e }); }
+
             finishSpeaking() {
                 this.isSpeaking = false;
-                this.start();
                 if (this.speechQueue.length) {
                     this.processSpeechItem(this.speechQueue.shift());
                 } else {
-                    // Only start listening if queue is empty
                     if (window.startListening) window.startListening();
                 }
             }
 
-            getValue(n) { if (n.startsWith('headRotate')) return this.poseDelta.props['Head.rotation']?.[n.slice(-1).toLowerCase()] || 0; const m = this.morphs[0]; return (m && m.morphTargetDictionary[n] !== undefined) ? m.morphTargetInfluences[m.morphTargetDictionary[n]] : 0; }
-            poseFactory(t, ms = 2000) { const p = {}; if (t.props) Object.keys(t.props).forEach(k => { const v = t.props[k]; if (k.includes('rotation')) p[k] = new THREE.Quaternion().setFromEuler(new THREE.Euler(v.x, v.y, v.z)); else p[k] = new THREE.Vector3(v.x, v.y, v.z); }); return { props: p }; }
-            animFactory(t) { const i = { template: t, ts: [], vs: {}, loop: t.loop }; let c = this.animClock + (Array.isArray(t.delay) ? (t.delay[0] + Math.random() * (t.delay[1] - t.delay[0])) : (t.delay || 0)); i.ts.push(c); (t.dt || [1000]).forEach(d => { c += Array.isArray(d) ? (d[0] + Math.random() * (d[1] - d[0])) : d; i.ts.push(c); }); Object.keys(t.vs).forEach(k => { i.vs[k] = t.vs[k].map(v => Array.isArray(v) ? v[0] + Math.random() * (v[1] - v[0]) : v); while (i.vs[k].length < i.ts.length) i.vs[k].push(i.vs[k].at(-1)); }); return i; }
-            valueAnimationSeq(ts, vs, t) { if (t <= ts[0]) return vs[0]; if (t >= ts.at(-1)) return vs.at(-1); let i = ts.findIndex(time => time > t) - 1; if (i < 0) i = 0; const p = (t - ts[i]) / (ts[i + 1] - ts[i]); return vs[i] + (vs[i + 1] - vs[i]) * this.easing(p); }
-            onResize() { this.camera.aspect = this.nodeAvatar.clientWidth / this.nodeAvatar.clientHeight; this.camera.updateProjectionMatrix(); this.renderer.setSize(this.nodeAvatar.clientWidth, this.nodeAvatar.clientHeight); }
-            setView(v) { this.camera.position.set(0, 1.55, 0.85); }
+            playEmojiAnimation(emoji) {
+                this.characterSvg.classList.remove('winking', 'surprised', 'concerned', 'attentive');
+                let durationMs = 2000, animClass = '';
+                
+                if (['😉', '😜', '😏'].includes(emoji)) { animClass = 'winking'; durationMs = 2000; }
+                else if (['😲', '😮', '🤯', '😳'].includes(emoji)) { animClass = 'surprised'; durationMs = 2500; }
+                else if (['🥺', '😢', '😔', '😟', '🤔'].includes(emoji)) { animClass = 'concerned'; durationMs = 3000; }
+                else if (['🙂', '😊', '😀'].includes(emoji)) { animClass = 'attentive'; durationMs = 2000; }
+                
+                if (animClass) {
+                    this.characterSvg.classList.add(animClass);
+                    setTimeout(() => {
+                        this.characterSvg.classList.remove(animClass);
+                        this.finishSpeaking(); 
+                    }, durationMs);
+                } else {
+                    this.finishSpeaking();
+                }
+            }
+
+            startBlinking() {
+                setInterval(() => {
+                    if (this.characterSvg.classList.contains('winking') || this.characterSvg.classList.contains('surprised') || this.characterSvg.classList.contains('concerned')) return;
+                    this.characterSvg.classList.add('idle-blinking');
+                    setTimeout(() => { this.characterSvg.classList.remove('idle-blinking'); }, 150);
+                }, 4000);
+            }
+
+            startIrisTracking() {
+                const irises = document.querySelectorAll('.iris');
+                document.addEventListener('mousemove', (e) => {
+                    if (!irises.length) return;
+                    const x = (e.clientX / window.innerWidth) * 2 - 1, y = (e.clientY / window.innerHeight) * 2 - 1;
+                    irises.forEach(iris => iris.style.transform = `translate(${x * 5}px, ${y * 5}px)`);
+                });
+            }
         }
 
         // --- GLOBAL LOGIC ---
@@ -1963,10 +2074,8 @@
 
         async function loadModelInBackground() {
             try {
-                avatar = new TalkingHead(avatarContainer, { ttsEndpoint: TTS_ENDPOINT, cameraView: 'head' });
+                avatar = new SVGAvatarController(avatarContainer, { ttsEndpoint: TTS_ENDPOINT });
                 await avatar.init();
-                updateLoadingProgress(30, 'Loading 3D model...');
-                await avatar.showAvatar({ url: AVATAR_URL });
                 updateLoadingProgress(100, 'Ready!');
                 isModelLoaded = true;
                 modelLoadingOverlay.classList.add('hidden');
