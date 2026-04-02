@@ -8,6 +8,9 @@ let totalPages = 0;
 let sidebarOpen = false;
 let flipbookReady = false;
 let viewMode = 'single';  // 'single' | 'double'
+const DEFAULT_INITIAL_ZOOM = 1;
+const MAX_RENDER_OUTPUT_SCALE = 3.4;
+const MIN_RENDER_OUTPUT_SCALE = 2;
 
 // Search state
 let searchMatches = [];
@@ -76,19 +79,28 @@ function calcPageSize(pdfPageViewport) {
 async function renderPageToCanvas(pageNum, width, height) {
     const page = await pdfDoc.getPage(pageNum);
     const canvas = document.createElement('canvas');
-    const dpr = Math.max(2, window.devicePixelRatio || 1);
+    const deviceScale = window.devicePixelRatio || 1;
+    const outputScale = Math.min(MAX_RENDER_OUTPUT_SCALE, Math.max(MIN_RENDER_OUTPUT_SCALE, deviceScale * 1.5));
 
-    const viewport = page.getViewport({ scale: 1 });
-    const scale = (width / viewport.width) * dpr;
-    const scaledViewport = page.getViewport({ scale });
+    const baseViewport = page.getViewport({ scale: 1 });
+    const cssScale = width / baseViewport.width;
+    const viewport = page.getViewport({ scale: cssScale });
+    const cssWidth = Math.round(viewport.width);
+    const cssHeight = Math.round(viewport.height);
 
-    canvas.width = scaledViewport.width;
-    canvas.height = scaledViewport.height;
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
+    canvas.width = Math.ceil(cssWidth * outputScale);
+    canvas.height = Math.ceil(cssHeight * outputScale);
+    canvas.style.width = cssWidth + 'px';
+    canvas.style.height = cssHeight + 'px';
 
-    const ctx = canvas.getContext('2d');
-    await page.render({ canvasContext: ctx, viewport: scaledViewport }).promise;
+    const ctx = canvas.getContext('2d', { alpha: false });
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    await page.render({
+        canvasContext: ctx,
+        viewport,
+        transform: outputScale === 1 ? null : [outputScale, 0, 0, outputScale, 0, 0]
+    }).promise;
     return canvas;
 }
 
@@ -99,6 +111,8 @@ async function buildFlipbook() {
     const firstPage = await pdfDoc.getPage(1);
     const rawVP = firstPage.getViewport({ scale: 1 });
     const { pageW, pageH } = calcPageSize(rawVP);
+    const initialPageW = clampPageWidth(rawVP.width * DEFAULT_INITIAL_ZOOM, rawVP);
+    const initialPageH = Math.floor(initialPageW / (rawVP.width / rawVP.height));
 
     // Create page divs
     for (let i = 1; i <= totalPages; i++) {
@@ -116,14 +130,14 @@ async function buildFlipbook() {
     }
 
     // Initialize turn.js
-    const bookWidth = viewMode === 'single' ? pageW : pageW * 2;
+    const bookWidth = viewMode === 'single' ? initialPageW : initialPageW * 2;
 
     $(flipbookEl).turn({
         width: bookWidth,
-        height: pageH,
+        height: initialPageH,
         autoCenter: true,
         display: viewMode,
-        acceleration: true,
+        acceleration: false,
         gradients: true,
         elevation: 50,
         duration: 1000,
@@ -157,7 +171,7 @@ async function buildFlipbook() {
     const initialView = $(flipbookEl).turn('view').filter(Boolean);
     const priorityPages = [...new Set([currentPage, ...initialView])];
 
-    await Promise.allSettled(priorityPages.map(p => renderFlipbookPage(p, pageW, pageH)));
+    await Promise.allSettled(priorityPages.map(p => renderFlipbookPage(p, initialPageW, initialPageH)));
     refreshFlipbookView(currentPage);
     await waitForNextFrame();
     await waitForNextFrame();
@@ -166,11 +180,12 @@ async function buildFlipbook() {
 
     // Warm nearby pages in the background after the first view is visible.
     for (let p = 1; p <= Math.min(6, totalPages); p++) {
-        renderFlipbookPage(p, pageW, pageH);
+        renderFlipbookPage(p, initialPageW, initialPageH);
     }
 
     updatePageDisplay(currentPage);
-    updateZoomDisplay(pageW, rawVP.width);
+    updateZoomDisplay(initialPageW, rawVP.width);
+    checkOverflow();
     generateThumbnails();
 }
 
@@ -257,10 +272,15 @@ async function renderFlipbookPage(pageNum, pageW, pageH) {
                     const cloneCanvas = document.createElement('canvas');
                     cloneCanvas.width = canvas.width;
                     cloneCanvas.height = canvas.height;
+                    cloneCanvas.style.width = canvas.style.width;
+                    cloneCanvas.style.height = canvas.style.height;
                     cloneCanvas.style.display = 'block';
                     cloneCanvas.style.pointerEvents = 'none';
                     cloneCanvas.draggable = false;
-                    cloneCanvas.getContext('2d').drawImage(canvas, 0, 0);
+                    const cloneCtx = cloneCanvas.getContext('2d', { alpha: false });
+                    cloneCtx.imageSmoothingEnabled = true;
+                    cloneCtx.imageSmoothingQuality = 'high';
+                    cloneCtx.drawImage(canvas, 0, 0);
                     div.appendChild(cloneCanvas);
                 }
             });
@@ -634,20 +654,30 @@ const viewDual = _$('view-dual');
 
 viewSingle.addEventListener('click', () => {
     if (!flipbookReady || viewMode === 'single') return;
+    const currentPageW = getCurrentPageWidth();
     viewMode = 'single';
     viewSingle.classList.add('active');
     viewDual.classList.remove('active');
     $(flipbookEl).turn('display', 'single');
-    rebuildAtOptimalSize();
+    if (currentPageW) {
+        resizeFlipbookToPageWidth(currentPageW);
+    } else {
+        rebuildAtOptimalSize();
+    }
 });
 
 viewDual.addEventListener('click', () => {
     if (!flipbookReady || viewMode === 'double') return;
+    const currentPageW = getCurrentPageWidth();
     viewMode = 'double';
     viewDual.classList.add('active');
     viewSingle.classList.remove('active');
     $(flipbookEl).turn('display', 'double');
-    rebuildAtOptimalSize();
+    if (currentPageW) {
+        resizeFlipbookToPageWidth(currentPageW);
+    } else {
+        rebuildAtOptimalSize();
+    }
 });
 sidebarToggle.addEventListener('click', toggleSidebar);
 

@@ -252,9 +252,12 @@ body {
 
 #flipbook .flipbook-page canvas {
     display: block;
-    width: 100% !important;
-    height: 100% !important;
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0 auto;
     pointer-events: none;
+    image-rendering: auto;
+    filter: contrast(1.06) brightness(0.985);
 }
 
 .page-loading {

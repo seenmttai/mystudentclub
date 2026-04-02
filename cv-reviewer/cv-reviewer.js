@@ -592,7 +592,7 @@ function parseAndDisplayGrammarCheck(text) {
 
     html = html.replace(/Original:\s*"([^"]+?)"\s*->\s*Corrected:\s*"([^"]+?)"(\s*<span class="highlight-issue.*?<\/span>)?/gi, (match, original, corrected, issueMarker) => {
         const issueHtml = issueMarker || '';
-        return `<div class="grammar-correction mb-2"><span class="original-text">${original}</span> <span class="text-lg mx-1 text-gray-400">â†’</span> <span class="corrected-text">${corrected}</span> ${issueHtml}</div>`;
+        return `<div class="grammar-correction mb-2"><span class="original-text">${original}</span> <span class="text-lg mx-1 text-gray-400">&rarr;</span> <span class="corrected-text">${corrected}</span> ${issueHtml}</div>`;
     });
 
     grammarCheckContent.innerHTML = html;
@@ -739,7 +739,7 @@ function cleanRawText(t) {
     out = out.replace(/\n\*\*\n/g, '\n');  // ** between newlines
 
     // 2) Mirror the bullet splitting used for on-page formatting
-    // After sentence boundaries followed by a capital letter â†’ start a new markdown bullet
+    // After sentence boundaries followed by a capital letter -> start a new markdown bullet
     out = out.replace(/([.!?])\s+(?=[A-Z])/g, '$1\n- ');
 
     // After ISSUE markers when explanation continues
@@ -765,10 +765,10 @@ function formatFeedbackText(text) {
     let processedText = text;
 
     // The model often returns long paragraphs. Break them into bullet-friendly lines:
-    // 1) After sentence boundaries (., ?, !) followed by a capital letter â†’ new bullet
-    processedText = processedText.replace(/([.!?])\s+(?=[A-Z])/g, '$1\n• ');
+    // 1) After sentence boundaries (., ?, !) followed by a capital letter -> new bullet
+    processedText = processedText.replace(/([.!?])\s+(?=[A-Z])/g, '$1\n\u2022 ');
     // 2) After ISSUE markers when explanation continues
-    processedText = processedText.replace(/(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\.?\s+([A-Z])/gi, '$1\n• $2');
+    processedText = processedText.replace(/(\[ISSUE(?:\s*-\s*SEVERITY:\s*(?:Critical|High|Moderate|Low))?[^\]]*\])\.?\s+([A-Z])/gi, '$1\n\u2022 $2');
     // 3) Convert inline numbered items (1. 2. 3. etc.) to bullet points
     // First, handle patterns like "text. 1. more" or "text 1. more" - any " N. " pattern
     processedText = processedText.replace(/\s+(\d+)\.\s+/g, '\n ');
@@ -778,16 +778,16 @@ function formatFeedbackText(text) {
     // STEP 2: Convert to HTML
     let html = simpleMarkdownToHtml(processedText);
 
-    // Replace [GOOD] with simple ✓ symbol
-    html = html.replace(/\[GOOD\]/gi, '<span class="highlight-good" title="Good point">✓</span>');
+    // Replace [GOOD] with a check mark.
+    html = html.replace(/\[GOOD\]/gi, '<span class="highlight-good" title="Good point">&#10003;</span>');
 
-    // Replace [ISSUE] with simple ✗ symbol (without severity)
-    html = html.replace(/\[ISSUE\](?!\s*-\s*SEVERITY)/gi, '<span class="highlight-issue" title="Area for improvement">✗</span>');
+    // Replace [ISSUE] with a cross mark (without severity).
+    html = html.replace(/\[ISSUE\](?!\s*-\s*SEVERITY)/gi, '<span class="highlight-issue" title="Area for improvement">&#10007;</span>');
 
     // Replace [ISSUE - SEVERITY: Level] with compact severity badges
     html = html.replace(/\[ISSUE\s*-\s*SEVERITY:\s*(Critical|High|Moderate|Low)(?:[^\]]*)\]/gi, (match, severity) => {
         const level = severity.toLowerCase();
-        return `<span class="highlight-issue" title="Issue">✗</span><span class="severity-badge severity-${level}">${severity}</span>`;
+        return `<span class="highlight-issue" title="Issue">&#10007;</span><span class="severity-badge severity-${level}">${severity}</span>`;
     });
 
     // Format section labels: "*   *Label:*" pattern from prompt
@@ -797,10 +797,10 @@ function formatFeedbackText(text) {
     // Also handle simpler bold labels: "**Label:**"
     html = html.replace(/<br>\s*\*\*([^*:]+):\*\*/g, '</p><h4 class="feedback-label">$1:</h4><p>');
 
-    // Convert bullet markers • to styled paragraphs - strip the • since CSS adds it via ::before
-    html = html.replace(/<br>\s*•\s*/g, '</p><p class="feedback-bullet">');
-    html = html.replace(/<p>•\s*/g, '<p class="feedback-bullet">');
-    html = html.replace(/^•\s*/gm, '');
+    // Convert bullet markers (\u2022) to styled paragraphs; CSS adds the visual bullet via ::before.
+    html = html.replace(/<br>\s*\u2022\s*/g, '</p><p class="feedback-bullet">');
+    html = html.replace(/<p>\u2022\s*/g, '<p class="feedback-bullet">');
+    html = html.replace(/^\u2022\s*/gm, '');
 
     // Convert numbered items to styled format (remove ::before bullet for numbered items)
     html = html.replace(/<br>\s*(\d+)\.\s+/g, '</p><p class="feedback-numbered"><strong>$1.</strong> ');
@@ -918,18 +918,24 @@ downloadReportBtn.addEventListener('click', () => {
         .replace(/[^a-z0-9_.-]/gi, '_');
     const headerHtml = `
       <div style="text-align:center;padding:8px 0;font-family:'Poppins',sans-serif;color:#111827;font-weight:600;">
-        My Student Club Â· CV Analysis Report
+        My Student Club &middot; CV Analysis Report
       </div>`;
     const footerHtml = `
       <div style="text-align:center;padding:6px 0;font-size:10px;color:#6b7280;font-family:'Poppins',sans-serif;">
         Generated ${new Date().toLocaleDateString()}
       </div>`;
     const pdfCss = `
+      @page { size: A4 portrait; margin: 14mm; }
       * { box-sizing: border-box; }
-      body { font-family: 'Poppins', sans-serif; color: #0f172a; }
-      h1, h2, h3 { color: #111827; font-weight:700; }
-      p, li { color: #374151; line-height: 1.6; font-size: 12px; }
+      body { font-family: 'Poppins', sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+      .mdpdf-content { padding: 2mm 0; }
+      h1, h2, h3, h4 { color: #111827; font-weight:700; break-after: avoid-page; page-break-after: avoid; }
+      p, li { color: #374151; line-height: 1.7; font-size: 12px; orphans: 3; widows: 3; }
       ul, ol { margin: 0 0 10px 18px; padding: 0; }
+      p, li, ul, ol, table, thead, tbody, tr, td, blockquote, pre, code, h1, h2, h3, h4 {
+        break-inside: avoid-page;
+        page-break-inside: avoid;
+      }
       .good-marker { color: #059669; font-weight: 700; }
       .issue-marker { color: #dc2626; font-weight: 700; }
       .sev-badge { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px; font-weight: 600; margin-left: 4px; }
@@ -938,26 +944,38 @@ downloadReportBtn.addEventListener('click', () => {
       .sev-moderate { background: #fef3c7; color: #92400e; }
       .sev-low { background: #f0fdf4; color: #065f46; }
     `;
+    const pdfOptions = {
+        format: 'a4',
+        orientation: 'portrait',
+        margin: 14,
+        css: pdfCss,
+        header: headerHtml,
+        footer: footerHtml,
+        image: { type: 'jpeg', quality: 1.0 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            scrollY: 0,
+            scrollX: 0,
+            letterRendering: true,
+            windowWidth: 1200
+        },
+        pagebreak: {
+            mode: ['avoid-all', 'css', 'legacy'],
+            avoid: ['p', 'li', 'ul', 'ol', 'table', 'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'blockquote', 'pre', 'code']
+        }
+    };
     const markdown = `# CV Analysis Report\n\n${fixInlineCodeMarkdown(cleaned)}`;
 
     pdfPreviewContainer.innerHTML = '';
-    MarkdownPDF.render(markdown, pdfPreviewContainer, {
-        css: pdfCss,
-        header: headerHtml,
-        footer: footerHtml
-    });
+    MarkdownPDF.render(markdown, pdfPreviewContainer, pdfOptions);
 
     pdfPreviewModal.style.display = 'block';
 
     const onDownload = () => {
         MarkdownPDF.download(markdown, {
             filename: `${safeFileName}_Analysis_Report.pdf`,
-            format: 'a4',
-            orientation: 'portrait',
-            margin: 12,
-            css: pdfCss,
-            header: headerHtml,
-            footer: footerHtml
+            ...pdfOptions
         }).finally(() => {
             pdfPreviewModal.style.display = 'none';
             pdfPreviewDownloadBtn.removeEventListener('click', onDownload);
@@ -996,11 +1014,11 @@ function fixInlineCodeMarkdown(md) {
     out = out.replace(/^\|.*\|$/gm, m => m.replace(/\|/g, ' ').replace(/-+/g, ' ')); // flatten tables
 
     // Format markers for PDF output with HTML styling
-    out = out.replace(/\[GOOD\]/g, '<span class="good-marker">âœ“</span>');
-    out = out.replace(/\[ISSUE\](?!\s*-\s*SEVERITY)/g, '<span class="issue-marker">âœ—</span>');
+    out = out.replace(/\[GOOD\]/g, '<span class="good-marker">&#10003;</span>');
+    out = out.replace(/\[ISSUE\](?!\s*-\s*SEVERITY)/g, '<span class="issue-marker">&#10007;</span>');
     out = out.replace(/\[ISSUE\s*-\s*SEVERITY:\s*(Critical|High|Moderate|Low)(?:[^\]]*)\]/gi, (match, severity) => {
         const level = severity.toLowerCase();
-        return `<span class="issue-marker">âœ—</span><span class="sev-badge sev-${level}">${severity}</span>`;
+        return `<span class="issue-marker">&#10007;</span><span class="sev-badge sev-${level}">${severity}</span>`;
     });
 
     // Split sentences for better readability in PDF
@@ -1031,7 +1049,7 @@ async function loadLeaderboard() {
         html += `<li class="p-3 rounded-lg border border-border bg-background-light">
                     <div class="flex justify-between items-center">
                         <span class="font-semibold text-primary">${item.score.toFixed(1)}%</span>
-                        <span class="text-sm text-text-secondary">${name} â€¢ ${date}</span>
+                        <span class="text-sm text-text-secondary">${name} &bull; ${date}</span>
                     </div>
                  </li>`;
     });
