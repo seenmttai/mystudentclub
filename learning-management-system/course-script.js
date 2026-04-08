@@ -1118,8 +1118,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const path = resource.view_storage_path.toLowerCase();
             if (path.endsWith('.csv')) {
                 await openResourceViewer(resource, 'csv');
-            } else if (isFromCrackingInterviewsSection(resource)) {
-                // Redirect to CA Resource viewer page for Cracking Interviews PDFs
+            } else {
+                // Redirect to CA Resource viewer page for ALL PDFs
                 try {
                     const { data, error } = await supabase.storage
                         .from('industrial-training-mastery-resources')
@@ -1131,8 +1131,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error('Error generating PDF link:', err);
                     alert('Could not open the resource. Please try again.');
                 }
-            } else {
-                await openResourceViewer(resource, 'pdf');
             }
             return;
         }

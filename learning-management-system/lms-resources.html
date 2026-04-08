@@ -768,6 +768,19 @@
                 },
 
                 async openViewer(resource, type) {
+                    if (type === 'pdf') {
+                        try {
+                            const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
+                            if (error) throw error;
+                            const proxyUrl = `https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`;
+                            window.open(`/ca-resource/?pdf=${encodeURIComponent(proxyUrl)}`, '_blank');
+                        } catch (err) {
+                            console.error("Viewer error", err);
+                            alert("Could not load resource.");
+                        }
+                        return;
+                    }
+
                     this.isViewerVisible = true;
                     this.currentResourceTitle = resource.title;
                     this.previewType = type;
@@ -807,21 +820,7 @@
                         const response = await fetch(proxyUrl);
                         if (!response.ok) throw new Error('Fetch failed');
 
-                        if (type === 'pdf') {
-                            const pdfData = await response.arrayBuffer();
-                            const loadingTask = window.pdfjsLib.getDocument(pdfData);
-                            const doc = await loadingTask.promise;
-
-                            // !!! CRITICAL FIX !!!
-                            // Use markRaw to prevent Vue from proxying the PDF document object.
-                            // This stops the "Cannot read private member #d" error.
-                            this.pdfDoc = markRaw(doc);
-
-                            this.pdfTotalPages = this.pdfDoc.numPages;
-                            this.pdfCurrentPage = 1;
-                            await this.$nextTick();
-                            this.renderPdfPage(1);
-                        } else if (type === 'csv') {
+                        if (type === 'csv') {
                             const csvText = await response.text();
                             this.renderCsv(csvText);
                         }
