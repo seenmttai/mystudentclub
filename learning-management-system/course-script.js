@@ -1118,7 +1118,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const path = resource.view_storage_path.toLowerCase();
             if (path.endsWith('.csv')) {
                 await openResourceViewer(resource, 'csv');
-            } else if (resource.group && resource.group.toLowerCase().startsWith('templates')) {
+            } else if (resource.group && resource.group.toLowerCase().includes('template')) {
                 // Templates (CV, Cover Letter, etc.) use the inline modal viewer
                 await openResourceViewer(resource, 'pdf');
             } else {

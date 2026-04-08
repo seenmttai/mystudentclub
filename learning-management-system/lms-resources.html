@@ -769,7 +769,7 @@
 
                 async openViewer(resource, type) {
                     // Non-template PDFs open in the ca-resource flipbook viewer
-                    const isTemplate = resource.group && resource.group.toLowerCase().startsWith('templates');
+                    const isTemplate = resource.group && resource.group.toLowerCase().includes('template');
                     if (type === 'pdf' && !isTemplate) {
                         try {
                             const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
