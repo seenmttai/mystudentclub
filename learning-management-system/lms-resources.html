@@ -768,7 +768,9 @@
                 },
 
                 async openViewer(resource, type) {
-                    if (type === 'pdf') {
+                    // Non-template PDFs open in the ca-resource flipbook viewer
+                    const isTemplate = resource.group && resource.group.toLowerCase().startsWith('templates');
+                    if (type === 'pdf' && !isTemplate) {
                         try {
                             const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
                             if (error) throw error;
@@ -820,7 +822,16 @@
                         const response = await fetch(proxyUrl);
                         if (!response.ok) throw new Error('Fetch failed');
 
-                        if (type === 'csv') {
+                        if (type === 'pdf') {
+                            const pdfData = await response.arrayBuffer();
+                            const loadingTask = window.pdfjsLib.getDocument(pdfData);
+                            const doc = await loadingTask.promise;
+                            this.pdfDoc = markRaw(doc);
+                            this.pdfTotalPages = this.pdfDoc.numPages;
+                            this.pdfCurrentPage = 1;
+                            await this.$nextTick();
+                            this.renderPdfPage(1);
+                        } else if (type === 'csv') {
                             const csvText = await response.text();
                             this.renderCsv(csvText);
                         }

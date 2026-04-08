@@ -1118,8 +1118,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const path = resource.view_storage_path.toLowerCase();
             if (path.endsWith('.csv')) {
                 await openResourceViewer(resource, 'csv');
+            } else if (resource.group && resource.group.toLowerCase().startsWith('templates')) {
+                // Templates (CV, Cover Letter, etc.) use the inline modal viewer
+                await openResourceViewer(resource, 'pdf');
             } else {
-                // Redirect to CA Resource viewer page for ALL PDFs
+                // All other PDFs open in the ca-resource flipbook viewer
                 try {
                     const { data, error } = await supabase.storage
                         .from('industrial-training-mastery-resources')
