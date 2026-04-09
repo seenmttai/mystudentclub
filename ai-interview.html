@@ -464,6 +464,524 @@
             transition: width 0.5s ease;
         }
 
+        .report-screen {
+            min-height: 100vh;
+            padding: 24px;
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            background:
+                radial-gradient(circle at top left, rgba(99, 102, 241, 0.18), transparent 28%),
+                radial-gradient(circle at top right, rgba(16, 185, 129, 0.12), transparent 24%),
+                linear-gradient(180deg, #050816 0%, #0b1120 100%);
+        }
+
+        .report-card {
+            width: min(100%, 1600px);
+            min-height: calc(100vh - 48px);
+            display: flex;
+            flex-direction: column;
+            background:
+                linear-gradient(180deg, rgba(17, 24, 39, 0.96) 0%, rgba(11, 17, 32, 0.98) 100%);
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 32px;
+            padding: 28px;
+            box-shadow: 0 28px 80px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .report-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(120deg, rgba(99, 102, 241, 0.08), transparent 28%, transparent 72%, rgba(16, 185, 129, 0.06));
+            pointer-events: none;
+        }
+
+        .report-header {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .report-header-main {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            min-width: 0;
+        }
+
+        .report-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.35rem 0.8rem;
+            border-radius: 999px;
+            background: rgba(99, 102, 241, 0.14);
+            border: 1px solid rgba(99, 102, 241, 0.22);
+            color: #c7d2fe;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.75rem;
+        }
+
+        .report-title {
+            font-size: clamp(2rem, 3vw, 3.4rem);
+            font-weight: 700;
+            line-height: 1.05;
+            margin-bottom: 0.45rem;
+            letter-spacing: -0.03em;
+        }
+
+        .report-subtitle {
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 760px;
+        }
+
+        .report-actions {
+            position: relative;
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            margin: 0;
+        }
+
+        .report-actions .btn {
+            min-width: 180px;
+        }
+
+        .report-actions .btn:not(.btn-primary) {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .report-meta {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .report-meta-item {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.03));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 1rem 1.05rem;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .report-meta-label {
+            display: block;
+            font-size: 0.76rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.4rem;
+        }
+
+        .report-meta-value {
+            color: var(--text-primary);
+            font-weight: 650;
+            font-size: 1rem;
+            line-height: 1.35;
+        }
+
+        .analysis-status {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 0.65rem;
+            border-radius: 16px;
+            padding: 0.95rem 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-secondary);
+        }
+
+        .analysis-status.loading {
+            border-color: rgba(99, 102, 241, 0.28);
+            background: rgba(99, 102, 241, 0.1);
+            color: #dbe4ff;
+        }
+
+        .analysis-status.success {
+            border-color: rgba(16, 185, 129, 0.28);
+            background: rgba(16, 185, 129, 0.1);
+            color: #d1fae5;
+        }
+
+        .analysis-status.error {
+            border-color: rgba(245, 158, 11, 0.28);
+            background: rgba(245, 158, 11, 0.1);
+            color: #fef3c7;
+        }
+
+        .analysis-loading {
+            display: flex;
+            align-items: center;
+            gap: 0.9rem;
+            margin-bottom: 1rem;
+            padding: 1rem 1.1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            color: var(--text-secondary);
+        }
+
+        .analysis-loading .loading-spinner {
+            width: 22px;
+            height: 22px;
+            margin: 0;
+            border-width: 2px;
+        }
+
+        .analysis-overview {
+            position: relative;
+            display: grid;
+            grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .analysis-overview-score {
+            background: linear-gradient(160deg, rgba(99, 102, 241, 0.2), rgba(16, 185, 129, 0.12));
+            border: 1px solid rgba(99, 102, 241, 0.28);
+            border-radius: 22px;
+            padding: 1rem 1.1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 150px;
+        }
+
+        .analysis-overview-label {
+            font-size: 0.78rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #c7d2fe;
+            margin-bottom: 0.6rem;
+            font-weight: 700;
+        }
+
+        .analysis-overview-value {
+            display: flex;
+            align-items: baseline;
+            gap: 0.35rem;
+            font-size: 3rem;
+            font-weight: 750;
+            line-height: 1;
+            color: #ffffff;
+            margin-bottom: 0.65rem;
+        }
+
+        .analysis-overview-value small {
+            font-size: 1rem;
+            color: #dbe4ff;
+        }
+
+        .analysis-overview-note {
+            color: #d1d5db;
+            line-height: 1.5;
+            font-size: 0.93rem;
+        }
+
+        .analysis-overview-meta {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 22px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+            min-height: 150px;
+        }
+
+        .analysis-overview-meta-title {
+            font-size: 0.82rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        .analysis-overview-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+        }
+
+        .analysis-overview-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.36rem 0.75rem;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+        }
+
+        .analysis-overview-reco {
+            border-radius: 12px;
+            border: 1px solid rgba(16, 185, 129, 0.28);
+            background: rgba(16, 185, 129, 0.1);
+            color: #d1fae5;
+            padding: 0.6rem 0.8rem;
+            line-height: 1.5;
+            font-size: 0.93rem;
+        }
+
+        .analysis-score-grid {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        .analysis-score-card {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 1rem;
+        }
+
+        .analysis-score-label {
+            display: block;
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 0.65rem;
+        }
+
+        .analysis-score-value {
+            display: flex;
+            align-items: baseline;
+            gap: 0.25rem;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1;
+            margin-bottom: 0.75rem;
+        }
+
+        .analysis-score-value small {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .analysis-score-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .analysis-score-bar span {
+            display: block;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #6366f1 0%, #10b981 100%);
+        }
+
+        .report-content {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .report-section {
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 22px;
+            padding: 1rem;
+        }
+
+        .report-section-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 0.75rem;
+        }
+
+        .report-body,
+        .report-transcript {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            background: rgba(3, 7, 18, 0.72);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 1.1rem 1.15rem;
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.72;
+            overflow: auto;
+        }
+
+        .report-body {
+            max-height: 380px;
+        }
+
+        .report-transcript {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            max-height: 420px;
+        }
+
+        .analysis-insights {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        .analysis-accordion {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 22px;
+            overflow: hidden;
+        }
+
+        .analysis-accordion > summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 0.95rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .analysis-accordion > summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .analysis-accordion > summary::after {
+            content: '+';
+            font-size: 1.2rem;
+            line-height: 1;
+            color: var(--text-muted);
+        }
+
+        .analysis-accordion[open] > summary::after {
+            content: '-';
+        }
+
+        .analysis-accordion-content {
+            padding: 0.95rem 1rem 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .analysis-copy {
+            color: var(--text-primary);
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .analysis-recommendation {
+            display: inline-flex;
+            align-self: flex-start;
+            padding: 0.45rem 0.85rem;
+            border-radius: 999px;
+            margin-top: 0.9rem;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #d1fae5;
+            font-weight: 600;
+        }
+
+        .analysis-list {
+            margin: 0;
+            padding-left: 1.15rem;
+            color: var(--text-primary);
+            line-height: 1.65;
+        }
+
+        .analysis-list li + li {
+            margin-top: 0.6rem;
+        }
+
+        .analysis-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .analysis-item {
+            background: rgba(3, 7, 18, 0.64);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 0.95rem 1rem;
+        }
+
+        .analysis-item-title {
+            font-weight: 650;
+            color: var(--text-primary);
+            margin-bottom: 0.35rem;
+        }
+
+        .analysis-item-subtle {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            margin-bottom: 0.45rem;
+        }
+
+        .analysis-item-copy {
+            color: var(--text-secondary);
+            line-height: 1.65;
+            white-space: pre-wrap;
+        }
+
+        .report-body strong {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        @media (max-width: 1200px) {
+            .analysis-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .analysis-score-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .report-meta {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .report-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
 
         .interview-container {
             position: fixed;
@@ -1090,6 +1608,52 @@
                 font-size: 0.9rem;
                 max-width: 95%;
             }
+
+            .report-screen {
+                padding: 12px;
+            }
+
+            .report-card {
+                width: 100%;
+                min-height: calc(100vh - 24px);
+                padding: 18px;
+                border-radius: 22px;
+            }
+
+            .report-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .report-header-main {
+                width: 100%;
+            }
+
+            .report-title {
+                font-size: 1.8rem;
+            }
+
+            .report-actions {
+                width: 100%;
+                justify-content: stretch;
+            }
+
+            .report-actions .btn {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .report-meta {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .analysis-score-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .report-content {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* Hide mobile chat UI by default (desktop), show only on mobile */
@@ -1102,6 +1666,10 @@
         }
 
         @media (max-width: 768px) {
+            .analysis-overview-value {
+                font-size: 2.35rem;
+            }
+
             .mobile-chat-fab {
                 position: fixed;
                 left: 16px;
@@ -1588,6 +2156,7 @@
         <main class="interview-main">
             <div class="main-video">
                 <div id="avatar-container" class="avatar-container">
+                    <div id="model-loading-overlay" class="hidden" aria-hidden="true"></div>
                     <svg id="character" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none" style="width: 100%; height: 100%; max-height: 400px;">
                         <defs><clipPath id="eye-clip"><path d="m63.28 106c3.87-4.61 7.74-6.02 13.2-6.02 5.47 0 9.61 3.87 12.15 6.68-3.2 3.16-7.61 5.43-12.38 5.43-5.7 0-9.1-2.27-12.97-6.09z"/></clipPath></defs>
                         <path d="m177.2 88.59c-1.45 5.17-5.02 6.12-8.68 6.43l-2.7 6.2c6.3 2.54 8.48 11.56 6.6 19.9-2.2 9.89-9.69 19.95-18.82 19.95l-2.48 13.9c-1.82 9.09-22.89 31.94-33.25 37.14-5.73 2.99-14.55 2.6-16.67 2.52-4.31-0.16-9.35-0.65-13.26-2.75-9.67-4.97-26.82-22.93-31.78-32.82-1.78-3.69-1.89-9.2-3.14-17.99-9.3 1.71-16.27-7.52-18.99-17.2-2.63-9.3 0.55-20.9 7.82-22.65-5-5.36-5.9-13.29-3.21-20.48-7.73 3.05-13.12-0.82-15.82-6.4 2.27 0.43 1.92 3.82 6.25 5.39 2.39 0.86 5.12 0.7 7.6-0.71-9.24-3.79-10.92-14.68-6.43-21.36 2.74-4.11 5.79-5.39 9.46-6.53-5.51-6.95-2.78-18.28 5.78-21.72 3.55-1.36 7.38-1.01 11.11-0.11-2.36-6.52 0.08-12.39 4.04-15.82 1.37-0.51 2.16 0.62 1.33 1.64-4.17 3.55-5.15 8.2-3.2 12.81 1.84-7.23 7.34-11.09 14.14-11.72 4.18-0.39 6.84 0.86 10.82 3.2 1.37-9.14 8.24-13.67 15.51-13.67 6.99 0 11.95 3.52 15.04 8.99 3.9-2.62 6.91-3.91 11.52-3.44 8.13 0.82 13.79 6.44 15.94 14.45 4.49-1.6 11.06-1.13 15.35 1.72 7.07 4.61 9.34 11.45 7.66 18.99 8.36 1.33 12.65 7.42 12.38 14.17-0.2 3.99-1.95 6.72-4.1 9.11 3.44 2.11 4.41 5 3.63 8.28-1.02 4.22-3.59 6.17-7.3 6.76 1.13 3.16 0.78 6.28-0.2 9.06 3.87-0.39 6.17-1.95 7.19-5.55 0.35-0.86 1.29-0.78 0.86 0.31z" fill="#262D40" stroke="#0A1026" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" stroke-width="2.5"/>
@@ -1713,12 +2282,131 @@
         </div>
     </div>
 
+    <div id="report-screen" class="report-screen hidden">
+        <div class="report-card">
+            <div class="report-header">
+                <div class="report-header-main">
+                    <div class="setup-logo">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="report-kicker">Interview Complete</div>
+                        <h2 class="report-title">Performance Report</h2>
+                        <p id="report-subtitle" class="report-subtitle">Your interview summary is ready.</p>
+                    </div>
+                </div>
+                <div class="report-actions">
+                    <button id="download-report-btn" class="btn btn-primary">Download Report</button>
+                    <button id="new-interview-btn" class="btn">Start New Interview</button>
+                </div>
+            </div>
+            <div id="report-meta" class="report-meta"></div>
+            <div id="analysis-status" class="analysis-status hidden"></div>
+            <div id="analysis-loading" class="analysis-loading hidden">
+                <div class="loading-spinner"></div>
+                <div>Generating detailed AI analysis from the full interview transcript...</div>
+            </div>
+            <div id="analysis-overview" class="analysis-overview hidden">
+                <div class="analysis-overview-score">
+                    <span class="analysis-overview-label">Overall Fit</span>
+                    <div id="analysis-overall-value" class="analysis-overview-value">--<small>/100</small></div>
+                    <div id="analysis-overall-note" class="analysis-overview-note">Overall score appears once analysis is ready.</div>
+                </div>
+                <div class="analysis-overview-meta">
+                    <div class="analysis-overview-meta-title">Interview Snapshot</div>
+                    <div id="analysis-overview-pills" class="analysis-overview-pills"></div>
+                    <div id="analysis-overview-reco" class="analysis-overview-reco hidden"></div>
+                </div>
+            </div>
+            <div id="analysis-score-grid" class="analysis-score-grid hidden"></div>
+            <div id="analysis-grid" class="analysis-insights hidden">
+                <details class="analysis-accordion" open>
+                    <summary>Executive Summary</summary>
+                    <div class="analysis-accordion-content">
+                    <div id="analysis-summary" class="analysis-copy"></div>
+                    <div id="analysis-recommendation" class="analysis-recommendation hidden"></div>
+                    </div>
+                </details>
+                <details class="analysis-accordion" open>
+                    <summary>Role-Specific Tips</summary>
+                    <div class="analysis-accordion-content">
+                    <ul id="analysis-role-tips" class="analysis-list"></ul>
+                    </div>
+                </details>
+                <details class="analysis-accordion" open>
+                    <summary>What Went Well</summary>
+                    <div class="analysis-accordion-content">
+                    <ul id="analysis-strengths" class="analysis-list"></ul>
+                    </div>
+                </details>
+                <details class="analysis-accordion" open>
+                    <summary>Needs Improvement</summary>
+                    <div class="analysis-accordion-content">
+                    <ul id="analysis-issues" class="analysis-list"></ul>
+                    </div>
+                </details>
+                <details class="analysis-accordion" open>
+                    <summary>Verbal Mistakes</summary>
+                    <div class="analysis-accordion-content">
+                    <div id="analysis-verbal-mistakes" class="analysis-stack"></div>
+                    </div>
+                </details>
+                <details class="analysis-accordion" open>
+                    <summary>Missed Questions</summary>
+                    <div class="analysis-accordion-content">
+                    <div id="analysis-missed-questions" class="analysis-stack"></div>
+                    </div>
+                </details>
+                <details class="analysis-accordion" open>
+                    <summary>Better Responses</summary>
+                    <div class="analysis-accordion-content">
+                    <div id="analysis-better-responses" class="analysis-stack"></div>
+                    </div>
+                </details>
+                <details class="analysis-accordion" open>
+                    <summary>Coaching Tips</summary>
+                    <div class="analysis-accordion-content">
+                    <ul id="analysis-tips" class="analysis-list"></ul>
+                    </div>
+                </details>
+            </div>
+            <div class="report-content">
+                <div class="report-section">
+                    <h3 class="report-section-title">Assessment</h3>
+                    <pre id="report-body" class="report-body"></pre>
+                </div>
+                <div class="report-section">
+                    <h3 class="report-section-title">Transcript</h3>
+                    <pre id="report-transcript" class="report-transcript"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pdf-preview-modal" style="display:none; position:fixed; inset:0; z-index:1200; background:rgba(0,0,0,0.38); padding:24px;">
+        <div style="max-width:960px; width:100%; margin:0 auto; background:#fff; border:1px solid #e5e7eb; border-radius:18px; box-shadow:0 22px 60px rgba(0,0,0,0.22); overflow:hidden;">
+            <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 22px; border-bottom:1px solid #e5e7eb;">
+                <h3 style="margin:0; font-weight:700; color:#0f172a;">Preview: Interview Analysis Report</h3>
+                <button id="pdf-preview-close-btn" style="border:none; background:#f3f4f6; color:#475569; padding:9px 14px; border-radius:10px; cursor:pointer; font-weight:600;">Close</button>
+            </div>
+            <div id="pdf-preview-container" style="max-height:68vh; overflow:auto; padding:20px; background:#f8fafc;"></div>
+            <div style="display:flex; justify-content:flex-end; gap:10px; padding:16px 22px; border-top:1px solid #e5e7eb; background:#fff;">
+                <button id="pdf-preview-download-btn" style="background:#2563eb; color:#fff; border:1px solid #2563eb; padding:11px 18px; border-radius:10px; font-weight:600; cursor:pointer;">Download PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/markdown-pdfjs@1.0.1/dist/markdown-pdf.umd.js"></script>
     <script type="module">
         import { LipsyncEn } from 'lipsync-en';
 
         // --- CONFIGURATION ---
         const AVATAR_URL = 'https://models.readyplayer.me/69440c84ca696e5f2fb7bfd5.glb?morphTargets=ARKit,Oculus+Visemes,mouthOpen,mouthSmile,eyesClosed,eyesLookUp,eyesLookDown';
+        const AI_INTERVIEWER_NAME = 'Aditya Chourasia';
         const WORKER_URL = 'https://interviewme.bhansalimanan55.workers.dev/';
+        const ANALYSIS_URL = 'https://analysis.mystudentclub.com/analysis';
         const TTS_ENDPOINT = 'https://us-central1-msc-notif.cloudfunctions.net/gcp-tts-rate-limited';
 
         // --- GLOBAL CONTROLS ---
@@ -1776,6 +2464,7 @@
 
             async processSpeechItem(item) {
                 if (window.stopListening) window.stopListening();
+                if (window.setAIAvatarSpeaking) window.setAIAvatarSpeaking(true);
                 this.isSpeaking = true;
 
                 if (item.type === 'text') {
@@ -1785,23 +2474,29 @@
                         if (!res.ok) throw new Error("TTS Error");
                         const data = await res.json();
                         await this.playAudioWithVisemes(data.audioContent, data.timepoints);
-                    } catch (e) { console.error(e); this.finishSpeaking(); }
+                    } catch (e) {
+                        console.error(e);
+                        if (typeof window.handleAISpeechFallback === 'function') window.handleAISpeechFallback(item.content);
+                        this.finishSpeaking();
+                    }
                 } else if (item.type === 'emoji') {
                     this.playEmojiAnimation(item.content);
                 }
             }
 
             async playAudioWithVisemes(base64, timepoints) {
+                if (!base64) throw new Error('Missing TTS audio');
                 if (this.audioCtx.state === 'suspended') await this.audioCtx.resume();
                 this.clearLipsync();
                 this.characterSvg.classList.add('bot-talking');
 
                 const audioData = Uint8Array.from(atob(base64), c => c.charCodeAt(0)).buffer;
                 const buffer = await this.audioCtx.decodeAudioData(audioData);
+                const safeTimepoints = Array.isArray(timepoints) ? timepoints : [];
 
                 const startTimeOffset = 50; 
-                timepoints.forEach((tp, idx) => {
-                    const next = timepoints[idx + 1];
+                safeTimepoints.forEach((tp, idx) => {
+                    const next = safeTimepoints[idx + 1];
                     const wordDur = next ? (next.time_seconds - tp.time_seconds) * 1000 : 200;
                     const vis = this.lipsync.en.wordsToVisemes(tp.word);
                     
@@ -1824,7 +2519,7 @@
                 this.audioSpeechSource.connect(this.audioCtx.destination);
                 this.audioSpeechSource.start(this.audioCtx.currentTime + 0.05);
 
-                if (typeof scheduleAISubtitles === 'function') scheduleAISubtitles(timepoints, buffer.duration, this.audioCtx.currentTime + 0.05);
+                if (typeof scheduleAISubtitles === 'function') scheduleAISubtitles(safeTimepoints, buffer.duration, startTimeOffset);
 
                 this.audioSpeechSource.onended = () => {
                     this.clearLipsync();
@@ -1834,7 +2529,10 @@
 
             stopSpeaking() {
                 if (this.audioSpeechSource) { this.audioSpeechSource.stop(); this.audioSpeechSource = null; }
-                this.speechQueue = []; this.clearLipsync(); this.finishSpeaking();
+                this.speechQueue = [];
+                this.clearLipsync();
+                if (window.setAIAvatarSpeaking) window.setAIAvatarSpeaking(false);
+                this.finishSpeaking();
             }
 
             speakText(t) { if (this.isSpeaking) { this.speechQueue.push({ type: 'text', content: t }); return; } this.processSpeechItem({ type: 'text', content: t }); }
@@ -1845,6 +2543,8 @@
                 if (this.speechQueue.length) {
                     this.processSpeechItem(this.speechQueue.shift());
                 } else {
+                    if (window.setAIAvatarSpeaking) window.setAIAvatarSpeaking(false);
+                    if (window.flushPendingInterviewAutoEnd) window.flushPendingInterviewAutoEnd();
                     if (window.startListening) window.startListening();
                 }
             }
@@ -1889,19 +2589,38 @@
 
         // --- GLOBAL LOGIC ---
         let avatar, userStream, isModelLoaded = false, areSubtitlesOn = true, interviewConfig = {}, messages = [], speechRecognition, isWaitingForAIResponse = false;
+        let interviewAutoEndTimer = null, interviewTerminalState = false, pendingInterviewAutoEnd = null;
+        let finalInterviewReport = null, interviewStartedAt = null, detailedInterviewAnalysis = null, analysisRequestToken = 0;
+        let consecutiveInterviewServiceFailures = 0;
         let liveUserMessageEl = null; // For live updating the user's message in chat
+        const INTERVIEW_REQUEST_TIMEOUT_MS = 45000;
+        const INTERVIEW_REQUEST_MAX_RETRIES = 1;
+        const INTERVIEW_SERVICE_FAILURES_BEFORE_END = 3;
 
         const EMOJI_CHAR = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
+        const FINAL_REPORT_BLOCK_REGEX = /<<<FINAL_INTERVIEW_REPORT>>>[\s\S]*?<<<END_FINAL_INTERVIEW_REPORT>>>/g;
+
+        function sanitizeTranscriptText(text = "") {
+            const withoutReportBlock = String(text || "").replace(FINAL_REPORT_BLOCK_REGEX, "");
+            return Array.from(withoutReportBlock)
+                .map(ch => (EMOJI_CHAR.test(ch) ? "" : ch))
+                .join("")
+                .replace(/[ \t]{2,}/g, " ")
+                .trim();
+        }
+
         function extractEmojisAndSanitize(text = "") {
-            const reportRegex = /<<<FINAL_INTERVIEW_REPORT>>>[\s\S]*?<<<END_FINAL_INTERVIEW_REPORT>>>/;
             const reportMatch = text.match(/<<<FINAL_INTERVIEW_REPORT>>>([\s\S]*?)<<<END_FINAL_INTERVIEW_REPORT>>>/);
-            let clean = text.replace(reportRegex, "").replace(/\*/g, "");
+            let clean = text.replace(FINAL_REPORT_BLOCK_REGEX, "").replace(/\*/g, "");
             const chars = Array.from(clean), emojis = [];
             clean = chars.map(ch => EMOJI_CHAR.test(ch) ? (emojis.push(ch), "") : ch).join("").trim();
             return { clean, emojis, report: reportMatch ? reportMatch[1] : null };
         }
 
-        const setupScreen = document.getElementById('setup-screen'), loadingScreen = document.getElementById('loading-screen'), permissionsModal = document.getElementById('permissions-modal'), interviewScreen = document.getElementById('interview-screen'), setupForm = document.getElementById('setup-form'), avatarContainer = document.getElementById('avatar-container'), modelLoadingOverlay = document.getElementById('model-loading-overlay'), chatMessages = document.getElementById('chat-messages'), userVideo = document.getElementById('user-video'), subtitlesOverlay = document.getElementById('subtitles-overlay'), currentRoleSpan = document.getElementById('current-role'), loadingProgressBar = document.getElementById('loading-progress-bar'), speechStatus = document.getElementById('speech-status'), subtitlesBtn = document.getElementById('subtitles-btn'), endCallBtn = document.getElementById('end-call-btn'), allowPermissionsBtn = document.getElementById('allow-permissions'), skipPermissionsBtn = document.getElementById('skip-permissions');
+        const setupScreen = document.getElementById('setup-screen'), loadingScreen = document.getElementById('loading-screen'), permissionsModal = document.getElementById('permissions-modal'), interviewScreen = document.getElementById('interview-screen'), reportScreen = document.getElementById('report-screen'), setupForm = document.getElementById('setup-form'), avatarContainer = document.getElementById('avatar-container'), modelLoadingOverlay = document.getElementById('model-loading-overlay'), chatMessages = document.getElementById('chat-messages'), userVideo = document.getElementById('user-video'), subtitlesOverlay = document.getElementById('subtitles-overlay'), currentRoleSpan = document.getElementById('current-role'), loadingProgressBar = document.getElementById('loading-progress-bar'), speechStatus = document.getElementById('speech-status'), subtitlesBtn = document.getElementById('subtitles-btn'), endCallBtn = document.getElementById('end-call-btn'), allowPermissionsBtn = document.getElementById('allow-permissions'), skipPermissionsBtn = document.getElementById('skip-permissions');
+        const reportSubtitle = document.getElementById('report-subtitle'), reportMeta = document.getElementById('report-meta'), reportBody = document.getElementById('report-body'), reportTranscript = document.getElementById('report-transcript'), downloadReportBtn = document.getElementById('download-report-btn'), newInterviewBtn = document.getElementById('new-interview-btn');
+        const analysisStatus = document.getElementById('analysis-status'), analysisLoading = document.getElementById('analysis-loading'), analysisOverview = document.getElementById('analysis-overview'), analysisOverallValue = document.getElementById('analysis-overall-value'), analysisOverallNote = document.getElementById('analysis-overall-note'), analysisOverviewPills = document.getElementById('analysis-overview-pills'), analysisOverviewReco = document.getElementById('analysis-overview-reco'), analysisScoreGrid = document.getElementById('analysis-score-grid'), analysisGrid = document.getElementById('analysis-grid'), analysisSummary = document.getElementById('analysis-summary'), analysisRecommendation = document.getElementById('analysis-recommendation'), analysisRoleTips = document.getElementById('analysis-role-tips'), analysisStrengths = document.getElementById('analysis-strengths'), analysisIssues = document.getElementById('analysis-issues'), analysisVerbalMistakes = document.getElementById('analysis-verbal-mistakes'), analysisMissedQuestions = document.getElementById('analysis-missed-questions'), analysisBetterResponses = document.getElementById('analysis-better-responses'), analysisTips = document.getElementById('analysis-tips');
+        const pdfPreviewModal = document.getElementById('pdf-preview-modal'), pdfPreviewContainer = document.getElementById('pdf-preview-container'), pdfPreviewCloseBtn = document.getElementById('pdf-preview-close-btn'), pdfPreviewDownloadBtn = document.getElementById('pdf-preview-download-btn');
         document.getElementById('push-to-talk-btn').style.display = 'none';
 
         async function init() {
@@ -1917,11 +2636,20 @@
             endCallBtn.addEventListener('click', endInterview);
             if (allowPermissionsBtn) allowPermissionsBtn.addEventListener('click', requestPermissions);
             if (skipPermissionsBtn) skipPermissionsBtn.addEventListener('click', skipPermissions);
+            if (downloadReportBtn) downloadReportBtn.addEventListener('click', downloadInterviewReport);
+            if (newInterviewBtn) newInterviewBtn.addEventListener('click', () => location.reload());
+            if (pdfPreviewCloseBtn) pdfPreviewCloseBtn.addEventListener('click', closeInterviewPdfPreview);
+            if (pdfPreviewModal) {
+                pdfPreviewModal.addEventListener('click', (e) => {
+                    if (e.target === pdfPreviewModal) closeInterviewPdfPreview();
+                });
+            }
             window.addEventListener('resize', () => { if (avatar) avatar.onResize(); });
         }
 
         // --- GLOBAL MIC CONTROLS ---
         const userVideoContainer = document.getElementById('user-video-container');
+        const aiAudioStatus = document.getElementById('ai-audio-status');
         const userAudioStatus = document.getElementById('user-audio-status');
         const listeningLabel = document.getElementById('listening-label');
 
@@ -1931,8 +2659,13 @@
             if (listeningLabel) listeningLabel.classList.toggle('visible', isListening);
         }
 
+        function setAIAvatarSpeaking(isSpeaking) {
+            if (aiAudioStatus) aiAudioStatus.classList.toggle('listening', isSpeaking);
+        }
+        window.setAIAvatarSpeaking = setAIAvatarSpeaking;
+
         window.startListening = function () {
-            if (speechRecognition && !isWaitingForAIResponse) {
+            if (speechRecognition && !isWaitingForAIResponse && !interviewTerminalState) {
                 try { 
                     speechRecognition.start(); 
                     setListeningUI(true);
@@ -1992,7 +2725,7 @@
                 speechRecognition.onend = () => {
                     setListeningUI(false);
                     // Auto-restart if we are supposed to be listening (not speaking)
-                    if (!interviewScreen.classList.contains('hidden') && avatar && !avatar.isSpeaking && !isWaitingForAIResponse) {
+                    if (!interviewScreen.classList.contains('hidden') && avatar && !avatar.isSpeaking && !isWaitingForAIResponse && !interviewTerminalState) {
                         try { speechRecognition.start(); } catch (e) { }
                     }
                 };
@@ -2000,7 +2733,7 @@
         }
 
         function handleSpeechInput(text) {
-            if (!text.trim() || isWaitingForAIResponse) return;
+            if (!text.trim() || isWaitingForAIResponse || interviewTerminalState) return;
             // Ignore short noise/echo remnants
             if (text.length < 3 && !['no', 'yes', 'ok'].includes(text.toLowerCase())) return;
             
@@ -2072,13 +2805,679 @@
 
         function updateSpeechStatus(t, v) { speechStatus.textContent = t; speechStatus.classList.toggle('visible', v); }
 
+        function formatDateTime(value) {
+            if (!value) return 'N/A';
+            return new Date(value).toLocaleString('en-IN', {
+                year: 'numeric',
+                month: 'short',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function getTranscriptText() {
+            return messages.map(msg => {
+                const speaker = msg.role === 'user' ? 'You' : (msg.role === 'assistant' ? AI_INTERVIEWER_NAME : 'System');
+                return `${speaker}: ${sanitizeTranscriptText(msg.content)}`;
+            }).join('\n\n');
+        }
+
+        function formatAssessmentHtml(text = '') {
+            const escaped = escapeHtml(String(text || ''));
+            return escaped
+                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                .replace(/\n/g, '<br>');
+        }
+
+        function setFinalInterviewReport(text, source = 'ai') {
+            finalInterviewReport = {
+                text: sanitizeTranscriptText(text || ''),
+                source,
+                generatedAt: new Date().toISOString()
+            };
+        }
+
+        function buildFallbackInterviewReport(reason = 'Interview ended before a final AI report was returned.') {
+            const userTurns = messages.filter(msg => msg.role === 'user').length;
+            const aiTurns = messages.filter(msg => msg.role === 'assistant').length;
+            return [
+                'Interview Summary',
+                '',
+                `Reason: ${reason}`,
+                `Target Role: ${interviewConfig.specialization || 'N/A'}`,
+                `Experience Level: ${interviewConfig.experienceLevel || 'N/A'}`,
+                `Company Type: ${interviewConfig.companyType || 'N/A'}`,
+                `Interview Duration Selected: ${interviewConfig.duration ? `${interviewConfig.duration} minutes` : 'N/A'}`,
+                `Candidate Responses Logged: ${userTurns}`,
+                `AI Responses Logged: ${aiTurns}`,
+                '',
+                'A formal AI-generated evaluation was not returned for this session.',
+                'Use the transcript below to review the conversation and identify improvement areas.'
+            ].join('\n');
+        }
+
+        function escapeHtml(value = '') {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function clampScore(value) {
+            const score = Number(value);
+            if (!Number.isFinite(score)) return null;
+            return Math.max(0, Math.min(100, Math.round(score)));
+        }
+
+        function normalizeStringArray(value) {
+            if (Array.isArray(value)) return value.map(item => (typeof item === 'string' ? item.trim() : '')).filter(Boolean);
+            if (typeof value === 'string' && value.trim()) return [value.trim()];
+            return [];
+        }
+
+        function normalizeObjectArray(value) {
+            return Array.isArray(value) ? value.filter(item => item && typeof item === 'object') : [];
+        }
+
+        function normalizeDetailedAnalysis(payload) {
+            const raw = payload?.analysis || payload?.result || payload || {};
+            const rawScores = raw.scores || {};
+            return {
+                summary: raw.summary || raw.executive_summary || raw.analysis_summary || '',
+                recommendation: raw.recommendation || raw.final_recommendation || raw.hiring_recommendation || '',
+                scores: {
+                    overall: clampScore(rawScores.overall ?? raw.overall_score),
+                    communication: clampScore(rawScores.communication ?? raw.communication_score),
+                    technical: clampScore(rawScores.technical ?? raw.technical_score),
+                    confidence: clampScore(rawScores.confidence ?? raw.confidence_score),
+                    professionalism: clampScore(rawScores.professionalism ?? raw.professionalism_score)
+                },
+                strengths: normalizeStringArray(raw.strengths),
+                issues: normalizeStringArray(raw.issues || raw.areas_for_improvement || raw.weaknesses),
+                tips: normalizeStringArray(raw.tips || raw.coaching_tips),
+                roleTips: normalizeStringArray(raw.role_specific_tips || raw.role_specific_advice),
+                verbalMistakes: normalizeObjectArray(raw.verbal_mistakes || raw.communication_mistakes || raw.verbal_issues).map(item => ({
+                    issue: item.issue || item.label || item.name || '',
+                    example: item.example || item.quote || item.observation || '',
+                    fix: item.fix || item.improvement || item.tip || ''
+                })),
+                missedQuestions: normalizeObjectArray(raw.missed_questions || raw.unanswered_questions).map(item => ({
+                    question: item.question || item.prompt || '',
+                    gap: item.what_was_missing || item.gap || item.issue || '',
+                    betterAnswer: item.better_answer || item.ideal_answer || item.suggested_answer || ''
+                })),
+                betterResponses: normalizeObjectArray(raw.better_responses || raw.sample_better_answers).map(item => ({
+                    question: item.question || item.prompt || '',
+                    original: item.candidate_answer || item.original_answer || '',
+                    improved: item.improved_answer || item.better_answer || item.sample_answer || ''
+                }))
+            };
+        }
+
+        function renderAnalysisList(node, items, emptyText) {
+            if (!node) return;
+            const values = normalizeStringArray(items);
+            node.innerHTML = values.length
+                ? values.map(item => `<li>${escapeHtml(item)}</li>`).join('')
+                : `<li>${escapeHtml(emptyText)}</li>`;
+        }
+
+        function renderAnalysisCards(node, items, emptyText, renderItem) {
+            if (!node) return;
+            if (!Array.isArray(items) || !items.length) {
+                node.innerHTML = `<div class="analysis-item"><div class="analysis-item-copy">${escapeHtml(emptyText)}</div></div>`;
+                return;
+            }
+            node.innerHTML = items.map(renderItem).join('');
+        }
+
+        function setAnalysisStatus(message, state) {
+            if (!analysisStatus) return;
+            analysisStatus.textContent = message || '';
+            analysisStatus.className = `analysis-status${message ? ` ${state || ''}` : ''}`;
+            analysisStatus.classList.toggle('hidden', !message);
+        }
+
+        function setAnalysisLoadingState() {
+            detailedInterviewAnalysis = null;
+            if (analysisLoading) analysisLoading.classList.remove('hidden');
+            if (analysisOverview) analysisOverview.classList.add('hidden');
+            if (analysisOverallValue) analysisOverallValue.innerHTML = `--<small>/100</small>`;
+            if (analysisOverallNote) analysisOverallNote.textContent = 'Overall score appears once analysis is ready.';
+            if (analysisOverviewPills) analysisOverviewPills.innerHTML = '';
+            if (analysisOverviewReco) {
+                analysisOverviewReco.classList.add('hidden');
+                analysisOverviewReco.textContent = '';
+            }
+            if (analysisScoreGrid) {
+                analysisScoreGrid.classList.add('hidden');
+                analysisScoreGrid.innerHTML = '';
+            }
+            if (analysisGrid) analysisGrid.classList.add('hidden');
+            if (analysisSummary) analysisSummary.textContent = '';
+            if (analysisRecommendation) {
+                analysisRecommendation.textContent = '';
+                analysisRecommendation.classList.add('hidden');
+            }
+            renderAnalysisList(analysisRoleTips, [], 'Detailed role-specific tips will appear here.');
+            renderAnalysisList(analysisStrengths, [], 'Detailed strengths will appear here.');
+            renderAnalysisList(analysisIssues, [], 'Detailed improvement areas will appear here.');
+            renderAnalysisList(analysisTips, [], 'Detailed coaching tips will appear here.');
+            renderAnalysisCards(analysisVerbalMistakes, [], 'Detailed verbal feedback will appear here.', () => '');
+            renderAnalysisCards(analysisMissedQuestions, [], 'Missed-question analysis will appear here.', () => '');
+            renderAnalysisCards(analysisBetterResponses, [], 'Improved sample answers will appear here.', () => '');
+            setAnalysisStatus('Generating detailed AI analysis from the full transcript...', 'loading');
+        }
+
+        function renderDetailedAnalysis(analysis) {
+            detailedInterviewAnalysis = analysis;
+            if (analysisLoading) analysisLoading.classList.add('hidden');
+            if (analysisOverview) analysisOverview.classList.remove('hidden');
+            if (analysisGrid) analysisGrid.classList.remove('hidden');
+
+            if (analysisOverallValue) {
+                const overall = analysis.scores.overall;
+                analysisOverallValue.innerHTML = overall !== null ? `${overall}<small>/100</small>` : `--<small>/100</small>`;
+            }
+            if (analysisOverallNote) {
+                analysisOverallNote.textContent = analysis.summary || 'Detailed analysis generated successfully.';
+            }
+            if (analysisOverviewPills) {
+                analysisOverviewPills.innerHTML = [
+                    `Role: ${interviewConfig.specialization || 'N/A'}`,
+                    `Experience: ${interviewConfig.experienceLevel || 'N/A'}`,
+                    `Company: ${interviewConfig.companyType || 'N/A'}`,
+                    `Duration: ${interviewConfig.duration ? `${interviewConfig.duration} min` : 'N/A'}`
+                ].map(value => `<span class="analysis-overview-pill">${escapeHtml(value)}</span>`).join('');
+            }
+            if (analysisOverviewReco) {
+                if (analysis.recommendation) {
+                    analysisOverviewReco.textContent = `Recommendation: ${analysis.recommendation}`;
+                    analysisOverviewReco.classList.remove('hidden');
+                } else {
+                    analysisOverviewReco.classList.add('hidden');
+                    analysisOverviewReco.textContent = '';
+                }
+            }
+
+            const scoreEntries = [
+                ['Overall', analysis.scores.overall],
+                ['Communication', analysis.scores.communication],
+                ['Technical', analysis.scores.technical],
+                ['Confidence', analysis.scores.confidence],
+                ['Professionalism', analysis.scores.professionalism]
+            ].filter(([, score]) => score !== null);
+
+            if (analysisScoreGrid) {
+                analysisScoreGrid.innerHTML = scoreEntries.map(([label, score]) => `
+                    <div class="analysis-score-card">
+                        <span class="analysis-score-label">${escapeHtml(label)}</span>
+                        <div class="analysis-score-value">${score}<small>/100</small></div>
+                        <div class="analysis-score-bar"><span style="width:${score}%"></span></div>
+                    </div>
+                `).join('');
+                analysisScoreGrid.classList.toggle('hidden', !scoreEntries.length);
+            }
+
+            if (analysisSummary) {
+                analysisSummary.textContent = analysis.summary || 'Detailed analysis was generated, but no executive summary was returned.';
+            }
+            if (analysisRecommendation) {
+                if (analysis.recommendation) {
+                    analysisRecommendation.textContent = analysis.recommendation;
+                    analysisRecommendation.classList.remove('hidden');
+                } else {
+                    analysisRecommendation.classList.add('hidden');
+                    analysisRecommendation.textContent = '';
+                }
+            }
+
+            renderAnalysisList(analysisRoleTips, analysis.roleTips, 'No role-specific tips were returned.');
+            renderAnalysisList(analysisStrengths, analysis.strengths, 'No strengths were returned.');
+            renderAnalysisList(analysisIssues, analysis.issues, 'No improvement areas were returned.');
+            renderAnalysisList(analysisTips, analysis.tips, 'No coaching tips were returned.');
+
+            renderAnalysisCards(analysisVerbalMistakes, analysis.verbalMistakes, 'No major verbal mistakes were identified.', item => `
+                <div class="analysis-item">
+                    <div class="analysis-item-title">${escapeHtml(item.issue || 'Communication note')}</div>
+                    ${item.example ? `<div class="analysis-item-subtle">Example: ${escapeHtml(item.example)}</div>` : ''}
+                    ${item.fix ? `<div class="analysis-item-copy">${escapeHtml(item.fix)}</div>` : ''}
+                </div>
+            `);
+
+            renderAnalysisCards(analysisMissedQuestions, analysis.missedQuestions, 'No major missed-question patterns were identified.', item => `
+                <div class="analysis-item">
+                    <div class="analysis-item-title">${escapeHtml(item.question || 'Question')}</div>
+                    ${item.gap ? `<div class="analysis-item-subtle">${escapeHtml(item.gap)}</div>` : ''}
+                    ${item.betterAnswer ? `<div class="analysis-item-copy">${escapeHtml(item.betterAnswer)}</div>` : ''}
+                </div>
+            `);
+
+            renderAnalysisCards(analysisBetterResponses, analysis.betterResponses, 'No improved answers were returned.', item => `
+                <div class="analysis-item">
+                    <div class="analysis-item-title">${escapeHtml(item.question || 'Suggested better response')}</div>
+                    ${item.original ? `<div class="analysis-item-subtle">Original: ${escapeHtml(item.original)}</div>` : ''}
+                    ${item.improved ? `<div class="analysis-item-copy">${escapeHtml(item.improved)}</div>` : ''}
+                </div>
+            `);
+
+            setAnalysisStatus('Detailed AI analysis is ready.', 'success');
+        }
+
+        function setAnalysisFallbackState(message) {
+            if (analysisLoading) analysisLoading.classList.add('hidden');
+            if (analysisOverview) analysisOverview.classList.add('hidden');
+            if (analysisScoreGrid) {
+                analysisScoreGrid.classList.add('hidden');
+                analysisScoreGrid.innerHTML = '';
+            }
+            if (analysisGrid) analysisGrid.classList.add('hidden');
+            setAnalysisStatus(message, 'error');
+        }
+
+        function buildDetailedAnalysisRequestPayload() {
+            return {
+                interview: {
+                    specialization: interviewConfig.specialization,
+                    experienceLevel: interviewConfig.experienceLevel,
+                    companyType: interviewConfig.companyType,
+                    duration: interviewConfig.duration,
+                    interviewer: AI_INTERVIEWER_NAME
+                },
+                messages,
+                transcript: getTranscriptText(),
+                finalReport: finalInterviewReport?.text || '',
+                reportSource: finalInterviewReport?.source || 'fallback'
+            };
+        }
+
+        async function requestDetailedInterviewAnalysis() {
+            if (!messages.length) {
+                setAnalysisFallbackState('Detailed analysis is unavailable because no transcript was captured.');
+                return;
+            }
+
+            const requestToken = ++analysisRequestToken;
+            setAnalysisLoadingState();
+
+            try {
+                const response = await fetch(ANALYSIS_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Specialization': interviewConfig.specialization,
+                        'X-Experience-Level': interviewConfig.experienceLevel,
+                        'X-Company-Type': interviewConfig.companyType,
+                        'X-Duration': interviewConfig.duration
+                    },
+                    body: JSON.stringify(buildDetailedAnalysisRequestPayload())
+                });
+
+                if (!response.ok) throw new Error(`Analysis endpoint returned ${response.status}`);
+                const data = await response.json();
+                if (data && data.ok === false) throw new Error(data.error || 'Analysis endpoint reported failure.');
+                const analysis = normalizeDetailedAnalysis(data);
+                const hasUsableAnalysis = analysis.summary || analysis.recommendation || Object.values(analysis.scores).some(score => score !== null) || analysis.strengths.length || analysis.issues.length || analysis.tips.length || analysis.roleTips.length || analysis.verbalMistakes.length || analysis.missedQuestions.length || analysis.betterResponses.length;
+                if (!hasUsableAnalysis) throw new Error('Analysis endpoint returned no structured analysis.');
+                if (requestToken !== analysisRequestToken) return;
+                renderDetailedAnalysis(analysis);
+            } catch (error) {
+                console.error(error);
+                if (requestToken !== analysisRequestToken) return;
+                setAnalysisFallbackState('Detailed AI analysis is temporarily unavailable. Showing the core report and full transcript instead.');
+            }
+        }
+
+        function getReportExportFilename() {
+            const roleSlug = (interviewConfig.specialization || 'interview-report').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+            return `${roleSlug || 'interview-report'}-${new Date().toISOString().slice(0, 10)}`;
+        }
+
+        function getReportExportMeta() {
+            return [
+                ['Role', interviewConfig.specialization || 'N/A'],
+                ['Experience Level', interviewConfig.experienceLevel || 'N/A'],
+                ['Company Type', interviewConfig.companyType || 'N/A'],
+                ['Interviewer', AI_INTERVIEWER_NAME],
+                ['Selected Duration', interviewConfig.duration ? `${interviewConfig.duration} minutes` : 'N/A'],
+                ['Started At', formatDateTime(interviewStartedAt)],
+                ['Ended At', formatDateTime(finalInterviewReport?.generatedAt || new Date().toISOString())]
+            ];
+        }
+
+        function escapeMarkdown(value = '') {
+            return String(value || '')
+                .replace(/\\/g, '\\\\')
+                .replace(/([*_`#[\]()!|>~-])/g, '\\$1');
+        }
+
+        function toMarkdownBulletList(items, emptyText) {
+            const values = normalizeStringArray(items);
+            if (!values.length) return `- ${escapeMarkdown(emptyText)}`;
+            return values.map(item => `- ${escapeMarkdown(item)}`).join('\n');
+        }
+
+        function toMarkdownDetailList(items, emptyText, formatter) {
+            if (!Array.isArray(items) || !items.length) return `- ${escapeMarkdown(emptyText)}`;
+            return items.map(formatter).join('\n\n');
+        }
+
+        function buildInterviewReportMarkdown() {
+            const reportText = finalInterviewReport?.text || buildFallbackInterviewReport('Interview ended without a final AI report.');
+            const transcriptText = (getTranscriptText() || 'No transcript available.').replace(/```/g, "'''");
+            const metaSection = getReportExportMeta()
+                .map(([label, value]) => `- **${escapeMarkdown(label)}:** ${escapeMarkdown(value)}`)
+                .join('\n');
+            const scoreEntries = detailedInterviewAnalysis
+                ? [
+                    ['Overall', detailedInterviewAnalysis.scores.overall],
+                    ['Communication', detailedInterviewAnalysis.scores.communication],
+                    ['Technical', detailedInterviewAnalysis.scores.technical],
+                    ['Confidence', detailedInterviewAnalysis.scores.confidence],
+                    ['Professionalism', detailedInterviewAnalysis.scores.professionalism]
+                ].filter(([, score]) => score !== null)
+                : [];
+            const scoreSection = scoreEntries.length
+                ? scoreEntries.map(([label, score]) => `- **${escapeMarkdown(label)}:** ${score}/100`).join('\n')
+                : '- Detailed scoring was unavailable for this session.';
+
+            return [
+                '# AI Interview Analysis Report',
+                '',
+                `**MyStudentClub**`,
+                '',
+                `## Summary`,
+                '',
+                escapeMarkdown(reportSubtitle?.textContent || 'Your interview summary is ready.'),
+                '',
+                '## Interview Details',
+                '',
+                metaSection,
+                '',
+                '## Assessment',
+                '',
+                reportText.split('\n').map(line => line ? `> ${escapeMarkdown(line)}` : '>').join('\n'),
+                '',
+                '## Scores',
+                '',
+                scoreSection,
+                '',
+                '## Executive Summary',
+                '',
+                escapeMarkdown(detailedInterviewAnalysis?.summary || 'Detailed analysis was unavailable for this session.'),
+                '',
+                '## Recommendation',
+                '',
+                escapeMarkdown(detailedInterviewAnalysis?.recommendation || 'No final recommendation was returned.'),
+                '',
+                '## What Went Well',
+                '',
+                toMarkdownBulletList(detailedInterviewAnalysis?.strengths, 'No strengths were returned.'),
+                '',
+                '## Needs Improvement',
+                '',
+                toMarkdownBulletList(detailedInterviewAnalysis?.issues, 'No improvement areas were returned.'),
+                '',
+                '## Role-Specific Tips',
+                '',
+                toMarkdownBulletList(detailedInterviewAnalysis?.roleTips, 'No role-specific tips were returned.'),
+                '',
+                '## Coaching Tips',
+                '',
+                toMarkdownBulletList(detailedInterviewAnalysis?.tips, 'No coaching tips were returned.'),
+                '',
+                '## Verbal Mistakes',
+                '',
+                toMarkdownDetailList(detailedInterviewAnalysis?.verbalMistakes, 'No major verbal mistakes were identified.', item => [
+                    `### ${escapeMarkdown(item.issue || 'Observation')}`,
+                    '',
+                    `- **Example:** ${escapeMarkdown(item.example || 'N/A')}`,
+                    `- **Fix:** ${escapeMarkdown(item.fix || 'N/A')}`
+                ].join('\n')),
+                '',
+                '## Missed Questions',
+                '',
+                toMarkdownDetailList(detailedInterviewAnalysis?.missedQuestions, 'No major missed-question patterns were identified.', item => [
+                    `### ${escapeMarkdown(item.question || 'Question')}`,
+                    '',
+                    `- **Gap:** ${escapeMarkdown(item.gap || 'N/A')}`,
+                    `- **Better Answer:** ${escapeMarkdown(item.betterAnswer || 'N/A')}`
+                ].join('\n')),
+                '',
+                '## Better Responses',
+                '',
+                toMarkdownDetailList(detailedInterviewAnalysis?.betterResponses, 'No improved answers were returned.', item => [
+                    `### ${escapeMarkdown(item.question || 'Prompt')}`,
+                    '',
+                    `- **Original:** ${escapeMarkdown(item.original || 'N/A')}`,
+                    `- **Improved:** ${escapeMarkdown(item.improved || 'N/A')}`
+                ].join('\n')),
+                '',
+                '## Transcript',
+                '',
+                '```',
+                transcriptText,
+                '```'
+            ].join('\n');
+        }
+
+        function getInterviewPdfOptions() {
+            const headerHtml = `
+                <div style="text-align:center;padding:8px 0;font-family:'Inter',sans-serif;color:#111827;font-weight:700;">
+                    MyStudentClub &middot; AI Interview Report
+                </div>`;
+            const footerHtml = `
+                <div style="text-align:center;padding:6px 0;font-size:10px;color:#6b7280;font-family:'Inter',sans-serif;">
+                    Generated ${new Date().toLocaleDateString()}
+                </div>`;
+            const css = `
+                @page { size: A4 portrait; margin: 14mm; }
+                .mdpdf-content, .mdpdf-content * { box-sizing: border-box; }
+                .mdpdf-content { padding: 2mm 0; font-family: 'Inter', sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+                .mdpdf-content h1 { font-size: 24px; color: #0f172a; margin-bottom: 8px; }
+                .mdpdf-content h2 { font-size: 17px; color: #172554; margin: 18px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #dbeafe; }
+                .mdpdf-content h3 { font-size: 14px; color: #1e3a8a; margin: 14px 0 8px; }
+                .mdpdf-content p, .mdpdf-content li { color: #334155; line-height: 1.7; font-size: 12px; orphans: 3; widows: 3; }
+                .mdpdf-content ul, .mdpdf-content ol { margin: 0 0 10px 18px; padding: 0; }
+                .mdpdf-content blockquote {
+                    margin: 10px 0;
+                    padding: 10px 14px;
+                    border-left: 4px solid #2563eb;
+                    background: #eff6ff;
+                    color: #1e3a8a;
+                    border-radius: 0 10px 10px 0;
+                }
+                .mdpdf-content code, .mdpdf-content pre {
+                    font-family: Consolas, 'Courier New', monospace;
+                    background: #f8fafc;
+                    color: #0f172a;
+                }
+                .mdpdf-content pre {
+                    padding: 12px 14px;
+                    border-radius: 10px;
+                    border: 1px solid #e2e8f0;
+                    white-space: pre-wrap;
+                    font-size: 11px;
+                    line-height: 1.6;
+                }
+                .mdpdf-content p, .mdpdf-content li, .mdpdf-content ul, .mdpdf-content ol, .mdpdf-content table, .mdpdf-content thead, .mdpdf-content tbody, .mdpdf-content tr, .mdpdf-content td, .mdpdf-content blockquote, .mdpdf-content pre, .mdpdf-content code, .mdpdf-content h1, .mdpdf-content h2, .mdpdf-content h3, .mdpdf-content h4 {
+                    break-inside: avoid-page;
+                    page-break-inside: avoid;
+                }
+            `;
+
+            return {
+                format: 'a4',
+                orientation: 'portrait',
+                margin: 14,
+                css,
+                header: headerHtml,
+                footer: footerHtml,
+                image: { type: 'jpeg', quality: 1.0 },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    scrollY: 0,
+                    scrollX: 0,
+                    letterRendering: true,
+                    windowWidth: 1200
+                },
+                pagebreak: {
+                    mode: ['avoid-all', 'css', 'legacy'],
+                    avoid: ['p', 'li', 'ul', 'ol', 'table', 'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'blockquote', 'pre', 'code']
+                }
+            };
+        }
+
+        function closeInterviewPdfPreview() {
+            if (pdfPreviewModal) pdfPreviewModal.style.display = 'none';
+            if (pdfPreviewDownloadBtn && pdfPreviewDownloadBtn._downloadHandler) {
+                pdfPreviewDownloadBtn.removeEventListener('click', pdfPreviewDownloadBtn._downloadHandler);
+                pdfPreviewDownloadBtn._downloadHandler = null;
+            }
+        }
+
+        function renderInterviewReportScreen(reason = 'Interview ended.') {
+            const reportText = finalInterviewReport?.text || buildFallbackInterviewReport(reason);
+            if (!finalInterviewReport) {
+                setFinalInterviewReport(reportText, 'fallback');
+            }
+
+            reportSubtitle.textContent = reason;
+            reportBody.innerHTML = formatAssessmentHtml(reportText);
+            reportTranscript.textContent = getTranscriptText() || 'No transcript available.';
+            reportMeta.innerHTML = `
+                <div class="report-meta-item">
+                    <span class="report-meta-label">Role</span>
+                    <span class="report-meta-value">${interviewConfig.specialization || 'N/A'}</span>
+                </div>
+                <div class="report-meta-item">
+                    <span class="report-meta-label">Experience</span>
+                    <span class="report-meta-value">${interviewConfig.experienceLevel || 'N/A'}</span>
+                </div>
+                <div class="report-meta-item">
+                    <span class="report-meta-label">Company Type</span>
+                    <span class="report-meta-value">${interviewConfig.companyType || 'N/A'}</span>
+                </div>
+                <div class="report-meta-item">
+                    <span class="report-meta-label">Started</span>
+                    <span class="report-meta-value">${formatDateTime(interviewStartedAt)}</span>
+                </div>
+            `;
+
+            setAnalysisLoadingState();
+            requestDetailedInterviewAnalysis();
+        }
+
+        function downloadInterviewReport() {
+            if (!window.MarkdownPDF) {
+                alert('PDF generator not available. Please reload the page.');
+                return;
+            }
+
+            const markdown = buildInterviewReportMarkdown();
+            const pdfOptions = getInterviewPdfOptions();
+
+            if (pdfPreviewContainer) {
+                pdfPreviewContainer.innerHTML = '';
+                window.MarkdownPDF.render(markdown, pdfPreviewContainer, pdfOptions);
+            }
+
+            if (pdfPreviewModal) {
+                pdfPreviewModal.style.display = 'block';
+            }
+
+            const onDownload = () => {
+                window.MarkdownPDF.download(markdown, {
+                    filename: `${getReportExportFilename()}-analysis-report.pdf`,
+                    ...pdfOptions
+                }).finally(() => {
+                    closeInterviewPdfPreview();
+                });
+            };
+
+            if (pdfPreviewDownloadBtn) {
+                if (pdfPreviewDownloadBtn._downloadHandler) {
+                    pdfPreviewDownloadBtn.removeEventListener('click', pdfPreviewDownloadBtn._downloadHandler);
+                }
+                pdfPreviewDownloadBtn._downloadHandler = onDownload;
+                pdfPreviewDownloadBtn.addEventListener('click', onDownload);
+            }
+        }
+
+        function clearInterviewAutoEnd() {
+            if (interviewAutoEndTimer) {
+                clearTimeout(interviewAutoEndTimer);
+                interviewAutoEndTimer = null;
+            }
+            pendingInterviewAutoEnd = null;
+        }
+
+        function isInterviewEndingMessage(text = '') {
+            const normalized = text.toLowerCase().replace(/\s+/g, ' ').trim();
+            if (!normalized) return false;
+
+            const endings = [
+                'this concludes our interview',
+                'that concludes our interview',
+                'this concludes the interview',
+                'that concludes the interview',
+                'the interview is now complete',
+                'the interview is complete',
+                'we have reached the end of the interview',
+                'we will end the interview here',
+                'we ll end the interview here',
+                'thank you for taking this interview',
+                'thank you for attending this interview',
+                'thank you for interviewing with us',
+                'we can wrap up here',
+                'let us wrap up here'
+            ];
+
+            return endings.some(phrase => normalized.includes(phrase));
+        }
+
+        function scheduleInterviewAutoEnd(reason, delayMs = 1200, waitForSpeech = false) {
+            if (interviewAutoEndTimer) {
+                clearTimeout(interviewAutoEndTimer);
+                interviewAutoEndTimer = null;
+            }
+            interviewTerminalState = true;
+            window.stopListening();
+            setAIAvatarSpeaking(false);
+            updateSpeechStatus(reason || 'Interview ended', true);
+            if (waitForSpeech && avatar && avatar.isSpeaking) {
+                pendingInterviewAutoEnd = { reason, delayMs };
+                return;
+            }
+            pendingInterviewAutoEnd = null;
+            interviewAutoEndTimer = setTimeout(() => endInterview({ skipConfirm: true, reason }), delayMs);
+        }
+        window.flushPendingInterviewAutoEnd = function () {
+            if (!pendingInterviewAutoEnd) return;
+            const { reason, delayMs } = pendingInterviewAutoEnd;
+            pendingInterviewAutoEnd = null;
+            interviewAutoEndTimer = setTimeout(() => endInterview({ skipConfirm: true, reason }), delayMs);
+        };
+
+        window.handleAISpeechFallback = function (text) {
+            window.clearAISubtitles();
+            if (text && text.trim()) {
+                if (liveAIMessageEl) finalizeLiveAIChatMessage(text);
+                else addChatMessage('ai', AI_INTERVIEWER_NAME, text);
+            }
+        };
+
         async function loadModelInBackground() {
             try {
                 avatar = new SVGAvatarController(avatarContainer, { ttsEndpoint: TTS_ENDPOINT });
                 await avatar.init();
                 updateLoadingProgress(100, 'Ready!');
                 isModelLoaded = true;
-                modelLoadingOverlay.classList.add('hidden');
+                if (modelLoadingOverlay) modelLoadingOverlay.classList.add('hidden');
                 loadingScreen.classList.add('hidden');
             } catch (error) { console.error(error); updateLoadingProgress(0, 'Failed.'); }
         }
@@ -2096,8 +3495,18 @@
         async function requestPermissions() { try { await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true } }); skipPermissions(); } catch (e) { skipPermissions(); } }
 
         async function startInterview() {
+            reportScreen.classList.add('hidden');
             interviewScreen.classList.remove('hidden');
-            messages = []; isWaitingForAIResponse = false;
+            messages = [];
+            isWaitingForAIResponse = false;
+            consecutiveInterviewServiceFailures = 0;
+            interviewTerminalState = false;
+            clearInterviewAutoEnd();
+            finalInterviewReport = null;
+            detailedInterviewAnalysis = null;
+            analysisRequestToken += 1;
+            interviewStartedAt = new Date().toISOString();
+            updateSpeechStatus('', false);
             await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: { echoCancellation: true, noiseSuppression: true } })
                 .then(stream => { userStream = stream; if (userVideo) { userVideo.srcObject = stream; userVideo.play(); } })
                 .catch(e => console.log(e));
@@ -2106,9 +3515,14 @@
 
             const welcome = "Hello, I'm Aditya. Let's get started. Please walk me through your background.";
             const welcomeTimepoints = [{ word: "Hello,", time_seconds: 0 }, { word: "I'm", time_seconds: 0.3 }, { word: "Aditya.", time_seconds: 0.5 }, { word: "Let's", time_seconds: 1.0 }, { word: "get", time_seconds: 1.2 }, { word: "started.", time_seconds: 1.5 }, { word: "Please", time_seconds: 2.0 }, { word: "walk", time_seconds: 2.2 }, { word: "me", time_seconds: 2.4 }, { word: "through", time_seconds: 2.5 }, { word: "your", time_seconds: 2.7 }, { word: "background.", time_seconds: 2.9 }];
-            addLiveAIChatMessage('Aditya Chourasia');
-            if (avatar) avatar.speakText(welcome);
-            scheduleAISubtitles(welcomeTimepoints, 4.0, 0);
+            addLiveAIChatMessage(AI_INTERVIEWER_NAME);
+            if (avatar) {
+                avatar.speakText(welcome);
+                scheduleAISubtitles(welcomeTimepoints, 4.0, 0);
+            } else {
+                window.handleAISpeechFallback(welcome);
+                if (window.startListening) window.startListening();
+            }
         }
 
         function addChatMessage(type, author, content) {
@@ -2152,7 +3566,7 @@
         if (mobileSendBtn && mobileChatInput) {
             const sendMobileMessage = () => {
                 const text = mobileChatInput.value.trim();
-                if (text && !isWaitingForAIResponse) {
+                if (text && !isWaitingForAIResponse && !interviewTerminalState) {
                     addChatMessage('user', 'You', text);
                     mobileChatInput.value = '';
                     window.stopListening();
@@ -2227,33 +3641,139 @@
             }
         }
 
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function isTransientInterviewServiceError(error) {
+            const text = String(error?.message || error || '').toLowerCase();
+            return text.includes('failed to fetch')
+                || text.includes('networkerror')
+                || text.includes('load failed')
+                || text.includes('timeout')
+                || text.includes('invalid json')
+                || text.includes('empty response')
+                || text.includes('unexpected end of json input');
+        }
+
+        async function fetchInterviewWorkerResponse() {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), INTERVIEW_REQUEST_TIMEOUT_MS);
+
+            try {
+                const response = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Specialization': interviewConfig.specialization,
+                        'X-Experience-Level': interviewConfig.experienceLevel,
+                        'X-Company-Type': interviewConfig.companyType,
+                        'X-Duration': interviewConfig.duration
+                    },
+                    body: JSON.stringify({ messages }),
+                    signal: controller.signal
+                });
+
+                if (!response.ok) throw new Error(`AI worker returned ${response.status}`);
+
+                let data;
+                try {
+                    data = await response.json();
+                } catch (error) {
+                    throw new Error('AI worker returned invalid JSON');
+                }
+
+                if (!data?.ok || !data?.response) {
+                    throw new Error('AI worker returned an empty response');
+                }
+
+                return data;
+            } catch (error) {
+                if (error?.name === 'AbortError') {
+                    throw new Error(`Interview service timeout after ${Math.round(INTERVIEW_REQUEST_TIMEOUT_MS / 1000)}s`);
+                }
+                throw error;
+            } finally {
+                clearTimeout(timeoutId);
+            }
+        }
+
         async function sendToAI(message) {
-            if (isWaitingForAIResponse) return; isWaitingForAIResponse = true;
+            if (isWaitingForAIResponse || interviewTerminalState) return;
+            isWaitingForAIResponse = true;
+            let responseWillSpeak = false;
             try {
                 messages.push({ role: 'user', content: message });
-                const response = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Specialization': interviewConfig.specialization, 'X-Experience-Level': interviewConfig.experienceLevel, 'X-Company-Type': interviewConfig.companyType, 'X-Duration': interviewConfig.duration }, body: JSON.stringify({ messages }) });
-                const data = await response.json();
-                if (data.ok && data.response) {
-                    let aiMessage = data.response;
-                    const { clean, emojis, report } = extractEmojisAndSanitize(aiMessage);
+                let data = null;
+                let lastError = null;
 
-                    if (report) {
-                        messages.push({ role: 'assistant', content: aiMessage });
-                        addChatMessage('ai', 'System', `<b>Interview Report Generated</b><div style="font-size:0.85em; margin-top:5px; white-space:pre-wrap; opacity:0.9">${report}</div>`);
-                        if (clean.length > 2) {
-                            addLiveAIChatMessage('Aditya Chourasia');
-                            if (avatar && isModelLoaded) avatar.speakText(clean);
-                        }
-                    } else {
-                        messages.push({ role: 'assistant', content: aiMessage });
-                        addLiveAIChatMessage('Aditya Chourasia');
-                        if (avatar && isModelLoaded) {
-                            emojis.forEach((e, i) => setTimeout(() => avatar.speakEmoji(e), i * 500));
-                            avatar.speakText(clean);
-                        }
+                for (let attempt = 0; attempt <= INTERVIEW_REQUEST_MAX_RETRIES; attempt += 1) {
+                    try {
+                        data = await fetchInterviewWorkerResponse();
+                        lastError = null;
+                        break;
+                    } catch (error) {
+                        lastError = error;
+                        console.error(`Interview service attempt ${attempt + 1} failed:`, error);
+                        const shouldRetry = attempt < INTERVIEW_REQUEST_MAX_RETRIES && isTransientInterviewServiceError(error);
+                        if (!shouldRetry) break;
+                        await delay(800);
                     }
                 }
-            } catch (error) { console.error(error); addChatMessage('ai', 'System', 'Connection error.'); } finally { isWaitingForAIResponse = false; }
+
+                if (!data) throw lastError || new Error('No response received from interview service.');
+                consecutiveInterviewServiceFailures = 0;
+
+                let aiMessage = data.response;
+                const { clean, emojis, report } = extractEmojisAndSanitize(aiMessage);
+
+                if (report) {
+                    setFinalInterviewReport(report, 'ai');
+                    const transcriptSafeAssistantText = sanitizeTranscriptText(clean || aiMessage);
+                    if (transcriptSafeAssistantText) messages.push({ role: 'assistant', content: transcriptSafeAssistantText });
+                    addChatMessage('ai', 'System', `<b>Interview Report Generated</b><div style="font-size:0.85em; margin-top:5px; white-space:pre-wrap; opacity:0.9">${sanitizeTranscriptText(report)}</div>`);
+                    if (clean.length > 2) {
+                        addLiveAIChatMessage(AI_INTERVIEWER_NAME);
+                        if (avatar && isModelLoaded) {
+                            responseWillSpeak = true;
+                            avatar.speakText(clean);
+                        } else {
+                            window.handleAISpeechFallback(clean);
+                        }
+                    }
+                    scheduleInterviewAutoEnd('Interview completed. Ending call...', 1200, responseWillSpeak);
+                } else {
+                    const transcriptSafeAssistantText = sanitizeTranscriptText(clean || aiMessage);
+                    if (transcriptSafeAssistantText) messages.push({ role: 'assistant', content: transcriptSafeAssistantText });
+                    if (clean.length > 2) addLiveAIChatMessage(AI_INTERVIEWER_NAME);
+                    if (avatar && isModelLoaded && (clean.length > 2 || emojis.length)) {
+                        responseWillSpeak = true;
+                        emojis.forEach((e, i) => setTimeout(() => avatar.speakEmoji(e), i * 500));
+                        if (clean.length > 2) avatar.speakText(clean);
+                    } else if (clean.length > 2) {
+                        window.handleAISpeechFallback(clean);
+                    }
+
+                    if (isInterviewEndingMessage(clean)) {
+                        scheduleInterviewAutoEnd('Interview completed. Ending call...', 1200, responseWillSpeak);
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                consecutiveInterviewServiceFailures += 1;
+                const shouldEndInterview = consecutiveInterviewServiceFailures >= INTERVIEW_SERVICE_FAILURES_BEFORE_END;
+                addChatMessage('ai', 'System', shouldEndInterview
+                    ? 'Interview service failed repeatedly. Ending call...'
+                    : 'Temporary interview service issue. The call is still active, so please try again in a moment.');
+                if (shouldEndInterview) {
+                    scheduleInterviewAutoEnd('Interview stopped due to repeated service errors. Ending call...', 1200);
+                }
+            } finally {
+                isWaitingForAIResponse = false;
+                if (!interviewTerminalState && !responseWillSpeak && avatar && !avatar.isSpeaking && window.startListening) {
+                    window.startListening();
+                }
+            }
         }
 
         function showSubtitles(text) { subtitlesOverlay.textContent = text; subtitlesOverlay.classList.remove('hidden'); }
@@ -2294,7 +3814,23 @@
         };
 
         function toggleSubtitles() { areSubtitlesOn = !areSubtitlesOn; subtitlesBtn.classList.toggle('active', areSubtitlesOn); if (!areSubtitlesOn) subtitlesOverlay.classList.add('hidden'); }
-        function endInterview() { if (confirm('End interview?')) { if (userStream) userStream.getTracks().forEach(t => t.stop()); if (avatar) avatar.stopSpeaking(); try { window.stopListening(); } catch (e) { } interviewScreen.classList.add('hidden'); setupScreen.classList.remove('hidden'); isModelLoaded = false; location.reload(); } }
+        function endInterview(options = {}) {
+            const shouldEnd = options.skipConfirm || confirm('End interview?');
+            if (!shouldEnd) return;
+            clearInterviewAutoEnd();
+            interviewTerminalState = true;
+            if (userStream) userStream.getTracks().forEach(t => t.stop());
+            if (avatar) avatar.stopSpeaking();
+            try { window.stopListening(); } catch (e) { }
+            window.clearAISubtitles();
+            updateSpeechStatus('', false);
+            interviewScreen.classList.add('hidden');
+            setupScreen.classList.add('hidden');
+            loadingScreen.classList.add('hidden');
+            permissionsModal.classList.add('hidden');
+            renderInterviewReportScreen(options.reason || 'Interview ended. Your report is ready.');
+            reportScreen.classList.remove('hidden');
+        }
 
         // Custom Dropdown Implementation
         function initCustomSelects() {
