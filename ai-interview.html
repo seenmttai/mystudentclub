@@ -2857,6 +2857,27 @@
             ].join('\n');
         }
 
+        function buildReportSummaryText() {
+            const detailedSummary = detailedInterviewAnalysis?.summary?.trim();
+            if (detailedSummary) return detailedSummary;
+
+            const reportText = (finalInterviewReport?.text || '').trim();
+            if (!reportText) return 'Your interview summary is ready.';
+
+            const lines = reportText
+                .split('\n')
+                .map(line => line.trim())
+                .filter(Boolean);
+            const informativeLines = lines.filter(line => !/^interview summary$/i.test(line));
+            const summaryLine = informativeLines.find(line => /[a-z]/i.test(line));
+
+            return summaryLine || 'Your interview summary is ready.';
+        }
+
+        function getUiReportSubtitleText() {
+            return 'Review your interview analysis and transcript below.';
+        }
+
         function escapeHtml(value = '') {
             return String(value)
                 .replace(/&/g, '&amp;')
@@ -3168,6 +3189,7 @@
         function buildInterviewReportMarkdown() {
             const reportText = finalInterviewReport?.text || buildFallbackInterviewReport('Interview ended without a final AI report.');
             const transcriptText = (getTranscriptText() || 'No transcript available.').replace(/```/g, "'''");
+            const reportSummaryText = buildReportSummaryText();
             const metaSection = getReportExportMeta()
                 .map(([label, value]) => `- **${escapeMarkdown(label)}:** ${escapeMarkdown(value)}`)
                 .join('\n');
@@ -3191,7 +3213,7 @@
                 '',
                 `## Summary`,
                 '',
-                escapeMarkdown(reportSubtitle?.textContent || 'Your interview summary is ready.'),
+                escapeMarkdown(reportSummaryText),
                 '',
                 '## Interview Details',
                 '',
@@ -3346,7 +3368,7 @@
                 setFinalInterviewReport(reportText, 'fallback');
             }
 
-            reportSubtitle.textContent = reason;
+            reportSubtitle.textContent = getUiReportSubtitleText();
             reportBody.innerHTML = formatAssessmentHtml(reportText);
             reportTranscript.textContent = getTranscriptText() || 'No transcript available.';
             reportMeta.innerHTML = `
@@ -3514,11 +3536,9 @@
             setTimeout(() => avatar && avatar.onResize(), 50);
 
             const welcome = "Hello, I'm Aditya. Let's get started. Please walk me through your background.";
-            const welcomeTimepoints = [{ word: "Hello,", time_seconds: 0 }, { word: "I'm", time_seconds: 0.3 }, { word: "Aditya.", time_seconds: 0.5 }, { word: "Let's", time_seconds: 1.0 }, { word: "get", time_seconds: 1.2 }, { word: "started.", time_seconds: 1.5 }, { word: "Please", time_seconds: 2.0 }, { word: "walk", time_seconds: 2.2 }, { word: "me", time_seconds: 2.4 }, { word: "through", time_seconds: 2.5 }, { word: "your", time_seconds: 2.7 }, { word: "background.", time_seconds: 2.9 }];
             addLiveAIChatMessage(AI_INTERVIEWER_NAME);
             if (avatar) {
                 avatar.speakText(welcome);
-                scheduleAISubtitles(welcomeTimepoints, 4.0, 0);
             } else {
                 window.handleAISpeechFallback(welcome);
                 if (window.startListening) window.startListening();
@@ -3784,11 +3804,13 @@
         };
         window.scheduleAISubtitles = function (timepoints, duration, startTime) {
             window.clearAISubtitles();
+            const safeTimepoints = Array.isArray(timepoints) ? timepoints : [];
+            const startDelay = Number.isFinite(Number(startTime)) ? Number(startTime) : 0;
             let currentLine = "";
             let fullChatText = "";
             
-            timepoints.forEach((tp) => {
-                const delay = (tp.time_seconds * 1000);
+            safeTimepoints.forEach((tp) => {
+                const delay = startDelay + (tp.time_seconds * 1000);
                 subtitlesOverlay._sched.push(setTimeout(() => {
                     // Update subtitle overlay (if enabled)
                     if (areSubtitlesOn) {
@@ -3806,11 +3828,11 @@
             });
             
             // Finalize and hide subtitle overlay when done
-            const fullText = timepoints.map(tp => tp.word).join(' ');
+            const fullText = safeTimepoints.map(tp => tp.word).join(' ');
             subtitlesOverlay._sched.push(setTimeout(() => {
                 subtitlesOverlay.classList.add('hidden');
                 finalizeLiveAIChatMessage(fullText);
-            }, duration * 1000 + 500));
+            }, startDelay + (duration * 1000) + 500));
         };
 
         function toggleSubtitles() { areSubtitlesOn = !areSubtitlesOn; subtitlesBtn.classList.toggle('active', areSubtitlesOn); if (!areSubtitlesOn) subtitlesOverlay.classList.add('hidden'); }
