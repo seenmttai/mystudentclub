@@ -230,42 +230,60 @@ document.addEventListener('DOMContentLoaded', () => {
             const moduleDiv = document.createElement('div');
             moduleDiv.className = 'course-module';
 
-            let resourcesHTML = '';
-            if (day.mainVideo && day.mainVideo.resources.length > 0) {
-                const groups = {};
-                day.mainVideo.resources.forEach(res => {
-                    const groupKey = res.group || 'General Resources';
-                    if (!groups[groupKey]) groups[groupKey] = [];
-                    groups[groupKey].push(res);
-                });
-
-                for (const groupName in groups) {
-                    if (groupName !== 'General Resources') {
-                        resourcesHTML += `<h5 class="sidebar-resource-group-title">${groupName}</h5>`;
-                    }
-                    groups[groupName].forEach(resource => {
-                        resourcesHTML += `
-                            <div class="resource-item-sidebar" data-resource='${JSON.stringify(resource).replace(/'/g, "&apos;")}'>
-                                <span class="resource-icon-sidebar"><i class="${getResourceIcon(resource.type)}"></i></span>
-                                <span class="resource-title-sidebar">${resource.title}</span>
-                            </div>`;
+            let sessionsHTML = '';
+            day.videos.forEach(video => {
+                const isVideoCompleted = video.completed;
+                const isVideoSelected = video.id === state.currentVideoId;
+                
+                let resourcesHTML = '';
+                if (video.resources && video.resources.length > 0) {
+                    const groups = {};
+                    video.resources.forEach(res => {
+                        const groupKey = res.group || 'General Resources';
+                        if (!groups[groupKey]) groups[groupKey] = [];
+                        groups[groupKey].push(res);
                     });
+
+                    resourcesHTML += '<div class="sidebar-resource-list">';
+                    for (const groupName in groups) {
+                        if (groupName !== 'General Resources') {
+                            resourcesHTML += `<h5 class="sidebar-resource-group-title">${groupName}</h5>`;
+                        }
+                        groups[groupName].forEach(resource => {
+                            resourcesHTML += `
+                                <div class="resource-item-sidebar" data-resource='${JSON.stringify(resource).replace(/'/g, "&apos;")}'>
+                                    <span class="resource-icon-sidebar"><i class="${getResourceIcon(resource.type)}"></i></span>
+                                    <span class="resource-title-sidebar">${resource.title}</span>
+                                </div>`;
+                        });
+                    }
+                    resourcesHTML += '</div>';
                 }
-            }
+
+                sessionsHTML += `
+                    <div class="sub-video-item ${isVideoSelected ? 'active' : ''} ${isVideoCompleted ? 'completed' : ''}" data-video-id="${video.id}">
+                        <div class="sub-video-header">
+                            <i class="fas ${isVideoCompleted ? 'fa-check-circle' : 'fa-play-circle'}"></i>
+                            <span>${video.title}</span>
+                        </div>
+                    </div>
+                    ${resourcesHTML}
+                `;
+            });
 
             moduleDiv.innerHTML = `
-                <div class="module-header ${isDaySelected ? 'active' : ''} ${isDayCompleted ? 'completed' : ''}" data-video-id="${day.mainVideo.id}">
+                <div class="module-header ${isDaySelected ? 'active' : ''} ${isDayCompleted ? 'completed' : ''}" data-day-index="${dayIndex}">
                     <div class="module-title-container">
                         <i class="fas ${isDayCompleted ? 'fa-check-circle' : 'fa-play-circle'}"></i>
                         <h4>${day.title}</h4>
                     </div>
-                    <div class="module-info" data-day-index="${dayIndex}">
-                        ${day.mainVideo && day.mainVideo.resources.length > 0 ? `<span>${day.mainVideo.resources.length} Resource${day.mainVideo.resources.length !== 1 ? 's' : ''}</span>` : ''}
+                    <div class="module-info">
+                        <span>${day.videos.length} Session${day.videos.length !== 1 ? 's' : ''}</span>
                         <i class="fas ${day.expanded ? 'fa-chevron-up' : 'fa-chevron-down'}"></i>
                     </div>
                 </div>
                 <div class="module-content ${day.expanded ? 'expanded' : ''}">
-                    <div class="sidebar-resource-list">${resourcesHTML}</div>
+                    ${sessionsHTML}
                 </div>
             `;
             DOMElements.courseModulesContainer.appendChild(moduleDiv);
@@ -273,21 +291,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
         DOMElements.courseModulesContainer.querySelectorAll('.module-header').forEach(el => {
             el.addEventListener('click', (e) => {
-                selectVideo(parseInt(el.dataset.videoId));
+                const dayIndex = parseInt(el.dataset.dayIndex);
+                if (!isNaN(dayIndex)) {
+                    state.courseSections[dayIndex].expanded = !state.courseSections[dayIndex].expanded;
+                    renderCourseModules();
+                }
             });
         });
 
-        DOMElements.courseModulesContainer.querySelectorAll('.module-info').forEach(el => {
+        DOMElements.courseModulesContainer.querySelectorAll('.sub-video-item').forEach(el => {
             el.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const dayIndex = parseInt(el.dataset.dayIndex);
-                state.courseSections[dayIndex].expanded = !state.courseSections[dayIndex].expanded;
-                renderCourseModules();
+                const videoId = parseInt(el.dataset.videoId);
+                if (!isNaN(videoId)) {
+                    selectVideo(videoId);
+                }
             });
         });
 
         DOMElements.courseModulesContainer.querySelectorAll('.resource-item-sidebar').forEach(el => {
-            el.addEventListener('click', () => handleResourceClick(JSON.parse(el.dataset.resource)));
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleResourceClick(JSON.parse(el.dataset.resource));
+            });
         });
     };
 
@@ -1060,7 +1085,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getAdjacentVideo = (direction) => {
         if (!state.currentVideoId) return null;
-        const allVideos = state.courseSections.map(section => section.videos[0]).filter(Boolean);
+        const allVideos = [];
+        state.courseSections.forEach(section => {
+            section.videos.forEach(v => allVideos.push(v));
+        });
         const currentIndex = allVideos.findIndex(video => video.id === state.currentVideoId);
         if (currentIndex === -1) return null;
         if (direction === 'previous' && currentIndex > 0) return allVideos[currentIndex - 1];
@@ -1080,7 +1108,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const section = state.courseSections.find(s => s.videos.some(v => v.id === state.currentVideoId));
         if (section) {
-            DOMElements.videoCounter.textContent = `Day ${section.day_number} of ${state.courseSections.length}`;
+            const currentVideoIndex = section.videos.findIndex(v => v.id === state.currentVideoId) + 1;
+            const sessionText = section.videos.length > 1 ? ` - Session ${currentVideoIndex}/${section.videos.length}` : '';
+            DOMElements.videoCounter.textContent = `Day ${section.day_number} of ${state.courseSections.length}${sessionText}`;
         }
     };
 
