@@ -381,14 +381,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         let videoFileName = null;
                         let hlsPath = null;
 
-                        if (meta.industrial_training_path) {
-                            hlsPath = meta.industrial_training_path;
-                        } else {
-                            const { data: rpcData, error: rpcError } = await supabase.rpc('get_video_link', {
-                                course_name_param: state.courseSlug,
-                                video_number_param: meta.video_number
-                            });
-                            videoFileName = rpcData || null;
+                        const tsPathRaw = meta.industrial_training_path;
+                        const tsPath = (tsPathRaw && tsPathRaw.trim().toLowerCase() !== 'none') ? tsPathRaw.trim() : null;
+
+                        const { data: rpcData, error: rpcError } = await supabase.rpc('get_video_link', {
+                            course_name_param: state.courseSlug,
+                            video_number_param: meta.video_number
+                        });
+                        const mp4Path = rpcData ? rpcData.trim() : null;
+
+                        // If the column holding .ts is empty but .mp4 is full then use .mp4, else use .ts
+                        if (!tsPath && mp4Path) {
+                            videoFileName = mp4Path;
+                        } else if (tsPath) {
+                            hlsPath = tsPath;
                         }
 
                         const day = meta.day_number || 1;
