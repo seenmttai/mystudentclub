@@ -1127,5 +1127,173 @@ body.p2-modal-open {
 .p2-skill-tag i:hover { color: var(--p2-text); }
 #skills_input { flex: 1; border: none !important; box-shadow:none !important; padding: 0.2rem; outline: none; min-width: 120px; font-size: 0.9rem; font-family: var(--p2-font); color: var(--p2-text); background:transparent; }
 
+/* ========== Toast Notifications ========== */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.p2-toast {
+    pointer-events: auto;
+    min-width: 300px;
+    max-width: 450px;
+    padding: 16px 20px;
+    border-radius: var(--p2-radius);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--p2-surface);
+    border-left: 4px solid var(--p2-blue);
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateX(24px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.p2-toast.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.p2-toast.p2-toast-success {
+    border-left-color: var(--p2-green);
+}
+
+.p2-toast.p2-toast-error {
+    border-left-color: var(--p2-red);
+}
+
+.p2-toast.p2-toast-warning {
+    border-left-color: var(--p2-orange);
+}
+
+.p2-toast.p2-toast-info {
+    border-left-color: var(--p2-blue);
+}
+
+.p2-toast-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+
+.p2-toast-success .p2-toast-icon {
+    color: var(--p2-green);
+}
+
+.p2-toast-error .p2-toast-icon {
+    color: var(--p2-red);
+}
+
+.p2-toast-warning .p2-toast-icon {
+    color: var(--p2-orange);
+}
+
+.p2-toast-info .p2-toast-icon {
+    color: var(--p2-blue);
+}
+
+.p2-toast-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.p2-toast-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    color: var(--p2-text);
+}
+
+.p2-toast-message {
+    font-size: 0.875rem;
+    color: var(--p2-text-secondary);
+    line-height: 1.4;
+}
+
+.p2-toast-close {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: none;
+    background: transparent;
+    color: var(--p2-text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: background 0.2s;
+    padding: 0;
+}
+
+.p2-toast-close:hover {
+    background: #f0f0f0;
+}
+
+.p2-toast.is-exiting {
+    opacity: 0;
+    transform: translateX(24px);
+}
+
+.p2-toast-progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    background: rgba(79, 70, 229, 0.22);
+    transform-origin: left center;
+}
+
+.p2-toast-success .p2-toast-progress {
+    background: rgba(5, 150, 105, 0.28);
+}
+
+.p2-toast-error .p2-toast-progress {
+    background: rgba(220, 38, 38, 0.28);
+}
+
+.p2-toast-warning .p2-toast-progress {
+    background: rgba(234, 88, 12, 0.28);
+}
+
+@media (max-width: 768px) {
+    .toast-container {
+        top: 10px;
+        right: 10px;
+        left: 10px;
+    }
+    
+    .p2-toast {
+        min-width: unset;
+        max-width: unset;
+        width: 100%;
+        transform: translateY(-16px);
+    }
+
+    .p2-toast.is-visible {
+        transform: translateY(0);
+    }
+
+    .p2-toast.is-exiting {
+        transform: translateY(-16px);
+    }
+}
+
+
 .p2-btn-save { background: var(--p2-blue); color: white; border: none; padding: 0.5rem 1.5rem; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background 0.2s; font-family: var(--p2-font); outline: none; margin-left: 0.5rem;}
 .p2-btn-save:hover { background: var(--p2-blue-hover); }

@@ -11,6 +11,463 @@
   <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/style.css">
   <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/admin-styles.css">
   <link rel="icon" type="image/x-icon" href="https://www.mystudentclub.com/assets/icon-70x70.png">
+  <style>
+    .admin-header-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .export-menu-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .profile-export-trigger {
+      background: var(--surface);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      border-radius: 8px;
+      min-height: 44px;
+      padding: 0.5rem 0.75rem 0.5rem 0.65rem;
+      gap: 0.6rem;
+      font-weight: 500;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .profile-export-trigger:hover {
+      border-color: rgba(79, 70, 229, 0.35);
+      box-shadow: var(--shadow-md);
+      background: var(--surface);
+    }
+
+    .profile-export-trigger:focus-visible {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+
+    .profile-export-trigger[aria-expanded="true"] {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .profile-export-trigger__icon-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 6px;
+      background: rgba(79, 70, 229, 0.08);
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .profile-export-trigger__icon-wrap svg {
+      width: 1.1rem;
+      height: 1.1rem;
+    }
+
+    .profile-export-trigger__text {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+      line-height: 1.2;
+      gap: 0.1rem;
+    }
+
+    .profile-export-trigger__label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .profile-export-trigger__hint {
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+    }
+
+    .profile-export-trigger__chevron {
+      width: 1.1rem;
+      height: 1.1rem;
+      margin-left: 0.15rem;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+
+    .profile-export-trigger[aria-expanded="true"] .profile-export-trigger__chevron {
+      transform: rotate(180deg);
+      color: var(--primary);
+    }
+
+    .export-menu-panel {
+      position: absolute;
+      top: calc(100% + 0.5rem);
+      right: 0;
+      width: 400px;
+      max-width: min(400px, calc(100vw - 2rem));
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: var(--shadow-lg);
+      padding: 0;
+      display: none;
+      z-index: 40;
+      overflow: hidden;
+    }
+
+    .export-menu-panel.open {
+      display: block;
+      animation: export-panel-in 0.18s ease-out;
+    }
+
+    @keyframes export-panel-in {
+      from {
+        opacity: 0;
+        transform: translateY(-6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .export-panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 1rem 1rem 0.75rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    .export-panel-close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .export-panel-close:hover {
+      background: var(--background);
+      color: var(--text-primary);
+    }
+
+    .export-panel-close:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25);
+    }
+
+    .export-panel-close svg {
+      width: 1.15rem;
+      height: 1.15rem;
+    }
+
+    .export-panel-body {
+      padding: 1rem;
+    }
+
+    .export-panel-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 0.2rem;
+    }
+
+    .export-panel-subtitle {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      margin: 0;
+      line-height: 1.5;
+      max-width: 42ch;
+    }
+
+    .export-filter-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .export-filter-group {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .export-filter-label {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .export-filter-label svg {
+      width: 0.95rem;
+      height: 0.95rem;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+
+    .export-filter-label--compact {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .export-mode-fieldset {
+      border: none;
+      margin: 0;
+      padding: 0;
+      min-width: 0;
+    }
+
+    .export-mode-fieldset legend {
+      padding: 0;
+      margin: 0 0 0.45rem;
+    }
+
+    .export-mode-segment-wrap {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.35rem;
+      padding: 0.3rem;
+      background: var(--background);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .export-mode-chip {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 500;
+      line-height: 1.25;
+      color: var(--text-secondary);
+      padding: 0.5rem 0.35rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+      user-select: none;
+    }
+
+    @media (min-width: 420px) {
+      .export-mode-chip {
+        font-size: 0.75rem;
+        padding: 0.55rem 0.4rem;
+      }
+    }
+
+    .export-mode-chip:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    .export-mode-chip input {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+      margin: 0;
+    }
+
+    .export-mode-chip:has(input:focus-visible) {
+      outline: 2px solid var(--primary);
+      outline-offset: 1px;
+    }
+
+    .export-mode-chip:has(input:checked) {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .export-date-card {
+      display: grid;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+
+    .export-date-input {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text-primary);
+      padding: 0.5rem 0.65rem;
+      font-size: 0.875rem;
+      font-family: inherit;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .export-date-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .export-filter-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .export-filter-field {
+      display: none;
+    }
+
+    .export-filter-field.active {
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    .export-panel-actions {
+      display: flex;
+      align-items: stretch;
+      gap: 0.6rem;
+      margin-top: 0.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .export-panel-reset {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-secondary);
+      min-height: 44px;
+      min-width: 5.5rem;
+      border-radius: 8px;
+      box-shadow: none;
+      font-weight: 500;
+    }
+
+    .export-panel-reset:hover {
+      border-color: var(--text-secondary);
+      color: var(--text-primary);
+      background: var(--background);
+    }
+
+    .export-panel-actions .save-btn {
+      flex: 1;
+      min-height: 44px;
+      border-radius: 8px;
+      justify-content: center;
+    }
+
+    .profile-export-download-btn svg {
+      width: 1.125rem;
+      height: 1.125rem;
+      flex-shrink: 0;
+    }
+
+    .export-panel-status {
+      display: block;
+      margin-top: 0.75rem;
+      min-height: 1.25rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .export-panel-status.error {
+      color: var(--danger);
+    }
+
+    .admin-badge {
+      min-height: 46px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.25rem 1rem;
+      border-radius: 12px;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 768px) {
+      .admin-header {
+        padding: 1rem 1.1rem;
+        gap: 1rem;
+      }
+
+      .admin-header-actions {
+        width: 100%;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+      }
+
+      .export-menu-panel {
+        right: 0;
+        left: auto;
+        width: min(388px, calc(100vw - 2rem));
+      }
+
+      .export-filter-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .admin-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .admin-header-actions {
+        justify-content: space-between;
+      }
+
+      .profile-export-trigger {
+        min-height: 48px;
+      }
+
+      .admin-badge {
+        min-height: 48px;
+      }
+
+      .export-menu-panel {
+        top: calc(100% + 0.45rem);
+        width: calc(100vw - 2rem);
+      }
+
+      .export-mode-segment-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .export-panel-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+      }
+
+      .export-panel-reset,
+      .export-panel-actions .save-btn {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -33,7 +490,104 @@
         </svg>
         Admin Panel
       </h1>
-      <span class="admin-badge">Super Admin</span>
+      <div class="admin-header-actions">
+        <div class="export-menu-wrap">
+          <button id="downloadProfilesBtn" class="admin-btn profile-export-trigger" type="button" aria-expanded="false" aria-controls="profileExportPanel" aria-haspopup="dialog">
+            <span class="profile-export-trigger__icon-wrap" aria-hidden="true">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </span>
+            <span class="profile-export-trigger__text">
+              <span class="profile-export-trigger__label">Profiles</span>
+              <span class="profile-export-trigger__hint">Export as CSV</span>
+            </span>
+            <svg class="profile-export-trigger__chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div id="profileExportPanel" class="export-menu-panel" role="dialog" aria-label="Profile export options">
+            <div class="export-panel-header">
+              <div>
+                <h2 class="export-panel-title">Export profiles</h2>
+                <p class="export-panel-subtitle">Pick a scope, then download a CSV. Dates use your local calendar.</p>
+              </div>
+              <button type="button" id="profileExportCloseBtn" class="export-panel-close" aria-label="Close export panel">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div class="export-panel-body">
+              <div class="export-filter-grid">
+                <fieldset class="export-mode-fieldset">
+                  <legend id="profileExportModeLegend" class="export-filter-label">Report type</legend>
+                  <div class="export-mode-segment-wrap" role="radiogroup" aria-labelledby="profileExportModeLegend">
+                    <label class="export-mode-chip">
+                      <input type="radio" name="profileExportMode" value="all" checked>
+                      <span>All profiles</span>
+                    </label>
+                    <label class="export-mode-chip">
+                      <input type="radio" name="profileExportMode" value="day">
+                      <span>Single day</span>
+                    </label>
+                    <label class="export-mode-chip">
+                      <input type="radio" name="profileExportMode" value="range">
+                      <span>Date range</span>
+                    </label>
+                  </div>
+                </fieldset>
+
+                <div id="profileExportDayField" class="export-filter-field">
+                  <div class="export-date-card">
+                    <label class="export-filter-label" for="profileExportDay">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      Day to export
+                    </label>
+                    <input id="profileExportDay" class="export-date-input" type="date" autocomplete="off">
+                  </div>
+                </div>
+
+                <div id="profileExportRangeField" class="export-filter-field">
+                  <div class="export-date-card">
+                    <span class="export-filter-label" id="profileExportRangeLabel">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      Date range
+                    </span>
+                    <div class="export-filter-row" role="group" aria-labelledby="profileExportRangeLabel">
+                      <div class="export-filter-group">
+                        <label class="export-filter-label export-filter-label--compact" for="profileExportStartDate">Start</label>
+                        <input id="profileExportStartDate" class="export-date-input" type="date" autocomplete="off">
+                      </div>
+                      <div class="export-filter-group">
+                        <label class="export-filter-label export-filter-label--compact" for="profileExportEndDate">End</label>
+                        <input id="profileExportEndDate" class="export-date-input" type="date" autocomplete="off">
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="export-panel-actions">
+                <button id="profileExportResetBtn" class="admin-btn export-panel-reset" type="button">Reset</button>
+                <button id="profileExportConfirmBtn" class="admin-btn save-btn profile-export-download-btn" type="button">
+                  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download CSV
+                </button>
+              </div>
+
+              <span id="profileExportStatus" class="export-panel-status" aria-live="polite"></span>
+            </div>
+          </div>
+        </div>
+        <span class="admin-badge">Super Admin</span>
+      </div>
     </header>
 
     <main>
@@ -252,6 +806,140 @@
     let hasMoreData = true;
     let currentTable = 'Industrial Training Job Portal';
     let categoryData = {};
+    const PROFILE_EXPORT_BATCH_SIZE = 500;
+    const PROFILE_EXPORT_FIELD_ORDER = [
+      'uuid', 'updated_at', 'ocr_cv',
+      'name', 'email', 'contact_number', 'linkedin_url', 'gender', 'marital_status',
+      'date_of_birth', 'category', 'work_permit', 'address', 'languages_json',
+      'job_preference', 'earliest_joining_date', 'articleship_completion_date',
+      'current_industry', 'department', 'role_category', 'job_role', 'desired_job_type',
+      'desired_employment_type', 'preferred_shift', 'current_location',
+      'preferred_locations', 'current_ctc', 'expected_salary', 'notice_period',
+      'profile_summary', 'headline',
+      'cert_name', 'cert_issuer', 'cert_year', 'cert_url',
+      'ca_final_course', 'ca_final_attempts_type', 'ca_final_attempts',
+      'ca_final_clear_month', 'ca_final_clear_year', 'ca_final_app_month', 'ca_final_app_year',
+      'ca_inter_course', 'ca_inter_attempts_type', 'ca_inter_attempts',
+      'ca_inter_clear_month', 'ca_inter_clear_year',
+      'ca_found_course', 'ca_found_attempts_type', 'ca_found_attempts',
+      'ca_found_clear_month', 'ca_found_clear_year',
+      'grad_degree', 'grad_university', 'grad_year', 'grad_percentage',
+      'class12_board', 'class12_school', 'class12_year', 'class12_percentage',
+      'class10_board', 'class10_school', 'class10_year', 'class10_percentage',
+      'other_edu_level', 'other_edu_course', 'other_edu_institute', 'other_edu_year', 'other_edu_score',
+      'is_current_employment', 'employment_type', 'emp_exp_years', 'emp_exp_months',
+      'emp_company_name', 'emp_job_title', 'emp_join_year', 'emp_join_month',
+      'emp_current_salary', 'emp_salary_currency', 'emp_salary_breakdown',
+      'emp_skills_hidden', 'emp_job_profile', 'emp_notice_period',
+      'articleship_firm_type', 'articleship_firm_name', 'articleship_domain', 'articleship_domain_other',
+      'industrial_training_company',
+      'project_title', 'project_tag', 'project_client', 'project_status',
+      'project_worked_from_year', 'project_worked_from_month', 'project_details', 'project_attachment_name',
+      'description', 'resume', 'cover_letter', 'viewport',
+      '_resume_filename', 'achievements', 'ca_level',
+      'certifications_json', 'final_attempts', 'foundation_attempts', 'inter_attempts',
+      'notification_subscriptions', 'projects_json'
+    ];
+    const PROFILE_EXPORT_LABEL_OVERRIDES = {
+      uuid: 'Profile ID',
+      updated_at: 'Last Updated',
+      ocr_cv: 'OCR CV Text',
+      linkedin_url: 'LinkedIn URL',
+      date_of_birth: 'Date of Birth',
+      work_permit: 'Work Permit',
+      languages_json: 'Languages',
+      job_preference: 'Job Preference',
+      earliest_joining_date: 'Earliest Joining Date',
+      articleship_completion_date: 'Articleship Completion Date',
+      current_industry: 'Current Industry',
+      role_category: 'Role Category',
+      desired_job_type: 'Desired Job Type',
+      desired_employment_type: 'Desired Employment Type',
+      preferred_shift: 'Preferred Shift',
+      current_location: 'Current Location',
+      preferred_locations: 'Preferred Locations',
+      current_ctc: 'Current CTC',
+      expected_salary: 'Expected Salary',
+      notice_period: 'Notice Period',
+      profile_summary: 'Profile Summary',
+      cert_name: 'Certification Name',
+      cert_issuer: 'Certification Issuer',
+      cert_year: 'Certification Year',
+      cert_url: 'Certification URL',
+      ca_final_course: 'CA Final Course',
+      ca_final_attempts_type: 'CA Final Attempts Type',
+      ca_final_attempts: 'CA Final Attempts',
+      ca_final_clear_month: 'CA Final Clear Month',
+      ca_final_clear_year: 'CA Final Clear Year',
+      ca_final_app_month: 'CA Final Attempt Month',
+      ca_final_app_year: 'CA Final Attempt Year',
+      ca_inter_course: 'CA Inter Course',
+      ca_inter_attempts_type: 'CA Inter Attempts Type',
+      ca_inter_attempts: 'CA Inter Attempts',
+      ca_inter_clear_month: 'CA Inter Clear Month',
+      ca_inter_clear_year: 'CA Inter Clear Year',
+      ca_found_course: 'CA Foundation Course',
+      ca_found_attempts_type: 'CA Foundation Attempts Type',
+      ca_found_attempts: 'CA Foundation Attempts',
+      ca_found_clear_month: 'CA Foundation Clear Month',
+      ca_found_clear_year: 'CA Foundation Clear Year',
+      grad_degree: 'Graduation Degree',
+      grad_university: 'Graduation University',
+      grad_year: 'Graduation Year',
+      grad_percentage: 'Graduation Score',
+      class12_board: 'Class 12 Board',
+      class12_school: 'Class 12 School',
+      class12_year: 'Class 12 Year',
+      class12_percentage: 'Class 12 Score',
+      class10_board: 'Class 10 Board',
+      class10_school: 'Class 10 School',
+      class10_year: 'Class 10 Year',
+      class10_percentage: 'Class 10 Score',
+      other_edu_level: 'Other Education Level',
+      other_edu_course: 'Other Education Course',
+      other_edu_institute: 'Other Education Institute',
+      other_edu_year: 'Other Education Year',
+      other_edu_score: 'Other Education Score',
+      is_current_employment: 'Current Employment',
+      employment_type: 'Employment Type',
+      emp_exp_years: 'Employment Experience Years',
+      emp_exp_months: 'Employment Experience Months',
+      emp_company_name: 'Employer Name',
+      emp_job_title: 'Employment Job Title',
+      emp_join_year: 'Employment Join Year',
+      emp_join_month: 'Employment Join Month',
+      emp_current_salary: 'Employment Current Salary',
+      emp_salary_currency: 'Employment Salary Currency',
+      emp_salary_breakdown: 'Employment Salary Breakdown',
+      emp_skills_hidden: 'Skills',
+      emp_job_profile: 'Employment Job Profile',
+      emp_notice_period: 'Employment Notice Period',
+      articleship_firm_type: 'Articleship Firm Type',
+      articleship_firm_name: 'Articleship Firm Name',
+      articleship_domain: 'Articleship Domain',
+      articleship_domain_other: 'Articleship Domain Other',
+      industrial_training_company: 'Industrial Training Company',
+      project_title: 'Project Title',
+      project_tag: 'Project Tag',
+      project_client: 'Project Client',
+      project_status: 'Project Status',
+      project_worked_from_year: 'Project Worked From Year',
+      project_worked_from_month: 'Project Worked From Month',
+      project_details: 'Project Details',
+      project_attachment_name: 'Project Attachment Name',
+      _resume_filename: 'Resume Filename',
+      ca_level: 'CA Level',
+      certifications_json: 'Certifications (Detailed)',
+      final_attempts: 'Legacy Final Attempts',
+      foundation_attempts: 'Legacy Foundation Attempts',
+      inter_attempts: 'Legacy Inter Attempts',
+      notification_subscriptions: 'Notification Subscriptions',
+      projects_json: 'Projects (Detailed)'
+    };
+    const PROFILE_EXPORT_COLUMNS = PROFILE_EXPORT_FIELD_ORDER.map((key) => ({
+      key,
+      label: PROFILE_EXPORT_LABEL_OVERRIDES[key] || humanizeFieldLabel(key)
+    }));
 
     function normalizeLocation(location) { if (!location) return ''; const lowerLoc = location.toLowerCase().trim(); if (lowerLoc === 'gurugram') return 'gurgaon'; if (lowerLoc === 'bengaluru') return 'bangalore'; if (lowerLoc === 'new delhi') return 'delhi'; return lowerLoc; }
     function findMatchingLocationKeyword(jobLocation) { const normalizedJobLoc = normalizeLocation(jobLocation); if (!normalizedJobLoc) return null; for (const keyword of PREDEFINED_LOCATIONS) { if (normalizedJobLoc.includes(normalizeLocation(keyword))) { return normalizeLocation(keyword); } } return null; }
@@ -259,8 +947,350 @@
     function truncateDescription(description, wordLimit = 20) { if (!description) return ''; const words = description.split(/\s+/); return words.length <= wordLimit ? description : words.slice(0, wordLimit).join(' ') + '...'; }
     async function sendNotification(topic, title, description, link, accessToken) { if (!topic || !title || !description || !link || !accessToken) return; try { const response = await fetch(CLOUDFLARE_WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${accessToken}` }, body: JSON.stringify({ title, description, link, topic }) }); const result = await response.json(); if (!response.ok || !result.success) { console.error(`Failed to send notification to topic ${topic}:`, result.error || response.statusText); } else { console.log(`Successfully sent notification request for topic: ${topic}`); } } catch (error) { console.error(`Error sending notification fetch request for topic ${topic}:`, error); } }
     async function triggerNotifications(jobData, accessToken) { if (!jobData || !accessToken) return; const { Company = 'A Company', Location = 'Various Locations', Description = '', table = currentTable } = jobData; const portalName = PORTAL_NAME_MAP[table] || 'Job'; const jobType = JOB_TYPE_MAP[table]; const link = PORTAL_LINK_MAP[table] || 'https://www.mystudentclub.com/'; const notificationTitle = `New ${portalName} job in ${Location}: ${Company}`; const notificationBody = truncateDescription(Description); const matchedLocationKeyword = findMatchingLocationKeyword(Location); const specificTopic = generateTopicName(matchedLocationKeyword, jobType); if (specificTopic) { await sendNotification(specificTopic, notificationTitle, notificationBody, link, accessToken); } await sendNotification('all', notificationTitle, notificationBody, link, accessToken); }
-    function showAccessDenied() { document.getElementById('access-denied').style.display = 'flex'; document.getElementById('admin-content').style.display = 'none'; }
-    async function checkAdmin() { const { data: { session }, error } = await supabaseClient.auth.getSession(); if (error || !session) { showAccessDenied(); throw new Error("User not authenticated."); } currentSession = session; document.getElementById('admin-content').style.display = 'block'; }
+    function showAccessDenied(message = "You don't have permission to access this page.") {
+      document.getElementById('access-denied').style.display = 'flex';
+      document.getElementById('admin-content').style.display = 'none';
+      const accessDeniedMessage = document.querySelector('#access-denied p');
+      if (accessDeniedMessage) accessDeniedMessage.textContent = message;
+    }
+    async function checkAdmin() {
+      const { data: { session }, error } = await supabaseClient.auth.getSession();
+      if (error || !session) {
+        showAccessDenied('Please log in to access this page.');
+        throw new Error('User not authenticated.');
+      }
+      const { data: isSuperAdmin, error: adminCheckError } = await supabaseClient.rpc('is_super_admin');
+      if (adminCheckError) {
+        showAccessDenied('Unable to verify admin access right now. Please try again.');
+        throw adminCheckError;
+      }
+      if (!isSuperAdmin) {
+        showAccessDenied('This page is only available to super admin users.');
+        throw new Error('User is not a super admin.');
+      }
+      currentSession = session;
+      document.getElementById('admin-content').style.display = 'block';
+    }
+    function setProfileExportStatus(message, isError = false) {
+      const statusEl = document.getElementById('profileExportStatus');
+      if (!statusEl) return;
+      statusEl.textContent = message || '';
+      statusEl.className = isError ? 'export-panel-status error' : 'export-panel-status';
+    }
+    function toggleProfileExportPanel(forceOpen) {
+      const panel = document.getElementById('profileExportPanel');
+      const trigger = document.getElementById('downloadProfilesBtn');
+      if (!panel || !trigger) return;
+      const wasOpen = panel.classList.contains('open');
+      const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : !wasOpen;
+      panel.classList.toggle('open', shouldOpen);
+      trigger.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+      if (!shouldOpen && wasOpen) {
+        trigger.focus();
+      }
+    }
+    function getProfileExportModeValue() {
+      return document.querySelector('input[name="profileExportMode"]:checked')?.value || 'all';
+    }
+    function updateProfileExportFields() {
+      const mode = getProfileExportModeValue();
+      const dayField = document.getElementById('profileExportDayField');
+      const rangeField = document.getElementById('profileExportRangeField');
+      if (dayField) dayField.classList.toggle('active', mode === 'day');
+      if (rangeField) rangeField.classList.toggle('active', mode === 'range');
+    }
+    function resetProfileExportFilters() {
+      const allRadio = document.querySelector('input[name="profileExportMode"][value="all"]');
+      const day = document.getElementById('profileExportDay');
+      const startDate = document.getElementById('profileExportStartDate');
+      const endDate = document.getElementById('profileExportEndDate');
+      if (allRadio) allRadio.checked = true;
+      if (day) day.value = '';
+      if (startDate) startDate.value = '';
+      if (endDate) endDate.value = '';
+      updateProfileExportFields();
+      setProfileExportStatus('');
+    }
+    function buildDateBoundsForLocalDay(dateString) {
+      const start = new Date(`${dateString}T00:00:00`);
+      const end = new Date(`${dateString}T23:59:59.999`);
+      return { startIso: start.toISOString(), endIso: end.toISOString() };
+    }
+    function getProfileExportFilters() {
+      const mode = getProfileExportModeValue();
+      if (mode === 'all') {
+        return { mode: 'all', filenameSuffix: 'all' };
+      }
+
+      if (mode === 'day') {
+        const day = document.getElementById('profileExportDay')?.value;
+        if (!day) throw new Error('Please choose a day for the export.');
+        const { startIso, endIso } = buildDateBoundsForLocalDay(day);
+        return { mode: 'day', startIso, endIso, filenameSuffix: day };
+      }
+
+      const startDate = document.getElementById('profileExportStartDate')?.value;
+      const endDate = document.getElementById('profileExportEndDate')?.value;
+      if (!startDate || !endDate) throw new Error('Please choose both start and end dates.');
+      if (startDate > endDate) throw new Error('Start date cannot be after end date.');
+      const startIso = new Date(`${startDate}T00:00:00`).toISOString();
+      const endIso = new Date(`${endDate}T23:59:59.999`).toISOString();
+      return { mode: 'range', startIso, endIso, filenameSuffix: `${startDate}_to_${endDate}` };
+    }
+    function escapeCsvValue(value) {
+      const stringValue = value == null ? '' : String(value);
+      return `"${stringValue.replace(/"/g, '""')}"`;
+    }
+    function humanizeFieldLabel(key) {
+      return key
+        .replace(/^_+/, '')
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+    }
+    function downloadCsv(filename, columns, rows) {
+      const csvLines = [columns.map((column) => escapeCsvValue(column.label)).join(',')];
+      rows.forEach((row) => {
+        csvLines.push(columns.map((column) => escapeCsvValue(row[column.key] ?? '')).join(','));
+      });
+      const blob = new Blob([csvLines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+    function prettifyProfileValue(key, value) {
+      if (value == null) return '';
+      if (Array.isArray(value)) {
+        return value.map((entry) => prettifyProfileValue(key, entry)).join(' | ');
+      }
+      if (typeof value === 'object') {
+        try {
+          return JSON.stringify(value);
+        } catch (error) {
+          return String(value);
+        }
+      }
+      if (typeof value !== 'string') return String(value);
+
+      const trimmed = value.trim();
+      if (!trimmed) return '';
+
+      if ((key === 'certifications_json' || key === 'projects_json' || key === 'notification_subscriptions') &&
+          (trimmed.startsWith('[') || trimmed.startsWith('{'))) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          if (Array.isArray(parsed)) {
+            return parsed.map((entry) => {
+              if (entry && typeof entry === 'object') {
+                return Object.values(entry).filter(Boolean).join(' - ');
+              }
+              return String(entry);
+            }).join(' | ');
+          }
+          if (parsed && typeof parsed === 'object') {
+            return Object.entries(parsed)
+              .map(([subKey, subValue]) => `${subKey}: ${subValue}`)
+              .join(' | ');
+          }
+        } catch (error) {
+          return trimmed;
+        }
+      }
+
+      if (key === 'languages_json' && trimmed.startsWith('[')) {
+        try {
+          const parsed = JSON.parse(trimmed);
+          if (Array.isArray(parsed)) {
+            return parsed.map((entry) => {
+              if (!entry || typeof entry !== 'object') return String(entry);
+              const language = entry.language || entry.name || '';
+              const proficiency = entry.proficiency || entry.level || '';
+              return [language, proficiency].filter(Boolean).join(' - ');
+            }).join(' | ');
+          }
+        } catch (error) {
+          return trimmed;
+        }
+      }
+
+      return trimmed;
+    }
+    function joinNonEmpty(parts, separator = ' | ') {
+      return parts.map((part) => (part == null ? '' : String(part).trim())).filter(Boolean).join(separator);
+    }
+    function formatDateForExport(value) {
+      if (!value) return '';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value).trim();
+      return date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
+    function parseJsonArrayString(value) {
+      if (!value || typeof value !== 'string') return null;
+      const trimmed = value.trim();
+      if (!trimmed.startsWith('[') && !trimmed.startsWith('{')) return null;
+      try {
+        return JSON.parse(trimmed);
+      } catch (error) {
+        return null;
+      }
+    }
+    function formatDateTimeForExport(value) {
+      if (!value) return '';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return String(value).trim();
+      return date.toLocaleString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
+    function formatLanguages(value) {
+      if (!value) return '';
+      const parsed = parseJsonArrayString(value);
+      if (Array.isArray(parsed)) {
+        return parsed.map((entry) => joinNonEmpty([entry?.language || entry?.name, entry?.proficiency || entry?.level], ' - ')).filter(Boolean).join(', ');
+      }
+      return String(value)
+        .split(',')
+        .map((entry) => entry.trim())
+        .filter(Boolean)
+        .map((entry) => {
+          const parts = entry.split('|').map((part) => part.trim()).filter(Boolean);
+          return joinNonEmpty([parts[0], parts[1]], ' - ');
+        })
+        .filter(Boolean)
+        .join(', ');
+    }
+    function formatCertificationSummary(profile) {
+      const jsonCerts = parseJsonArrayString(profile.certifications_json);
+      if (Array.isArray(jsonCerts) && jsonCerts.length) {
+        return jsonCerts.map((entry) => joinNonEmpty([entry?.cert_name, entry?.cert_issuer, entry?.cert_year], ' - ')).filter(Boolean).join(' | ');
+      }
+      return joinNonEmpty([profile.cert_name, profile.cert_issuer, profile.cert_year], ' - ');
+    }
+    function formatProjectSummary(profile) {
+      const jsonProjects = parseJsonArrayString(profile.projects_json);
+      if (Array.isArray(jsonProjects) && jsonProjects.length) {
+        return jsonProjects.map((entry) => joinNonEmpty([entry?.project_title || entry?.title, entry?.project_tag || entry?.tag, entry?.project_status || entry?.status], ' - ')).filter(Boolean).join(' | ');
+      }
+      return joinNonEmpty([
+        profile.project_title,
+        profile.project_tag,
+        profile.project_status,
+        profile.project_client && `Client: ${profile.project_client}`,
+        profile.project_details
+      ]);
+    }
+    function formatCaTrack(profile) {
+      const sections = [
+        joinNonEmpty([profile.ca_final_course, profile.ca_final_attempts && `Attempts: ${profile.ca_final_attempts}`, joinNonEmpty([profile.ca_final_clear_month, profile.ca_final_clear_year], ' ')]),
+        joinNonEmpty([profile.ca_inter_course, profile.ca_inter_attempts && `Attempts: ${profile.ca_inter_attempts}`, joinNonEmpty([profile.ca_inter_clear_month, profile.ca_inter_clear_year], ' ')]),
+        joinNonEmpty([profile.ca_found_course, profile.ca_found_attempts && `Attempts: ${profile.ca_found_attempts}`, joinNonEmpty([profile.ca_found_clear_month, profile.ca_found_clear_year], ' ')])
+      ].filter(Boolean);
+      return sections.join(' | ') || profile.ca_level || '';
+    }
+    function formatArticleshipDetails(profile) {
+      return joinNonEmpty([
+        profile.articleship_firm_type,
+        profile.articleship_firm_name,
+        profile.articleship_domain === 'Other' ? profile.articleship_domain_other : profile.articleship_domain,
+        profile.articleship_completion_date && `Completion: ${formatDateForExport(profile.articleship_completion_date)}`
+      ]);
+    }
+    function formatEducationLine(label, parts) {
+      const value = joinNonEmpty(parts, ' - ');
+      return value ? `${label}: ${value}` : '';
+    }
+    function getExportFieldValue(row, profile, key) {
+      if (key === 'uuid') return prettifyProfileValue(key, row.uuid);
+      if (key === 'updated_at') return formatDateTimeForExport(row.updated_at);
+      if (key === 'ocr_cv') return prettifyProfileValue(key, row.ocr_cv).replace(/\s+/g, ' ').trim();
+      if (key === 'languages_json') return formatLanguages(profile.languages_json);
+      if (key === 'certifications_json') return formatCertificationSummary(profile);
+      if (key === 'projects_json') return formatProjectSummary(profile);
+      if (key === 'profile_summary') return prettifyProfileValue(key, profile.profile_summary || profile.headline);
+      if (key === 'emp_skills_hidden') {
+        return prettifyProfileValue(key, profile.emp_skills_hidden)
+          .split(',')
+          .map((item) => item.trim())
+          .filter(Boolean)
+          .join(', ');
+      }
+      return prettifyProfileValue(key, profile[key]);
+    }
+    function normalizeProfileObject(profile) {
+      if (!profile) return {};
+      if (typeof profile === 'object') return profile;
+      if (typeof profile === 'string') {
+        try {
+          const parsed = JSON.parse(profile);
+          return parsed && typeof parsed === 'object' ? parsed : {};
+        } catch (error) {
+          return {};
+        }
+      }
+      return {};
+    }
+    function flattenProfileRow(row) {
+      const profile = normalizeProfileObject(row.profile);
+      const exportRow = {};
+      PROFILE_EXPORT_COLUMNS.forEach((column) => {
+        exportRow[column.key] = getExportFieldValue(row, profile, column.key);
+      });
+      return exportRow;
+    }
+    async function fetchAllProfilesForExport(filters) {
+      const rows = [];
+      let from = 0;
+
+      while (true) {
+        const to = from + PROFILE_EXPORT_BATCH_SIZE - 1;
+        let query = supabaseClient
+          .from('profiles')
+          .select('uuid, profile, updated_at')
+          .order('updated_at', { ascending: false, nullsFirst: false });
+
+        if (filters?.startIso && filters?.endIso) {
+          query = query.gte('updated_at', filters.startIso).lte('updated_at', filters.endIso);
+        }
+
+        const { data, error } = await query.range(from, to);
+
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+
+        rows.push(...data);
+        if (data.length < PROFILE_EXPORT_BATCH_SIZE) break;
+        from += PROFILE_EXPORT_BATCH_SIZE;
+      }
+
+      return rows;
+    }
+    async function exportProfilesCsv(button) {
+      if (button) button.disabled = true;
+      setProfileExportStatus('Preparing export...');
+      try {
+        const filters = getProfileExportFilters();
+        const rows = await fetchAllProfilesForExport(filters);
+        const flattenedRows = rows.map(flattenProfileRow);
+        const today = new Date().toISOString().slice(0, 10);
+        const fileSuffix = filters?.filenameSuffix || today;
+        downloadCsv(`profiles_export_${fileSuffix}_${today}.csv`, PROFILE_EXPORT_COLUMNS, flattenedRows);
+        setProfileExportStatus(`Exported ${flattenedRows.length} profiles.`);
+        toggleProfileExportPanel(false);
+      } catch (error) {
+        console.error('Profile export failed:', error);
+        setProfileExportStatus(`Export failed: ${error.message}`, true);
+      } finally {
+        if (button) button.disabled = false;
+      }
+    }
     async function loadBanners() { const { data: banners, error } = await supabaseClient.from('Banners').select('*'); if (error) throw error; const bannerEditor = document.getElementById('banner-editor'); bannerEditor.innerHTML = ''; banners.forEach(banner => { const bannerItem = document.createElement('div'); bannerItem.className = 'banner-item'; bannerItem.innerHTML = ` <input type="text" class="admin-input" value="${banner.Image || ''}" placeholder="Image URL"> <input type="text" class="admin-input" value="${banner.Hyperlink || ''}" placeholder="Hyperlink"> <select class="admin-input type-select"> <option value="Industrial" ${banner.Type === 'Industrial' ? 'selected' : ''}>Industrial</option> <option value="Freshers" ${banner.Type === 'Freshers' ? 'selected' : ''}>Freshers</option> <option value="Articleship" ${banner.Type === 'Articleship' ? 'selected' : ''}>Articleship</option> <option value="Semi-Qualified" ${banner.Type === 'Semi-Qualified' ? 'selected' : ''}>Semi-Qualified</option> <option value="All" ${banner.Type === 'All' ? 'selected' : ''}>All</option> </select> <div class="banner-actions"> <button class="icon-btn edit-icon-btn" title="Save Banner"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button> <button class="icon-btn delete-icon-btn" title="Delete Banner"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button> </div>`; const [editBtn, deleteBtn] = bannerItem.querySelectorAll('button'); editBtn.addEventListener('click', () => updateBanner(banner.id, bannerItem)); deleteBtn.addEventListener('click', () => deleteBanner(banner.id)); bannerEditor.appendChild(bannerItem); }); }
     async function updateBanner(id, itemElement) { const [imageInput, hyperlinkInput, typeSelect] = itemElement.querySelectorAll('.admin-input, .type-select'); try { const { error } = await supabaseClient.from('Banners').update({ Image: imageInput.value, Hyperlink: hyperlinkInput.value, Type: typeSelect.value }).eq('id', id); if (error) throw error; alert('Banner updated successfully'); } catch (error) { alert('Failed to update banner: ' + error.message); } }
     async function deleteBanner(id) { if (!confirm('Are you sure you want to delete this banner?')) return; try { const { error } = await supabaseClient.from('Banners').delete().eq('id', id); if (error) throw error; await loadBanners(); } catch (error) { alert('Failed to delete banner: ' + error.message); } }
@@ -345,7 +1375,12 @@
         loadMore: document.getElementById('loadMore'),
         jobForm: document.getElementById('job-form'),
         jobs: document.getElementById('jobs'),
-        tableSelect: document.getElementById('tableSelect')
+        tableSelect: document.getElementById('tableSelect'),
+        downloadProfilesBtn: document.getElementById('downloadProfilesBtn'),
+        profileExportPanel: document.getElementById('profileExportPanel'),
+        profileExportCloseBtn: document.getElementById('profileExportCloseBtn'),
+        profileExportResetBtn: document.getElementById('profileExportResetBtn'),
+        profileExportConfirmBtn: document.getElementById('profileExportConfirmBtn')
       };
 
       let debounceTimeout = null;
@@ -364,6 +1399,41 @@
       dom.salaryFilter.addEventListener('change', debouncedFetch);
       dom.experienceFilter.addEventListener('change', debouncedFetch);
       dom.loadMore.addEventListener('click', () => fetchJobs(dom.searchInput.value, dom.locationSearchInput.value, dom.salaryFilter.value, dom.experienceFilter.value));
+      if (dom.downloadProfilesBtn) {
+        dom.downloadProfilesBtn.addEventListener('click', (event) => {
+          event.stopPropagation();
+          toggleProfileExportPanel();
+        });
+      }
+      if (dom.profileExportConfirmBtn) {
+        dom.profileExportConfirmBtn.addEventListener('click', () => exportProfilesCsv(dom.profileExportConfirmBtn));
+      }
+      if (dom.profileExportResetBtn) {
+        dom.profileExportResetBtn.addEventListener('click', resetProfileExportFilters);
+      }
+      if (dom.profileExportCloseBtn) {
+        dom.profileExportCloseBtn.addEventListener('click', (event) => {
+          event.stopPropagation();
+          toggleProfileExportPanel(false);
+        });
+      }
+      if (dom.profileExportPanel) {
+        dom.profileExportPanel.addEventListener('change', (event) => {
+          if (event.target.matches('input[name="profileExportMode"]')) updateProfileExportFields();
+        });
+        updateProfileExportFields();
+      }
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        if (!dom.profileExportPanel?.classList.contains('open')) return;
+        event.preventDefault();
+        toggleProfileExportPanel(false);
+      });
+      document.addEventListener('click', (event) => {
+        if (!dom.profileExportPanel?.classList.contains('open')) return;
+        const exportWrap = event.target.closest('.export-menu-wrap');
+        if (!exportWrap) toggleProfileExportPanel(false);
+      });
 
       document.querySelectorAll('.footer-tab').forEach(tab => {
         tab.addEventListener('click', () => {
