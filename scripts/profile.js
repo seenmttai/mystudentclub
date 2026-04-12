@@ -11,6 +11,126 @@ const saveBtn = document.getElementById('saveBtn');
 let currentUser = null;
 let lastUpdatedISO = null;
 
+// =================== TOAST NOTIFICATIONS ===================
+function showToast(message, type = 'info', duration = 6000) {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+    const safeDuration = duration > 0 ? Math.max(duration, 3500) : 0;
+
+    const icons = {
+        success: '<i class="fas fa-check-circle"></i>',
+        error: '<i class="fas fa-times-circle"></i>',
+        warning: '<i class="fas fa-exclamation-triangle"></i>',
+        info: '<i class="fas fa-info-circle"></i>'
+    };
+
+    const titles = {
+        success: 'Success',
+        error: 'Error',
+        warning: 'Warning',
+        info: 'Information'
+    };
+
+    const toast = document.createElement('div');
+    toast.className = `p2-toast p2-toast-${type}`;
+    toast.innerHTML = `
+        <div class="p2-toast-icon">${icons[type] || icons.info}</div>
+        <div class="p2-toast-content">
+            <div class="p2-toast-title">${titles[type] || titles.info}</div>
+            <div class="p2-toast-message">${message}</div>
+        </div>
+        <button class="p2-toast-close" aria-label="Close notification">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="p2-toast-progress"></div>
+    `;
+
+    container.appendChild(toast);
+    requestAnimationFrame(() => {
+        toast.classList.add('is-visible');
+    });
+
+    const closeBtn = toast.querySelector('.p2-toast-close');
+    const progressBar = toast.querySelector('.p2-toast-progress');
+    let autoDismissTimer = null;
+    let remainingTime = safeDuration;
+    let timerStartedAt = null;
+    let isClosing = false;
+
+    const setProgressWidth = (value) => {
+        if (!progressBar) return;
+        progressBar.style.width = `${Math.max(0, Math.min(100, value))}%`;
+    };
+
+    const startTimer = () => {
+        if (remainingTime <= 0 || isClosing) return;
+        if (autoDismissTimer) clearTimeout(autoDismissTimer);
+        timerStartedAt = Date.now();
+        if (progressBar) {
+            progressBar.style.transition = 'none';
+            setProgressWidth((remainingTime / safeDuration) * 100);
+            requestAnimationFrame(() => {
+                progressBar.style.transition = `width ${remainingTime}ms linear`;
+                setProgressWidth(0);
+            });
+        }
+        autoDismissTimer = setTimeout(() => {
+            removeToast();
+        }, remainingTime);
+    };
+
+    const pauseTimer = () => {
+        if (!autoDismissTimer || isClosing) return;
+        clearTimeout(autoDismissTimer);
+        autoDismissTimer = null;
+        if (timerStartedAt) {
+            remainingTime -= Date.now() - timerStartedAt;
+            remainingTime = Math.max(0, remainingTime);
+        }
+        if (progressBar) {
+            const computedWidth = parseFloat(window.getComputedStyle(progressBar).width);
+            const toastWidth = parseFloat(window.getComputedStyle(toast).width) || 1;
+            progressBar.style.transition = 'none';
+            setProgressWidth((computedWidth / toastWidth) * 100);
+        }
+    };
+
+    const removeToast = () => {
+        if (isClosing) return;
+        isClosing = true;
+        toast.classList.remove('is-visible');
+        toast.classList.add('is-exiting');
+        if (autoDismissTimer) {
+            clearTimeout(autoDismissTimer);
+            autoDismissTimer = null;
+        }
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
+    };
+
+    closeBtn.addEventListener('click', removeToast);
+
+    toast.addEventListener('mouseenter', pauseTimer);
+    toast.addEventListener('mouseleave', () => {
+        if (safeDuration > 0) startTimer();
+    });
+    toast.addEventListener('focusin', pauseTimer);
+    toast.addEventListener('focusout', () => {
+        if (safeDuration > 0) startTimer();
+    });
+
+    if (safeDuration > 0) {
+        startTimer();
+    } else {
+        setProgressWidth(0);
+    }
+
+    return toast;
+}
+
 const ENTRY_CLEAR_MAP = {
     'summary-entry-display': ['profile_summary', 'headline'],
     'cert-entry-display': ['cert_name', 'cert_issuer', 'cert_year', 'cert_url'],
@@ -137,6 +257,11 @@ function populateForm(profileData) {
         if (key === 'resume' || key === 'cover_letter' || key === 'project_attachment') continue;
         const field = profileForm.elements[key];
         if (field) field.value = profileData[key];
+    }
+
+    const emailField = document.getElementById('email');
+    if (emailField && !emailField.value && currentUser?.email) {
+        emailField.value = currentUser.email;
     }
 
     const domainOther = document.getElementById('articleship_domain_other');
@@ -314,7 +439,7 @@ async function handleFile(file, type) {
         let images = [];
 
         if (type === 'cover_letter' && file.type !== 'application/pdf') {
-            alert('Please upload your Cover Letter in PDF format only.');
+            showToast('Please upload your Cover Letter in PDF format only.', 'warning');
             return;
         }
 
@@ -335,18 +460,18 @@ async function handleFile(file, type) {
                     try {
                         localStorage.setItem(config.storageKeyImages, JSON.stringify(images));
                     } catch (e) {
-                        alert('Resume is too large. Please reupload your resume.');
+                        showToast('Resume is too large. Please reupload your resume.', 'error');
                     }
                     showLoading(true, 'Validating and Autofilling details...');
                     const extractResult = await extractProfileData(images, textContent);
                     if (extractResult && extractResult.is_valid === false) {
-                        alert(extractResult.message);
+                        showToast(extractResult.message, 'error', 8000);
                         hideFileDisplay('resume');
                         return;
                     } else if (extractResult && extractResult.data) {
                         populateForm(extractResult.data);
                         refreshHeader();
-                        alert('Profile auto-filled from your resume! Please review the details.');
+                        showToast('Profile auto-filled from your resume! Please review the details.', 'success', 8000);
                     }
                 }
             }
@@ -357,17 +482,17 @@ async function handleFile(file, type) {
                 showLoading(true, 'Validating and Autofilling details...');
                 const extractResult = await extractProfileData([], textContent);
                 if (extractResult && extractResult.is_valid === false) {
-                    alert(extractResult.message);
+                    showToast(extractResult.message, 'error', 8000);
                     hideFileDisplay('resume');
                     return;
                 } else if (extractResult && extractResult.data) {
                     populateForm(extractResult.data);
                     refreshHeader();
-                    alert('Profile auto-filled from your resume! Please review the details.');
+                    showToast('Profile auto-filled from your resume! Please review the details.', 'success', 8000);
                 }
             }
         } else {
-            alert('Unsupported file type. Please upload PDF or TXT.');
+            showToast('Unsupported file type. Please upload PDF or TXT.', 'warning');
             return;
         }
 
@@ -377,7 +502,7 @@ async function handleFile(file, type) {
         refreshHeader();
     } catch (error) {
         console.error(error);
-        alert(`Could not process your ${type.replace('_', ' ')}. Please try a different file.`);
+        showToast(`Could not process your ${type.replace('_', ' ')}. Please try a different file.`, 'error');
     } finally {
         showLoading(false);
     }
@@ -445,7 +570,7 @@ function setCloudSyncFlag() {
 async function handleSave(e) {
     e.preventDefault();
     if (!localStorage.getItem('userCVImages')) {
-        alert('Please upload your resume. It is required to use the AI features.');
+        showToast('Please upload your resume. It is required to use the AI features.', 'warning');
         return;
     }
 
@@ -466,6 +591,9 @@ async function handleSave(e) {
     const profileData = Object.fromEntries(formData.entries());
     delete profileData.resume;
     delete profileData.cover_letter;
+    if (currentUser?.email) {
+        profileData.email = currentUser.email;
+    }
 
     const ocrText = localStorage.getItem('userCVText') || '';
     localStorage.setItem('userProfileData', JSON.stringify(profileData));
@@ -481,13 +609,13 @@ async function handleSave(e) {
         setCloudSyncFlag();
         lastUpdatedISO = new Date().toISOString();
         refreshHeader();
-        alert('Profile saved successfully!');
+        showToast('Profile saved successfully!', 'success', 8000);
 
         const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
         if (redirectUrl) window.location.href = decodeURIComponent(redirectUrl);
     } catch (e) {
         console.error(e);
-        alert('Profile saved to your browser, but failed to sync to the server. You can continue using the site.');
+        showToast('Profile saved to your browser, but failed to sync to the server. You can continue using the site.', 'warning', 10000);
     } finally {
         btnText.textContent = originalText;
         spinner.style.display = 'none';
@@ -1079,6 +1207,19 @@ function refreshSavedDisplays(d) {
         el.textContent = safeVal || fallback;
         el.style.color = safeVal ? 'var(--p2-text)' : 'var(--p2-blue)';
     };
+
+    // Map job_preference value to display text
+    const jobPortalMap = {
+        'industrial': 'Industrial Training',
+        'articleship': 'Articleship',
+        'fresher_fresher': 'CA Fresher (Fresher)',
+        'fresher_experienced': 'CA Fresher (Experienced)',
+        'semi_fresher': 'Semi Qualified (Fresher)',
+        'semi_experienced': 'Semi Qualified (Experienced)'
+    };
+    const jobPrefValue = (d.job_preference || '').trim();
+    const jobPortalDisplay = jobPortalMap[jobPrefValue] || '';
+    setCareerValue('career-job-portal', jobPortalDisplay, 'Add default portal');
 
     setCareerValue('career-current-industry', d.current_industry, 'Add current industry');
     setCareerValue('career-department', d.department, 'Add department');
