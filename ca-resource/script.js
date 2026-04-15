@@ -13,8 +13,9 @@ const MAX_RENDER_OUTPUT_SCALE = 3.4;
 const MIN_RENDER_OUTPUT_SCALE = 2;
 
 // Search state
-let searchMatches = [];
+let searchMatches = [];     // Array of { page, index, itemIdx, charOffset }
 let searchIndex = -1;
+let currentSearchTerm = '';
 
 // ─── DOM ───
 const _$ = id => document.getElementById(id);
@@ -96,12 +97,85 @@ async function renderPageToCanvas(pageNum, width, height) {
     const ctx = canvas.getContext('2d', { alpha: false });
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
+    
+    // Render the PDF content
     await page.render({
         canvasContext: ctx,
         viewport,
         transform: outputScale === 1 ? null : [outputScale, 0, 0, outputScale, 0, 0]
     }).promise;
+
+    // Apply highlights if searching
+    if (currentSearchTerm) {
+        await drawHighlightsOnCanvas(ctx, page, viewport, outputScale);
+    }
+
     return canvas;
+}
+
+// ─── Highlighting Logic ───
+async function drawHighlightsOnCanvas(ctx, page, viewport, outputScale) {
+    try {
+        const textContent = await page.getTextContent();
+        const items = textContent.items;
+        const term = currentSearchTerm.toLowerCase();
+
+        ctx.save();
+        // Scale context if we are using outputScale
+        if (outputScale !== 1) {
+            ctx.scale(outputScale, outputScale);
+        }
+
+        items.forEach((item, itemIdx) => {
+            if (!item.str) return;
+            const str = item.str.toLowerCase();
+            let idx = -1;
+            
+            while ((idx = str.indexOf(term, idx + 1)) !== -1) {
+                // Determine if this is the "active" match
+                const isCurrentMatch = searchIndex >= 0 && 
+                                     searchMatches[searchIndex] &&
+                                     searchMatches[searchIndex].page === page.pageNumber &&
+                                     searchMatches[searchIndex].itemIdx === itemIdx &&
+                                     searchMatches[searchIndex].charOffset === idx;
+
+                drawMatchHighlight(ctx, item, viewport, idx, term.length, isCurrentMatch);
+            }
+        });
+        ctx.restore();
+    } catch (e) {
+        console.error('Highlighting error:', e);
+    }
+}
+
+function drawMatchHighlight(ctx, item, viewport, charOffset, len, isCurrent) {
+    // The item.transform is [scaleX, skewX, skewY, scaleY, tx, ty]
+    // PDF.js coordinates have origin at bottom-left.
+    const tx = pdfjsLib.Util.transform(viewport.transform, item.transform);
+    
+    // fontHeight is approximately the scaleY of the combined transform
+    const fontHeight = Math.sqrt(tx[2] * tx[2] + tx[3] * tx[3]);
+    const fontWidth = Math.sqrt(tx[0] * tx[0] + tx[1] * tx[1]);
+    
+    // Estimate width per character if we don't have individual glyph widths
+    // PDF.js items have 'width' which is the total width of the string in PDF units
+    const totalWidth = item.width * (fontWidth / (item.transform[0] || fontWidth));
+    const charWidth = totalWidth / item.str.length;
+    
+    const x = tx[4] + (charOffset * charWidth);
+    const y = tx[5] - fontHeight; // text baseline is at tx[5], move up to top of font
+    const rectWidth = len * charWidth;
+    const rectHeight = fontHeight * 1.1; // slight padding
+
+    ctx.fillStyle = isCurrent ? 'rgba(255, 150, 0, 0.6)' : 'rgba(255, 255, 0, 0.4)';
+    ctx.fillRect(x, y, rectWidth, rectHeight);
+    
+    // Add a small border to current match
+    if (isCurrent) {
+        ctx.strokeStyle = 'rgba(255, 100, 0, 0.9)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(x, y, rectWidth, rectHeight);
+    }
 }
 
 // ─── Build Flipbook ───
@@ -553,47 +627,104 @@ function scrollThumbIntoView(pageNum) {
 
 // ─── Search ───
 async function searchDocument(term) {
+    const oldTerm = currentSearchTerm;
+    currentSearchTerm = term;
     searchMatches = [];
     searchIndex = -1;
-    updateSearchControls();
-    if (!pdfDoc || !term) return;
+    
+    if (!pdfDoc || !term) {
+        updateSearchControls();
+        if (oldTerm) {
+            renderedPages.clear();
+            refreshFlipbookView();
+        }
+        return;
+    }
 
     const lower = term.toLowerCase();
+    searchInfo.textContent = 'Searching...';
+
     for (let i = 1; i <= totalPages; i++) {
         try {
             const page = await pdfDoc.getPage(i);
-            const txt = await page.getTextContent();
-            const str = txt.items.map(it => it.str).join(' ');
-            if (str.toLowerCase().includes(lower)) {
-                searchMatches.push(i);
-            }
-        } catch (e) {}
+            const textContent = await page.getTextContent();
+            
+            textContent.items.forEach((item, itemIdx) => {
+                if (!item.str) return;
+                const str = item.str.toLowerCase();
+                let idx = -1;
+                while ((idx = str.indexOf(lower, idx + 1)) !== -1) {
+                    searchMatches.push({
+                        page: i,
+                        itemIdx: itemIdx,
+                        charOffset: idx
+                    });
+                }
+            });
+        } catch (e) {
+            console.error('Search error on page', i, e);
+        }
     }
 
     if (searchMatches.length === 0) {
         searchInfo.textContent = 'No results';
-        setTimeout(() => { searchInfo.textContent = ''; }, 2000);
+        setTimeout(() => { 
+            if (currentSearchTerm === term) searchInfo.textContent = ''; 
+        }, 2000);
+        updateSearchControls();
         return;
     }
 
     searchIndex = 0;
-    goToPage(searchMatches[0]);
     updateSearchControls();
     updateSearchInfo();
+    
+    // Jump to first match and force re-render
+    renderedPages.clear(); 
+    goToPage(searchMatches[0].page);
+    refreshFlipbookView();
 }
 
 function onSearchNext() {
     if (searchMatches.length === 0) return;
+    const oldPage = searchMatches[searchIndex].page;
     searchIndex = (searchIndex + 1) % searchMatches.length;
-    goToPage(searchMatches[searchIndex]);
+    const newMatch = searchMatches[searchIndex];
+    
     updateSearchInfo();
+    
+    if (newMatch.page !== oldPage) {
+        goToPage(newMatch.page);
+    } else {
+        // Same page, but we need to update the "current" highlight
+        // The easiest way is to re-render the current canvas.
+        getTurnPageNodes(newMatch.page).forEach(node => {
+            // We can't easily re-render just the highlights without 
+            // the whole page logic, so we'll just clear cache for this page.
+            renderedPages.delete(newMatch.page);
+            const size = $(flipbookEl).turn('size');
+            const pW = viewMode === 'single' ? size.width : size.width / 2;
+            renderFlipbookPage(newMatch.page, pW, size.height);
+        });
+    }
 }
 
 function onSearchPrev() {
     if (searchMatches.length === 0) return;
+    const oldPage = searchMatches[searchIndex].page;
     searchIndex = (searchIndex - 1 + searchMatches.length) % searchMatches.length;
-    goToPage(searchMatches[searchIndex]);
+    const newMatch = searchMatches[searchIndex];
+    
     updateSearchInfo();
+    
+    if (newMatch.page !== oldPage) {
+        goToPage(newMatch.page);
+    } else {
+        renderedPages.delete(newMatch.page);
+        const size = $(flipbookEl).turn('size');
+        const pW = viewMode === 'single' ? size.width : size.width / 2;
+        renderFlipbookPage(newMatch.page, pW, size.height);
+    }
 }
 
 function updateSearchControls() {
