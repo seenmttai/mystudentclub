@@ -7,6 +7,7 @@
   <title>Admin Panel - My Student Club</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/scripts/vendor/papaparse.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/style.css">
   <link rel="stylesheet" href="https://www.mystudentclub.com/scripts/admin-styles.css">
@@ -467,6 +468,838 @@
         width: 100%;
       }
     }
+
+    .lms-resource-section {
+      display: grid;
+      gap: 1.25rem;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      border-radius: 18px;
+      box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
+      padding: 1.1rem;
+      max-width: 100%;
+      width: calc(100% - 2rem);
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* ──── Section Header ──── */
+    .lms-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .lms-section-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .lms-section-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(79, 70, 229, 0.12) 0%, rgba(99, 102, 241, 0.08) 100%);
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+    .lms-section-icon svg { width: 1.25rem; height: 1.25rem; }
+    .lms-section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+      line-height: 1.3;
+    }
+    .lms-section-subtitle {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      margin: 0.1rem 0 0;
+    }
+
+    /* ──── Unified Toolbar v2 ──── */
+    .lms-resource-toolbar-v2 {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      padding: 0.65rem 0.75rem;
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+    }
+    .lms-toolbar-select-wrap,
+    .lms-toolbar-search-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .lms-toolbar-select-wrap {
+      flex: 0 1 280px;
+      min-width: 180px;
+    }
+    .lms-toolbar-search-wrap {
+      flex: 1 1 220px;
+      min-width: 160px;
+    }
+    .lms-toolbar-icon {
+      position: absolute;
+      left: 0.65rem;
+      width: 1rem;
+      height: 1rem;
+      color: var(--text-secondary);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .lms-toolbar-select,
+    .lms-toolbar-search {
+      width: 100%;
+      min-height: 40px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 0.5rem 0.75rem 0.5rem 2.1rem;
+      font-size: 0.85rem;
+      font-family: inherit;
+      font-weight: 500;
+      color: var(--text-primary);
+      background: #fff;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .lms-toolbar-select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%2394a3b8' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2.5' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      padding-right: 2rem;
+    }
+    .lms-toolbar-select:focus,
+    .lms-toolbar-search:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+    .lms-toolbar-sort-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      min-height: 40px;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      flex-shrink: 0;
+    }
+    .lms-toolbar-sort-btn svg { width: 1rem; height: 1rem; color: var(--text-secondary); }
+    .lms-toolbar-sort-btn:hover {
+      border-color: rgba(79, 70, 229, 0.35);
+      box-shadow: var(--shadow-sm);
+    }
+    .lms-toolbar-sort-btn.active {
+      background: rgba(79, 70, 229, 0.08);
+      border-color: rgba(79, 70, 229, 0.3);
+      color: var(--primary);
+    }
+    .lms-toolbar-sort-btn.active svg { color: var(--primary); }
+
+    .lms-resource-status {
+      min-height: 1.25rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .lms-resource-status.error {
+      color: #dc2626;
+    }
+
+    .lms-resource-status.success {
+      color: #059669;
+    }
+
+    .lms-resource-grid {
+      display: block;
+      width: 100%;
+    }
+
+    .lms-resource-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
+      padding: 1.25rem;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .lms-resource-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .lms-resource-panel-header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .lms-resource-panel-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .lms-resource-panel-subtitle {
+      margin: 0.2rem 0 0;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .lms-video-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .lms-video-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 999px;
+      background: rgba(79, 70, 229, 0.08);
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .lms-resource-empty {
+      padding: 1rem;
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      color: var(--text-secondary);
+      background: var(--background);
+      text-align: center;
+      font-size: 0.92rem;
+    }
+
+    .lms-resource-list {
+      display: grid;
+      gap: 1.1rem;
+      width: 100%;
+    }
+
+    .lms-resource-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      padding: 0.7rem 0.85rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--background);
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .lms-resource-summary b {
+      color: var(--text-primary);
+    }
+
+    .lms-resource-group {
+      display: grid;
+      gap: 0.7rem;
+    }
+
+    .lms-resource-group-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .lms-resource-group h4 {
+      margin: 0;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .lms-resource-card {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1rem;
+      display: grid;
+      gap: 0.75rem;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+      min-height: 100%;
+    }
+
+    .lms-resource-card:hover {
+      transform: translateY(-1px);
+      border-color: rgba(79, 70, 229, 0.3);
+      box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+    }
+
+    .lms-resource-card-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .lms-resource-card-head-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* ──── Type Icon ──── */
+    .lms-resource-type-icon {
+      width: 2.25rem;
+      height: 2.25rem;
+      min-width: 2.25rem;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .lms-resource-type-icon svg {
+      width: 1.1rem;
+      height: 1.1rem;
+    }
+
+    /* ──── Type Color Themes ──── */
+    .lms-resource-type-icon.type-pdf { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
+    .lms-resource-type-icon.type-csv { background: rgba(16, 185, 129, 0.1); color: #059669; }
+    .lms-resource-type-icon.type-link { background: rgba(139, 92, 246, 0.1); color: #7c3aed; }
+    .lms-resource-type-icon.type-image { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+    .lms-resource-type-icon.type-video { background: rgba(6, 182, 212, 0.1); color: #0891b2; }
+    .lms-resource-type-icon.type-doc { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
+
+    .lms-resource-tag.type-pdf { background: rgba(239, 68, 68, 0.08); color: #dc2626; border-color: rgba(239, 68, 68, 0.2); }
+    .lms-resource-tag.type-csv { background: rgba(16, 185, 129, 0.08); color: #059669; border-color: rgba(16, 185, 129, 0.2); }
+    .lms-resource-tag.type-link { background: rgba(139, 92, 246, 0.08); color: #7c3aed; border-color: rgba(139, 92, 246, 0.2); }
+    .lms-resource-tag.type-image { background: rgba(245, 158, 11, 0.08); color: #d97706; border-color: rgba(245, 158, 11, 0.2); }
+    .lms-resource-tag.type-video { background: rgba(6, 182, 212, 0.08); color: #0891b2; border-color: rgba(6, 182, 212, 0.2); }
+    .lms-resource-tag.type-doc { background: rgba(59, 130, 246, 0.08); color: #2563eb; border-color: rgba(59, 130, 246, 0.2); }
+    .lms-resource-tag.type-view { background: rgba(79, 70, 229, 0.06); color: var(--primary); border-color: rgba(79, 70, 229, 0.15); }
+    .lms-resource-tag.type-dl { background: rgba(16, 185, 129, 0.06); color: #059669; border-color: rgba(16, 185, 129, 0.15); }
+    .lms-resource-tag.type-viewonly { background: rgba(107, 114, 128, 0.06); color: #6b7280; border-color: rgba(107, 114, 128, 0.15); }
+
+    /* ──── Action Button Icons ──── */
+    .lms-resource-mini-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .lms-resource-mini-btn svg { flex-shrink: 0; }
+    .lms-resource-mini-btn.view-btn:hover { border-color: rgba(79, 70, 229, 0.35); color: var(--primary); }
+    .lms-resource-mini-btn.edit-btn:hover { border-color: rgba(245, 158, 11, 0.35); color: #d97706; }
+
+    .lms-resource-card-title {
+      margin: 0;
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .lms-resource-card-desc {
+      margin: 0.25rem 0 0;
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .lms-resource-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+
+    .lms-resource-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.28rem 0.6rem;
+      border-radius: 999px;
+      background: var(--background);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+
+    .lms-resource-links {
+      display: grid;
+      gap: 0.35rem;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      word-break: break-all;
+    }
+
+    .lms-resource-links strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .lms-resource-card-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: auto;
+    }
+
+    .lms-resource-mini-btn {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-primary);
+      border-radius: 10px;
+      padding: 0.45rem 0.7rem;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .lms-resource-mini-btn:hover {
+      border-color: rgba(79, 70, 229, 0.35);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .lms-resource-mini-btn.delete {
+      color: #b91c1c;
+      border-color: rgba(220, 38, 38, 0.18);
+      background: rgba(254, 242, 242, 0.8);
+    }
+
+    .lms-resource-primary-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: 40px;
+      padding: 0.55rem 1rem;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(79, 70, 229, 0.22);
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.18s ease, filter 0.18s ease, box-shadow 0.18s ease;
+      flex-shrink: 0;
+      font-family: inherit;
+    }
+    .lms-resource-primary-btn svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    .lms-resource-primary-btn:hover {
+      filter: brightness(1.03);
+      transform: translateY(-1px);
+    }
+
+    .lms-resource-form {
+      display: grid;
+      gap: 0.9rem;
+    }
+
+    .lms-resource-form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+
+    .lms-resource-form .form-group {
+      margin: 0;
+    }
+
+    .lms-resource-form .description-group,
+    .lms-resource-form .full-span {
+      grid-column: 1 / -1;
+    }
+
+    .lms-resource-mode-toggle {
+      display: inline-grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      padding: 0.25rem;
+      background: var(--background);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      gap: 0.35rem;
+    }
+
+    .lms-resource-mode-option {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .lms-resource-mode-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .lms-resource-mode-option span {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 40px;
+      padding: 0.55rem 0.75rem;
+      border-radius: 10px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .lms-resource-mode-option input:checked + span {
+      background: #fff;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .lms-resource-mode-panel {
+      display: none;
+    }
+
+    .lms-resource-mode-panel.active {
+      display: grid;
+      gap: 0.9rem;
+    }
+
+    .lms-resource-inline-note {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .lms-resource-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 0.88rem;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .lms-resource-current-file {
+      padding: 0.75rem;
+      border-radius: 12px;
+      background: var(--background);
+      border: 1px dashed var(--border);
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      word-break: break-all;
+    }
+
+    .lms-resource-editor-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.58);
+      backdrop-filter: blur(7px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      z-index: 1180;
+    }
+
+    .lms-resource-editor-modal.visible {
+      display: flex;
+    }
+
+    .lms-resource-editor-shell {
+      width: min(760px, 100%);
+      max-height: min(90vh, 980px);
+      overflow: auto;
+      background: #fff;
+      border-radius: 24px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      box-shadow: 0 28px 70px rgba(15, 23, 42, 0.22);
+      padding: 1.3rem;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .lms-resource-editor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .lms-resource-editor-header p {
+      margin: 0.3rem 0 0;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .lms-resource-editor-close {
+      width: 2.35rem;
+      height: 2.35rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .lms-resource-editor-close:hover {
+      color: var(--text-primary);
+      border-color: rgba(79, 70, 229, 0.35);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .lms-resource-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .lms-resource-actions-right {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .lms-resource-form .form-input,
+    .lms-resource-form .form-textarea {
+      border-radius: 12px;
+    }
+
+    .admin-page {
+      display: none;
+    }
+
+    .admin-page.active {
+      display: block;
+    }
+
+    .lms-viewer-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.64);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1.25rem;
+      z-index: 1200;
+    }
+
+    .lms-viewer-modal.visible {
+      display: flex;
+    }
+
+    .lms-viewer-shell {
+      width: min(1100px, 100%);
+      max-height: min(88vh, 920px);
+      height: min(88vh, 920px);
+      background: #fff;
+      border-radius: 20px;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
+      display: grid;
+      grid-template-rows: auto 1fr;
+      overflow: hidden;
+    }
+
+    .lms-viewer-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem 1.2rem;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+    }
+
+    .lms-viewer-title-wrap {
+      min-width: 0;
+    }
+
+    .lms-viewer-title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .lms-viewer-subtitle {
+      margin: 0.25rem 0 0;
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+    }
+
+    .lms-viewer-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .lms-viewer-body {
+      min-height: 0;
+      position: relative;
+      background: #f8fafc;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .lms-viewer-loading,
+    .lms-viewer-empty {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      background: rgba(248, 250, 252, 0.92);
+      z-index: 2;
+    }
+
+    .lms-viewer-loading.visible,
+    .lms-viewer-empty.visible {
+      display: flex;
+    }
+
+    .lms-viewer-frame,
+    .lms-viewer-csv {
+      width: 100%;
+      height: 100%;
+      display: none;
+    }
+
+    .lms-viewer-frame.visible,
+    .lms-viewer-csv.visible {
+      display: block;
+    }
+
+    .lms-viewer-frame iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+      display: block;
+    }
+
+    .lms-viewer-csv {
+      overflow: auto;
+      padding: 1rem;
+    }
+
+    .lms-viewer-csv table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .lms-viewer-csv th,
+    .lms-viewer-csv td {
+      border: 1px solid var(--border);
+      padding: 0.75rem 0.85rem;
+      text-align: left;
+      vertical-align: top;
+      font-size: 0.84rem;
+      line-height: 1.45;
+    }
+
+    .lms-viewer-csv th {
+      position: sticky;
+      top: 0;
+      background: #eef2ff;
+      color: var(--text-primary);
+      font-weight: 700;
+      z-index: 1;
+    }
+
+    @media (max-width: 768px) {
+      .lms-viewer-shell {
+        max-height: 92vh;
+        height: 92vh;
+      }
+
+      .lms-viewer-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .lms-viewer-actions {
+        justify-content: stretch;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .lms-resource-toolbar-v2 {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .lms-toolbar-select-wrap,
+      .lms-toolbar-search-wrap {
+        flex: 1 1 100%;
+      }
+      .lms-resource-form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .lms-resource-section {
+        padding: 1rem;
+      }
+
+      .lms-resource-group-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 700px) {
+      .lms-resource-group-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .lms-resource-panel-header,
+      .lms-resource-panel-header-left,
+      .lms-resource-editor-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .lms-section-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
   </style>
 </head>
 
@@ -591,6 +1424,7 @@
     </header>
 
     <main>
+      <div id="adminJobsPage" class="admin-page active">
       <section class="admin-controls">
         <h2>
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -679,6 +1513,68 @@
       <div class="load-more-container">
         <button id="loadMore" class="load-more-btn" style="display: none;">Load More Jobs</button>
       </div>
+      </div>
+
+      <div id="adminLmsPage" class="admin-page">
+        <section class="admin-controls lms-resource-section">
+          <!-- ===== SECTION HEADER ===== -->
+          <div class="lms-section-header">
+            <div class="lms-section-header-left">
+              <div class="lms-section-icon">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+              <div>
+                <h2 class="lms-section-title">LMS Resources</h2>
+                <p class="lms-section-subtitle">Manage resources for Industrial Training sessions</p>
+              </div>
+            </div>
+            <div class="lms-resource-status" id="lmsResourceStatus" aria-live="polite"></div>
+          </div>
+
+          <!-- ===== UNIFIED TOOLBAR ===== -->
+          <div class="lms-resource-toolbar-v2">
+            <div class="lms-toolbar-select-wrap">
+              <svg class="lms-toolbar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              <select id="lmsVideoSelect" class="lms-toolbar-select">
+                <option value="">Loading sessions...</option>
+              </select>
+            </div>
+            <div class="lms-toolbar-search-wrap">
+              <svg class="lms-toolbar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              <input id="lmsResourceSearchInput" type="search" class="lms-toolbar-search" placeholder="Search by title, group, type...">
+            </div>
+            <button type="button" id="lmsSortToggleBtn" class="lms-toolbar-sort-btn" title="Sort by oldest" data-sort="asc">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/></svg>
+              <span>Oldest</span>
+            </button>
+            <button type="button" id="lmsResourceAddBtn" class="lms-resource-primary-btn">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              Add Resource
+            </button>
+          </div>
+
+          <!-- ===== RESOURCE PANEL ===== -->
+          <div class="lms-resource-grid">
+            <div class="lms-resource-panel">
+              <div class="lms-resource-panel-header">
+                <div class="lms-resource-panel-header-left">
+                  <h3 class="lms-resource-panel-title">Mapped Resources</h3>
+                  <div class="lms-video-meta" id="lmsVideoMeta"></div>
+                </div>
+              </div>
+              <div class="lms-resource-summary" id="lmsResourceSummary">
+                <span>Select a session to view resource analytics.</span>
+              </div>
+              <div id="lmsResourceList" class="lms-resource-list">
+                <div class="lms-resource-empty">Select a session to view and manage its resources.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
     </main>
 
     <div id="modal" class="modal-overlay" onclick="closeModal(event)">
@@ -755,6 +1651,122 @@
       </div>
     </div>
 
+    <div id="lmsResourceEditorModal" class="lms-resource-editor-modal" aria-hidden="true">
+      <div class="lms-resource-editor-shell">
+        <div class="lms-resource-editor-header">
+          <div>
+            <h3 class="lms-resource-panel-title" id="lmsResourceFormTitle">Add resource</h3>
+            <p>Create file-backed or external-link resources using the same structure consumed by the LMS.</p>
+          </div>
+          <button type="button" id="lmsResourceEditorCloseBtn" class="lms-resource-editor-close" aria-label="Close resource editor">×</button>
+        </div>
+
+        <form id="lmsResourceForm" class="lms-resource-form">
+          <input type="hidden" id="lmsEditingResourceIndex" value="">
+
+          <div class="form-group">
+            <label class="form-label">Resource mode</label>
+            <div class="lms-resource-mode-toggle" role="radiogroup" aria-label="Resource mode">
+              <label class="lms-resource-mode-option">
+                <input type="radio" name="lmsResourceMode" value="file" checked>
+                <span>Upload file</span>
+              </label>
+              <label class="lms-resource-mode-option">
+                <input type="radio" name="lmsResourceMode" value="link">
+                <span>External link</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="lms-resource-form-grid">
+            <div class="form-group">
+              <label class="form-label" for="lmsResourceTitle">Title</label>
+              <input id="lmsResourceTitle" type="text" class="form-input" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="lmsResourceGroup">Group</label>
+              <input id="lmsResourceGroup" type="text" class="form-input" placeholder="Search or add new group..." list="lmsResourceGroupList" autocomplete="off">
+              <datalist id="lmsResourceGroupList"></datalist>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="lmsResourceType">Type</label>
+              <select id="lmsResourceType" class="form-input">
+                <option value="pdf">PDF</option>
+                <option value="csv">CSV</option>
+                <option value="doc">DOC</option>
+                <option value="docx">DOCX</option>
+                <option value="xlsx">XLSX</option>
+                <option value="spreadsheet">Spreadsheet</option>
+                <option value="image">Image</option>
+                <option value="txt">Text</option>
+                <option value="archive">Archive</option>
+                <option value="video">Video</option>
+                <option value="external_link">External Link</option>
+              </select>
+            </div>
+            <div class="form-group description-group">
+              <label class="form-label" for="lmsResourceDescription">Description</label>
+              <textarea id="lmsResourceDescription" class="form-textarea" placeholder="Optional resource description"></textarea>
+            </div>
+          </div>
+
+          <div id="lmsFileModePanel" class="lms-resource-mode-panel active">
+            <div class="form-group">
+              <label class="form-label" for="lmsResourceFile">Upload file</label>
+              <input id="lmsResourceFile" type="file" class="form-input">
+              <div class="lms-resource-inline-note">Files are uploaded to the <code>industrial-training-mastery-resources</code> bucket.</div>
+            </div>
+            <label class="lms-resource-checkbox">
+              <input id="lmsResourceViewOnly" type="checkbox">
+              <span>View only resource (disable LMS download)</span>
+            </label>
+            <div id="lmsCurrentFileInfo" class="lms-resource-current-file" style="display:none;"></div>
+          </div>
+
+          <div id="lmsLinkModePanel" class="lms-resource-mode-panel">
+            <div class="form-group">
+              <label class="form-label" for="lmsResourceUrl">External URL</label>
+              <input id="lmsResourceUrl" type="url" class="form-input" placeholder="https://...">
+              <div class="lms-resource-inline-note">Use this for Google Docs, Sheets, Drive links, or any external study resource.</div>
+            </div>
+          </div>
+
+          <div class="lms-resource-actions">
+            <span class="lms-resource-inline-note">Only the selected session's <code>videos.resources</code> entry is updated.</span>
+            <div class="lms-resource-actions-right">
+              <button type="button" id="lmsResourceCancelBtn" class="lms-resource-mini-btn">Cancel</button>
+              <button type="submit" id="lmsResourceSaveBtn" class="admin-btn save-btn">Save Resource</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="lmsViewerModal" class="lms-viewer-modal" aria-hidden="true">
+      <div class="lms-viewer-shell">
+        <div class="lms-viewer-header">
+          <div class="lms-viewer-title-wrap">
+            <h2 id="lmsViewerTitle" class="lms-viewer-title">Resource Viewer</h2>
+            <p id="lmsViewerSubtitle" class="lms-viewer-subtitle">Preview LMS resource content.</p>
+          </div>
+          <div class="lms-viewer-actions">
+            <button type="button" id="lmsViewerOpenBtn" class="lms-resource-mini-btn">Open in new tab</button>
+            <button type="button" id="lmsViewerCloseBtn" class="lms-resource-mini-btn">Close</button>
+          </div>
+        </div>
+        <div class="lms-viewer-body">
+          <div id="lmsViewerLoading" class="lms-viewer-loading">Loading resource preview...</div>
+          <div id="lmsViewerEmpty" class="lms-viewer-empty">This resource cannot be previewed inline. Use “Open in new tab” instead.</div>
+          <div id="lmsViewerFrame" class="lms-viewer-frame">
+            <iframe id="lmsViewerIframe" title="LMS resource preview"></iframe>
+          </div>
+          <div id="lmsViewerCsv" class="lms-viewer-csv">
+            <table id="lmsViewerCsvTable"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <nav class="footer-nav">
       <button class="footer-tab active" data-table="Industrial Training Job Portal">
         <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -784,6 +1796,13 @@
         </svg>
         <span>Articleship</span>
       </button>
+      <button class="footer-tab" data-page="lms">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+        <span>LMS</span>
+      </button>
     </nav>
   </div>
 
@@ -807,6 +1826,18 @@
     let currentTable = 'Industrial Training Job Portal';
     let categoryData = {};
     const PROFILE_EXPORT_BATCH_SIZE = 500;
+    const LMS_RESOURCE_BUCKET = 'industrial-training-mastery-resources';
+    const LMS_RESOURCE_COURSE = 'industrial-training-mastery';
+    const LMS_RESOURCE_MANAGED_PREFIX = 'admin-managed/industrial-training-mastery';
+    const LMS_RESOURCE_TYPE_OPTIONS = ['pdf', 'csv', 'doc', 'docx', 'xlsx', 'spreadsheet', 'image', 'txt', 'archive', 'video', 'external_link'];
+    const lmsResourceState = {
+      videos: [],
+      selectedVideoKey: '',
+      searchQuery: '',
+      editingResourceIndex: null,
+      currentViewerUrl: '',
+      currentViewerResource: null
+    };
     const PROFILE_EXPORT_FIELD_ORDER = [
       'uuid', 'updated_at', 'ocr_cv',
       'name', 'email', 'contact_number', 'linkedin_url', 'gender', 'marital_status',
@@ -1291,6 +2322,717 @@
         if (button) button.disabled = false;
       }
     }
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+    function slugifySegment(value) {
+      return String(value || 'resource')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 60) || 'resource';
+    }
+    function parseVideoResources(resources) {
+      if (!resources) return [];
+      if (Array.isArray(resources)) return resources.map((resource) => ({ ...resource }));
+      if (typeof resources === 'string') {
+        try {
+          const parsed = JSON.parse(resources);
+          return Array.isArray(parsed) ? parsed.map((resource) => ({ ...resource })) : [];
+        } catch (error) {
+          console.warn('Unable to parse video resources:', error);
+          return [];
+        }
+      }
+      return [];
+    }
+    function normalizeLmsResource(resource = {}) {
+      return {
+        title: String(resource.title || '').trim(),
+        description: String(resource.description || '').trim(),
+        type: String(resource.type || '').trim() || 'pdf',
+        group: String(resource.group || '').trim(),
+        url: String(resource.url || '').trim(),
+        view_storage_path: String(resource.view_storage_path || '').trim() || 'None',
+        download_storage_path: String(resource.download_storage_path || '').trim() || 'None'
+      };
+    }
+    function getLmsVideoKey(video) {
+      return `${video.day_number || 0}::${video.video_number}`;
+    }
+    function getSelectedLmsVideo() {
+      return lmsResourceState.videos.find((video) => getLmsVideoKey(video) === lmsResourceState.selectedVideoKey) || null;
+    }
+    function formatLmsVideoLabel(video) {
+      const day = video.day_number || 0;
+      const videoNumber = video.video_number || 0;
+      const title = video.title || `Session ${videoNumber}`;
+      return `Day ${day} · Session ${videoNumber} · ${title}`;
+    }
+    function setLmsResourceStatus(message, tone = '') {
+      const statusEl = document.getElementById('lmsResourceStatus');
+      if (!statusEl) return;
+      statusEl.textContent = message || '';
+      statusEl.className = `lms-resource-status${tone ? ` ${tone}` : ''}`;
+    }
+    function renderLmsVideoOptions() {
+      const select = document.getElementById('lmsVideoSelect');
+      if (!select) return;
+      if (!lmsResourceState.videos.length) {
+        select.innerHTML = '<option value="">No LMS sessions found</option>';
+        lmsResourceState.selectedVideoKey = '';
+        renderLmsVideoMeta();
+        renderLmsResourceList();
+        return;
+      }
+      const sortedVideos = [...lmsResourceState.videos].sort((a, b) => {
+        const dir = lmsResourceState.sortOrder === 'asc' ? 1 : -1;
+        const dayDiff = (a.day_number || 0) - (b.day_number || 0);
+        if (dayDiff !== 0) return dayDiff * dir;
+        return ((a.video_number || 0) - (b.video_number || 0)) * dir;
+      });
+      select.innerHTML = sortedVideos.map((video) => {
+        const key = getLmsVideoKey(video);
+        return `<option value="${escapeHtml(key)}">${escapeHtml(formatLmsVideoLabel(video))}</option>`;
+      }).join('');
+      if (!lmsResourceState.selectedVideoKey || !lmsResourceState.videos.some((video) => getLmsVideoKey(video) === lmsResourceState.selectedVideoKey)) {
+        lmsResourceState.selectedVideoKey = getLmsVideoKey(sortedVideos[0]);
+      }
+      select.value = lmsResourceState.selectedVideoKey;
+      renderLmsVideoMeta();
+      renderLmsResourceList();
+    }
+    function renderLmsVideoMeta() {
+      const metaEl = document.getElementById('lmsVideoMeta');
+      if (!metaEl) return;
+      const video = getSelectedLmsVideo();
+      if (!video) {
+        metaEl.innerHTML = '';
+        return;
+      }
+      metaEl.innerHTML = `
+        <span class="lms-video-chip">Day ${escapeHtml(video.day_number || 0)}</span>
+        <span class="lms-video-chip">Session ${escapeHtml(video.video_number || 0)}</span>
+        <span class="lms-video-chip">${escapeHtml(`${video.resources.length} resources`)}</span>
+      `;
+    }
+    function isManagedLmsStoragePath(path) {
+      return typeof path === 'string' && path.startsWith(`${LMS_RESOURCE_MANAGED_PREFIX}/`);
+    }
+    function collectManagedPaths(resource) {
+      const paths = new Set();
+      [resource?.view_storage_path, resource?.download_storage_path].forEach((path) => {
+        if (path && path !== 'None' && isManagedLmsStoragePath(path)) {
+          paths.add(path);
+        }
+      });
+      return [...paths];
+    }
+    function getTypeIconSvg(type) {
+      const icons = {
+        pdf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>',
+        csv: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M3 14h18M3 18h18M3 6h18"/></svg>',
+        external_link: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>',
+        image: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>',
+        video: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>',
+        spreadsheet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>'
+      };
+      return icons[type] || icons.pdf;
+    }
+    function getTypeColorClass(type) {
+      const map = { pdf: 'type-pdf', csv: 'type-csv', spreadsheet: 'type-csv', xlsx: 'type-csv', external_link: 'type-link', image: 'type-image', video: 'type-video', doc: 'type-doc', docx: 'type-doc', txt: 'type-doc', archive: 'type-doc' };
+      return map[type] || 'type-pdf';
+    }
+    function renderLmsResourceList() {
+      const listEl = document.getElementById('lmsResourceList');
+      const summaryEl = document.getElementById('lmsResourceSummary');
+      if (!listEl) return;
+      const video = getSelectedLmsVideo();
+      renderLmsVideoMeta();
+      if (!video) {
+        if (summaryEl) summaryEl.innerHTML = '<span>Select a session to view resource analytics.</span>';
+        listEl.innerHTML = '<div class="lms-resource-empty">Select a session to view and manage its resources.</div>';
+        return;
+      }
+      const normalizedQuery = String(lmsResourceState.searchQuery || '').trim().toLowerCase();
+      const resources = video.resources.map((resource, index) => ({ resource, index }));
+      const filteredResources = !normalizedQuery
+        ? resources
+        : resources.filter(({ resource }) => {
+          const haystack = [
+            resource.title,
+            resource.description,
+            resource.group,
+            resource.type,
+            resource.url,
+            resource.view_storage_path,
+            resource.download_storage_path
+          ].join(' ').toLowerCase();
+          return haystack.includes(normalizedQuery);
+        });
+
+      if (lmsResourceState.sortOrder === 'desc') {
+        filteredResources.reverse();
+      }
+
+      if (summaryEl) {
+        const totalCount = resources.length;
+        const visibleCount = filteredResources.length;
+        summaryEl.innerHTML = normalizedQuery
+          ? `<span>Showing <b>${visibleCount}</b> of <b>${totalCount}</b> resources</span><span>Filter: <b>${escapeHtml(lmsResourceState.searchQuery)}</b></span>`
+          : `<span>Total resources in this session: <b>${totalCount}</b></span><span>Use search to quickly find files and links.</span>`;
+      }
+
+      if (!resources.length) {
+        listEl.innerHTML = '<div class="lms-resource-empty">No resources are mapped to this session yet.</div>';
+        return;
+      }
+
+      if (!filteredResources.length) {
+        listEl.innerHTML = '<div class="lms-resource-empty">No resources match your search. Try a different keyword.</div>';
+        return;
+      }
+
+      const grouped = filteredResources.reduce((acc, { resource, index }) => {
+        const groupName = resource.group || 'General Resources';
+        if (!acc[groupName]) acc[groupName] = [];
+        acc[groupName].push({ resource, index });
+        return acc;
+      }, {});
+
+      listEl.innerHTML = Object.entries(grouped).map(([groupName, items]) => `
+        <div class="lms-resource-group">
+          <h4>${escapeHtml(groupName)}</h4>
+          <div class="lms-resource-group-grid">
+            ${items.map(({ resource, index }) => {
+              const typeColor = getTypeColorClass(resource.type);
+              const typeIcon = getTypeIconSvg(resource.type);
+              const hasView = resource.view_storage_path && resource.view_storage_path !== 'None';
+              const hasDl = resource.download_storage_path && resource.download_storage_path !== 'None';
+              const isLink = resource.type === 'external_link' || resource.url;
+              return `
+              <article class="lms-resource-card ${typeColor}">
+                <div class="lms-resource-card-head">
+                  <div class="lms-resource-type-icon ${typeColor}">${typeIcon}</div>
+                  <div class="lms-resource-card-head-text">
+                    <h5 class="lms-resource-card-title">${escapeHtml(resource.title || 'Untitled Resource')}</h5>
+                    <p class="lms-resource-card-desc">${escapeHtml(resource.description || 'No description added.')}</p>
+                  </div>
+                </div>
+                <div class="lms-resource-tags">
+                  <span class="lms-resource-tag ${typeColor}">${escapeHtml(resource.type || 'resource')}</span>
+                  ${isLink && !resource.url ? '' : (isLink ? '<span class="lms-resource-tag type-link">External Link</span>' : '')}
+                  ${hasView ? '<span class="lms-resource-tag type-view">Viewable</span>' : ''}
+                  ${!isLink && hasDl ? '<span class="lms-resource-tag type-dl">Downloadable</span>' : ''}
+                  ${!isLink && !hasDl ? '<span class="lms-resource-tag type-viewonly">View Only</span>' : ''}
+                </div>
+                <div class="lms-resource-card-actions">
+                  <button type="button" class="lms-resource-mini-btn view-btn" data-action="view" data-index="${index}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    View
+                  </button>
+                  <button type="button" class="lms-resource-mini-btn edit-btn" data-action="edit" data-index="${index}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    Edit
+                  </button>
+                  <button type="button" class="lms-resource-mini-btn delete" data-action="delete" data-index="${index}">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    Delete
+                  </button>
+                </div>
+              </article>`;
+            }).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+    function updateLmsResourceModePanels() {
+      const mode = document.querySelector('input[name="lmsResourceMode"]:checked')?.value || 'file';
+      const filePanel = document.getElementById('lmsFileModePanel');
+      const linkPanel = document.getElementById('lmsLinkModePanel');
+      const typeSelect = document.getElementById('lmsResourceType');
+      if (filePanel) filePanel.classList.toggle('active', mode === 'file');
+      if (linkPanel) linkPanel.classList.toggle('active', mode === 'link');
+      if (mode === 'link' && typeSelect) typeSelect.value = 'external_link';
+    }
+    function inferLmsResourceTypeFromName(fileName) {
+      const ext = String(fileName || '').toLowerCase().split('.').pop();
+      const map = {
+        pdf: 'pdf',
+        csv: 'csv',
+        doc: 'doc',
+        docx: 'docx',
+        xls: 'spreadsheet',
+        xlsx: 'xlsx',
+        png: 'image',
+        jpg: 'image',
+        jpeg: 'image',
+        webp: 'image',
+        txt: 'txt',
+        zip: 'archive',
+        rar: 'archive',
+        mp4: 'video',
+        mov: 'video'
+      };
+      return map[ext] || 'pdf';
+    }
+    function populateLmsGroupDatalist() {
+      const datalist = document.getElementById('lmsResourceGroupList');
+      if (!datalist) return;
+      const groups = new Set();
+      lmsResourceState.videos.forEach((video) => {
+        (video.resources || []).forEach((r) => {
+          if (r.group && r.group.trim()) groups.add(r.group.trim());
+        });
+      });
+      datalist.innerHTML = [...groups].sort().map(g => `<option value="${escapeHtml(g)}">`).join('');
+    }
+    function openLmsResourceEditor() {
+      const modal = document.getElementById('lmsResourceEditorModal');
+      if (!modal) return;
+      populateLmsGroupDatalist();
+      modal.classList.add('visible');
+      modal.setAttribute('aria-hidden', 'false');
+    }
+    function closeLmsResourceEditor() {
+      const modal = document.getElementById('lmsResourceEditorModal');
+      if (!modal) return;
+      modal.classList.remove('visible');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+    function resetLmsResourceForm() {
+      const form = document.getElementById('lmsResourceForm');
+      if (!form) return;
+      form.reset();
+      const defaultMode = form.querySelector('input[name="lmsResourceMode"][value="file"]');
+      if (defaultMode) defaultMode.checked = true;
+      document.getElementById('lmsEditingResourceIndex').value = '';
+      document.getElementById('lmsResourceFormTitle').textContent = 'Add resource';
+      const currentFileInfo = document.getElementById('lmsCurrentFileInfo');
+      if (currentFileInfo) {
+        currentFileInfo.style.display = 'none';
+        currentFileInfo.innerHTML = '';
+      }
+      lmsResourceState.editingResourceIndex = null;
+      updateLmsResourceModePanels();
+      closeLmsResourceEditor();
+    }
+    function populateLmsResourceForm(index) {
+      const video = getSelectedLmsVideo();
+      if (!video || index == null || !video.resources[index]) return;
+      const resource = video.resources[index];
+      const mode = resource.type === 'external_link' || (resource.url && !resource.view_storage_path) ? 'link' : 'file';
+      const radio = document.querySelector(`input[name="lmsResourceMode"][value="${mode}"]`);
+      if (radio) radio.checked = true;
+      document.getElementById('lmsEditingResourceIndex').value = String(index);
+      document.getElementById('lmsResourceFormTitle').textContent = 'Edit resource';
+      document.getElementById('lmsResourceTitle').value = resource.title || '';
+      document.getElementById('lmsResourceGroup').value = resource.group || '';
+      document.getElementById('lmsResourceType').value = LMS_RESOURCE_TYPE_OPTIONS.includes(resource.type) ? resource.type : (mode === 'link' ? 'external_link' : 'pdf');
+      document.getElementById('lmsResourceDescription').value = resource.description || '';
+      document.getElementById('lmsResourceUrl').value = resource.url || '';
+      document.getElementById('lmsResourceViewOnly').checked = !resource.download_storage_path || resource.download_storage_path === 'None';
+      const currentFileInfo = document.getElementById('lmsCurrentFileInfo');
+      if (currentFileInfo) {
+        if (mode === 'file' && (resource.view_storage_path && resource.view_storage_path !== 'None')) {
+          currentFileInfo.style.display = 'block';
+          currentFileInfo.innerHTML = `
+            <strong>Current file mapping</strong><br>
+            View: ${escapeHtml(resource.view_storage_path || 'None')}<br>
+            Download: ${escapeHtml(resource.download_storage_path || 'None')}
+          `;
+        } else {
+          currentFileInfo.style.display = 'none';
+          currentFileInfo.innerHTML = '';
+        }
+      }
+      lmsResourceState.editingResourceIndex = index;
+      updateLmsResourceModePanels();
+      openLmsResourceEditor();
+    }
+    async function loadLmsVideos() {
+      setLmsResourceStatus('Loading LMS sessions...');
+      try {
+        const { data, error } = await supabaseClient
+          .from('videos')
+          .select('video_number, title, day_number, resources')
+          .eq('course', LMS_RESOURCE_COURSE)
+          .order('day_number', { ascending: true })
+          .order('video_number', { ascending: true });
+        if (error) throw error;
+        lmsResourceState.videos = (data || []).map((video) => ({
+          ...video,
+          resources: parseVideoResources(video.resources).map(normalizeLmsResource)
+        }));
+        renderLmsVideoOptions();
+        resetLmsResourceForm();
+        setLmsResourceStatus(`${lmsResourceState.videos.length} LMS sessions loaded.`, 'success');
+      } catch (error) {
+        console.error('Failed to load LMS videos:', error);
+        setLmsResourceStatus(`Failed to load LMS sessions: ${error.message}`, 'error');
+      }
+    }
+    async function persistSelectedLmsResources(nextResources) {
+      const video = getSelectedLmsVideo();
+      if (!video) throw new Error('Please select an LMS session first.');
+      const normalizedResources = nextResources.map(normalizeLmsResource);
+      const { data, error } = await supabaseClient
+        .from('videos')
+        .update({ resources: normalizedResources })
+        .eq('course', LMS_RESOURCE_COURSE)
+        .eq('day_number', video.day_number)
+        .eq('video_number', video.video_number)
+        .select();
+      
+      if (error) throw error;
+      if (!data || data.length === 0) {
+        throw new Error("Database update silently failed (0 rows updated). You likely need an UPDATE policy on the 'videos' table for this admin user.");
+      }
+      
+      video.resources = normalizedResources;
+      renderLmsResourceList();
+    }
+    function buildManagedLmsStoragePath(video, title, fileName) {
+      const extension = fileName.includes('.') ? fileName.split('.').pop().toLowerCase() : 'file';
+      const titleSegment = slugifySegment(title || fileName || 'resource');
+      return `${LMS_RESOURCE_MANAGED_PREFIX}/day-${video.day_number || 0}/video-${video.video_number}/${Date.now()}-${titleSegment}.${extension}`;
+    }
+    async function uploadLmsResourceFile(file, video, title) {
+      const path = buildManagedLmsStoragePath(video, title, file.name);
+      const { error } = await supabaseClient.storage
+        .from(LMS_RESOURCE_BUCKET)
+        .upload(path, file, { cacheControl: '3600', upsert: false });
+      if (error) throw error;
+      return path;
+    }
+    async function removeLmsStoragePaths(paths) {
+      const uniquePaths = [...new Set((paths || []).filter(Boolean))];
+      if (!uniquePaths.length) return;
+      const { error } = await supabaseClient.storage.from(LMS_RESOURCE_BUCKET).remove(uniquePaths);
+      if (error) throw error;
+    }
+    function getLmsViewerElements() {
+      return {
+        modal: document.getElementById('lmsViewerModal'),
+        title: document.getElementById('lmsViewerTitle'),
+        subtitle: document.getElementById('lmsViewerSubtitle'),
+        loading: document.getElementById('lmsViewerLoading'),
+        empty: document.getElementById('lmsViewerEmpty'),
+        frameWrap: document.getElementById('lmsViewerFrame'),
+        iframe: document.getElementById('lmsViewerIframe'),
+        csvWrap: document.getElementById('lmsViewerCsv'),
+        csvTable: document.getElementById('lmsViewerCsvTable'),
+        openBtn: document.getElementById('lmsViewerOpenBtn')
+      };
+    }
+    function resetLmsViewerBody() {
+      const viewer = getLmsViewerElements();
+      viewer.loading?.classList.remove('visible');
+      viewer.empty?.classList.remove('visible');
+      viewer.frameWrap?.classList.remove('visible');
+      viewer.csvWrap?.classList.remove('visible');
+      if (viewer.iframe) viewer.iframe.src = 'about:blank';
+      if (viewer.csvTable) viewer.csvTable.innerHTML = '';
+    }
+    function setLmsViewerLoading(message = 'Loading resource preview...') {
+      const viewer = getLmsViewerElements();
+      resetLmsViewerBody();
+      if (viewer.loading) {
+        viewer.loading.textContent = message;
+        viewer.loading.classList.add('visible');
+      }
+    }
+    function showLmsViewerEmpty(message) {
+      const viewer = getLmsViewerElements();
+      resetLmsViewerBody();
+      if (viewer.empty) {
+        viewer.empty.textContent = message;
+        viewer.empty.classList.add('visible');
+      }
+    }
+    function openLmsViewerModal(resource, subtitle = 'Preview LMS resource content.') {
+      const viewer = getLmsViewerElements();
+      lmsResourceState.currentViewerResource = resource;
+      if (viewer.title) viewer.title.textContent = resource?.title || 'Resource Viewer';
+      if (viewer.subtitle) viewer.subtitle.textContent = subtitle;
+      if (viewer.modal) {
+        viewer.modal.classList.add('visible');
+        viewer.modal.setAttribute('aria-hidden', 'false');
+      }
+    }
+    function closeLmsViewer() {
+      const viewer = getLmsViewerElements();
+      if (viewer.modal) {
+        viewer.modal.classList.remove('visible');
+        viewer.modal.setAttribute('aria-hidden', 'true');
+      }
+      resetLmsViewerBody();
+      lmsResourceState.currentViewerUrl = '';
+      lmsResourceState.currentViewerResource = null;
+    }
+    async function getLmsResourceOpenUrl(resource, preferDownload = false) {
+      if (!resource) throw new Error('Resource not found.');
+      if (resource.type === 'external_link' && resource.url) return resource.url;
+      const storagePath = preferDownload
+        ? (resource.download_storage_path && resource.download_storage_path !== 'None' ? resource.download_storage_path : resource.view_storage_path)
+        : resource.view_storage_path;
+      if (!storagePath || storagePath === 'None') {
+        throw new Error('This resource does not have a previewable file path.');
+      }
+      const { data, error } = await supabaseClient.storage.from(LMS_RESOURCE_BUCKET).createSignedUrl(storagePath, 300);
+      if (error) throw error;
+      return data.signedUrl;
+    }
+    function getLmsPreviewMode(resource) {
+      if (!resource) return 'none';
+      if (resource.type === 'external_link' && resource.url) return 'external';
+      const path = String(resource.view_storage_path || '').toLowerCase();
+      if (!path || path === 'none') return resource.url ? 'external' : 'none';
+      if (path.endsWith('.csv')) return 'csv';
+      if (path.endsWith('.pdf')) return 'pdf';
+      if (path.endsWith('.png') || path.endsWith('.jpg') || path.endsWith('.jpeg') || path.endsWith('.webp') || path.endsWith('.txt')) {
+        return 'iframe';
+      }
+      return 'external';
+    }
+    function renderLmsCsvPreview(rows) {
+      const viewer = getLmsViewerElements();
+      if (!viewer.csvTable || !viewer.csvWrap) return;
+      viewer.csvTable.innerHTML = '';
+      if (!rows.length) {
+        showLmsViewerEmpty('This CSV file is empty.');
+        return;
+      }
+      const headerRow = document.createElement('tr');
+      const headers = rows[0] || [];
+      const thead = document.createElement('thead');
+      headers.forEach((cell) => {
+        const th = document.createElement('th');
+        th.textContent = cell ?? '';
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+      viewer.csvTable.appendChild(thead);
+      const tbody = document.createElement('tbody');
+      rows.slice(1).forEach((row) => {
+        const tr = document.createElement('tr');
+        row.forEach((cell) => {
+          const td = document.createElement('td');
+          td.textContent = cell ?? '';
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+      viewer.csvTable.appendChild(tbody);
+      viewer.loading?.classList.remove('visible');
+      viewer.empty?.classList.remove('visible');
+      viewer.frameWrap?.classList.remove('visible');
+      viewer.csvWrap.classList.add('visible');
+    }
+    async function handleLmsResourceView(index) {
+      const video = getSelectedLmsVideo();
+      if (!video || !video.resources[index]) return;
+      const resource = video.resources[index];
+      const mode = getLmsPreviewMode(resource);
+      try {
+        if (mode === 'none') {
+          openLmsViewerModal(resource, 'Preview LMS resource content.');
+          showLmsViewerEmpty('This resource does not have a previewable view path.');
+          return;
+        }
+
+        if (mode === 'external') {
+          const url = await getLmsResourceOpenUrl(resource);
+          window.open(url, '_blank', 'noopener,noreferrer');
+          setLmsResourceStatus('External link opened in a new tab.', 'success');
+          return;
+        }
+
+        openLmsViewerModal(resource, 'Preview LMS resource content.');
+        setLmsViewerLoading();
+        const url = await getLmsResourceOpenUrl(resource);
+        lmsResourceState.currentViewerUrl = url;
+        const viewer = getLmsViewerElements();
+
+        if (mode === 'iframe' || mode === 'pdf') {
+          const previewUrl = mode === 'pdf' ? `${url}#toolbar=0&navpanes=0&scrollbar=1` : url;
+          if (viewer.iframe) viewer.iframe.src = previewUrl;
+          viewer.loading?.classList.remove('visible');
+          viewer.empty?.classList.remove('visible');
+          viewer.csvWrap?.classList.remove('visible');
+          viewer.frameWrap?.classList.add('visible');
+          return;
+        }
+
+        if (mode === 'csv') {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`Failed to load CSV preview (${response.status}).`);
+          const csvText = await response.text();
+          Papa.parse(csvText, {
+            skipEmptyLines: true,
+            complete(results) {
+              renderLmsCsvPreview(results.data || []);
+            },
+            error(err) {
+              console.error('CSV preview parse failed:', err);
+              showLmsViewerEmpty('Could not parse this CSV for preview.');
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Failed to preview LMS resource:', error);
+        showLmsViewerEmpty(`Could not preview this resource: ${error.message}`);
+      }
+    }
+    async function handleLmsResourceSave(event) {
+      event.preventDefault();
+      const video = getSelectedLmsVideo();
+      if (!video) {
+        setLmsResourceStatus('Please select an LMS session first.', 'error');
+        return;
+      }
+
+      const saveBtn = document.getElementById('lmsResourceSaveBtn');
+      const title = document.getElementById('lmsResourceTitle').value.trim();
+      const group = document.getElementById('lmsResourceGroup').value.trim();
+      const description = document.getElementById('lmsResourceDescription').value.trim();
+      const typeSelect = document.getElementById('lmsResourceType');
+      const mode = document.querySelector('input[name="lmsResourceMode"]:checked')?.value || 'file';
+      const url = document.getElementById('lmsResourceUrl').value.trim();
+      const fileInput = document.getElementById('lmsResourceFile');
+      const file = fileInput?.files?.[0] || null;
+      const isViewOnly = document.getElementById('lmsResourceViewOnly').checked;
+      const editingIndex = document.getElementById('lmsEditingResourceIndex').value === '' ? null : Number(document.getElementById('lmsEditingResourceIndex').value);
+      const existingResource = editingIndex != null ? video.resources[editingIndex] : null;
+
+      if (!title) {
+        setLmsResourceStatus('Title is required.', 'error');
+        return;
+      }
+      if (mode === 'link' && !url) {
+        setLmsResourceStatus('External URL is required for link resources.', 'error');
+        return;
+      }
+      if (mode === 'file' && !file && !existingResource) {
+        setLmsResourceStatus('Please choose a file to upload.', 'error');
+        return;
+      }
+      if (mode === 'file' && !file && existingResource && (!existingResource.view_storage_path || existingResource.view_storage_path === 'None')) {
+        setLmsResourceStatus('Please choose a file to upload for this resource.', 'error');
+        return;
+      }
+
+      const nextResources = video.resources.map((resource) => ({ ...resource }));
+      const cleanupAfterSave = [];
+      const rollbackUploads = [];
+
+      try {
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.textContent = existingResource ? 'Saving...' : 'Uploading...';
+        }
+        setLmsResourceStatus(existingResource ? 'Updating resource...' : 'Uploading resource...');
+
+        let nextResource = {
+          title,
+          description,
+          group,
+          type: mode === 'link' ? 'external_link' : (typeSelect.value || 'pdf'),
+          url: mode === 'link' ? url : '',
+          view_storage_path: 'None',
+          download_storage_path: 'None'
+        };
+
+        if (mode === 'file') {
+          nextResource.type = typeSelect.value === 'external_link'
+            ? inferLmsResourceTypeFromName(file?.name || existingResource?.view_storage_path || existingResource?.download_storage_path || title)
+            : (typeSelect.value || inferLmsResourceTypeFromName(file?.name || title));
+
+          if (file) {
+            const uploadedPath = await uploadLmsResourceFile(file, video, title);
+            rollbackUploads.push(uploadedPath);
+            nextResource.view_storage_path = uploadedPath;
+            nextResource.download_storage_path = isViewOnly ? 'None' : uploadedPath;
+            if (existingResource) cleanupAfterSave.push(...collectManagedPaths(existingResource));
+          } else if (existingResource) {
+            nextResource.view_storage_path = existingResource.view_storage_path || 'None';
+            nextResource.download_storage_path = isViewOnly
+              ? 'None'
+              : (existingResource.download_storage_path && existingResource.download_storage_path !== 'None'
+                ? existingResource.download_storage_path
+                : existingResource.view_storage_path || 'None');
+          }
+        } else if (existingResource) {
+          cleanupAfterSave.push(...collectManagedPaths(existingResource));
+        }
+
+        if (editingIndex != null) {
+          nextResources[editingIndex] = normalizeLmsResource(nextResource);
+        } else {
+          nextResources.push(normalizeLmsResource(nextResource));
+        }
+
+        await persistSelectedLmsResources(nextResources);
+
+        if (cleanupAfterSave.length) {
+          try {
+            await removeLmsStoragePaths(cleanupAfterSave);
+          } catch (cleanupError) {
+            console.warn('Resource mapping updated but storage cleanup failed:', cleanupError);
+            setLmsResourceStatus('Resource saved, but old storage cleanup needs a quick manual check.', 'success');
+            resetLmsResourceForm();
+            return;
+          }
+        }
+
+        setLmsResourceStatus(editingIndex != null ? 'Resource updated successfully.' : 'Resource added successfully.', 'success');
+        resetLmsResourceForm();
+      } catch (error) {
+        console.error('Failed to save LMS resource:', error);
+        if (rollbackUploads.length) {
+          try { await removeLmsStoragePaths(rollbackUploads); } catch (rollbackError) { console.warn('Rollback cleanup failed:', rollbackError); }
+        }
+        setLmsResourceStatus(`Failed to save resource: ${error.message}`, 'error');
+      } finally {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Save Resource';
+        }
+        if (fileInput) fileInput.value = '';
+      }
+    }
+    async function handleLmsResourceDelete(index) {
+      const video = getSelectedLmsVideo();
+      if (!video || !video.resources[index]) return;
+      const resource = video.resources[index];
+      if (!confirm(`Delete "${resource.title || 'this resource'}" from this session?`)) return;
+      const nextResources = video.resources.filter((_, resourceIndex) => resourceIndex !== index);
+      const managedPaths = collectManagedPaths(resource);
+      setLmsResourceStatus('Deleting resource...');
+      try {
+        await persistSelectedLmsResources(nextResources);
+        if (managedPaths.length) {
+          try {
+            await removeLmsStoragePaths(managedPaths);
+          } catch (cleanupError) {
+            console.warn('Resource mapping removed but storage cleanup failed:', cleanupError);
+            setLmsResourceStatus('Resource removed, but storage cleanup needs a manual check.', 'success');
+            resetLmsResourceForm();
+            return;
+          }
+        }
+        if (lmsResourceState.editingResourceIndex === index) resetLmsResourceForm();
+        setLmsResourceStatus('Resource deleted successfully.', 'success');
+      } catch (error) {
+        console.error('Failed to delete LMS resource:', error);
+        setLmsResourceStatus(`Failed to delete resource: ${error.message}`, 'error');
+      }
+    }
     async function loadBanners() { const { data: banners, error } = await supabaseClient.from('Banners').select('*'); if (error) throw error; const bannerEditor = document.getElementById('banner-editor'); bannerEditor.innerHTML = ''; banners.forEach(banner => { const bannerItem = document.createElement('div'); bannerItem.className = 'banner-item'; bannerItem.innerHTML = ` <input type="text" class="admin-input" value="${banner.Image || ''}" placeholder="Image URL"> <input type="text" class="admin-input" value="${banner.Hyperlink || ''}" placeholder="Hyperlink"> <select class="admin-input type-select"> <option value="Industrial" ${banner.Type === 'Industrial' ? 'selected' : ''}>Industrial</option> <option value="Freshers" ${banner.Type === 'Freshers' ? 'selected' : ''}>Freshers</option> <option value="Articleship" ${banner.Type === 'Articleship' ? 'selected' : ''}>Articleship</option> <option value="Semi-Qualified" ${banner.Type === 'Semi-Qualified' ? 'selected' : ''}>Semi-Qualified</option> <option value="All" ${banner.Type === 'All' ? 'selected' : ''}>All</option> </select> <div class="banner-actions"> <button class="icon-btn edit-icon-btn" title="Save Banner"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button> <button class="icon-btn delete-icon-btn" title="Delete Banner"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button> </div>`; const [editBtn, deleteBtn] = bannerItem.querySelectorAll('button'); editBtn.addEventListener('click', () => updateBanner(banner.id, bannerItem)); deleteBtn.addEventListener('click', () => deleteBanner(banner.id)); bannerEditor.appendChild(bannerItem); }); }
     async function updateBanner(id, itemElement) { const [imageInput, hyperlinkInput, typeSelect] = itemElement.querySelectorAll('.admin-input, .type-select'); try { const { error } = await supabaseClient.from('Banners').update({ Image: imageInput.value, Hyperlink: hyperlinkInput.value, Type: typeSelect.value }).eq('id', id); if (error) throw error; alert('Banner updated successfully'); } catch (error) { alert('Failed to update banner: ' + error.message); } }
     async function deleteBanner(id) { if (!confirm('Are you sure you want to delete this banner?')) return; try { const { error } = await supabaseClient.from('Banners').delete().eq('id', id); if (error) throw error; await loadBanners(); } catch (error) { alert('Failed to delete banner: ' + error.message); } }
@@ -1367,6 +3109,8 @@
       try { await checkAdmin(); } catch (error) { return; }
 
       const dom = {
+        adminJobsPage: document.getElementById('adminJobsPage'),
+        adminLmsPage: document.getElementById('adminLmsPage'),
         searchInput: document.getElementById('searchInput'),
         locationSearchInput: document.getElementById('locationSearchInput'),
         salaryFilter: document.getElementById('salaryFilter'),
@@ -1380,7 +3124,29 @@
         profileExportPanel: document.getElementById('profileExportPanel'),
         profileExportCloseBtn: document.getElementById('profileExportCloseBtn'),
         profileExportResetBtn: document.getElementById('profileExportResetBtn'),
-        profileExportConfirmBtn: document.getElementById('profileExportConfirmBtn')
+        profileExportConfirmBtn: document.getElementById('profileExportConfirmBtn'),
+        lmsVideoSelect: document.getElementById('lmsVideoSelect'),
+        lmsResourceSearchInput: document.getElementById('lmsResourceSearchInput'),
+        lmsResourceAddBtn: document.getElementById('lmsResourceAddBtn'),
+        lmsResourceForm: document.getElementById('lmsResourceForm'),
+        lmsResourceList: document.getElementById('lmsResourceList'),
+        lmsResourceCancelBtn: document.getElementById('lmsResourceCancelBtn'),
+        lmsResourceEditorModal: document.getElementById('lmsResourceEditorModal'),
+        lmsResourceEditorCloseBtn: document.getElementById('lmsResourceEditorCloseBtn'),
+        lmsResourceFile: document.getElementById('lmsResourceFile'),
+        lmsResourceType: document.getElementById('lmsResourceType'),
+        lmsViewerModal: document.getElementById('lmsViewerModal'),
+        lmsViewerCloseBtn: document.getElementById('lmsViewerCloseBtn'),
+        lmsViewerOpenBtn: document.getElementById('lmsViewerOpenBtn'),
+        lmsSortToggleBtn: document.getElementById('lmsSortToggleBtn')
+      };
+      lmsResourceState.sortOrder = 'asc';
+      const setAdminPage = (page) => {
+        const showLms = page === 'lms';
+        dom.adminJobsPage?.classList.toggle('active', !showLms);
+        dom.adminLmsPage?.classList.toggle('active', showLms);
+        if (!showLms) closeLmsResourceEditor();
+        if (!showLms) closeLmsViewer();
       };
 
       let debounceTimeout = null;
@@ -1425,20 +3191,136 @@
       }
       document.addEventListener('keydown', (event) => {
         if (event.key !== 'Escape') return;
-        if (!dom.profileExportPanel?.classList.contains('open')) return;
-        event.preventDefault();
-        toggleProfileExportPanel(false);
+        if (dom.profileExportPanel?.classList.contains('open')) {
+          event.preventDefault();
+          toggleProfileExportPanel(false);
+        }
+        if (dom.lmsViewerModal?.classList.contains('visible')) {
+          event.preventDefault();
+          closeLmsViewer();
+        }
+        if (dom.lmsResourceEditorModal?.classList.contains('visible')) {
+          event.preventDefault();
+          closeLmsResourceEditor();
+        }
       });
       document.addEventListener('click', (event) => {
         if (!dom.profileExportPanel?.classList.contains('open')) return;
         const exportWrap = event.target.closest('.export-menu-wrap');
         if (!exportWrap) toggleProfileExportPanel(false);
       });
+      if (dom.lmsVideoSelect) {
+        dom.lmsVideoSelect.addEventListener('change', (event) => {
+          lmsResourceState.selectedVideoKey = event.target.value;
+          renderLmsVideoMeta();
+          renderLmsResourceList();
+          resetLmsResourceForm();
+          setLmsResourceStatus('');
+        });
+      }
+      if (dom.lmsResourceSearchInput) {
+        dom.lmsResourceSearchInput.addEventListener('input', (event) => {
+          lmsResourceState.searchQuery = event.target.value || '';
+          renderLmsResourceList();
+        });
+      }
+      if (dom.lmsResourceAddBtn) {
+        dom.lmsResourceAddBtn.addEventListener('click', () => {
+          resetLmsResourceForm();
+          openLmsResourceEditor();
+          setLmsResourceStatus('');
+        });
+      }
+      if (dom.lmsSortToggleBtn) {
+        dom.lmsSortToggleBtn.addEventListener('click', () => {
+          const isDesc = lmsResourceState.sortOrder === 'desc';
+          lmsResourceState.sortOrder = isDesc ? 'asc' : 'desc';
+          dom.lmsSortToggleBtn.querySelector('span').textContent = isDesc ? 'Oldest' : 'Latest';
+          dom.lmsSortToggleBtn.classList.toggle('active', !isDesc);
+          renderLmsVideoOptions();
+        });
+      }
+      if (dom.lmsResourceForm) {
+        dom.lmsResourceForm.addEventListener('submit', handleLmsResourceSave);
+        dom.lmsResourceForm.addEventListener('change', (event) => {
+          if (event.target.matches('input[name="lmsResourceMode"]')) {
+            updateLmsResourceModePanels();
+          }
+        });
+      }
+      if (dom.lmsResourceCancelBtn) {
+        dom.lmsResourceCancelBtn.addEventListener('click', () => {
+          resetLmsResourceForm();
+          setLmsResourceStatus('');
+        });
+      }
+      if (dom.lmsResourceEditorCloseBtn) {
+        dom.lmsResourceEditorCloseBtn.addEventListener('click', () => {
+          resetLmsResourceForm();
+          setLmsResourceStatus('');
+        });
+      }
+      if (dom.lmsResourceEditorModal) {
+        dom.lmsResourceEditorModal.addEventListener('click', (event) => {
+          if (event.target === dom.lmsResourceEditorModal) {
+            resetLmsResourceForm();
+            setLmsResourceStatus('');
+          }
+        });
+      }
+      if (dom.lmsResourceFile) {
+        dom.lmsResourceFile.addEventListener('change', (event) => {
+          const file = event.target.files?.[0];
+          if (!file || !dom.lmsResourceType) return;
+          if (!dom.lmsResourceType.value || dom.lmsResourceType.value === 'external_link' || dom.lmsResourceType.value === 'pdf') {
+            dom.lmsResourceType.value = inferLmsResourceTypeFromName(file.name);
+          }
+        });
+      }
+      if (dom.lmsResourceList) {
+        dom.lmsResourceList.addEventListener('click', async (event) => {
+          const actionButton = event.target.closest('[data-action]');
+          if (!actionButton) return;
+          const index = Number(actionButton.dataset.index);
+          if (Number.isNaN(index)) return;
+          if (actionButton.dataset.action === 'view') {
+            await handleLmsResourceView(index);
+          } else if (actionButton.dataset.action === 'edit') {
+            populateLmsResourceForm(index);
+            setLmsResourceStatus('');
+          } else if (actionButton.dataset.action === 'delete') {
+            await handleLmsResourceDelete(index);
+          }
+        });
+      }
+      if (dom.lmsViewerCloseBtn) {
+        dom.lmsViewerCloseBtn.addEventListener('click', closeLmsViewer);
+      }
+      if (dom.lmsViewerOpenBtn) {
+        dom.lmsViewerOpenBtn.addEventListener('click', async () => {
+          try {
+            const url = lmsResourceState.currentViewerUrl || (lmsResourceState.currentViewerResource ? await getLmsResourceOpenUrl(lmsResourceState.currentViewerResource) : '');
+            if (!url) return;
+            lmsResourceState.currentViewerUrl = url;
+            window.open(url, '_blank', 'noopener,noreferrer');
+          } catch (error) {
+            showLmsViewerEmpty(`Could not open this resource: ${error.message}`);
+          }
+        });
+      }
+      if (dom.lmsViewerModal) {
+        dom.lmsViewerModal.addEventListener('click', (event) => {
+          if (event.target === dom.lmsViewerModal) closeLmsViewer();
+        });
+      }
 
       document.querySelectorAll('.footer-tab').forEach(tab => {
         tab.addEventListener('click', () => {
           document.querySelectorAll('.footer-tab').forEach(t => t.classList.remove('active'));
           tab.classList.add('active');
+          const targetPage = tab.dataset.page === 'lms' ? 'lms' : 'jobs';
+          setAdminPage(targetPage);
+          if (targetPage === 'lms') return;
           currentTable = tab.dataset.table;
 
           if (currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs') {
@@ -1526,6 +3408,7 @@
       window.closeJobEditModal = closeJobEditModal;
       window.closeModal = closeModal;
 
+      try { await loadLmsVideos(); } catch (error) { console.error("Failed to load LMS resources:", error); }
       try { await loadBanners(); } catch (error) { console.error("Failed to load banners:", error); }
       try { await fetchCategories(); await fetchJobs(); } catch (error) { console.error("Failed to load initial data:", error); }
     });
