@@ -1,6 +1,7 @@
 // ─── State ───
 const urlParams = new URLSearchParams(window.location.search);
 const paramPdf = urlParams.get('pdf');
+const paramDl = urlParams.get('dl');
 const PDF_URL = paramPdf ? paramPdf : 'https://www.mystudentclub.com/assets/doc.pdf';
 
 let pdfDoc = null;
@@ -992,3 +993,23 @@ window.addEventListener('beforeprint', e => {
 // ─── Init ───
 updateSearchControls();
 loadPdf(PDF_URL);
+
+const dlBtn = document.getElementById('viewer-dl-btn');
+const dlSep = document.getElementById('viewer-dl-separator');
+if (dlBtn && dlSep) {
+    dlBtn.style.display = 'flex';
+    dlSep.style.display = 'block';
+    
+    if (paramDl) {
+        dlBtn.addEventListener('click', () => {
+            window.open(paramDl, '_blank');
+        });
+    } else {
+        dlBtn.style.opacity = '0.4';
+        dlBtn.style.cursor = 'not-allowed';
+        dlBtn.title = 'Download is disabled for this view-only resource';
+        dlBtn.addEventListener('click', () => {
+            alert('This resource is restricted to view-only mode. Downloading is currently disabled.');
+        });
+    }
+}

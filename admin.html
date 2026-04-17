@@ -1693,14 +1693,7 @@
               <select id="lmsResourceType" class="form-input">
                 <option value="pdf">PDF</option>
                 <option value="csv">CSV</option>
-                <option value="doc">DOC</option>
                 <option value="docx">DOCX</option>
-                <option value="xlsx">XLSX</option>
-                <option value="spreadsheet">Spreadsheet</option>
-                <option value="image">Image</option>
-                <option value="txt">Text</option>
-                <option value="archive">Archive</option>
-                <option value="video">Video</option>
                 <option value="external_link">External Link</option>
               </select>
             </div>
@@ -1712,11 +1705,16 @@
 
           <div id="lmsFileModePanel" class="lms-resource-mode-panel active">
             <div class="form-group">
-              <label class="form-label" for="lmsResourceFile">Upload file</label>
+              <label class="form-label" id="lmsResourceFileLabel" for="lmsResourceFile">Upload file</label>
               <input id="lmsResourceFile" type="file" class="form-input">
               <div class="lms-resource-inline-note">Files are uploaded to the <code>industrial-training-mastery-resources</code> bucket.</div>
             </div>
-            <label class="lms-resource-checkbox">
+            <div class="form-group" id="lmsDocxExtraUpload" style="display:none; border-top: 1px solid #333; padding-top: 15px; margin-top: 15px;">
+              <label class="form-label" for="lmsResourceFilePdf">Upload PDF Preview (For View)</label>
+              <input id="lmsResourceFilePdf" type="file" accept=".pdf" class="form-input">
+              <div class="lms-resource-inline-note">LMS needs a PDF to render the view securely. The DOCX file will be used as the download.</div>
+            </div>
+            <label class="lms-resource-checkbox" id="lmsResourceViewOnlyWrap">
               <input id="lmsResourceViewOnly" type="checkbox">
               <span>View only resource (disable LMS download)</span>
             </label>
@@ -1750,6 +1748,7 @@
             <p id="lmsViewerSubtitle" class="lms-viewer-subtitle">Preview LMS resource content.</p>
           </div>
           <div class="lms-viewer-actions">
+            <button type="button" id="lmsViewerDownloadBtn" class="lms-resource-mini-btn lms-btn-primary" style="display:none;">Download File</button>
             <button type="button" id="lmsViewerOpenBtn" class="lms-resource-mini-btn">Open in new tab</button>
             <button type="button" id="lmsViewerCloseBtn" class="lms-resource-mini-btn">Close</button>
           </div>
@@ -2559,6 +2558,14 @@
       if (filePanel) filePanel.classList.toggle('active', mode === 'file');
       if (linkPanel) linkPanel.classList.toggle('active', mode === 'link');
       if (mode === 'link' && typeSelect) typeSelect.value = 'external_link';
+
+      const isDocx = typeSelect?.value === 'docx';
+      const fileLabel = document.getElementById('lmsResourceFileLabel');
+      const docxExtra = document.getElementById('lmsDocxExtraUpload');
+      const viewOnlyWrap = document.getElementById('lmsResourceViewOnlyWrap');
+      if (fileLabel) fileLabel.textContent = isDocx ? 'Upload DOCX File (For Download)' : 'Upload file';
+      if (docxExtra) docxExtra.style.display = isDocx && mode === 'file' ? 'block' : 'none';
+      if (viewOnlyWrap) viewOnlyWrap.style.display = isDocx ? 'none' : 'block';
     }
     function inferLmsResourceTypeFromName(fileName) {
       const ext = String(fileName || '').toLowerCase().split('.').pop();
@@ -2633,7 +2640,7 @@
       document.getElementById('lmsResourceFormTitle').textContent = 'Edit resource';
       document.getElementById('lmsResourceTitle').value = resource.title || '';
       document.getElementById('lmsResourceGroup').value = resource.group || '';
-      document.getElementById('lmsResourceType').value = LMS_RESOURCE_TYPE_OPTIONS.includes(resource.type) ? resource.type : (mode === 'link' ? 'external_link' : 'pdf');
+      document.getElementById('lmsResourceType').value = ['pdf', 'csv', 'docx', 'external_link'].includes(resource.type) ? resource.type : (mode === 'link' ? 'external_link' : 'pdf');
       document.getElementById('lmsResourceDescription').value = resource.description || '';
       document.getElementById('lmsResourceUrl').value = resource.url || '';
       document.getElementById('lmsResourceViewOnly').checked = !resource.download_storage_path || resource.download_storage_path === 'None';
@@ -2764,6 +2771,16 @@
         viewer.modal.classList.add('visible');
         viewer.modal.setAttribute('aria-hidden', 'false');
       }
+
+      const dlBtn = document.getElementById('lmsViewerDownloadBtn');
+      if (dlBtn) {
+        const hasDl = resource && resource.download_storage_path && resource.download_storage_path !== 'None';
+        dlBtn.style.display = hasDl ? 'inline-block' : 'none';
+        if (hasDl) {
+          const typeStr = (resource.type || 'file').toUpperCase();
+          dlBtn.textContent = 'Download ' + typeStr;
+        }
+      }
     }
     function closeLmsViewer() {
       const viewer = getLmsViewerElements();
@@ -2784,7 +2801,11 @@
       if (!storagePath || storagePath === 'None') {
         throw new Error('This resource does not have a previewable file path.');
       }
-      const { data, error } = await supabaseClient.storage.from(LMS_RESOURCE_BUCKET).createSignedUrl(storagePath, 300);
+      const { data, error } = await supabaseClient.storage.from(LMS_RESOURCE_BUCKET).createSignedUrl(
+        storagePath, 
+        300, 
+        preferDownload ? { download: true } : undefined
+      );
       if (error) throw error;
       return data.signedUrl;
     }
@@ -2918,11 +2939,20 @@
         setLmsResourceStatus('External URL is required for link resources.', 'error');
         return;
       }
-      if (mode === 'file' && !file && !existingResource) {
+      const pdfFileInput = document.getElementById('lmsResourceFilePdf');
+      const pdfFile = pdfFileInput ? pdfFileInput.files[0] : null;
+
+      if (mode === 'file' && typeSelect.value === 'docx') {
+        const hasExisting = existingResource && existingResource.download_storage_path && existingResource.download_storage_path !== 'None';
+        if (!file && !pdfFile && !hasExisting) {
+          setLmsResourceStatus('Please choose DOCX and PDF files to upload.', 'error');
+          return;
+        }
+      } else if (mode === 'file' && !file && !existingResource) {
         setLmsResourceStatus('Please choose a file to upload.', 'error');
         return;
       }
-      if (mode === 'file' && !file && existingResource && (!existingResource.view_storage_path || existingResource.view_storage_path === 'None')) {
+      if (mode === 'file' && typeSelect.value !== 'docx' && !file && existingResource && (!existingResource.view_storage_path || existingResource.view_storage_path === 'None')) {
         setLmsResourceStatus('Please choose a file to upload for this resource.', 'error');
         return;
       }
@@ -2950,22 +2980,46 @@
 
         if (mode === 'file') {
           nextResource.type = typeSelect.value === 'external_link'
-            ? inferLmsResourceTypeFromName(file?.name || existingResource?.view_storage_path || existingResource?.download_storage_path || title)
+            ? inferLmsResourceTypeFromName(file?.name || existingResource?.view_storage_path || title)
             : (typeSelect.value || inferLmsResourceTypeFromName(file?.name || title));
 
-          if (file) {
-            const uploadedPath = await uploadLmsResourceFile(file, video, title);
-            rollbackUploads.push(uploadedPath);
-            nextResource.view_storage_path = uploadedPath;
-            nextResource.download_storage_path = isViewOnly ? 'None' : uploadedPath;
-            if (existingResource) cleanupAfterSave.push(...collectManagedPaths(existingResource));
-          } else if (existingResource) {
-            nextResource.view_storage_path = existingResource.view_storage_path || 'None';
-            nextResource.download_storage_path = isViewOnly
-              ? 'None'
-              : (existingResource.download_storage_path && existingResource.download_storage_path !== 'None'
-                ? existingResource.download_storage_path
-                : existingResource.view_storage_path || 'None');
+          if (nextResource.type === 'docx') {
+            if (file) {
+              const docxPath = await uploadLmsResourceFile(file, video, title + '_origin');
+              rollbackUploads.push(docxPath);
+              nextResource.download_storage_path = docxPath;
+              if (existingResource && existingResource.download_storage_path && existingResource.download_storage_path !== existingResource.view_storage_path && existingResource.download_storage_path !== 'None') {
+                cleanupAfterSave.push(existingResource.download_storage_path);
+              }
+            } else if (existingResource) {
+              nextResource.download_storage_path = existingResource.download_storage_path || 'None';
+            }
+
+            if (pdfFile) {
+              const pdfPath = await uploadLmsResourceFile(pdfFile, video, title + '_preview');
+              rollbackUploads.push(pdfPath);
+              nextResource.view_storage_path = pdfPath;
+              if (existingResource && existingResource.view_storage_path && existingResource.view_storage_path !== 'None') {
+                cleanupAfterSave.push(existingResource.view_storage_path);
+              }
+            } else if (existingResource) {
+              nextResource.view_storage_path = existingResource.view_storage_path || 'None';
+            }
+          } else {
+            if (file) {
+              const uploadedPath = await uploadLmsResourceFile(file, video, title);
+              rollbackUploads.push(uploadedPath);
+              nextResource.view_storage_path = uploadedPath;
+              nextResource.download_storage_path = isViewOnly ? 'None' : uploadedPath;
+              if (existingResource) cleanupAfterSave.push(...collectManagedPaths(existingResource));
+            } else if (existingResource) {
+              nextResource.view_storage_path = existingResource.view_storage_path || 'None';
+              nextResource.download_storage_path = isViewOnly
+                ? 'None'
+                : (existingResource.download_storage_path && existingResource.download_storage_path !== 'None'
+                  ? existingResource.download_storage_path
+                  : existingResource.view_storage_path || 'None');
+            }
           }
         } else if (existingResource) {
           cleanupAfterSave.push(...collectManagedPaths(existingResource));
@@ -3274,7 +3328,13 @@
           if (!file || !dom.lmsResourceType) return;
           if (!dom.lmsResourceType.value || dom.lmsResourceType.value === 'external_link' || dom.lmsResourceType.value === 'pdf') {
             dom.lmsResourceType.value = inferLmsResourceTypeFromName(file.name);
+            updateLmsResourceModePanels();
           }
+        });
+      }
+      if (dom.lmsResourceType) {
+        dom.lmsResourceType.addEventListener('change', () => {
+          updateLmsResourceModePanels();
         });
       }
       if (dom.lmsResourceList) {
@@ -3295,6 +3355,17 @@
       }
       if (dom.lmsViewerCloseBtn) {
         dom.lmsViewerCloseBtn.addEventListener('click', closeLmsViewer);
+      }
+      const lmsViewerDownloadBtn = document.getElementById('lmsViewerDownloadBtn');
+      if (lmsViewerDownloadBtn) {
+        lmsViewerDownloadBtn.addEventListener('click', async () => {
+          try {
+            const url = await getLmsResourceOpenUrl(lmsResourceState.currentViewerResource, true);
+            window.open(url, '_blank', 'noopener,noreferrer');
+          } catch (error) {
+            alert(`Could not download this resource: ${error.message}`);
+          }
+        });
       }
       if (dom.lmsViewerOpenBtn) {
         dom.lmsViewerOpenBtn.addEventListener('click', async () => {
