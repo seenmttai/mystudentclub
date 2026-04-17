@@ -1160,12 +1160,27 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 // All other PDFs open in the ca-resource flipbook viewer
                 try {
-                    const { data, error } = await supabase.storage
+                    const { data: viewData, error: viewError } = await supabase.storage
                         .from('industrial-training-mastery-resources')
                         .createSignedUrl(resource.view_storage_path, 300);
-                    if (error) throw error;
-                    const proxyUrl = `https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`;
-                    window.open(`/ca-resource/?pdf=${encodeURIComponent(proxyUrl)}`, '_blank');
+                    if (viewError) throw viewError;
+
+                    let dlUrl = '';
+                    if (resource.download_storage_path && resource.download_storage_path !== 'None') {
+                        const { data: dlData, error: dlError } = await supabase.storage
+                            .from('industrial-training-mastery-resources')
+                            .createSignedUrl(resource.download_storage_path, 300, { download: true });
+                        if (!dlError && dlData) {
+                            dlUrl = dlData.signedUrl;
+                        }
+                    }
+
+                    const proxyUrl = `https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(viewData.signedUrl)}`;
+                    let viewerUrl = `/ca-resource/?pdf=${encodeURIComponent(proxyUrl)}`;
+                    if (dlUrl) {
+                        viewerUrl += `&dl=${encodeURIComponent(dlUrl)}`;
+                    }
+                    window.open(viewerUrl, '_blank');
                 } catch (err) {
                     console.error('Error generating PDF link:', err);
                     alert('Could not open the resource. Please try again.');
@@ -1177,7 +1192,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const downloadResource = async (resource) => {
-        const path = resource.download_storage_path;
+        let path = resource.download_storage_path;
         if (!path || path === 'None') {
             DOMElements.noDownloadPopup.classList.add('active');
             return;
@@ -1347,6 +1362,11 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.iframeViewerContainer.style.display = 'none';
 
         DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = type === 'iframe' ? 'none' : 'flex';
+        
+        const hasDl = resource.download_storage_path && resource.download_storage_path !== 'None';
+        if (DOMElements.viewerDownloadBtn) {
+            DOMElements.viewerDownloadBtn.style.display = hasDl ? 'inline-block' : 'none';
+        }
 
         try {
             if (type === 'iframe') {
