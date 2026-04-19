@@ -1528,7 +1528,7 @@
               </div>
               <div>
                 <h2 class="lms-section-title">LMS Resources</h2>
-                <p class="lms-section-subtitle">Manage resources for Industrial Training sessions</p>
+                <p class="lms-section-subtitle">Manage resources across multiple CA programs</p>
               </div>
             </div>
             <div class="lms-resource-status" id="lmsResourceStatus" aria-live="polite"></div>
@@ -1536,6 +1536,13 @@
 
           <!-- ===== UNIFIED TOOLBAR ===== -->
           <div class="lms-resource-toolbar-v2">
+            <div class="lms-toolbar-select-wrap">
+              <svg class="lms-toolbar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+              <select id="lmsCourseSelect" class="lms-toolbar-select">
+                <option value="industrial-training-mastery">Industrial Training Mastery</option>
+                <option value="msc-ca-freshers-program">MSC CA Freshers Program</option>
+              </select>
+            </div>
             <div class="lms-toolbar-select-wrap">
               <svg class="lms-toolbar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
               <select id="lmsVideoSelect" class="lms-toolbar-select">
@@ -1688,13 +1695,12 @@
               <input id="lmsResourceGroup" type="text" class="form-input" placeholder="Search or add new group..." list="lmsResourceGroupList" autocomplete="off">
               <datalist id="lmsResourceGroupList"></datalist>
             </div>
-            <div class="form-group">
+            <div class="form-group" id="lmsResourceTypeRow">
               <label class="form-label" for="lmsResourceType">Type</label>
               <select id="lmsResourceType" class="form-input">
                 <option value="pdf">PDF</option>
                 <option value="csv">CSV</option>
                 <option value="docx">DOCX</option>
-                <option value="external_link">External Link</option>
               </select>
             </div>
             <div class="form-group description-group">
@@ -1826,11 +1832,10 @@
     let categoryData = {};
     const PROFILE_EXPORT_BATCH_SIZE = 500;
     const LMS_RESOURCE_BUCKET = 'industrial-training-mastery-resources';
-    const LMS_RESOURCE_COURSE = 'industrial-training-mastery';
-    const LMS_RESOURCE_MANAGED_PREFIX = 'admin-managed/industrial-training-mastery';
     const LMS_RESOURCE_TYPE_OPTIONS = ['pdf', 'csv', 'doc', 'docx', 'xlsx', 'spreadsheet', 'image', 'txt', 'archive', 'video', 'external_link'];
     const lmsResourceState = {
       videos: [],
+      selectedCourseKey: 'industrial-training-mastery',
       selectedVideoKey: '',
       searchQuery: '',
       editingResourceIndex: null,
@@ -2336,17 +2341,45 @@
         .replace(/^-+|-+$/g, '')
         .slice(0, 60) || 'resource';
     }
-    function parseVideoResources(resources) {
+    function cloneResourceList(list) {
+      return Array.isArray(list) ? list.map((resource) => ({ ...resource })) : [];
+    }
+    function extractResourceArray(payload) {
+      if (!payload || typeof payload !== 'object') return [];
+      const directKeys = ['resources', 'items', 'data', 'files', 'links'];
+      for (const key of directKeys) {
+        if (Array.isArray(payload[key])) return cloneResourceList(payload[key]);
+      }
+      const nestedArrays = Object.values(payload).filter(Array.isArray);
+      if (nestedArrays.length === 1) return cloneResourceList(nestedArrays[0]);
+      return [];
+    }
+    function parseVideoResources(resources, context = {}) {
       if (!resources) return [];
-      if (Array.isArray(resources)) return resources.map((resource) => ({ ...resource }));
+      if (Array.isArray(resources)) return cloneResourceList(resources);
       if (typeof resources === 'string') {
         try {
           const parsed = JSON.parse(resources);
-          return Array.isArray(parsed) ? parsed.map((resource) => ({ ...resource })) : [];
+          if (Array.isArray(parsed)) return cloneResourceList(parsed);
+          const extractedFromString = extractResourceArray(parsed);
+          if (extractedFromString.length) {
+            console.warn('Recovered LMS resources from wrapped JSON payload:', context, parsed);
+            return extractedFromString;
+          }
+          console.warn('LMS resources JSON parsed, but no resource array was found:', context, parsed);
+          return [];
         } catch (error) {
-          console.warn('Unable to parse video resources:', error);
+          console.warn('Unable to parse video resources:', context, error, resources);
           return [];
         }
+      }
+      if (typeof resources === 'object') {
+        const extracted = extractResourceArray(resources);
+        if (extracted.length) {
+          console.warn('Recovered LMS resources from wrapped object payload:', context, resources);
+          return extracted;
+        }
+        console.warn('Unsupported LMS resources payload shape:', context, resources);
       }
       return [];
     }
@@ -2362,7 +2395,7 @@
       };
     }
     function getLmsVideoKey(video) {
-      return `${video.day_number || 0}::${video.video_number}`;
+      return `${video.course}::${video.day_number || 0}::${video.video_number}`;
     }
     function getSelectedLmsVideo() {
       return lmsResourceState.videos.find((video) => getLmsVideoKey(video) === lmsResourceState.selectedVideoKey) || null;
@@ -2382,14 +2415,17 @@
     function renderLmsVideoOptions() {
       const select = document.getElementById('lmsVideoSelect');
       if (!select) return;
-      if (!lmsResourceState.videos.length) {
+      
+      const courseVideos = lmsResourceState.videos.filter(v => (v.course || 'industrial-training-mastery') === lmsResourceState.selectedCourseKey);
+
+      if (!courseVideos.length) {
         select.innerHTML = '<option value="">No LMS sessions found</option>';
         lmsResourceState.selectedVideoKey = '';
         renderLmsVideoMeta();
         renderLmsResourceList();
         return;
       }
-      const sortedVideos = [...lmsResourceState.videos].sort((a, b) => {
+      const sortedVideos = [...courseVideos].sort((a, b) => {
         const dir = lmsResourceState.sortOrder === 'asc' ? 1 : -1;
         const dayDiff = (a.day_number || 0) - (b.day_number || 0);
         if (dayDiff !== 0) return dayDiff * dir;
@@ -2418,10 +2454,11 @@
         <span class="lms-video-chip">Day ${escapeHtml(video.day_number || 0)}</span>
         <span class="lms-video-chip">Session ${escapeHtml(video.video_number || 0)}</span>
         <span class="lms-video-chip">${escapeHtml(`${video.resources.length} resources`)}</span>
+        <span class="lms-video-chip">${escapeHtml(video.title || 'Untitled Session')}</span>
       `;
     }
     function isManagedLmsStoragePath(path) {
-      return typeof path === 'string' && path.startsWith(`${LMS_RESOURCE_MANAGED_PREFIX}/`);
+      return typeof path === 'string' && path.startsWith(`admin-managed/`);
     }
     function collectManagedPaths(resource) {
       const paths = new Set();
@@ -2488,6 +2525,12 @@
       }
 
       if (!resources.length) {
+        if (summaryEl) {
+          summaryEl.innerHTML = `
+            <span>Total resources in this session: <b>0</b></span>
+            <span>Selected row: <b>${escapeHtml(video.title || `Day ${video.day_number || 0} Session ${video.video_number || 0}`)}</b> (${escapeHtml(video.course || 'unknown-course')} / day ${escapeHtml(video.day_number || 0)} / session ${escapeHtml(video.video_number || 0)})</span>
+          `;
+        }
         listEl.innerHTML = '<div class="lms-resource-empty">No resources are mapped to this session yet.</div>';
         return;
       }
@@ -2555,9 +2598,12 @@
       const filePanel = document.getElementById('lmsFileModePanel');
       const linkPanel = document.getElementById('lmsLinkModePanel');
       const typeSelect = document.getElementById('lmsResourceType');
+      const typeRow = document.getElementById('lmsResourceTypeRow');
+      
       if (filePanel) filePanel.classList.toggle('active', mode === 'file');
       if (linkPanel) linkPanel.classList.toggle('active', mode === 'link');
-      if (mode === 'link' && typeSelect) typeSelect.value = 'external_link';
+      if (typeRow) typeRow.style.display = mode === 'file' ? 'block' : 'none';
+      if (mode === 'link' && typeSelect) typeSelect.value = 'pdf';
 
       const isDocx = typeSelect?.value === 'docx';
       const fileLabel = document.getElementById('lmsResourceFileLabel');
@@ -2667,15 +2713,33 @@
       try {
         const { data, error } = await supabaseClient
           .from('videos')
-          .select('video_number, title, day_number, resources')
-          .eq('course', LMS_RESOURCE_COURSE)
+          .select('course, video_number, title, day_number, resources')
+          .in('course', ['industrial-training-mastery', 'msc-ca-freshers-program'])
+          .order('course', { ascending: true })
           .order('day_number', { ascending: true })
           .order('video_number', { ascending: true });
         if (error) throw error;
-        lmsResourceState.videos = (data || []).map((video) => ({
-          ...video,
-          resources: parseVideoResources(video.resources).map(normalizeLmsResource)
-        }));
+        lmsResourceState.videos = (data || []).map((video) => {
+          const parsedResources = parseVideoResources(video.resources, {
+            course: video.course,
+            day_number: video.day_number,
+            video_number: video.video_number,
+            title: video.title
+          });
+          if (!parsedResources.length && video.resources) {
+            console.warn('LMS session loaded with a non-empty raw resources payload but 0 parsed resources:', {
+              course: video.course,
+              day_number: video.day_number,
+              video_number: video.video_number,
+              title: video.title,
+              rawResources: video.resources
+            });
+          }
+          return {
+            ...video,
+            resources: parsedResources.map(normalizeLmsResource)
+          };
+        });
         renderLmsVideoOptions();
         resetLmsResourceForm();
         setLmsResourceStatus(`${lmsResourceState.videos.length} LMS sessions loaded.`, 'success');
@@ -2691,7 +2755,7 @@
       const { data, error } = await supabaseClient
         .from('videos')
         .update({ resources: normalizedResources })
-        .eq('course', LMS_RESOURCE_COURSE)
+        .eq('course', video.course)
         .eq('day_number', video.day_number)
         .eq('video_number', video.video_number)
         .select();
@@ -2707,7 +2771,7 @@
     function buildManagedLmsStoragePath(video, title, fileName) {
       const extension = fileName.includes('.') ? fileName.split('.').pop().toLowerCase() : 'file';
       const titleSegment = slugifySegment(title || fileName || 'resource');
-      return `${LMS_RESOURCE_MANAGED_PREFIX}/day-${video.day_number || 0}/video-${video.video_number}/${Date.now()}-${titleSegment}.${extension}`;
+      return `admin-managed/${video.course}/day-${video.day_number || 0}/video-${video.video_number}/${Date.now()}-${titleSegment}.${extension}`;
     }
     async function uploadLmsResourceFile(file, video, title) {
       const path = buildManagedLmsStoragePath(video, title, file.name);
@@ -3179,6 +3243,7 @@
         profileExportCloseBtn: document.getElementById('profileExportCloseBtn'),
         profileExportResetBtn: document.getElementById('profileExportResetBtn'),
         profileExportConfirmBtn: document.getElementById('profileExportConfirmBtn'),
+        lmsCourseSelect: document.getElementById('lmsCourseSelect'),
         lmsVideoSelect: document.getElementById('lmsVideoSelect'),
         lmsResourceSearchInput: document.getElementById('lmsResourceSearchInput'),
         lmsResourceAddBtn: document.getElementById('lmsResourceAddBtn'),
@@ -3263,6 +3328,15 @@
         const exportWrap = event.target.closest('.export-menu-wrap');
         if (!exportWrap) toggleProfileExportPanel(false);
       });
+      if (dom.lmsCourseSelect) {
+        dom.lmsCourseSelect.addEventListener('change', (event) => {
+          lmsResourceState.selectedCourseKey = event.target.value;
+          lmsResourceState.selectedVideoKey = '';
+          renderLmsVideoOptions();
+          resetLmsResourceForm();
+          setLmsResourceStatus('');
+        });
+      }
       if (dom.lmsVideoSelect) {
         dom.lmsVideoSelect.addEventListener('change', (event) => {
           lmsResourceState.selectedVideoKey = event.target.value;
