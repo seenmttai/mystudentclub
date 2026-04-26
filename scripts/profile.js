@@ -1151,7 +1151,7 @@ function refreshSavedDisplays(d) {
     if (itCompany) {
         itDisplay.style.display = 'block';
         document.getElementById('emp-it-title').textContent = itCompany;
-        document.getElementById('emp-it-meta').textContent = 'Industrial Training';
+        document.getElementById('emp-it-meta').textContent = 'MSC Industrial Training Program';
         if (addITLink) addITLink.style.display = 'none';
     } else {
         itDisplay.style.display = 'none';
@@ -1210,7 +1210,7 @@ function refreshSavedDisplays(d) {
 
     // Map job_preference value to display text
     const jobPortalMap = {
-        'industrial': 'Industrial Training',
+        'industrial': 'MSC Industrial Training Program',
         'articleship': 'Articleship',
         'fresher_fresher': 'CA Fresher (Fresher)',
         'fresher_experienced': 'CA Fresher (Experienced)',

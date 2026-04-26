@@ -141,7 +141,7 @@ function getApplicationLink(id) {
   let emails = id.split(/,|\s/).filter(e => e);
   let email = emails[0];
   let subject = "";
-  if (currentTable === "Industrial Training Job Portal") subject = "Application for CA Industrial Training (Ref - My Student Club)";
+  if (currentTable === "Industrial Training Job Portal") subject = "Application for MSC Industrial Training Program (Ref - My Student Club)";
   else if (currentTable === "Articleship Jobs") subject = "Application for Articleship (Ref - My Student Club)";
   else if (currentTable === "Fresher Jobs") subject = "Application for Role of CA Fresher in your Organization (Ref - My Student Club)";
   else if (currentTable === "Semi Qualified Jobs") subject = "Application for Semi Qualified Roles in your Organization (Ref - My Student Club)";
@@ -390,20 +390,23 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const resourcesBtn = document.getElementById('resourcesDropdownBtn');
   const resourcesDropdown = document.getElementById('resourcesDropdown');
-  const dropdownIcon = resourcesBtn.querySelector('.dropdown-icon');
 
-  resourcesBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    resourcesDropdown.classList.toggle('active');
-    dropdownIcon.classList.toggle('open');
-  });
+  if (resourcesBtn && resourcesDropdown) {
+    const dropdownIcon = resourcesBtn.querySelector('.dropdown-icon');
 
-  document.addEventListener('click', (e) => {
-    if (!resourcesBtn.contains(e.target) && !resourcesDropdown.contains(e.target)) {
-      resourcesDropdown.classList.remove('active');
-      dropdownIcon.classList.remove('open');
-    }
-  });
+    resourcesBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      resourcesDropdown.classList.toggle('active');
+      if (dropdownIcon) dropdownIcon.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!resourcesBtn.contains(e.target) && !resourcesDropdown.contains(e.target)) {
+        resourcesDropdown.classList.remove('active');
+        if (dropdownIcon) dropdownIcon.classList.remove('open');
+      }
+    });
+  }
 });
 
 async function checkAuth() {

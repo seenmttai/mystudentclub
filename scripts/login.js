@@ -29,20 +29,23 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   const resourcesBtn = document.getElementById('resourcesDropdownBtn');
   const resourcesDropdown = document.getElementById('resourcesDropdown');
-  const dropdownIcon = resourcesBtn.querySelector('.dropdown-icon');
 
-  resourcesBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    resourcesDropdown.classList.toggle('active');
-    dropdownIcon.classList.toggle('open');
-  });
+  if (resourcesBtn && resourcesDropdown) {
+    const dropdownIcon = resourcesBtn.querySelector('.dropdown-icon');
 
-  document.addEventListener('click', (e) => {
-    if (!resourcesBtn.contains(e.target) && !resourcesDropdown.contains(e.target)) {
-      resourcesDropdown.classList.remove('active');
-      dropdownIcon.classList.remove('open');
-    }
-  });
+    resourcesBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      resourcesDropdown.classList.toggle('active');
+      if (dropdownIcon) dropdownIcon.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!resourcesBtn.contains(e.target) && !resourcesDropdown.contains(e.target)) {
+        resourcesDropdown.classList.remove('active');
+        if (dropdownIcon) dropdownIcon.classList.remove('open');
+      }
+    });
+  }
 });
 
 const loginForm = document.getElementById('login-form');

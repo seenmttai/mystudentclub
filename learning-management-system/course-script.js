@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const courses = {
         'industrial-training-mastery': {
-            title: 'CA Industrial Training Program',
+            title: 'MSC Industrial Training Program',
             description: 'Master industrial training requirements for CA candidates with real-world case studies.',
             thumbnail: '../assets/courseimg-industrial.png'
         },
