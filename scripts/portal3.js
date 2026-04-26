@@ -2063,6 +2063,21 @@ async function initializePage() {
     if (session) {
         localStorage.removeItem('portalVisitCount');
         await initializeUserFeatures();
+    } else {
+        // Track visits for unlogged users
+        let visitCount = parseInt(localStorage.getItem('portalVisitCount') || '0');
+        visitCount++;
+        localStorage.setItem('portalVisitCount', visitCount);
+
+        if (visitCount === 3) {
+            showToast("Create an account to unlock AI Apply and instant vacancy alerts!", "info");
+        } else if (visitCount >= 5) {
+            const overlay = document.getElementById('loginPromptOverlay');
+            if (overlay) {
+                overlay.style.display = 'flex';
+                document.body.style.overflow = 'hidden'; // Prevent browsing jobs
+            }
+        }
     }
 
     if (currentTable === 'Fresher Jobs') {
