@@ -72,8 +72,11 @@
       <span class="layer l3" data-depth="0.10"></span>
     </div>
     <h1>MSC CA Industrial Training<br>Program</h1>
-    <p class="access-info eligibility-criteria" style="color: #ff4d4d; font-weight: bold; font-size: 1.2rem;">Registrations Closed</p>
-    <p class="access-info eligibility-criteria" style="color: #333; font-weight: 600; font-size: 1rem; margin-top: 5px;">Registration Opens on 1st May for Students Completing Articleship between 1st May to 31st July</p>
+    <p class="access-info eligibility-criteria" style="color: #ff4d4d; font-weight: bold; font-size: 1.2rem;">
+      Registrations Closed</p>
+    <p class="access-info eligibility-criteria"
+      style="color: #333; font-weight: 600; font-size: 1rem; margin-top: 5px;">Registration Opens on 1st May for
+      Students Completing Articleship between 1st May to 31st July</p>
     <!-- <a href="https://u.payu.in/4IknM3Yb3nEF" target="_blank" class="register-btn pulse-btn hero-cta" id="registerButtonHero"
       >Enroll Now</a> -->
 
@@ -119,7 +122,8 @@
         speed="1" style="width: 100%; height: 100%;" loop autoplay>
       </lottie-player>
     </div>
-    <h2>Our <span class="dynamic-batch-month-long">December</span> batch <span class="highlight">Students</span> placed in Top Companies</h2>
+    <h2>Our <span class="dynamic-batch-month-long">December</span> batch <span class="highlight">Students</span> placed
+      in Top Companies</h2>
     <div class="carousel-container">
       <div class="carousel" id="studentCarousel"></div>
     </div>
@@ -274,11 +278,12 @@
   <div class="fixed-cta" id="cta-footer">
     <div class="price-container">
       <div class="price">
-        <span class="discounted">₹1999</span>
+        <span class="discounted">₹2499</span>
         <span class="original">₹4999</span>
       </div>
     </div>
-    <a class="register-btn" style="margin-left: auto; background: #666; cursor: not-allowed; box-shadow: none;">Registrations Closed</a>
+    <a class="register-btn"
+      style="margin-left: auto; background: #666; cursor: not-allowed; box-shadow: none;">Registrations Closed</a>
   </div>
 
   <section class="mentor" style="margin-bottom: 2rem;">
@@ -351,7 +356,7 @@
         const authContainer = document.querySelector('.auth-buttons-container');
         const lmsLink = document.getElementById('lms-nav-link');
 
-          if (authContainer) {
+        if (authContainer) {
           if (session) {
             authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn"><i class="fas fa-user"></i></a>';
             if (lmsLink) lmsLink.style.display = 'flex';
@@ -367,7 +372,7 @@
       const monthShort = d.toLocaleString('en-US', { month: 'short' });
       const monthLong = d.toLocaleString('en-US', { month: 'long' });
       const yearShort = d.getFullYear().toString().slice(-2);
-      
+
       const batchFormat1 = `${monthShort}'${yearShort}`; // Dec'25
       const batchFormat2 = `${monthLong}`; // December
       const batchFormat3 = `${monthShort} '${yearShort}`; // Dec '25
