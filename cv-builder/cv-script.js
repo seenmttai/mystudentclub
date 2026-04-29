@@ -3,6 +3,13 @@
         const CA_DEGREES = ["CA Final", "CA Intermediate", "B.Com", "Class XII", "Class X"];
         const AUDIT_VERBS = ["Executed", "Analyzed", "Prepared", "Reviewed", "Led", "Verified"];
         const BASE_SECTION_ORDER = ['summary', 'education', 'experience', 'projects', 'certifications', 'achievements', 'leadership', 'interests', 'skills'];
+        const EDUCATION_COLUMN_META = {
+            degree: { label: 'Examination', min: 12, max: 42 },
+            year: { label: 'Year', min: 8, max: 28 },
+            institution: { label: 'Institution', min: 18, max: 50 },
+            marks: { label: 'Percentage', min: 10, max: 30 },
+            remarks: { label: 'Remarks', min: 10, max: 35 }
+        };
         const SECTION_LABELS = {
             summary: 'Career Objective',
             education: 'Education',
@@ -14,6 +21,20 @@
             interests: 'Interests & Hobbies',
             skills: 'Skills'
         };
+
+        function getDefaultTableSettings() {
+            return {
+                education: {
+                    columns: {
+                        degree: { visible: true, width: 22 },
+                        year: { visible: true, width: 12 },
+                        institution: { visible: true, width: 36 },
+                        marks: { visible: true, width: 14 },
+                        remarks: { visible: true, width: 16 }
+                    }
+                }
+            };
+        }
 
         let cvData = {
             personal: { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] },
@@ -28,7 +49,8 @@
             skills: "",
             themeAccent: "",
             customSections: [],
-            sectionOrder: [...BASE_SECTION_ORDER]
+            sectionOrder: [...BASE_SECTION_ORDER],
+            tableSettings: getDefaultTableSettings()
         };
         
         const DEMO_PREVIEW_DATA = {
@@ -89,12 +111,13 @@
             customSections: [
                 { id: "custom_demo_languages", title: "Languages", items: ["English", "Hindi"] }
             ],
-            sectionOrder: [...BASE_SECTION_ORDER, "custom_demo_languages"]
+            sectionOrder: [...BASE_SECTION_ORDER, "custom_demo_languages"],
+            tableSettings: getDefaultTableSettings()
         };
 
         const WORKER_URL = "https://cv-maker.bhansalimanan55.workers.dev";
         // PDF Worker URL — update this after deploying cv-pdf-worker
-        const WORKER_PDF_URL = "https://cv-pdf-worker.bhansalimanan55.workers.dev";
+        const FILE_WORKER_URL = window.localStorage.getItem('cv_file_worker_url') || "https://cv-pdf-worker.bhansalimanan55.workers.dev";
         const HISTORY_KEY = 'cv_maker_history_v1';
         let history = [];
         const UNDO_LIMIT = 120;
@@ -530,6 +553,16 @@
                 Array.from(node.childNodes).forEach(child => {
                     if (child.nodeType === Node.ELEMENT_NODE) {
                         const tag = child.tagName.toUpperCase();
+                        if (tag === 'SPAN') {
+                            const style = (child.getAttribute('style') || '').toLowerCase();
+                            if (/font-weight\s*:\s*(bold|[6-9]00)/i.test(style)) {
+                                const strong = document.createElement('strong');
+                                while (child.firstChild) strong.appendChild(child.firstChild);
+                                child.replaceWith(strong);
+                                walk(node);
+                                return;
+                            }
+                        }
                         if (!allowed.has(tag)) {
                             const frag = document.createDocumentFragment();
                             while (child.firstChild) frag.appendChild(child.firstChild);
@@ -564,6 +597,355 @@
             walk(template.content);
             const sanitized = template.innerHTML.trim();
             return sanitized === '<p><br></p>' ? '' : sanitized;
+        }
+
+        function convertMarkdownBoldToHTML(value) {
+            return String(value || '')
+                .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                .replace(/__([^_]+)__/g, '<strong>$1</strong>');
+        }
+
+        function normalizeImportedRichText(value, sectionType = 'general') {
+            const base = convertMarkdownBoldToHTML(value);
+            return applyBalancedKeywordBolding(base, sectionType);
+        }
+
+        function normalizeImportedString(value) {
+            if (value === null || value === undefined) return '';
+            return String(value).trim();
+        }
+
+        function htmlToMultilineText(value) {
+            const tmp = document.createElement('div');
+            tmp.innerHTML = String(value || '').replace(/<br\s*\/?>/gi, '\n');
+            return (tmp.textContent || '')
+                .replace(/\r/g, '')
+                .split('\n')
+                .map(line => line.trim())
+                .join('\n')
+                .trim();
+        }
+
+        function normalizeCategoryHTML(value) {
+            const multiline = String(value || '')
+                .replace(/\r/g, '')
+                .split('\n')
+                .map(line => line.trim())
+                .filter(Boolean)
+                .join('<br>');
+            return sanitizeSummaryHTML(multiline);
+        }
+
+        function escapeRegex(value) {
+            return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function getKeywordPattern(sectionType) {
+            const sectionTerms = {
+                summary: ['led', 'managed', 'improved', 'delivered', 'optimized', 'audit', 'compliance', 'gst', 'tax', 'finance'],
+                experience: ['led', 'managed', 'executed', 'analyzed', 'delivered', 'optimized', 'automated', 'audit', 'compliance', 'gst', 'tax', 'internal control'],
+                projects: ['built', 'developed', 'implemented', 'designed', 'analyzed', 'optimized', 'reduced', 'improved'],
+                certifications: ['certified', 'certificate', 'course', 'specialization', 'program'],
+                achievements: ['awarded', 'won', 'rank', 'top', 'recognized', 'achieved'],
+                leadership: ['led', 'coordinated', 'mentored', 'organized', 'managed', 'captained'],
+                interests: ['volunteering', 'writing', 'public speaking', 'sports', 'research'],
+                skills: ['excel', 'sap', 'tally', 'power bi', 'financial modeling', 'audit', 'taxation', 'compliance']
+            };
+            const terms = sectionTerms[sectionType] || sectionTerms.experience;
+            const termsRegex = terms
+                .map(term => (term.includes(' ') ? escapeRegex(term) : `\\b${escapeRegex(term)}\\b`))
+                .join('|');
+            const impactRegex = '\\b\\d+(?:\\.\\d+)?%\\b|\\b(?:rs\\.?|inr)\\s?\\d[\\d,]*\\b|\\b\\d+\\+\\s*(?:clients?|audits?|projects?|users?|teams?|months?|years?)\\b';
+            return new RegExp(`(${impactRegex}|${termsRegex})`, 'gi');
+        }
+
+        function applyBalancedKeywordBolding(value, sectionType = 'general') {
+            const sanitized = sanitizeSummaryHTML(convertMarkdownBoldToHTML(value || ''));
+            if (!sanitized) return '';
+
+            const template = document.createElement('template');
+            template.innerHTML = sanitized;
+            const pattern = getKeywordPattern(sectionType);
+            const maxHighlights = sectionType === 'summary' ? 6 : 10;
+            let highlights = 0;
+
+            const walk = (node) => {
+                if (highlights >= maxHighlights) return;
+                if (node.nodeType === Node.TEXT_NODE) {
+                    const parentTag = node.parentElement ? node.parentElement.tagName.toUpperCase() : '';
+                    if (['STRONG', 'B', 'A', 'CODE', 'PRE'].includes(parentTag)) return;
+                    const text = node.nodeValue || '';
+                    if (!text.trim()) return;
+
+                    pattern.lastIndex = 0;
+                    let match;
+                    let lastIndex = 0;
+                    let hasReplacement = false;
+                    const frag = document.createDocumentFragment();
+                    while ((match = pattern.exec(text)) !== null) {
+                        if (highlights >= maxHighlights) break;
+                        const start = match.index;
+                        const matched = match[0];
+                        if (start > lastIndex) {
+                            frag.appendChild(document.createTextNode(text.slice(lastIndex, start)));
+                        }
+                        const strong = document.createElement('strong');
+                        strong.textContent = matched;
+                        frag.appendChild(strong);
+                        lastIndex = start + matched.length;
+                        hasReplacement = true;
+                        highlights++;
+                    }
+                    if (hasReplacement) {
+                        if (lastIndex < text.length) {
+                            frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+                        }
+                        node.replaceWith(frag);
+                    }
+                    return;
+                }
+
+                if (node.nodeType !== Node.ELEMENT_NODE) return;
+                const tag = node.tagName.toUpperCase();
+                if (['SCRIPT', 'STYLE', 'STRONG', 'B', 'A', 'CODE', 'PRE'].includes(tag)) return;
+                Array.from(node.childNodes).forEach(child => walk(child));
+            };
+
+            Array.from(template.content.childNodes).forEach(node => walk(node));
+            return sanitizeSummaryHTML(template.innerHTML);
+        }
+
+        function applyBoldToBulletList(items, sectionType) {
+            return (Array.isArray(items) ? items : [])
+                .map(item => normalizeImportedRichText(item, sectionType))
+                .filter(item => !!getPlainTextFromHTML(item));
+        }
+
+        function detectLanguagesFromPayload(payload) {
+            const sources = [
+                payload.languages,
+                payload.language,
+                payload.known_languages,
+                payload.personal?.languages,
+                payload.personal?.known_languages
+            ];
+            for (const src of sources) {
+                if (!src) continue;
+                if (Array.isArray(src)) {
+                    const arr = src.map(v => normalizeImportedString(v)).filter(Boolean);
+                    if (arr.length) return arr;
+                }
+                const asString = normalizeImportedString(src);
+                if (asString) {
+                    const arr = asString.split(/[,|\n]/).map(v => v.trim()).filter(Boolean);
+                    if (arr.length) return arr;
+                }
+            }
+            return [];
+        }
+
+        function parseLegacyContact(personal) {
+            if (!personal || typeof personal !== 'object') return;
+            const contact = normalizeImportedString(personal.contact);
+            if (!contact) return;
+
+            const parts = contact
+                .split(/[|\n,]/)
+                .map(part => part.trim())
+                .filter(Boolean);
+            if (!parts.length) return;
+
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/i;
+            const phoneRegex = /(?:\+|00)?(?:\d[ \-\(\)\.]{0,2}){8,}\d/;
+            const linkedinRegex = /(linkedin\.com\/|^linkedin\b)/i;
+
+            const leftovers = [];
+            parts.forEach(part => {
+                if (!personal.email && emailRegex.test(part)) {
+                    personal.email = part;
+                    return;
+                }
+                if (!personal.phone && phoneRegex.test(part)) {
+                    personal.phone = part;
+                    return;
+                }
+                if (!personal.linkedin && linkedinRegex.test(part)) {
+                    personal.linkedin = part;
+                    return;
+                }
+                leftovers.push(part);
+            });
+
+            if (!personal.location && leftovers.length) {
+                personal.location = leftovers[leftovers.length - 1];
+            }
+        }
+
+        function normalizeImportedPayload(rawPayload) {
+            const incoming = rawPayload && typeof rawPayload === 'object' ? rawPayload : {};
+            const normalized = JSON.parse(JSON.stringify(cvData || {}));
+
+            const personalIncoming = { ...(incoming.personal || {}) };
+            if (!personalIncoming.contact && incoming.contact) personalIncoming.contact = incoming.contact;
+            parseLegacyContact(personalIncoming);
+            normalized.personal = {
+                ...(normalized.personal || {}),
+                ...personalIncoming,
+                name: normalizeImportedString(personalIncoming.name || normalized.personal?.name || ''),
+                tagline: normalizeImportedString(personalIncoming.tagline || normalized.personal?.tagline || ''),
+                phone: normalizeImportedString(personalIncoming.phone || normalized.personal?.phone || ''),
+                email: normalizeImportedString(personalIncoming.email || normalized.personal?.email || ''),
+                linkedin: normalizeImportedString(personalIncoming.linkedin || normalized.personal?.linkedin || ''),
+                location: normalizeImportedString(personalIncoming.location || normalized.personal?.location || ''),
+                contact: normalizeImportedString(personalIncoming.contact || normalized.personal?.contact || '')
+            };
+            normalized.personal.socialLinks = Array.isArray(personalIncoming.socialLinks)
+                ? personalIncoming.socialLinks
+                : (Array.isArray(normalized.personal.socialLinks) ? normalized.personal.socialLinks : []);
+
+            if (incoming.summary !== undefined) {
+                normalized.summary = normalizeImportedRichText(incoming.summary, 'summary');
+            }
+            if (incoming.skills !== undefined) {
+                normalized.skills = normalizeImportedRichText(incoming.skills, 'skills');
+            }
+
+            if (Array.isArray(incoming.education)) {
+                normalized.education = incoming.education.map(item => ({
+                    degree: normalizeImportedRichText(item?.degree || '', 'education'),
+                    institute: normalizeImportedRichText(item?.institute || item?.institution || '', 'education'),
+                    year: normalizeImportedString(item?.year || ''),
+                    marks: normalizeImportedRichText(item?.marks || '', 'education'),
+                    remarks: normalizeImportedRichText(item?.remarks || '', 'education')
+                })).filter(item => Object.values(item).some(v => normalizeImportedString(getPlainTextFromHTML(v))));
+            }
+
+            if (Array.isArray(incoming.experience)) {
+                normalized.experience = incoming.experience.map((item, index) => ({
+                    role: normalizeImportedRichText(item?.role || '', 'experience'),
+                    company: normalizeImportedRichText(item?.company || '', 'experience'),
+                    dates: normalizeImportedRichText(item?.dates || '', 'experience'),
+                    category: normalizeImportedRichText(item?.category || '', 'experience'),
+                    bullets: applyBoldToBulletList(item?.bullets || [], 'experience'),
+                    mergedWithPrevious: !!item?.mergedWithPrevious && index > 0
+                })).filter(item => Object.values(item).some(v => Array.isArray(v) ? v.length : normalizeImportedString(getPlainTextFromHTML(v))));
+            }
+
+            if (Array.isArray(incoming.projects)) {
+                normalized.projects = incoming.projects.map(item => ({
+                    title: normalizeImportedRichText(item?.title || '', 'projects'),
+                    description: normalizeImportedRichText(item?.description || '', 'projects'),
+                    bullets: applyBoldToBulletList(item?.bullets || [], 'projects')
+                })).filter(item => Object.values(item).some(v => Array.isArray(v) ? v.length : normalizeImportedString(getPlainTextFromHTML(v))));
+            }
+
+            if (Array.isArray(incoming.certifications)) {
+                normalized.certifications = incoming.certifications.map(item => {
+                    if (typeof item === 'string') {
+                        return { name: normalizeImportedRichText(item, 'certifications'), issuer: '' };
+                    }
+                    return {
+                        name: normalizeImportedRichText(item?.name || '', 'certifications'),
+                        issuer: normalizeImportedRichText(item?.issuer || '', 'certifications')
+                    };
+                }).filter(item => normalizeImportedString(getPlainTextFromHTML(item.name || item.issuer)));
+            }
+
+            ['achievements', 'leadership', 'interests'].forEach(key => {
+                if (Array.isArray(incoming[key])) {
+                    normalized[key] = incoming[key]
+                        .map(item => normalizeImportedRichText(item, key))
+                        .filter(item => !!getPlainTextFromHTML(item));
+                }
+            });
+
+            const incomingCustom = Array.isArray(incoming.customSections) ? incoming.customSections : [];
+            const customSections = incomingCustom.map(section => ({
+                id: normalizeImportedString(section?.id) || `custom_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+                title: normalizeImportedString(section?.title) || 'Custom Section',
+                items: (Array.isArray(section?.items) ? section.items : [])
+                    .map(item => normalizeImportedRichText(item, 'experience'))
+                    .filter(item => !!getPlainTextFromHTML(item))
+            })).filter(section => section.items.length || section.title);
+
+            const languageItems = detectLanguagesFromPayload(incoming).map(item => normalizeImportedRichText(item, 'skills'));
+            if (languageItems.length) {
+                const existingLanguages = customSections.find(section => (section.title || '').toLowerCase() === 'languages');
+                if (existingLanguages) {
+                    existingLanguages.items = Array.from(new Set([...(existingLanguages.items || []), ...languageItems]));
+                    if (!existingLanguages.id) existingLanguages.id = 'custom_languages';
+                } else {
+                    customSections.push({
+                        id: 'custom_languages',
+                        title: 'Languages',
+                        items: languageItems
+                    });
+                }
+            }
+
+            if (customSections.length) normalized.customSections = customSections;
+
+            normalized.sectionOrder = Array.isArray(incoming.sectionOrder)
+                ? incoming.sectionOrder.slice()
+                : Array.isArray(normalized.sectionOrder) ? normalized.sectionOrder.slice() : [...BASE_SECTION_ORDER];
+
+            ensureCvDataShape();
+            return normalized;
+        }
+
+        async function safeRefineSection(fieldType, text, customPrompt = '') {
+            const trimmed = normalizeImportedString(text);
+            if (!trimmed) return null;
+            try {
+                return await refineSection(fieldType, trimmed, customPrompt);
+            } catch (error) {
+                console.warn(`Refine failed for ${fieldType}:`, error);
+                return null;
+            }
+        }
+
+        function buildAiEnhancePreview(data) {
+            const lines = [];
+            const summary = getPlainTextFromHTML(data.summary || '');
+            if (summary) lines.push(`Summary:\n${summary}`);
+
+            if (Array.isArray(data.experience) && data.experience.length) {
+                const expLines = [];
+                data.experience.forEach((exp, idx) => {
+                    const bullets = (exp.bullets || []).map(b => getPlainTextFromHTML(b)).filter(Boolean);
+                    if (!bullets.length) return;
+                    const heading = getPlainTextFromHTML(exp.company || exp.role || `Experience ${idx + 1}`);
+                    expLines.push(`${heading}\n${bullets.map((b, i) => `${i + 1}. ${b}`).join('\n')}`);
+                });
+                if (expLines.length) lines.push(`Experience:\n${expLines.join('\n\n')}`);
+            }
+
+            if (Array.isArray(data.projects) && data.projects.length) {
+                const projLines = [];
+                data.projects.forEach((proj, idx) => {
+                    const bullets = (proj.bullets || []).map(b => getPlainTextFromHTML(b)).filter(Boolean);
+                    if (!bullets.length) return;
+                    const heading = getPlainTextFromHTML(proj.title || `Project ${idx + 1}`);
+                    projLines.push(`${heading}\n${bullets.map((b, i) => `${i + 1}. ${b}`).join('\n')}`);
+                });
+                if (projLines.length) lines.push(`Projects:\n${projLines.join('\n\n')}`);
+            }
+
+            const simpleSections = [
+                ['Certifications', (data.certifications || []).map(c => `${getPlainTextFromHTML(c?.name || '')}${c?.issuer ? ` - ${getPlainTextFromHTML(c.issuer)}` : ''}`).filter(Boolean)],
+                ['Achievements', (data.achievements || []).map(v => getPlainTextFromHTML(v)).filter(Boolean)],
+                ['Leadership', (data.leadership || []).map(v => getPlainTextFromHTML(v)).filter(Boolean)],
+                ['Interests', (data.interests || []).map(v => getPlainTextFromHTML(v)).filter(Boolean)]
+            ];
+            simpleSections.forEach(([label, items]) => {
+                if (!items.length) return;
+                lines.push(`${label}:\n${items.map((item, index) => `${index + 1}. ${item}`).join('\n')}`);
+            });
+
+            const skills = getPlainTextFromHTML(data.skills || '');
+            if (skills) lines.push(`Skills:\n${skills}`);
+
+            return lines.join('\n\n').trim() || '(no content)';
         }
 
         function getPlainTextFromHTML(value) {
@@ -685,7 +1067,8 @@
                     skills: "",
                     themeAccent: "",
                     customSections: [],
-                    sectionOrder: [...BASE_SECTION_ORDER]
+                    sectionOrder: [...BASE_SECTION_ORDER],
+                    tableSettings: getDefaultTableSettings()
                 };
             }
             if (!cvData.personal) cvData.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
@@ -703,10 +1086,45 @@
             if (typeof cvData.summary !== 'string') cvData.summary = cvData.summary ? String(cvData.summary) : '';
             if (typeof cvData.skills !== 'string') cvData.skills = cvData.skills ? String(cvData.skills) : '';
             if (typeof cvData.themeAccent !== 'string') cvData.themeAccent = '';
+            ensureTableSettingsShape();
+        }
+
+        function ensureTableSettingsShape() {
+            const defaults = getDefaultTableSettings();
+            if (!cvData.tableSettings || typeof cvData.tableSettings !== 'object') {
+                cvData.tableSettings = defaults;
+                return;
+            }
+
+            if (!cvData.tableSettings.education || typeof cvData.tableSettings.education !== 'object') {
+                cvData.tableSettings.education = defaults.education;
+            }
+            if (!cvData.tableSettings.education.columns || typeof cvData.tableSettings.education.columns !== 'object') {
+                cvData.tableSettings.education.columns = defaults.education.columns;
+            }
+
+            Object.keys(defaults.education.columns).forEach((key) => {
+                const existing = cvData.tableSettings.education.columns[key];
+                const fallback = defaults.education.columns[key];
+                const meta = EDUCATION_COLUMN_META[key];
+                const rawWidth = Number(existing?.width);
+                const boundedWidth = Number.isFinite(rawWidth)
+                    ? Math.max(meta.min, Math.min(meta.max, rawWidth))
+                    : fallback.width;
+                cvData.tableSettings.education.columns[key] = {
+                    visible: existing?.visible !== false,
+                    width: boundedWidth
+                };
+            });
+        }
+
+        function getEducationTableSettings() {
+            ensureCvDataShape();
+            return cvData.tableSettings.education.columns;
         }
 
         function getSelectedTemplateFile() {
-            return document.getElementById('template-select')?.value || 'cv2.html';
+            return document.getElementById('template-select')?.value || 'classic-blue.html';
         }
 
         function syncCurrentTemplateName() {
@@ -781,7 +1199,7 @@
             normalizeSectionOrder();
 
             const select = document.getElementById('template-select');
-            const targetTemplate = state.templateFile || 'cv2.html';
+            const targetTemplate = state.templateFile || 'classic-blue.html';
             if (select) select.value = targetTemplate;
             syncCurrentTemplateName();
 
@@ -901,7 +1319,74 @@
             renderSocialLinks();
             renderCustomSectionEditors();
             renderSectionOrderEditor();
+            renderEducationFormatControls();
             initSectionInlineRichEditors();
+        }
+
+        function renderEducationFormatControls() {
+            const container = document.getElementById('education-format-panel');
+            if (!container) return;
+
+            const settings = getEducationTableSettings();
+            container.innerHTML = Object.entries(EDUCATION_COLUMN_META).map(([key, meta]) => {
+                const config = settings[key];
+                const width = Math.round(Number(config?.width) || 0);
+                const disabledAttr = config?.visible === false ? 'disabled' : '';
+                return `
+                    <div class="table-format-row">
+                        <label class="table-format-label">
+                            <input type="checkbox" ${config?.visible === false ? '' : 'checked'} onchange="toggleEducationColumnVisibility('${key}', this.checked)">
+                            <span>${meta.label}</span>
+                        </label>
+                        <div class="table-format-controls">
+                            <input class="table-format-range" type="range" min="${meta.min}" max="${meta.max}" value="${width}" ${disabledAttr}
+                                oninput="updateEducationColumnWidth('${key}', this.value, true)" onchange="updateEducationColumnWidth('${key}', this.value)">
+                            <input class="table-format-number" type="number" min="${meta.min}" max="${meta.max}" value="${width}" ${disabledAttr}
+                                oninput="updateEducationColumnWidth('${key}', this.value, true)" onchange="updateEducationColumnWidth('${key}', this.value)">
+                            <span class="table-format-unit">wt</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function toggleEducationFormatPanel(event) {
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            const panel = document.getElementById('education-format-panel-wrap');
+            if (!panel) return;
+            const shouldOpen = !panel.classList.contains('open');
+            panel.classList.toggle('open', shouldOpen);
+            panel.setAttribute('aria-hidden', shouldOpen ? 'false' : 'true');
+            if (shouldOpen) renderEducationFormatControls();
+        }
+
+        function toggleEducationColumnVisibility(columnKey, visible) {
+            const settings = getEducationTableSettings();
+            if (!settings[columnKey]) return;
+            settings[columnKey].visible = !!visible;
+            renderEducationFormatControls();
+            postToFrame();
+        }
+
+        function updateEducationColumnWidth(columnKey, rawValue, skipRender = false) {
+            const settings = getEducationTableSettings();
+            const meta = EDUCATION_COLUMN_META[columnKey];
+            if (!settings[columnKey] || !meta) return;
+            const parsed = Number(rawValue);
+            if (!Number.isFinite(parsed)) return;
+            settings[columnKey].width = Math.max(meta.min, Math.min(meta.max, parsed));
+            if (!skipRender) renderEducationFormatControls();
+            postToFrame();
+        }
+
+        function resetEducationTableSettings() {
+            const defaults = getDefaultTableSettings();
+            cvData.tableSettings.education = JSON.parse(JSON.stringify(defaults.education));
+            renderEducationFormatControls();
+            postToFrame();
         }
 
         function renderListInputs(key, containerId, placeholder) {
@@ -1041,7 +1526,7 @@
                     </div>
                     <div class="form-group" data-section="category">
                         <label>Department / Category (optional)</label>
-                        <input class="form-control" value="${exp.category || ''}" oninput="updateExp(${index}, 'category', this.value)" placeholder="e.g. Business Finance, Auditing & Assurance">
+                        <textarea class="form-control" style="min-height:78px" oninput="updateExp(${index}, 'category', this.value)" placeholder="Add one department/category per line&#10;e.g. Accounting&#10;Auditing & Assurance">${htmlToMultilineText(exp.category || '')}</textarea>
                     </div>
                     <div class="form-group" style="margin-bottom:0">
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
@@ -1120,14 +1605,15 @@
 
         // Data Updates
         function updateCV() {
+            parseLegacyContact(cvData.personal);
             cvData.personal.name = document.getElementById('inp-name').value;
             cvData.personal.tagline = document.getElementById('inp-tagline').value;
             // Keep legacy free-text contact blank now that separate fields are the source of truth.
-            cvData.personal.contact = '';
             cvData.personal.phone = document.getElementById('inp-phone').value;
             cvData.personal.email = document.getElementById('inp-email').value;
             cvData.personal.linkedin = document.getElementById('inp-linkedin').value;
             cvData.personal.location = document.getElementById('inp-location').value;
+            cvData.personal.contact = '';
             if (summaryQuill) {
                 syncSummaryFromEditor();
             } else {
@@ -1159,6 +1645,8 @@
         function updateExp(index, field, value) {
             if (field === 'bullets') {
                 cvData.experience[index].bullets = richHTMLToBulletArray(value);
+            } else if (field === 'category') {
+                cvData.experience[index].category = normalizeCategoryHTML(value);
             } else if (field === 'mergedWithPrevious') {
                 cvData.experience[index].mergedWithPrevious = !!value && index > 0;
             } else {
@@ -1664,19 +2152,20 @@
 
         // Template Sidebar Logic
         const TEMPLATES = [
-            { file: 'cv2.html', name: 'Classic Blue', accent: '#1e40af', style: 'sans' },
-            { file: 'cv1.html', name: 'Modern Serif', accent: '#4f81bc', style: 'serif' },
-            { file: 'cv3.html', name: 'Grid Layout', accent: '#059669', style: 'grid' },
-            { file: 'cv4.html', name: 'Professional', accent: '#374151', style: 'clean' },
-            { file: 'cv5.html', name: 'Corporate', accent: '#0369a1', style: 'formal' },
-            { file: 'cv6.html', name: 'Minimalist', accent: '#6b7280', style: 'minimal' },
-            { file: 'cv7.html', name: 'Compact', accent: '#7c3aed', style: 'dense' },
-            { file: 'cv8.html', name: 'Bold Modern', accent: '#dc2626', style: 'bold' },
-            { file: 'cv9.html', name: 'Executive', accent: '#064e3b', style: 'exec' },
-            { file: 'cv10.html', name: 'Classic Refined', accent: '#2F557F', style: 'refined' },
-            { file: 'cv11.html', name: 'Modern Deep Blue', accent: '#2c5d79', style: 'deepblue' },
-            { file: 'cv12.html', name: 'Executive Dark', accent: '#404040', style: 'dark' },
-            { file: 'cv13.html', name: 'Classic Professional', accent: '#104e70', style: 'formal' }
+            { file: 'classic-blue.html', name: 'Classic Blue', accent: '#1e40af', style: 'sans' },
+            { file: 'modern-serif.html', name: 'Modern Serif', accent: '#4f81bc', style: 'serif' },
+            { file: 'grid-layout.html', name: 'Grid Layout', accent: '#059669', style: 'grid' },
+            { file: 'professional.html', name: 'Professional', accent: '#374151', style: 'clean' },
+            { file: 'corporate.html', name: 'Corporate', accent: '#0369a1', style: 'formal' },
+            { file: 'minimalist.html', name: 'Minimalist', accent: '#6b7280', style: 'minimal' },
+            { file: 'bold-modern.html', name: 'Bold Modern', accent: '#dc2626', style: 'bold' },
+            { file: 'classic-refined.html', name: 'Classic Refined', accent: '#2F557F', style: 'refined' },
+            { file: 'modern-deep-blue.html', name: 'Modern Deep Blue', accent: '#2c5d79', style: 'deepblue' },
+            { file: 'executive-dark.html', name: 'Executive Dark', accent: '#404040', style: 'dark' },
+            { file: 'navy-merit.html', name: 'Navy Merit', accent: '#0f2f63', style: 'merit' },
+            { file: 'monochrome-ledger.html', name: 'Monochrome Ledger', accent: '#111111', style: 'mono' },
+            { file: 'slate-split.html', name: 'Slate Split', accent: '#28535e', style: 'split' },
+            { file: 'blue-horizon-split.html', name: 'Blue Horizon Split', accent: '#1f385c', style: 'splitblue' }
         ];
         const TEMPLATE_COLOR_PRESETS = ['#2b2b2b', '#0f6cbd', '#155e95', '#1f8f63', '#c0392b', '#7b4db3'];
 
@@ -2025,7 +2514,8 @@
                     skills: "",
                     themeAccent: "",
                     customSections: [],
-                    sectionOrder: [...BASE_SECTION_ORDER]
+                    sectionOrder: [...BASE_SECTION_ORDER],
+                    tableSettings: getDefaultTableSettings()
                 };
                 localStorage.removeItem('cv_maker_data');
                 renderEditor();
@@ -2035,6 +2525,56 @@
         }
 
 async function printCV() {
+    return downloadCvFile('pdf');
+}
+
+async function downloadDocx() {
+    return downloadCvFile('docx');
+}
+
+function toggleDownloadMenu(event, btn) {
+    if (event) {
+        event.stopPropagation();
+    }
+    
+    const menu = document.getElementById('download-menu-popover');
+    if (!menu) return;
+
+    if (menu.classList.contains('active')) {
+        menu.classList.remove('active');
+        return;
+    }
+
+    const rect = btn.getBoundingClientRect();
+    
+    // Always align the right edge of the popup to the right edge of the button
+    // It's much cleaner since usually the Download button is on the right side of the toolbar.
+    menu.style.top = (rect.bottom + 8) + 'px';
+    
+    // Using display off/on to let the DOM calculate min-width before checking width
+    menu.style.visibility = 'hidden'; 
+    menu.classList.add('active'); 
+    
+    requestAnimationFrame(() => {
+        const menuRect = menu.getBoundingClientRect();
+        menu.style.left = (rect.right - menuRect.width) + 'px';
+        menu.style.visibility = 'visible';
+    });
+}
+
+// Close the download popup when clicking outside ANYWHERE
+document.addEventListener('click', (e) => {
+    const menu = document.getElementById('download-menu-popover');
+    if (menu && menu.classList.contains('active') && !menu.contains(e.target)) {
+        menu.classList.remove('active');
+    }
+});
+
+async function downloadCvFile(format = 'pdf') {
+    // Hide the dropdown after selection
+    const menu = document.getElementById('download-menu-popover');
+    if (menu) menu.classList.remove('active');
+    
     const frame = document.getElementById('cv-frame');
     const doc = frame?.contentDocument || frame?.contentWindow?.document;
 
@@ -2045,7 +2585,9 @@ async function printCV() {
     }
 
     // Build a clean filename from user's name
-    const filename = `${toSafeFilename(cvData.personal?.name || 'cv')}.pdf`;
+    const extension = format === 'docx' ? 'docx' : 'pdf';
+    const route = format === 'docx' ? 'docx' : 'pdf';
+    const filename = `${toSafeFilename(cvData.personal?.name || 'cv')}.${extension}`;
 
     // Show loading spinner so the user knows something is happening
     const overlay = document.querySelector('.loading-overlay');
@@ -2064,7 +2606,7 @@ async function printCV() {
         let retries = 3;
         
         while (retries > 0) {
-            res = await fetch(`${WORKER_PDF_URL}/pdf`, {
+            res = await fetch(`${FILE_WORKER_URL}/${route}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ html: fullHTML, filename }),
@@ -2079,12 +2621,12 @@ async function printCV() {
                 await new Promise(r => setTimeout(r, 3000));
                 continue;
             }
-            break; // Break the loop if successful or another error occurred
+            break;
         }
 
         // ── Step 3: Handle errors from the Worker ────────────────────
         if (!res.ok) {
-            let errMsg = 'PDF generation failed';
+            let errMsg = `${extension.toUpperCase()} generation failed`;
             try {
                 const errJSON = await res.json();
                 errMsg = errJSON.error || errMsg;
@@ -2108,10 +2650,10 @@ async function printCV() {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        showToast('PDF downloaded!');
+        showToast(`${extension.toUpperCase()} downloaded!`);
     } catch (e) {
-        console.error('PDF generation error:', e);
-        alert('PDF download failed: ' + e.message);
+        console.error(`${extension.toUpperCase()} generation error:`, e);
+        alert(`${extension.toUpperCase()} download failed: ` + e.message);
     } finally {
         // Always hide the spinner, even on error
         overlay?.classList.remove('active');
@@ -2123,7 +2665,7 @@ async function printCV() {
             const trimmed = (text || '').trim();
             if (!trimmed) throw new Error('Nothing to refine');
 
-            const templateFile = document.getElementById('template-select')?.value || 'cv2.html';
+            const templateFile = document.getElementById('template-select')?.value || 'classic-blue.html';
             const templateId = 'template_' + templateFile.replace('cv', '').replace('-', '').replace('.html', '');
 
             const response = await fetch(`${WORKER_URL}/refine-section`, {
@@ -2652,22 +3194,109 @@ async function printCV() {
             const overlay = document.querySelector('.loading-overlay');
             overlay.classList.add('active');
 
-            const templateFile = document.getElementById('template-select').value;
-            const templateId = 'template_' + templateFile.replace('cv', '').replace('-', '').replace('.html', '');
-
             try {
-                const response = await fetch(`${WORKER_URL}/generate`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ user_data: cvData, template_id: templateId })
+                const customPrompt = await getCustomPrompt('AI Enhance');
+                if (customPrompt === null) return;
+
+                const next = JSON.parse(JSON.stringify(cvData));
+                const beforePreview = buildAiEnhancePreview(cvData);
+                let hasChanges = false;
+
+                const refinedSummary = await safeRefineSection('summary', getPlainTextFromHTML(next.summary || ''), customPrompt || '');
+                if (refinedSummary) {
+                    next.summary = normalizeImportedRichText(refinedSummary, 'summary');
+                    hasChanges = true;
+                }
+
+                if (Array.isArray(next.experience)) {
+                    for (let i = 0; i < next.experience.length; i++) {
+                        const bullets = Array.isArray(next.experience[i]?.bullets) ? next.experience[i].bullets : [];
+                        if (!bullets.length) continue;
+                        const refined = await safeRefineSection('experience_bullets', bullets.map(b => getPlainTextFromHTML(b)).join('\n'), customPrompt || '');
+                        if (!refined) continue;
+                        const refinedLines = refined.split('\n').map(line => normalizeImportedRichText(line, 'experience')).filter(line => !!getPlainTextFromHTML(line));
+                        if (!refinedLines.length) continue;
+                        next.experience[i].bullets = refinedLines;
+                        hasChanges = true;
+                    }
+                }
+
+                if (Array.isArray(next.projects)) {
+                    for (let i = 0; i < next.projects.length; i++) {
+                        const bullets = Array.isArray(next.projects[i]?.bullets) ? next.projects[i].bullets : [];
+                        if (!bullets.length) continue;
+                        const refined = await safeRefineSection('project_bullets', bullets.map(b => getPlainTextFromHTML(b)).join('\n'), customPrompt || '');
+                        if (!refined) continue;
+                        const refinedLines = refined.split('\n').map(line => normalizeImportedRichText(line, 'projects')).filter(line => !!getPlainTextFromHTML(line));
+                        if (!refinedLines.length) continue;
+                        next.projects[i].bullets = refinedLines;
+                        hasChanges = true;
+                    }
+                }
+
+                const refinedCerts = await safeRefineSection('certifications',
+                    (next.certifications || []).map(c => `${getPlainTextFromHTML(c?.name || '')}${c?.issuer ? ` - ${getPlainTextFromHTML(c.issuer)}` : ''}`).filter(Boolean).join('\n'),
+                    customPrompt || ''
+                );
+                if (refinedCerts) {
+                    const lines = refinedCerts.split('\n').map(v => v.trim()).filter(Boolean);
+                    if (lines.length) {
+                        next.certifications = lines.map(line => {
+                            const [name, ...rest] = line.split(/\s+-\s+/);
+                            return {
+                                name: normalizeImportedRichText(name || line, 'certifications'),
+                                issuer: normalizeImportedRichText(rest.join(' - '), 'certifications')
+                            };
+                        });
+                        hasChanges = true;
+                    }
+                }
+
+                const simpleSections = [
+                    ['achievements', 'achievements'],
+                    ['leadership', 'leadership'],
+                    ['interests', 'interests']
+                ];
+                for (const [key, fieldType] of simpleSections) {
+                    const values = Array.isArray(next[key]) ? next[key].map(v => getPlainTextFromHTML(v)).filter(Boolean) : [];
+                    if (!values.length) continue;
+                    const refined = await safeRefineSection(fieldType, values.join('\n'), customPrompt || '');
+                    if (!refined) continue;
+                    const refinedLines = refined.split('\n').map(line => normalizeImportedRichText(line, fieldType)).filter(line => !!getPlainTextFromHTML(line));
+                    if (!refinedLines.length) continue;
+                    next[key] = refinedLines;
+                    hasChanges = true;
+                }
+
+                const refinedSkills = await safeRefineSection('skills', getPlainTextFromHTML(next.skills || ''), customPrompt || '');
+                if (refinedSkills) {
+                    next.skills = normalizeImportedRichText(refinedSkills, 'skills');
+                    hasChanges = true;
+                }
+
+                if (!hasChanges) {
+                    showToast("AI enhancement found no changes");
+                    return;
+                }
+
+                const approved = await openAiPreviewModal({
+                    title: 'Apply AI enhancement to all sections?',
+                    before: beforePreview,
+                    after: buildAiEnhancePreview(next)
                 });
 
-                const res = await response.json();
-                if (res.ok && res.data) {
-                    cvData = res.data;
-                    if (!cvData.certifications) cvData.certifications = [];
-                    renderEditor(); postToFrame(); showToast("AI Enhancement Applied!");
-                } else throw new Error(res.error || "Generation failed");
+                if (!approved) {
+                    showToast('AI changes discarded');
+                    return;
+                }
+
+                cvData = next;
+                ensureCvDataShape();
+                normalizeSectionOrder();
+                renderEditor();
+                updateProgress();
+                postToFrame();
+                showToast("AI Enhancement Applied!");
             } catch (e) {
                 alert("Error: " + e.message);
             } finally {
@@ -2719,12 +3348,13 @@ async function printCV() {
 
                 const res = await response.json();
                 if (res.ok && res.data) {
-                    // Merge new data with structure
-                    cvData = { ...cvData, ...res.data };
-                    // Ensure arrays
-                    ['education', 'experience', 'certifications', 'achievements', 'leadership', 'interests'].forEach(k => {
-                        if (!Array.isArray(cvData[k])) cvData[k] = [];
-                    });
+                    cvData = normalizeImportedPayload(res.data);
+                    ensureCvDataShape();
+                    normalizeSectionOrder();
+                    parseLegacyContact(cvData.personal);
+                    if (document.getElementById('inp-location') && !cvData.personal.location) {
+                        cvData.personal.location = normalizeImportedString(document.getElementById('inp-location').value);
+                    }
 
                     renderEditor();
                     updateProgress();
@@ -3006,12 +3636,12 @@ async function printCV() {
                 });
             }
             
-            // Export PDF
+            // Download
             steps.push({
-                element: 'button[onclick="printCV()"]',
+                element: 'label.dropdown-trigger',
                 popover: {
-                    title: '📥 Export PDF',
-                    description: 'When ready, download your polished CV as a high-quality PDF!',
+                    title: '📥 Download',
+                    description: 'Choose PDF or DOCX from this dropdown to export your CV.',
                     side: 'bottom',
                     align: 'center'
                 }

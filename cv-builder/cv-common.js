@@ -44,6 +44,7 @@ function renderCV(data) {
     ensureUniversalSections();
     ensureSectionWrappers();
     applyTemplateAccent(data.themeAccent || '');
+    syncDocumentTitle(data);
 
     // 1. Personal Info
     setHTML('[data-field="name"]', data.personal?.name);
@@ -267,6 +268,8 @@ function renderCV(data) {
     // 11. Section ordering
     applySectionOrder(data.sectionOrder || []);
     enforceExperienceOnlyLeftLabels();
+    stabilizeSectionLayouts();
+    applyTableFormatSettings(data.tableSettings || {});
 
     // 12. Recalculate Layout (Scale/Shrink)
     // These functions exist in the templates script block
@@ -280,6 +283,11 @@ function renderCV(data) {
             window.scaleToFit();
         }
     });
+}
+
+function syncDocumentTitle(data) {
+    const name = stripTags(data?.personal?.name || '').trim();
+    document.title = name ? `${name} CV` : 'My Student Club CV';
 }
 
 // Helper: Set innerHTML safely
@@ -448,6 +456,120 @@ function enforceExperienceOnlyLeftLabels() {
     });
 }
 
+function stabilizeSectionLayouts() {
+    // Keep table columns fluid so content adapts on zoom and during import-heavy payloads.
+    document.querySelectorAll('.sortable-section table').forEach(table => {
+        table.style.setProperty('width', '100%', 'important');
+        table.style.setProperty('table-layout', 'auto', 'important');
+        table.style.setProperty('max-width', '100%', 'important');
+    });
+
+    document.querySelectorAll('.sortable-section td, .sortable-section th').forEach(cell => {
+        cell.style.setProperty('max-width', '100%', 'important');
+        cell.style.setProperty('overflow-wrap', 'anywhere', 'important');
+        cell.style.setProperty('word-break', 'break-word', 'important');
+        if (cell.style.whiteSpace === 'nowrap') {
+            cell.style.setProperty('white-space', 'normal', 'important');
+        }
+    });
+
+    // Experience-specific hardening for merged stints and zoomed rendering.
+    document.querySelectorAll('.sortable-section[data-section-id="experience"] [data-field="company"], .sortable-section[data-section-id="experience"] [data-field="dates"], .sortable-section[data-section-id="experience"] .entry-title, .sortable-section[data-section-id="experience"] .entry-location, .sortable-section[data-section-id="experience"] .entry-dates').forEach(el => {
+        el.style.setProperty('max-width', '100%', 'important');
+        el.style.setProperty('overflow-wrap', 'anywhere', 'important');
+        el.style.setProperty('word-break', 'break-word', 'important');
+        el.style.setProperty('white-space', 'normal', 'important');
+    });
+}
+
+function applyTableFormatSettings(tableSettings) {
+    applyEducationTableFormat(tableSettings?.education?.columns || {});
+}
+
+function applyEducationTableFormat(columns) {
+    const section = document.querySelector('.sortable-section[data-section-id="education"]');
+    if (!section) return;
+
+    const defaults = {
+        degree: { visible: true, width: 22 },
+        year: { visible: true, width: 12 },
+        institution: { visible: true, width: 36 },
+        marks: { visible: true, width: 14 },
+        remarks: { visible: true, width: 16 }
+    };
+    const limits = {
+        degree: { min: 12, max: 42 },
+        year: { min: 8, max: 28 },
+        institution: { min: 18, max: 50 },
+        marks: { min: 10, max: 30 },
+        remarks: { min: 10, max: 35 }
+    };
+
+    const config = {};
+    Object.keys(defaults).forEach((key) => {
+        const explicitVisible = columns && Object.prototype.hasOwnProperty.call(columns, key) && Object.prototype.hasOwnProperty.call(columns[key] || {}, 'visible');
+        const rawWidth = Number(columns?.[key]?.width);
+        const boundedWidth = Number.isFinite(rawWidth)
+            ? Math.max(limits[key].min, Math.min(limits[key].max, rawWidth))
+            : defaults[key].width;
+        config[key] = {
+            visible: explicitVisible ? columns?.[key]?.visible !== false : true,
+            width: boundedWidth
+        };
+    });
+
+    ['degree', 'year', 'institution', 'marks', 'remarks'].forEach((field) => {
+        section.querySelectorAll(`[data-field="${field}"]`).forEach((el) => {
+            el.style.display = config[field].visible ? '' : 'none';
+        });
+    });
+
+    section.querySelectorAll('table').forEach((table) => {
+        const templateRow = table.querySelector('.template') || table.querySelector('tr');
+        if (!templateRow) return;
+        const sourceRow = templateRow.matches('tr') ? templateRow : templateRow.closest('tr');
+        if (!sourceRow) return;
+
+        const indexMap = {};
+        ['degree', 'year', 'institution', 'marks', 'remarks'].forEach((field) => {
+            const fieldHost = sourceRow.querySelector(`[data-field="${field}"]`);
+            if (!fieldHost) return;
+            const fieldCell = fieldHost.closest('td, th') || fieldHost;
+            const index = Array.from(sourceRow.children).indexOf(fieldCell) + 1;
+            if (index < 1) return;
+            indexMap[field] = index;
+        });
+
+        const visibleEntries = Object.entries(indexMap)
+            .filter(([field]) => config[field]?.visible !== false)
+            .map(([field, index]) => ({ field, index, width: config[field].width }));
+        const totalWidth = visibleEntries.reduce((sum, entry) => sum + entry.width, 0) || 1;
+
+        table.style.setProperty('table-layout', 'fixed', 'important');
+        table.style.setProperty('width', '100%', 'important');
+
+        Object.entries(indexMap).forEach(([field, index]) => {
+            const isVisible = config[field]?.visible !== false;
+            const percent = isVisible ? `${((config[field].width / totalWidth) * 100).toFixed(2)}%` : '0%';
+            table.querySelectorAll(`tr > *:nth-child(${index})`).forEach((cell) => {
+                cell.style.display = isVisible ? '' : 'none';
+                cell.style.setProperty('width', percent, 'important');
+                cell.style.setProperty('max-width', percent, 'important');
+                cell.style.setProperty('overflow-wrap', 'anywhere', 'important');
+                cell.style.setProperty('word-break', 'break-word', 'important');
+                cell.style.setProperty('white-space', 'normal', 'important');
+            });
+        });
+
+        // Keep education header labels readable (avoid vertical letter stacking like "R e m a r k s")
+        table.querySelectorAll('thead th').forEach((th) => {
+            th.style.setProperty('overflow-wrap', 'normal', 'important');
+            th.style.setProperty('word-break', 'normal', 'important');
+            th.style.setProperty('white-space', 'nowrap', 'important');
+        });
+    });
+}
+
 function hasMeaningfulCellContent(cell) {
     if (!cell) return false;
     if (cell.querySelector('[data-list], [data-field], ul, ol, p, div, span, a')) return true;
@@ -596,6 +718,16 @@ function buildRenderedExperience(items) {
     const source = Array.isArray(items) ? items : [];
     const groups = [];
 
+    const extractCategoryLines = (value) => {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = String(value || '').replace(/<br\s*\/?>/gi, '\n');
+        return (tmp.textContent || '')
+            .replace(/\r/g, '')
+            .split('\n')
+            .map(line => line.trim())
+            .filter(Boolean);
+    };
+
     source.forEach((entry, index) => {
         const safeEntry = entry && typeof entry === 'object' ? entry : {};
         const mergeIntoPrevious = !!safeEntry.mergedWithPrevious && index > 0 && groups.length > 0;
@@ -618,15 +750,30 @@ function buildRenderedExperience(items) {
         }).filter(Boolean);
 
         const dateLines = group.map(item => item.dates || '').filter(Boolean);
-        const sharedCategory = primary.category || '';
+        const mergedCategories = [];
+        group.forEach(item => {
+            extractCategoryLines(item.category).forEach(line => {
+                if (!mergedCategories.includes(line)) mergedCategories.push(line);
+            });
+        });
+        const mergedBullets = [];
+        group.forEach(item => {
+            const bullets = Array.isArray(item.bullets) ? item.bullets : [];
+            bullets.forEach(bullet => {
+                const normalized = String(bullet || '').trim();
+                if (!normalized) return;
+                if (!mergedBullets.includes(normalized)) mergedBullets.push(normalized);
+            });
+        });
+        const mergedCategoryHTML = mergedCategories.join('<br>');
 
         return {
             ...primary,
-            role: sharedCategory || '',
+            role: mergedCategoryHTML || '',
             company: companyLines.join('<br>'),
             dates: dateLines.join('<br>'),
-            category: sharedCategory,
-            bullets: Array.isArray(primary.bullets) ? primary.bullets : []
+            category: mergedCategoryHTML,
+            bullets: mergedBullets
         };
     });
 }
@@ -688,11 +835,14 @@ function renderSimpleList(items, selector) {
     const container = document.querySelector(selector);
     if (!container) return;
 
-    const hasItems = items && items.length > 0;
+    const normalizedItems = (Array.isArray(items) ? items : [])
+        .map(item => String(item || '').trim())
+        .filter(Boolean);
+    const hasItems = normalizedItems.length > 0;
     toggleSectionElement(container, hasItems);
 
     if (hasItems) {
-        container.innerHTML = items.map(item => `<li>${item}</li>`).join('');
+        container.innerHTML = normalizedItems.map(item => `<li>${item}</li>`).join('');
     }
 }
 
@@ -995,11 +1145,20 @@ function getPageContainer() {
 function getSectionAppendHost() {
     const page = getPageContainer();
     if (!page) return null;
+
+    // Template-level override: lets split layouts (e.g. 2-column resumes)
+    // force injected/custom sections into a specific column container.
+    const explicitHost = page.querySelector('[data-section-append-host]');
+    if (explicitHost) return explicitHost;
+
     const directMainContainer = Array.from(page.children).find(child => child.classList && child.classList.contains('main-container'));
     if (directMainContainer) return directMainContainer;
 
     const directContentPadding = Array.from(page.children).find(child => child.classList && child.classList.contains('content-padding'));
     if (directContentPadding) return directContentPadding;
+
+    const directInnerContent = Array.from(page.children).find(child => child.classList && child.classList.contains('inner-content'));
+    if (directInnerContent) return directInnerContent;
 
     return page;
 }
@@ -1072,6 +1231,68 @@ function ensureRichTextGuards() {
             overflow-wrap: anywhere;
             word-break: break-word;
         }
+        .sortable-section table {
+            width: 100%;
+            max-width: 100%;
+            table-layout: auto;
+        }
+        .sortable-section td,
+        .sortable-section th {
+            max-width: 100%;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .sortable-section[data-section-id="experience"] [data-field="company"],
+        .sortable-section[data-section-id="experience"] [data-field="dates"],
+        .sortable-section[data-section-id="experience"] .entry-title,
+        .sortable-section[data-section-id="experience"] .entry-location,
+        .sortable-section[data-section-id="experience"] .entry-dates {
+            white-space: normal !important;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .contact-icon-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.28em;
+            vertical-align: middle;
+            line-height: 1.25;
+            max-width: 100%;
+        }
+        .contact-icon-glyph {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.15em;
+            min-width: 1.15em;
+            height: 1.15em;
+            flex: 0 0 1.15em;
+            color: currentColor;
+            opacity: 0.9;
+        }
+        .contact-icon-glyph svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        .contact-icon-glyph-linkedin {
+            width: 1.2em;
+            min-width: 1.2em;
+            height: 1.2em;
+            flex-basis: 1.2em;
+            margin-bottom: 0.20em;
+        }
+        .contact-icon-text {
+            display: inline-flex;
+            align-items: center;
+            min-width: 0;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+        .contact-value .contact-icon-item {
+            display: flex;
+            align-items: center;
+        }
     `;
     document.head.appendChild(style);
 }
@@ -1122,9 +1343,9 @@ function renderContactWithIcons(personal) {
         if (!/^https?:\/\//i.test(href)) href = 'https://' + href;
         items.push(`
             <span class="contact-icon-item" style="display:inline-flex;align-items:center;">
-                <span style="${iconStyle}width:1.24em;height:1.24em;">
-                    <svg viewBox="0 0 24 24" width="1.24em" height="1.24em" fill="currentColor" aria-hidden="true">
-                        <path d="M6.94 8.5A1.56 1.56 0 1 1 6.94 5.38 1.56 1.56 0 0 1 6.94 8.5zM5.6 9.82h2.67v8.58H5.6V9.82zm4.3 0h2.56v1.17h.04c.36-.67 1.23-1.37 2.53-1.37 2.71 0 3.21 1.79 3.21 4.11v4.67h-2.67v-4.14c0-.99-.02-2.26-1.38-2.26-1.39 0-1.6 1.08-1.6 2.19v4.21H9.9V9.82z"></path>
+                <span class="contact-icon-glyph contact-icon-glyph-linkedin">
+                    <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM8.34 18H5.96V10.35h2.38V18zM7.15 9.31A1.38 1.38 0 1 1 7.15 6.55a1.38 1.38 0 0 1 0 2.76zM18.04 18h-2.38v-3.72c0-.89-.02-2.03-1.24-2.03-1.24 0-1.43.97-1.43 1.97V18h-2.38V10.35h2.28v1.05h.03c.32-.6 1.09-1.24 2.25-1.24 2.41 0 2.87 1.59 2.87 3.66V18z"></path>
                     </svg>
                 </span>
                 <a href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="${contactLinkStyle}">${escapeHTML(linkedin)}</a>
@@ -1181,6 +1402,55 @@ function renderContactWithIcons(personal) {
     const contactNodes = document.querySelectorAll('[data-field="contact"]');
     contactNodes.forEach(el => {
         el.innerHTML = items.length ? items.join(sep) : '';
+    });
+
+    renderStandaloneContactField('phone', phone ? `
+        <span class="contact-icon-item">
+            <span class="contact-icon-glyph">
+                <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.11 4.18 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.62a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.46-1.27a2 2 0 0 1 2.11-.45c.84.29 1.72.5 2.62.62A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+            </span>
+            <a class="contact-icon-text" href="tel:${escapeAttr(phone.replace(/[^\d+]/g, ''))}" style="${contactLinkStyle}">${escapeHTML(phone)}</a>
+        </span>
+    ` : '');
+    renderStandaloneContactField('email', email ? `
+        <span class="contact-icon-item">
+            <span class="contact-icon-glyph">
+                <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
+                    <path d="m22 6-10 7L2 6"></path>
+                </svg>
+            </span>
+            <a class="contact-icon-text" href="mailto:${escapeAttr(email)}" style="${contactLinkStyle}">${escapeHTML(email)}</a>
+        </span>
+    ` : '');
+    renderStandaloneContactField('linkedin', linkedin ? `
+        <span class="contact-icon-item">
+            <span class="contact-icon-glyph contact-icon-glyph-linkedin">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zM8.34 18H5.96V10.35h2.38V18zM7.15 9.31A1.38 1.38 0 1 1 7.15 6.55a1.38 1.38 0 0 1 0 2.76zM18.04 18h-2.38v-3.72c0-.89-.02-2.03-1.24-2.03-1.24 0-1.43.97-1.43 1.97V18h-2.38V10.35h2.28v1.05h.03c.32-.6 1.09-1.24 2.25-1.24 2.41 0 2.87 1.59 2.87 3.66V18z"></path>
+                </svg>
+            </span>
+            <a class="contact-icon-text" href="${escapeAttr(/^https?:\/\//i.test(linkedin) ? linkedin : 'https://' + linkedin)}" target="_blank" rel="noopener noreferrer" style="${contactLinkStyle}">${escapeHTML(linkedin)}</a>
+        </span>
+    ` : '');
+    renderStandaloneContactField('location', location ? `
+        <span class="contact-icon-item">
+            <span class="contact-icon-glyph">
+                <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M21 10c0 6-9 12-9 12s-9-6-9-12a9 9 0 1 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+            </span>
+            <span class="contact-icon-text">${escapeHTML(location)}</span>
+        </span>
+    ` : '');
+}
+
+function renderStandaloneContactField(fieldName, html) {
+    document.querySelectorAll(`.contact-value[data-field="${fieldName}"]`).forEach(el => {
+        el.innerHTML = html || '';
     });
 }
 
@@ -1617,6 +1887,11 @@ function createStyledCustomSection(section, items) {
     setSectionBodyLabel(wrapper, section.title || 'Custom Section');
 
     const listHost = getOrCreateListHost(wrapper);
+    const bodyHost = listHost.parentElement || wrapper;
+    Array.from(bodyHost.children).forEach(child => {
+        if (child !== listHost && !child.classList?.contains('section-header')) child.remove();
+    });
+    listHost.classList.add('bullet-list');
     listHost.innerHTML = items.map(item => `<li>${item}</li>`).join('');
 
     return wrapper;
@@ -1635,6 +1910,7 @@ function createFallbackCustomSection(section, items) {
     wrapper.appendChild(header);
 
     const list = document.createElement('ul');
+    list.className = 'bullet-list';
     list.innerHTML = items.map(item => `<li>${item}</li>`).join('');
     wrapper.appendChild(list);
 
