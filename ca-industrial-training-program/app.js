@@ -460,9 +460,8 @@ const initializePostponedPopup = () => {
 
   // Show on April 30, May 1, and May 2
   const isTargetDate = (month === 3 && date >= 30) || (month === 4 && date <= 2);
-  const popupDismissed = localStorage.getItem('postponedPopupDismissed');
 
-  if (isTargetDate && !popupDismissed) {
+  if (isTargetDate) {
     const popup = document.getElementById('postponedPopup');
     const closeBtn = document.querySelector('.postponed-close');
     const ackBtn = document.getElementById('postponedAckBtn');
@@ -475,7 +474,6 @@ const initializePostponedPopup = () => {
       
       const dismissPopup = () => {
         popup.style.display = 'none';
-        localStorage.setItem('postponedPopupDismissed', 'true');
       };
 
       if (closeBtn) closeBtn.addEventListener('click', dismissPopup);
