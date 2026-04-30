@@ -458,8 +458,8 @@ const initializePostponedPopup = () => {
   const month = today.getMonth(); // 0 is January, 3 is April, 4 is May
   const date = today.getDate();
 
-  // Show only on April 1/2 or May 1/2 (Handles the prompt's potential typo to ensure users see it)
-  const isTargetDate = (month === 3 || month === 4) && (date === 1 || date === 2);
+  // Show on April 30, May 1, and May 2
+  const isTargetDate = (month === 3 && date >= 30) || (month === 4 && date <= 2);
   const popupDismissed = localStorage.getItem('postponedPopupDismissed');
 
   if (isTargetDate && !popupDismissed) {
@@ -468,7 +468,10 @@ const initializePostponedPopup = () => {
     const ackBtn = document.getElementById('postponedAckBtn');
 
     if (popup) {
-      popup.style.display = 'flex'; // Trigger display
+      // Small timeout ensures it renders smoothly after DOM is completely ready
+      setTimeout(() => {
+        popup.style.display = 'flex';
+      }, 100);
       
       const dismissPopup = () => {
         popup.style.display = 'none';
