@@ -1,7 +1,7 @@
 const generateData = () => {
   const baseURL = "https://www.mystudentclub.com/assets/";
 
-  const allAvailableStudents = [
+  const allAvailableStudents =[
     { name: "Vedang Sawant", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/vedangsawant/", image: baseURL + "vedang.jpg", company: "Flipkart" },
     { name: "Gaurav Jaat", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/gauravjaat/", image: baseURL + "gaurav.jpg", company: "DE Shaw" },
     { name: "Kanchan Kulhria", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/kanchankulhria/", image: baseURL + "kanchan.jpg", company: "Amazon" },
@@ -69,7 +69,7 @@ const generateData = () => {
     { name: "Tanya Bhojwani", course: "CA Fresher Training Program", linkedin: "https://www.linkedin.com/in/tanya-bhojwani/", image: baseURL + "bhojwani.jpg", company: "Hindalco Eternia" }
   ];
 
-  const prioritizedStudentsOrder = [
+  const prioritizedStudentsOrder =[
     { name: "Vedang Sawant", company: "Flipkart" },
     { name: "Gaurav Jaat", company: "DE Shaw" },
     { name: "Kanchan Kulhria", company: "Amazon" },
@@ -95,7 +95,7 @@ const generateData = () => {
     { name: "Tanya Bhojwani", company: "Hindalco Eternia" },
   ];
 
-  const students = [];
+  const students =[];
   const addedStudentKeys = new Set();
 
   prioritizedStudentsOrder.forEach(pStudent => {
@@ -134,13 +134,13 @@ const initializeCarousel = () => {
     card.className = 'student-card';
     card.innerHTML = `
       <div class="student-image">
-        <img src="${student.image}" alt="${student.name}" loading="lazy" />
+        <img src="${student.image}" alt="${student.name}" loading="lazy">
       </div>
       <h3>${student.name}</h3>
       <p class="company-info">Placed at:<br><strong>${student.company}</strong></p>
       ${student.linkedin && student.linkedin !== 'N/A' ? `<a href="${student.linkedin}" class="linkedin-button" target="_blank">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="linkedin-icon">
-          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path>
         </svg>
         View Profile
       </a>` : ''}
@@ -148,7 +148,7 @@ const initializeCarousel = () => {
     carousel.appendChild(card);
   });
 
-  const cards = [...carousel.children];
+  const cards =[...carousel.children];
   cards.forEach(card => {
     const clone = card.cloneNode(true);
     carousel.appendChild(clone);
@@ -213,7 +213,7 @@ const initializeCarousel = () => {
 
 
 const initializeLinkedInPosts = () => {
-  const linkedInPosts = [
+  const linkedInPosts =[
     {
       name: "Priyanka Sharma",
       title: "CA Finalist at Grasim Industries Ltd.",
@@ -295,7 +295,7 @@ const initializeLinkedInPosts = () => {
     card.className = 'linkedin-card';
     card.innerHTML = `
       <div class="linkedin-card-header">
-        <img src="${post.avatar}" alt="${post.name}" class="linkedin-avatar" onerror="this.src='https://via.placeholder.com/48'">
+        <img src="https://via.placeholder.com/48" alt="${post.name}" class="linkedin-avatar" onerror="this.src='https://via.placeholder.com/48'">
         <div class="linkedin-user-info">
           <p class="linkedin-user-name">${post.name}</p>
           <p class="linkedin-user-title">${post.title}</p>
@@ -314,15 +314,15 @@ const initializeLinkedInPosts = () => {
       </div>
       <div class="linkedin-actions">
         <button class="linkedin-action-btn" onclick="window.open('${post.linkedinUrl}', '_blank')">
-          <svg viewBox="0 0 24 24"><path d="M19.46 11l-3.91-3.91a7 7 0 01-1.69-2.74l-.49-1.47A2.76 2.76 0 0010.76 1 2.75 2.75 0 008 3.74v1.12a9.19 9.19 0 00.46 2.85L8.89 9H4.12A2.12 2.12 0 002 11.12a2.16 2.16 0 00.92 1.76A2.11 2.11 0 002 14.62a2.14 2.14 0 001.28 2 2 2 0 00-.28 1 2.12 2.12 0 002 2.12v.14A2.12 2.12 0 007.12 22h7.49a8.08 8.08 0 003.58-.84l.31-.16H21V11zM19 19h-1l-.73.37a6.14 6.14 0 01-2.69.63H7.72a1 1 0 01-.72-.31.38.38 0 010-.06l.35-.34-.34-.34a.38.38 0 010-.06 1 1 0 01.72-.31.75.75 0 000-1.5 1 1 0 01-.72-.31.38.38 0 010-.06l.35-.34-.34-.34a.38.38 0 010-.06 1 1 0 01.72-.31.75.75 0 000-1.5A1.12 1.12 0 017 12.62a.38.38 0 010-.06l.35-.34-.35-.34A1.13 1.13 0 018.12 10H9a.75.75 0 00.71-.51l-.53-1.59a7.66 7.66 0 01-.38-2.37V3.74a1.25 1.25 0 011.26-1.24 1.26 1.26 0 011.19.89l.49 1.47a8.48 8.48 0 002.06 3.33L17.71 12H19z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M19.46 11l-3.91-3.91a7 7 0 01-1.69-2.74l-.49-1.47A2.76 2.76 0 0010.76 1 2.75 2.75 0 008 3.74v1.12a9.19 9.19 0 00.46 2.85L8.89 9H4.12A2.12 2.12 0 002 11.12a2.16 2.16 0 00.92 1.76A2.11 2.11 0 002 14.62a2.14 2.14 0 001.28 2 2 2 0 00-.28 1 2.12 2.12 0 002 2.12v.14A2.12 2.12 0 007.12 22h7.49a8.08 8.08 0 003.58-.84l.31-.16H21V11zM19 19h-1l-.73.37a6.14 6.14 0 01-2.69.63H7.72a1 1 0 01-.72-.31.38.38 0 010-.06l.35-.34-.34-.34a.38.38 0 010-.06 1 1 0 01.72-.31.75.75 0 000-1.5 1 1 0 01-.72-.31.38.38 0 010-.06l.35-.34-.34-.34a.38.38 0 010-.06 1 1 0 01.72-.31.75.75 0 000-1.5A1.12 1.12 0 017 12.62a.38.38 0 010-.06l.35-.34-.35-.34A1.13 1.13 0 018.12 10H9a.75.75 0 00.71-.51l-.53-1.59a7.66 7.66 0 01-.38-2.37V3.74a1.25 1.25 0 011.26-1.24 1.26 1.26 0 011.19.89l.49 1.47a8.48 8.48 0 002.06 3.33L17.71 12H19z"></path></svg>
           Like
         </button>
         <button class="linkedin-action-btn" onclick="window.open('${post.linkedinUrl}', '_blank')">
-          <svg viewBox="0 0 24 24"><path d="M7 9h10v1H7zm0 3h7v1H7zm16-8v13c0 1.1-.9 2-2 2H7l-5 5V4c0-1.1.9-2 2-2h17c1.1 0 2 .9 2 2zm-2 0H4v14l2-2h15V4z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M7 9h10v1H7zm0 3h7v1H7zm16-8v13c0 1.1-.9 2-2 2H7l-5 5V4c0-1.1.9-2 2-2h17c1.1 0 2 .9 2 2zm-2 0H4v14l2-2h15V4z"></path></svg>
           Comment
         </button>
         <button class="linkedin-action-btn" onclick="window.open('${post.linkedinUrl}', '_blank')">
-          <svg viewBox="0 0 24 24"><path d="M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M21 3L3 10.53v.98l6.84 2.65L12.48 21h.98L21 3z"></path></svg>
           Share
         </button>
       </div>
@@ -330,7 +330,7 @@ const initializeLinkedInPosts = () => {
     carousel.appendChild(card);
   });
 
-  const cards = [...carousel.children];
+  const cards =[...carousel.children];
   cards.forEach(card => {
     const clone = card.cloneNode(true);
     carousel.appendChild(clone);
@@ -453,20 +453,52 @@ function initializeCurriculumCenter() {
 
 }
 
+const initializePostponedPopup = () => {
+  const today = new Date();
+  const month = today.getMonth(); // 0 is January, 3 is April, 4 is May
+  const date = today.getDate();
 
+  // Show only on April 1/2 or May 1/2 (Handles the prompt's potential typo to ensure users see it)
+  const isTargetDate = (month === 3 || month === 4) && (date === 1 || date === 2);
+  const popupDismissed = localStorage.getItem('postponedPopupDismissed');
+
+  if (isTargetDate && !popupDismissed) {
+    const popup = document.getElementById('postponedPopup');
+    const closeBtn = document.querySelector('.postponed-close');
+    const ackBtn = document.getElementById('postponedAckBtn');
+
+    if (popup) {
+      popup.style.display = 'flex'; // Trigger display
+      
+      const dismissPopup = () => {
+        popup.style.display = 'none';
+        localStorage.setItem('postponedPopupDismissed', 'true');
+      };
+
+      if (closeBtn) closeBtn.addEventListener('click', dismissPopup);
+      if (ackBtn) ackBtn.addEventListener('click', dismissPopup);
+
+      // Dismiss on outside click
+      window.addEventListener('click', (e) => {
+        if (e.target === popup) {
+          dismissPopup();
+        }
+      });
+    }
+  }
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   safe(initializeLinkedInPosts, 'linkedinPosts');
   safe(initializeCarousel, 'carousel');
   safe(initializeCertificate, 'certificate');
-
+  safe(initializePostponedPopup, 'postponedPopup');
   safe(initializeParallax, 'parallax');
   AOS.init({
     duration: 1000,
     once: true
   });
 });
-
 
 function safe(fn, label) {
   try {
