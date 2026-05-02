@@ -453,47 +453,12 @@ function initializeCurriculumCenter() {
 
 }
 
-const initializePostponedPopup = () => {
-  const today = new Date();
-  const month = today.getMonth(); // 0 is January, 3 is April, 4 is May
-  const date = today.getDate();
-
-  // Show on April 30, May 1, and May 2
-  const isTargetDate = (month === 3 && date >= 30) || (month === 4 && date <= 2);
-
-  if (isTargetDate) {
-    const popup = document.getElementById('postponedPopup');
-    const closeBtn = document.querySelector('.postponed-close');
-    const ackBtn = document.getElementById('postponedAckBtn');
-
-    if (popup) {
-      // Small timeout ensures it renders smoothly after DOM is completely ready
-      setTimeout(() => {
-        popup.style.display = 'flex';
-      }, 100);
-      
-      const dismissPopup = () => {
-        popup.style.display = 'none';
-      };
-
-      if (closeBtn) closeBtn.addEventListener('click', dismissPopup);
-      if (ackBtn) ackBtn.addEventListener('click', dismissPopup);
-
-      // Dismiss on outside click
-      window.addEventListener('click', (e) => {
-        if (e.target === popup) {
-          dismissPopup();
-        }
-      });
-    }
-  }
-};
 
 document.addEventListener('DOMContentLoaded', () => {
   safe(initializeLinkedInPosts, 'linkedinPosts');
   safe(initializeCarousel, 'carousel');
   safe(initializeCertificate, 'certificate');
-  safe(initializePostponedPopup, 'postponedPopup');
+
   safe(initializeParallax, 'parallax');
   AOS.init({
     duration: 1000,
