@@ -295,7 +295,7 @@ const initializeLinkedInPosts = () => {
     card.className = 'linkedin-card';
     card.innerHTML = `
       <div class="linkedin-card-header">
-        <img src="https://via.placeholder.com/48" alt="${post.name}" class="linkedin-avatar" onerror="this.src='https://via.placeholder.com/48'">
+        <img src="${post.avatar}" alt="${post.name}" class="linkedin-avatar" onerror="this.style.background='#c0a060';this.removeAttribute('src')">
         <div class="linkedin-user-info">
           <p class="linkedin-user-name">${post.name}</p>
           <p class="linkedin-user-title">${post.title}</p>
