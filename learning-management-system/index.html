@@ -178,6 +178,110 @@
             border-radius: 6px;
             cursor: pointer;
         }
+
+        /* First-visit form prompt modal */
+        #form-prompt-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 1rem;
+        }
+
+        #form-prompt-overlay.hidden {
+            display: none;
+        }
+
+        .form-prompt-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem 2rem 1.75rem;
+            max-width: 460px;
+            width: 100%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-prompt-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #7c3aed, #4f46e5, #3b82f6);
+        }
+
+        .form-prompt-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #ede9fe, #dbeafe);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0.5rem auto 1.25rem;
+            font-size: 1.75rem;
+        }
+
+        .form-prompt-card h2 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-prompt-card p {
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-prompt-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #7c3aed, #4f46e5);
+            color: white;
+            font-weight: 700;
+            font-size: 0.95rem;
+            padding: 0.75rem 1.75rem;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.4);
+            margin-bottom: 1rem;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .form-prompt-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.45);
+        }
+
+        .form-prompt-dismiss {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 0.82rem;
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            transition: color 0.2s;
+            font-family: inherit;
+        }
+
+        .form-prompt-dismiss:hover {
+            color: #475569;
+        }
     </style>
 </head>
 
@@ -445,6 +549,20 @@
         </footer>
     </div>
 
+    <!-- First-visit Google Form Prompt -->
+    <div id="form-prompt-overlay">
+        <div class="form-prompt-card">
+            <div class="form-prompt-icon">📋</div>
+            <h2>One Quick Step Before You Begin</h2>
+            <p>Please fill in this short form so we can personalise your experience and ensure you get everything from this program. It takes less than 2 minutes.</p>
+            <a href="https://forms.gle/3vEuYnHk73Q7cEpn6" target="_blank" rel="noopener" class="form-prompt-btn" id="form-prompt-link">
+                <i class="fas fa-external-link-alt"></i> Fill the Form Now
+            </a>
+            <br>
+            <button class="form-prompt-dismiss" id="form-prompt-dismiss">I've already filled it — continue to dashboard</button>
+        </div>
+    </div>
+
     <script type="module">
         import { createApp } from 'vue';
 
@@ -666,6 +784,34 @@
                 });
             }
         }).mount('#app');
+    </script>
+
+    <script>
+        // First-visit form prompt
+        (function () {
+            var overlay = document.getElementById('form-prompt-overlay');
+            var dismissBtn = document.getElementById('form-prompt-dismiss');
+            var formLink = document.getElementById('form-prompt-link');
+
+            var STORAGE_KEY = 'msc_form_prompt_dismissed';
+
+            function hideOverlay() {
+                overlay.classList.add('hidden');
+                localStorage.setItem(STORAGE_KEY, '1');
+            }
+
+            // Show only if not dismissed before
+            if (localStorage.getItem(STORAGE_KEY)) {
+                overlay.classList.add('hidden');
+            }
+
+            dismissBtn.addEventListener('click', hideOverlay);
+
+            // Also hide (but mark) if they click the form link, so on return the overlay is gone
+            formLink.addEventListener('click', function () {
+                localStorage.setItem(STORAGE_KEY, '1');
+            });
+        })();
     </script>
 </body>
 

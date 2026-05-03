@@ -124,6 +124,77 @@
 
 
 
+    .form-required-banner {
+      background: linear-gradient(135deg, #7c3aed, #4f46e5);
+      color: white;
+      border-radius: 12px;
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: left;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-required-banner::before {
+      content: '';
+      position: absolute;
+      top: -20px;
+      right: -20px;
+      width: 80px;
+      height: 80px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50%;
+    }
+
+    .form-required-banner .banner-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 999px;
+      margin-bottom: 0.6rem;
+    }
+
+    .form-required-banner h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+      color: white;
+    }
+
+    .form-required-banner p {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .form-required-banner a.banner-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: white;
+      color: #4f46e5;
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .form-required-banner a.banner-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    }
+
     @media (max-width: 420px) {
       .success-card {
         padding: 1.25rem 1rem 1.75rem;
@@ -221,7 +292,14 @@
       <p style="margin-bottom: 0;">Let’s Crack IT :)</p>
     </div>
 
-
+    <div class="form-required-banner">
+      <span class="banner-tag"><i class="fas fa-exclamation-circle"></i> Action Required</span>
+      <h3>📋 Please Fill This Form Before You Begin</h3>
+      <p>We need a few details from you to personalise your experience and ensure you get the most out of this program. It takes less than 2 minutes.</p>
+      <a href="https://forms.gle/3vEuYnHk73Q7cEpn6" target="_blank" rel="noopener" class="banner-btn">
+        <i class="fas fa-external-link-alt"></i> Fill the Form Now
+      </a>
+    </div>
 
     <a href="https://www.mystudentclub.com/learning-management-system/" class="btn-primary">
       Go to Learning Portal
