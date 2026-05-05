@@ -1476,3 +1476,42 @@ h1 {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
 }
+
+/* Registration Closed Styles */
+.closed-notice {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    animation: fadeIn 0.5s ease;
+}
+
+.closed-notice i {
+    font-size: 1.1rem;
+}
+
+.register-btn.btn-disabled,
+.action-btn.btn-disabled {
+    background: #e2e8f0 !important;
+    color: #94a3b8 !important;
+    cursor: not-allowed !important;
+    box-shadow: none !important;
+    transform: none !important;
+    pointer-events: none;
+}
+
+.fixed-cta.closed .price-container {
+    display: none;
+}
+
+.fixed-cta.closed .register-btn {
+    margin-left: auto;
+    margin-right: auto;
+}
