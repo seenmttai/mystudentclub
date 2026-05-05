@@ -480,22 +480,21 @@ body {
   margin-bottom: 1rem;
 }
 
+/* Ideal banner size: 1200 × 375 px (16:5 ratio), max file size 300 KB */
 .banner-section .carousel {
   width: 100%;
+  aspect-ratio: 16 / 5;
+  background-color: #1a1a2e;
   border-radius: var(--radius-lg);
   overflow: hidden;
   position: relative;
-  background-color: var(--border-light);
-  /* Height adapts to image content */
-  min-height: 60px;
 }
 
 .banner-section .carousel img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain; /* Never crop — letterbox if needed */
   display: block;
-  object-fit: contain;
-  max-width: 100%;
 }
 
 .carousel-item {
@@ -503,6 +502,7 @@ body {
   top: 0;
   left: 0;
   width: 100%;
+  height: 100%;
   opacity: 0;
   transition: opacity 0.5s ease-in-out;
   pointer-events: none;
@@ -510,7 +510,6 @@ body {
 
 .carousel-item.active {
   opacity: 1;
-  position: relative; /* Active item takes up space to define height */
   pointer-events: auto;
 }
 
