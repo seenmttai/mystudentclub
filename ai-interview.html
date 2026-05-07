@@ -1274,65 +1274,12 @@
         }
 
 
-        .push-to-talk-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
 
-        .push-to-talk-btn {
-            width: 56px;
-            height: 56px;
-            border: 3px solid var(--primary-light);
-            border-radius: 50%;
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition);
-            font-size: 1.3rem;
-            position: relative;
-        }
-
-        .push-to-talk-btn:hover {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: var(--primary);
-        }
-
-        .push-to-talk-btn.recording {
-            background: var(--error);
-            border-color: var(--error);
-            color: white;
-            animation: pulse-recording 1.5s infinite;
-        }
-
-        @keyframes pulse-recording {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.05);
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        .push-to-talk-hint {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-left: 0.5rem;
-        }
 
 
         .speech-status {
-            position: absolute;
-            bottom: 100%;
+            position: fixed;
+            bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.8);
@@ -1341,7 +1288,7 @@
             border-radius: 8px;
             font-size: 0.8rem;
             white-space: nowrap;
-            margin-bottom: 0.5rem;
+            z-index: 1000;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s ease;
@@ -1590,15 +1537,7 @@
                 display: none;
             }
 
-            /* Adjust PTT button position */
-            .floating-ptt {
-                bottom: 96px;
-                right: 12px;
-                /* Ensure it doesn't overlap excessively with PiP */
-                right: auto;
-                left: 50%;
-                transform: translateX(-50%);
-            }
+
             
             /* Subtitles Position - Bottom center, above controls */
             .subtitles-overlay {
@@ -2255,18 +2194,7 @@
         </footer>
 
 
-        <div class="floating-ptt" aria-live="polite">
-            <div class="push-to-talk-container">
-                <button id="push-to-talk-btn" class="push-to-talk-btn" title="Hold to speak" aria-label="Hold to speak">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path
-                            d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.49 6-3.31 6-6.72h-1.7z" />
-                    </svg>
-                </button>
-                <div id="speech-status" class="speech-status" role="status" aria-live="polite"></div>
-                <span class="push-to-talk-hint">Hold to speak, release to send</span>
-            </div>
-        </div>
+        <div id="speech-status" class="speech-status" role="status" aria-live="polite"></div>
 
         <div id="mobile-chat-fab" class="mobile-chat-fab" aria-label="Open chat">Chat</div>
         <div id="mobile-chat-sheet" class="mobile-chat-sheet" aria-hidden="true">
@@ -2621,7 +2549,6 @@
         const reportSubtitle = document.getElementById('report-subtitle'), reportMeta = document.getElementById('report-meta'), reportBody = document.getElementById('report-body'), reportTranscript = document.getElementById('report-transcript'), downloadReportBtn = document.getElementById('download-report-btn'), newInterviewBtn = document.getElementById('new-interview-btn');
         const analysisStatus = document.getElementById('analysis-status'), analysisLoading = document.getElementById('analysis-loading'), analysisOverview = document.getElementById('analysis-overview'), analysisOverallValue = document.getElementById('analysis-overall-value'), analysisOverallNote = document.getElementById('analysis-overall-note'), analysisOverviewPills = document.getElementById('analysis-overview-pills'), analysisOverviewReco = document.getElementById('analysis-overview-reco'), analysisScoreGrid = document.getElementById('analysis-score-grid'), analysisGrid = document.getElementById('analysis-grid'), analysisSummary = document.getElementById('analysis-summary'), analysisRecommendation = document.getElementById('analysis-recommendation'), analysisRoleTips = document.getElementById('analysis-role-tips'), analysisStrengths = document.getElementById('analysis-strengths'), analysisIssues = document.getElementById('analysis-issues'), analysisVerbalMistakes = document.getElementById('analysis-verbal-mistakes'), analysisMissedQuestions = document.getElementById('analysis-missed-questions'), analysisBetterResponses = document.getElementById('analysis-better-responses'), analysisTips = document.getElementById('analysis-tips');
         const pdfPreviewModal = document.getElementById('pdf-preview-modal'), pdfPreviewContainer = document.getElementById('pdf-preview-container'), pdfPreviewCloseBtn = document.getElementById('pdf-preview-close-btn'), pdfPreviewDownloadBtn = document.getElementById('pdf-preview-download-btn');
-        document.getElementById('push-to-talk-btn').style.display = 'none';
 
         async function init() {
             setupEventListeners();
