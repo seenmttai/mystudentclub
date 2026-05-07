@@ -1144,7 +1144,7 @@
                 user_id: userId,
                 score: parseScore(text),
                 review_data: { review: text },
-                file_name: selectedFile.name
+                file_name: selectedFile?.name || buildPreviewReviewFilename()
             }]);
             if (error) console.error(error);
         }
@@ -1192,18 +1192,36 @@
         // Initialize
         initReviewer();
 
+        async function ensureHtml2Canvas() {
+            if (typeof window.html2canvas === 'function') return window.html2canvas;
+
+            const module = await import('https://esm.sh/html2canvas@1.4.1');
+            const html2canvasLib = module?.default || module?.html2canvas;
+
+            if (typeof html2canvasLib !== 'function') {
+                throw new Error('Review engine failed to load.');
+            }
+
+            window.html2canvas = html2canvasLib;
+            return html2canvasLib;
+        }
+
+        function buildPreviewReviewFilename() {
+            const activeCvData = typeof cvData !== 'undefined' ? cvData : window.cvData;
+            const rawName = (activeCvData?.personal?.name || 'cv-preview').trim();
+            const safeName = rawName
+                .replace(/[\\/:*?"<>|]+/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+            return `${safeName || 'cv-preview'}.pdf`;
+        }
+
         // Expose a function to start review from the current live preview
         window.startReviewFromPreview = async function () {
             try {
                 if (window.toggleReviewer) window.toggleReviewer(true);
 
-                // Check for html2canvas - fallback to global or bundle internal if needed
-                const h2c = window.html2canvas || (window.html2pdf && window.html2pdf.Worker.prototype.html2canvas);
-
-                if (!h2c) {
-                    alert('Review engine (html2canvas) not ready. Please refresh and try again.');
-                    return;
-                }
+                const h2c = await ensureHtml2Canvas();
 
                 const frame = document.getElementById('cv-frame');
                 const doc = frame?.contentDocument || frame?.contentWindow?.document;
@@ -1219,6 +1237,10 @@
                 if (els.previewArea) els.previewArea.style.display = 'none';
                 if (els.loadingSection) els.loadingSection.style.display = 'block';
 
+                if (doc.fonts?.ready) {
+                    await doc.fonts.ready;
+                }
+
                 // Capture the current CV preview as an image (same content as the PDF)
                 const canvas = await h2c(node, {
                     scale: 2,
@@ -1232,6 +1254,7 @@
                 });
 
                 pdfImages = [canvas.toDataURL('image/jpeg', 0.85).split(',')[1]];
+                selectedFile = selectedFile || { name: buildPreviewReviewFilename() };
 
                 // Re-use the existing analysis pipeline
                 await analyzeCv();
