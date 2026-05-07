@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CV - Template 15</title>
+    <style>
+        :root {
+            --bg-header: #28535e;
+            --bg-left: #f2f5f7;
+            --text-primary: #1d2a36;
+            --text-heading: #2a4365;
+            --bg-white: #ffffff;
+            --font-name: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            --font-main: 'Georgia', 'Times New Roman', serif;
+            --viewer-bg: #525659;
+            --ref-width: 1000px;
+            --ref-height: 1414px;
+            --content-scale: 1;
+        }
+
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.2s ease-in;
+        }
+
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .cv-page {
+            width: var(--ref-width);
+            height: var(--ref-height);
+            background: var(--bg-white);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transform-origin: top center;
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        .top-header {
+            background-color: var(--bg-header);
+            color: white;
+            padding: calc(35px * var(--content-scale)) calc(45px * var(--content-scale));
+        }
+
+        .header-name {
+            font-family: var(--font-name);
+            font-size: calc(46px * var(--content-scale));
+            font-weight: 900;
+            letter-spacing: 1px;
+            margin-bottom: calc(5px * var(--content-scale));
+            text-transform: uppercase;
+        }
+
+        .header-subtitle {
+            font-family: var(--font-name);
+            font-size: calc(18px * var(--content-scale));
+            margin-bottom: calc(15px * var(--content-scale));
+        }
+
+        .contact-grid {
+            font-family: var(--font-name);
+            font-size: calc(14px * var(--content-scale));
+            line-height: 1.5;
+        }
+
+        .contact-grid a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .top-header [data-field="contact"] a,
+        .top-header .contact-icon-item a,
+        .top-header .contact-icon-text,
+        .top-header .contact-icon-glyph {
+            color: #ffffff !important;
+            border-bottom-color: rgba(255,255,255,0.7) !important;
+        }
+
+        .main-content {
+            display: flex;
+            flex-grow: 1;
+        }
+
+        .left-col {
+            width: 33%;
+            background-color: var(--bg-left);
+            padding: calc(25px * var(--content-scale)) calc(20px * var(--content-scale));
+            overflow: hidden;
+        }
+
+        .right-col {
+            width: 67%;
+            background-color: var(--bg-white);
+            padding: calc(25px * var(--content-scale)) calc(40px * var(--content-scale));
+            overflow: hidden;
+        }
+
+        .section-block {
+            margin-bottom: calc(25px * var(--content-scale));
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: calc(12px * var(--content-scale));
+            color: var(--text-heading);
+            font-size: calc(22px * var(--content-scale));
+            font-weight: bold;
+            margin-bottom: calc(15px * var(--content-scale));
+            line-height: 1.2;
+        }
+
+        .left-col .section-header {
+            font-size: calc(20px * var(--content-scale));
+        }
+
+        .section-icon {
+            width: calc(30px * var(--content-scale));
+            height: calc(30px * var(--content-scale));
+            flex-shrink: 0;
+        }
+
+        .left-title {
+            color: var(--text-heading);
+            font-size: calc(16px * var(--content-scale));
+            font-weight: bold;
+            margin-bottom: calc(3px * var(--content-scale));
+        }
+
+        .left-subtitle {
+            color: var(--text-heading);
+            font-size: calc(15px * var(--content-scale));
+            font-weight: bold;
+            margin-bottom: calc(8px * var(--content-scale));
+        }
+
+        .bullet-list {
+            list-style-type: disc;
+            padding-left: calc(20px * var(--content-scale));
+            margin: 0;
+            text-align: justify;
+        }
+
+        .left-col .bullet-list {
+            color: #3f4e5e;
+            font-size: calc(14px * var(--content-scale));
+        }
+
+        .right-col .bullet-list {
+            font-size: calc(15px * var(--content-scale));
+        }
+
+        .bullet-list li {
+            margin-bottom: calc(6px * var(--content-scale));
+            line-height: 1.4;
+        }
+
+        .edu-item {
+            margin-bottom: calc(15px * var(--content-scale));
+            font-size: calc(15px * var(--content-scale));
+            line-height: 1.4;
+        }
+
+        .edu-item:last-child { margin-bottom: 0; }
+
+        .edu-degree {
+            display: flex;
+            justify-content: space-between;
+            gap: calc(10px * var(--content-scale));
+            margin-bottom: calc(2px * var(--content-scale));
+            font-weight: bold;
+        }
+
+        .edu-inst {
+            font-weight: bold;
+            margin-bottom: calc(2px * var(--content-scale));
+        }
+
+        .exp-item {
+            margin-bottom: calc(20px * var(--content-scale));
+        }
+
+        .exp-item:last-child { margin-bottom: 0; }
+
+        .exp-title {
+            font-size: calc(16px * var(--content-scale));
+            font-weight: bold;
+            margin-bottom: calc(2px * var(--content-scale));
+        }
+
+        .exp-company-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: calc(10px * var(--content-scale));
+            font-weight: bold;
+            font-size: calc(15px * var(--content-scale));
+            margin-bottom: calc(2px * var(--content-scale));
+        }
+
+        .exp-role {
+            font-size: calc(14px * var(--content-scale));
+            margin-bottom: calc(8px * var(--content-scale));
+        }
+
+        .template {
+            display: none !important;
+        }
+
+        .main-content > .custom-section-injected,
+        .main-content > .universal-injected {
+            width: 67%;
+            margin-left: 33%;
+            background-color: var(--bg-white);
+            padding: 0 calc(40px * var(--content-scale)) calc(18px * var(--content-scale));
+        }
+
+        .custom-section-injected .section-header,
+        .universal-injected .section-header {
+            margin-bottom: calc(12px * var(--content-scale));
+        }
+
+        .custom-section-injected ul,
+        .universal-injected ul {
+            list-style-type: disc;
+            padding-left: calc(20px * var(--content-scale));
+            margin: 0;
+        }
+
+        @media print {
+            @page { size: A4 portrait; margin: 0; }
+            html, body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                background: #ffffff !important;
+            }
+            #zoom-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                transform: none !important;
+            }
+            .cv-page {
+                width: 1000px !important;
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: none !important;
+                zoom: 0.7937;
+                -moz-transform: scale(0.7937);
+                -moz-transform-origin: top center;
+                transform: none !important;
+                position: static !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="zoom-wrapper">
+        <div class="cv-page" id="cv-page">
+            <div class="top-header">
+                <div class="header-name" data-field="name"></div>
+                <div class="header-subtitle" data-field="tagline"></div>
+                <div class="contact-grid" data-field="contact"></div>
+            </div>
+
+            <div class="main-content main-container">
+                <div class="left-col">
+                    <div class="section-block sortable-section" data-section-id="leadership">
+                        <div class="section-header">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            <span>Position of Responsibility</span>
+                        </div>
+                        <ul class="bullet-list" data-list="leadership"></ul>
+                    </div>
+
+                    <div class="section-block sortable-section" data-section-id="skills">
+                        <div class="section-header">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                            <span>Technical Skills</span>
+                        </div>
+                        <div data-field="skills"></div>
+                    </div>
+
+                    <div class="section-block sortable-section" data-section-id="certifications">
+                        <div class="section-header">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                            <span>Awards & Certifications</span>
+                        </div>
+                        <ul class="bullet-list" data-list="certifications"></ul>
+                    </div>
+
+                    <div class="section-block sortable-section" data-section-id="interests">
+                        <div class="section-header">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                            <span>Extra-Curricular</span>
+                        </div>
+                        <ul class="bullet-list" data-list="interests"></ul>
+                    </div>
+                </div>
+
+                <div class="right-col" data-section-append-host>
+                    <div class="section-block sortable-section" data-section-id="summary">
+                        <div class="section-header">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                            <span>Summary</span>
+                        </div>
+                        <div data-field="summary"></div>
+                    </div>
+
+                    <div class="section-block sortable-section" data-section-id="education">
+                        <div class="section-header">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                            <span>Education</span>
+                        </div>
+                        <div id="education-list">
+                            <div class="edu-item template">
+                                <div class="edu-degree">
+                                    <span data-field="degree"></span>
+                                    <span data-field="year"></span>
+                                </div>
+                                <div class="edu-inst" data-field="institution"></div>
+                                <div data-field="marks"></div>
+                                <div data-field="remarks"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-block sortable-section" data-section-id="experience">
+                        <div class="section-header">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>
+                            <span>Experience</span>
+                        </div>
+                        <div id="experience-list">
+                            <div class="exp-item template">
+                                <div class="exp-title" data-field="role"></div>
+                                <div class="exp-company-row">
+                                    <span data-field="company"></span>
+                                    <span data-field="dates"></span>
+                                </div>
+                                <div class="exp-role" data-field="category"></div>
+                                <ul class="bullet-list" data-list="bullets"></ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-block sortable-section" data-section-id="projects">
+                        <div class="section-header">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+                            <span>Projects</span>
+                        </div>
+                        <div id="projects-list">
+                            <div class="exp-item template">
+                                <div class="exp-title" data-field="title"></div>
+                                <div class="exp-role" data-field="description"></div>
+                                <ul class="bullet-list" data-list="bullets"></ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-block sortable-section" data-section-id="achievements">
+                        <div class="section-header">
+                            <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15l-3.5 2 1-4-3-2.5 4-.5L12 6l1.5 4 4 .5-3 2.5 1 4z"/></svg>
+                            <span>Achievements</span>
+                        </div>
+                        <ul class="bullet-list" data-list="achievements"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="cv-common.js"></script>
+    <script>
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            if (!page || document.body.classList.contains('print-mode')) return;
+            const windowWidth = window.innerWidth;
+            const targetWidth = windowWidth - 20;
+            const refWidth = 1000;
+
+            let scale = 1;
+            if (targetWidth < refWidth) {
+                scale = targetWidth / refWidth;
+            }
+
+            page.style.transform = `scale(${scale})`;
+            const refHeight = 1414;
+            const currentVisualHeight = refHeight * scale;
+            const spaceToRemove = refHeight - currentVisualHeight;
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            const maxHeight = 1414;
+            let contentScale = 1;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+
+            let iterations = 0;
+            while (page.scrollHeight > maxHeight && iterations < 50) {
+                contentScale -= 0.02;
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                iterations++;
+            }
+        }
+
+        let screenTransform = '';
+        let screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            screenTransform = page.style.transform;
+            screenMarginBottom = page.style.marginBottom;
+            document.body.classList.add('print-mode');
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+            shrinkContentToFit();
+        }
+
+        function handlePrintChange(e) {
+            if (e.matches) enablePrintMode();
+            else disablePrintMode();
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            document.body.classList.remove('print-mode');
+            page.style.transform = screenTransform || '';
+            page.style.marginBottom = screenMarginBottom || '';
+            scaleToFit();
+        }
+
+        function init() {
+            shrinkContentToFit();
+            scaleToFit();
+            document.body.style.opacity = '1';
+
+            const printMedia = window.matchMedia('print');
+            if (printMedia.addEventListener) printMedia.addEventListener('change', handlePrintChange);
+            else if (printMedia.addListener) printMedia.addListener(handlePrintChange);
+
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+        window.addEventListener('load', function() {
+            scaleToFit();
+            shrinkContentToFit();
+        });
+
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+</html>

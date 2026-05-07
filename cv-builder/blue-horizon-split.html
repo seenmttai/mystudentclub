@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CV - Template 16</title>
+    <style>
+        :root {
+            --bg-header: #1f385c;
+            --text-heading: #4982c2;
+            --navy-line: #1f385c;
+            --text-primary: #111111;
+            --bg-white: #ffffff;
+            --font-main: 'Segoe UI', Calibri, Arial, sans-serif;
+            --viewer-bg: #525659;
+            --ref-width: 1000px;
+            --ref-height: 1414px;
+            --content-scale: 1;
+        }
+
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.2s ease-in;
+        }
+
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .cv-page {
+            width: var(--ref-width);
+            height: var(--ref-height);
+            background: var(--bg-white);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transform-origin: top center;
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        .top-header {
+            background-color: var(--bg-header);
+            color: white;
+            padding: calc(30px * var(--content-scale)) calc(40px * var(--content-scale));
+        }
+
+        .header-name {
+            font-size: calc(36px * var(--content-scale));
+            font-weight: 600;
+            margin-bottom: calc(4px * var(--content-scale));
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .header-subtitle {
+            font-size: calc(15px * var(--content-scale));
+            margin-bottom: calc(12px * var(--content-scale));
+        }
+
+        .contact-grid {
+            font-size: calc(13px * var(--content-scale));
+            line-height: 1.5;
+        }
+
+        .top-header [data-field="contact"] a,
+        .top-header .contact-icon-item a,
+        .top-header .contact-icon-text,
+        .top-header .contact-icon-glyph {
+            color: #ffffff !important;
+            border-bottom-color: rgba(255,255,255,0.7) !important;
+        }
+
+        .main-content {
+            display: flex;
+            justify-content: space-between;
+            flex-grow: 1;
+            padding: calc(25px * var(--content-scale)) calc(40px * var(--content-scale));
+            gap: calc(20px * var(--content-scale));
+            overflow: visible;
+        }
+
+        .left-col { width: 58%; overflow: visible; }
+        .right-col { width: 38%; overflow: visible; }
+
+        .section-block { margin-bottom: calc(25px * var(--content-scale)); }
+        .section-item { margin-bottom: calc(15px * var(--content-scale)); }
+
+        .section-header {
+            color: var(--text-heading);
+            font-size: calc(17px * var(--content-scale));
+            text-transform: uppercase;
+            font-weight: 600;
+            border-bottom: calc(2px * var(--content-scale)) solid var(--navy-line);
+            padding-bottom: calc(6px * var(--content-scale));
+            margin-bottom: calc(15px * var(--content-scale));
+        }
+
+        .sub-title {
+            color: var(--text-heading);
+            font-size: calc(15px * var(--content-scale));
+            margin-bottom: calc(4px * var(--content-scale));
+        }
+
+        .item-main-title {
+            font-weight: 700;
+            font-size: calc(15px * var(--content-scale));
+            margin-bottom: calc(2px * var(--content-scale));
+        }
+
+        .item-main-title-navy {
+            font-weight: 700;
+            font-size: calc(15px * var(--content-scale));
+            color: var(--navy-line);
+            margin-bottom: calc(2px * var(--content-scale));
+        }
+
+        .item-date {
+            font-size: calc(12px * var(--content-scale));
+            font-weight: 700;
+            margin-bottom: calc(8px * var(--content-scale));
+        }
+
+        .item-desc {
+            font-size: calc(14px * var(--content-scale));
+            margin-bottom: calc(6px * var(--content-scale));
+        }
+
+        .bullet-list {
+            list-style-type: square;
+            padding-left: calc(18px * var(--content-scale));
+            margin: 0;
+            text-align: left;
+        }
+
+        .bullet-list li {
+            font-size: calc(13px * var(--content-scale));
+            margin-bottom: calc(5px * var(--content-scale));
+            line-height: 1.4;
+        }
+
+        .bullet-list li:last-child { margin-bottom: 0; }
+
+        .template { display: none !important; }
+
+        .right-col .custom-section-injected,
+        .right-col .universal-injected {
+            margin-bottom: calc(25px * var(--content-scale));
+        }
+
+        .custom-section-injected .section-header,
+        .universal-injected .section-header {
+            margin-bottom: calc(15px * var(--content-scale));
+        }
+
+        .custom-section-injected ul,
+        .universal-injected ul {
+            list-style-type: square;
+            padding-left: calc(18px * var(--content-scale));
+            margin: 0;
+        }
+
+        @media print {
+            @page { size: A4 portrait; margin: 0; }
+            html, body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                background: #ffffff !important;
+            }
+            #zoom-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                transform: none !important;
+            }
+            .cv-page {
+                width: 1000px !important;
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: none !important;
+                zoom: 0.7937;
+                -moz-transform: scale(0.7937);
+                -moz-transform-origin: top center;
+                transform: none !important;
+                position: static !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="zoom-wrapper">
+        <div class="cv-page" id="cv-page">
+            <div class="top-header">
+                <div class="header-name" data-field="name"></div>
+                <div class="header-subtitle" data-field="tagline"></div>
+                <div class="contact-grid" data-field="contact"></div>
+            </div>
+
+            <div class="main-content main-container">
+                <div class="left-col">
+                    <div class="section-block sortable-section" data-section-id="experience">
+                        <div class="section-header">Experience</div>
+                        <div id="experience-list">
+                            <div class="section-item template">
+                                <div class="sub-title" data-field="role"></div>
+                                <div class="item-main-title" data-field="company"></div>
+                                <div class="item-date" data-field="dates"></div>
+                                <div class="sub-title" data-field="category"></div>
+                                <ul class="bullet-list" data-list="bullets"></ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-block sortable-section" data-section-id="education">
+                        <div class="section-header">Education</div>
+                        <div id="education-list">
+                            <div class="section-item template">
+                                <div class="sub-title" data-field="degree"></div>
+                                <div class="item-main-title-navy" data-field="institution"></div>
+                                <div class="item-desc"><span data-field="marks"></span><span data-field="year"></span><span data-field="remarks"></span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-col" data-section-append-host>
+                    <div class="section-block sortable-section" data-section-id="summary">
+                        <div class="section-header">Summary</div>
+                        <div class="item-desc" data-field="summary"></div>
+                    </div>
+
+                    <div class="section-block sortable-section" data-section-id="leadership">
+                        <div class="section-header">Position Of Responsibility</div>
+                        <ul class="bullet-list" data-list="leadership"></ul>
+                    </div>
+
+                    <div class="section-block sortable-section" data-section-id="skills">
+                        <div class="section-header">Technical Skills</div>
+                        <div class="item-desc" data-field="skills"></div>
+                    </div>
+
+                    <div class="section-block sortable-section" data-section-id="certifications">
+                        <div class="section-header">Awards & Certifications</div>
+                        <ul class="bullet-list" data-list="certifications"></ul>
+                    </div>
+
+                    <div class="section-block sortable-section" data-section-id="interests">
+                        <div class="section-header">Interests & Extra-Curricular</div>
+                        <ul class="bullet-list" data-list="interests"></ul>
+                    </div>
+
+                    <div class="section-block sortable-section" data-section-id="projects">
+                        <div class="section-header">Projects</div>
+                        <div id="projects-list">
+                            <div class="section-item template">
+                                <div class="item-main-title" data-field="title"></div>
+                                <div class="item-desc" data-field="description"></div>
+                                <ul class="bullet-list" data-list="bullets"></ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-block sortable-section" data-section-id="achievements">
+                        <div class="section-header">Achievements</div>
+                        <ul class="bullet-list" data-list="achievements"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="cv-common.js"></script>
+    <script>
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            if (!page || document.body.classList.contains('print-mode')) return;
+            const windowWidth = window.innerWidth;
+            const targetWidth = windowWidth - 20;
+            const refWidth = 1000;
+
+            let scale = 1;
+            if (targetWidth < refWidth) {
+                scale = targetWidth / refWidth;
+            }
+
+            page.style.transform = `scale(${scale})`;
+            const refHeight = 1414;
+            const currentVisualHeight = refHeight * scale;
+            const spaceToRemove = refHeight - currentVisualHeight;
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            const maxHeight = 1414;
+            let contentScale = 1;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+
+            let iterations = 0;
+            while (page.scrollHeight > maxHeight && iterations < 50) {
+                contentScale -= 0.02;
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                iterations++;
+            }
+        }
+
+        let screenTransform = '';
+        let screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            screenTransform = page.style.transform;
+            screenMarginBottom = page.style.marginBottom;
+            document.body.classList.add('print-mode');
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+            shrinkContentToFit();
+        }
+
+        function handlePrintChange(e) {
+            if (e.matches) enablePrintMode();
+            else disablePrintMode();
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            document.body.classList.remove('print-mode');
+            page.style.transform = screenTransform || '';
+            page.style.marginBottom = screenMarginBottom || '';
+            scaleToFit();
+        }
+
+        function init() {
+            shrinkContentToFit();
+            scaleToFit();
+            document.body.style.opacity = '1';
+            const printMedia = window.matchMedia('print');
+            if (printMedia.addEventListener) printMedia.addEventListener('change', handlePrintChange);
+            else if (printMedia.addListener) printMedia.addListener(handlePrintChange);
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+        window.addEventListener('load', function() {
+            scaleToFit();
+            shrinkContentToFit();
+        });
+
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+</html>
