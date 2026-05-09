@@ -543,6 +543,18 @@
     padding-right: 1rem;
 }
 
+.resource-meta {
+    flex: 1;
+    min-width: 220px;
+}
+
+.resource-format-note {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.8rem;
+    color: var(--text-muted, #64748b);
+}
+
 .resource-actions {
     display: flex;
     gap: 0.5rem;
@@ -801,6 +813,11 @@
     flex-shrink: 0;
 }
 
+.resource-viewer-title-wrap {
+    min-width: 0;
+    flex: 1;
+}
+
 .resource-viewer-title {
     font-size: 1.25rem;
     font-weight: 600;
@@ -809,6 +826,12 @@
     overflow: hidden;
     text-overflow: ellipsis;
     padding-right: 1rem;
+}
+
+.resource-viewer-subtitle {
+    margin-top: 0.35rem;
+    font-size: 0.88rem;
+    color: #64748b;
 }
 
 .resource-viewer-header>div {

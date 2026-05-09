@@ -119,6 +119,30 @@ document.addEventListener('DOMContentLoaded', () => {
         return iconMap[type ? type.toLowerCase() : ''] || 'fas fa-file';
     };
 
+    const isDocxPreviewResource = (resource) => {
+        const type = String(resource?.type || '').toLowerCase();
+        const hasPreview = resource?.view_storage_path && resource.view_storage_path !== 'None';
+        const hasDownload = resource?.download_storage_path && resource.download_storage_path !== 'None';
+        return type === 'docx' && hasPreview && hasDownload;
+    };
+
+    const getResourceViewLabel = (resource) => isDocxPreviewResource(resource) ? 'Preview PDF' : 'View';
+
+    const getResourceDownloadLabel = (resource) => isDocxPreviewResource(resource) ? 'Download DOCX' : 'Download';
+
+    const getResourceFormatNote = (resource) => (
+        isDocxPreviewResource(resource)
+            ? 'PDF preview available. Download returns the original DOCX file.'
+            : ''
+    );
+
+    const getResourceViewerSubtitle = (resource, type) => {
+        if (isDocxPreviewResource(resource) && type === 'pdf') {
+            return 'Previewing the PDF version. Use download to get the original DOCX file.';
+        }
+        return '';
+    };
+
     const updateLearningStreak = () => {
         const today = new Date().toDateString();
         const lastActivity = localStorage.getItem('lastLearningActivity');
@@ -1050,15 +1074,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 resourcesHTML += `<ul class="resource-list">`;
                 groups[groupName].forEach(resource => {
+                    const viewLabel = getResourceViewLabel(resource);
+                    const downloadLabel = getResourceDownloadLabel(resource);
+                    const formatNote = getResourceFormatNote(resource);
                     resourcesHTML += `
                         <li class="resource-item">
                             <span class="resource-icon"><i class="${getResourceIcon(resource.type)}"></i></span>
-                            <span class="resource-title">${resource.title}</span>
+                            <div class="resource-meta">
+                                <span class="resource-title">${resource.title}</span>
+                                ${formatNote ? `<span class="resource-format-note">${formatNote}</span>` : ''}
+                            </div>
                             <div class="resource-actions">
-                                <button class="resource-btn resource-btn-view" data-resource='${JSON.stringify(resource).replace(/'/g, "&apos;")}'><i class="fas fa-eye"></i> View</button>
+                                <button class="resource-btn resource-btn-view" data-resource='${JSON.stringify(resource).replace(/'/g, "&apos;")}'><i class="fas fa-eye"></i> ${viewLabel}</button>
                                 ${resource.download_storage_path && resource.download_storage_path !== 'None' ?
-                            `<button class="resource-btn resource-btn-download" data-resource='${JSON.stringify(resource).replace(/'/g, "&apos;")}'><i class="fas fa-download"></i> Download</button>` :
-                            `<span class="resource-btn resource-btn-download disabled"><i class="fas fa-download"></i> Download</span>`
+                            `<button class="resource-btn resource-btn-download" data-resource='${JSON.stringify(resource).replace(/'/g, "&apos;")}'><i class="fas fa-download"></i> ${downloadLabel}</button>` :
+                            `<span class="resource-btn resource-btn-download disabled"><i class="fas fa-download"></i> ${downloadLabel}</span>`
                         }
                             </div>
                         </li>`;
@@ -1179,6 +1209,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     let viewerUrl = `/ca-resource/?pdf=${encodeURIComponent(proxyUrl)}`;
                     if (dlUrl) {
                         viewerUrl += `&dl=${encodeURIComponent(dlUrl)}`;
+                    }
+                    if (isDocxPreviewResource(resource)) {
+                        viewerUrl += '&preview=docx';
                     }
                     window.open(viewerUrl, '_blank');
                 } catch (err) {
@@ -1356,6 +1389,11 @@ document.addEventListener('DOMContentLoaded', () => {
         state.currentResource = resource;
         state.previewType = type;
         DOMElements.resourceViewerTitle.textContent = resource.title;
+        const viewerSubtitle = document.getElementById('resource-viewer-subtitle');
+        if (viewerSubtitle) {
+            viewerSubtitle.textContent = getResourceViewerSubtitle(resource, type);
+            viewerSubtitle.style.display = viewerSubtitle.textContent ? 'block' : 'none';
+        }
 
         DOMElements.pdfViewerContainer.style.display = 'none';
         DOMElements.csvViewerContainer.style.display = 'none';
@@ -1366,6 +1404,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const hasDl = resource.download_storage_path && resource.download_storage_path !== 'None';
         if (DOMElements.viewerDownloadBtn) {
             DOMElements.viewerDownloadBtn.style.display = hasDl ? 'inline-block' : 'none';
+            DOMElements.viewerDownloadBtn.textContent = getResourceDownloadLabel(resource);
         }
 
         try {
@@ -1494,6 +1533,11 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.resourceViewerModal.classList.remove('visible');
         DOMElements.resourceIframe.src = 'about:blank';
         DOMElements.resourceViewerModal.querySelector('.resource-viewer-controls').style.display = 'flex';
+        const viewerSubtitle = document.getElementById('resource-viewer-subtitle');
+        if (viewerSubtitle) {
+            viewerSubtitle.textContent = '';
+            viewerSubtitle.style.display = 'none';
+        }
         state.pdfDoc = null; state.currentResource = null; state.previewType = null;
     };
 

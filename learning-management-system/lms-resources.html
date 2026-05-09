@@ -200,6 +200,12 @@
             flex-grow: 1;
         }
 
+        .resource-format-note {
+            margin-top: 0.5rem;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
         .resource-actions {
             display: flex;
             gap: 0.5rem;
@@ -306,6 +312,16 @@
             font-size: 1.25rem;
             font-weight: 600;
             color: #1e293b;
+        }
+
+        .resource-viewer-title-wrap {
+            min-width: 0;
+        }
+
+        .resource-viewer-subtitle {
+            margin-top: 0.35rem;
+            font-size: 0.88rem;
+            color: #64748b;
         }
 
         .resource-viewer-close-button {
@@ -530,7 +546,10 @@
                             <div class="resource-icon"><i :class="getResourceIcon(resource.type)"></i></div>
                             <h3 class="resource-title">{{ resource.title }}</h3>
                         </div>
-                        <p class="resource-description">{{ resource.description || 'Access this resource below.' }}</p>
+                        <div class="resource-description">
+                            <p>{{ resource.description || 'Access this resource below.' }}</p>
+                            <p v-if="getResourceFormatNote(resource)" class="resource-format-note">{{ getResourceFormatNote(resource) }}</p>
+                        </div>
                         <div class="resource-actions">
                             <button v-if="isSpecialSheet(resource)" @click="openViewer(resource, 'iframe')"
                                 class="resource-btn resource-btn-view">
@@ -540,7 +559,7 @@
                             <button v-else-if="hasViewPath(resource)"
                                 @click="openViewer(resource, getPreviewType(resource))"
                                 class="resource-btn resource-btn-view">
-                                <i class="fas fa-eye"></i> View
+                                <i class="fas fa-eye"></i> {{ getViewLabel(resource) }}
                             </button>
 
                             <a v-else-if="resource.type === 'external_link' && resource.url" :href="resource.url"
@@ -550,7 +569,7 @@
 
                             <button v-if="hasDownloadPath(resource)" @click.stop="downloadResource(resource)"
                                 class="resource-btn resource-btn-download">
-                                <i class="fas fa-download"></i> Download
+                                <i class="fas fa-download"></i> {{ getDownloadLabel(resource) }}
                             </button>
                         </div>
                     </div>
@@ -561,7 +580,7 @@
             <div v-if="isViewerVisible" id="resource-viewer-modal">
                 <div class="resource-viewer-content">
                     <div class="resource-viewer-header">
-                        <h2 class="resource-viewer-title">{{ currentResourceTitle }}</h2>
+                        <h2 class="resource-viewer-title">{{ currentResourceTitle }}{{ currentResourceSubtitle ? ' · PDF Preview' : '' }}</h2>
                         <button @click="closeViewer" class="resource-viewer-close-button">×</button>
                     </div>
 
@@ -665,6 +684,7 @@
                     viewerLoading: false,
                     previewType: null, // 'iframe', 'pdf', 'csv'
                     currentResourceTitle: '',
+                    currentResourceSubtitle: '',
 
                     // Iframe Data
                     iframeSrc: '',
@@ -755,6 +775,21 @@
                 hasDownloadPath(resource) {
                     return resource.download_storage_path && resource.download_storage_path !== 'None';
                 },
+                isDocxPreviewResource(resource) {
+                    const type = String(resource?.type || '').toLowerCase();
+                    return type === 'docx' && this.hasViewPath(resource) && this.hasDownloadPath(resource);
+                },
+                getViewLabel(resource) {
+                    return this.isDocxPreviewResource(resource) ? 'Preview PDF' : 'View';
+                },
+                getDownloadLabel(resource) {
+                    return this.isDocxPreviewResource(resource) ? 'Download DOCX' : 'Download';
+                },
+                getResourceFormatNote(resource) {
+                    return this.isDocxPreviewResource(resource)
+                        ? 'PDF preview available. Download returns the original DOCX file.'
+                        : '';
+                },
                 getPreviewType(resource) {
                     if (this.isSpecialSheet(resource)) return 'iframe';
                     if (resource.view_storage_path) {
@@ -775,7 +810,19 @@
                             const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
                             if (error) throw error;
                             const proxyUrl = `https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`;
-                            window.open(`/ca-resource/?pdf=${encodeURIComponent(proxyUrl)}`, '_blank');
+                            let viewerUrl = `/ca-resource/?pdf=${encodeURIComponent(proxyUrl)}`;
+                            if (this.hasDownloadPath(resource)) {
+                                const { data: dlData, error: dlError } = await supabase.storage
+                                    .from('industrial-training-mastery-resources')
+                                    .createSignedUrl(resource.download_storage_path, 300, { download: true });
+                                if (!dlError && dlData?.signedUrl) {
+                                    viewerUrl += `&dl=${encodeURIComponent(dlData.signedUrl)}`;
+                                }
+                            }
+                            if (this.isDocxPreviewResource(resource)) {
+                                viewerUrl += '&preview=docx';
+                            }
+                            window.open(viewerUrl, '_blank');
                         } catch (err) {
                             console.error("Viewer error", err);
                             alert("Could not load resource.");
@@ -785,6 +832,9 @@
 
                     this.isViewerVisible = true;
                     this.currentResourceTitle = resource.title;
+                    this.currentResourceSubtitle = this.isDocxPreviewResource(resource) && type === 'pdf'
+                        ? 'Previewing the PDF version. Download gets the original DOCX file.'
+                        : '';
                     this.previewType = type;
                     this.viewerLoading = true;
 
@@ -912,6 +962,9 @@
                 closeViewer() {
                     this.isViewerVisible = false;
                     this.iframeSrc = 'about:blank';
+                    this.currentResourceTitle = '';
+                    this.currentResourceSubtitle = '';
+                    this.previewType = null;
                     this.pdfDoc = null;
                 },
 
