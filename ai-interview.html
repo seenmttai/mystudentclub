@@ -112,7 +112,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
-            padding: 4rem 1rem;
+            padding: 2rem 1rem;
             position: relative;
             overflow-y: auto;
             background: radial-gradient(circle at top, rgba(79, 70, 229, 0.1) 0%, transparent 70%);
@@ -2151,7 +2151,7 @@
     <div id="interview-screen" class="interview-container hidden">
         <header class="interview-header">
             <div class="interview-title">
-                AI Video Interview - <span id="current-role">Software Engineer</span>
+                AI Video Interview - <span id="current-role">Selected Role</span>
                 <span class="pills">
                     <span id="score-pill" class="pill success">Avg Score: —</span>
                     <span id="progress-pill" class="pill info">Progress: 0%</span>
@@ -3577,6 +3577,7 @@
                 interviewDomain: document.getElementById('interviewDomain').value,
                 toughness: document.getElementById('toughness').value,
                 jobDescription: document.getElementById('jobDescription').value,
+                specialization: document.getElementById('positionApplied').value,
                 duration: 30 // Default duration
             };
             
@@ -3834,6 +3835,14 @@
             const timeoutId = setTimeout(() => controller.abort(), INTERVIEW_REQUEST_TIMEOUT_MS);
 
             try {
+                console.log("Sending to AI worker:", {
+                    positionApplied: interviewConfig.positionApplied,
+                    experienceLevel: interviewConfig.experienceLevel,
+                    companyName: interviewConfig.companyName,
+                    interviewDomain: interviewConfig.interviewDomain,
+                    toughness: interviewConfig.toughness
+                });
+
                 const response = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: {
@@ -3843,6 +3852,7 @@
                         messages,
                         interviewPlan,
                         positionApplied: interviewConfig.positionApplied,
+                        specialization: interviewConfig.specialization || interviewConfig.positionApplied,
                         experienceLevel: interviewConfig.experienceLevel,
                         companyName: interviewConfig.companyName,
                         companyType: interviewConfig.companyType,
@@ -3856,17 +3866,13 @@
 
                 if (!response.ok) throw new Error(`AI worker returned ${response.status}`);
 
-                let data;
-                try {
-                    data = await response.json();
-                } catch (error) {
-                    throw new Error('AI worker returned invalid JSON');
-                }
-
+                const data = await response.json();
+                console.log("AI Worker Response:", data);
+                
                 if (!data?.ok || !data?.response) {
-                    throw new Error('AI worker returned an empty response');
+                    console.warn("AI worker returned an error or malformed response", data);
                 }
-
+                
                 return data;
             } catch (error) {
                 if (error?.name === 'AbortError') {
