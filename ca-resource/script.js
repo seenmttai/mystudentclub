@@ -2,6 +2,7 @@
 const urlParams = new URLSearchParams(window.location.search);
 const paramPdf = urlParams.get('pdf');
 const paramDl = urlParams.get('dl');
+const previewMode = urlParams.get('preview');
 const PDF_URL = paramPdf ? paramPdf : 'https://www.mystudentclub.com/assets/doc.pdf';
 
 let pdfDoc = null;
@@ -39,6 +40,7 @@ const thumbList = _$('thumbnail-list');
 const viewerArea = _$('viewer-area');
 const flipbookEl = _$('flipbook');
 const loadingOverlay = _$('loading-overlay');
+const previewModeChip = _$('preview-mode-chip');
 
 // ─── Flipbook Dimensions ───
 function getFlipbookDimensions() {
@@ -994,6 +996,12 @@ window.addEventListener('beforeprint', e => {
 updateSearchControls();
 loadPdf(PDF_URL);
 
+if (previewModeChip && previewMode === 'docx') {
+    previewModeChip.style.display = 'inline-flex';
+    previewModeChip.innerHTML = '<i class="fas fa-circle-info"></i><span>PDF Preview</span>';
+    previewModeChip.title = 'You are previewing the PDF version. Use download to get the original DOCX file.';
+}
+
 const dlBtn = document.getElementById('viewer-dl-btn');
 const dlSep = document.getElementById('viewer-dl-separator');
 if (dlBtn && dlSep) {
@@ -1001,6 +1009,11 @@ if (dlBtn && dlSep) {
     dlSep.style.display = 'block';
     
     if (paramDl) {
+        if (previewMode === 'docx') {
+            dlBtn.title = 'Download original DOCX document';
+            dlBtn.setAttribute('aria-label', 'Download DOCX');
+            dlBtn.innerHTML = '<i class="fas fa-download"></i><span class="toolbar-btn-label">DOCX</span>';
+        }
         dlBtn.addEventListener('click', () => {
             window.open(paramDl, '_blank');
         });
