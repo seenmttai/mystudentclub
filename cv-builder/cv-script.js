@@ -2406,7 +2406,7 @@
             const frame = document.getElementById('cv-frame');
             if (frame && frame.contentWindow) {
                 try {
-                    const payload = buildPreviewPayload({ useDemoFallback: false });
+                    const payload = buildPreviewPayload({ useDemoFallback: true });
                     frame.contentWindow.postMessage({ type: 'update-cv', payload }, '*');
                 } catch (e) {
                     console.error('postToFrame error:', e);
