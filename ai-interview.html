@@ -33,37 +33,50 @@
         }
 
         .hidden { display: none !important; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
-        .toughness-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-top: 0.5rem; }
+        .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; margin-bottom: 1.25rem; }
+        @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } }
+        
+        .toughness-group { 
+            display: flex; 
+            background: rgba(255, 255, 255, 0.03);
+            padding: 4px;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            margin-top: 0.5rem; 
+        }
         .toughness-btn {
-            background: var(--bg-tertiary);
-            border: 2px solid transparent;
-            color: var(--text-secondary);
-            padding: 0.75rem;
-            border-radius: 12px;
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 0.6rem;
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.2s ease;
+            font-size: 0.9rem;
             font-weight: 600;
             text-align: center;
         }
         .toughness-btn.selected {
-            background: rgba(37, 99, 235, 0.1);
-            border-color: var(--primary);
-            color: var(--primary);
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
         }
         .toughness-btn:hover:not(.selected) {
-            background: var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
         }
         .file-upload-wrapper {
             position: relative;
             border: 2px dashed var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
+            border-radius: 14px;
+            padding: 1.25rem;
             text-align: center;
-            transition: border-color 0.2s;
-            background: var(--bg-secondary);
+            transition: all 0.2s;
+            background: rgba(255, 255, 255, 0.02);
+            margin-top: 0.5rem;
         }
-        .file-upload-wrapper:hover { border-color: var(--primary); }
+        .file-upload-wrapper:hover { border-color: var(--primary); background: rgba(79, 70, 229, 0.03); }
         .file-upload-input {
             position: absolute;
             inset: 0;
@@ -72,9 +85,9 @@
             opacity: 0;
             cursor: pointer;
         }
-        .file-upload-label { color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
-        .file-upload-label svg { color: var(--primary); }
-        .file-upload-preview { margin-top: 1rem; font-size: 0.875rem; color: var(--primary); font-weight: 500; }
+        .file-upload-label { color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; gap: 0.25rem; font-size: 0.9rem; }
+        .file-upload-label svg { color: var(--primary); margin-bottom: 4px; }
+        .file-upload-preview { margin-top: 0.75rem; font-size: 0.8rem; color: var(--success); font-weight: 500; }
 
         * {
             margin: 0;
@@ -93,13 +106,12 @@
 
         .setup-container {
             min-height: 100vh;
-            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1rem;
+            padding: 2rem 1rem;
             position: relative;
-            border-radius: 24px;
+            background: radial-gradient(circle at center, rgba(79, 70, 229, 0.1) 0%, transparent 70%);
         }
 
         .subtitles-overlay {
@@ -150,50 +162,45 @@
         }
 
         .setup-card {
-            background: rgba(17, 24, 39, 0.6);
-            backdrop-filter: blur(24px);
+            background: rgba(11, 17, 32, 0.8);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 2rem 3rem;
-            max-width: 900px;
+            border-radius: 28px;
+            padding: 2.5rem;
+            max-width: 800px;
             width: 100%;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             position: relative;
             z-index: 2;
         }
 
         .setup-header {
             text-align: center;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
-
         .setup-logo {
-            width: 56px;
-            height: 56px;
+            width: 48px;
+            height: 48px;
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            border-radius: 16px;
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1.5rem;
-            box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
+            margin: 0 auto 1.25rem;
+            box-shadow: 0 0 20px rgba(79, 70, 229, 0.3);
         }
-
         .setup-title {
-            font-size: 2.25rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.75rem;
+            font-size: 2rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
         }
-
         .setup-subtitle {
             color: var(--text-muted);
-            font-size: 1.1rem;
-            line-height: 1.6;
-            max-width: 450px;
+            font-size: 1rem;
+            line-height: 1.5;
+            max-width: 400px;
             margin: 0 auto;
         }
 
@@ -209,21 +216,29 @@
         }
 
         .form-label {
-            font-weight: 500;
+            font-weight: 600;
             margin-bottom: 0.5rem;
             color: var(--text-secondary);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
-
         .form-input,
         .form-select {
-            padding: 0.875rem 1rem;
-            background: rgba(17, 24, 39, 0.8);
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border);
-            border-radius: var(--border-radius);
+            border-radius: 12px;
             color: var(--text-primary);
-            font-size: 1rem;
-            transition: var(--transition);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        .form-input:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+            outline: none;
         }
 
         .select-wrapper {
@@ -238,17 +253,17 @@
         }
 
         .custom-dropdown-trigger {
-            padding: 0.875rem 1rem;
-            background: var(--bg-secondary);
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border);
-            border-radius: var(--border-radius);
+            border-radius: 12px;
             color: var(--text-primary);
-            font-size: 1rem;
+            font-size: 0.95rem;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: var(--transition);
+            transition: all 0.2s;
             width: 100%;
         }
 
@@ -2048,47 +2063,49 @@
                     </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label class="form-label">Interview Domain</label>
-                    <select id="interviewDomain" class="form-select">
-                        <option value="Statutory Audit">Statutory Audit</option>
-                        <option value="Internal Audit">Internal Audit</option>
-                        <option value="Direct Tax">Direct Tax</option>
-                        <option value="Indirect Tax (GST)">Indirect Tax (GST)</option>
-                        <option value="Financial Reporting (IndAS)">Financial Reporting (IndAS)</option>
-                        <option value="FP&A / Corporate Finance">FP&A / Corporate Finance</option>
-                        <option value="General Finance">General Finance</option>
-                    </select>
-                </div>
-
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label class="form-label">Interview Toughness</label>
-                    <div class="toughness-group">
-                        <button type="button" class="toughness-btn" data-value="Easy">Easy</button>
-                        <button type="button" class="toughness-btn selected" data-value="Medium">Medium</button>
-                        <button type="button" class="toughness-btn" data-value="Hard">Hard</button>
-                        <button type="button" class="toughness-btn" data-value="Brutal">Brutal</button>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Interview Domain</label>
+                        <select id="interviewDomain" class="form-select">
+                            <option value="Statutory Audit">Statutory Audit</option>
+                            <option value="Internal Audit">Internal Audit</option>
+                            <option value="Direct Tax">Direct Tax</option>
+                            <option value="Indirect Tax (GST)">Indirect Tax (GST)</option>
+                            <option value="Financial Reporting (IndAS)">Financial Reporting (IndAS)</option>
+                            <option value="FP&A / Corporate Finance">FP&A / Corporate Finance</option>
+                            <option value="General Finance">General Finance</option>
+                        </select>
                     </div>
-                    <input type="hidden" id="toughness" value="Medium">
-                </div>
-
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label class="form-label">Upload CV (PDF only)</label>
-                    <div class="file-upload-wrapper">
-                        <input type="file" id="cvFile" class="file-upload-input" accept=".pdf">
-                        <div class="file-upload-label">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
-                            </svg>
-                            <span>Click to upload or drag and drop</span>
+                    <div class="form-group">
+                        <label class="form-label">Interview Toughness</label>
+                        <div class="toughness-group">
+                            <button type="button" class="toughness-btn" data-value="Easy">Easy</button>
+                            <button type="button" class="toughness-btn selected" data-value="Medium">Med</button>
+                            <button type="button" class="toughness-btn" data-value="Hard">Hard</button>
+                            <button type="button" class="toughness-btn" data-value="Brutal">Brutal</button>
                         </div>
-                        <div id="cv-preview" class="file-upload-preview hidden"></div>
+                        <input type="hidden" id="toughness" value="Medium">
                     </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label class="form-label">Job Description (Optional)</label>
-                    <textarea id="jobDescription" class="form-input" rows="3" placeholder="Paste the JD here for a more tailored interview..."></textarea>
+                <div class="form-row" style="margin-bottom: 2rem;">
+                    <div class="form-group">
+                        <label class="form-label">Upload CV (PDF only)</label>
+                        <div class="file-upload-wrapper">
+                            <input type="file" id="cvFile" class="file-upload-input" accept=".pdf">
+                            <div class="file-upload-label">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                                </svg>
+                                <span>Drop CV or click to browse</span>
+                            </div>
+                            <div id="cv-preview" class="file-upload-preview hidden"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Job Description (Optional)</label>
+                        <textarea id="jobDescription" class="form-input" rows="2" style="resize: none; height: 82px;" placeholder="Paste JD for tailored questions..."></textarea>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1rem;">
