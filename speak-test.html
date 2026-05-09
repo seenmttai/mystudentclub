@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Whisper + VAD</title>
+    <!-- Load ONNX Runtime and VAD-web from CDNs -->
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/ort.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.27/dist/bundle.min.js"></script>
+</head>
+
+<body>
+    <button id="start-btn">Start Microphone</button>
+    <p id="status">Status: Waiting</p>
+    <p id="transcription"></p>
+
+    <script>
+        const workerUrl = "https://YOUR_WORKER_URL_HERE.workers.dev"; // Replace with your Worker URL
+
+        document.getElementById('start-btn').onclick = async () => {
+            document.getElementById('status').innerText = "Status: Loading VAD model...";
+
+            const myvad = await vad.MicVAD.new({
+                onSpeechStart: () => {
+                    document.getElementById('status').innerText = "Status: Listening (Speech Detected)";
+                },
+                onSpeechEnd: async (audio) => {
+                    document.getElementById('status').innerText = "Status: Processing Audio...";
+
+                    // Convert the raw Float32Array to a WAV format buffer
+                    const wavBuffer = vad.utils.encodeWAV(audio);
+
+                    try {
+                        // Send the WAV buffer to your Cloudflare Worker
+                        const response = await fetch(workerUrl, {
+                            method: 'POST',
+                            body: wavBuffer,
+                            headers: { 'Content-Type': 'audio/wav' }
+                        });
+
+                        const result = await response.json();
+                        document.getElementById('transcription').innerText += "\n" + result.text;
+                        document.getElementById('status').innerText = "Status: Waiting for speech...";
+                    } catch (err) {
+                        console.error("Transcription error", err);
+                        document.getElementById('status').innerText = "Status: Error calling Whisper";
+                    }
+                },
+                // Point to the correct WASM/asset paths
+                onnxWASMBasePath: "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/",
+                baseAssetPath: "https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.27/dist/",
+            });
+
+            myvad.start();
+            document.getElementById('status').innerText = "Status: VAD started. Waiting for speech...";
+        };
+    </script>
+</body>
+
+</html>
