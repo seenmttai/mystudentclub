@@ -3682,11 +3682,9 @@ async function downloadCvFile(format = 'pdf') {
         }
 
         // Auto-start tour for first-time visitors
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                if (!localStorage.getItem('cv_tour_completed')) {
-                    startTour();
-                }
-            }, 1200); // Delay to ensure page is fully loaded
-        });
+        setTimeout(() => {
+    if (!localStorage.getItem('cv_tour_completed')) {
+        startTour();
+    }
+}, 1200);
 
