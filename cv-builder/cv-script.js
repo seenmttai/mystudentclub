@@ -132,6 +132,11 @@
         let summaryLinkPopover = null;
         let summaryLinkRange = null;
         const inlineRichEditors = new Map();
+        window.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'cv-frame-ready') {
+        postToFrame();
+    }
+});
 
         // Initialization
         window.onload = () => {
@@ -168,18 +173,23 @@
             updateUndoRedoControls();
 
             const frame = document.getElementById('cv-frame');
-            if (frame) {
-                frame.onload = () => setTimeout(postToFrame, 300);
-                // Listen for frame saying it's ready (fix for white screen on reload)
-                window.addEventListener('message', (e) => {
-                    if (e.data && e.data.type === 'cv-frame-ready') {
-                        postToFrame();
-                    }
-                });
-                // Fallback attempt
-                setTimeout(postToFrame, 1000);
-            }
 
+if (frame) {
+
+    if (
+        frame.contentDocument &&
+        frame.contentDocument.readyState === 'complete'
+    ) {
+
+        setTimeout(postToFrame, 300);
+
+    } else {
+
+        frame.onload = () => setTimeout(postToFrame, 300);
+    }
+
+    setTimeout(postToFrame, 1000);
+}
             initResizeHandle();
             resetEditorScrollToTop();
             requestAnimationFrame(() => resetEditorScrollToTop());
