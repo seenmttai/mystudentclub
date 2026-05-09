@@ -4,6 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.7.107/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.7.107/pdf.worker.min.js';
+    </script>
+
     <title>AI Video Interview - Professional Practice Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -27,9 +32,49 @@
             --transition: all 0.2s ease-in-out;
         }
 
-        .hidden {
-            display: none !important;
+        .hidden { display: none !important; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+        .toughness-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-top: 0.5rem; }
+        .toughness-btn {
+            background: var(--bg-tertiary);
+            border: 2px solid transparent;
+            color: var(--text-secondary);
+            padding: 0.75rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+            text-align: center;
         }
+        .toughness-btn.selected {
+            background: rgba(37, 99, 235, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .toughness-btn:hover:not(.selected) {
+            background: var(--border);
+        }
+        .file-upload-wrapper {
+            position: relative;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: border-color 0.2s;
+            background: var(--bg-secondary);
+        }
+        .file-upload-wrapper:hover { border-color: var(--primary); }
+        .file-upload-input {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .file-upload-label { color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; gap: 0.5rem; }
+        .file-upload-label svg { color: var(--primary); }
+        .file-upload-preview { margin-top: 1rem; font-size: 0.875rem; color: var(--primary); font-weight: 500; }
 
         * {
             margin: 0;
@@ -1966,88 +2011,91 @@
                 </p>
             </div>
 
-            <form id="setup-form" class="form-grid">
-                <div class="form-group">
-                    <label class="form-label" for="specialization">Target Role</label>
-                    <div class="select-wrapper">
-                        <select id="specialization" class="form-select">
-                            <optgroup label="CA & Accounting (Recommended)">
-                                <option value="Chartered Accountant - Audit" selected>Chartered Accountant — Audit
-                                </option>
-                                <option value="Chartered Accountant - Taxation">Chartered Accountant — Taxation</option>
-                                <option value="Management Accountant (CMA)">Management Accountant (CMA)</option>
-                                <option value="Financial Controller">Financial Controller</option>
-                                <option value="Statutory Auditor">Statutory Auditor</option>
-                                <option value="IFRS Specialist">IFRS Specialist</option>
-                                <option value="GST/Indirect Tax Specialist">GST / Indirect Tax Specialist</option>
-                                <option value="Direct Tax Consultant">Direct Tax Consultant</option>
-                                <option value="Risk & Compliance (SOX/ICFR)">Risk & Compliance (SOX / ICFR)</option>
-                                <option value="Treasury Analyst">Treasury Analyst</option>
-                                <option value="Corporate Finance Associate">Corporate Finance Associate</option>
-                                <option value="Forensic Accountant">Forensic Accountant</option>
-                            </optgroup>
-                            <optgroup label="Other Roles">
-                                <option value="Finance Analyst">Finance Analyst</option>
-                                <option value="Business Analyst">Business Analyst</option>
-                                <option value="Product Manager">Product Manager</option>
-                                <option value="Data Scientist">Data Scientist</option>
-                                <option value="Software Engineer">Software Engineer</option>
-                                <option value="UX Designer">UX Designer</option>
-                                <option value="Marketing Manager">Marketing Manager</option>
-                                <option value="Sales Representative">Sales Representative</option>
-                            </optgroup>
+            <form id="setup-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Role Category</label>
+                        <select id="positionApplied" class="form-select">
+                            <option value="CA Fresher">CA Fresher</option>
+                            <option value="Industrial Trainee">Industrial Trainee</option>
+                            <option value="CA Articleship">CA Articleship</option>
+                            <option value="Other Finance Role">Other Finance Role</option>
+                        </select>
+                    </div>
+                    <div id="exp-group" class="form-group">
+                        <label class="form-label">Experience Level</label>
+                        <select id="experienceLevel" class="form-select">
+                            <option value="Fresher">Fresher (0-1 yr)</option>
+                            <option value="Junior">Junior (1-3 yrs)</option>
+                            <option value="Senior">Senior (3+ yrs)</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="experience-level">Experience Level</label>
-                    <div class="select-wrapper">
-                        <select id="experience-level" class="form-select">
-                            <option value="Article/Intern">Article/Intern</option>
-                            <option value="Entry Level" selected>Entry Level (0-2 years)</option>
-                            <option value="Mid Level">Mid Level (3-5 years)</option>
-                            <option value="Senior Level">Senior Level (6-10 years)</option>
-                            <option value="Executive Level">Executive Level (10+ years)</option>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Company Name</label>
+                        <input type="text" id="companyName" class="form-input" placeholder="e.g. Deloitte, Reliance, etc." required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Company Type</label>
+                        <select id="companyType" class="form-select">
+                            <option value="Big 4">Big 4 / Top Tier Firm</option>
+                            <option value="MNC">MNC / Industry Giant</option>
+                            <option value="Mid-Size">Mid-Size Firm</option>
+                            <option value="Startup">Startup / New Age</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="company-type">Company Type</label>
-                    <div class="select-wrapper">
-                        <select id="company-type" class="form-select">
-                            <option value="Big 4 (Audit/Tax)">Big 4 (Audit/Tax)</option>
-                            <option value="Mid-size CA Firm">Mid-size CA Firm</option>
-                            <option value="Corporate (Industry)">Corporate (Industry)</option>
-                            <option value="Consulting Firm">Consulting Firm</option>
-                            <option value="Fortune 500">Fortune 500</option>
-                            <option value="Tech Startup">Tech Startup</option>
-                            <option value="Healthcare">Healthcare</option>
-                            <option value="Government">Government</option>
-                            <option value="Non-Profit">Non-Profit</option>
-                            <option value="Investment Bank">Investment Bank</option>
-                        </select>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label">Interview Domain</label>
+                    <select id="interviewDomain" class="form-select">
+                        <option value="Statutory Audit">Statutory Audit</option>
+                        <option value="Internal Audit">Internal Audit</option>
+                        <option value="Direct Tax">Direct Tax</option>
+                        <option value="Indirect Tax (GST)">Indirect Tax (GST)</option>
+                        <option value="Financial Reporting (IndAS)">Financial Reporting (IndAS)</option>
+                        <option value="FP&A / Corporate Finance">FP&A / Corporate Finance</option>
+                        <option value="General Finance">General Finance</option>
+                    </select>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label">Interview Toughness</label>
+                    <div class="toughness-group">
+                        <button type="button" class="toughness-btn" data-value="Easy">Easy</button>
+                        <button type="button" class="toughness-btn selected" data-value="Medium">Medium</button>
+                        <button type="button" class="toughness-btn" data-value="Hard">Hard</button>
+                        <button type="button" class="toughness-btn" data-value="Brutal">Brutal</button>
+                    </div>
+                    <input type="hidden" id="toughness" value="Medium">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label">Upload CV (PDF only)</label>
+                    <div class="file-upload-wrapper">
+                        <input type="file" id="cvFile" class="file-upload-input" accept=".pdf">
+                        <div class="file-upload-label">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                            </svg>
+                            <span>Click to upload or drag and drop</span>
+                        </div>
+                        <div id="cv-preview" class="file-upload-preview hidden"></div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label class="form-label" for="interview-duration">Interview Duration</label>
-                    <div class="select-wrapper">
-                        <select id="interview-duration" class="form-select">
-                            <option value="15">15 minutes</option>
-                            <option value="30" selected>30 minutes</option>
-                            <option value="45">45 minutes</option>
-                            <option value="60">60 minutes</option>
-                        </select>
-                    </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label">Job Description (Optional)</label>
+                    <textarea id="jobDescription" class="form-input" rows="3" placeholder="Paste the JD here for a more tailored interview..."></textarea>
                 </div>
 
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; padding: 1rem;">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M8 5v14l11-7z" />
                     </svg>
-                    Start Interview
+                    Initialize Interview
                 </button>
             </form>
         </div>
@@ -2336,6 +2384,11 @@
         const WORKER_URL = 'https://interviewme.bhansalimanan55.workers.dev/';
         const ANALYSIS_URL = 'https://analysis.mystudentclub.com/analysis';
         const TTS_ENDPOINT = 'https://us-central1-msc-notif.cloudfunctions.net/gcp-tts-rate-limited';
+
+        // --- NEW STATE ---
+        let interviewPlan = null;
+        let cvImages = [];
+
 
         // --- GLOBAL CONTROLS ---
         window.speechRecognitionActive = false; // Flag to track state
@@ -3029,10 +3082,12 @@
         function buildDetailedAnalysisRequestPayload() {
             return {
                 interview: {
-                    specialization: interviewConfig.specialization,
+                    positionApplied: interviewConfig.positionApplied,
                     experienceLevel: interviewConfig.experienceLevel,
+                    companyName: interviewConfig.companyName,
                     companyType: interviewConfig.companyType,
-                    duration: interviewConfig.duration,
+                    interviewDomain: interviewConfig.interviewDomain,
+                    toughness: interviewConfig.toughness,
                     interviewer: AI_INTERVIEWER_NAME
                 },
                 messages,
@@ -3056,10 +3111,11 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Specialization': interviewConfig.specialization,
+                        'X-Specialization': interviewConfig.positionApplied,
                         'X-Experience-Level': interviewConfig.experienceLevel,
+                        'X-Company-Name': interviewConfig.companyName,
                         'X-Company-Type': interviewConfig.companyType,
-                        'X-Duration': interviewConfig.duration
+                        'X-Duration': 30
                     },
                     body: JSON.stringify(buildDetailedAnalysisRequestPayload())
                 });
@@ -3086,11 +3142,13 @@
 
         function getReportExportMeta() {
             return [
-                ['Role', interviewConfig.specialization || 'N/A'],
+                ['Role', interviewConfig.positionApplied || 'N/A'],
                 ['Experience Level', interviewConfig.experienceLevel || 'N/A'],
+                ['Company', interviewConfig.companyName || 'N/A'],
                 ['Company Type', interviewConfig.companyType || 'N/A'],
+                ['Domain', interviewConfig.interviewDomain || 'N/A'],
+                ['Toughness', interviewConfig.toughness || 'N/A'],
                 ['Interviewer', AI_INTERVIEWER_NAME],
-                ['Selected Duration', interviewConfig.duration ? `${interviewConfig.duration} minutes` : 'N/A'],
                 ['Started At', formatDateTime(interviewStartedAt)],
                 ['Ended At', formatDateTime(finalInterviewReport?.generatedAt || new Date().toISOString())]
             ];
@@ -3301,15 +3359,19 @@
             reportMeta.innerHTML = `
                 <div class="report-meta-item">
                     <span class="report-meta-label">Role</span>
-                    <span class="report-meta-value">${interviewConfig.specialization || 'N/A'}</span>
+                    <span class="report-meta-value">${interviewConfig.positionApplied || 'N/A'}</span>
                 </div>
                 <div class="report-meta-item">
                     <span class="report-meta-label">Experience</span>
                     <span class="report-meta-value">${interviewConfig.experienceLevel || 'N/A'}</span>
                 </div>
                 <div class="report-meta-item">
-                    <span class="report-meta-label">Company Type</span>
-                    <span class="report-meta-value">${interviewConfig.companyType || 'N/A'}</span>
+                    <span class="report-meta-label">Company</span>
+                    <span class="report-meta-value">${interviewConfig.companyName || 'N/A'}</span>
+                </div>
+                <div class="report-meta-item">
+                    <span class="report-meta-label">Toughness</span>
+                    <span class="report-meta-value">${interviewConfig.toughness || 'N/A'}</span>
                 </div>
                 <div class="report-meta-item">
                     <span class="report-meta-label">Started</span>
@@ -3434,11 +3496,105 @@
 
         async function handleSetupSubmit(e) {
             e.preventDefault();
-            interviewConfig = { specialization: document.getElementById('specialization').value, experienceLevel: document.getElementById('experience-level').value, companyType: document.getElementById('company-type').value, duration: document.getElementById('interview-duration').value };
-            currentRoleSpan.textContent = interviewConfig.specialization;
+            
+            const btn = e.submitter;
+            const originalBtnText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner" style="width:16px;height:16px;border-width:2px;"></span> Initializing...';
+
+            interviewConfig = { 
+                positionApplied: document.getElementById('positionApplied').value,
+                experienceLevel: document.getElementById('experienceLevel').value,
+                companyName: document.getElementById('companyName').value,
+                companyType: document.getElementById('companyType').value,
+                interviewDomain: document.getElementById('interviewDomain').value,
+                toughness: document.getElementById('toughness').value,
+                jobDescription: document.getElementById('jobDescription').value,
+                duration: 30 // Default duration
+            };
+            
+            // Process PDF if exists
+            const fileInput = document.getElementById('cvFile');
+            if (fileInput.files.length > 0) {
+                try {
+                    cvImages = await processPdfToImages(fileInput.files[0]);
+                } catch (err) {
+                    console.error("PDF Processing failed:", err);
+                }
+            }
+
+            currentRoleSpan.textContent = `${interviewConfig.positionApplied} (${interviewConfig.toughness})`;
             setupScreen.classList.add('hidden');
-            if (!isModelLoaded) { loadingScreen.classList.remove('hidden'); while (!isModelLoaded) await new Promise(r => setTimeout(r, 100)); loadingScreen.classList.add('hidden'); }
-            try { await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); skipPermissions(); } catch (error) { permissionsModal.classList.remove('hidden'); }
+            
+            if (!isModelLoaded) { 
+                loadingScreen.classList.remove('hidden'); 
+                while (!isModelLoaded) await new Promise(r => setTimeout(r, 100)); 
+                loadingScreen.classList.add('hidden'); 
+            }
+
+            try { 
+                await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); 
+                skipPermissions(); 
+            } catch (error) { 
+                permissionsModal.classList.remove('hidden'); 
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnText;
+            }
+        }
+
+        async function processPdfToImages(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            const images = [];
+            
+            const maxPages = Math.min(pdf.numPages, 3); // Max 3 pages to save tokens
+            for (let i = 1; i <= maxPages; i++) {
+                const page = await pdf.getPage(i);
+                const viewport = page.getViewport({ scale: 1.5 });
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                
+                await page.render({ canvasContext: context, viewport: viewport }).promise;
+                images.push(canvas.toDataURL('image/jpeg', 0.8));
+            }
+            return images;
+        }
+
+        // Initialize toughness buttons
+        document.querySelectorAll('.toughness-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.toughness-btn').forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                document.getElementById('toughness').value = btn.dataset.value;
+            });
+        });
+
+        // Initialize experience level visibility
+        const posSelect = document.getElementById('positionApplied');
+        const expGroup = document.getElementById('exp-group');
+        if (posSelect && expGroup) {
+            posSelect.addEventListener('change', () => {
+                if (posSelect.value === 'CA Articleship') {
+                    expGroup.classList.add('hidden');
+                } else {
+                    expGroup.classList.remove('hidden');
+                }
+            });
+        }
+
+        // CV Upload Preview
+        const cvFileInput = document.getElementById('cvFile');
+        const cvPreview = document.getElementById('cv-preview');
+        if (cvFileInput && cvPreview) {
+            cvFileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    cvPreview.textContent = `File selected: ${e.target.files[0].name}`;
+                    cvPreview.classList.remove('hidden');
+                }
+            });
         }
         function skipPermissions() { permissionsModal.classList.add('hidden'); startInterview(); }
         async function requestPermissions() { try { await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true } }); skipPermissions(); } catch (e) { skipPermissions(); } }
@@ -3447,6 +3603,7 @@
             reportScreen.classList.add('hidden');
             interviewScreen.classList.remove('hidden');
             messages = [];
+            interviewPlan = null;
             isWaitingForAIResponse = false;
             consecutiveInterviewServiceFailures = 0;
             interviewTerminalState = false;
@@ -3611,13 +3768,20 @@
                 const response = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'X-Specialization': interviewConfig.specialization,
-                        'X-Experience-Level': interviewConfig.experienceLevel,
-                        'X-Company-Type': interviewConfig.companyType,
-                        'X-Duration': interviewConfig.duration
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ messages }),
+                    body: JSON.stringify({ 
+                        messages,
+                        interviewPlan,
+                        positionApplied: interviewConfig.positionApplied,
+                        experienceLevel: interviewConfig.experienceLevel,
+                        companyName: interviewConfig.companyName,
+                        companyType: interviewConfig.companyType,
+                        interviewDomain: interviewConfig.interviewDomain,
+                        toughness: interviewConfig.toughness,
+                        jobDescription: interviewConfig.jobDescription,
+                        cvImages: cvImages
+                    }),
                     signal: controller.signal
                 });
 
@@ -3670,6 +3834,11 @@
 
                 if (!data) throw lastError || new Error('No response received from interview service.');
                 consecutiveInterviewServiceFailures = 0;
+
+                // Update persistent interview plan if returned
+                if (data.interviewPlan) {
+                    interviewPlan = data.interviewPlan;
+                }
 
                 let aiMessage = data.response;
                 const { clean, emojis, report } = extractEmojisAndSanitize(aiMessage);
@@ -3783,7 +3952,7 @@
 
         // Custom Dropdown Implementation
         function initCustomSelects() {
-            const selectorIds = ['specialization', 'experience-level', 'company-type', 'interview-duration'];
+            const selectorIds = ['positionApplied', 'experienceLevel', 'companyType', 'interviewDomain'];
 
             // Close dropdowns on outside click
             document.addEventListener('click', (e) => {
@@ -3939,8 +4108,6 @@
         init();
     </script>
 
-    <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
-        data-cf-beacon='{"token": "9ecf6f49919940acb2efcc833483cd5f"}'></script><!-- Cloudflare Pages Analytics -->
     <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
         data-cf-beacon='{"token": "9ecf6f49919940acb2efcc833483cd5f"}'></script><!-- Cloudflare Pages Analytics -->
 </body>
