@@ -6,7 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Video Interview - Professional Practice Platform</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.min.js"></script>
   <style>
+    .hidden { display: none !important; }
     :root {
       --primary: #4f46e5;
       --primary-light: #6366f1;
@@ -251,6 +253,87 @@
       border-color: var(--primary-light);
       background: var(--bg-secondary);
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    }
+
+    .file-upload-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100px;
+      border: 2px dashed var(--border);
+      border-radius: var(--border-radius);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      background: rgba(17, 24, 39, 0.4);
+      overflow: hidden;
+    }
+
+    .file-upload-wrapper:hover {
+      border-color: var(--primary-light);
+      background: rgba(79, 70, 229, 0.1);
+    }
+
+    .file-upload-wrapper.active {
+      border-color: var(--success);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .file-upload-input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .file-upload-text {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      text-align: center;
+      padding: 0 1rem;
+    }
+
+    .file-upload-icon {
+      margin-bottom: 0.5rem;
+      color: var(--text-muted);
+    }
+
+    .toughness-selector {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .toughness-btn {
+      flex: 1;
+      padding: 0.75rem;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .toughness-btn:hover {
+      border-color: var(--primary-light);
+    }
+
+    .toughness-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .toughness-btn[data-toughness="brutal"].active {
+      background: var(--error);
+      border-color: var(--error);
     }
 
     .btn {
@@ -912,42 +995,26 @@
 
       <form id="setup-form" class="form-grid">
         <div class="form-group">
-          <label class="form-label" for="specialization">Target Role</label>
+          <label class="form-label" for="specialization">Position Applied For</label>
           <div class="select-wrapper">
             <select id="specialization" class="form-select">
-              <optgroup label="CA & Accounting (Recommended)">
-                <option value="Chartered Accountant - Audit" selected>Chartered Accountant — Audit</option>
-                <option value="Chartered Accountant - Taxation">Chartered Accountant — Taxation</option>
-                <option value="Management Accountant (CMA)">Management Accountant (CMA)</option>
-                <option value="Financial Controller">Financial Controller</option>
-                <option value="Statutory Auditor">Statutory Auditor</option>
-                <option value="IFRS Specialist">IFRS Specialist</option>
-                <option value="GST/Indirect Tax Specialist">GST / Indirect Tax Specialist</option>
-                <option value="Direct Tax Consultant">Direct Tax Consultant</option>
-                <option value="Risk & Compliance (SOX/ICFR)">Risk & Compliance (SOX / ICFR)</option>
-                <option value="Treasury Analyst">Treasury Analyst</option>
-                <option value="Corporate Finance Associate">Corporate Finance Associate</option>
-                <option value="Forensic Accountant">Forensic Accountant</option>
-              </optgroup>
-              <optgroup label="Other Roles">
-                <option value="Finance Analyst">Finance Analyst</option>
-                <option value="Business Analyst">Business Analyst</option>
-                <option value="Product Manager">Product Manager</option>
-                <option value="Data Scientist">Data Scientist</option>
-                <option value="Software Engineer">Software Engineer</option>
-                <option value="UX Designer">UX Designer</option>
-                <option value="Marketing Manager">Marketing Manager</option>
-                <option value="Sales Representative">Sales Representative</option>
-              </optgroup>
+              <option value="CA Industrial Trainee">CA Industrial Trainee</option>
+              <option value="CA Fresher" selected>CA Fresher</option>
+              <option value="CA Articleship">CA Articleship</option>
+              <option value="Experienced CA">Experienced CA</option>
+              <option value="CFA">CFA</option>
+              <option value="CMA">CMA</option>
+              <option value="CS">CS</option>
+              <option value="Data Scientist">Data Scientist</option>
+              <option value="Others">Others</option>
             </select>
           </div>
         </div>
 
-        <div class="form-group">
+        <div id="experience-level-group" class="form-group hidden">
           <label class="form-label" for="experience-level">Experience Level</label>
           <div class="select-wrapper">
             <select id="experience-level" class="form-select">
-              <option value="Article/Intern">Article/Intern</option>
               <option value="Entry Level" selected>Entry Level (0-2 years)</option>
               <option value="Mid Level">Mid Level (3-5 years)</option>
               <option value="Senior Level">Senior Level (6-10 years)</option>
@@ -957,21 +1024,107 @@
         </div>
 
         <div class="form-group">
+          <label class="form-label" for="company-name">Company Name</label>
+          <input type="text" id="company-name" class="form-input" placeholder="e.g. Goldman Sachs, Reliance, etc.">
+        </div>
+
+        <div class="form-group">
           <label class="form-label" for="company-type">Company Type</label>
           <div class="select-wrapper">
             <select id="company-type" class="form-select">
-              <option value="Big 4 (Audit/Tax)">Big 4 (Audit/Tax)</option>
-              <option value="Mid-size CA Firm">Mid-size CA Firm</option>
-              <option value="Corporate (Industry)">Corporate (Industry)</option>
-              <option value="Consulting Firm">Consulting Firm</option>
-              <option value="Fortune 500">Fortune 500</option>
-              <option value="Tech Startup">Tech Startup</option>
-              <option value="Healthcare">Healthcare</option>
-              <option value="Government">Government</option>
-              <option value="Non-Profit">Non-Profit</option>
+              <option value="Corporate (Industry)" selected>Corporate (Industry)</option>
               <option value="Investment Bank">Investment Bank</option>
+              <option value="Big 6 CA Firms">Big 6 CA Firms</option>
+              <option value="Midsize CA Firm">Midsize CA Firm</option>
+              <option value="PSU">PSU</option>
+              <option value="Startups">Startups</option>
+              <option value="Consulting">Consulting</option>
+              <option value="Banking">Banking</option>
+              <option value="Others">Others</option>
             </select>
           </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="domain">Domain (Optional)</label>
+          <div class="select-wrapper">
+            <select id="domain" class="form-select">
+              <option value="">Select Domain</option>
+              <option value="FP&A">FP&A</option>
+              <option value="Business Finance">Business Finance</option>
+              <option value="Supply Chain Finance">Supply Chain Finance</option>
+              <optgroup label="Finance">
+                <option value="Controllership">Controllership</option>
+                <option value="GL / MIS">GL / MIS</option>
+                <option value="Treasury">Treasury</option>
+                <option value="AR / AP">AR / AP</option>
+              </optgroup>
+              <option value="Consulting / Strategy">Consulting / Strategy</option>
+              <optgroup label="Investment Banking">
+                <option value="Front Office">Front Office</option>
+                <option value="Mid Office">Mid Office</option>
+                <option value="Back Office">Back Office</option>
+              </optgroup>
+              <optgroup label="Equity Research">
+                <option value="Buy Side">Buy Side</option>
+                <option value="Sell Side">Sell Side</option>
+              </optgroup>
+              <optgroup label="Banking">
+                <option value="Relationship Manager">Relationship Manager</option>
+                <option value="Credit Analyst">Credit Analyst</option>
+              </optgroup>
+              <option value="FDD">FDD</option>
+              <option value="Forensics">Forensics</option>
+              <option value="Statutory Audit">Statutory Audit</option>
+              <option value="Internal Audit">Internal Audit</option>
+              <optgroup label="Direct Tax">
+                <option value="Corporate Income Tax">Corporate Income Tax</option>
+                <option value="Transfer Pricing">Transfer Pricing</option>
+                <option value="International Tax">International Tax</option>
+                <option value="M&A Tax">M&A Tax</option>
+              </optgroup>
+              <optgroup label="Indirect Tax">
+                <option value="Compliance">Compliance</option>
+                <option value="Advisory">Advisory</option>
+                <option value="Litigation">Litigation</option>
+                <option value="Subsidies">Subsidies</option>
+                <option value="Customs">Customs</option>
+              </optgroup>
+              <option value="Others">Others</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Interview Toughness</label>
+          <div class="toughness-selector">
+            <button type="button" class="toughness-btn" data-toughness="easy">Easy</button>
+            <button type="button" class="toughness-btn active" data-toughness="medium">Medium</button>
+            <button type="button" class="toughness-btn" data-toughness="hard">Hard</button>
+            <button type="button" class="toughness-btn" data-toughness="brutal">Brutal</button>
+            <input type="hidden" id="toughness" value="medium">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="cv-upload">Upload CV (PDF)</label>
+          <div class="file-upload-wrapper" id="cv-upload-container">
+            <div class="file-upload-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="12" y1="18" x2="12" y2="12"></line>
+                <polyline points="9 15 12 12 15 15"></polyline>
+              </svg>
+            </div>
+            <div class="file-upload-text" id="cv-upload-text">Click to upload CV (PDF)</div>
+            <input type="file" id="cv-upload" class="file-upload-input" accept="application/pdf">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="jd-upload">Job Description (Optional)</label>
+          <textarea id="jd-upload" class="form-input" style="min-height: 80px; font-size: 0.85rem;" placeholder="Paste JD here or key skills..."></textarea>
         </div>
 
         <div class="form-group">
@@ -1398,7 +1551,9 @@
     }
 
     // --- GLOBAL LOGIC ---
-    let avatar, userStream, isModelLoaded = false, areSubtitlesOn = true, interviewConfig = {}, messages = [], speechRecognition, isWaitingForAIResponse = false;
+    let avatar, userStream, isModelLoaded = false, areSubtitlesOn = true, interviewConfig = {}, messages = [], speechRecognition, isWaitingForAIResponse = false, interviewPlan = null, cvImages = [];
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.7.107/build/pdf.worker.min.js';
 
     const EMOJI_CHAR = /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u;
     function extractEmojisAndSanitize(text = "") {
@@ -1427,6 +1582,69 @@
       if (allowPermissionsBtn) allowPermissionsBtn.addEventListener('click', requestPermissions);
       if (skipPermissionsBtn) skipPermissionsBtn.addEventListener('click', skipPermissions);
       window.addEventListener('resize', () => { if (avatar) avatar.onResize(); });
+
+      // Toughness Selector
+      document.querySelectorAll('.toughness-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.toughness-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          document.getElementById('toughness').value = btn.dataset.toughness;
+        });
+      });
+
+      // Position Change (Conditional Experience Level)
+      const specializationSelect = document.getElementById('specialization');
+      const experienceLevelGroup = document.getElementById('experience-level-group');
+      specializationSelect.addEventListener('change', () => {
+        const val = specializationSelect.value;
+        if (val === 'Experienced CA' || val === 'Others' || val === 'CFA' || val === 'CMA' || val === 'CS' || val === 'Data Scientist') {
+          experienceLevelGroup.classList.remove('hidden');
+        } else {
+          experienceLevelGroup.classList.add('hidden');
+        }
+      });
+
+      // CV Upload Handling
+      const cvUploadInput = document.getElementById('cv-upload');
+      const cvUploadText = document.getElementById('cv-upload-text');
+      const cvUploadContainer = document.getElementById('cv-upload-container');
+
+      cvUploadInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (file && file.type === 'application/pdf') {
+          cvUploadText.textContent = "Processing " + file.name + "...";
+          cvUploadContainer.classList.add('active');
+          try {
+            cvImages = await convertPdfToImages(file);
+            cvUploadText.textContent = "✅ " + file.name + " uploaded";
+          } catch (err) {
+            console.error(err);
+            cvUploadText.textContent = "❌ Error processing PDF";
+            cvUploadContainer.classList.remove('active');
+          }
+        } else {
+          alert("Please upload a valid PDF file.");
+        }
+      });
+    }
+
+    async function convertPdfToImages(file) {
+      const images = [];
+      const arrayBuffer = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const scale = 1.5;
+      for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale: scale });
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        await page.render({ canvasContext: context, viewport: viewport }).promise;
+        const imageDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        images.push({ mime_type: "image/jpeg", data: imageDataUrl.split(',')[1] });
+      }
+      return images;
     }
 
     // --- GLOBAL MIC CONTROLS (THE HARD FIX) ---
@@ -1501,8 +1719,26 @@
 
     async function handleSetupSubmit(e) {
       e.preventDefault();
-      interviewConfig = { specialization: document.getElementById('specialization').value, experienceLevel: document.getElementById('experience-level').value, companyType: document.getElementById('company-type').value, duration: document.getElementById('interview-duration').value };
-      currentRoleSpan.textContent = interviewConfig.specialization;
+      const pos = document.getElementById('specialization').value;
+      let exp = "Entry Level";
+      if (pos === 'Experienced CA' || pos === 'Others' || pos === 'CFA' || pos === 'CMA' || pos === 'CS' || pos === 'Data Scientist') {
+        exp = document.getElementById('experience-level').value;
+      } else if (pos === 'CA Industrial Trainee' || pos === 'CA Articleship') {
+        exp = "Article/Intern";
+      }
+
+      interviewConfig = {
+        positionApplied: pos,
+        experienceLevel: exp,
+        companyName: document.getElementById('company-name').value || "Unknown",
+        companyType: document.getElementById('company-type').value,
+        companyDomain: document.getElementById('domain').value || "Not provided",
+        jobDescription: document.getElementById('jd-upload').value || "Not provided",
+        toughness: document.getElementById('toughness').value,
+        duration: parseInt(document.getElementById('interview-duration').value)
+      };
+
+      currentRoleSpan.textContent = interviewConfig.positionApplied;
       setupScreen.classList.add('hidden');
       if (!isModelLoaded) { loadingScreen.classList.remove('hidden'); while (!isModelLoaded) await new Promise(r => setTimeout(r, 100)); loadingScreen.classList.add('hidden'); }
       try { await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }); skipPermissions(); } catch (error) { permissionsModal.classList.remove('hidden'); }
@@ -1536,9 +1772,19 @@
       if (isWaitingForAIResponse) return; isWaitingForAIResponse = true;
       try {
         messages.push({ role: 'user', content: message });
-        const response = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Specialization': interviewConfig.specialization, 'X-Experience-Level': interviewConfig.experienceLevel, 'X-Company-Type': interviewConfig.companyType, 'X-Duration': interviewConfig.duration }, body: JSON.stringify({ messages }) });
+        const response = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages,
+            interviewPlan,
+            cvImages,
+            ...interviewConfig
+          })
+        });
         const data = await response.json();
         if (data.ok && data.response) {
+          if (data.interviewPlan) interviewPlan = data.interviewPlan;
           let aiMessage = data.response;
           const { clean, emojis, report } = extractEmojisAndSanitize(aiMessage);
 
