@@ -2510,23 +2510,24 @@ if (frame) {
             input.value = '';
         }
 
-        function resetData() {
-            if (confirm("Clear all data?")) {
-                cvData = {
-                    personal: { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] },
-                    summary: "",
-                    education: [],
-                    experience: [],
-                    certifications: [],
-                    achievements: [],
-                    leadership: [],
-                    interests: [],
-                    skills: "",
-                    themeAccent: "",
-                    customSections: [],
-                    sectionOrder: [...BASE_SECTION_ORDER],
-                    tableSettings: getDefaultTableSettings()
-                };
+       function resetData() {
+    if (confirm("Clear all data?")) {
+        cvData = {
+            personal: { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] },
+            summary: "",
+            education: [],
+            experience: [],
+            projects: [],       
+            certifications: [],
+            achievements: [],
+            leadership: [],
+            interests: [],
+            skills: "",
+            themeAccent: "",
+            customSections: [],
+            sectionOrder: [...BASE_SECTION_ORDER],
+            tableSettings: getDefaultTableSettings()
+        };
                 localStorage.removeItem('cv_maker_data');
                 renderEditor();
                 updateCV();
