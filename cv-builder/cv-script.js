@@ -2176,6 +2176,7 @@ const TEMPLATES = [
     { file: 'monochrome-ledger.html', name: 'Monochrome Ledger', accent: '#111111', style: 'mono' },
     { file: 'slate-split.html', name: 'Slate Split', accent: '#28535e', style: 'split' },
     { file: 'blue-horizon-split.html', name: 'Blue Horizon Split', accent: '#1f385c', style: 'splitblue' },
+    { file: 'file32.html', name: 'File 32', accent: '#0b4f6c', style: 'audit' },
 
     { file: 'file31.html', name: 'File 31', accent: '#2563eb', style: 'modern' }
 ];
