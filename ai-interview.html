@@ -3176,11 +3176,10 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Specialization': interviewConfig.positionApplied,
-                        'X-Experience-Level': interviewConfig.experienceLevel,
-                        'X-Company-Name': interviewConfig.companyName,
-                        'X-Company-Type': interviewConfig.companyType,
-                        'X-Duration': 30
+                        'X-Specialization': interviewConfig.positionApplied || 'Software Engineer',
+                        'X-Experience-Level': interviewConfig.experienceLevel || 'Mid Level',
+                        'X-Company-Type': interviewConfig.companyType || 'Startup',
+                        'X-Duration': '30'
                     },
                     body: JSON.stringify(buildDetailedAnalysisRequestPayload())
                 });
@@ -3510,7 +3509,10 @@
                 'thank you for attending this interview',
                 'thank you for interviewing with us',
                 'we can wrap up here',
-                'let us wrap up here'
+                'let us wrap up here',
+                'that\'s all then',
+                'thats all then',
+                'we will let you know the results afterwards'
             ];
 
             return endings.some(phrase => normalized.includes(phrase));
@@ -3991,7 +3993,7 @@
                         window.handleAISpeechFallback(clean);
                     }
 
-                    if (isInterviewEndingMessage(clean)) {
+                    if (data.endInterview || isInterviewEndingMessage(clean)) {
                         scheduleInterviewAutoEnd('Interview completed. Ending call...', 1200, responseWillSpeak);
                     }
                 }
