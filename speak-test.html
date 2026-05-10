@@ -2,20 +2,70 @@
 <html>
 
 <head>
-    <title>Whisper + VAD</title>
-    <!-- Load ONNX Runtime and VAD-web from CDNs -->
+    <title>Whisper + Gemma 4</title>
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/ort.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.27/dist/bundle.min.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            gap: 40px;
+            padding: 20px;
+        }
+
+        .column {
+            flex: 1;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        #chat-log {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .msg {
+            margin-bottom: 8px;
+        }
+
+        .user {
+            color: blue;
+        }
+
+        .ai {
+            color: green;
+        }
+    </style>
 </head>
 
 <body>
-    <button id="start-btn">Start Microphone</button>
-    <p id="status">Status: Waiting</p>
-    <p id="transcription"></p>
+
+    <!-- LEFT COLUMN: Whisper Voice Transcription -->
+    <div class="column">
+        <h2>Speech to Text (Whisper)</h2>
+        <button id="start-btn">Start Microphone</button>
+        <p id="status">Status: Waiting</p>
+        <div id="transcription" style="white-space: pre-wrap; margin-top: 10px;"></div>
+    </div>
+
+    <!-- RIGHT COLUMN: Gemma 4 Chat -->
+    <div class="column">
+        <h2>Chat with Gemma 4</h2>
+        <div id="chat-log"></div>
+        <input type="text" id="chat-input" placeholder="Type your message..." style="width: 70%; padding: 8px;" />
+        <button id="send-btn" style="padding: 8px;">Send</button>
+    </div>
 
     <script>
-        const workerUrl = "https://whisper.bhansalimanan55.workers.dev"; // Replace with your Worker URL
+        const workerBaseUrl = "https://YOUR_WORKER_URL_HERE.workers.dev"; // Base URL without trailing slash
 
+        // ==========================================
+        // 1. Whisper Transcription Logic
+        // ==========================================
         document.getElementById('start-btn').onclick = async () => {
             document.getElementById('status').innerText = "Status: Loading VAD model...";
 
@@ -25,27 +75,31 @@
                 },
                 onSpeechEnd: async (audio) => {
                     document.getElementById('status').innerText = "Status: Processing Audio...";
-
-                    // Convert the raw Float32Array to a WAV format buffer
                     const wavBuffer = vad.utils.encodeWAV(audio);
 
                     try {
-                        // Send the WAV buffer to your Cloudflare Worker
-                        const response = await fetch(workerUrl, {
+                        // Note the /whisper path
+                        const response = await fetch(`${workerBaseUrl}/whisper`, {
                             method: 'POST',
                             body: wavBuffer,
                             headers: { 'Content-Type': 'audio/wav' }
                         });
 
                         const result = await response.json();
-                        document.getElementById('transcription').innerText += "\n" + result.text;
+                        const text = result.text.trim();
+
+                        // Add to transcription log
+                        document.getElementById('transcription').innerText += "\n" + text;
                         document.getElementById('status').innerText = "Status: Waiting for speech...";
+
+                        // Optional: Automatically paste the transcribed text into the chat box
+                        document.getElementById('chat-input').value = text;
+
                     } catch (err) {
-                        console.error("Transcription error", err);
+                        console.error(err);
                         document.getElementById('status').innerText = "Status: Error calling Whisper";
                     }
                 },
-                // Point to the correct WASM/asset paths
                 onnxWASMBasePath: "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/",
                 baseAssetPath: "https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.27/dist/",
             });
@@ -53,6 +107,53 @@
             myvad.start();
             document.getElementById('status').innerText = "Status: VAD started. Waiting for speech...";
         };
+
+        // ==========================================
+        // 2. Gemma 4 Chat Logic
+        // ==========================================
+        let conversationHistory = [
+            { role: "system", content: "You are a helpful AI assistant." }
+        ];
+
+        document.getElementById('send-btn').onclick = async () => {
+            const inputEl = document.getElementById('chat-input');
+            const userText = inputEl.value.trim();
+            if (!userText) return;
+
+            // Add user message to UI and history
+            addMessageToUI("User", userText, "user");
+            conversationHistory.push({ role: "user", content: userText });
+            inputEl.value = "";
+
+            try {
+                // Note the /chat path
+                const response = await fetch(`${workerBaseUrl}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: conversationHistory })
+                });
+
+                const result = await response.json();
+                const aiText = result.response;
+
+                // Add AI response to UI and history
+                addMessageToUI("Gemma 4", aiText, "ai");
+                conversationHistory.push({ role: "assistant", content: aiText });
+
+            } catch (err) {
+                console.error(err);
+                addMessageToUI("System", "Error communicating with Gemma 4", "error");
+            }
+        };
+
+        function addMessageToUI(sender, text, className) {
+            const log = document.getElementById('chat-log');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `msg ${className}`;
+            msgDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+            log.appendChild(msgDiv);
+            log.scrollTop = log.scrollHeight; // Auto-scroll to bottom
+        }
     </script>
 </body>
 
