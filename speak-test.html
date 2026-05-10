@@ -2,9 +2,19 @@
 <html>
 
 <head>
-    <title>Whisper + Gemma 4 Vision</title>
+    <title>Whisper + Gemma 4 (Vision & PDF)</title>
+
+    <!-- Whisper VAD Dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/ort.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.27/dist/bundle.min.js"></script>
+
+    <!-- PDF.js Dependency for client-side PDF rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // Set up the PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+
     <style>
         body {
             font-family: sans-serif;
@@ -30,6 +40,8 @@
 
         .msg {
             margin-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 10px;
         }
 
         .user {
@@ -41,16 +53,23 @@
         }
 
         .thumbnail {
-            max-width: 150px;
+            max-width: 100px;
             border-radius: 4px;
-            display: block;
-            margin-top: 5px;
+            margin: 5px;
+            border: 1px solid #ddd;
         }
 
         .controls {
             display: flex;
             gap: 10px;
             align-items: center;
+        }
+
+        #preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -62,58 +81,117 @@
         <h2>Speech to Text (Whisper)</h2>
         <button id="start-btn">Start Microphone</button>
         <p id="status">Status: Waiting</p>
-        <div id="transcription" style="white-space: pre-wrap; margin-top: 10px;"></div>
+        <div id="transcription" style="white-space: pre-wrap; margin-top: 10px; padding: 10px; background: #f9f9f9;">
+        </div>
     </div>
 
-    <!-- RIGHT COLUMN: Gemma 4 Chat & Vision -->
+    <!-- RIGHT COLUMN: Gemma 4 Chat, Vision & PDF -->
     <div class="column">
-        <h2>Chat & Vision with Gemma 4</h2>
+        <h2>Chat with Gemma 4</h2>
         <div id="chat-log"></div>
 
-        <!-- Image Preview Area -->
-        <div id="image-preview-container" style="display:none; margin-bottom:10px;">
-            <img id="image-preview" class="thumbnail" />
-            <button onclick="clearImage()">Remove Image</button>
-        </div>
+        <!-- Image/PDF Preview Area -->
+        <div id="preview-container"></div>
+        <button id="clear-btn" style="display:none; margin-bottom:10px;" onclick="clearAttachments()">Remove
+            Attachments</button>
 
         <div class="controls">
-            <input type="file" id="image-upload" accept="image/*" />
-            <input type="text" id="chat-input" placeholder="Type message or ask about image..."
-                style="flex:1; padding: 8px;" />
+            <!-- Added application/pdf to the accept attribute -->
+            <input type="file" id="file-upload" accept="image/*,application/pdf" />
+            <input type="text" id="chat-input" placeholder="Type message..." style="flex:1; padding: 8px;" />
             <button id="send-btn" style="padding: 8px;">Send</button>
         </div>
     </div>
 
     <script>
-        const workerBaseUrl = "https://whisper.bhansalimanan55.workers.dev"; // Replace with your Worker URL
+        // Your specific Worker URL
+        const workerBaseUrl = "https://whisper.bhansalimanan55.workers.dev";
 
-        let currentImageBase64 = null;
-        let currentImageType = null;
+        // Array to hold the Data URLs of all attached images/PDF pages
+        let currentAttachments = [];
 
-        // --- Image Handling ---
-        document.getElementById('image-upload').addEventListener('change', function (e) {
+        // --- File Handling (Images & PDFs) ---
+        document.getElementById('file-upload').addEventListener('change', async function (e) {
             const file = e.target.files[0];
             if (!file) return;
 
-            currentImageType = file.type;
-            const reader = new FileReader();
-            reader.onload = function (event) {
-                // We only want the base64 string, without the "data:image/jpeg;base64," prefix for the API
-                const base64String = event.target.result.split(',')[1];
-                currentImageBase64 = base64String;
+            document.getElementById('clear-btn').style.display = 'block';
+            const previewContainer = document.getElementById('preview-container');
+            previewContainer.innerHTML = "<p>Processing file...</p>";
 
-                // Show preview
-                document.getElementById('image-preview').src = event.target.result;
-                document.getElementById('image-preview-container').style.display = 'block';
-            };
-            reader.readAsDataURL(file);
+            if (file.type === "application/pdf") {
+                await processPDF(file);
+            } else if (file.type.startsWith("image/")) {
+                await processImage(file);
+            } else {
+                alert("Unsupported file type!");
+                clearAttachments();
+            }
         });
 
-        function clearImage() {
-            currentImageBase64 = null;
-            currentImageType = null;
-            document.getElementById('image-upload').value = "";
-            document.getElementById('image-preview-container').style.display = 'none';
+        async function processImage(file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const dataUrl = event.target.result;
+                currentAttachments.push(dataUrl);
+                renderPreviews();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function processPDF(file) {
+            try {
+                const fileUrl = URL.createObjectURL(file);
+                const loadingTask = pdfjsLib.getDocument(fileUrl);
+                const pdf = await loadingTask.promise;
+
+                currentAttachments = []; // Reset attachments
+
+                // Loop through all pages of the PDF
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    // Scale 1.5 provides a good balance between resolution and API payload size
+                    const viewport = page.getViewport({ scale: 1.5 });
+
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    // Render the PDF page onto the canvas
+                    await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+                    // Convert the canvas to a JPEG data URL
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    currentAttachments.push(dataUrl);
+                }
+
+                renderPreviews();
+                URL.revokeObjectURL(fileUrl);
+            } catch (error) {
+                console.error("Error parsing PDF:", error);
+                document.getElementById('preview-container').innerHTML = "<p style='color:red'>Failed to read PDF</p>";
+            }
+        }
+
+        function renderPreviews() {
+            const container = document.getElementById('preview-container');
+            container.innerHTML = ""; // Clear current previews
+
+            currentAttachments.forEach((dataUrl, index) => {
+                const img = document.createElement('img');
+                img.src = dataUrl;
+                img.className = 'thumbnail';
+                img.title = `Page/Image ${index + 1}`;
+                container.appendChild(img);
+            });
+        }
+
+        function clearAttachments() {
+            currentAttachments = [];
+            document.getElementById('file-upload').value = "";
+            document.getElementById('preview-container').innerHTML = "";
+            document.getElementById('clear-btn').style.display = 'none';
         }
 
         // --- Whisper Voice Transcription Logic ---
@@ -144,7 +222,7 @@
 
                     } catch (err) {
                         console.error(err);
-                        document.getElementById('status').innerText = "Status: Error";
+                        document.getElementById('status').innerText = "Status: Error transcribing audio";
                     }
                 },
                 onnxWASMBasePath: "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/",
@@ -164,32 +242,36 @@
             const inputEl = document.getElementById('chat-input');
             const userText = inputEl.value.trim();
 
-            if (!userText && !currentImageBase64) return;
+            if (!userText && currentAttachments.length === 0) return;
 
-            // Display user message in UI
-            let uiHtml = userText;
-            if (currentImageBase64) {
-                uiHtml += `<br><img src="data:${currentImageType};base64,${currentImageBase64}" class="thumbnail">`;
-            }
+            // Build UI display
+            let uiHtml = userText ? `<p>${userText}</p>` : "";
+            currentAttachments.forEach(img => {
+                uiHtml += `<img src="${img}" class="thumbnail">`;
+            });
             addMessageToUI("User", uiHtml, "user");
 
-            // Construct the message format
-            // If there's an image, the content is an array. Otherwise, it's a standard string.
+            // Construct the message format for Cloudflare Workers AI
             let messageContent;
-            if (currentImageBase64) {
-                messageContent = [
-                    { type: "text", text: userText || "Describe this image." },
-                    { type: "image_url", image_url: { url: `data:${currentImageType};base64,${currentImageBase64}` } }
-                ];
+            if (currentAttachments.length > 0) {
+                messageContent = [];
+                if (userText) messageContent.push({ type: "text", text: userText });
+
+                // Push every page of the PDF (or the single uploaded image) into the content array
+                currentAttachments.forEach(dataUrl => {
+                    messageContent.push({
+                        type: "image_url",
+                        image_url: { url: dataUrl }
+                    });
+                });
             } else {
                 messageContent = userText;
             }
 
             conversationHistory.push({ role: "user", content: messageContent });
 
-            // Clear inputs
             inputEl.value = "";
-            clearImage();
+            clearAttachments();
 
             try {
                 const response = await fetch(`${workerBaseUrl}/chat`, {
@@ -206,7 +288,7 @@
 
             } catch (err) {
                 console.error(err);
-                addMessageToUI("System", "Error communicating with Gemma 4", "error");
+                addMessageToUI("System", "Error communicating with Gemma 4. Check console for details.", "error");
             }
         };
 
