@@ -2161,22 +2161,24 @@ if (frame) {
         }
 
         // Template Sidebar Logic
-        const TEMPLATES = [
-            { file: 'classic-blue.html', name: 'Classic Blue', accent: '#1e40af', style: 'sans' },
-            { file: 'modern-serif.html', name: 'Modern Serif', accent: '#4f81bc', style: 'serif' },
-            { file: 'grid-layout.html', name: 'Grid Layout', accent: '#059669', style: 'grid' },
-            { file: 'professional.html', name: 'Professional', accent: '#374151', style: 'clean' },
-            { file: 'corporate.html', name: 'Corporate', accent: '#0369a1', style: 'formal' },
-            { file: 'minimalist.html', name: 'Minimalist', accent: '#6b7280', style: 'minimal' },
-            { file: 'bold-modern.html', name: 'Bold Modern', accent: '#dc2626', style: 'bold' },
-            { file: 'classic-refined.html', name: 'Classic Refined', accent: '#2F557F', style: 'refined' },
-            { file: 'modern-deep-blue.html', name: 'Modern Deep Blue', accent: '#2c5d79', style: 'deepblue' },
-            { file: 'executive-dark.html', name: 'Executive Dark', accent: '#404040', style: 'dark' },
-            { file: 'navy-merit.html', name: 'Navy Merit', accent: '#0f2f63', style: 'merit' },
-            { file: 'monochrome-ledger.html', name: 'Monochrome Ledger', accent: '#111111', style: 'mono' },
-            { file: 'slate-split.html', name: 'Slate Split', accent: '#28535e', style: 'split' },
-            { file: 'blue-horizon-split.html', name: 'Blue Horizon Split', accent: '#1f385c', style: 'splitblue' }
-        ];
+const TEMPLATES = [
+    { file: 'classic-blue.html', name: 'Classic Blue', accent: '#1e40af', style: 'sans' },
+    { file: 'modern-serif.html', name: 'Modern Serif', accent: '#4f46e5', style: 'serif' },
+    { file: 'grid-layout.html', name: 'Grid Layout', accent: '#059669', style: 'grid' },
+    { file: 'professional.html', name: 'Professional', accent: '#374151', style: 'clean' },
+    { file: 'corporate.html', name: 'Corporate', accent: '#0369a1', style: 'formal' },
+    { file: 'minimalist.html', name: 'Minimalist', accent: '#6b7280', style: 'minimal' },
+    { file: 'bold-modern.html', name: 'Bold Modern', accent: '#dc2626', style: 'bold' },
+    { file: 'classic-refined.html', name: 'Classic Refined', accent: '#2F557F', style: 'refined' },
+    { file: 'modern-deep-blue.html', name: 'Modern Deep Blue', accent: '#2c5d79', style: 'deepblue' },
+    { file: 'executive-dark.html', name: 'Executive Dark', accent: '#404040', style: 'dark' },
+    { file: 'navy-merit.html', name: 'Navy Merit', accent: '#0f2f63', style: 'merit' },
+    { file: 'monochrome-ledger.html', name: 'Monochrome Ledger', accent: '#111111', style: 'mono' },
+    { file: 'slate-split.html', name: 'Slate Split', accent: '#28535e', style: 'split' },
+    { file: 'blue-horizon-split.html', name: 'Blue Horizon Split', accent: '#1f385c', style: 'splitblue' },
+
+    { file: 'file31.html', name: 'File 31', accent: '#2563eb', style: 'modern' }
+];
         const TEMPLATE_COLOR_PRESETS = ['#2b2b2b', '#0f6cbd', '#155e95', '#1f8f63', '#c0392b', '#7b4db3'];
 
         function normalizeHexColor(value) {
