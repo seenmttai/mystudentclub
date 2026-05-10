@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Whisper + Gemma 4</title>
+    <title>Whisper + Gemma 4 Vision</title>
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/ort.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.27/dist/bundle.min.js"></script>
     <style>
@@ -21,7 +21,7 @@
         }
 
         #chat-log {
-            height: 300px;
+            height: 400px;
             overflow-y: auto;
             border: 1px solid #eee;
             padding: 10px;
@@ -29,7 +29,7 @@
         }
 
         .msg {
-            margin-bottom: 8px;
+            margin-bottom: 15px;
         }
 
         .user {
@@ -39,12 +39,25 @@
         .ai {
             color: green;
         }
+
+        .thumbnail {
+            max-width: 150px;
+            border-radius: 4px;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
     </style>
 </head>
 
 <body>
 
-    <!-- LEFT COLUMN: Whisper Voice Transcription -->
+    <!-- LEFT COLUMN: Whisper -->
     <div class="column">
         <h2>Speech to Text (Whisper)</h2>
         <button id="start-btn">Start Microphone</button>
@@ -52,33 +65,70 @@
         <div id="transcription" style="white-space: pre-wrap; margin-top: 10px;"></div>
     </div>
 
-    <!-- RIGHT COLUMN: Gemma 4 Chat -->
+    <!-- RIGHT COLUMN: Gemma 4 Chat & Vision -->
     <div class="column">
-        <h2>Chat with Gemma 4</h2>
+        <h2>Chat & Vision with Gemma 4</h2>
         <div id="chat-log"></div>
-        <input type="text" id="chat-input" placeholder="Type your message..." style="width: 70%; padding: 8px;" />
-        <button id="send-btn" style="padding: 8px;">Send</button>
+
+        <!-- Image Preview Area -->
+        <div id="image-preview-container" style="display:none; margin-bottom:10px;">
+            <img id="image-preview" class="thumbnail" />
+            <button onclick="clearImage()">Remove Image</button>
+        </div>
+
+        <div class="controls">
+            <input type="file" id="image-upload" accept="image/*" />
+            <input type="text" id="chat-input" placeholder="Type message or ask about image..."
+                style="flex:1; padding: 8px;" />
+            <button id="send-btn" style="padding: 8px;">Send</button>
+        </div>
     </div>
 
     <script>
-        const workerBaseUrl = "https://whisper.bhansalimanan55.workers.dev"; // Base URL without trailing slash
+        const workerBaseUrl = "https://whisper.bhansalimanan55.workers.dev"; // Replace with your Worker URL
 
-        // ==========================================
-        // 1. Whisper Transcription Logic
-        // ==========================================
+        let currentImageBase64 = null;
+        let currentImageType = null;
+
+        // --- Image Handling ---
+        document.getElementById('image-upload').addEventListener('change', function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            currentImageType = file.type;
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                // We only want the base64 string, without the "data:image/jpeg;base64," prefix for the API
+                const base64String = event.target.result.split(',')[1];
+                currentImageBase64 = base64String;
+
+                // Show preview
+                document.getElementById('image-preview').src = event.target.result;
+                document.getElementById('image-preview-container').style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function clearImage() {
+            currentImageBase64 = null;
+            currentImageType = null;
+            document.getElementById('image-upload').value = "";
+            document.getElementById('image-preview-container').style.display = 'none';
+        }
+
+        // --- Whisper Voice Transcription Logic ---
         document.getElementById('start-btn').onclick = async () => {
             document.getElementById('status').innerText = "Status: Loading VAD model...";
 
             const myvad = await vad.MicVAD.new({
                 onSpeechStart: () => {
-                    document.getElementById('status').innerText = "Status: Listening (Speech Detected)";
+                    document.getElementById('status').innerText = "Status: Listening...";
                 },
                 onSpeechEnd: async (audio) => {
                     document.getElementById('status').innerText = "Status: Processing Audio...";
                     const wavBuffer = vad.utils.encodeWAV(audio);
 
                     try {
-                        // Note the /whisper path
                         const response = await fetch(`${workerBaseUrl}/whisper`, {
                             method: 'POST',
                             body: wavBuffer,
@@ -88,16 +138,13 @@
                         const result = await response.json();
                         const text = result.text.trim();
 
-                        // Add to transcription log
                         document.getElementById('transcription').innerText += "\n" + text;
                         document.getElementById('status').innerText = "Status: Waiting for speech...";
-
-                        // Optional: Automatically paste the transcribed text into the chat box
                         document.getElementById('chat-input').value = text;
 
                     } catch (err) {
                         console.error(err);
-                        document.getElementById('status').innerText = "Status: Error calling Whisper";
+                        document.getElementById('status').innerText = "Status: Error";
                     }
                 },
                 onnxWASMBasePath: "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/",
@@ -108,9 +155,7 @@
             document.getElementById('status').innerText = "Status: VAD started. Waiting for speech...";
         };
 
-        // ==========================================
-        // 2. Gemma 4 Chat Logic
-        // ==========================================
+        // --- Gemma 4 Chat Logic ---
         let conversationHistory = [
             { role: "system", content: "You are a helpful AI assistant." }
         ];
@@ -118,15 +163,35 @@
         document.getElementById('send-btn').onclick = async () => {
             const inputEl = document.getElementById('chat-input');
             const userText = inputEl.value.trim();
-            if (!userText) return;
 
-            // Add user message to UI and history
-            addMessageToUI("User", userText, "user");
-            conversationHistory.push({ role: "user", content: userText });
+            if (!userText && !currentImageBase64) return;
+
+            // Display user message in UI
+            let uiHtml = userText;
+            if (currentImageBase64) {
+                uiHtml += `<br><img src="data:${currentImageType};base64,${currentImageBase64}" class="thumbnail">`;
+            }
+            addMessageToUI("User", uiHtml, "user");
+
+            // Construct the message format
+            // If there's an image, the content is an array. Otherwise, it's a standard string.
+            let messageContent;
+            if (currentImageBase64) {
+                messageContent = [
+                    { type: "text", text: userText || "Describe this image." },
+                    { type: "image_url", image_url: { url: `data:${currentImageType};base64,${currentImageBase64}` } }
+                ];
+            } else {
+                messageContent = userText;
+            }
+
+            conversationHistory.push({ role: "user", content: messageContent });
+
+            // Clear inputs
             inputEl.value = "";
+            clearImage();
 
             try {
-                // Note the /chat path
                 const response = await fetch(`${workerBaseUrl}/chat`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -136,7 +201,6 @@
                 const result = await response.json();
                 const aiText = result.response;
 
-                // Add AI response to UI and history
                 addMessageToUI("Gemma 4", aiText, "ai");
                 conversationHistory.push({ role: "assistant", content: aiText });
 
@@ -146,13 +210,13 @@
             }
         };
 
-        function addMessageToUI(sender, text, className) {
+        function addMessageToUI(sender, htmlContent, className) {
             const log = document.getElementById('chat-log');
             const msgDiv = document.createElement('div');
             msgDiv.className = `msg ${className}`;
-            msgDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+            msgDiv.innerHTML = `<strong>${sender}:</strong><br>${htmlContent}`;
             log.appendChild(msgDiv);
-            log.scrollTop = log.scrollHeight; // Auto-scroll to bottom
+            log.scrollTop = log.scrollHeight;
         }
     </script>
 </body>
