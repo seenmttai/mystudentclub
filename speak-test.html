@@ -2,50 +2,229 @@
 <html>
 
 <head>
-    <title>Whisper + VAD</title>
-    <!-- Load ONNX Runtime and VAD-web from CDNs -->
+    <title>Whisper + Gemma 4 (Vision & PDF)</title>
+
+    <!-- Whisper VAD Dependencies -->
     <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/ort.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.27/dist/bundle.min.js"></script>
+
+    <!-- PDF.js Dependency for client-side PDF rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        // Set up the PDF.js worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            gap: 40px;
+            padding: 20px;
+        }
+
+        .column {
+            flex: 1;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        #chat-log {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid #eee;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .msg {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+
+        .user {
+            color: blue;
+        }
+
+        .ai {
+            color: green;
+        }
+
+        .thumbnail {
+            max-width: 100px;
+            border-radius: 4px;
+            margin: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+    </style>
 </head>
 
 <body>
-    <button id="start-btn">Start Microphone</button>
-    <p id="status">Status: Waiting</p>
-    <p id="transcription"></p>
+
+    <!-- LEFT COLUMN: Whisper -->
+    <div class="column">
+        <h2>Speech to Text (Whisper)</h2>
+        <button id="start-btn">Start Microphone</button>
+        <p id="status">Status: Waiting</p>
+        <div id="transcription" style="white-space: pre-wrap; margin-top: 10px; padding: 10px; background: #f9f9f9;">
+        </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Gemma 4 Chat, Vision & PDF -->
+    <div class="column">
+        <h2>Chat with Gemma 4</h2>
+        <div id="chat-log"></div>
+
+        <!-- Image/PDF Preview Area -->
+        <div id="preview-container"></div>
+        <button id="clear-btn" style="display:none; margin-bottom:10px;" onclick="clearAttachments()">Remove
+            Attachments</button>
+
+        <div class="controls">
+            <!-- Added application/pdf to the accept attribute -->
+            <input type="file" id="file-upload" accept="image/*,application/pdf" />
+            <input type="text" id="chat-input" placeholder="Type message..." style="flex:1; padding: 8px;" />
+            <button id="send-btn" style="padding: 8px;">Send</button>
+        </div>
+    </div>
 
     <script>
-        const workerUrl = "https://whisper.bhansalimanan55.workers.dev"; // Replace with your Worker URL
+        // Your specific Worker URL
+        const workerBaseUrl = "https://whisper.bhansalimanan55.workers.dev";
 
+        // Array to hold the Data URLs of all attached images/PDF pages
+        let currentAttachments = [];
+
+        // --- File Handling (Images & PDFs) ---
+        document.getElementById('file-upload').addEventListener('change', async function (e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('clear-btn').style.display = 'block';
+            const previewContainer = document.getElementById('preview-container');
+            previewContainer.innerHTML = "<p>Processing file...</p>";
+
+            if (file.type === "application/pdf") {
+                await processPDF(file);
+            } else if (file.type.startsWith("image/")) {
+                await processImage(file);
+            } else {
+                alert("Unsupported file type!");
+                clearAttachments();
+            }
+        });
+
+        async function processImage(file) {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const dataUrl = event.target.result;
+                currentAttachments.push(dataUrl);
+                renderPreviews();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function processPDF(file) {
+            try {
+                const fileUrl = URL.createObjectURL(file);
+                const loadingTask = pdfjsLib.getDocument(fileUrl);
+                const pdf = await loadingTask.promise;
+
+                currentAttachments = []; // Reset attachments
+
+                // Loop through all pages of the PDF
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    // Scale 1.5 provides a good balance between resolution and API payload size
+                    const viewport = page.getViewport({ scale: 1.5 });
+
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+
+                    // Render the PDF page onto the canvas
+                    await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+                    // Convert the canvas to a JPEG data URL
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+                    currentAttachments.push(dataUrl);
+                }
+
+                renderPreviews();
+                URL.revokeObjectURL(fileUrl);
+            } catch (error) {
+                console.error("Error parsing PDF:", error);
+                document.getElementById('preview-container').innerHTML = "<p style='color:red'>Failed to read PDF</p>";
+            }
+        }
+
+        function renderPreviews() {
+            const container = document.getElementById('preview-container');
+            container.innerHTML = ""; // Clear current previews
+
+            currentAttachments.forEach((dataUrl, index) => {
+                const img = document.createElement('img');
+                img.src = dataUrl;
+                img.className = 'thumbnail';
+                img.title = `Page/Image ${index + 1}`;
+                container.appendChild(img);
+            });
+        }
+
+        function clearAttachments() {
+            currentAttachments = [];
+            document.getElementById('file-upload').value = "";
+            document.getElementById('preview-container').innerHTML = "";
+            document.getElementById('clear-btn').style.display = 'none';
+        }
+
+        // --- Whisper Voice Transcription Logic ---
         document.getElementById('start-btn').onclick = async () => {
             document.getElementById('status').innerText = "Status: Loading VAD model...";
 
             const myvad = await vad.MicVAD.new({
                 onSpeechStart: () => {
-                    document.getElementById('status').innerText = "Status: Listening (Speech Detected)";
+                    document.getElementById('status').innerText = "Status: Listening...";
                 },
                 onSpeechEnd: async (audio) => {
                     document.getElementById('status').innerText = "Status: Processing Audio...";
-
-                    // Convert the raw Float32Array to a WAV format buffer
                     const wavBuffer = vad.utils.encodeWAV(audio);
 
                     try {
-                        // Send the WAV buffer to your Cloudflare Worker
-                        const response = await fetch(workerUrl, {
+                        const response = await fetch(`${workerBaseUrl}/whisper`, {
                             method: 'POST',
                             body: wavBuffer,
                             headers: { 'Content-Type': 'audio/wav' }
                         });
 
                         const result = await response.json();
-                        document.getElementById('transcription').innerText += "\n" + result.text;
+                        const text = result.text.trim();
+
+                        document.getElementById('transcription').innerText += "\n" + text;
                         document.getElementById('status').innerText = "Status: Waiting for speech...";
+                        document.getElementById('chat-input').value = text;
+
                     } catch (err) {
-                        console.error("Transcription error", err);
-                        document.getElementById('status').innerText = "Status: Error calling Whisper";
+                        console.error(err);
+                        document.getElementById('status').innerText = "Status: Error transcribing audio";
                     }
                 },
-                // Point to the correct WASM/asset paths
                 onnxWASMBasePath: "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/",
                 baseAssetPath: "https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.27/dist/",
             });
@@ -53,6 +232,74 @@
             myvad.start();
             document.getElementById('status').innerText = "Status: VAD started. Waiting for speech...";
         };
+
+        // --- Gemma 4 Chat Logic ---
+        let conversationHistory = [
+            { role: "system", content: "You are a helpful AI assistant." }
+        ];
+
+        document.getElementById('send-btn').onclick = async () => {
+            const inputEl = document.getElementById('chat-input');
+            const userText = inputEl.value.trim();
+
+            if (!userText && currentAttachments.length === 0) return;
+
+            // Build UI display
+            let uiHtml = userText ? `<p>${userText}</p>` : "";
+            currentAttachments.forEach(img => {
+                uiHtml += `<img src="${img}" class="thumbnail">`;
+            });
+            addMessageToUI("User", uiHtml, "user");
+
+            // Construct the message format for Cloudflare Workers AI
+            let messageContent;
+            if (currentAttachments.length > 0) {
+                messageContent = [];
+                if (userText) messageContent.push({ type: "text", text: userText });
+
+                // Push every page of the PDF (or the single uploaded image) into the content array
+                currentAttachments.forEach(dataUrl => {
+                    messageContent.push({
+                        type: "image_url",
+                        image_url: { url: dataUrl }
+                    });
+                });
+            } else {
+                messageContent = userText;
+            }
+
+            conversationHistory.push({ role: "user", content: messageContent });
+
+            inputEl.value = "";
+            clearAttachments();
+
+            try {
+                const response = await fetch(`${workerBaseUrl}/chat`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messages: conversationHistory })
+                });
+
+                const result = await response.json();
+                const aiText = result.response;
+
+                addMessageToUI("Gemma 4", aiText, "ai");
+                conversationHistory.push({ role: "assistant", content: aiText });
+
+            } catch (err) {
+                console.error(err);
+                addMessageToUI("System", "Error communicating with Gemma 4. Check console for details.", "error");
+            }
+        };
+
+        function addMessageToUI(sender, htmlContent, className) {
+            const log = document.getElementById('chat-log');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `msg ${className}`;
+            msgDiv.innerHTML = `<strong>${sender}:</strong><br>${htmlContent}`;
+            log.appendChild(msgDiv);
+            log.scrollTop = log.scrollHeight;
+        }
     </script>
 </body>
 
