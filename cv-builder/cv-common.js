@@ -185,11 +185,19 @@ function renderCV(data) {
         setHTMLIn(block, '[data-field="company"]', item.company);
         setHTMLIn(block, '[data-field="dates"]', item.dates);
         setHTMLIn(block, '[data-field="category"]', item.category); // Department/Area like "Business Finance"
+        applyExperienceTitleMergeDisplayV2(block, item);
 
         const roleEl = block.querySelector('[data-field="role"]');
         if (roleEl) roleEl.style.display = stripTags(item.role || '').trim() ? '' : 'none';
         const categoryEl = block.querySelector('[data-field="category"]');
         if (categoryEl) categoryEl.style.display = stripTags(item.category || '').trim() ? '' : 'none';
+        if (item.titleMergedWithPrevious) {
+            if (roleEl) roleEl.style.display = 'none';
+            const companyEl = block.querySelector('[data-field="company"]');
+            const datesEl = block.querySelector('[data-field="dates"]');
+            if (companyEl) companyEl.style.display = 'none';
+            if (datesEl) datesEl.style.display = 'none';
+        }
 
         const ul = block.querySelector('[data-list="bullets"]');
         if (ul) {
@@ -740,7 +748,12 @@ function buildRenderedExperience(items) {
 
     return groups.map(group => {
         const primary = group[0] || {};
-        if (group.length === 1) return primary;
+        if (group.length === 1) {
+            return {
+                ...primary,
+                titleMergedWithPrevious: !!primary.titleMergedWithPrevious
+            };
+        }
 
         const companyLines = group.map(item => {
             const company = item.company || '';
@@ -773,8 +786,105 @@ function buildRenderedExperience(items) {
             company: companyLines.join('<br>'),
             dates: dateLines.join('<br>'),
             category: mergedCategoryHTML,
-            bullets: mergedBullets
+            bullets: mergedBullets,
+            titleMergedWithPrevious: false
         };
+    });
+}
+
+function applyExperienceTitleMergeDisplay(block, item) {
+    if (!block) return;
+    const hideTitle = !!item?.titleMergedWithPrevious;
+    block.classList.toggle('experience-title-merged', hideTitle);
+
+    const titleFields = [
+        block.querySelector('[data-field="role"]'),
+        block.querySelector('[data-field="company"]'),
+        block.querySelector('[data-field="dates"]')
+    ].filter(Boolean);
+
+    titleFields.forEach(el => {
+        el.style.display = hideTitle ? 'none' : '';
+    });
+
+    const wrapperSelectors = [
+        '.work-exp-header',
+        '.sub-header',
+        '.sub-header-title',
+        '.sub-header-date',
+        '.item-main-title',
+        '.item-date',
+        '.exp-title',
+        '.job-header',
+        '.job-header-row',
+        '.entry-header'
+    ];
+
+    wrapperSelectors.forEach(selector => {
+        block.querySelectorAll(selector).forEach(el => {
+            if (!hideTitle) {
+                el.style.display = '';
+                return;
+            }
+            const text = (el.textContent || '').replace(/[\s\|\-–—:\[\]\(\)]/g, '');
+            el.style.display = text ? '' : 'none';
+        });
+    });
+}
+
+function applyExperienceTitleMergeDisplayV2(block, item) {
+    if (!block) return;
+    const hideTitle = !!item?.titleMergedWithPrevious;
+    block.classList.toggle('experience-title-merged', hideTitle);
+
+    const titleFields = ['role', 'company', 'dates']
+        .map(field => block.querySelector(`[data-field="${field}"]`))
+        .filter(Boolean);
+    const wrappersToToggle = new Set();
+
+    const addWrapper = (el) => {
+        if (el && el !== block) wrappersToToggle.add(el);
+    };
+
+    titleFields.forEach(el => {
+        el.style.display = hideTitle ? 'none' : '';
+        addWrapper(el.closest('.work-exp-header'));
+        addWrapper(el.closest('.work-exp-row'));
+        addWrapper(el.closest('.sub-header'));
+        addWrapper(el.closest('.sub-header-title'));
+        addWrapper(el.closest('.sub-header-date'));
+        addWrapper(el.closest('.item-main-title'));
+        addWrapper(el.closest('.item-date'));
+        addWrapper(el.closest('.exp-title'));
+        addWrapper(el.closest('.sub-header-cell'));
+        addWrapper(el.closest('.job-title-row'));
+        addWrapper(el.closest('.job-header'));
+        addWrapper(el.closest('.exp-header-details'));
+        addWrapper(el.closest('.work-subheader'));
+        addWrapper(el.closest('.work-box-header'));
+        addWrapper(el.closest('.work-box-header-row'));
+    });
+
+    wrappersToToggle.forEach(el => {
+        el.style.display = hideTitle ? 'none' : '';
+        const row = el.closest('tr');
+        if (row && row !== block && row.querySelector('.sub-header-cell')) {
+            row.style.display = hideTitle ? 'none' : '';
+        }
+    });
+
+    block.querySelectorAll('.work-exp-content > div:first-child, .details-grid, .work-box-header + .work-table').forEach(el => {
+        if (el.matches('.details-grid')) {
+            el.style.borderTop = hideTitle ? 'none' : '';
+            return;
+        }
+        if (el.matches('.work-box-header + .work-table')) {
+            el.style.marginTop = hideTitle ? '0' : '';
+            return;
+        }
+        if (!(el.textContent || '').trim()) {
+            el.style.display = hideTitle ? 'none' : '';
+        }
     });
 }
 

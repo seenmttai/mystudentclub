@@ -612,7 +612,12 @@
 
         function normalizeImportedString(value) {
             if (value === null || value === undefined) return '';
-            return String(value).trim();
+            const tmp = document.createElement('div');
+            tmp.innerHTML = convertMarkdownBoldToHTML(String(value));
+            return (tmp.textContent || '')
+                .replace(/\u00a0/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
         }
 
         function htmlToMultilineText(value) {
@@ -812,29 +817,30 @@
 
             if (Array.isArray(incoming.education)) {
                 normalized.education = incoming.education.map(item => ({
-                    degree: normalizeImportedRichText(item?.degree || '', 'education'),
-                    institute: normalizeImportedRichText(item?.institute || item?.institution || '', 'education'),
+                    degree: normalizeImportedString(item?.degree || ''),
+                    institute: normalizeImportedString(item?.institute || item?.institution || ''),
                     year: normalizeImportedString(item?.year || ''),
-                    marks: normalizeImportedRichText(item?.marks || '', 'education'),
-                    remarks: normalizeImportedRichText(item?.remarks || '', 'education')
+                    marks: normalizeImportedString(item?.marks || ''),
+                    remarks: normalizeImportedString(item?.remarks || '')
                 })).filter(item => Object.values(item).some(v => normalizeImportedString(getPlainTextFromHTML(v))));
             }
 
             if (Array.isArray(incoming.experience)) {
                 normalized.experience = incoming.experience.map((item, index) => ({
-                    role: normalizeImportedRichText(item?.role || '', 'experience'),
-                    company: normalizeImportedRichText(item?.company || '', 'experience'),
-                    dates: normalizeImportedRichText(item?.dates || '', 'experience'),
-                    category: normalizeImportedRichText(item?.category || '', 'experience'),
+                    role: normalizeImportedString(item?.role || ''),
+                    company: normalizeImportedString(item?.company || ''),
+                    dates: normalizeImportedString(item?.dates || ''),
+                    category: normalizeCategoryHTML(htmlToMultilineText(item?.category || '')),
                     bullets: applyBoldToBulletList(item?.bullets || [], 'experience'),
-                    mergedWithPrevious: !!item?.mergedWithPrevious && index > 0
+                    mergedWithPrevious: !!item?.mergedWithPrevious && index > 0,
+                    titleMergedWithPrevious: !!item?.titleMergedWithPrevious && index > 0 && !item?.mergedWithPrevious
                 })).filter(item => Object.values(item).some(v => Array.isArray(v) ? v.length : normalizeImportedString(getPlainTextFromHTML(v))));
             }
 
             if (Array.isArray(incoming.projects)) {
                 normalized.projects = incoming.projects.map(item => ({
-                    title: normalizeImportedRichText(item?.title || '', 'projects'),
-                    description: normalizeImportedRichText(item?.description || '', 'projects'),
+                    title: normalizeImportedString(item?.title || ''),
+                    description: normalizeImportedString(item?.description || ''),
                     bullets: applyBoldToBulletList(item?.bullets || [], 'projects')
                 })).filter(item => Object.values(item).some(v => Array.isArray(v) ? v.length : normalizeImportedString(getPlainTextFromHTML(v))));
             }
@@ -842,11 +848,11 @@
             if (Array.isArray(incoming.certifications)) {
                 normalized.certifications = incoming.certifications.map(item => {
                     if (typeof item === 'string') {
-                        return { name: normalizeImportedRichText(item, 'certifications'), issuer: '' };
+                        return { name: normalizeImportedString(item), issuer: '' };
                     }
                     return {
-                        name: normalizeImportedRichText(item?.name || '', 'certifications'),
-                        issuer: normalizeImportedRichText(item?.issuer || '', 'certifications')
+                        name: normalizeImportedString(item?.name || ''),
+                        issuer: normalizeImportedString(item?.issuer || '')
                     };
                 }).filter(item => normalizeImportedString(getPlainTextFromHTML(item.name || item.issuer)));
             }
@@ -990,6 +996,7 @@
                 if (!exp || typeof exp !== 'object') cvData.experience[index] = {};
                 if (!Array.isArray(cvData.experience[index].bullets)) cvData.experience[index].bullets = [];
                 cvData.experience[index].mergedWithPrevious = !!cvData.experience[index].mergedWithPrevious && index > 0;
+                cvData.experience[index].titleMergedWithPrevious = !!cvData.experience[index].titleMergedWithPrevious && index > 0 && !cvData.experience[index].mergedWithPrevious;
             });
         }
 
@@ -1086,6 +1093,63 @@
             if (typeof cvData.summary !== 'string') cvData.summary = cvData.summary ? String(cvData.summary) : '';
             if (typeof cvData.skills !== 'string') cvData.skills = cvData.skills ? String(cvData.skills) : '';
             if (typeof cvData.themeAccent !== 'string') cvData.themeAccent = '';
+            cvData.personal.name = normalizeImportedString(cvData.personal.name || '');
+            cvData.personal.tagline = normalizeImportedString(cvData.personal.tagline || '');
+            cvData.personal.contact = normalizeImportedString(cvData.personal.contact || '');
+            cvData.personal.phone = normalizeImportedString(cvData.personal.phone || '');
+            cvData.personal.email = normalizeImportedString(cvData.personal.email || '');
+            cvData.personal.linkedin = normalizeImportedString(cvData.personal.linkedin || '');
+            cvData.personal.location = normalizeImportedString(cvData.personal.location || '');
+            cvData.education = cvData.education.map(item => {
+                const entry = item && typeof item === 'object' ? item : {};
+                return {
+                    ...entry,
+                    degree: normalizeImportedString(entry.degree || ''),
+                    institute: normalizeImportedString(entry.institute || entry.institution || ''),
+                    year: normalizeImportedString(entry.year || ''),
+                    marks: normalizeImportedString(entry.marks || ''),
+                    remarks: normalizeImportedString(entry.remarks || '')
+                };
+            });
+            cvData.experience = cvData.experience.map((item, index) => {
+                const entry = item && typeof item === 'object' ? item : {};
+                return {
+                    ...entry,
+                    role: normalizeImportedString(entry.role || ''),
+                    company: normalizeImportedString(entry.company || ''),
+                    dates: normalizeImportedString(entry.dates || ''),
+                    category: normalizeCategoryHTML(htmlToMultilineText(entry.category || '')),
+                    mergedWithPrevious: !!entry.mergedWithPrevious && index > 0,
+                    titleMergedWithPrevious: !!entry.titleMergedWithPrevious && index > 0 && !entry.mergedWithPrevious,
+                    bullets: Array.isArray(entry.bullets) ? entry.bullets : []
+                };
+            });
+            cvData.projects = cvData.projects.map(item => {
+                const entry = item && typeof item === 'object' ? item : {};
+                return {
+                    ...entry,
+                    title: normalizeImportedString(entry.title || ''),
+                    description: normalizeImportedString(entry.description || ''),
+                    bullets: Array.isArray(entry.bullets) ? entry.bullets : []
+                };
+            });
+            cvData.certifications = cvData.certifications.map(item => {
+                const entry = item && typeof item === 'object' ? item : {};
+                return {
+                    ...entry,
+                    name: normalizeImportedString(entry.name || (typeof item === 'string' ? item : '')),
+                    issuer: normalizeImportedString(entry.issuer || '')
+                };
+            });
+            cvData.customSections = cvData.customSections.map(section => {
+                const entry = section && typeof section === 'object' ? section : {};
+                return {
+                    ...entry,
+                    id: normalizeImportedString(entry.id || ''),
+                    title: normalizeImportedString(entry.title || 'Custom Section'),
+                    items: Array.isArray(entry.items) ? entry.items : []
+                };
+            });
             ensureTableSettingsShape();
         }
 
@@ -1495,7 +1559,9 @@
                 const div = document.createElement('div');
                 div.className = 'list-item';
                 const isMergedChild = !!exp.mergedWithPrevious;
+                const isTitleMergedChild = !!exp.titleMergedWithPrevious && !isMergedChild;
                 const canMergeWithPrevious = index > 0 && !isMergedChild;
+                const canTitleMergeWithPrevious = index > 0 && !isMergedChild;
                 const mergeAction = isMergedChild
                     ? `unmergeExp(${index})`
                     : `mergeExpWithPrevious(${index})`;
@@ -1504,14 +1570,24 @@
                     : (canMergeWithPrevious ? 'Merge with previous stint' : 'First stint cannot merge backward');
                 const mergeStyle = !isMergedChild && !canMergeWithPrevious ? 'opacity:.35;pointer-events:none;' : '';
                 const mergeLabel = isMergedChild ? 'Unmerge' : 'Merge';
+                const titleMergeAction = isTitleMergedChild
+                    ? `unmergeExpTitle(${index})`
+                    : `mergeExpTitleWithPrevious(${index})`;
+                const titleMergeTitle = isTitleMergedChild
+                    ? 'Show this title again'
+                    : (canTitleMergeWithPrevious ? 'Reuse the previous title but keep a separate subsection' : 'First stint cannot title-merge backward');
+                const titleMergeStyle = !isTitleMergedChild && !canTitleMergeWithPrevious ? 'opacity:.35;pointer-events:none;' : '';
+                const titleMergeLabel = isTitleMergedChild ? 'Show Title' : 'Title Merge';
                 div.innerHTML = `
                     <div class="item-actions">
                         <div class="action-btn" onclick="moveExp(${index}, -1)">&#9650;</div>
                         <div class="action-btn" onclick="moveExp(${index}, 1)">&#9660;</div>
                         <div class="action-btn merge-toggle ${isMergedChild ? 'active' : ''}" onclick="${mergeAction}" title="${mergeTitle}" style="${mergeStyle}">${mergeLabel}</div>
+                        <div class="action-btn merge-toggle ${isTitleMergedChild ? 'active' : ''}" onclick="${titleMergeAction}" title="${titleMergeTitle}" style="${titleMergeStyle}">${titleMergeLabel}</div>
                         <div class="action-btn delete" onclick="removeExp(${index})">&times;</div>
                     </div>
                     ${isMergedChild ? `<div style="margin-bottom:8px; padding:8px 10px; border:1px solid #dbeafe; background:#eff6ff; border-radius:12px; color:#1d4ed8; font-size:12px;">This stint is merged with the experience above in preview and PDF.</div>` : ''}
+                    ${isTitleMergedChild ? `<div style="margin-bottom:8px; padding:8px 10px; border:1px solid #d1fae5; background:#ecfdf5; border-radius:12px; color:#047857; font-size:12px;">This subsection reuses the title above in preview and PDF, but keeps its own category and bullets.</div>` : ''}
                     <div class="form-group">
                         <label>Role</label>
                         <input class="form-control" value="${exp.role || ''}" oninput="updateExp(${index}, 'role', this.value)" placeholder="e.g. Articled Assistant">
@@ -1649,6 +1725,14 @@
                 cvData.experience[index].category = normalizeCategoryHTML(value);
             } else if (field === 'mergedWithPrevious') {
                 cvData.experience[index].mergedWithPrevious = !!value && index > 0;
+                if (cvData.experience[index].mergedWithPrevious) {
+                    cvData.experience[index].titleMergedWithPrevious = false;
+                }
+            } else if (field === 'titleMergedWithPrevious') {
+                cvData.experience[index].titleMergedWithPrevious = !!value && index > 0;
+                if (cvData.experience[index].titleMergedWithPrevious) {
+                    cvData.experience[index].mergedWithPrevious = false;
+                }
             } else {
                 cvData.experience[index][field] = value;
             }
@@ -1693,7 +1777,7 @@
         }
 
         function addExperience() {
-            cvData.experience.push({ role: "", company: "", dates: "", category: "", bullets: [], mergedWithPrevious: false });
+            cvData.experience.push({ role: "", company: "", dates: "", category: "", bullets: [], mergedWithPrevious: false, titleMergedWithPrevious: false });
             normalizeExperienceMerges();
             renderExpInputs();
             postToFrame();
@@ -1710,6 +1794,7 @@
         function mergeExpWithPrevious(i) {
             if (i <= 0 || !cvData.experience[i]) return;
             cvData.experience[i].mergedWithPrevious = true;
+            cvData.experience[i].titleMergedWithPrevious = false;
             normalizeExperienceMerges();
             renderExpInputs();
             postToFrame();
@@ -1717,6 +1802,21 @@
         function unmergeExp(i) {
             if (i <= 0 || !cvData.experience[i]) return;
             cvData.experience[i].mergedWithPrevious = false;
+            normalizeExperienceMerges();
+            renderExpInputs();
+            postToFrame();
+        }
+        function mergeExpTitleWithPrevious(i) {
+            if (i <= 0 || !cvData.experience[i]) return;
+            cvData.experience[i].titleMergedWithPrevious = true;
+            cvData.experience[i].mergedWithPrevious = false;
+            normalizeExperienceMerges();
+            renderExpInputs();
+            postToFrame();
+        }
+        function unmergeExpTitle(i) {
+            if (i <= 0 || !cvData.experience[i]) return;
+            cvData.experience[i].titleMergedWithPrevious = false;
             normalizeExperienceMerges();
             renderExpInputs();
             postToFrame();
@@ -3400,7 +3500,7 @@ async function downloadCvFile(format = 'pdf') {
                 id: Date.now(),
                 at: new Date().toISOString(),
                 source,
-                title: cvData.personal.name || 'Untitled CV',
+                title: normalizeImportedString(cvData.personal.name || '') || 'Untitled CV',
                 data: JSON.parse(JSON.stringify(cvData))
             };
             history.unshift(snapshot);
@@ -3424,7 +3524,7 @@ async function downloadCvFile(format = 'pdf') {
                 const d = new Date(s.at);
                 const label = d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) +
                     ' · ' + d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
-                const safeTitle = (s.title || 'Untitled CV')
+                const safeTitle = (normalizeImportedString(s.title || '') || 'Untitled CV')
                     .replace(/&/g, '&amp;')
                     .replace(/</g, '&lt;')
                     .replace(/>/g, '&gt;');
