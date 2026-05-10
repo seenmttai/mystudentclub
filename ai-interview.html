@@ -2405,7 +2405,6 @@
         const WORKER_URL = 'https://interviewme.bhansalimanan55.workers.dev/';
         const ANALYSIS_URL = 'https://analysis.mystudentclub.com/analysis';
         const TTS_ENDPOINT = 'https://us-central1-msc-notif.cloudfunctions.net/gcp-tts-rate-limited';
-        const WHISPER_WORKER_URL = 'https://whisper.bhansalimanan55.workers.dev/';
 
         // --- NEW STATE ---
         let interviewPlan = null;
@@ -2693,6 +2692,18 @@
 
         async function initializeVAD() {
             if (myvad) return;
+            
+            window.arrayBufferToBase64 = function(buffer) {
+                let binary = '';
+                const bytes = new Uint8Array(buffer);
+                const len = bytes.byteLength;
+                for (let i = 0; i < len; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return window.btoa(binary);
+            };
+
+
             try {
                 myvad = await vad.MicVAD.new({
                     onSpeechStart: () => {
@@ -2701,27 +2712,14 @@
                     onSpeechEnd: async (audio) => {
                         if (isWaitingForAIResponse || interviewTerminalState) return;
                         
-                        console.log("VAD: Speech ended, transcribing...");
-                        updateSpeechStatus("Transcribing...", true);
+                        console.log("VAD: Speech ended, processing...");
+                        updateSpeechStatus("Processing audio...", true);
                         
                         const wavBuffer = vad.utils.encodeWAV(audio);
-                        try {
-                            const response = await fetch(WHISPER_WORKER_URL, {
-                                method: 'POST',
-                                body: wavBuffer,
-                                headers: { 'Content-Type': 'audio/wav' }
-                            });
-                            const result = await response.json();
-                            if (result.text && result.text.trim()) {
-                                handleTranscription(result.text.trim());
-                            } else {
-                                updateSpeechStatus("", false);
-                            }
-                        } catch (err) {
-                            console.error("Transcription error", err);
-                            updateSpeechStatus("Transcription failed", true);
-                            setTimeout(() => updateSpeechStatus("", false), 2000);
-                        }
+                        const base64Audio = arrayBufferToBase64(wavBuffer);
+                        
+                        window.stopListening();
+                        sendToAI(null, base64Audio);
                     },
                     onnxWASMBasePath: "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/",
                     baseAssetPath: "https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.27/dist/",
@@ -3830,7 +3828,7 @@
                 || text.includes('unexpected end of json input');
         }
 
-        async function fetchInterviewWorkerResponse() {
+        async function fetchInterviewWorkerResponse(base64Audio = null) {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), INTERVIEW_REQUEST_TIMEOUT_MS);
 
@@ -3843,24 +3841,34 @@
                     toughness: interviewConfig.toughness
                 });
 
+                const requestBody = { 
+                    messages,
+                    interviewPlan,
+                    positionApplied: interviewConfig.positionApplied,
+                    specialization: interviewConfig.specialization || interviewConfig.positionApplied,
+                    experienceLevel: interviewConfig.experienceLevel,
+                    companyName: interviewConfig.companyName,
+                    companyType: interviewConfig.companyType,
+                    interviewDomain: interviewConfig.interviewDomain,
+                    toughness: interviewConfig.toughness,
+                    jobDescription: interviewConfig.jobDescription,
+                    cvImages: cvImages
+                };
+
+                if (base64Audio) {
+                    requestBody.latestAudio = base64Audio;
+                }
+
                 const response = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-Specialization': interviewConfig.specialization || interviewConfig.positionApplied || '',
+                        'X-Experience-Level': interviewConfig.experienceLevel || '',
+                        'X-Company-Type': interviewConfig.companyType || '',
+                        'X-Duration': String(interviewConfig.duration || 30)
                     },
-                    body: JSON.stringify({ 
-                        messages,
-                        interviewPlan,
-                        positionApplied: interviewConfig.positionApplied,
-                        specialization: interviewConfig.specialization || interviewConfig.positionApplied,
-                        experienceLevel: interviewConfig.experienceLevel,
-                        companyName: interviewConfig.companyName,
-                        companyType: interviewConfig.companyType,
-                        interviewDomain: interviewConfig.interviewDomain,
-                        toughness: interviewConfig.toughness,
-                        jobDescription: interviewConfig.jobDescription,
-                        cvImages: cvImages
-                    }),
+                    body: JSON.stringify(requestBody),
                     signal: controller.signal
                 });
 
@@ -3884,18 +3892,29 @@
             }
         }
 
-        async function sendToAI(message) {
+        async function sendToAI(message, base64Audio = null) {
             if (isWaitingForAIResponse || interviewTerminalState) return;
             isWaitingForAIResponse = true;
             let responseWillSpeak = false;
             try {
-                messages.push({ role: 'user', content: message });
+                if (message) {
+                    messages.push({ role: 'user', content: message });
+                }
+
+                if (base64Audio && !liveUserMessageEl) {
+                    liveUserMessageEl = document.createElement('div');
+                    liveUserMessageEl.className = 'message user live';
+                    liveUserMessageEl.innerHTML = `<div class="message-author">You</div><div class="message-content">...</div>`;
+                    chatMessages.appendChild(liveUserMessageEl);
+                    scrollToBottom();
+                }
+
                 let data = null;
                 let lastError = null;
 
                 for (let attempt = 0; attempt <= INTERVIEW_REQUEST_MAX_RETRIES; attempt += 1) {
                     try {
-                        data = await fetchInterviewWorkerResponse();
+                        data = await fetchInterviewWorkerResponse(base64Audio);
                         lastError = null;
                         break;
                     } catch (error) {
@@ -3909,6 +3928,33 @@
 
                 if (!data) throw lastError || new Error('No response received from interview service.');
                 consecutiveInterviewServiceFailures = 0;
+
+                // Handle transcription from worker if audio was sent
+                if (base64Audio && data.transcription) {
+                    const text = data.transcription;
+                    if (text.length >= 3 || ['no', 'yes', 'ok'].includes(text.toLowerCase())) {
+                        messages.push({ role: 'user', content: text });
+                        if (liveUserMessageEl) {
+                            const contentEl = liveUserMessageEl.querySelector('.message-content');
+                            if (contentEl) contentEl.textContent = text;
+                            liveUserMessageEl.classList.remove('live');
+                            liveUserMessageEl = null;
+                        } else {
+                            addChatMessage('user', 'You', text);
+                        }
+                    } else {
+                        if (liveUserMessageEl) {
+                            liveUserMessageEl.remove();
+                            liveUserMessageEl = null;
+                        }
+                    }
+                    updateSpeechStatus("", false);
+                } else if (base64Audio && liveUserMessageEl) {
+                    // Fallback if no transcription returned
+                    liveUserMessageEl.remove();
+                    liveUserMessageEl = null;
+                    updateSpeechStatus("", false);
+                }
 
                 // Update persistent interview plan if returned
                 if (data.interviewPlan) {
