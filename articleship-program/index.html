@@ -301,6 +301,10 @@
       <div class="price">
         <span class="original">₹2999</span> <span class="discounted">₹999</span>
       </div>
+      <button id="notifyMeFooterBtn" class="notify-me-footer-btn">
+        <span class="notify-footer-icon">🔔</span>
+        <span class="notify-footer-text">Notify Me</span>
+      </button>
     </div>
 
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
@@ -397,19 +401,29 @@
 
         async function initNotifyMe() {
           const btn = document.getElementById('notifyMeBtn');
-          if (!btn) return;
+          const footerBtn = document.getElementById('notifyMeFooterBtn');
+          if (!btn && !footerBtn) return;
 
-          const isSubscribed = localStorage.getItem('notif_articleship_program') === '1';
-          if (isSubscribed) {
-            btn.querySelector('.notify-btn-text').textContent = 'You Will Be Notified!';
-            btn.querySelector('.notify-btn-icon').textContent = '✅';
-            btn.classList.add('subscribed');
+          function syncButtonStates(subscribed) {
+            if (btn) {
+              btn.querySelector('.notify-btn-text').textContent = subscribed ? 'You Will Be Notified!' : 'Notify Me When Open';
+              btn.querySelector('.notify-btn-icon').textContent = subscribed ? '✅' : '🔔';
+              btn.classList.toggle('subscribed', subscribed);
+            }
+            if (footerBtn) {
+              footerBtn.querySelector('.notify-footer-text').textContent = subscribed ? 'Notified ✅' : 'Notify Me';
+              footerBtn.querySelector('.notify-footer-icon').textContent = subscribed ? '✅' : '🔔';
+              footerBtn.classList.toggle('subscribed', subscribed);
+            }
           }
 
-          btn.addEventListener('click', async () => {
-            if (btn.disabled) return;
-            btn.disabled = true;
-            btn.classList.add('loading');
+          const isSubscribed = localStorage.getItem('notif_articleship_program') === '1';
+          syncButtonStates(isSubscribed);
+
+          async function handleNotifyClick() {
+            const activeBtn = this;
+            if (activeBtn.disabled) return;
+            [btn, footerBtn].forEach(b => b && (b.disabled = true));
 
             // Already subscribed — unsubscribe
             if (localStorage.getItem('notif_articleship_program') === '1') {
@@ -425,12 +439,9 @@
               }
               localStorage.removeItem('notif_articleship_program');
               localStorage.removeItem('notif_fcm_token_ap');
-              btn.querySelector('.notify-btn-text').textContent = 'Notify Me When Open';
-              btn.querySelector('.notify-btn-icon').textContent = '🔔';
-              btn.classList.remove('subscribed');
+              syncButtonStates(false);
               setNotifyStatus('Unsubscribed.', 'info');
-              btn.disabled = false;
-              btn.classList.remove('loading');
+              [btn, footerBtn].forEach(b => b && (b.disabled = false));
               return;
             }
 
@@ -441,8 +452,7 @@
 
             if (permission !== 'granted') {
               setNotifyStatus('Please allow notifications in your browser settings.', 'error');
-              btn.disabled = false;
-              btn.classList.remove('loading');
+              [btn, footerBtn].forEach(b => b && (b.disabled = false));
               return;
             }
 
@@ -474,18 +484,18 @@
 
               localStorage.setItem('notif_articleship_program', '1');
               localStorage.setItem('notif_fcm_token_ap', fcmToken);
-              btn.querySelector('.notify-btn-text').textContent = 'You Will Be Notified!';
-              btn.querySelector('.notify-btn-icon').textContent = '✅';
-              btn.classList.add('subscribed');
+              syncButtonStates(true);
               setNotifyStatus("You're on the list! We'll notify you when the program opens.", 'success');
             } catch (err) {
               console.error('NotifyMe error:', err);
               setNotifyStatus('Something went wrong. Please try again.', 'error');
             }
 
-            btn.disabled = false;
-            btn.classList.remove('loading');
-          });
+            [btn, footerBtn].forEach(b => b && (b.disabled = false));
+          }
+
+          if (btn) btn.addEventListener('click', handleNotifyClick);
+          if (footerBtn) footerBtn.addEventListener('click', handleNotifyClick);
         }
 
         initNotifyMe();
