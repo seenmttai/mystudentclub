@@ -3671,7 +3671,25 @@
         async function startInterview() {
             reportScreen.classList.add('hidden');
             interviewScreen.classList.remove('hidden');
-            messages = [];
+            
+            // System instruction to set the tone/difficulty
+            messages = [
+                {
+                    role: 'system',
+                    content: `You are an interviewer named Aditya. 
+                    Target Role: ${interviewConfig.positionApplied}.
+                    Company: ${interviewConfig.companyName} (${interviewConfig.companyType}).
+                    Domain: ${interviewConfig.interviewDomain}.
+                    Difficulty: ${interviewConfig.toughness}.
+
+                    DIFFICULTY GUIDELINES:
+                    - Easy: Be supportive, encouraging, and ask basic conceptual questions. Help the candidate if they struggle.
+                    - Medium: Be a standard professional interviewer. Ask a mix of technical and behavioral questions.
+                    - Hard: Be critical, deep-dive into technical details, and challenge their answers.
+                    - Brutal: Be aggressive, use stress-interview tactics, interrupt occasionally, and ask extremely complex technical questions.`
+                }
+            ];
+            
             interviewPlan = null;
             isWaitingForAIResponse = false;
             consecutiveInterviewServiceFailures = 0;
@@ -3690,7 +3708,15 @@
 
             await initializeVAD();
 
-            const welcome = "Hello, I'm Aditya. Let's get started. Please walk me through your background.";
+            let welcome = "Hello, I'm Aditya. Let's get started. Please walk me through your background.";
+            if (interviewConfig.toughness === 'Easy') {
+                welcome = "Hi! I'm Aditya. I'm really looking forward to our chat. To start off, could you tell me a little bit about yourself and your background?";
+            } else if (interviewConfig.toughness === 'Hard') {
+                welcome = "Hello, I'm Aditya. We have a lot to cover. Start by walking me through your background, focusing specifically on your technical contributions.";
+            } else if (interviewConfig.toughness === 'Brutal') {
+                welcome = "I'm Aditya. I've reviewed your profile, but I want to hear it from you. Why should we even consider you for this role? Walk me through your background and be concise.";
+            }
+
             addLiveAIChatMessage(AI_INTERVIEWER_NAME);
             if (avatar) {
                 avatar.speakText(welcome);
@@ -3869,7 +3895,8 @@
                         'X-Specialization': interviewConfig.specialization || interviewConfig.positionApplied || '',
                         'X-Experience-Level': interviewConfig.experienceLevel || '',
                         'X-Company-Type': interviewConfig.companyType || '',
-                        'X-Duration': String(interviewConfig.duration || 30)
+                        'X-Duration': String(interviewConfig.duration || 30),
+                        'X-Toughness': interviewConfig.toughness || 'Medium'
                     },
                     body: JSON.stringify(requestBody),
                     signal: controller.signal
