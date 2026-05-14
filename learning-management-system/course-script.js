@@ -182,25 +182,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (sidebarCertContainer && certBtn) {
                 sidebarCertContainer.style.display = 'block'; // Ensure container is visible
 
-                if (progress === 100) {
-                    // Only allow certificate download when course is 100% complete
-                    certBtn.classList.remove('locked');
-                    certBtn.disabled = false;
-                    certBtn.innerHTML = '<i class="fas fa-certificate"></i> <span>Download Certificate</span>';
+                // Certificate is now always unlocked for Industrial Training Mastery
+                certBtn.classList.remove('locked');
+                certBtn.disabled = false;
+                certBtn.innerHTML = '<i class="fas fa-certificate"></i> <span>Download Certificate</span>';
 
-                    // Hide the lock message if present
-                    const lockMsg = sidebarCertContainer.querySelector('.cert-lock-msg');
-                    if (lockMsg) lockMsg.style.display = 'none';
-                } else {
-                    // Keep certificate locked until 100% completion
-                    certBtn.classList.add('locked');
-                    certBtn.disabled = true;
-                    certBtn.innerHTML = '<i class="fas fa-lock"></i> <span>Certificate Locked (' + progress + '% done)</span>';
-
-                    // Show the lock message if present
-                    const lockMsg = sidebarCertContainer.querySelector('.cert-lock-msg');
-                    if (lockMsg) lockMsg.style.display = 'block';
-                }
+                // Hide the lock message
+                const lockMsg = sidebarCertContainer.querySelector('.cert-lock-msg');
+                if (lockMsg) lockMsg.style.display = 'none';
             }
         }
     };
@@ -1268,11 +1257,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Block certificate generation if course is not 100% complete
-        if (state.course.progress < 100) {
-            alert('You must complete 100% of the course before downloading the certificate. Current progress: ' + state.course.progress + '%');
-            return;
-        }
+
 
         try {
             const { jsPDF } = window.jspdf;
