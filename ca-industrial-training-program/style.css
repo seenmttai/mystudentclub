@@ -1497,6 +1497,25 @@ h1 {
     font-size: 1.1rem;
 }
 
+.soon-notice {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    animation: fadeIn 0.5s ease;
+}
+
+.soon-notice i {
+    font-size: 1.1rem;
+}
+
 .register-btn.btn-disabled,
 .action-btn.btn-disabled {
     background: #e2e8f0 !important;
