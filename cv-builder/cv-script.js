@@ -132,6 +132,11 @@
         let summaryLinkPopover = null;
         let summaryLinkRange = null;
         const inlineRichEditors = new Map();
+        window.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'cv-frame-ready') {
+        postToFrame();
+    }
+});
 
         // Initialization
         window.onload = () => {
@@ -168,18 +173,23 @@
             updateUndoRedoControls();
 
             const frame = document.getElementById('cv-frame');
-            if (frame) {
-                frame.onload = () => setTimeout(postToFrame, 300);
-                // Listen for frame saying it's ready (fix for white screen on reload)
-                window.addEventListener('message', (e) => {
-                    if (e.data && e.data.type === 'cv-frame-ready') {
-                        postToFrame();
-                    }
-                });
-                // Fallback attempt
-                setTimeout(postToFrame, 1000);
-            }
 
+if (frame) {
+
+    if (
+        frame.contentDocument &&
+        frame.contentDocument.readyState === 'complete'
+    ) {
+
+        setTimeout(postToFrame, 300);
+
+    } else {
+
+        frame.onload = () => setTimeout(postToFrame, 300);
+    }
+
+    setTimeout(postToFrame, 1000);
+}
             initResizeHandle();
             resetEditorScrollToTop();
             requestAnimationFrame(() => resetEditorScrollToTop());
@@ -2251,22 +2261,25 @@
         }
 
         // Template Sidebar Logic
-        const TEMPLATES = [
-            { file: 'classic-blue.html', name: 'Classic Blue', accent: '#1e40af', style: 'sans' },
-            { file: 'modern-serif.html', name: 'Modern Serif', accent: '#4f81bc', style: 'serif' },
-            { file: 'grid-layout.html', name: 'Grid Layout', accent: '#059669', style: 'grid' },
-            { file: 'professional.html', name: 'Professional', accent: '#374151', style: 'clean' },
-            { file: 'corporate.html', name: 'Corporate', accent: '#0369a1', style: 'formal' },
-            { file: 'minimalist.html', name: 'Minimalist', accent: '#6b7280', style: 'minimal' },
-            { file: 'bold-modern.html', name: 'Bold Modern', accent: '#dc2626', style: 'bold' },
-            { file: 'classic-refined.html', name: 'Classic Refined', accent: '#2F557F', style: 'refined' },
-            { file: 'modern-deep-blue.html', name: 'Modern Deep Blue', accent: '#2c5d79', style: 'deepblue' },
-            { file: 'executive-dark.html', name: 'Executive Dark', accent: '#404040', style: 'dark' },
-            { file: 'navy-merit.html', name: 'Navy Merit', accent: '#0f2f63', style: 'merit' },
-            { file: 'monochrome-ledger.html', name: 'Monochrome Ledger', accent: '#111111', style: 'mono' },
-            { file: 'slate-split.html', name: 'Slate Split', accent: '#28535e', style: 'split' },
-            { file: 'blue-horizon-split.html', name: 'Blue Horizon Split', accent: '#1f385c', style: 'splitblue' }
-        ];
+const TEMPLATES = [
+    { file: 'classic-blue.html', name: 'Classic Blue', accent: '#1e40af', style: 'sans' },
+    { file: 'modern-serif.html', name: 'Modern Serif', accent: '#4f46e5', style: 'serif' },
+    { file: 'grid-layout.html', name: 'Grid Layout', accent: '#059669', style: 'grid' },
+    { file: 'professional.html', name: 'Professional', accent: '#374151', style: 'clean' },
+    { file: 'corporate.html', name: 'Corporate', accent: '#0369a1', style: 'formal' },
+    { file: 'minimalist.html', name: 'Minimalist', accent: '#6b7280', style: 'minimal' },
+    { file: 'bold-modern.html', name: 'Bold Modern', accent: '#dc2626', style: 'bold' },
+    { file: 'classic-refined.html', name: 'Classic Refined', accent: '#2F557F', style: 'refined' },
+    { file: 'modern-deep-blue.html', name: 'Modern Deep Blue', accent: '#2c5d79', style: 'deepblue' },
+    { file: 'executive-dark.html', name: 'Executive Dark', accent: '#404040', style: 'dark' },
+    { file: 'navy-merit.html', name: 'Navy Merit', accent: '#0f2f63', style: 'merit' },
+    { file: 'monochrome-ledger.html', name: 'Monochrome Ledger', accent: '#111111', style: 'mono' },
+    { file: 'slate-split.html', name: 'Slate Split', accent: '#28535e', style: 'split' },
+    { file: 'blue-horizon-split.html', name: 'Blue Horizon Split', accent: '#1f385c', style: 'splitblue' },
+    { file: 'file32.html', name: 'File 32', accent: '#0b4f6c', style: 'audit' },
+
+    { file: 'file31.html', name: 'File 31', accent: '#2563eb', style: 'modern' }
+];
         const TEMPLATE_COLOR_PRESETS = ['#2b2b2b', '#0f6cbd', '#155e95', '#1f8f63', '#c0392b', '#7b4db3'];
 
         function normalizeHexColor(value) {
@@ -2506,7 +2519,7 @@
             const frame = document.getElementById('cv-frame');
             if (frame && frame.contentWindow) {
                 try {
-                    const payload = buildPreviewPayload({ useDemoFallback: false });
+                    const payload = buildPreviewPayload({ useDemoFallback: true });
                     frame.contentWindow.postMessage({ type: 'update-cv', payload }, '*');
                 } catch (e) {
                     console.error('postToFrame error:', e);
@@ -2600,23 +2613,24 @@
             input.value = '';
         }
 
-        function resetData() {
-            if (confirm("Clear all data?")) {
-                cvData = {
-                    personal: { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] },
-                    summary: "",
-                    education: [],
-                    experience: [],
-                    certifications: [],
-                    achievements: [],
-                    leadership: [],
-                    interests: [],
-                    skills: "",
-                    themeAccent: "",
-                    customSections: [],
-                    sectionOrder: [...BASE_SECTION_ORDER],
-                    tableSettings: getDefaultTableSettings()
-                };
+       function resetData() {
+    if (confirm("Clear all data?")) {
+        cvData = {
+            personal: { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] },
+            summary: "",
+            education: [],
+            experience: [],
+            projects: [],       
+            certifications: [],
+            achievements: [],
+            leadership: [],
+            interests: [],
+            skills: "",
+            themeAccent: "",
+            customSections: [],
+            sectionOrder: [...BASE_SECTION_ORDER],
+            tableSettings: getDefaultTableSettings()
+        };
                 localStorage.removeItem('cv_maker_data');
                 renderEditor();
                 updateCV();
@@ -3771,11 +3785,9 @@ async function downloadCvFile(format = 'pdf') {
         }
 
         // Auto-start tour for first-time visitors
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                if (!localStorage.getItem('cv_tour_completed')) {
-                    startTour();
-                }
-            }, 1200); // Delay to ensure page is fully loaded
-        });
+        setTimeout(() => {
+    if (!localStorage.getItem('cv_tour_completed')) {
+        startTour();
+    }
+}, 1200);
 

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Padam Bhansali – Resume</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 9.8pt;
+      color: #000;
+      background: #a0a0a0;
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .page {
+      background: #fff;
+      width: 794px;
+      padding: 18px 18px 20px 18px;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.22);
+      border: 1px solid #888;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      margin-bottom: 7px;
+    }
+
+    .header .name {
+      font-size: 15pt;
+      font-weight: 700;
+      font-family: 'Times New Roman', serif;
+      color: #000;
+      margin-bottom: 2px;
+    }
+
+    .header .contact-line {
+      font-size: 9.2pt;
+      line-height: 1.65;
+      color: #000;
+    }
+
+    .header .contact-line a {
+      color: #1155CC;
+      text-decoration: underline;
+    }
+
+    /* ── SECTION HEADER (dark teal bar, bold, centred) ── */
+    .sec-hdr {
+      background: #17375e;
+      color: #fff;
+      font-weight: 700;
+      font-size: 9.8pt;
+      text-align: center;
+      padding: 3px 6px;
+      letter-spacing: 0.2px;
+    }
+
+    /* ── OUTER BORDER wrapper used for several sections ── */
+    .outer-border {
+      border: 1px solid #000;
+      border-top: none;
+    }
+
+    /* ── ABOUT ME ── */
+    .about-cell {
+      padding: 5px 7px;
+      font-size: 9.5pt;
+      line-height: 1.5;
+      border: 1px solid #000;
+      border-top: none;
+    }
+
+    /* ── ACADEMIC QUALIFICATIONS TABLE ── */
+    .acad-wrap {
+      border: 1px solid #000;
+      border-top: none;
+    }
+
+    .acad-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .acad-table th {
+      background: #d9e1f2;
+      font-weight: 700;
+      text-align: center;
+      padding: 4px 6px;
+      font-size: 9.5pt;
+      border: 1px solid #000;
+    }
+
+    .acad-table td {
+      text-align: center;
+      padding: 3px 6px;
+      font-size: 9.5pt;
+      border: 1px solid #000;
+      vertical-align: middle;
+      line-height: 1.4;
+    }
+
+    /* ── WORK EXPERIENCE ── */
+    .we-wrap {
+      border: 1px solid #000;
+      border-top: none;
+    }
+
+    .we-job-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 3px 7px;
+      font-size: 9.5pt;
+      font-weight: 700;
+      border-bottom: 1px solid #000;
+    }
+
+    .we-body {
+      display: flex;
+    }
+
+    .we-label {
+      font-weight: 700;
+      font-size: 9.2pt;
+      width: 82px;
+      min-width: 82px;
+      padding: 6px 4px;
+      border-right: 1px solid #000;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.35;
+      padding-top: 7px;
+    }
+
+    .we-bullets-wrap {
+      padding: 5px 7px 6px 5px;
+      flex: 1;
+    }
+
+    /* ── SQUARE BULLET (▪) style ── */
+    .slist {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .slist li {
+      display: flex;
+      align-items: flex-start;
+      font-size: 9.5pt;
+      line-height: 1.48;
+      margin-bottom: 3px;
+    }
+
+    .slist li::before {
+      content: "▪";
+      font-size: 9pt;
+      min-width: 14px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── ACHIEVEMENTS / SKILLS / SOFT SKILLS sections ── */
+    .plain-section {
+      border: 1px solid #000;
+      border-top: none;
+      padding: 5px 7px;
+    }
+
+    .plain-section .slist li {
+      font-size: 9.5pt;
+      line-height: 1.5;
+      margin-bottom: 2px;
+    }
+
+    b, strong { font-weight: 700; }
+
+    /* ── PRINT ── */
+    @media print {
+      body { background: none; padding: 0; }
+      .page {
+        width: 210mm;
+        padding: 12mm 14mm 14mm 14mm;
+        box-shadow: none;
+        border: none;
+      }
+    }
+
+    @media (max-width: 860px) {
+      body { padding: 6px 2px; }
+      .page { width: 100%; padding: 12px 8px; }
+      .header .name { font-size: 13pt; }
+      .we-label { width: 66px; min-width: 66px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── HEADER ── -->
+  <div class="header">
+    <div class="name">Padam Bhansali</div>
+    <div class="contact-line">
+      Contact No: +91-7228881182<br>
+      Email: <a href="mailto:capadambhansali@gmail.com">capadambhansali@gmail.com</a><br>
+      LinkedIn: &nbsp;<a href="http://www.linkedin.com/in/ca-padam-bhansali" target="_blank">www.linkedin.com/in/ca-padam-bhansali</a>
+    </div>
+  </div>
+
+  <!-- ── ABOUT ME ── -->
+  <div class="sec-hdr">ABOUT ME</div>
+  <div class="about-cell">
+    Analytical and execution-focused CA Finalist with proven experience in audits, taxation, and financial reporting. Passionate about financial analysis and capital markets, seeking an Industrial Trainee role to deepen expertise and deliver impact in core finance domains.
+  </div>
+
+  <!-- ── ACADEMIC QUALIFICATIONS ── -->
+  <div class="sec-hdr" style="margin-top:6px;">ACADEMIC QUALIFICATIONS</div>
+  <div class="acad-wrap">
+    <table class="acad-table">
+      <thead>
+        <tr>
+          <th style="width:10%;">Year</th>
+          <th style="width:26%;">Degree/Examination</th>
+          <th style="width:36%;">Board/Institute</th>
+          <th style="width:28%;">Remarks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2021–24</td>
+          <td>Bachelor of Commerce(B.Com)</td>
+          <td>Government Autonomous College,<br>Rourkela</td>
+          <td>6.8 CGPA<br>(Passed First Class )</td>
+        </tr>
+        <tr>
+          <td>2024</td>
+          <td>CA Intermediate(Group 2)</td>
+          <td>Institute of Chartered Accountants of India</td>
+          <td>50%</td>
+        </tr>
+        <tr>
+          <td>2023</td>
+          <td>CA Intermediate(Group 1)</td>
+          <td>Institute of Chartered Accountants of India</td>
+          <td>52% (Exemption in 1 Paper)</td>
+        </tr>
+        <tr>
+          <td>2022</td>
+          <td>CA Foundation</td>
+          <td>Institute of Chartered Accountants of India</td>
+          <td>56.25% (Exemption in 2 Papers)</td>
+        </tr>
+        <tr>
+          <td>2021</td>
+          <td>Class XII</td>
+          <td>Carmel School, Rourkela</td>
+          <td>89% (School Rank 4)</td>
+        </tr>
+        <tr>
+          <td>2019</td>
+          <td>Class X</td>
+          <td>Carmel School, Rourkela</td>
+          <td>95%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── WORK EXPERIENCE ── -->
+  <div class="sec-hdr" style="margin-top:6px;">WORK EXPERIENCE</div>
+  <div class="we-wrap">
+    <div class="we-job-row">
+      <span>XYZ &amp; Associates (ARTICLE TRAINEE)</span>
+      <span>AUGUST 2024 - Current</span>
+    </div>
+    <div class="we-body">
+      <div class="we-label">AUDITING &amp;<br>ASSURANCE</div>
+      <div class="we-bullets-wrap">
+        <ul class="slist">
+          <li><span>Conducted detailed vouching and ledger reviews to verify the authenticity of financial transactions, tested journal entries for discrepancies, <b>prepared and finalized balance sheets</b> to ensure compliance with accounting standards.</span></li>
+          <li><span><b>Identified significant cash repayment of ₹8 Lakhs against unsecured loans</b> for a manufacturing entity with around ₹70 Cr turover during tax audit of a manufacturing entity, flagged the potential non-compliance under the Income Tax Act.</span></li>
+          <li><span>Gained hands-on <b>experience in Tally ERP</b> for accounting entries and GST reporting; also worked on <b>Hi-Rise (Automobile dealership software)</b> to extract and analyze sales, purchase, and service data for internal audit and stock verification.</span></li>
+          <li><span>Performed Internal audit of an automobile dealership, verifying sales, purchases, service income, and physical stock, ensuring <b>zero differences in physical verification</b> and presented audit findings with process improvement suggestions to management.</span></li>
+          <li><span><b>Preparation and filing of Form 3CD under Section 44B</b> of the Income-tax Act, 1961, supporting statutory tax requirements.</span></li>
+          <li><span><b>Identified non-deduction</b> of TDS on interest payments totaling <b>₹1.5 Lakhs made in multiple installments</b>, during tax audit, flagged the issue to ensure timely deduction and <b>avoiding expense disallowance</b> under Section 40(a) of the Income Tax Act.</span></li>
+          <li><span>Led the <b>Reconciliation of GSTR-3B, GSTR-1 and GSTR-2B with financial records</b>, ensuring alignment of tax liabilities, input tax credits, and supply details for accurate GST Reporting.</span></li>
+          <li><span>Conducted GST audit procedures for clients by <b>analyzing bill-wise data</b> for sales, purchases, and input tax credit was responsible for identifying mismatches and ineligible ITC prepared and ensured accurate <b>filing of GSTR-9 and GSTR-9C.</b></span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ACHIEVEMENTS ── -->
+  <div class="sec-hdr" style="margin-top:6px;">ACHIEVEMENTS</div>
+  <div class="plain-section">
+    <ul class="slist">
+      <li><span><b>Recognized as Best Student</b> in Higher Secondary School for overall academic excellence and leadership.</span></li>
+      <li><span>Secured <b>Gold Medal in the National General Knowledge</b> Olympiad.</span></li>
+      <li><span>Successfully <b>led a team</b> of 7 peers in the Orientation Program, <b>achieving 1st place</b> among multiple competing teams.</span></li>
+      <li><span><b>Winner of the Carrom Competition</b> organized by ICAI, Rourkela, outperforming 15+ participants.</span></li>
+    </ul>
+  </div>
+
+  <!-- ── TECHNICAL SKILLS & CERTIFICATIONS ── -->
+  <div class="sec-hdr" style="margin-top:6px;">TECHNICAL SKILLS &amp; CERTIFICATIONS</div>
+  <div class="plain-section">
+    <ul class="slist">
+      <li><span>Proficient in MS-office (MS-excel: <b>XLOOKUP, Pivot Tables, Powerpoint, Word</b>)</span></li>
+      <li><span><b>Proficient in AI Tools</b> such as ChatGPT for analysis and automation</span></li>
+      <li><span>Completed <b>ChatGPT for Everyone certification (2025)</b></span></li>
+      <li><span>Completed the <b>IT course</b> and <b>Orientation Course</b> as mandated by ICAI</span></li>
+    </ul>
+  </div>
+
+  <!-- ── SOFT SKILLS & HOBBIES ── -->
+  <div class="sec-hdr" style="margin-top:6px;">SOFT SKILLS &amp; HOBBIES</div>
+  <div class="plain-section">
+    <ul class="slist">
+      <li><span><b>Problem-Solving &amp; Critical Thinking</b> - Skilled at analyzing situations and identifying effective solutions.</span></li>
+      <li><span><b>Collaboration &amp; Interpersonal Skills</b> - Build positive relationships and work productively in teams.</span></li>
+      <li><span><b>Curiosity &amp; Quick Learning</b> - Strong ability to grasp new concepts quickly and apply them effectively.</span></li>
+      <li><span>Listening <b>music and Art</b></span></li>
+      <li><span>Creative <b>content creation</b> (Informal Instagram Page)</span></li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>

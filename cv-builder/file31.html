@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CV – File 31</title>
+    <style>
+        /* ---------------------------------------------------------
+           VARIABLES
+        --------------------------------------------------------- */
+        :root {
+            --accent:        #1f3864;   /* dark navy matching PDF */
+            --accent-light:  #d9e1f2;   /* light blue-grey for edu header row */
+            --contact-bg:    #dce6f1;   /* light tint for contact bar */
+            --text:          #000000;
+            --bg:            #ffffff;
+            --font:          'Calibri', 'Arial', sans-serif;
+            --viewer-bg:     #525659;
+            --ref-width:     1000px;
+            --ref-height:    1414px;
+            --content-scale: 1;
+        }
+
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0; padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background: var(--viewer-bg);
+            font-family: var(--font);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.2s ease-in;
+        }
+
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        /* ---------------------------------------------------------
+           A4 PAGE SHEET
+        --------------------------------------------------------- */
+        .cv-page {
+            width:  var(--ref-width);
+            height: var(--ref-height);
+            background: var(--bg);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            padding: calc(28px * var(--content-scale))
+                     calc(30px * var(--content-scale))
+                     calc(16px * var(--content-scale));
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transform-origin: top center;
+            overflow: hidden;
+            font-size: calc(14px * var(--content-scale));
+            line-height: 1.35;
+            color: var(--text);
+        }
+
+        /* ---------------------------------------------------------
+           HEADER — name LEFT, tagline RIGHT, same baseline
+        --------------------------------------------------------- */
+        .cv-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: calc(3px * var(--content-scale));
+        }
+
+        .cv-name {
+            font-size: calc(30px * var(--content-scale));
+            font-weight: 700;
+            line-height: 1;
+            color: var(--text);
+        }
+
+        .cv-tagline {
+            font-size: calc(14px * var(--content-scale));
+            font-weight: 400;
+            color: var(--text);
+            padding-bottom: calc(2px * var(--content-scale));
+        }
+
+        /* ---------------------------------------------------------
+           CONTACT ROW — light blue-tint background, pipe separators
+           cv-common.js injects icons + pipe spans into [data-field="contact"]
+        --------------------------------------------------------- */
+        .contact-row-wrap {
+            background-color: var(--contact-bg);
+            padding: calc(3px * var(--content-scale)) calc(6px * var(--content-scale));
+            margin-bottom: calc(4px * var(--content-scale));
+            font-size: calc(13px * var(--content-scale));
+            line-height: 1.3;
+        }
+
+        .contact-row-wrap [data-field="contact"] {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .contact-row-wrap .contact-sep {
+            margin: 0 calc(6px * var(--content-scale));
+            opacity: 1;
+            color: var(--text);
+        }
+
+        .contact-row-wrap a {
+            color: #1155cc !important;
+            text-decoration: underline;
+            border-bottom: none !important;
+        }
+
+        /* ---------------------------------------------------------
+           SECTION HEADER BAR — dark navy, white bold, tight padding
+        --------------------------------------------------------- */
+        .section-header {
+            background-color: var(--accent);
+            color: #ffffff;
+            font-weight: 700;
+            font-size: calc(13px * var(--content-scale));
+            padding: calc(3px * var(--content-scale)) calc(5px * var(--content-scale));
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+            margin-top: calc(5px * var(--content-scale));
+            line-height: 1.25;
+        }
+
+        /* ---------------------------------------------------------
+           GLOBAL TABLE BASE
+        --------------------------------------------------------- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: calc(13.5px * var(--content-scale));
+        }
+
+        th, td {
+            border: 1px solid rgba(0,0,0,0.3);
+            padding: calc(2px * var(--content-scale)) calc(5px * var(--content-scale));
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        /* ---------------------------------------------------------
+           PROFILE SUMMARY
+        --------------------------------------------------------- */
+        .summary-box {
+            border: 1px solid rgba(0,0,0,0.25);
+            padding: calc(4px * var(--content-scale)) calc(7px * var(--content-scale));
+            font-size: calc(13.5px * var(--content-scale));
+            line-height: 1.45;
+            text-align: justify;
+        }
+
+        /* ---------------------------------------------------------
+           EDUCATION TABLE
+        --------------------------------------------------------- */
+        .edu-table th {
+            background-color: var(--accent-light);
+            font-weight: 700;
+            font-size: calc(13px * var(--content-scale));
+            text-align: center;
+        }
+
+        .edu-table td { text-align: center; }
+
+        /* ---------------------------------------------------------
+           WORK EXPERIENCE
+           PDF layout: plain text header row + 2-column content table
+        --------------------------------------------------------- */
+        .job-group { display: contents; }
+
+        /* "EY – Article Trainee" LEFT  |  "January 2025 – January 2026" RIGHT */
+        .work-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: calc(2px * var(--content-scale)) calc(4px * var(--content-scale));
+            font-size: calc(13.5px * var(--content-scale));
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .work-header-left {
+            display: flex;
+            align-items: center;
+            gap: calc(3px * var(--content-scale));
+        }
+
+        .work-header-left .sep { font-weight: 400; }
+
+        .work-header-right {
+            font-size: calc(13px * var(--content-scale));
+            font-weight: 700;
+        }
+
+        /* 2-column table: category cell LEFT, bullets cell RIGHT */
+        .work-body-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: calc(13.5px * var(--content-scale));
+            border: 1px solid rgba(0,0,0,0.25);
+            margin-bottom: calc(3px * var(--content-scale));
+        }
+
+        .work-body-table td {
+            border: 1px solid rgba(0,0,0,0.25);
+            padding: calc(3px * var(--content-scale)) calc(6px * var(--content-scale));
+            vertical-align: top;
+            text-align: left;
+        }
+
+        /* Category column — bold, centred, ~18% wide */
+        .work-cat-cell {
+            width: 18%;
+            font-weight: 700;
+            text-align: center;
+            vertical-align: middle;
+            font-size: calc(13px * var(--content-scale));
+        }
+
+        /* ---------------------------------------------------------
+           BULLET LISTS
+        --------------------------------------------------------- */
+        ul {
+            list-style-type: disc;
+            padding-left: calc(18px * var(--content-scale));
+            margin: 0;
+        }
+
+        li {
+            margin-bottom: calc(1px * var(--content-scale));
+            text-align: justify;
+            line-height: 1.38;
+            font-size: calc(13.5px * var(--content-scale));
+        }
+
+        /* ---------------------------------------------------------
+           PLAIN BORDERED LIST BOX (leadership / achievements / certs)
+        --------------------------------------------------------- */
+        .list-box {
+            border: 1px solid rgba(0,0,0,0.2);
+            padding: calc(3px * var(--content-scale)) calc(8px * var(--content-scale));
+        }
+
+        /* ---------------------------------------------------------
+           SKILLS TABLE — grid, data-field="skills" writes into single cell
+        --------------------------------------------------------- */
+        .skills-table td {
+            text-align: left;
+            vertical-align: top;
+            font-size: calc(13.5px * var(--content-scale));
+            padding: calc(4px * var(--content-scale)) calc(8px * var(--content-scale));
+        }
+
+        /* ---------------------------------------------------------
+           INTERESTS
+        --------------------------------------------------------- */
+        .interests-box {
+            border: 1px solid rgba(0,0,0,0.2);
+            padding: calc(3px * var(--content-scale)) calc(8px * var(--content-scale));
+        }
+
+        /* ---------------------------------------------------------
+           TEMPLATE ROWS — hidden, cloned by cv-common
+        --------------------------------------------------------- */
+        .template { display: none !important; }
+
+        /* ---------------------------------------------------------
+           PRINT
+        --------------------------------------------------------- */
+        @media print {
+            @page { size: A4 portrait; margin: 0; }
+
+            html, body {
+                width: 210mm; height: 297mm;
+                margin: 0 !important; padding: 0 !important;
+                overflow: hidden !important;
+                background: #ffffff !important;
+            }
+
+            #zoom-wrapper {
+                display: block !important; width: 100% !important;
+                height: auto !important; margin: 0 !important;
+                padding: 0 !important; overflow: visible !important;
+                transform: none !important;
+            }
+
+            .cv-page {
+                width: 1000px !important;
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: none !important;
+                zoom: 0.7937;
+                -moz-transform: scale(0.7937);
+                -moz-transform-origin: top center;
+                transform-origin: top center;
+                transform: none !important;
+                position: static !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div id="zoom-wrapper">
+<div class="cv-page" id="cv-page">
+
+    <!-- ═══ HEADER: name LEFT, tagline RIGHT ═══ -->
+    <div class="cv-header">
+        <div class="cv-name" data-field="name"></div>
+        <div class="cv-tagline" data-field="tagline"></div>
+    </div>
+
+    <!-- CONTACT ROW — cv-common injects pipe-separated items into [data-field="contact"] -->
+    <div class="contact-row-wrap">
+        <div data-field="contact"></div>
+    </div>
+
+    <!-- ═══ PROFILE SUMMARY ═══ -->
+    <div class="sortable-section" data-section-id="summary">
+        <div class="section-header">Profile Summary</div>
+        <div class="summary-box">
+            <div data-field="summary"></div>
+        </div>
+    </div>
+
+    <!-- ═══ PROFESSIONAL & EDUCATIONAL QUALIFICATIONS ═══ -->
+    <div class="sortable-section" data-section-id="education">
+        <div class="section-header">Professional &amp; Educational Qualifications</div>
+        <table class="edu-table">
+            <thead>
+                <tr>
+                    <th style="width:22%;">Examination</th>
+                    <th style="width:14%;">Year</th>
+                    <th style="width:30%;">Institution</th>
+                    <th style="width:14%;">Percentage</th>
+                    <th style="width:20%;">Remarks</th>
+                </tr>
+            </thead>
+            <tbody id="education-list">
+                <!-- cloned by cv-common updateList() -->
+                <tr class="template">
+                    <td data-field="degree"></td>
+                    <td data-field="year"></td>
+                    <td data-field="institution"></td>
+                    <td data-field="marks"></td>
+                    <td data-field="remarks"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ═══ WORK EXPERIENCE ═══ -->
+    <div class="sortable-section" data-section-id="experience">
+        <div class="section-header">Internship and Work Experience</div>
+
+        <div id="experience-list">
+            <!-- TEMPLATE BLOCK — cloned by cv-common buildRenderedExperience() -->
+            <div class="job-group template">
+                <!-- Plain header row matching PDF "EY – Article Trainee  |  January 2025 – January 2026" -->
+                <div class="work-header-row">
+                    <div class="work-header-left">
+                        <span data-field="company"></span>
+                        <span class="sep"> – </span>
+                        <span data-field="role"></span>
+                    </div>
+                    <div class="work-header-right">
+                        <span data-field="dates"></span>
+                    </div>
+                </div>
+                <!-- 2-column table: category | bullets -->
+                <table class="work-body-table">
+                    <tbody>
+                        <tr>
+                            <td class="work-cat-cell" data-field="category"></td>
+                            <td>
+                                <ul data-list="bullets"></ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ TEACHING EXPERIENCE / PROJECTS ═══ -->
+    <div class="sortable-section" data-section-id="projects">
+        <div class="section-header">Teaching Experience</div>
+        <div id="projects-list">
+            <div class="template">
+                <div style="display:flex; justify-content:space-between; font-weight:700; font-size:calc(13.5px * var(--content-scale)); padding:calc(2px * var(--content-scale)) 0;">
+                    <span data-field="title"></span>
+                </div>
+                <div style="font-size:calc(13px * var(--content-scale)); margin-bottom:2px;" data-field="description"></div>
+                <ul data-list="bullets"></ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ POSITION OF RESPONSIBILITY ═══ -->
+    <div class="sortable-section" data-section-id="leadership">
+        <div class="section-header">Position of Responsibility</div>
+        <div class="list-box">
+            <ul data-list="leadership"></ul>
+        </div>
+    </div>
+
+    <!-- ═══ EXTRA-CURRICULAR ACTIVITIES & ACHIEVEMENTS ═══ -->
+    <div class="sortable-section" data-section-id="achievements">
+        <div class="section-header">Extra-Curricular Activities &amp; Achievements</div>
+        <div class="list-box">
+            <ul data-list="achievements"></ul>
+        </div>
+    </div>
+
+    <!-- ═══ CERTIFICATIONS ═══ -->
+    <div class="sortable-section" data-section-id="certifications">
+        <div class="section-header">Certifications</div>
+        <div class="list-box">
+            <ul data-list="certifications"></ul>
+        </div>
+    </div>
+
+    <!-- ═══ INTEREST AND HOBBIES ═══ -->
+    <div class="sortable-section" data-section-id="interests">
+        <div class="section-header">Interest and Hobbies</div>
+        <div class="interests-box">
+            <ul data-list="interests" style="list-style:disc; padding-left:calc(18px * var(--content-scale));"></ul>
+        </div>
+    </div>
+
+    <!-- ═══ SKILLS & HOBBIES ═══ -->
+    <div class="sortable-section" data-section-id="skills">
+        <div class="section-header">Skills &amp; Hobbies</div>
+        <table class="skills-table">
+            <tbody>
+                <tr>
+                    <td data-field="skills"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div><!-- .cv-page -->
+</div><!-- #zoom-wrapper -->
+
+<script src="cv-common.js"></script>
+<script>
+    /* ── 1. VISUAL SCALE ── */
+    function scaleToFit() {
+        const page = document.getElementById('cv-page');
+        if (!page || document.body.classList.contains('print-mode')) return;
+        const scale = (window.innerWidth - 48) / 1000;
+        page.style.transform = `scale(${scale})`;
+        page.style.marginBottom = `-${1414 - 1414 * scale}px`;
+    }
+
+    /* ── 2. CONTENT SHRINK ── */
+    function shrinkContentToFit() {
+        const page = document.getElementById('cv-page');
+        let scale = 1;
+        document.documentElement.style.setProperty('--content-scale', scale);
+        let i = 0;
+        while (page.scrollHeight > 1414 && i < 50) {
+            scale -= 0.02;
+            document.documentElement.style.setProperty('--content-scale', scale);
+            i++;
+        }
+    }
+
+    /* ── 3. PRINT MODE ── */
+    let _st = '', _smb = '';
+    function enablePrintMode() {
+        const p = document.getElementById('cv-page');
+        _st = p.style.transform; _smb = p.style.marginBottom;
+        document.body.classList.add('print-mode');
+        p.style.transform = 'scale(1)'; p.style.marginBottom = '0px';
+        shrinkContentToFit();
+    }
+    function disablePrintMode() {
+        const p = document.getElementById('cv-page');
+        document.body.classList.remove('print-mode');
+        p.style.transform = _st || ''; p.style.marginBottom = _smb || '';
+        scaleToFit();
+    }
+    function handlePrintChange(e) { e.matches ? enablePrintMode() : disablePrintMode(); }
+
+    /* ── 4. INIT ── */
+    function init() {
+        scaleToFit(); shrinkContentToFit();
+        document.body.style.opacity = '1';
+        const pm = window.matchMedia('print');
+        if (pm.addEventListener) pm.addEventListener('change', handlePrintChange);
+        else if (pm.addListener)  pm.addListener(handlePrintChange);
+        window.addEventListener('beforeprint', enablePrintMode);
+        window.addEventListener('afterprint',  disablePrintMode);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+    window.addEventListener('load', () => { scaleToFit(); shrinkContentToFit(); });
+    let _rt;
+    window.addEventListener('resize', () => { clearTimeout(_rt); _rt = setTimeout(scaleToFit, 100); });
+</script>
+</body>
+</html>
