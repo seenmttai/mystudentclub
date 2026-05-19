@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Padam Bhansali – Resume</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 9.5pt;
+      color: #000;
+      background: #c8c8c8;
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .page {
+      background: #fff;
+      width: 794px;
+      padding: 22px 24px 24px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 2px;
+    }
+
+    .header-left .name {
+      font-size: 18pt;
+      font-weight: 700;
+      font-family: 'Times New Roman', serif;
+      color: #000;
+      line-height: 1.15;
+    }
+
+    .header-left .linkedin-link {
+      font-size: 9pt;
+      color: #1155CC;
+      text-decoration: underline;
+    }
+
+    .header-right {
+      text-align: right;
+      font-size: 9pt;
+      line-height: 1.6;
+      padding-top: 4px;
+    }
+
+    .header-right a {
+      color: #1155CC;
+      text-decoration: underline;
+    }
+
+    .header-right .sep { margin: 0 3px; }
+
+    .li-icon {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      vertical-align: middle;
+      margin-right: 1px;
+      position: relative;
+      top: -1px;
+    }
+
+    .mail-icon {
+      display: inline-block;
+      font-size: 9pt;
+      margin-right: 1px;
+    }
+
+    /* ── MAIN TABLE (full resume body) ── */
+    .resume-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #000;
+      margin-top: 6px;
+    }
+
+    .resume-table td,
+    .resume-table th {
+      border: 1px solid #000;
+      vertical-align: top;
+      font-size: 9pt;
+      font-family: 'Times New Roman', Times, serif;
+    }
+
+    /* ── SECTION HEADER ROW ── */
+    .sec-header {
+      background: #1f3864;
+      color: #fff;
+      font-weight: 700;
+      text-align: center;
+      font-size: 9.5pt;
+      padding: 3px 6px;
+      letter-spacing: 0.2px;
+    }
+
+    /* ── CAREER OBJECTIVE ── */
+    .obj-cell {
+      padding: 4px 6px;
+      font-size: 9pt;
+      line-height: 1.45;
+    }
+
+    /* ── EDUCATION TABLE ── */
+    .edu-header-row th {
+      background: #fff;
+      font-weight: 700;
+      text-align: center;
+      padding: 3px 5px;
+      font-size: 9pt;
+      border: 1px solid #000;
+    }
+
+    .edu-row td {
+      text-align: center;
+      padding: 3px 5px;
+      font-size: 9pt;
+      line-height: 1.38;
+      border: 1px solid #000;
+      vertical-align: middle;
+    }
+
+    .edu-row td:last-child {
+      text-align: left;
+    }
+
+    /* ── WORK EXPERIENCE ── */
+    .we-title-row td {
+      padding: 3px 6px;
+      font-size: 9pt;
+      font-weight: 700;
+      font-style: italic;
+      vertical-align: middle;
+    }
+
+    .we-title-left { font-style: italic; font-weight: 700; }
+    .we-title-right { text-align: right; font-style: italic; font-weight: 700; }
+
+    .we-label-cell {
+      font-weight: 700;
+      text-align: center;
+      vertical-align: top;
+      padding: 5px 4px;
+      width: 90px;
+      font-size: 9pt;
+      line-height: 1.4;
+    }
+
+    .we-content-cell {
+      padding: 4px 6px;
+      vertical-align: top;
+      font-size: 9pt;
+      line-height: 1.42;
+    }
+
+    .client-name {
+      font-weight: 700;
+      font-size: 9pt;
+      margin-bottom: 2px;
+      display: block;
+    }
+
+    .we-bullets {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 6px 0;
+    }
+
+    .we-bullets li {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 1px;
+      font-size: 9pt;
+      line-height: 1.4;
+    }
+
+    .we-bullets li::before {
+      content: "•";
+      font-size: 11pt;
+      min-width: 14px;
+      flex-shrink: 0;
+      margin-top: -1px;
+    }
+
+    /* ── EXTRACURRICULAR / SKILLS rows ── */
+    .sub-label-cell {
+      font-weight: 700;
+      text-align: center;
+      vertical-align: middle;
+      padding: 5px 4px;
+      font-size: 9pt;
+      line-height: 1.4;
+    }
+
+    .sub-content-cell {
+      padding: 4px 6px;
+      vertical-align: top;
+      font-size: 9pt;
+      line-height: 1.42;
+    }
+
+    .sub-bullets {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sub-bullets li {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 1px;
+      font-size: 9pt;
+      line-height: 1.4;
+    }
+
+    .sub-bullets li::before {
+      content: "•";
+      font-size: 11pt;
+      min-width: 14px;
+      flex-shrink: 0;
+      margin-top: -1px;
+    }
+
+    b, strong { font-weight: 700; }
+
+    @media print {
+      body { background: none; padding: 0; }
+      .page {
+        width: 210mm;
+        padding: 14mm 16mm 14mm 16mm;
+        box-shadow: none;
+      }
+    }
+
+    @media (max-width: 860px) {
+      body { padding: 6px 2px; }
+      .page { width: 100%; padding: 12px 8px; }
+      .header-left .name { font-size: 14pt; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="name">PADAM BHANSALI</div>
+      <div><a href="https://www.linkedin.com/in/ca-padam-bhansali/" class="linkedin-link">Bhansali</a></div>
+    </div>
+    <div class="header-right">
+      7228881182
+      <span class="sep">|</span>
+      <!-- envelope symbol -->
+      <span class="mail-icon">&#9993;</span>
+      <a href="mailto:capadambhansali@gmail.com">capadambhansali@gmail.com</a>
+      <span class="sep">|</span>
+      <!-- LinkedIn icon -->
+      <svg class="li-icon" viewBox="0 0 24 24" fill="#0077b5" xmlns="http://www.w3.org/2000/svg">
+        <rect width="24" height="24" rx="3" fill="#0077b5"/>
+        <path d="M6.94 5a2 2 0 1 1-4-.002A2 2 0 0 1 6.94 5zM7 8.48H3V21h4V8.48zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-3.96 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.72-2.91l.04-1.68z" fill="white"/>
+      </svg>
+      <a href="https://www.linkedin.com/in/ca-padam-bhansali/">Padam Bhansali</a>
+    </div>
+  </div>
+
+  <!-- MAIN RESUME TABLE -->
+  <table class="resume-table">
+
+    <!-- CAREER OBJECTIVE -->
+    <tr>
+      <td colspan="5" class="sec-header">CARRER OBJECTIVE</td>
+    </tr>
+    <tr>
+      <td colspan="5" class="obj-cell">
+        Aspiring finance professional seeking an opportunity to apply accounting &nbsp;taxation knowledge, support core financial operations &amp; gain practical experience towards a successful CA career in a growth-oriented organization.
+      </td>
+    </tr>
+
+    <!-- EDUCATION QUALIFICATIONS -->
+    <tr>
+      <td colspan="5" class="sec-header">EDUCATION QUALIFICATIONS</td>
+    </tr>
+    <tr class="edu-header-row">
+      <th style="width:18%;">Course</th>
+      <th style="width:9%;">Year</th>
+      <th style="width:26%;">College/Institution</th>
+      <th style="width:9%;">Score</th>
+      <th style="width:38%;">Remarks/Achievements</th>
+    </tr>
+    <tr class="edu-row">
+      <td>CA Intermediate (Group2)</td>
+      <td>May 24</td>
+      <td>ICAI</td>
+      <td>60%</td>
+      <td style="text-align:left;">Exemption in Financial &amp; Strategic Management</td>
+    </tr>
+    <tr class="edu-row">
+      <td>CA Intermediate (Group1)</td>
+      <td>Nov 23</td>
+      <td>ICAI</td>
+      <td>56.25%</td>
+      <td style="text-align:left;">Exemption in Cost and Management Accounting</td>
+    </tr>
+    <tr class="edu-row">
+      <td>CA Foundation</td>
+      <td>Dec 22</td>
+      <td>ICAI</td>
+      <td>77.75%</td>
+      <td style="text-align:left;">Cleared in first attempt with Exemption in 3 Subjects</td>
+    </tr>
+    <tr class="edu-row">
+      <td>B. Com (Prog)</td>
+      <td>May 25</td>
+      <td>School of Open Learning (DU)</td>
+      <td>8.18 CGPA</td>
+      <td style="text-align:left;"></td>
+    </tr>
+    <tr class="edu-row">
+      <td>Class XII</td>
+      <td>Mar 22</td>
+      <td>CBSE</td>
+      <td>95.6%</td>
+      <td style="text-align:left;">2<sup>nd</sup> Rank in School. Scored 100 marks in Business Studies &amp; 98 in Economics &amp; Accountancy</td>
+    </tr>
+    <tr class="edu-row">
+      <td>Class X</td>
+      <td>Mar 20</td>
+      <td>CBSE</td>
+      <td>91.0%</td>
+      <td style="text-align:left;">Scored 90+ in 2 Subjects</td>
+    </tr>
+
+    <!-- WORK EXPERIENCE -->
+    <tr>
+      <td colspan="5" class="sec-header">WORK EXPERIENCE</td>
+    </tr>
+    <tr class="we-title-row">
+      <td colspan="3" style="padding:3px 6px; font-weight:700; font-style:italic; font-size:9pt;"><span style="font-style:italic; font-weight:700;">Article Trainee – Indirect Taxation, Big 4 (Gurugram)</span></td>
+      <td colspan="2" style="padding:3px 6px; text-align:right; font-weight:700; font-style:italic; font-size:9pt;"><em>October'24-Present</em></td>
+    </tr>
+    <tr>
+      <td class="we-label-cell" rowspan="3">Roles &amp;<br>Responsibilities</td>
+      <td colspan="4" class="we-content-cell">
+        <span class="client-name">Nucleus Office Parks, Subsidiary of Blackstone Real Estate Offices</span>
+        <ul class="we-bullets">
+          <li><span>Prepared and filed <b>GSTR-1</b> and <b>GSTR-3B</b> returns, ensuring timely and accurate GST compliance.</span></li>
+          <li><span>Compiled and submitted <b>GSTR-9</b> and <b>GSTR-9C</b> for annual tax reporting and reconciliation.</span></li>
+          <li><span>Provided assistance in litigation matters by drafting responses to <b>Show Cause Notices (SCN)</b>.</span></li>
+          <li><span>Contributed to <b>automation initiatives</b> using <b>Digigst</b> to streamline compliance workflows and improve efficiency.</span></li>
+          <li><span>Organized and compiled comprehensive data to support <b>client tax audits</b> and facilitate the audit process.</span></li>
+          <li><span>Developed <b>TDS working data</b> for Forms <b>26Q, 27EQ,</b> and <b>27Q</b>, ensuring precise tax deductions and reporting.</span></li>
+          <li><span>Prepared reconciliations including <b>vendor master</b> and <b>provision tracker</b> to maintain TDS compliance.</span></li>
+          <li><span>Assisted in the preparation and filing of <b>the Statement of Financial Transactions (SFT)</b> to fulfill regulatory requirements.</span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="4" class="we-content-cell">
+        <span class="client-name">Paytm</span>
+        <ul class="we-bullets">
+          <li><span>Issued client-specific <b>advisories</b> on various aspects of indirect taxation, including <b>GST implications, compliance requirements, tax planning strategies, and regulatory updates.</b></span></li>
+          <li><span>Contributed to <b>litigation efforts</b> by drafting <b>various replies.</b></span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="4" class="we-content-cell">
+        <span class="client-name">EY GBS</span>
+        <ul class="we-bullets">
+          <li><span>Conducted <b>legal research</b> and analyzed <b>case laws</b> relevant to Indirect Taxation, aiding in the formulation of compliance strategies and client advisories.</span></li>
+          <li><span>Prepared and organized data for Form <b>ADT-01</b> to facilitate tax audits, ensuring completeness, accuracy, and compliance with regulatory requirements.</span></li>
+          <li><span>Coordinated with <b>tax authorities</b> to support adjournment proceedings of Personal Hearings (PH), including those concerning EY GDS cases.</span></li>
+          <li><span>Drafted <b>GST-related advisories for clients</b>, addressing compliance issues, input tax credit, and transaction structuring under prevailing laws.</span></li>
+          <li><span>Liaised with <b>GST departments</b> for submission of documentation, audit facilitation, and resolving procedural issues.</span></li>
+          <li><span>Took initiative to lead <b>cross-functional teams during client audits and tax compliance projects.</b></span></li>
+          <li><span>Coordinated with <b>senior leadership</b> to <b>develop and implement strategic initiatives.</b></span></li>
+        </ul>
+      </td>
+    </tr>
+
+    <!-- EXTRACURRICULAR ACTIVITIES -->
+    <tr>
+      <td colspan="5" class="sec-header">EXTRACURRICULAR ACTIVITIES</td>
+    </tr>
+    <tr>
+      <td class="sub-label-cell" style="width:90px;">Academic &amp;<br>Competitive<br>Achievements</td>
+      <td colspan="4" class="sub-content-cell">
+        <ul class="sub-bullets">
+          <li><span>Secured <b>First Position</b> in the District Level GITA Quiz Competition, organized by the <b>Government of Haryana</b>.</span></li>
+          <li><span><b>Winner of the Inter-School Declamation Competition</b> hosted by D.A.V. Centenary Public School, Sirsa.</span></li>
+          <li><span>Participated and Won in Various Inter-School Debates.</span></li>
+          <li><span>Awarded merit-based <b>academic scholarship</b> for outstanding performance.</span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="sub-label-cell">Communication<br>&amp; Leadership</td>
+      <td colspan="4" class="sub-content-cell">
+        <ul class="sub-bullets">
+          <li><span>Elected as <b>Vice-Captain</b>, entrusted with leading peers, coordinating school events, and fostering teamwork. <b>Delivered presentations to peers and faculty.</b></span></li>
+          <li><span><b>Volunteered</b> for <b>EY Disha Scholarship Program, supporting education initiatives.</b></span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="sub-label-cell">Event Management<br>&amp; Responsibility</td>
+      <td colspan="4" class="sub-content-cell">
+        <ul class="sub-bullets">
+          <li><span><b>Coordinated guest speakers and managed registrations for multiple events.</b></span></li>
+          <li><span><b>Served as an Event Host</b> for various school programs.</span></li>
+          <li><span><b>Volunteered at professional</b> events organized by <b>NICASA.</b></span></li>
+        </ul>
+      </td>
+    </tr>
+
+    <!-- SKILLS -->
+    <tr>
+      <td colspan="5" class="sec-header">SKILLS</td>
+    </tr>
+    <tr>
+      <td class="sub-label-cell">Technical<br>Skills</td>
+      <td colspan="4" class="sub-content-cell">
+        <ul class="sub-bullets">
+          <li><span><b>Proficient</b> with <b>MS Excel , Word, PowerPoint , Tally and Internet Operations.</b></span></li>
+          <li><span><b>Completed the Audit Master Class</b> conducted by <b>Thinking Bridge.</b></span></li>
+          <li><span>Completed <b>KPMG</b> Career Catalyst: Audit by Forage and <b>PWC</b> audit simulation by Forage.</span></li>
+          <li><span>Worked with <b>SAP software</b> for business operations and data management.</span></li>
+          <li><span><b>Financial Modelling</b> Skills.</span></li>
+        </ul>
+      </td>
+    </tr>
+    <tr>
+      <td class="sub-label-cell">Soft Skills</td>
+      <td colspan="4" class="sub-content-cell">
+        <ul class="sub-bullets">
+          <li><span><b>Confident and clear communication and ability to multitask</b> in a <b>fast-paced environment.</b></span></li>
+          <li><span><b>Strong collaborator</b> with <b>intellectual curiosity</b> and <b>creativity.</b></span></li>
+          <li><span><b>Problem solving</b> and <b>analytical thinking.</b></span></li>
+          <li><span><b>Detail-oriented</b> and <b>initiative driven.</b></span></li>
+        </ul>
+      </td>
+    </tr>
+
+  </table>
+</div>
+</body>
+</html>
