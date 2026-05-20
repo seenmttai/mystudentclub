@@ -14,8 +14,11 @@
         (function() {
             var params = new URLSearchParams(window.location.search);
             var pdfUrl = params.get('pdf');
-            var resolvedUrl = pdfUrl ? pdfUrl : 'https://www.mystudentclub.com/assets/doc.pdf';
-            window.__pdfPreFetch = fetch(resolvedUrl)
+            if (!pdfUrl) {
+                window.location.replace('/ca-resource/resource/?name=doc.pdf');
+                return;
+            }
+            window.__pdfPreFetch = fetch(pdfUrl)
                 .then(function(r) { return r.arrayBuffer(); })
                 .catch(function() { return null; });
         })();

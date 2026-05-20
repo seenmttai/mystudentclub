@@ -332,6 +332,27 @@
 .sidebar-resource-list {
     padding: 0.5rem 1rem 0.5rem 1.5rem;
     border-top: 1px dashed var(--border-color);
+    max-height: 150px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+.sidebar-resource-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-resource-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sidebar-resource-list::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+}
+
+.sidebar-resource-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.3);
 }
 
 .sidebar-resource-group {
