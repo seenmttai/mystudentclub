@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessing Resource | My Student Club</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #0f172a;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Ambient glowing background */
+        .ambient-bg {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .ambient-circle-1 {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(99, 102, 241, 0) 70%);
+            top: -100px;
+            left: -100px;
+            animation: float-slow 15s infinite alternate;
+        }
+
+        .ambient-circle-2 {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(168, 85, 247, 0.12) 0%, rgba(168, 85, 247, 0) 70%);
+            bottom: -150px;
+            right: -150px;
+            animation: float-slow 20s infinite alternate-reverse;
+        }
+
+        @keyframes float-slow {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(40px, 40px) scale(1.1); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 480px;
+            padding: 24px;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 40px 32px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        /* Loading View Styles */
+        .loading-view {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spinner-ring {
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 24px;
+        }
+
+        .spinner-ring div {
+            box-sizing: border-box;
+            display: block;
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            margin: 8px;
+            border: 4px solid transparent;
+            border-radius: 50%;
+            animation: spinner-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            border-color: #818cf8 transparent transparent transparent;
+        }
+
+        .spinner-ring div:nth-child(1) { animation-delay: -0.45s; }
+        .spinner-ring div:nth-child(2) { animation-delay: -0.3s; }
+        .spinner-ring div:nth-child(3) { animation-delay: -0.15s; }
+
+        @keyframes spinner-ring {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 8px;
+            letter-spacing: -0.01em;
+        }
+
+        .status-text {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.5;
+        }
+
+        /* Restricted View Styles */
+        .restricted-view {
+            display: none;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .restricted-view.active {
+            display: block;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .lock-icon-container {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 24px;
+            position: relative;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.15);
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+            70% { box-shadow: 0 0 0 12px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .error-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f8fafc;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .error-text {
+            font-size: 15px;
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            gap: 8px;
+            border: none;
+            outline: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(79, 70, 229, 0.45);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.06);
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <div class="ambient-bg">
+        <div class="ambient-circle-1"></div>
+        <div class="ambient-circle-2"></div>
+    </div>
+
+    <div class="container">
+        <!-- Loading Card -->
+        <div id="loading-card" class="card loading-view">
+            <div class="spinner-ring">
+                <div></div><div></div><div></div><div></div>
+            </div>
+            <h2 class="status-title">Verifying Permissions</h2>
+            <p class="status-text" id="loading-message">Retrieving resource and signing URL...</p>
+        </div>
+
+        <!-- Access Restricted Card -->
+        <div id="restricted-card" class="card restricted-view">
+            <div class="lock-icon-container">
+                <i class="fas fa-shield-halved"></i>
+            </div>
+            <h2 class="error-title">Access Restricted</h2>
+            <p class="error-text" id="error-message">You do not have active permission to view this resource. Please make sure you are enrolled in the corresponding program.</p>
+            <div class="actions">
+                <a href="https://mystudentclub.com/login" id="action-login-btn" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt"></i> Login to My Student Club
+                </a>
+                <a href="https://mystudentclub.com/learning-management-system/" class="btn btn-secondary">
+                    <i class="fas fa-graduation-cap"></i> Go to My Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        function showAccessRestricted(message, showLogin = false) {
+            document.getElementById('loading-card').style.display = 'none';
+            const restrictedCard = document.getElementById('restricted-card');
+            restrictedCard.classList.add('active');
+            
+            if (message) {
+                document.getElementById('error-message').textContent = message;
+            }
+            
+            const loginBtn = document.getElementById('action-login-btn');
+            if (showLogin) {
+                loginBtn.style.display = 'inline-flex';
+            } else {
+                loginBtn.style.display = 'none';
+            }
+        }
+
+        async function init() {
+            try {
+                // Get URL parameter for the resource path/name
+                const urlParams = new URLSearchParams(window.location.search);
+                const resourceName = urlParams.get('name');
+
+                if (!resourceName || resourceName.trim() === '') {
+                    showAccessRestricted("Please specify a valid resource name in the 'name' parameter.", false);
+                    return;
+                }
+
+                document.getElementById('loading-message').textContent = `Requesting secure access for: ${resourceName}`;
+
+                // Check active authentication session
+                const { data: { session }, error: authError } = await supabase.auth.getSession();
+
+                if (authError || !session) {
+                    showAccessRestricted("You must be logged in to access this resource.", true);
+                    return;
+                }
+
+                // Attempt to generate signed URLs from the bucket
+                const { data: viewData, error: viewError } = await supabase.storage
+                    .from('industrial-training-mastery-resources')
+                    .createSignedUrl(resourceName, 300);
+
+                if (viewError || !viewData || !viewData.signedUrl) {
+                    console.error("Storage View Error:", viewError);
+                    showAccessRestricted("Access Restricted: You do not have active permission to view this resource or the file does not exist.", false);
+                    return;
+                }
+
+                // Optionally, attempt to generate the download URL as well
+                let targetUrl = `/ca-resource/?pdf=${encodeURIComponent(`https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(viewData.signedUrl)}`)}`;
+                
+                try {
+                    const { data: dlData, error: dlError } = await supabase.storage
+                        .from('industrial-training-mastery-resources')
+                        .createSignedUrl(resourceName, 300, { download: true });
+                    
+                    if (!dlError && dlData?.signedUrl) {
+                        targetUrl += `&dl=${encodeURIComponent(dlData.signedUrl)}`;
+                    }
+                } catch (dlErr) {
+                    console.warn("Failed to generate download URL:", dlErr);
+                }
+
+                // Redirect user to the PDF viewer
+                window.location.replace(targetUrl);
+
+            } catch (err) {
+                console.error("Initialization error:", err);
+                showAccessRestricted("An unexpected error occurred. Please try again.", false);
+            }
+        }
+
+        // Run on page load
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
