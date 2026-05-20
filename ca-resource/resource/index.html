@@ -273,7 +273,7 @@
     <script>
         const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
         function showAccessRestricted(message, showLogin = false) {
             document.getElementById('loading-card').style.display = 'none';
@@ -306,7 +306,7 @@
                 document.getElementById('loading-message').textContent = `Requesting secure access for: ${resourceName}`;
 
                 // Check active authentication session
-                const { data: { session }, error: authError } = await supabase.auth.getSession();
+                const { data: { session }, error: authError } = await supabaseClient.auth.getSession();
 
                 if (authError || !session) {
                     showAccessRestricted("You must be logged in to access this resource.", true);
@@ -314,7 +314,7 @@
                 }
 
                 // Attempt to generate signed URLs from the bucket
-                const { data: viewData, error: viewError } = await supabase.storage
+                const { data: viewData, error: viewError } = await supabaseClient.storage
                     .from('industrial-training-mastery-resources')
                     .createSignedUrl(resourceName, 300);
 
@@ -328,7 +328,7 @@
                 let targetUrl = `/ca-resource/?pdf=${encodeURIComponent(`https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(viewData.signedUrl)}`)}`;
                 
                 try {
-                    const { data: dlData, error: dlError } = await supabase.storage
+                    const { data: dlData, error: dlError } = await supabaseClient.storage
                         .from('industrial-training-mastery-resources')
                         .createSignedUrl(resourceName, 300, { download: true });
                     
