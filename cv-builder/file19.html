@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Padam Bhansali – Resume</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 10pt;
+      color: #000;
+      background: #b0b0b0;
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .page {
+      background: #fff;
+      width: 794px;
+      padding: 28px 30px 30px 30px;
+      box-shadow: 0 2px 14px rgba(0,0,0,0.22);
+      border: 1px solid #aaa;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      margin-bottom: 10px;
+    }
+
+    .header .name {
+      font-size: 22pt;
+      font-weight: 700;
+      font-family: 'Times New Roman', serif;
+      color: #000;
+      line-height: 1.1;
+      margin-bottom: 2px;
+    }
+
+    .header .tagline {
+      font-size: 9.5pt;
+      color: #000;
+      margin-bottom: 5px;
+    }
+
+    .header .contact-line {
+      font-size: 9pt;
+      color: #000;
+      line-height: 1.7;
+    }
+
+    .header .contact-line a {
+      color: #1155CC;
+      text-decoration: underline;
+    }
+
+    /* ── SECTION HEADER (dark blue, centered, underlined text) ── */
+    .sec-header {
+      background: #1f3864;
+      color: #fff;
+      font-weight: 700;
+      text-align: center;
+      font-size: 10pt;
+      padding: 4px 6px;
+      text-decoration: underline;
+      letter-spacing: 0.2px;
+      margin-top: 0;
+    }
+
+    /* ── BORDERED BOX wrapper ── */
+    .section-box {
+      border: 1px solid #7f7f7f;
+      border-top: none;
+      margin-bottom: 0;
+    }
+
+    /* gap between major sections */
+    .section-gap {
+      margin-bottom: 7px;
+    }
+
+    /* ── PROFESSIONAL SUMMARY ── */
+    .summary-cell {
+      padding: 5px 7px;
+      font-size: 9.5pt;
+      line-height: 1.5;
+    }
+
+    /* ── EDUCATION TABLE ── */
+    .edu-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .edu-table th {
+      font-weight: 700;
+      text-align: center;
+      padding: 4px 6px;
+      font-size: 9.5pt;
+      border: 1px solid #7f7f7f;
+      background: #fff;
+    }
+
+    .edu-table td {
+      text-align: center;
+      padding: 3px 6px;
+      font-size: 9.5pt;
+      border: 1px solid #7f7f7f;
+      line-height: 1.4;
+      vertical-align: middle;
+    }
+
+    .edu-table td.left { text-align: left; }
+
+    /* ── WORK EXPERIENCE ── */
+    .we-section {
+      border: 1px solid #7f7f7f;
+      border-top: none;
+    }
+
+    .we-job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      padding: 4px 7px;
+      font-size: 9.5pt;
+      font-weight: 700;
+      border-bottom: 1px solid #7f7f7f;
+    }
+
+    .we-job-header .job-title { font-weight: 700; }
+    .we-job-header .job-date  { font-weight: 700; white-space: nowrap; margin-left: 8px; }
+
+    .we-body {
+      display: flex;
+      border-bottom: 1px solid #7f7f7f;
+    }
+
+    .we-body:last-child { border-bottom: none; }
+
+    .we-label {
+      font-weight: 700;
+      font-size: 9.5pt;
+      width: 100px;
+      min-width: 100px;
+      padding: 6px 6px;
+      border-right: 1px solid #7f7f7f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.3;
+    }
+
+    .we-bullets-wrap {
+      padding: 5px 8px 5px 4px;
+      flex: 1;
+    }
+
+    .we-bullets {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .we-bullets li {
+      display: flex;
+      align-items: flex-start;
+      font-size: 9.5pt;
+      line-height: 1.45;
+      margin-bottom: 2px;
+    }
+
+    .we-bullets li::before {
+      content: "•";
+      font-size: 12pt;
+      min-width: 16px;
+      flex-shrink: 0;
+      margin-top: -2px;
+    }
+
+    /* ── EXTRACURRICULARS / SKILLS / AWARDS ── */
+    .extra-section {
+      border: 1px solid #7f7f7f;
+      border-top: none;
+      padding: 6px 8px 4px 8px;
+    }
+
+    .extra-block-title {
+      font-weight: 700;
+      font-size: 9.5pt;
+      margin-bottom: 2px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .extra-block-title .por-label {
+      font-weight: 700;
+      font-size: 9.5pt;
+    }
+
+    .extra-block-title .por-date {
+      font-weight: 700;
+      font-size: 9.5pt;
+      white-space: nowrap;
+    }
+
+    .extra-subtitle {
+      font-weight: 700;
+      font-size: 9.5pt;
+      margin-bottom: 2px;
+    }
+
+    .extra-bullets {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 8px 0;
+    }
+
+    .extra-bullets li {
+      display: flex;
+      align-items: flex-start;
+      font-size: 9.5pt;
+      line-height: 1.45;
+      margin-bottom: 2px;
+    }
+
+    .extra-bullets li::before {
+      content: "•";
+      font-size: 12pt;
+      min-width: 16px;
+      flex-shrink: 0;
+      margin-top: -2px;
+    }
+
+    .skills-title {
+      font-weight: 700;
+      font-size: 9.5pt;
+      margin-top: 2px;
+      margin-bottom: 2px;
+    }
+
+    b, strong { font-weight: 700; }
+
+    /* ── PRINT ── */
+    @media print {
+      body { background: none; padding: 0; }
+      .page {
+        width: 210mm;
+        padding: 18mm 18mm 14mm 18mm;
+        box-shadow: none;
+        border: none;
+      }
+    }
+
+    @media (max-width: 860px) {
+      body { padding: 6px 2px; }
+      .page { width: 100%; padding: 14px 10px; }
+      .header .name { font-size: 17pt; }
+      .we-label { width: 80px; min-width: 80px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── HEADER ── -->
+  <div class="header">
+    <div class="name">PADAM BHANSALI</div>
+    <div class="tagline">Immediate Joiner | Statutory Audit | First Attempt</div>
+    <div class="contact-line">
+      Contact: +91 7228881182<br>
+      Email: <a href="mailto:capadambhansali@gmail.com">capadambhansali@gmail.com</a><br>
+      LinkedIn: <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank">https://www.linkedin.com/in/ca-padam-bhansali/</a>
+    </div>
+  </div>
+
+  <!-- ── PROFESSIONAL SUMMARY ── -->
+  <div class="section-gap">
+    <div class="sec-header">PROFESSIONAL SUMMARY</div>
+    <div class="section-box">
+      <div class="summary-cell">
+        CA Finalist with hands-on expertise in Indirect Taxation. Independently managed <b>GST registrations, monthly compliances, and GSTR-9/9C</b> filings for high-turnover retail clients. Successfully drafted replies to <b>departmental notices</b> and assisted partners in <b>processing GST refunds</b> exceeding ₹2 Cr.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── EDUCATIONAL QUALIFICATIONS ── -->
+  <div class="section-gap">
+    <div class="sec-header">EDUCATIONAL QUALIFICATIONS</div>
+    <div class="section-box" style="padding:0;">
+      <table class="edu-table">
+        <thead>
+          <tr>
+            <th style="width:18%;">Examination</th>
+            <th style="width:10%;">Year</th>
+            <th style="width:34%;">Institution</th>
+            <th style="width:11%;">Percentage</th>
+            <th style="width:27%;">Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CA Intermediate</td>
+            <td>Nov 2021</td>
+            <td>The Institute of Chartered Accountants of India <b>(Cleared all levels in first attempt)</b></td>
+            <td>60%</td>
+            <td class="left">Exemption in All Group 1 Papers</td>
+          </tr>
+          <tr>
+            <td>CA Foundation</td>
+            <td>Nov 2020</td>
+            <td></td>
+            <td>75%</td>
+            <td class="left">70+ Score in all subjects</td>
+          </tr>
+          <tr>
+            <td>B. Com</td>
+            <td>Mar 2023</td>
+            <td>RJTCC (Gujarat University)</td>
+            <td>76%</td>
+            <td class="left">First Class Distinction</td>
+          </tr>
+          <tr>
+            <td>Class XII</td>
+            <td>Mar 2020</td>
+            <td>Devasya International School</td>
+            <td>88%</td>
+            <td class="left">School Rank 1 (99.56 Percentile)</td>
+          </tr>
+          <tr>
+            <td>Class X</td>
+            <td>Mar 2018</td>
+            <td>New Vision School</td>
+            <td>92%</td>
+            <td class="left">School Rank 1</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── WORK EXPERIENCE ── -->
+  <div class="section-gap">
+    <div class="sec-header">WORK EXPERIENCE</div>
+    <div class="we-section">
+
+      <!-- Job 1 Header -->
+      <div class="we-job-header">
+        <span class="job-title">Kantilal Patel &amp; Co. (Ahmedabad) – Article Assistant</span>
+        <span class="job-date">(Jan'23 – Nov'23)</span>
+      </div>
+      <!-- Job 1 Body -->
+      <div class="we-body">
+        <div class="we-label">Auditing and<br>Assurance</div>
+        <div class="we-bullets-wrap">
+          <ul class="we-bullets">
+            <li><span>Assisted in statutory audit of a cooperative bank with over 75 branches, <b>₹10,000 Cr in deposits,</b> identifying critical areas of improvement.</span></li>
+            <li><span>Conducted comprehensive <b>statutory audits, tax audits, GST audits, and internal audits</b> for 30+ clients across industries such as healthcare, construction, VC's, tobacco, ice cream manufacturing, e-commerce, logistics etc.</span></li>
+            <li><span><b>Filed income tax returns</b> for individuals, trusts, and companies, optimizing tax savings through tax planning and claiming deductions under various sections, assisted in GST filing for various organizations, ensuring timely and accurate submissions.</span></li>
+            <li><span>Identified and executed <b>cost-saving strategies</b> across PAN India Fulfillment and Sortation Centers, driving operational efficiency and contributing to Annual Savings of ₹100 Crores.</span></li>
+            <li><span>Optimized and finalized monthly operating plans for a <b>₹100+ Cr OPEX budget,</b> partnering directly with cross-functional teams across Planning, Operations, Design, HR, and Procurement.</span></li>
+            <li><span>Facilitated in an approximate <b>₹50 lakh monthly cost reduction</b> by eliminating buffers, design improvements and better cross-deployment of manpower.</span></li>
+            <li><span>Efficiently managed <b>multiple responsibilities alongside core duties</b>, including overseeing the accrual process for the South Zone, supporting the Zonal Finance Team, managing finance involved in large inventory supply chain.</span></li>
+            <li><span>Prepared a <b>comprehensive dashboard</b> to track Operative KPIs across different functions and monitor manpower changes (site-wise and function-wise). Solely responsible for reporting results and conclusions from the analysis to the upper management.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Job 2 Header -->
+      <div class="we-job-header">
+        <span class="job-title">Goenka Mehta &amp; Associates (Ahmedabad) – Article Assistant</span>
+        <span class="job-date">(Apr'22 – Dec'22)</span>
+      </div>
+      <!-- Job 2 Body -->
+      <div class="we-body">
+        <div class="we-label">Accounting</div>
+        <div class="we-bullets-wrap">
+          <ul class="we-bullets">
+            <li><span>Managed <b>end-to-end accounting processes</b> for New Zealand based companies, resulting in higher accuracy in their financial records and streamlined accounting workflows.</span></li>
+            <li><span>Ensured timely <b>statutory compliance</b>, reducing penalties through efficient GST filing and taxation-related services for offshore clients.</span></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── EXTRA CURRICULARS, SKILLS, AWARDS & CERTIFICATIONS ── -->
+  <div class="section-gap">
+    <div class="sec-header">EXTRA CURRICULARS ACTIVITIES, SKILLS, AWARDS &amp; CERTIFICATIONS</div>
+    <div class="section-box" style="padding: 0;">
+      <div class="extra-section">
+
+        <!-- Position of Responsibility -->
+        <div class="extra-block-title">
+          <span class="por-label">My Student Club – Founder<br><span style="font-weight:700;">Position of Responsibility</span></span>
+          <span class="por-date">(Dec'22 – Present)</span>
+        </div>
+        <ul class="extra-bullets">
+          <li><span>A student social networking platform, achieving <b>5000+ member registrations</b> within first quarter with monthly <b>50K+ site visits</b>, growing a <b>25-member team</b> and generating <b>₹1 Lakh in monthly profits.</b></span></li>
+          <li><span>Organized <b>100+ guidance sessions</b> on CA preparation, industrial training, and skill development, featuring Shark Tank pitchers, influencers, and AIR 1 holders, positively impacting 10,000+ participants.</span></li>
+        </ul>
+
+        <!-- Technical Skills -->
+        <div class="skills-title">Technical Skills</div>
+        <ul class="extra-bullets">
+          <li><span>Proficient in MS-Office <b>(Excel, Word &amp; PowerPoint)</b>, Google Tools <b>(Sheets &amp; Slides).</b></span></li>
+          <li><span>Working Knowledge of <b>Power Bi</b>.</span></li>
+        </ul>
+
+        <!-- Significant Awards & Certifications -->
+        <div class="skills-title">Significant Awards &amp; Certifications</div>
+        <ul class="extra-bullets" style="margin-bottom:0;">
+          <li><span>Certified <b>Financial Modeling &amp; Valuation Analyst (FMVA)</b> by CFI.</span></li>
+          <li><span>Obtained <b>Research Analyst Certification</b> from NISM.</span></li>
+          <li><span>Received a Certificate from <b>Trinity College of London in English Speaking.</b></span></li>
+          <li><span>Awarded with <b>Employee of the Quarter (Performance Award) at Flipkart</b> during the Internship period.</span></li>
+          <li><span>Achieved <b>advanced-level certifications</b> in Power BI and MS Excel.</span></li>
+          <li><span>Consistently <b>ranked among the top 3</b> throughout academics.</span></li>
+          <li><span>Winner of <b>Group Discussion</b> Competition in MCS.</span></li>
+        </ul>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
