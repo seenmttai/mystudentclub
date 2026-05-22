@@ -200,7 +200,7 @@ function renderJobCard(job) {
     const buttonText = isApplied ? 'Applied' : 'View Details';
     const buttonClass = isApplied ? 'applied' : '';
     const applyLink = getApplicationLink(job['Application ID']);
-    const applyButtonText = isApplied ? 'Applied' : 'Apply Now';
+    const applyButtonText = 'Apply Now';
 
     jobCard.innerHTML = `
         <div class="job-card-logo">${companyInitial}</div>
@@ -383,10 +383,7 @@ async function recordApplication(job, btnElement) {
         }
 
         btnElement.classList.add('applied');
-        btnElement.innerHTML = `
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7"/></svg>
-            Applied
-        `;
+        btnElement.innerHTML = originalText;
         return true;
     } catch (e) {
         console.error('Application exception:', e);
@@ -423,8 +420,8 @@ function showModal(job) {
 
     let actionsHtml = '';
     if (isMailto) {
-        const simpleApplyText = isApplied ? 'Applied' : 'Simple Apply';
-        const aiApplyText = isApplied ? 'Applied' : 'AI Powered Apply';
+        const simpleApplyText = 'Simple Apply';
+        const aiApplyText = 'AI Powered Apply';
         actionsHtml = `
             <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
                 <button id="modalSimpleApplyBtn" class="btn btn-secondary ${buttonClass}" style="flex: 1; min-width: 100%; padding: 0.5rem 1rem; min-height: 3rem;">
@@ -449,7 +446,7 @@ function showModal(job) {
                 </button>
             </div>`;
     } else {
-        const applyText = isApplied ? 'Applied' : 'Apply Now';
+        const applyText = 'Apply Now';
         actionsHtml = `
             <a href="${applyLink}" id="modalExternalApplyBtn" class="btn btn-primary ${buttonClass}" target="_blank" style="padding: 0.5rem 1rem; min-height: 3rem; display: flex; align-items: center; justify-content: center;">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
@@ -1222,8 +1219,7 @@ async function markJobAsApplied(job) {
     document.querySelectorAll(`#modalSimpleApplyBtn, #modalAiApplyBtn, #modalExternalApplyBtn`).forEach(btn => {
         if (btn) {
             btn.classList.add('applied');
-            const textEl = btn.querySelector('span') || btn.querySelector('.btn-text') || btn;
-            if (textEl) textEl.textContent = 'Applied';
+            // Keep original button text
         }
     });
 
@@ -1234,7 +1230,7 @@ async function markJobAsApplied(job) {
         const applyBtn = card.querySelector('.apply-now-card-btn.primary');
         if (applyBtn) {
             applyBtn.classList.add('applied');
-            applyBtn.textContent = 'Applied';
+            // Keep original button text
         }
     }
 
