@@ -113,7 +113,62 @@ async function renderPageToCanvas(pageNum, width, height) {
         await drawHighlightsOnCanvas(ctx, page, viewport, outputScale);
     }
 
-    return canvas;
+    return { canvas, page, viewport };
+}
+
+// ─── Render Annotations Layer (Links) ───
+async function renderAnnotationLayer(page, viewport, container) {
+    try {
+        const annotations = await page.getAnnotations();
+        // Remove any existing annotation layer in this page element first
+        // to prevent duplicate layers on page resize/re-render.
+        const existing = container.querySelector('.pdf-annotation-layer');
+        if (existing) {
+            existing.remove();
+        }
+
+        if (!annotations || annotations.length === 0) return;
+
+        const annotationLayerDiv = document.createElement('div');
+        annotationLayerDiv.className = 'pdf-annotation-layer';
+        // Size it to the exact cssWidth / cssHeight of the viewport
+        annotationLayerDiv.style.width = Math.round(viewport.width) + 'px';
+        annotationLayerDiv.style.height = Math.round(viewport.height) + 'px';
+
+        let hasLinks = false;
+
+        annotations.forEach(annotation => {
+            if (annotation.subtype === 'Link') {
+                const url = annotation.url || annotation.unsafeUrl;
+                if (!url) return;
+
+                const [x1, y1, x2, y2] = viewport.convertToViewportRectangle(annotation.rect);
+                const rectWidth = Math.abs(x2 - x1);
+                const rectHeight = Math.abs(y2 - y1);
+                const left = Math.min(x1, x2);
+                const top = Math.min(y1, y2);
+
+                const link = document.createElement('a');
+                link.href = url;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.style.left = left + 'px';
+                link.style.top = top + 'px';
+                link.style.width = rectWidth + 'px';
+                link.style.height = rectHeight + 'px';
+                link.title = url;
+
+                annotationLayerDiv.appendChild(link);
+                hasLinks = true;
+            }
+        });
+
+        if (hasLinks) {
+            container.appendChild(annotationLayerDiv);
+        }
+    } catch (e) {
+        console.error('Annotation rendering error:', e);
+    }
 }
 
 // ─── Highlighting Logic ───
@@ -333,7 +388,7 @@ async function renderFlipbookPage(pageNum, pageW, pageH) {
         if (pageDivs.length === 0) return;
 
         try {
-            const canvas = await renderPageToCanvas(pageNum, pageW, pageH);
+            const { canvas, page, viewport } = await renderPageToCanvas(pageNum, pageW, pageH);
             canvas.style.display = 'block';
             canvas.style.pointerEvents = 'none';
             canvas.draggable = false;
@@ -345,6 +400,7 @@ async function renderFlipbookPage(pageNum, pageW, pageH) {
                 // onto a new canvas because standard node cloning doesn't copy canvas pixel data.
                 if (index === 0) {
                     div.appendChild(canvas);
+                    renderAnnotationLayer(page, viewport, div);
                 } else {
                     const cloneCanvas = document.createElement('canvas');
                     cloneCanvas.width = canvas.width;
@@ -359,6 +415,7 @@ async function renderFlipbookPage(pageNum, pageW, pageH) {
                     cloneCtx.imageSmoothingQuality = 'high';
                     cloneCtx.drawImage(canvas, 0, 0);
                     div.appendChild(cloneCanvas);
+                    renderAnnotationLayer(page, viewport, div);
                 }
             });
 
