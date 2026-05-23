@@ -209,7 +209,11 @@
     <script>
         const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
         const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+        
+        // Initialize client and attach to window to avoid scope issues across scripts.
+        // Use 'supabaseClient' instead of 'supabase' to avoid collision with the global library namespace.
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+        window.supabaseClient = supabaseClient;
 
         const authStatusDiv = document.getElementById('auth-status');
         const deleteSection = document.getElementById('delete-section');
@@ -218,7 +222,7 @@
         const resultMessage = document.getElementById('result-message');
         let currentUser = null;
 
-        supabase.auth.onAuthStateChange((_event, session) => {
+        function updateAuthUI(session) {
             if (session && session.user) {
                 currentUser = session.user;
                 authStatusDiv.textContent = `You are logged in as: ${currentUser.email}`;
@@ -228,7 +232,25 @@
                 authStatusDiv.innerHTML = 'You are not logged in. Please <a href="/login.html">log in</a> to delete your account.';
                 deleteSection.classList.add('hidden');
             }
+        }
+
+        // Listen for future auth changes
+        supabaseClient.auth.onAuthStateChange((_event, session) => {
+            updateAuthUI(session);
         });
+
+        // Run explicit check immediately on load to prevent getting stuck
+        async function checkInitialSession() {
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                if (error) throw error;
+                updateAuthUI(session);
+            } catch (err) {
+                console.error('Session check error:', err);
+                authStatusDiv.innerHTML = 'Error verifying session. Please <a href="/login.html">log in</a> again.';
+            }
+        }
+        checkInitialSession();
 
         confirmationInput.addEventListener('input', () => {
             deleteBtn.disabled = confirmationInput.value !== 'DELETE';
@@ -244,12 +266,12 @@
             try {
                 // DPDP Act: Explicitly remove consent record before account deletion
                 try {
-                    await supabase.from('consentform').delete().eq('user_id', currentUser.id);
+                    await supabaseClient.from('consentform').delete().eq('user_id', currentUser.id);
                 } catch (consentErr) {
                     console.log('Consent record cleanup:', consentErr);
                 }
 
-                const { error } = await supabase.rpc('delete_user_account');
+                const { error } = await supabaseClient.rpc('delete_user_account');
 
                 if (error) {
                     throw error;
@@ -259,7 +281,7 @@
                 resultMessage.className = 'success';
                 resultMessage.style.display = 'block';
 
-                await supabase.auth.signOut();
+                await supabaseClient.auth.signOut();
                 setTimeout(() => {
                     window.location.href = '/';
                 }, 3000);
@@ -301,10 +323,9 @@
             });
 
             // Auth Check
-            if (window.supabase) {
-                // Supabase client is already initialized in the specific script below, but we can reuse the global one if available or re-init safely (though re-init is wasteful, better to check if existing client variable is accessible, but scopes might differ. Using the one from below script might be tricky due to timing. Safe to re-create or better, check if window.supabaseClient exists or similar. The script below defines `const supabase` in local scope.
-                // Let's just do a simple check.
-                const { data: { session } } = await supabase.auth.getSession();
+            if (window.supabaseClient) {
+                // Use the globally exposed supabaseClient
+                const { data: { session } } = await window.supabaseClient.auth.getSession();
                 const authContainer = document.querySelector('.auth-buttons-container');
                 const lmsLink = document.getElementById('lms-nav-link');
 
