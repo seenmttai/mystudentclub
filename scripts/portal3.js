@@ -2192,6 +2192,69 @@ document.getElementById('resumePromptModal')?.addEventListener('click', (e) => {
     }
 });
 
+// =================== DPDP CONSENT CHECK ===================
+const DPDP_CONSENT_TEXT = 'I consent to My Student Club sharing my CV and profile details with registered companies and recruiters for job-matching purposes.';
+
+async function checkAndPromptConsent() {
+    if (!currentSession) return;
+    const hasCV = localStorage.getItem('userCVText');
+    if (!hasCV) return; // No CV uploaded, no consent needed
+
+    try {
+        const { data } = await supabaseClient
+            .from('consentform')
+            .select('cv_sharing_consent')
+            .eq('user_id', currentSession.user.id)
+            .single();
+
+        // If no record or consent is false/withdrawn, show prompt
+        if (!data || !data.cv_sharing_consent) {
+            const path = window.location.pathname;
+            if (path === '/' || path === '/index.html' || path.includes('/articleship') || path.includes('/fresher') || path.includes('/semi-qualified') || path.includes('/experienced')) {
+                setTimeout(() => {
+                    const modal = document.getElementById('cvConsentPromptModal');
+                    if (modal) modal.style.display = 'flex';
+                }, 1500);
+            }
+        }
+    } catch (e) {
+        console.log('Consent check:', e);
+    }
+}
+
+// Consent Accept Button
+document.getElementById('cvConsentAcceptBtn')?.addEventListener('click', async () => {
+    const now = new Date().toISOString();
+    try {
+        await supabaseClient.from('consentform').upsert({
+            user_id: currentSession.user.id,
+            cv_sharing_consent: true,
+            consent_text: DPDP_CONSENT_TEXT,
+            consented_at: now,
+            withdrawn_at: null,
+            user_agent: navigator.userAgent,
+            updated_at: now
+        }, { onConflict: 'user_id' });
+
+        showToast('Thank you! Your consent has been recorded.', 'success');
+    } catch (e) {
+        console.error('Failed to save consent:', e);
+        showToast('Could not save consent. Please try again from your profile.', 'error');
+    }
+    document.getElementById('cvConsentPromptModal').style.display = 'none';
+});
+
+// Consent Decline Button
+document.getElementById('cvConsentDeclineBtn')?.addEventListener('click', () => {
+    document.getElementById('cvConsentPromptModal').style.display = 'none';
+    window.location.href = '/profile.html';
+});
+
+// Trigger consent check after page loads
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => checkAndPromptConsent(), 2000);
+});
+
 const JOB_PREFERENCE_KEY = 'userJobPreference';
 
 // Map preference values to redirect URLs

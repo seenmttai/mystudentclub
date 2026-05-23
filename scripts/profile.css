@@ -1297,3 +1297,248 @@ body.p2-modal-open {
 
 .p2-btn-save { background: var(--p2-blue); color: white; border: none; padding: 0.5rem 1.5rem; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: background 0.2s; font-family: var(--p2-font); outline: none; margin-left: 0.5rem;}
 .p2-btn-save:hover { background: var(--p2-blue-hover); }
+
+/* ===== DPDP Consent Card ===== */
+.p2-consent-card {
+    margin-top: 1.25rem;
+    border: 1.5px solid #D1FAE5;
+    border-radius: 10px;
+    padding: 1.15rem 1.25rem;
+    background: linear-gradient(135deg, #F0FDF4 0%, #ECFDF5 100%);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.p2-consent-card:has(#cvSharingConsent:checked) {
+    border-color: var(--p2-green);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.08);
+}
+
+.p2-consent-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+}
+
+.p2-consent-shield {
+    color: var(--p2-green);
+    font-size: 1rem;
+}
+
+.p2-consent-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #065F46;
+    letter-spacing: 0.01em;
+}
+
+.p2-consent-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    cursor: pointer;
+    user-select: none;
+    padding: 0.5rem 0;
+    margin: 0;
+}
+
+.p2-consent-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    margin-top: 2px;
+    accent-color: var(--p2-green);
+    cursor: pointer;
+}
+
+.p2-consent-text {
+    font-size: 0.88rem;
+    color: #374151;
+    line-height: 1.55;
+}
+
+.p2-consent-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.75rem;
+    padding-top: 0.65rem;
+    border-top: 1px solid #D1FAE5;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.p2-consent-link {
+    font-size: 0.78rem;
+    color: var(--p2-blue);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: color 0.15s;
+}
+
+.p2-consent-link:hover {
+    color: var(--p2-blue-hover);
+    text-decoration: underline;
+}
+
+.p2-consent-status {
+    font-size: 0.75rem;
+    color: var(--p2-text-muted);
+    font-style: italic;
+}
+
+/* ===== Consent Popup Modal ===== */
+.p2-consent-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    padding: 1rem;
+}
+
+.p2-consent-modal {
+    background: white;
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 440px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+    text-align: center;
+    animation: p2consentFadeIn 0.3s ease;
+}
+
+@keyframes p2consentFadeIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.p2-consent-modal .consent-icon {
+    font-size: 2.5rem;
+    color: var(--p2-orange);
+    margin-bottom: 1rem;
+}
+
+.p2-consent-modal h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--p2-text);
+    margin-bottom: 0.75rem;
+}
+
+.p2-consent-modal p {
+    font-size: 0.88rem;
+    color: #6B7280;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.p2-consent-modal .consent-action-btn {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: var(--p2-font);
+    transition: all 0.2s;
+}
+
+.p2-consent-modal .consent-accept-btn {
+    background: linear-gradient(135deg, var(--p2-green) 0%, #15803D 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+}
+
+.p2-consent-modal .consent-accept-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(22, 163, 74, 0.35);
+}
+
+/* ===== Data Privacy & Account Card ===== */
+.p2-privacy-card {
+    border-left: 4px solid var(--p2-green);
+}
+
+.p2-privacy-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.p2-privacy-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #F9FAFB;
+    border-radius: 8px;
+    border: 1px solid #F3F4F6;
+}
+
+.p2-privacy-item > i {
+    font-size: 1.1rem;
+    color: var(--p2-green);
+    width: 24px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.p2-privacy-label {
+    font-size: 0.75rem;
+    color: var(--p2-text-muted);
+    font-weight: 500;
+    margin-bottom: 0.15rem;
+}
+
+.p2-privacy-value {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--p2-text);
+}
+
+.p2-privacy-actions {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.p2-privacy-link {
+    font-size: 0.85rem;
+    color: var(--p2-blue);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 500;
+    transition: color 0.15s;
+}
+
+.p2-privacy-link:hover {
+    color: var(--p2-blue-hover);
+    text-decoration: underline;
+}
+
+.p2-danger-link {
+    color: #DC2626 !important;
+}
+
+.p2-danger-link:hover {
+    color: #B91C1C !important;
+}
+
+@media (max-width: 600px) {
+    .p2-privacy-grid {
+        grid-template-columns: 1fr;
+    }
+    .p2-consent-modal {
+        padding: 1.5rem;
+    }
+}

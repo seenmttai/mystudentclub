@@ -709,6 +709,40 @@
     </div>
   </div>
 
+  <!-- DPDP Act: Consent Prompt for Existing CV Uploaders -->
+  <div id="cvConsentPromptModal" class="modal-overlay-container" style="display: none; z-index: 2004;">
+    <div class="modal-dialog" style="max-width: 460px;">
+      <div style="padding: 2rem; text-align: center;">
+        <div style="width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #D1FAE5, #ECFDF5); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+          <i class="fas fa-shield-alt" style="font-size: 1.75rem; color: #16A34A;"></i>
+        </div>
+        <h3 style="font-size: 1.25rem; font-weight: 700; color: #1f2937; margin-bottom: 0.5rem;">Your CV Data Consent</h3>
+        <p style="color: #6b7280; margin-bottom: 0.25rem; line-height: 1.6; font-size: 0.92rem;">
+          Under India's <strong>Digital Personal Data Protection Act, 2023</strong>, we need your explicit permission to share your CV with employers.
+        </p>
+        <div style="background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 10px; padding: 1rem; margin: 1.25rem 0; text-align: left;">
+          <p style="color: #374151; font-size: 0.88rem; line-height: 1.6; margin: 0;">
+            <i class="fas fa-quote-left" style="color: #16A34A; margin-right: 0.3rem; font-size: 0.7rem;"></i>
+            I consent to My Student Club sharing my CV and profile details with registered companies and recruiters for job-matching purposes.
+            <i class="fas fa-quote-right" style="color: #16A34A; margin-left: 0.3rem; font-size: 0.7rem;"></i>
+          </p>
+        </div>
+        <button id="cvConsentAcceptBtn" class="btn btn-primary"
+          style="width: 100%; padding: 0.875rem; font-size: 1rem; margin-bottom: 0.75rem; background: linear-gradient(135deg, #16A34A, #15803D); border-color: #16A34A;">
+          <i class="fas fa-check-circle"></i>&nbsp; I Agree — Share My CV
+        </button>
+        <button id="cvConsentDeclineBtn"
+          style="background: none; border: none; color: #6b7280; cursor: pointer; font-size: 0.85rem; padding: 0.5rem; transition: color 0.2s;">
+          No thanks — take me to my profile
+        </button>
+        <p style="color: #9CA3AF; font-size: 0.75rem; margin-top: 0.75rem; line-height: 1.5;">
+          You can withdraw consent at any time from your <a href="/profile.html" style="color: #457EFF;">profile page</a>.
+          <a href="/privacy-policy.html" target="_blank" style="color: #457EFF;">Read our Privacy Policy</a>.
+        </p>
+      </div>
+    </div>
+  </div>
+
   <!-- Profile Incomplete Modal for AI Apply -->
   <div id="profileIncompleteModal" class="modal-overlay-container" style="display: none; z-index: 2002;">
     <div class="modal-dialog" style="max-width: 450px;">

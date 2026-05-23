@@ -185,8 +185,13 @@
             </svg>
             Delete Your Account
         </h1>
-        <p>This action is irreversible. When you delete your account, all of your personal profile data, course
-            enrollments, and application history will be permanently removed.</p>
+        <p>This action is irreversible. When you delete your account, all of your personal data will be permanently removed, including:</p>
+        <ul style="margin: 0.75rem 0 1rem 1.5rem; color: #6b7280; line-height: 1.8; font-size: 0.95rem;">
+            <li>Profile data &amp; CV</li>
+            <li>CV sharing consent records (DPDP Act)</li>
+            <li>Course enrollments &amp; progress</li>
+            <li>Application history</li>
+        </ul>
 
         <div id="auth-status">Verifying your session...</div>
 
@@ -237,6 +242,13 @@
             resultMessage.style.display = 'none';
 
             try {
+                // DPDP Act: Explicitly remove consent record before account deletion
+                try {
+                    await supabase.from('consentform').delete().eq('user_id', currentUser.id);
+                } catch (consentErr) {
+                    console.log('Consent record cleanup:', consentErr);
+                }
+
                 const { error } = await supabase.rpc('delete_user_account');
 
                 if (error) {

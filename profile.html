@@ -135,6 +135,22 @@
                                 <button type="button" class="p2-remove-file" data-target="resume"><i class="fas fa-times"></i></button>
                             </div>
                         </div>
+                        <!-- DPDP Act Consent Checkbox -->
+                        <div class="p2-consent-card" id="cvConsentCard">
+                            <div class="p2-consent-header">
+                                <i class="fas fa-shield-alt p2-consent-shield"></i>
+                                <span class="p2-consent-title">Data Sharing Consent</span>
+                            </div>
+                            <label class="p2-consent-label" for="cvSharingConsent">
+                                <input type="checkbox" id="cvSharingConsent" name="cv_sharing_consent">
+                                <span class="p2-consent-checkmark"></span>
+                                <span class="p2-consent-text">I consent to My Student Club sharing my CV and profile details with registered companies and recruiters for job-matching purposes.</span>
+                            </label>
+                            <div class="p2-consent-footer">
+                                <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer" class="p2-consent-link"><i class="fas fa-external-link-alt"></i> Read our Privacy Policy</a>
+                                <span class="p2-consent-status" id="consentStatusText"></span>
+                            </div>
+                        </div>
                     </section>
 
                     <section class="p2-card" id="sec-cover-letter">
@@ -1208,10 +1224,50 @@
                         </button>
                     </div>
 
+                    <!-- ===== DATA PRIVACY & ACCOUNT ===== -->
+                    <section class="p2-card p2-privacy-card" id="sec-privacy">
+                        <div class="p2-card-header">
+                            <h2><i class="fas fa-shield-alt" style="color:#16A34A; margin-right:0.5rem;"></i>Data Privacy & Account</h2>
+                        </div>
+                        <p class="p2-card-sub">Your data is handled under India's DPDP Act, 2023. You have full control over your information.</p>
+                        <div class="p2-privacy-grid">
+                            <div class="p2-privacy-item">
+                                <i class="fas fa-file-contract"></i>
+                                <div>
+                                    <div class="p2-privacy-label">CV Sharing Consent</div>
+                                    <div class="p2-privacy-value" id="privacyConsentStatus">Not provided</div>
+                                </div>
+                            </div>
+                            <div class="p2-privacy-item">
+                                <i class="fas fa-calendar-check"></i>
+                                <div>
+                                    <div class="p2-privacy-label">Consent Date</div>
+                                    <div class="p2-privacy-value" id="privacyConsentDate">—</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p2-privacy-actions">
+                            <a href="/privacy-policy.html" target="_blank" class="p2-privacy-link"><i class="fas fa-book-open"></i> Privacy Policy</a>
+                            <a href="/delete-account.html" class="p2-privacy-link p2-danger-link"><i class="fas fa-user-times"></i> Delete My Account</a>
+                        </div>
+                    </section>
+
                 </form>
             </div>
         </div>
     </main>
+
+    <!-- Consent Required Popup -->
+    <div class="p2-consent-modal-overlay" id="consentRequiredModal" style="display:none;">
+        <div class="p2-consent-modal">
+            <i class="fas fa-exclamation-triangle consent-icon"></i>
+            <h3>Consent Required</h3>
+            <p>To use our platform and apply for jobs, you must allow us to share your CV with registered employers. Please tick the consent checkbox to continue.</p>
+            <button class="consent-action-btn consent-accept-btn" id="consentModalAcceptBtn">
+                <i class="fas fa-check-circle"></i>&nbsp; I Understand — Take Me to Consent
+            </button>
+        </div>
+    </div>
 
     <script type="module" src="scripts/profile.js"></script>
 </body>

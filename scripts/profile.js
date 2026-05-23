@@ -566,11 +566,91 @@ function setCloudSyncFlag() {
     document.cookie = 'cv_cloud_synced=true; max-age=31536000; path=/';
 }
 
+// =================== DPDP CONSENT MANAGEMENT ===================
+const CONSENT_TEXT = 'I consent to My Student Club sharing my CV and profile details with registered companies and recruiters for job-matching purposes.';
+
+async function loadConsentStatus() {
+    if (!currentUser) return;
+    try {
+        const { data, error } = await supabaseClient
+            .from('consentform')
+            .select('cv_sharing_consent, consented_at, withdrawn_at')
+            .eq('user_id', currentUser.id)
+            .single();
+
+        const checkbox = document.getElementById('cvSharingConsent');
+        const statusText = document.getElementById('consentStatusText');
+        const privacyStatus = document.getElementById('privacyConsentStatus');
+        const privacyDate = document.getElementById('privacyConsentDate');
+
+        if (data && data.cv_sharing_consent) {
+            if (checkbox) checkbox.checked = true;
+            if (statusText) statusText.textContent = 'Consent given on ' + new Date(data.consented_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+            if (privacyStatus) { privacyStatus.textContent = 'Active'; privacyStatus.style.color = '#16A34A'; }
+            if (privacyDate) privacyDate.textContent = new Date(data.consented_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        } else {
+            if (checkbox) checkbox.checked = false;
+            if (statusText) statusText.textContent = data ? 'Consent withdrawn' : '';
+            if (privacyStatus) { privacyStatus.textContent = 'Not provided'; privacyStatus.style.color = ''; }
+            if (privacyDate) privacyDate.textContent = '—';
+        }
+    } catch (e) {
+        console.log('Could not load consent status:', e);
+    }
+}
+
+async function saveConsentRecord(isConsented) {
+    if (!currentUser) return;
+    const now = new Date().toISOString();
+    const payload = {
+        user_id: currentUser.id,
+        cv_sharing_consent: isConsented,
+        consent_text: CONSENT_TEXT,
+        user_agent: navigator.userAgent,
+        updated_at: now
+    };
+    if (isConsented) {
+        payload.consented_at = now;
+        payload.withdrawn_at = null;
+    } else {
+        payload.withdrawn_at = now;
+    }
+
+    try {
+        const { error } = await supabaseClient
+            .from('consentform')
+            .upsert(payload, { onConflict: 'user_id' });
+        if (error) throw error;
+    } catch (e) {
+        console.error('Failed to save consent record:', e);
+    }
+}
+
+function updatePrivacyCard(isConsented) {
+    const privacyStatus = document.getElementById('privacyConsentStatus');
+    const privacyDate = document.getElementById('privacyConsentDate');
+    if (isConsented) {
+        if (privacyStatus) { privacyStatus.textContent = 'Active'; privacyStatus.style.color = '#16A34A'; }
+        if (privacyDate) privacyDate.textContent = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+    } else {
+        if (privacyStatus) { privacyStatus.textContent = 'Not provided'; privacyStatus.style.color = ''; }
+        if (privacyDate) privacyDate.textContent = '—';
+    }
+}
+
 // =================== SAVE ===================
 async function handleSave(e) {
     e.preventDefault();
     if (!localStorage.getItem('userCVImages')) {
         showToast('Please upload your resume. It is required to use the AI features.', 'warning');
+        return;
+    }
+
+    // DPDP Act: Block save if CV is uploaded but consent not given
+    const consentCheckbox = document.getElementById('cvSharingConsent');
+    if (consentCheckbox && !consentCheckbox.checked) {
+        const modal = document.getElementById('consentRequiredModal');
+        if (modal) modal.style.display = 'flex';
         return;
     }
 
@@ -609,6 +689,15 @@ async function handleSave(e) {
         setCloudSyncFlag();
         lastUpdatedISO = new Date().toISOString();
         refreshHeader();
+
+        // Save consent record
+        if (consentCheckbox && consentCheckbox.checked) {
+            await saveConsentRecord(true);
+            updatePrivacyCard(true);
+            const statusText = document.getElementById('consentStatusText');
+            if (statusText) statusText.textContent = 'Consent given on ' + new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        }
+
         showToast('Profile saved successfully!', 'success', 8000);
 
         const redirectUrl = new URLSearchParams(window.location.search).get('redirect');
@@ -1888,5 +1977,37 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
     menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+
+    // ----- DPDP Consent Initialization -----
+    await loadConsentStatus();
+
+    // Consent Required Modal — close and scroll to checkbox
+    const consentModalAcceptBtn = document.getElementById('consentModalAcceptBtn');
+    if (consentModalAcceptBtn) {
+        consentModalAcceptBtn.addEventListener('click', () => {
+            document.getElementById('consentRequiredModal').style.display = 'none';
+            const consentCard = document.getElementById('cvConsentCard');
+            if (consentCard) {
+                consentCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                consentCard.style.animation = 'p2consentFadeIn 0.5s ease';
+                setTimeout(() => consentCard.style.animation = '', 600);
+            }
+        });
+    }
+
+    // Live update privacy card when consent checkbox changes
+    const cvConsentCheckbox = document.getElementById('cvSharingConsent');
+    if (cvConsentCheckbox) {
+        cvConsentCheckbox.addEventListener('change', () => {
+            if (!cvConsentCheckbox.checked) {
+                // Consent withdrawal — save immediately
+                saveConsentRecord(false);
+                updatePrivacyCard(false);
+                const statusText = document.getElementById('consentStatusText');
+                if (statusText) statusText.textContent = 'Consent withdrawn';
+                showToast('CV sharing consent withdrawn. Your CV will no longer be shared with employers.', 'warning', 8000);
+            }
+        });
+    }
 });
 
