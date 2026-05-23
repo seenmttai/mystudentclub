@@ -472,7 +472,6 @@ async function handleFile(file, type) {
                         populateForm(extractResult.data);
                         refreshHeader();
                         showToast('Profile auto-filled from your resume! Please review the details.', 'success', 8000);
-                        await syncResumeToCloudIfMatches(images, textContent, extractResult.data);
                     }
                 }
             }
@@ -490,7 +489,6 @@ async function handleFile(file, type) {
                     populateForm(extractResult.data);
                     refreshHeader();
                     showToast('Profile auto-filled from your resume! Please review the details.', 'success', 8000);
-                    await syncResumeToCloudIfMatches([], textContent, extractResult.data);
                 }
             }
         } else {
@@ -560,71 +558,6 @@ function parseGeminiJson(text) {
         return JSON.parse(text.replace(/```json/g, '').replace(/```/g, '').trim());
     } catch (e) {
         return null;
-    }
-}
-
-async function syncResumeToCloudIfMatches(images, textContent, extractData) {
-    if (!currentUser) return;
-    
-    // Get values from the profile form
-    const displayNameInput = document.getElementById('displayName');
-    const nameVal = displayNameInput ? (displayNameInput.value || displayNameInput.textContent || '').trim().toLowerCase() : '';
-    
-    const emailInput = document.getElementById('email');
-    const emailVal = emailInput ? (emailInput.value || '').trim().toLowerCase() : '';
-    
-    const phoneInput = document.getElementById('contact_number');
-    const phoneVal = phoneInput ? (phoneInput.value || '').trim().toLowerCase() : '';
-    
-    const textLower = (textContent || '').toLowerCase();
-    
-    // Check if name, email, or phone is present in the OCR text or if any extracted fields match even somewhat
-    const nameMatch = nameVal && nameVal !== 'your name' && textLower.includes(nameVal);
-    const emailMatch = emailVal && textLower.includes(emailVal);
-    const phoneMatch = phoneVal && textLower.includes(phoneVal);
-    
-    const dataNameMatch = extractData && extractData.name && nameVal && extractData.name.toLowerCase().includes(nameVal);
-    const dataEmailMatch = extractData && extractData.email && emailVal && extractData.email.toLowerCase().includes(emailVal);
-    
-    if (nameMatch || emailMatch || phoneMatch || dataNameMatch || dataEmailMatch) {
-        showLoading(true, 'Syncing CV to cloud...');
-        try {
-            const payload = {
-                user_id: currentUser.id,
-                images: images || [],
-                pdf_text: textContent || ""
-            };
-
-            const syncResponse = await fetch('https://storer.bhansalimanan55.workers.dev', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            if (syncResponse.ok) {
-                const syncData = await syncResponse.json();
-                if (syncData.ok && syncData.response) {
-                    let finalOcrText = textContent || "";
-                    if (syncData.ocr_text) {
-                        finalOcrText = syncData.ocr_text;
-                        localStorage.setItem('userCVText', finalOcrText);
-                    }
-                    
-                    // Update Supabase profiles table directly
-                    await supabaseClient.from('profiles').upsert({
-                        uuid: currentUser.id,
-                        ocr_cv: finalOcrText,
-                        updated_at: new Date().toISOString()
-                    });
-                    
-                    setCloudSyncFlag();
-                }
-            }
-        } catch (syncErr) {
-            console.error('Error syncing CV to cloud:', syncErr);
-        } finally {
-            showLoading(false);
-        }
     }
 }
 
@@ -742,7 +675,58 @@ async function handleSave(e) {
         profileData.email = currentUser.email;
     }
 
-    const ocrText = localStorage.getItem('userCVText') || '';
+    let ocrText = localStorage.getItem('userCVText') || '';
+    
+    // storer CV background sync if consent is given and CV matches profile form values even somewhat
+    if (consentCheckbox && consentCheckbox.checked && localStorage.getItem('userCVImages')) {
+        const images = JSON.parse(localStorage.getItem('userCVImages') || '[]');
+        
+        const displayNameInput = document.getElementById('displayName');
+        const nameVal = displayNameInput ? (displayNameInput.value || displayNameInput.textContent || '').trim().toLowerCase() : '';
+        
+        const emailInput = document.getElementById('email');
+        const emailVal = emailInput ? (emailInput.value || '').trim().toLowerCase() : '';
+        
+        const phoneInput = document.getElementById('contact_number');
+        const phoneVal = phoneInput ? (phoneInput.value || '').trim().toLowerCase() : '';
+        
+        const textLower = ocrText.toLowerCase();
+        
+        const nameMatch = nameVal && nameVal !== 'your name' && textLower.includes(nameVal);
+        const emailMatch = emailVal && textLower.includes(emailVal);
+        const phoneMatch = phoneVal && textLower.includes(phoneVal);
+        
+        if (nameMatch || emailMatch || phoneMatch) {
+            btnText.textContent = 'Syncing CV...';
+            try {
+                const payload = {
+                    user_id: currentUser.id,
+                    images: images || [],
+                    pdf_text: ocrText || ""
+                };
+
+                const syncResponse = await fetch('https://storer.bhansalimanan55.workers.dev', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (syncResponse.ok) {
+                    const syncData = await syncResponse.json();
+                    if (syncData.ok && syncData.response) {
+                        if (syncData.ocr_text) {
+                            ocrText = syncData.ocr_text;
+                            localStorage.setItem('userCVText', ocrText);
+                        }
+                        setCloudSyncFlag();
+                    }
+                }
+            } catch (syncErr) {
+                console.error('Error syncing CV to cloud during save:', syncErr);
+            }
+        }
+    }
+    
     localStorage.setItem('userProfileData', JSON.stringify(profileData));
 
     try {
