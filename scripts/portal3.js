@@ -2593,7 +2593,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 syncFiltersUI();
             }
 
-            redirectToPreferredPortal(preference);
+            // redirectToPreferredPortal(preference);
         }
 
         // Initialize modal event listeners
