@@ -162,6 +162,233 @@
       };
     })();
   </script>
+  <style>
+    /* Premium Onboarding Modal Styles */
+    .onboarding-modal-dialog {
+      max-width: 480px !important;
+      background: rgba(255, 255, 255, 0.9) !important;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+      border-radius: 24px !important;
+      padding: 0 !important;
+      overflow: hidden;
+      transform: scale(0.95);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .modal-overlay-container.show-modal .onboarding-modal-dialog {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .onboarding-modal-card {
+      padding: 2.25rem 2rem;
+    }
+
+    .onboarding-modal-header {
+      text-align: center;
+      margin-bottom: 1.75rem;
+    }
+
+    .onboarding-brand-logo {
+      width: 110px;
+      height: auto;
+      margin: 0 auto 0.75rem;
+      display: block;
+    }
+
+    .onboarding-modal-header h3 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .onboarding-modal-header p {
+      font-size: 0.85rem;
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    .form-group-custom {
+      margin-bottom: 1.5rem;
+    }
+
+    .input-label-custom {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 0.75rem;
+    }
+
+    .input-label-custom .help-text {
+      font-weight: 400;
+      color: #8b5cf6;
+      font-size: 0.8rem;
+    }
+
+    .onboarding-options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .onboarding-option-card {
+      border: 2px solid #f3f4f6;
+      border-radius: 16px;
+      padding: 0.875rem;
+      background: white;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+      text-align: center;
+      transition: all 0.25s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .onboarding-option-card:hover {
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .onboarding-option-card.active {
+      border-color: #4f46e5;
+      background: rgba(79, 70, 229, 0.03);
+      box-shadow: 0 8px 16px rgba(79, 70, 229, 0.08);
+    }
+
+    .option-icon-box {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.1rem;
+    }
+
+    .pink-gradient { background: linear-gradient(135deg, #ec4899, #f43f5e); }
+    .orange-gradient { background: linear-gradient(135deg, #f97316, #f59e0b); }
+    .purple-gradient { background: linear-gradient(135deg, #8b5cf6, #a855f7); }
+    .blue-gradient { background: linear-gradient(135deg, #3b82f6, #06b6d4); }
+
+    .option-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .onboarding-option-card.active .option-title {
+      color: #4f46e5;
+    }
+
+    .dynamic-question-container {
+      background: #f9fafb;
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 1.75rem;
+      border: 1px solid #f3f4f6;
+      min-height: 94px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .onboarding-conditional-field {
+      display: none;
+      animation: fadeInField 0.3s ease forwards;
+    }
+
+    .onboarding-conditional-field.active {
+      display: block;
+    }
+
+    @keyframes fadeInField {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .input-with-icon {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-with-icon i {
+      position: absolute;
+      left: 1rem;
+      color: #9ca3af;
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    .form-input-custom {
+      width: 100%;
+      padding: 0.75rem 1rem 0.75rem 2.5rem;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: #1f2937;
+      background: white;
+      transition: all 0.2s;
+    }
+
+    .form-input-custom:focus {
+      outline: none;
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+    }
+
+    .select-custom {
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1rem;
+      padding-right: 2.5rem;
+    }
+
+    .onboarding-submit-btn {
+      width: 100%;
+      padding: 0.875rem;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+      color: white;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
+    }
+
+    .onboarding-submit-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);
+      background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+    }
+
+    .onboarding-submit-btn:active {
+      transform: translateY(1px);
+    }
+  </style>
 </head>
 
 <body>
@@ -586,7 +813,123 @@
     </div>
   </div>
 
+  <!-- Onboarding Questionnaire Modal -->
+  <div id="onboardingSegmentModal" class="modal-overlay-container" style="display: none; z-index: 2004;">
+    <div class="modal-dialog onboarding-modal-dialog">
+      <div class="onboarding-modal-card">
+        <div class="onboarding-modal-header">
+          <img src="/assets/logo.png" alt="My Student Club" class="onboarding-brand-logo">
+          <h3>Help Us Personalize Your Portal</h3>
+          <p>Tell us what you are looking for to see the best opportunities.</p>
+        </div>
 
+        <form id="onboardingSegmentForm" class="onboarding-form">
+          <div class="form-group-custom">
+            <label class="input-label-custom">I am looking for:</label>
+            <div class="onboarding-options-grid">
+              <div class="onboarding-option-card active" data-value="CA Industrial Training Default">
+                <div class="option-icon-box pink-gradient">
+                  <i class="fas fa-industry"></i>
+                </div>
+                <div class="option-details">
+                  <span class="option-title">CA Industrial Training</span>
+                </div>
+              </div>
+
+              <div class="onboarding-option-card" data-value="CA Articleship">
+                <div class="option-icon-box orange-gradient">
+                  <i class="fas fa-book-open"></i>
+                </div>
+                <div class="option-details">
+                  <span class="option-title">CA Articleship</span>
+                </div>
+              </div>
+
+              <div class="onboarding-option-card" data-value="CA Fresher">
+                <div class="option-icon-box purple-gradient">
+                  <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div class="option-details">
+                  <span class="option-title">CA Fresher</span>
+                </div>
+              </div>
+
+              <div class="onboarding-option-card" data-value="Semi Qualified CA">
+                <div class="option-icon-box blue-gradient">
+                  <i class="fas fa-briefcase"></i>
+                </div>
+                <div class="option-details">
+                  <span class="option-title">Semi Qualified CA</span>
+                </div>
+              </div>
+            </div>
+            <!-- Hidden input to store selected value -->
+            <input type="hidden" id="selectedLookingFor" name="looking_for" value="CA Industrial Training Default">
+          </div>
+
+          <!-- Dynamic Questions Area -->
+          <div class="dynamic-question-container">
+            <!-- CA Industrial Training Default -->
+            <div class="onboarding-conditional-field active" id="field-industrial">
+              <label class="input-label-custom" for="articleship_1yr_end_date">Articleship 1 year end date</label>
+              <div class="input-with-icon">
+                <i class="far fa-calendar-alt"></i>
+                <input type="date" id="articleship_1yr_end_date" class="form-input-custom" required>
+              </div>
+            </div>
+
+            <!-- CA Articleship -->
+            <div class="onboarding-conditional-field" id="field-articleship">
+              <label class="input-label-custom" for="ca_inter_attempt">CA Inter Attempt</label>
+              <div class="input-with-icon">
+                <i class="fas fa-history"></i>
+                <select id="ca_inter_attempt" class="form-input-custom select-custom">
+                  <option value="" disabled selected>Select Attempt Month/Year</option>
+                  <option value="May 2026">May 2026</option>
+                  <option value="Nov 2026">Nov 2026</option>
+                  <option value="May 2027">May 2027</option>
+                  <option value="Nov 2027">Nov 2027</option>
+                  <option value="Cleared Both Groups">Cleared Both Groups</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- CA Fresher -->
+            <div class="onboarding-conditional-field" id="field-fresher">
+              <label class="input-label-custom" for="ca_final_attempt">CA Final Attempt</label>
+              <div class="input-with-icon">
+                <i class="fas fa-award"></i>
+                <select id="ca_final_attempt" class="form-input-custom select-custom">
+                  <option value="" disabled selected>Select Attempt Month/Year</option>
+                  <option value="May 2026">May 2026</option>
+                  <option value="Nov 2026">Nov 2026</option>
+                  <option value="May 2027">May 2027</option>
+                  <option value="Nov 2027">Nov 2027</option>
+                  <option value="Cleared">Cleared / Passed</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Semi Qualified CA -->
+            <div class="onboarding-conditional-field" id="field-semi">
+              <label class="input-label-custom" for="years_of_experience">Years of Experience <span class="help-text">(if Fresher put 0)</span></label>
+              <div class="input-with-icon">
+                <i class="fas fa-hourglass-half"></i>
+                <input type="text" id="years_of_experience" class="form-input-custom" placeholder="e.g. 2 (if Fresher put 0)">
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="onboarding-submit-btn">
+            <span>Continue to Portal</span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="/scripts/portal3.js"></script>
   <script type="module" src="/scripts/date-utils.js"></script>

@@ -2059,6 +2059,26 @@ async function initializePage() {
     if (session) {
         localStorage.removeItem('portalVisitCount');
         await initializeUserFeatures();
+
+        // Onboarding Check: Ensure looking_for details are completed
+        let profile = null;
+        const cached = localStorage.getItem('userProfileData');
+        if (cached) {
+            try { profile = JSON.parse(cached); } catch (e) {}
+        }
+        if (!profile || !profile.looking_for) {
+            profile = await fetchAndCacheProfileData();
+        }
+
+        // Show onboarding segment modal if looking_for is not set on the homepage
+        if (!profile || !profile.looking_for) {
+            const path = window.location.pathname;
+            if (path === '/' || path === '/index.html') {
+                setTimeout(() => {
+                    showOnboardingSegmentModal();
+                }, 800); // Small pleasant delay after load
+            }
+        }
     } else {
         // Track visits for unlogged users
         let visitCount = parseInt(localStorage.getItem('portalVisitCount') || '0');
@@ -2232,23 +2252,31 @@ async function fetchAndCacheProfileData() {
     try {
         const { data } = await supabaseClient
             .from('profiles')
-            .select('profile')
+            .select('profile, looking_for, articleship_1yr_end_date, ca_inter_attempt, ca_final_attempt, years_of_experience')
             .eq('uuid', currentSession.user.id)
             .single();
 
-        if (data?.profile) {
-            localStorage.setItem('userProfileData', JSON.stringify(data.profile));
+        if (data) {
+            const profileObj = data.profile || {};
+            // Inject dedicated columns to local cached profile representation
+            profileObj.looking_for = data.looking_for;
+            profileObj.articleship_1yr_end_date = data.articleship_1yr_end_date;
+            profileObj.ca_inter_attempt = data.ca_inter_attempt;
+            profileObj.ca_final_attempt = data.ca_final_attempt;
+            profileObj.years_of_experience = data.years_of_experience;
 
-            if (data.profile.job_preference) {
-                localStorage.setItem(JOB_PREFERENCE_KEY, data.profile.job_preference);
+            localStorage.setItem('userProfileData', JSON.stringify(profileObj));
+
+            if (profileObj.job_preference) {
+                localStorage.setItem(JOB_PREFERENCE_KEY, profileObj.job_preference);
             }
 
-            if (data.profile.notification_subscriptions && Array.isArray(data.profile.notification_subscriptions)) {
-                localStorage.setItem('subscribedTopics', JSON.stringify(data.profile.notification_subscriptions));
+            if (profileObj.notification_subscriptions && Array.isArray(profileObj.notification_subscriptions)) {
+                localStorage.setItem('subscribedTopics', JSON.stringify(profileObj.notification_subscriptions));
                 updateNotificationBadge();
             }
 
-            return data.profile;
+            return profileObj;
         }
     } catch (e) {
         console.log('Could not fetch profile data:', e);
@@ -2507,6 +2535,189 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Initialize modal event listeners
         initJobPreferenceModal();
+        initOnboardingSegmentForm();
     }, 500);
 });
+
+// ==========================================
+// ONBOARDING QUESTIONNAIRE SEGMENT MODAL
+// ==========================================
+
+// Show Onboarding Segment Modal with premium transition
+function showOnboardingSegmentModal() {
+    const modal = document.getElementById('onboardingSegmentModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        // Trigger reflow for animation
+        modal.offsetHeight;
+        modal.classList.add('show-modal');
+    }
+}
+
+// Hide Onboarding Segment Modal with premium transition
+function hideOnboardingSegmentModal() {
+    const modal = document.getElementById('onboardingSegmentModal');
+    if (modal) {
+        modal.classList.remove('show-modal');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 400);
+    }
+}
+
+// Initialize Onboarding Segment form and interactive elements
+function initOnboardingSegmentForm() {
+    const form = document.getElementById('onboardingSegmentForm');
+    if (!form) return;
+
+    const cards = document.querySelectorAll('.onboarding-option-card');
+    const selectedInput = document.getElementById('selectedLookingFor');
+
+    const fields = {
+        'CA Industrial Training Default': {
+            element: document.getElementById('field-industrial'),
+            input: document.getElementById('articleship_1yr_end_date')
+        },
+        'CA Articleship': {
+            element: document.getElementById('field-articleship'),
+            input: document.getElementById('ca_inter_attempt')
+        },
+        'CA Fresher': {
+            element: document.getElementById('field-fresher'),
+            input: document.getElementById('ca_final_attempt')
+        },
+        'Semi Qualified CA': {
+            element: document.getElementById('field-semi'),
+            input: document.getElementById('years_of_experience')
+        }
+    };
+
+    // Make sure we have proper state initialized
+    const defaultVal = selectedInput.value;
+    Object.keys(fields).forEach(key => {
+        const item = fields[key];
+        if (key === defaultVal) {
+            item.element.classList.add('active');
+            item.input.required = true;
+            item.input.disabled = false;
+        } else {
+            item.element.classList.remove('active');
+            item.input.required = false;
+            item.input.disabled = true;
+        }
+    });
+
+    // Card Selection Click Handlers
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            const value = card.getAttribute('data-value');
+            if (!value) return;
+
+            // Highlight selected card
+            cards.forEach(c => c.classList.remove('active'));
+            card.classList.add('active');
+
+            // Save to hidden input
+            selectedInput.value = value;
+
+            // Toggle dynamic fields visibility and validation constraints
+            Object.keys(fields).forEach(key => {
+                const item = fields[key];
+                if (key === value) {
+                    item.element.classList.add('active');
+                    item.input.required = true;
+                    item.input.disabled = false;
+                } else {
+                    item.element.classList.remove('active');
+                    item.input.required = false;
+                    item.input.disabled = true;
+                }
+            });
+        });
+    });
+
+    // Form submission sync to database
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        if (!currentSession?.user?.id) {
+            hideOnboardingSegmentModal();
+            return;
+        }
+
+        const lookingFor = selectedInput.value;
+        const articleshipDate = document.getElementById('articleship_1yr_end_date').value;
+        const caInterAttempt = document.getElementById('ca_inter_attempt').value;
+        const caFinalAttempt = document.getElementById('ca_final_attempt').value;
+        const yearsOfExp = document.getElementById('years_of_experience').value;
+
+        // Construct update object strictly using dedicated columns (NOT inside JSONB)
+        const updateData = {
+            looking_for: lookingFor,
+            articleship_1yr_end_date: lookingFor === 'CA Industrial Training Default' ? (articleshipDate || null) : null,
+            ca_inter_attempt: lookingFor === 'CA Articleship' ? (caInterAttempt || null) : null,
+            ca_final_attempt: lookingFor === 'CA Fresher' ? (caFinalAttempt || null) : null,
+            years_of_experience: lookingFor === 'Semi Qualified CA' ? (yearsOfExp || null) : null,
+            updated_at: new Date().toISOString()
+        };
+
+        const submitBtn = form.querySelector('.onboarding-submit-btn');
+        const originalBtnText = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>Saving preferences...</span><i class="fas fa-spinner fa-spin"></i>';
+
+        try {
+            const { error } = await supabaseClient
+                .from('profiles')
+                .update(updateData)
+                .eq('uuid', currentSession.user.id);
+
+            if (error) throw error;
+
+            // Sync with local cached object in localStorage
+            const cached = localStorage.getItem('userProfileData');
+            let profileObj = {};
+            if (cached) {
+                try { profileObj = JSON.parse(cached); } catch (_) {}
+            }
+            
+            // Merge properties locally
+            Object.assign(profileObj, updateData);
+            localStorage.setItem('userProfileData', JSON.stringify(profileObj));
+
+            // Hide the modal beautifully
+            hideOnboardingSegmentModal();
+
+            // Notify user
+            if (typeof showToast === 'function') {
+                showToast("Personalization complete! Enjoy your personalized feed.", "success");
+            }
+
+            // Map and trigger portal redirect for seamless preference alignment
+            let prefMapping = {
+                'CA Industrial Training Default': 'industrial',
+                'CA Articleship': 'articleship',
+                'CA Fresher': 'fresher_fresher',
+                'Semi Qualified CA': 'semi_fresher'
+            };
+            const mappedPref = prefMapping[lookingFor];
+            if (mappedPref) {
+                await saveJobPreference(mappedPref);
+                setTimeout(() => {
+                    redirectToPreferredPortal(mappedPref);
+                }, 1000);
+            }
+
+        } catch (err) {
+            console.error("Failed to submit onboarding answers:", err);
+            if (typeof showToast === 'function') {
+                showToast("Failed to save preferences. Please try again.", "error");
+            } else {
+                alert("Failed to save preferences. Please try again.");
+            }
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
+    });
+}
 
