@@ -166,6 +166,7 @@
     /* Premium Onboarding Modal Styles */
     .onboarding-modal-dialog {
       max-width: 480px !important;
+      max-height: 90vh !important;
       background: rgba(255, 255, 255, 0.9) !important;
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
@@ -173,10 +174,26 @@
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
       border-radius: 24px !important;
       padding: 0 !important;
-      overflow: hidden;
+      overflow-y: auto !important;
+      overflow-x: hidden;
       transform: scale(0.95);
       opacity: 0;
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Custom premium scrollbar styling */
+    .onboarding-modal-dialog::-webkit-scrollbar {
+      width: 6px;
+    }
+    .onboarding-modal-dialog::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .onboarding-modal-dialog::-webkit-scrollbar-thumb {
+      background: rgba(156, 163, 175, 0.3);
+      border-radius: 99px;
+    }
+    .onboarding-modal-dialog::-webkit-scrollbar-thumb:hover {
+      background: rgba(156, 163, 175, 0.5);
     }
     
     .modal-overlay-container.show-modal .onboarding-modal-dialog {
