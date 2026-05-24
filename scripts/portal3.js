@@ -2237,6 +2237,7 @@ document.getElementById('cvConsentAcceptBtn')?.addEventListener('click', async (
         }, { onConflict: 'user_id' });
 
         showToast('Thank you! Your consent has been recorded.', 'success');
+        setTimeout(() => checkAndSyncCVBackground(), 1000);
     } catch (e) {
         console.error('Failed to save consent:', e);
         showToast('Could not save consent. Please try again from your profile.', 'error');
@@ -2315,11 +2316,15 @@ async function fetchAndCacheProfileData() {
     try {
         const { data } = await supabaseClient
             .from('profiles')
-            .select('profile, looking_for, articleship_1yr_end_date, ca_inter_attempt, ca_final_attempt, years_of_experience')
+            .select('profile, looking_for, articleship_1yr_end_date, ca_inter_attempt, ca_final_attempt, years_of_experience, ocr_cv')
             .eq('uuid', currentSession.user.id)
             .single();
 
         if (data) {
+            if (data.ocr_cv) {
+                localStorage.setItem('userCVText', data.ocr_cv);
+                setCloudSyncFlag();
+            }
             const profileObj = data.profile || {};
             // Inject dedicated columns to local cached profile representation
             profileObj.looking_for = data.looking_for;

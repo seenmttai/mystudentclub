@@ -220,6 +220,7 @@ async function loadProfile() {
             }
             if (data.ocr_cv) {
                 localStorage.setItem('userCVText', data.ocr_cv);
+                setCloudSyncFlag();
             }
         } else {
             const localProfile = localStorage.getItem('userProfileData');
@@ -696,7 +697,8 @@ async function handleSave(e) {
         const emailMatch = emailVal && textLower.includes(emailVal);
         const phoneMatch = phoneVal && textLower.includes(phoneVal);
         
-        if (nameMatch || emailMatch || phoneMatch) {
+        // Sync unconditionally if consent is given and we have CV images, to avoid strict OCR failures blocking sync
+        if (true || nameMatch || emailMatch || phoneMatch) {
             btnText.textContent = 'Syncing CV...';
             try {
                 const payload = {

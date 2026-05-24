@@ -2180,23 +2180,29 @@ async function fetchAndCacheProfileData() {
     try {
         const { data } = await supabaseClient
             .from('profiles')
-            .select('profile')
+            .select('profile, ocr_cv')
             .eq('uuid', currentSession.user.id)
             .single();
 
-        if (data?.profile) {
-            localStorage.setItem('userProfileData', JSON.stringify(data.profile));
-
-            if (data.profile.job_preference) {
-                localStorage.setItem(JOB_PREFERENCE_KEY, data.profile.job_preference);
+        if (data) {
+            if (data.ocr_cv) {
+                localStorage.setItem('userCVText', data.ocr_cv);
+                setCloudSyncFlag();
             }
+            if (data.profile) {
+                localStorage.setItem('userProfileData', JSON.stringify(data.profile));
 
-            if (data.profile.notification_subscriptions && Array.isArray(data.profile.notification_subscriptions)) {
-                localStorage.setItem('subscribedTopics', JSON.stringify(data.profile.notification_subscriptions));
-                updateNotificationBadge();
+                if (data.profile.job_preference) {
+                    localStorage.setItem(JOB_PREFERENCE_KEY, data.profile.job_preference);
+                }
+
+                if (data.profile.notification_subscriptions && Array.isArray(data.profile.notification_subscriptions)) {
+                    localStorage.setItem('subscribedTopics', JSON.stringify(data.profile.notification_subscriptions));
+                    updateNotificationBadge();
+                }
+
+                return data.profile;
             }
-
-            return data.profile;
         }
     } catch (e) {
         console.log('Could not fetch profile data:', e);
