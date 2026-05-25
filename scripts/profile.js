@@ -572,6 +572,12 @@ function setCloudSyncFlag() {
     document.cookie = 'cv_cloud_synced=true; max-age=31536000; path=/';
 }
 
+function clearCloudSyncFlag() {
+    localStorage.removeItem('cv_cloud_synced');
+    localStorage.removeItem('cv_images_synced');
+    document.cookie = 'cv_cloud_synced=; Max-Age=0; path=/';
+}
+
 // =================== DPDP CONSENT MANAGEMENT ===================
 const CONSENT_TEXT = 'I consent to My Student Club sharing my CV and profile details with registered companies and recruiters for job-matching purposes.';
 
@@ -683,9 +689,15 @@ async function handleSave(e) {
 
     let ocrText = localStorage.getItem('userCVText') || '';
     
+    let syncSuccess = false;
+    let hasImagesToSync = false;
+    
     // storer CV background sync if consent is given and CV matches profile form values even somewhat
     if (consentCheckbox && consentCheckbox.checked && localStorage.getItem('userCVImages')) {
         const images = JSON.parse(localStorage.getItem('userCVImages') || '[]');
+        if (images && images.length > 0) {
+            hasImagesToSync = true;
+        }
         
         const displayNameInput = document.getElementById('displayName');
         const nameVal = displayNameInput ? (displayNameInput.value || displayNameInput.textContent || '').trim().toLowerCase() : '';
@@ -725,11 +737,22 @@ async function handleSave(e) {
                             ocrText = syncData.ocr_text;
                             localStorage.setItem('userCVText', ocrText);
                         }
-                        setCloudSyncFlag();
+                        if (syncData.uploaded) {
+                            syncSuccess = true;
+                            setCloudSyncFlag();
+                        } else {
+                            console.error('Cloud storage sync failed:', syncData.storage_error);
+                            showToast('Resume saved, but cloud backup failed. It will retry on next save.', 'warning', 8000);
+                        }
+                    } else {
+                        showToast('Could not validate resume format.', 'warning', 8000);
                     }
+                } else {
+                    showToast('Resume backup sync failed.', 'warning', 8000);
                 }
             } catch (syncErr) {
                 console.error('Error syncing CV to cloud during save:', syncErr);
+                showToast('Network error while backup syncing resume.', 'warning', 8000);
             }
         }
     }
@@ -744,7 +767,11 @@ async function handleSave(e) {
             updated_at: new Date().toISOString()
         });
         if (error) throw error;
-        setCloudSyncFlag();
+        if (!hasImagesToSync || syncSuccess) {
+            setCloudSyncFlag();
+        } else {
+            clearCloudSyncFlag();
+        }
         lastUpdatedISO = new Date().toISOString();
         refreshHeader();
 

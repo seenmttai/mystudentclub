@@ -2373,6 +2373,12 @@ function setCloudSyncFlag() {
     document.cookie = "cv_cloud_synced=true; max-age=31536000; path=/";
 }
 
+function clearCloudSyncFlag() {
+    localStorage.removeItem('cv_cloud_synced');
+    localStorage.removeItem('cv_images_synced');
+    document.cookie = "cv_cloud_synced=; Max-Age=0; path=/";
+}
+
 async function checkAndSyncCVBackground() {
     if (!currentSession) return;
 
@@ -2410,29 +2416,40 @@ async function checkAndSyncCVBackground() {
             body: JSON.stringify(payload)
         });
 
-        if (!response.ok) return;
+        if (!response.ok) {
+            clearCloudSyncFlag();
+            return;
+        }
 
         const data = await response.json();
 
         if (data.ok && data.response) {
-            let finalOcrText = userCVText || "";
-            if (data.ocr_text) {
-                finalOcrText = data.ocr_text;
-                localStorage.setItem('userCVText', finalOcrText);
+            if (data.uploaded) {
+                let finalOcrText = userCVText || "";
+                if (data.ocr_text) {
+                    finalOcrText = data.ocr_text;
+                    localStorage.setItem('userCVText', finalOcrText);
+                }
+
+                // Update Supabase
+                await supabaseClient.from('profiles').upsert({
+                    uuid: currentSession.user.id,
+                    ocr_cv: finalOcrText,
+                    updated_at: new Date().toISOString()
+                });
+
+                setCloudSyncFlag();
+                console.log("Background Sync: Complete.");
+            } else {
+                console.error("Background Sync: Worker returned uploaded=false", data.storage_error);
+                clearCloudSyncFlag();
             }
-
-            // Update Supabase
-            await supabaseClient.from('profiles').upsert({
-                uuid: currentSession.user.id,
-                ocr_cv: finalOcrText,
-                updated_at: new Date().toISOString()
-            });
-
-            setCloudSyncFlag();
-            console.log("Background Sync: Complete.");
+        } else {
+            clearCloudSyncFlag();
         }
     } catch (e) {
         console.error("Background Sync Failed:", e);
+        clearCloudSyncFlag();
     }
 }
 
