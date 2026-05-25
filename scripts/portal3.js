@@ -2511,17 +2511,28 @@ function isCloudSynced() {
 
 function setCloudSyncFlag() {
     localStorage.setItem('cv_cloud_synced', 'true');
+    localStorage.setItem('cv_images_synced', 'true');
     document.cookie = "cv_cloud_synced=true; max-age=31536000; path=/";
 }
 
 async function checkAndSyncCVBackground() {
-    if (!currentSession || isCloudSynced()) return;
+    if (!currentSession) return;
 
     // Check if we have cached CV data to sync
     const userCVImages = localStorage.getItem('userCVImages');
     let userCVText = localStorage.getItem('userCVText');
 
-    if (!userCVImages) return; // Nothing to sync
+    // If we have local images but they haven't been successfully synced yet during this user's lifecycle,
+    // we upload them regardless of general cloud synced status (since they could be missing in the bucket)
+    if (userCVImages) {
+        if (localStorage.getItem('cv_images_synced') === 'true') {
+            return; // Already synced this local file
+        }
+    } else {
+        // No local images, fallback to checking general cloud sync
+        if (isCloudSynced()) return;
+        return; // Nothing to sync
+    }
 
     try {
         console.log("Background Sync: Uploading cached CV to storer...");

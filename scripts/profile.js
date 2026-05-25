@@ -434,6 +434,10 @@ async function handleFile(file, type) {
     const config = fileConfig[type];
     if (!config) return;
 
+    if (type === 'resume') {
+        localStorage.removeItem('cv_images_synced');
+    }
+
     showLoading(true, `Processing ${type.replace('_', ' ')}...`);
     try {
         let textContent = '';
@@ -564,6 +568,7 @@ function parseGeminiJson(text) {
 
 function setCloudSyncFlag() {
     localStorage.setItem('cv_cloud_synced', 'true');
+    localStorage.setItem('cv_images_synced', 'true');
     document.cookie = 'cv_cloud_synced=true; max-age=31536000; path=/';
 }
 
