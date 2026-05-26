@@ -275,6 +275,7 @@ function renderCV(data) {
 
     // 11. Section ordering
     applySectionOrder(data.sectionOrder || []);
+    normalizeClassicBlueDetailSections();
     enforceExperienceOnlyLeftLabels();
     stabilizeSectionLayouts();
     applyTableFormatSettings(data.tableSettings || {});
@@ -412,6 +413,9 @@ function enforceExperienceOnlyLeftLabels() {
         const sectionId = section.getAttribute('data-section-id') || '';
         if (sectionId !== 'education') {
             section.querySelectorAll('table').forEach(table => {
+                if (table.classList.contains('section-detail-table') || table.hasAttribute('data-preserve-label-columns')) {
+                    return;
+                }
                 const colCount = Math.max(1, table.querySelectorAll('colgroup col').length);
                 table.querySelectorAll('tr').forEach(row => {
                     const cells = Array.from(row.children).filter(el => /^(TD|TH)$/i.test(el.tagName));
@@ -691,7 +695,7 @@ function applyAccentInlineStyles(color, light, softer, deep) {
         color: '#ffffff',
         borderColor: deep
     });
-    setInlineStyles('.contact-bar, .work-company-row, .qual-table th, .extra-table td.category, .role-col, .summary-box, .summary-content, .header-bg-lite', {
+    setInlineStyles('.contact-bar, .work-company-row, .qual-table th, .extra-table td.category, .section-detail-table td.section-label, .role-col, .summary-box, .summary-content, .header-bg-lite', {
         backgroundColor: light,
         borderColor: deep
     });
@@ -702,7 +706,7 @@ function applyAccentInlineStyles(color, light, softer, deep) {
 
 function clearAccentInlineStyles() {
     clearInlineStyles('.section-header, .section-header-2, .work-exp-header, .project-title-row, .header-name-box', ['backgroundColor', 'color', 'borderColor']);
-    clearInlineStyles('.contact-bar, .work-company-row, .qual-table th, .extra-table td.category, .role-col, .summary-box, .summary-content, .header-bg-lite', ['backgroundColor', 'borderColor']);
+    clearInlineStyles('.contact-bar, .work-company-row, .qual-table th, .extra-table td.category, .section-detail-table td.section-label, .role-col, .summary-box, .summary-content, .header-bg-lite', ['backgroundColor', 'borderColor']);
     clearInlineStyles('.edu-institution', ['color']);
 }
 
@@ -1628,6 +1632,197 @@ function getTemplateHeaderClass() {
     return 'section-header';
 }
 
+function isClassicBlueTemplate() {
+    return /classic-blue\.html$/i.test(String(window.location.pathname || ''));
+}
+
+function isClassicBlueDetailSectionKey(key) {
+    return ['achievements', 'certifications', 'leadership', 'interests'].includes(String(key || '').toLowerCase());
+}
+
+function buildClassicBlueDetailSection(title, listAttr) {
+    const safeTitle = escapeHTML(title || 'Custom Section');
+    return `
+        <table class="extra-table section-detail-table">
+            <tbody>
+                <tr>
+                    <td class="section-label">${safeTitle}</td>
+                    <td class="section-content">
+                        <ul class="bullet-list" data-list="${escapeAttr(listAttr)}"></ul>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+}
+
+function toReadableSectionLabel(text) {
+    const raw = String(text || '').trim();
+    if (!raw) return 'Custom Section';
+    const compact = raw.replace(/\s+/g, ' ').trim();
+    if (compact === compact.toUpperCase()) {
+        return compact.toLowerCase().replace(/\b\w/g, ch => ch.toUpperCase());
+    }
+    return compact;
+}
+
+function getSectionHeaderElement(section) {
+    return section?.querySelector('.section-header, .section-header-2, .section-title, .gray-bar, h2, h3') || null;
+}
+
+function getClassicBlueSectionLabel(section, fallbackTitle) {
+    const explicit = section?.getAttribute('data-section-label');
+    if (explicit) return explicit;
+    const header = getSectionHeaderElement(section);
+    const headerText = header?.textContent || '';
+    return toReadableSectionLabel(headerText || fallbackTitle);
+}
+
+function buildClassicBlueGroupHeader(labels) {
+    const cleaned = Array.from(new Set((labels || []).map(label => String(label || '').trim()).filter(Boolean)));
+    if (cleaned.length === 0) return 'ADDITIONAL INFORMATION';
+    if (cleaned.length === 1) return cleaned[0].toUpperCase();
+    if (cleaned.length === 2) return `${cleaned[0]} & ${cleaned[1]}`.toUpperCase();
+    return `${cleaned.slice(0, -1).join(', ')} & ${cleaned[cleaned.length - 1]}`.toUpperCase();
+}
+
+function hasMeaningfulRenderedContent(node) {
+    if (!node) return false;
+    const text = (node.textContent || '').replace(/\s+/g, ' ').trim();
+    if (text) return true;
+    return !!node.querySelector('li, p, div, span, a, br, ul, ol');
+}
+
+function normalizeClassicBlueDetailSections() {
+    if (!isClassicBlueTemplate()) return;
+
+    const detailDefs = [
+        { key: 'certifications', label: 'Certifications' },
+        { key: 'achievements', label: 'Achievements' },
+        { key: 'leadership', label: 'Leadership' },
+        { key: 'interests', label: 'Interests' },
+        { key: 'skills', label: 'Skills' }
+    ];
+    const labelMap = new Map(detailDefs.map(def => [def.key, def.label]));
+
+    const orderedSourceSections = Array.from(document.querySelectorAll('.sortable-section'))
+        .filter(section => {
+            if (section.classList.contains('classic-blue-detail-group')) return false;
+            const sectionId = section.getAttribute('data-section-id') || '';
+            return labelMap.has(sectionId) || section.hasAttribute('data-custom-section-root');
+        });
+
+    const anchorSection = orderedSourceSections[0] || null;
+    if (!anchorSection) return;
+
+    let group = document.querySelector('.sortable-section.classic-blue-detail-group');
+    if (!group) {
+        group = document.createElement('div');
+        group.className = 'sortable-section classic-blue-detail-group';
+        group.setAttribute('data-section-id', 'classic-blue-detail-group');
+
+        const header = document.createElement('div');
+        header.className = 'section-header';
+        header.textContent = 'ADDITIONAL INFORMATION';
+        group.appendChild(header);
+
+        const table = document.createElement('table');
+        table.className = 'extra-table section-detail-table';
+        table.setAttribute('data-preserve-label-columns', '');
+
+        const tbody = document.createElement('tbody');
+        table.appendChild(tbody);
+        group.appendChild(table);
+    }
+
+    anchorSection.parentElement?.insertBefore(group, anchorSection);
+    const tbody = group.querySelector('tbody');
+    if (!tbody) return;
+
+    const orderedRows = [];
+    const getExistingRow = (key) => group.querySelector(`tr[data-detail-source="${key}"]`);
+
+    const ensureRow = (key, label, bodyType) => {
+        let row = getExistingRow(key);
+        if (!row) {
+            const holder = document.createElement('tbody');
+            holder.innerHTML = bodyType === 'skills'
+                ? `
+                    <tr data-detail-source="${escapeAttr(key)}">
+                        <td class="section-label">${escapeHTML(label)}</td>
+                        <td class="section-content">
+                            <div data-field="skills"></div>
+                        </td>
+                    </tr>
+                `
+                : `
+                    <tr data-detail-source="${escapeAttr(key)}">
+                        <td class="section-label">${escapeHTML(label)}</td>
+                        <td class="section-content">
+                            <ul class="bullet-list" data-list="${escapeAttr(key)}"></ul>
+                        </td>
+                    </tr>
+                `;
+            row = holder.querySelector('tr');
+        }
+        const labelCell = row.querySelector('.section-label');
+        if (labelCell) labelCell.textContent = label;
+        return row;
+    };
+
+    orderedSourceSections.forEach((section, index) => {
+        const customRoot = section.getAttribute('data-custom-section-root');
+        const key = customRoot ? `custom-${customRoot || index}` : (section.getAttribute('data-section-id') || '');
+        const label = customRoot
+            ? getClassicBlueSectionLabel(section, 'Custom Section')
+            : getClassicBlueSectionLabel(section, labelMap.get(key) || 'Section');
+        const row = ensureRow(key, label, !customRoot && key === 'skills' ? 'skills' : 'list');
+        let sourceHasContent = false;
+
+        if (!customRoot && key === 'skills') {
+            const sourceField = section.querySelector('[data-field="skills"]');
+            const targetField = row.querySelector('[data-field="skills"]');
+            if (sourceField && targetField && sourceField !== targetField && sourceField.innerHTML.trim()) {
+                targetField.innerHTML = sourceField.innerHTML;
+            }
+            sourceHasContent = hasMeaningfulRenderedContent(sourceField) || hasMeaningfulRenderedContent(targetField);
+        } else {
+            const sourceList = customRoot
+                ? section.querySelector('[data-list="custom-items"]')
+                : section.querySelector(`[data-list="${key}"]`);
+            const targetList = row.querySelector(`[data-list="${key}"]`);
+            if (sourceList && targetList && sourceList !== targetList && sourceList.innerHTML.trim()) {
+                targetList.innerHTML = sourceList.innerHTML;
+            }
+            sourceHasContent = hasMeaningfulRenderedContent(sourceList) || hasMeaningfulRenderedContent(targetList);
+        }
+        row.style.display = sourceHasContent ? '' : 'none';
+        if (customRoot) row.setAttribute('data-custom-detail-row', 'true');
+        orderedRows.push(row);
+        if (customRoot) {
+            section.remove();
+        } else {
+            section.style.display = 'none';
+        }
+    });
+
+    Array.from(tbody.querySelectorAll('tr[data-detail-source]')).forEach(row => {
+        if (!orderedRows.includes(row)) row.remove();
+    });
+    orderedRows.forEach(row => tbody.appendChild(row));
+
+    const visibleRows = orderedRows.filter(row => row.style.display !== 'none');
+    const header = group.querySelector('.section-header');
+    if (header) {
+        const headerLabels = visibleRows.map(row => {
+            if (row.hasAttribute('data-custom-detail-row')) return 'Additional';
+            return toReadableSectionLabel(row.querySelector('.section-label')?.textContent || '');
+        });
+        header.textContent = buildClassicBlueGroupHeader(headerLabels);
+    }
+    group.style.display = visibleRows.length > 0 ? '' : 'none';
+}
+
 function createInjectedSection(title, contentHTML, key) {
     const wrapper = document.createElement('div');
     wrapper.className = 'section sortable-section universal-injected';
@@ -1641,7 +1836,9 @@ function createInjectedSection(title, contentHTML, key) {
     wrapper.appendChild(header);
 
     const body = document.createElement('div');
-    body.innerHTML = contentHTML;
+    body.innerHTML = isClassicBlueTemplate() && isClassicBlueDetailSectionKey(key)
+        ? buildClassicBlueDetailSection(title, key)
+        : contentHTML;
     Array.from(body.childNodes).forEach(node => wrapper.appendChild(node));
     return wrapper;
 }
@@ -1952,7 +2149,7 @@ function setSectionHeaderText(root, title) {
 
 function setSectionBodyLabel(root, title) {
     const label = title || 'Custom Section';
-    const labelSelectors = ['.category-label', '.skills-col-label', '.work-label', '.col-left', '.details-label'];
+    const labelSelectors = ['.category-label', '.skills-col-label', '.work-label', '.col-left', '.details-label', '.section-label', '.category'];
     for (const selector of labelSelectors) {
         const el = root.querySelector(selector);
         if (el) {
@@ -2018,6 +2215,17 @@ function createFallbackCustomSection(section, items) {
     header.className = getTemplateHeaderClass();
     header.textContent = (section.title || 'Custom Section').toUpperCase();
     wrapper.appendChild(header);
+
+    if (isClassicBlueTemplate()) {
+        const body = document.createElement('div');
+        body.innerHTML = buildClassicBlueDetailSection(section.title || 'Custom Section', 'custom-items');
+        Array.from(body.childNodes).forEach(node => wrapper.appendChild(node));
+        const list = wrapper.querySelector('[data-list="custom-items"]');
+        if (list) {
+            list.innerHTML = items.map(item => `<li>${item}</li>`).join('');
+        }
+        return wrapper;
+    }
 
     const list = document.createElement('ul');
     list.className = 'bullet-list';

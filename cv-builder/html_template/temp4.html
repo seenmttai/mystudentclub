@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Added maximum-scale to prevent auto-zoom glitches on reload -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Padam Bhansali - Resume</title>
+    <style>
+        /* ---------------------------------------------------------
+           CORE VARIABLES
+           --------------------------------------------------------- */
+        :root {
+            --blue-header: #2d5294;      /* Deep Professional Navy Blue */
+            --light-blue-bg: #deeaf6;    /* Soft steel blue background for left column */
+            --border-color: #000000;
+            --text-black: #000000;
+            --bg-white: #ffffff;
+            --font-main: 'Times New Roman', Times, serif; /* Elegant serif typography */
+            --viewer-bg: #525659;
+
+            /* A4 DIMENSIONS (Fixed Reference) */
+            --ref-width: 1000px;
+            --ref-height: 1414px; /* 1:1.414 Aspect Ratio */
+            
+            /* DYNAMIC SCALING FACTOR (Controlled by JS for shrinking content) */
+            --content-scale: 1; 
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden; /* Vital */
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* WRAPPER FIX: 
+           This isolates the large 1000px page from the viewport.
+           The browser only sees this container (width: 100%), so it won't 
+           auto-zoom to fit the huge 1000px child.
+        */
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden; /* Hides the overflow of the scaled element */
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        /* ---------------------------------------------------------
+           THE SHEET (A4 CONTAINER)
+           --------------------------------------------------------- */
+        .resume-container {
+            /* Fixed Dimensions based on reference */
+            width: var(--ref-width);
+            height: var(--ref-height);
+            background: var(--bg-white);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            
+            /* Initial Padding (Scaled by content-scale) */
+            padding: calc(30px * var(--content-scale)) calc(35px * var(--content-scale));
+            
+            display: flex;
+            flex-direction: column;
+            
+            /* Prevent flexbox from squashing the width */
+            flex-shrink: 0; 
+
+            /* Origin for transform scaling */
+            transform-origin: top center;
+            
+            /* Base font size scaling */
+            font-size: calc(16.5px * var(--content-scale));
+            color: var(--text-black);
+            line-height: 1.35;
+        }
+
+        /* Helper Classes */
+        .bold { font-weight: bold; }
+        .underline { text-decoration: underline; }
+        .justify { text-align: justify; }
+        .right { text-align: right; }
+        .center { text-align: center; }
+        .uppercase { text-transform: uppercase; }
+
+        /* Header Section */
+        header {
+            text-align: center;
+            margin-bottom: calc(12px * var(--content-scale));
+        }
+
+        h1 {
+            font-size: calc(34px * var(--content-scale));
+            font-weight: bold;
+            margin-bottom: calc(2px * var(--content-scale));
+        }
+
+        .subtitle {
+            font-size: calc(18px * var(--content-scale));
+            font-weight: normal;
+            margin-bottom: calc(6px * var(--content-scale));
+        }
+
+        .contact-info {
+            font-size: calc(16px * var(--content-scale));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: calc(15px * var(--content-scale));
+            flex-wrap: wrap;
+        }
+
+        .contact-item {
+            display: inline-flex;
+            align-items: center;
+            color: var(--text-black);
+            text-decoration: none;
+        }
+
+        .contact-item a {
+            color: blue;
+            text-decoration: underline;
+        }
+
+        /* High-quality SVGs for contact icons */
+        .contact-icon {
+            width: calc(16px * var(--content-scale));
+            height: calc(16px * var(--content-scale));
+            margin-right: calc(4px * var(--content-scale));
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            vertical-align: middle;
+        }
+
+        .linkedin-icon {
+            fill: currentColor;
+            stroke: none;
+        }
+
+        /* Section Banners */
+        .section-banner {
+            background-color: var(--blue-header);
+            color: white;
+            padding: calc(5px * var(--content-scale)) calc(8px * var(--content-scale));
+            font-weight: bold;
+            font-size: calc(18px * var(--content-scale));
+            text-transform: uppercase;
+            border: 1px solid var(--blue-header);
+            text-align: left;
+            letter-spacing: 0.5px;
+        }
+
+        /* Standard Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: calc(16.5px * var(--content-scale));
+            margin-bottom: calc(12px * var(--content-scale));
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: calc(4px * var(--content-scale)) calc(6px * var(--content-scale));
+            vertical-align: top;
+        }
+
+        th {
+            text-align: center;
+            font-weight: bold;
+            background-color: var(--bg-white);
+        }
+
+        /* Educational Table Columns */
+        .col-exam { width: 18%; }
+        .col-year { width: 10%; text-align: center; }
+        .col-inst { width: 40%; }
+        .col-pct { width: 12%; text-align: center; }
+        .col-remarks { width: 20%; }
+
+        .cell-middle {
+            vertical-align: middle;
+        }
+
+        /* Grid Table for Experience/Skills/Responsibility sections */
+        .grid-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: calc(12px * var(--content-scale));
+        }
+
+        .grid-table td {
+            border: 1px solid var(--border-color);
+            padding: calc(6px * var(--content-scale)) calc(8px * var(--content-scale));
+        }
+
+        .grid-left {
+            width: 18%;
+            background-color: var(--light-blue-bg);
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            font-size: calc(16px * var(--content-scale));
+            line-height: 1.25;
+        }
+
+        .grid-right {
+            width: 82%;
+            vertical-align: top;
+        }
+
+        /* Subheader inside bullet list cells */
+        .cell-sub-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: calc(16.5px * var(--content-scale));
+        }
+
+        /* Work Experience Subheaders */
+        .job-headers-container {
+            border: 1px solid var(--border-color);
+            background-color: var(--light-blue-bg);
+
+        }
+
+        .job-list-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: calc(16.5px * var(--content-scale));
+            padding: calc(4px * var(--content-scale)) calc(8px * var(--content-scale));
+        }
+
+        /* Bullet lists */
+        ul {
+            list-style-type: disc;
+            margin-left: calc(20px * var(--content-scale));
+        }
+
+        li {
+            font-size: calc(16.5px * var(--content-scale));
+            margin-bottom: calc(3px * var(--content-scale));
+            text-align: justify;
+            line-height: 1.35;
+        }
+
+        li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ---------------------------------------------------------
+           PRINT STYLES - STRICT SINGLE PAGE A4
+           --------------------------------------------------------- */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                background: #ffffff !important;
+            }
+
+            #zoom-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                transform: none !important; /* Reset transform */
+            }
+
+            .resume-container {
+                width: 1000px !important; /* Keep design width */
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: none !important;
+                
+                /* SCALE TO A4 */
+                /* 210mm / 1000px = ~0.7937 */
+                zoom: 0.7937; 
+                -moz-transform: scale(0.7937);
+                -moz-transform-origin: top center;
+                
+                /* Reset other transforms */
+                transform: none !important; 
+                position: static !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- WRAPPER FIX -->
+    <div id="zoom-wrapper">
+        <!-- SINGLE A4 PAGE -->
+        <div class="resume-container" id="cv-page">
+            
+            <!-- HEADER -->
+            <header>
+                <h1>Padam Bhansali</h1>
+                <div class="subtitle">Immediate Joiner | First Attempt</div>
+                <div class="contact-info">
+                    <span class="contact-item">
+                        <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                        +91 7228881182
+                    </span>
+                    <span class="contact-item">
+                        <svg class="contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
+                        <a href="mailto:capadambhansali@gmail.com">capadambhansali@gmail.com</a>
+                    </span>
+                    <span class="contact-item">
+                        <svg class="contact-icon linkedin-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                        </svg>
+                        <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank">https://www.linkedin.com/in/ca-padam-bhansali/</a>
+                    </span>
+                </div>
+            </header>
+
+            <!-- EDUCATIONAL QUALIFICATIONS -->
+            <div class="section-banner">Educational Qualifications</div>
+            <table>
+                <thead>
+                    <tr>
+                        <th class="col-exam">EXAMINATION</th>
+                        <th class="col-year">YEAR</th>
+                        <th class="col-inst">INSTITUTION</th>
+                        <th class="col-pct">PERCENTAGE</th>
+                        <th class="col-remarks">REMARKS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="bold center cell-middle">CA Intermediate</td>
+                        <td class="center cell-middle">Nov 2021</td>
+                        <td rowspan="2" class="bold center cell-middle">
+                            The Institute of Chartered Accountants of India<br>
+                            (Cleared all levels in first attempt)
+                        </td>
+                        <td class="center cell-middle">60%</td>
+                        <td class="center cell-middle">Exemption in All Group 1 Papers</td>
+                    </tr>
+                    <tr>
+                        <td class="bold center cell-middle">CA Foundation</td>
+                        <td class="center cell-middle">Nov 2020</td>
+                        <td class="center cell-middle">75%</td>
+                        <td class="center cell-middle">70+ Score in all subjects</td>
+                    </tr>
+                    <tr>
+                        <td class="bold center cell-middle">B. Com</td>
+                        <td class="center cell-middle">Mar 2023</td>
+                        <td class="center cell-middle">RJTCC (Gujarat University)</td>
+                        <td class="center cell-middle">76%</td>
+                        <td class="center cell-middle">First Class Distinction</td>
+                    </tr>
+                    <tr>
+                        <td class="bold center cell-middle">Class XII</td>
+                        <td class="center cell-middle">Mar 2020</td>
+                        <td class="center cell-middle">Devasya International School</td>
+                        <td class="center cell-middle">88%</td>
+                        <td class="center cell-middle">School Rank 1 (99.56 Percentile)</td>
+                    </tr>
+                    <tr>
+                        <td class="bold center cell-middle">Class X</td>
+                        <td class="center cell-middle">Mar 2018</td>
+                        <td class="center cell-middle">New Vision School</td>
+                        <td class="center cell-middle">92%</td>
+                        <td class="center cell-middle">School Rank 1</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- WORK EXPERIENCE -->
+            <div class="section-banner">Work Experience</div>
+            <div class="job-headers-container">
+                <div class="job-list-header">
+                    <span>Kantilal Patel & Co. (Ahmedabad) – Article Assistant (Auditing and Assurance)</span>
+                    <span>(Jan'23 – Nov'23)</span>
+                </div>
+            </div>
+
+            <table class="grid-table">
+                <tbody>
+                    <tr>
+                        <td class="grid-left">CFO Services</td>
+                        <td class="grid-right">
+                            <ul>
+                                <li>Identified and executed <span class="bold">cost-saving strategies</span> across PAN India Fulfillment and Sortation Centers, driving operational efficiency and contributing to <span class="bold">Annual Savings of ₹100 Crores</span>.</li>
+                                <li>Optimized and finalized <span class="bold">monthly operating plans</span> for a <span class="bold">₹100+ Cr OPEX budget</span>, partnering directly with cross-functional teams across Planning, Operations, Design, HR, and Procurement.</li>
+                                <li>Facilitated in an approximate <span class="bold">₹50 lakh monthly cost reduction</span> by eliminating buffers, design improvements and better cross-deployment of manpower.</li>
+                                <li>Efficiently <span class="bold">managed multiple responsibilities</span> alongside core duties, including overseeing the accrual process for the South Zone, supporting the Zonal Finance Team, managing finance involved in large inventory supply chain.</li>
+                                <li>Prepared a comprehensive <span class="bold">dashboard to track Operative KPIs</span> across different functions and monitor manpower changes (site-wise and function-wise). Solely responsible for reporting results and conclusions from the analysis to the upper management.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="grid-left">Auditing &<br>Assurance</td>
+                        <td class="grid-right">
+                            <ul>
+                                <li>Assisted in <span class="bold">statutory audit</span> of a cooperative bank with over 75 branches, <span class="bold">₹10,000 Cr in deposits</span>, identifying critical areas of improvement.</li>
+                                <li>Conducted comprehensive <span class="bold">statutory audits, tax audits, GST audits</span>, and <span class="bold">internal audits</span> for 30+ clients across industries such as healthcare, construction, VC's, tobacco, ice cream manufacturing, e-commerce, logistics etc.</li>
+                                <li>Filed <span class="bold">income tax returns</span> for individuals, trusts, and companies, optimizing tax savings through tax planning and claiming deductions under various sections, assisted in <span class="bold">GST filing</span> for various organizations, ensuring timely and accurate submissions.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="grid-left">Accounting</td>
+                        <td class="grid-right">
+                            <ul>
+                                <li>Managed <span class="bold">end-to-end accounting processes</span> for New Zealand based companies, resulting in higher accuracy in their financial records and streamlined accounting workflows.</li>
+                                <li>Ensured timely <span class="bold">statutory compliance</span>, reducing penalties through efficient GST filing and taxation-related services for offshore clients.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- POSITION OF RESPONSIBILITY, EXTRACURRICULAR ACTIVITIES, CERTIFICATIONS AND SKILLS -->
+            <div class="section-banner">Position of Responsibility, Extracurricular Activities, Certifications and Skills</div>
+            
+            <table class="grid-table">
+                <tbody>
+                    <tr>
+                        <td class="grid-left">Position of<br>Responsibility</td>
+                        <td class="grid-right">
+                            <div class="cell-sub-header">
+                                <span>My Student Club – Founder</span>
+                                <span>(Dec'22 – Present)</span>
+                            </div>
+                            <ul>
+                                <li>A student social networking platform, achieving <span class="bold">5000+ member registrations</span> within first quarter with monthly <span class="bold">50K+ site visits</span>, growing a <span class="bold">25-member team</span> and generating <span class="bold">₹1 Lakh in monthly profits</span>.</li>
+                                <li>Organized <span class="bold">100+ guidance sessions</span> on CA preparation, industrial training, and skill development, featuring Shark Tank pitchers, influencers, and AIR 1 holders, positively impacting 10,000+ participants.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="grid-left">Technical Skills</td>
+                        <td class="grid-right">
+                            <ul>
+                                <li>Proficient in MS-Office <span class="bold">(Excel, Word & PowerPoint)</span>, Google Tools <span class="bold">(Sheets & Slides)</span>.</li>
+                                <li>Working Knowledge of <span class="bold">Power Bi</span>.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="grid-left">Significant Awards<br>& Certifications</td>
+                        <td class="grid-right">
+                            <ul>
+                                <li>Certified <span class="bold">Financial Modeling & Valuation Analyst (FMVA)</span> by CFI.</li>
+                                <li>Obtained <span class="bold">Research Analyst</span> Certification from NISM.</li>
+                                <li>Received a Certificate from <span class="bold">Trinity College of London</span> in English Speaking.</li>
+                                <li>Awarded with <span class="bold">Employee of the Quarter</span> (Performance Award) at Flipkart during the Internship period.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="grid-left">Extra-Curricular</td>
+                        <td class="grid-right">
+                            <ul>
+                                <li>Built & grew StepFly (Online CA Lecture Portal) to <span class="bold">₹1 Crore in annual revenue</span>.</li>
+                                <li><span class="bold">Hosted</span> various sessions with 1000+ participants and participated as <span class="bold">Speaker</span> for student guidance programs.</li>
+                                <li>Authored multiple articles featured in <span class="bold">ICAI Newsletters</span>.</li>
+                                <li><span class="bold">Investor</span> in stock market & crypto since age 14.</li>
+                                <li>Contributed as <span class="bold">Volunteer</span> at Ahmedabad National Conference.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="grid-left">Others</td>
+                        <td class="grid-right">
+                            <ul>
+                                <li><span class="bold">Content Writing</span>: Grown LinkedIn following to 10K+, with over 1 million impressions.</li>
+                                <li><span class="bold">Cricket</span>: Represented Flipkart Finance Team in the corporate cricket league.</li>
+                                <li><span class="bold">Business Research</span>: Enthusiastic about analyzing businesses through studying research reports and financials.</li>
+                            </ul>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script>
+        // 1. SCALING LOGIC (Visual Zoom for Viewport Responsiveness)
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            const windowWidth = window.innerWidth;
+            const targetWidth = windowWidth - 20; // 10px padding on each side for mobile spacing
+            const refWidth = 1000; // Fixed width of the page container in pixels
+
+            let scale = 1;
+            
+            // Only scale down if screen is smaller than reference width
+            if (targetWidth < refWidth) {
+                scale = targetWidth / refWidth;
+            }
+
+            page.style.transform = `scale(${scale})`;
+            
+            // Adjust margin bottom to remove whitespace created by scaling
+            const refHeight = 1414;
+            const currentVisualHeight = refHeight * scale;
+            const spaceToRemove = refHeight - currentVisualHeight;
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        // 2. SHRINK TO FIT LOGIC (Font Compression to Fit STRICT A4 Sheet Height)
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            const maxHeight = 1414; 
+            
+            let contentScale = 1.0;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+
+            let iterations = 0;
+            // Loop, reducing font size scale until page fits exactly within A4 boundary
+            while (page.scrollHeight > maxHeight && iterations < 60) {
+                contentScale -= 0.01; 
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                iterations++;
+            }
+        }
+
+        let screenTransform = '';
+        let screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            screenTransform = page.style.transform;
+            screenMarginBottom = page.style.marginBottom;
+            document.body.classList.add('print-mode');
+
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+
+            shrinkContentToFit();
+        }
+
+        function handlePrintChange(e) {
+            if (e.matches) {
+                enablePrintMode();
+            } else {
+                disablePrintMode();
+            }
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            document.body.classList.remove('print-mode');
+
+            page.style.transform = screenTransform || '';
+            page.style.marginBottom = screenMarginBottom || '';
+
+            scaleToFit();
+        }
+
+        function init() {
+            shrinkContentToFit(); 
+            scaleToFit();
+
+            // Set up listeners for standard printing
+            const printMedia = window.matchMedia('print');
+            if (printMedia.addEventListener) {
+                printMedia.addEventListener('change', handlePrintChange);
+            } else if (printMedia.addListener) {
+                printMedia.addListener(handlePrintChange);
+            }
+
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        }
+
+        window.addEventListener('load', init);
+        
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(scaleToFit, 100); 
+        });
+    </script>
+</body>
+</html>

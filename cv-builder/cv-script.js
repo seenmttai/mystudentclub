@@ -2253,6 +2253,9 @@
         // Template Sidebar Logic
         const TEMPLATES = [
             { file: 'classic-blue.html', name: 'Classic Blue', accent: '#1e40af', style: 'sans' },
+            { file: 'ledger-blue-grid.html', name: 'Ledger Blue Grid', accent: '#0d465f', style: 'ledger' },
+            { file: 'royal-blue-grid.html', name: 'Royal Blue Grid', accent: '#2d5294', style: 'royal' },
+            { file: 'pill-banner-corporate.html', name: 'Pill Banner Corporate', accent: '#2d5294', style: 'pillcorp' },
             { file: 'modern-serif.html', name: 'Modern Serif', accent: '#4f81bc', style: 'serif' },
             { file: 'grid-layout.html', name: 'Grid Layout', accent: '#059669', style: 'grid' },
             { file: 'professional.html', name: 'Professional', accent: '#374151', style: 'clean' },
