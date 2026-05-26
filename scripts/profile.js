@@ -434,6 +434,12 @@ async function handleFile(file, type) {
     const config = fileConfig[type];
     if (!config) return;
 
+    if (type === 'resume' && file.size > 5 * 1024 * 1024) {
+        showToast('Resume file size exceeds the 5 MB limit. Please upload a smaller file.', 'error');
+        hideFileDisplay('resume');
+        return;
+    }
+
     if (type === 'resume') {
         localStorage.removeItem('cv_images_synced');
     }
@@ -653,6 +659,16 @@ function updatePrivacyCard(isConsented) {
 // =================== SAVE ===================
 async function handleSave(e) {
     e.preventDefault();
+
+    const resumeInput = document.getElementById('resume');
+    if (resumeInput && resumeInput.files && resumeInput.files[0]) {
+        if (resumeInput.files[0].size > 5 * 1024 * 1024) {
+            showToast('Resume file size exceeds the 5 MB limit. Please upload a smaller file.', 'error');
+            hideFileDisplay('resume');
+            return;
+        }
+    }
+
     if (!localStorage.getItem('userCVImages')) {
         showToast('Please upload your resume. It is required to use the AI features.', 'warning');
         return;
