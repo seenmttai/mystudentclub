@@ -791,8 +791,8 @@ async function handleSave(e) {
         lastUpdatedISO = new Date().toISOString();
         refreshHeader();
 
-        // Save consent record
-        if (consentCheckbox && consentCheckbox.checked) {
+        // Save consent record (Only if the Storer API has successfully completed the resume storage process)
+        if (consentCheckbox && consentCheckbox.checked && syncSuccess) {
             await saveConsentRecord(true);
             updatePrivacyCard(true);
             const statusText = document.getElementById('consentStatusText');

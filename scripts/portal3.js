@@ -2224,25 +2224,30 @@ async function checkAndPromptConsent() {
 
 // Consent Accept Button
 document.getElementById('cvConsentAcceptBtn')?.addEventListener('click', async () => {
-    const now = new Date().toISOString();
+    document.getElementById('cvConsentPromptModal').style.display = 'none';
+    showToast('Syncing your CV to cloud...', 'info');
     try {
-        await supabaseClient.from('consentform').upsert({
-            user_id: currentSession.user.id,
-            cv_sharing_consent: true,
-            consent_text: DPDP_CONSENT_TEXT,
-            consented_at: now,
-            withdrawn_at: null,
-            user_agent: navigator.userAgent,
-            updated_at: now
-        }, { onConflict: 'user_id' });
+        const syncSuccess = await checkAndSyncCVBackground();
+        if (syncSuccess) {
+            const now = new Date().toISOString();
+            await supabaseClient.from('consentform').upsert({
+                user_id: currentSession.user.id,
+                cv_sharing_consent: true,
+                consent_text: DPDP_CONSENT_TEXT,
+                consented_at: now,
+                withdrawn_at: null,
+                user_agent: navigator.userAgent,
+                updated_at: now
+            }, { onConflict: 'user_id' });
 
-        showToast('Thank you! Your consent has been recorded.', 'success');
-        setTimeout(() => checkAndSyncCVBackground(), 1000);
+            showToast('Thank you! Your CV has been backed up and your consent has been recorded.', 'success');
+        } else {
+            showToast('CV backup sync failed. Please complete/update your profile to consent.', 'error', 8000);
+        }
     } catch (e) {
-        console.error('Failed to save consent:', e);
+        console.error('Failed to sync CV and save consent:', e);
         showToast('Could not save consent. Please try again from your profile.', 'error');
     }
-    document.getElementById('cvConsentPromptModal').style.display = 'none';
 });
 
 // Consent Decline Button
@@ -2522,7 +2527,7 @@ function clearCloudSyncFlag() {
 }
 
 async function checkAndSyncCVBackground() {
-    if (!currentSession) return;
+    if (!currentSession) return false;
 
     // Check if we have cached CV data to sync
     const userCVImages = localStorage.getItem('userCVImages');
@@ -2532,12 +2537,12 @@ async function checkAndSyncCVBackground() {
     // we upload them regardless of general cloud synced status (since they could be missing in the bucket)
     if (userCVImages) {
         if (localStorage.getItem('cv_images_synced') === 'true') {
-            return; // Already synced this local file
+            return true; // Already synced this local file
         }
     } else {
         // No local images, fallback to checking general cloud sync
-        if (isCloudSynced()) return;
-        return; // Nothing to sync
+        if (isCloudSynced()) return true;
+        return false; // Nothing to sync
     }
 
     try {
@@ -2560,7 +2565,7 @@ async function checkAndSyncCVBackground() {
 
         if (!response.ok) {
             clearCloudSyncFlag();
-            return;
+            return false;
         }
 
         const data = await response.json();
@@ -2582,16 +2587,20 @@ async function checkAndSyncCVBackground() {
 
                 setCloudSyncFlag();
                 console.log("Background Sync: Complete.");
+                return true;
             } else {
                 console.error("Background Sync: Worker returned uploaded=false", data.storage_error);
                 clearCloudSyncFlag();
+                return false;
             }
         } else {
             clearCloudSyncFlag();
+            return false;
         }
     } catch (e) {
         console.error("Background Sync Failed:", e);
         clearCloudSyncFlag();
+        return false;
     }
 }
 
