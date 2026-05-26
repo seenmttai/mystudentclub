@@ -23,16 +23,21 @@ body {
 .hero {
   max-width: calc(100vw - 40px);
   width: 100%;
-  padding: 60px 20px;
+  padding: 80px 40px 64px;
   text-align: center;
   position: relative;
   overflow: hidden;
   background: #fff;
   border: 1px solid #eceff3;
-  border-radius: 24px;
+  border-radius: 32px;
   isolation: isolate;
-  margin: 20px;
+  margin: 30px auto;
   box-sizing: border-box;
+
+  /* Modern Flex Layout to establish strong structured spacing */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .hero::after {
@@ -128,48 +133,81 @@ h1 {
   padding-right: 15px;
 }
 
+.hero .eligibility-criteria {
+  color: #333;
+  font-weight: 600;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  margin: 0 0 28px 0 !important;
+  max-width: 800px;
+  text-align: center;
+}
+
+.hero .soon-notice,
+.hero .closed-notice {
+  margin: 0 0 24px 0 !important;
+}
+
+.hero h1 {
+  margin: 0 0 16px 0 !important;
+}
+
+.hero .hero-cta {
+  margin: 0 0 54px 0 !important;
+}
+
 .features {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin: 40px auto;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin: 0 auto 44px auto !important;
+  width: 100%;
+  max-width: 1100px;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  margin-bottom: 60px;
-  justify-items: center;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin: 0 auto !important;
+  width: 100%;
+  max-width: 1100px;
+  padding: 0;
+  box-sizing: border-box;
+  justify-items: stretch;
 }
 
 .feature {
   width: 100%;
-  min-height: 60px;
+  min-height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  font-size: 18px;
-  padding: 15px 25px;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 16px 24px;
   background: white;
-  border-radius: 15px;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
-  transition: transform 0.3s ease;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f1f5f9;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: center;
   box-sizing: border-box;
-  margin: 0 auto;
-  color: #1a1a4b;
+  margin: 0;
+  color: #1e293b;
 }
 
 .feature.rating {
   background: white;
-  color: #1a1a4b;
+  color: #1e293b;
 }
 
 .feature.placement-rate {
   background: white;
-  color: #1a1a4b;
+  color: #1e293b;
 }
 
 .feature .stars {
@@ -178,49 +216,52 @@ h1 {
 }
 
 .feature .checkmark {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   fill: #4CAF50;
 }
 
 .feature:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  border-color: #e2e8f0;
 }
 
 .stat {
-  padding: 20px;
+  padding: 24px 20px;
   background: white;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-  transition: transform 0.3s ease;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f1f5f9;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  min-height: 100px;
+  min-height: 110px;
   width: 100%;
-  max-width: 280px;
+  max-width: 100%;
   box-sizing: border-box;
+  margin: 0;
 }
 
-
-
 .stat:hover {
-  transform: translateY(-5px);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  border-color: #e2e8f0;
 }
 
 .stat .number {
-  font-size: 24px;
-  font-weight: bold;
+  font-size: 20px;
+  font-weight: 750;
   margin-bottom: 0;
-  color: #1a1a4b;
-  line-height: 1.4;
+  color: #1e293b;
+  line-height: 1.35;
 }
 
 .stat .label {
-  font-size: 16px;
+  font-size: 15px;
   color: #4a4a8f;
 }
 
@@ -436,8 +477,8 @@ h1 {
 
 @media (max-width: 1200px) {
   .hero {
-    margin: 10px;
-    padding: 40px 15px;
+    margin: 20px auto;
+    padding: 64px 30px 48px;
   }
 
   h1 {
@@ -450,13 +491,41 @@ h1 {
     width: 200px;
     height: 200px;
   }
+
+  .hero {
+    padding: 60px 24px 48px;
+  }
+
+  .hero h1 {
+    font-size: 42px;
+  }
+
+  .hero .eligibility-criteria {
+    font-size: 1rem;
+    margin-bottom: 24px !important;
+  }
+
+  .hero .hero-cta {
+    margin-bottom: 40px !important;
+  }
+
+  .hero .features {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 32px !important;
+  }
+
+  .hero .stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
 }
 
 @media (max-width: 768px) {
   .hero {
-    margin: 10px;
-    padding: 40px 10px;
-    max-width: calc(100vw - 20px);
+    margin: 15px auto;
+    padding: 48px 20px 36px;
+    max-width: calc(100vw - 30px);
   }
 
   .features,
@@ -468,22 +537,19 @@ h1 {
     padding-right: 10px;
   }
 
-  .features {
+  .hero .features {
     grid-template-columns: 1fr;
-    padding: 0 10px;
-    width: calc(100% - 20px);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    gap: 12px;
+    margin-bottom: 28px !important;
   }
 
   .feature {
-    font-size: 16px;
-    padding: 12px 15px;
+    font-size: 15px;
+    padding: 14px 20px;
     width: 100%;
-    max-width: 400px;
+    max-width: 100%;
     box-sizing: border-box;
-    margin-bottom: 10px;
+    margin: 0;
   }
 
 
@@ -518,11 +584,12 @@ h1 {
   }
 
   h1 {
-    font-size: 36px;
+    font-size: 34px;
   }
 
   .stat .number {
-    font-size: 22px;
+    font-size: 18px;
+    font-weight: 750;
   }
 
   .stat .label {
@@ -543,17 +610,16 @@ h1 {
     font-size: 18px;
   }
 
-  .stats {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 15px;
-    padding: 0 10px;
-    width: calc(100% - 20px);
+  .hero .stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    width: 100%;
   }
 
   .stat {
-    padding: 15px;
-    min-height: 90px;
-    margin: 0 auto;
+    padding: 16px 12px;
+    min-height: 100px;
+    margin: 0;
   }
 
   .eligibility-info,
@@ -579,18 +645,18 @@ h1 {
 
 @media (max-width: 480px) {
   .hero {
-    margin: 5px;
-    padding: 30px 5px;
-    max-width: calc(100vw - 10px);
+    margin: 10px auto;
+    padding: 36px 12px 24px;
+    max-width: calc(100vw - 20px);
   }
 
   h1 {
-    font-size: 32px;
+    font-size: 28px;
   }
 
   .feature {
     font-size: 14px;
-    padding: 10px;
+    padding: 12px 16px;
   }
 
   .cta {
@@ -599,21 +665,20 @@ h1 {
   }
 
   .stat .number {
-    font-size: 20px;
+    font-size: 18px;
+    font-weight: 750;
   }
 
-  .stats {
+  .hero .stats {
     grid-template-columns: 1fr;
-    gap: 12px;
-    padding: 0 10px;
-    width: calc(100% - 20px);
-    margin: 0 auto 40px;
+    gap: 10px;
+    width: 100%;
   }
 
   .stat {
-    padding: 12px;
-    min-height: 80px;
-    margin: 0 auto;
+    padding: 14px 16px;
+    min-height: 90px;
+    margin: 0;
   }
 
   .fixed-cta {
