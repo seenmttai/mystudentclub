@@ -2648,14 +2648,6 @@
         const pdfPreviewModal = document.getElementById('pdf-preview-modal'), pdfPreviewContainer = document.getElementById('pdf-preview-container'), pdfPreviewCloseBtn = document.getElementById('pdf-preview-close-btn'), pdfPreviewDownloadBtn = document.getElementById('pdf-preview-download-btn');
 
         async function init() {
-            const urlParams = new URLSearchParams(window.location.search);
-            courseSlug = urlParams.get('course');
-            if (!courseSlug) {
-                alert('Course parameter is missing.');
-                window.location.href = 'dashboard.html';
-                return;
-            }
-
             const { data: { session }, error: sessionError } = await supabase.auth.getSession();
             if (sessionError || !session) {
                 alert('Please sign in to access this interview.');
@@ -2664,17 +2656,38 @@
             }
             userSession = session;
 
-            const { data: enrollment, error: enrollmentError } = await supabase
-                .from('enrollment')
-                .select('*')
-                .eq('user_id', userSession.user.id)
-                .eq('course', courseSlug)
-                .single();
+            const urlParams = new URLSearchParams(window.location.search);
+            courseSlug = urlParams.get('course');
+            
+            if (!courseSlug) {
+                // Fetch the user's enrollments to find an active course
+                const { data: enrollments, error: enrollError } = await supabase
+                    .from('enrollment')
+                    .select('course')
+                    .eq('user_id', userSession.user.id);
+                
+                if (enrollError || !enrollments || enrollments.length === 0) {
+                    alert('You are not enrolled in any course. Please enroll in a course to access the AI Interview.');
+                    window.location.href = 'profile.html';
+                    return;
+                }
+                
+                // Fallback to the first enrolled course
+                courseSlug = enrollments[0].course;
+            } else {
+                // Verify enrollment for the specified course slug
+                const { data: enrollment, error: enrollmentError } = await supabase
+                    .from('enrollment')
+                    .select('*')
+                    .eq('user_id', userSession.user.id)
+                    .eq('course', courseSlug)
+                    .single();
 
-            if (enrollmentError || !enrollment) {
-                alert('You are not enrolled in this course.');
-                window.location.href = 'dashboard.html';
-                return;
+                if (enrollmentError || !enrollment) {
+                    alert('You are not enrolled in this course.');
+                    window.location.href = 'profile.html';
+                    return;
+                }
             }
 
             setupEventListeners();
