@@ -20,6 +20,10 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+.site-header {
+  margin-bottom: 0 !important;
+}
+
 .hero {
   max-width: calc(100vw - 40px);
   width: 100%;
@@ -31,7 +35,7 @@ body {
   border: 1px solid #eceff3;
   border-radius: 32px;
   isolation: isolate;
-  margin: 30px auto;
+  margin: 0 auto 30px auto !important;
   box-sizing: border-box;
 
   /* Modern Flex Layout to establish strong structured spacing */
