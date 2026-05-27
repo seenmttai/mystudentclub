@@ -2437,6 +2437,16 @@
         // --- GLOBAL CONTROLS ---
         window.speechRecognitionActive = false; // Flag to track state
 
+        window.arrayBufferToBase64 = function(buffer) {
+            let binary = '';
+            const bytes = new Uint8Array(buffer);
+            const len = bytes.byteLength;
+            for (let i = 0; i < len; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return window.btoa(binary);
+        };
+
         // --- SVG AVATAR CONTROLLER ---
         class SVGAvatarController {
             constructor(node, opt = {}) {
@@ -2757,17 +2767,6 @@
 
         async function initializeVAD() {
             if (myvad) return;
-            
-            window.arrayBufferToBase64 = function(buffer) {
-                let binary = '';
-                const bytes = new Uint8Array(buffer);
-                const len = bytes.byteLength;
-                for (let i = 0; i < len; i++) {
-                    binary += String.fromCharCode(bytes[i]);
-                }
-                return window.btoa(binary);
-            };
-
 
             try {
                 myvad = await vad.MicVAD.new({
@@ -2782,15 +2781,18 @@
                         // Stop listening to prevent overlapping inputs
                         window.stopListening();
                         
+                        // Wait a short duration to let speechRecognition finalize any pending results
+                        await new Promise(resolve => setTimeout(resolve, 800));
+                        
                         const finalText = lastUserTranscription.trim();
                         if (finalText) {
                             handleTranscription(finalText);
                             sendToAI(finalText);
                             lastUserTranscription = ''; // reset
                         } else {
-                            console.log("VAD: No speech transcribed.");
-                            updateSpeechStatus("", false);
-                            window.startListening();
+                            console.log("VAD: No speech transcribed. Using native Gemini audio fallback.");
+                            handleTranscription("(Audio response)");
+                            sendToAI(null); // Triggers generation with the accumulated audio stream
                         }
                     },
                     onnxWASMBasePath: "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/",
@@ -3975,6 +3977,9 @@
             
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             const audioCtx = new AudioContext({ sampleRate: 16000 });
+            if (audioCtx.state === 'suspended') {
+                await audioCtx.resume();
+            }
             audioStream = audioCtx.createMediaStreamSource(userStream);
             audioProcessor = audioCtx.createScriptProcessor(4096, 1, 1);
             
@@ -4009,57 +4014,72 @@
         let unplayedAiBuffer = '';
 
         function handleWebSocketMessage(data) {
-            if (data.serverContent && data.serverContent.modelTurn) {
-                updateSpeechStatus("", false); // Hide the "Processing audio..." status!
-                const parts = data.serverContent.modelTurn.parts;
-                for (const part of parts) {
-                    if (part.text) {
-                        const textChunk = part.text;
-                        currentLiveAiMessage += textChunk;
-                        unplayedAiBuffer += textChunk;
-                        updateLiveAIChatMessage(currentLiveAiMessage);
-                        
-                        // Split by sentence to play
-                        const sentences = unplayedAiBuffer.match(/[^.?!]+[.?!]+[\s]*/g);
-                        if (sentences) {
-                            for (const sentence of sentences) {
-                                if (avatar) {
-                                    avatar.processSpeechItem({ type: 'text', content: sentence.trim() });
-                                } else {
-                                    window.handleAISpeechFallback(sentence.trim());
+            if (data.serverContent) {
+                // 1. Process modelTurn text chunks if present
+                if (data.serverContent.modelTurn) {
+                    updateSpeechStatus("", false); // Hide the "Processing audio..." status!
+                    const parts = data.serverContent.modelTurn.parts;
+                    for (const part of parts) {
+                        if (part.text) {
+                            const textChunk = part.text;
+                            currentLiveAiMessage += textChunk;
+                            unplayedAiBuffer += textChunk;
+                            updateLiveAIChatMessage(currentLiveAiMessage);
+                            
+                            // Split by sentence to play
+                            const sentences = unplayedAiBuffer.match(/[^.?!]+[.?!]+[\s]*/g);
+                            if (sentences) {
+                                for (const sentence of sentences) {
+                                    if (avatar) {
+                                        avatar.processSpeechItem({ type: 'text', content: sentence.trim() });
+                                    } else {
+                                        window.handleAISpeechFallback(sentence.trim());
+                                    }
+                                    unplayedAiBuffer = unplayedAiBuffer.replace(sentence, '');
                                 }
-                                unplayedAiBuffer = unplayedAiBuffer.replace(sentence, '');
                             }
                         }
                     }
                 }
-            } else if (data.serverContent && data.serverContent.turnComplete) {
-                if (unplayedAiBuffer.trim()) {
-                    if (avatar) avatar.processSpeechItem({ type: 'text', content: unplayedAiBuffer.trim() });
-                    else window.handleAISpeechFallback(unplayedAiBuffer.trim());
-                }
-                finalizeLiveAIChatMessage(currentLiveAiMessage);
-                messages.push({ role: 'assistant', content: currentLiveAiMessage });
                 
-                unplayedAiBuffer = '';
-                currentLiveAiMessage = '';
-                isWaitingForAIResponse = false; // Reset waiting state
-                if (window.startListening) window.startListening();
+                // 2. Process turnComplete flag if present (can arrive in same message as modelTurn)
+                if (data.serverContent.turnComplete) {
+                    if (unplayedAiBuffer.trim()) {
+                        if (avatar) avatar.processSpeechItem({ type: 'text', content: unplayedAiBuffer.trim() });
+                        else window.handleAISpeechFallback(unplayedAiBuffer.trim());
+                    }
+                    finalizeLiveAIChatMessage(currentLiveAiMessage);
+                    messages.push({ role: 'assistant', content: currentLiveAiMessage });
+                    
+                    unplayedAiBuffer = '';
+                    currentLiveAiMessage = '';
+                    isWaitingForAIResponse = false; // Reset waiting state
+                    if (window.startListening) window.startListening();
+                }
             }
         }
 
         async function sendToAI(message) {
             if (isWaitingForAIResponse || interviewTerminalState) return;
-            if (message && liveApiWebSocket && liveApiWebSocket.readyState === WebSocket.OPEN) {
+            if (liveApiWebSocket && liveApiWebSocket.readyState === WebSocket.OPEN) {
                 isWaitingForAIResponse = true; // Set to true when waiting for Gemini
                 updateSpeechStatus("Processing audio...", true); // Show processing status
-                messages.push({ role: 'user', content: message });
+                
+                const turns = [];
+                if (message) {
+                    messages.push({ role: 'user', content: message });
+                    turns.push({
+                        role: 'user',
+                        parts: [{ text: message }]
+                    });
+                } else {
+                    // Log placeholder in local transcript when relying on native audio processing
+                    messages.push({ role: 'user', content: "(Audio response)" });
+                }
+                
                 liveApiWebSocket.send(JSON.stringify({
                     clientContent: {
-                        turns: [{
-                            role: 'user',
-                            parts: [{ text: message }]
-                        }],
+                        turns: turns,
                         turnComplete: true
                     }
                 }));
