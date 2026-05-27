@@ -569,7 +569,7 @@
       const email = session?.user?.email || null;
       await sb
         .from('notifiable')
-        .insert({ key: deviceKey, email })
+        .insert({ key: deviceKey, email, topic: 'industrial-training' })
         .throwOnError();
     }
 
