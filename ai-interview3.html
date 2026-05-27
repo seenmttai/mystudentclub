@@ -3551,6 +3551,8 @@
             }
 
             setupEventListeners();
+            setupContinuousSpeechRecognition();
+            initializeVAD(); // Pre-load VAD model in background
             loadModelInBackground();
             subtitlesBtn.classList.toggle('active', areSubtitlesOn);
         }
@@ -3590,14 +3592,142 @@
         window.setAIAvatarSpeaking = setAIAvatarSpeaking;
 
         window.startListening = function () {
-            if (!isWaitingForAIResponse && !interviewTerminalState) {
-                setListeningUI(true);
+            if (myvad && !isWaitingForAIResponse && !interviewTerminalState) {
+                try {
+                    myvad.start();
+                } catch (e) { }
+            }
+            if (speechRecognition && !isWaitingForAIResponse && !interviewTerminalState) {
+                try {
+                    speechRecognition.start();
+                    setListeningUI(true);
+                } catch (e) { /* ignore already started errors */ }
             }
         };
 
         window.stopListening = function () {
-            setListeningUI(false);
+            if (myvad) {
+                try { myvad.pause(); } catch (e) { }
+            }
+            if (speechRecognition) {
+                try { speechRecognition.stop(); } catch (e) { }
+                setListeningUI(false);
+            }
         };
+
+        async function initializeVAD() {
+            if (myvad) return;
+
+            try {
+                myvad = await vad.MicVAD.new({
+                    onSpeechStart: () => {
+                        console.log("VAD: Speech started");
+                    },
+                    onSpeechEnd: async (audio) => {
+                        if (isWaitingForAIResponse || interviewTerminalState) return;
+
+                        console.log("VAD: Speech ended, processing...");
+
+                        // Stop listening to prevent overlapping inputs
+                        window.stopListening();
+
+                        // Wait a short duration to let speechRecognition finalize any pending results
+                        await new Promise(resolve => setTimeout(resolve, 800));
+
+                        const finalText = lastUserTranscription.trim();
+                        if (finalText) {
+                            handleTranscription(finalText);
+                            sendToAI(finalText);
+                            lastUserTranscription = ''; // reset
+                        } else {
+                            console.log("VAD: No speech transcribed. Using native Gemini audio fallback.");
+                            handleTranscription("(Audio response)");
+                            sendToAI(null); // Triggers generation with the accumulated audio stream
+                        }
+                    },
+                    onnxWASMBasePath: "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/",
+                    baseAssetPath: "https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.27/dist/",
+                });
+                // If we initialized early (on page load), pause until interview starts
+                if (interviewScreen.classList.contains('hidden')) {
+                    myvad.pause();
+                }
+            } catch (e) {
+                console.error("VAD Initialization failed:", e);
+            }
+        }
+
+        function handleTranscription(text) {
+            if (!text.trim() || isWaitingForAIResponse || interviewTerminalState) return;
+            // Ignore short noise/echo remnants
+            if (text.length < 3 && !['no', 'yes', 'ok'].includes(text.toLowerCase())) {
+                updateSpeechStatus("", false);
+                return;
+            }
+
+            updateSpeechStatus("", false);
+
+            // Finalize the live message if it exists
+            if (liveUserMessageEl) {
+                const contentEl = liveUserMessageEl.querySelector('.message-content');
+                if (contentEl) contentEl.textContent = text;
+                liveUserMessageEl.classList.remove('live');
+                liveUserMessageEl = null;
+
+                // Also finalize in mobile chat
+                const mobileChatMessages = document.getElementById('mobile-chat-messages');
+                if (mobileChatMessages) {
+                    const mobileLiveUserEl = mobileChatMessages.querySelector('.message.user.live');
+                    if (mobileLiveUserEl) {
+                        const mobileContentEl = mobileLiveUserEl.querySelector('.message-content');
+                        if (mobileContentEl) mobileContentEl.textContent = text;
+                        mobileLiveUserEl.classList.remove('live');
+                    }
+                }
+            } else {
+                addChatMessage('user', 'You', text);
+            }
+        }
+
+        function setupContinuousSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                speechRecognition = new SpeechRecognition();
+                speechRecognition.continuous = true;
+                speechRecognition.interimResults = true;
+                speechRecognition.lang = 'en-US';
+
+                speechRecognition.onresult = (event) => {
+                    if (avatar && avatar.isSpeaking) return;
+
+                    let interimTranscript = '';
+                    let finalTranscript = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) finalTranscript += transcript;
+                        else interimTranscript += transcript;
+                    }
+
+                    const liveText = (finalTranscript + interimTranscript).trim();
+                    if (liveText) {
+                        lastUserTranscription = liveText;
+                        updateLiveUserMessage(liveText);
+                    }
+                };
+
+                speechRecognition.onstart = () => {
+                    setListeningUI(true);
+                };
+
+                speechRecognition.onend = () => {
+                    setListeningUI(false);
+                    if (!interviewScreen.classList.contains('hidden') && avatar && !avatar.isSpeaking && !isWaitingForAIResponse && !interviewTerminalState) {
+                        try { speechRecognition.start(); } catch (e) { }
+                    }
+                };
+            }
+        }
 
         // handleSpeechInput is now handled by handleTranscription from VAD
 
@@ -4535,8 +4665,7 @@
                             },
                             systemInstruction: {
                                 parts: [{ text: systemInstruction }]
-                            },
-                            inputAudioTranscription: {}
+                            }
                         }
                     };
                     liveApiWebSocket.send(JSON.stringify(setupMessage));
@@ -4723,7 +4852,7 @@
             audioProcessor.connect(audioCtx.destination);
 
             audioProcessor.onaudioprocess = (e) => {
-                if (interviewTerminalState) return;
+                if (isWaitingForAIResponse || interviewTerminalState || (avatar && avatar.isSpeaking)) return;
 
                 const inputData = e.inputBuffer.getChannelData(0);
                 const pcm16 = new Int16Array(inputData.length);
@@ -4749,35 +4878,11 @@
         let currentLiveAiMessage = '';
         let unplayedAiBuffer = '';
 
-        function finalizeUserLiveChatMessage() {
-            if (liveUserMessageEl) {
-                liveUserMessageEl.classList.remove('live');
-                liveUserMessageEl = null;
-            }
-            // Sync to mobile chat
-            const mobileChatMessages = document.getElementById('mobile-chat-messages');
-            if (mobileChatMessages) {
-                const mobileLiveUserEl = mobileChatMessages.querySelector('.message.user.live');
-                if (mobileLiveUserEl) {
-                    mobileLiveUserEl.classList.remove('live');
-                }
-            }
-        }
-
         function handleWebSocketMessage(data) {
             if (data.serverContent) {
                 // 1. Process modelTurn text chunks if present
                 if (data.serverContent.modelTurn) {
                     updateSpeechStatus("", false); // Hide the "Processing audio..." status!
-
-                    // Finalize user's spoken message and add to messages history
-                    if (liveUserMessageEl) {
-                        const finalSpokenText = lastUserTranscription || "(Spoken response)";
-                        messages.push({ role: 'user', content: finalSpokenText });
-                        finalizeUserLiveChatMessage();
-                        lastUserTranscription = '';
-                    }
-
                     const parts = data.serverContent.modelTurn.parts;
                     for (const part of parts) {
                         if (part.text) {
@@ -4814,25 +4919,6 @@
                     unplayedAiBuffer = '';
                     currentLiveAiMessage = '';
                     isWaitingForAIResponse = false; // Reset waiting state
-                    if (window.startListening) window.startListening();
-                }
-
-                // 3. Process inputTranscription (real-time user STT streaming)
-                if (data.serverContent.inputTranscription) {
-                    const liveText = data.serverContent.inputTranscription.text;
-                    if (liveText) {
-                        lastUserTranscription = liveText;
-                        updateLiveUserMessage(liveText);
-                    }
-                }
-
-                // 4. Process interrupted flag if present
-                if (data.serverContent.interrupted) {
-                    console.log("Gemini: Interruption detected, stopping avatar speech.");
-                    if (avatar) avatar.stopSpeaking();
-                    isWaitingForAIResponse = false;
-                    unplayedAiBuffer = '';
-                    currentLiveAiMessage = '';
                     if (window.startListening) window.startListening();
                 }
             }
