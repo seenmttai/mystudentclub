@@ -2664,7 +2664,7 @@
                 const { data: enrollments, error: enrollError } = await supabase
                     .from('enrollment')
                     .select('course')
-                    .eq('user_id', userSession.user.id);
+                    .eq('uuid', userSession.user.id);
                 
                 if (enrollError || !enrollments || enrollments.length === 0) {
                     alert('You are not enrolled in any course. Please enroll in a course to access the AI Interview.');
@@ -2679,7 +2679,7 @@
                 const { data: enrollment, error: enrollmentError } = await supabase
                     .from('enrollment')
                     .select('*')
-                    .eq('user_id', userSession.user.id)
+                    .eq('uuid', userSession.user.id)
                     .eq('course', courseSlug)
                     .single();
 
