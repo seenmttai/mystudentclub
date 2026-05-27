@@ -3806,6 +3806,21 @@
                     updateSpeechStatus('', false);
                     console.log('Connected to Gemini Live API');
                     
+                    // Send the setup configuration message (mandatory for raw WebSockets)
+                    const setupMessage = {
+                        setup: {
+                            model: "models/gemini-2.0-flash-exp",
+                            generationConfig: {
+                                responseModalities: ["TEXT"]
+                            },
+                            systemInstruction: {
+                                parts: [{ text: systemInstruction }]
+                            }
+                        }
+                    };
+                    liveApiWebSocket.send(JSON.stringify(setupMessage));
+                    console.log('Setup configuration sent');
+                    
                     await setupAudioStreaming();
                     const durationMs = interviewConfig.duration * 60 * 1000;
                     interviewDurationTimer = setTimeout(() => endCallBtn.click(), durationMs);
