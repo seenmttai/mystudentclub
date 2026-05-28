@@ -4660,9 +4660,7 @@
                     const setupMessage = {
                         setup: {
                             model: "models/gemini-3.1-flash-live-preview",
-                            generationConfig: {
-                                responseModalities: ["TEXT"]
-                            },
+                            responseModalities: ["TEXT"],
                             systemInstruction: {
                                 parts: [{ text: systemInstruction }]
                             }
@@ -4865,10 +4863,10 @@
                     const base64Data = arrayBufferToBase64(pcm16.buffer);
                     liveApiWebSocket.send(JSON.stringify({
                         realtimeInput: {
-                            mediaChunks: [{
+                            audio: {
                                 mimeType: "audio/pcm;rate=16000",
                                 data: base64Data
-                            }]
+                            }
                         }
                     }));
                 }
