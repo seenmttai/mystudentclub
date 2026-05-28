@@ -2230,6 +2230,7 @@
         let sttWebSocket = null;
         let isStreaming = false;
         let accumulatedTranscript = "";
+        let finalizedText = "";
         let audioContext = null;
         let scriptProcessor = null;
         let mediaStreamSource = null;
@@ -2352,6 +2353,7 @@
             if (isStreaming) return;
             isStreaming = true;
             accumulatedTranscript = "";
+            finalizedText = "";
             audioBuffer = [];
             isWsReady = false;
 
@@ -2379,21 +2381,36 @@
                                 sttWebSocket.send(chunk);
                             }
                         }
-                    } else if (data.type === "transcript.partial") {
+                    } else if (data.type === "transcript.partial" || data.type === "transcript.final") {
                         const text = data.text;
                         if (text && text.trim()) {
-                            console.log(`[STT partial] ${text}`);
-                            updateLiveUserMessage(text);
-                            accumulatedTranscript = text;
+                            console.log(`[STT ${data.type}] ${text}`);
+                            
+                            if (data.type === "transcript.final" || data.is_final) {
+                                // Commit the final sentence to finalizedText
+                                finalizedText = finalizedText ? `${finalizedText} ${text.trim()}` : text.trim();
+                                updateLiveUserMessage(finalizedText);
+                                accumulatedTranscript = finalizedText;
+                            } else {
+                                // Display finalizedText + current partial
+                                const fullLiveText = finalizedText ? `${finalizedText} ${text.trim()}` : text.trim();
+                                updateLiveUserMessage(fullLiveText);
+                                accumulatedTranscript = fullLiveText;
+                            }
                         }
 
-                        // Handle utterance final natively from xAI STT
-                        if (data.is_final && data.speech_final) {
+                        // Handle utterance final natively from xAI STT if provided
+                        if (data.speech_final) {
                             console.log("STT: Utterance final received. Finalizing...");
                             stopSTTStreaming(true);
                         }
                     } else if (data.type === "transcript.done") {
                         console.log("STT Session complete:", data.text);
+                        if (data.text && data.text.trim()) {
+                            const trimmedText = data.text.trim();
+                            updateLiveUserMessage(trimmedText);
+                            accumulatedTranscript = trimmedText;
+                        }
                     } else if (data.type === "error") {
                         console.error("STT error:", data.message);
                         stopSTTStreaming(false);
