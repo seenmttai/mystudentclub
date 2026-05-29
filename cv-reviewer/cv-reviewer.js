@@ -1045,7 +1045,15 @@ async function loadLeaderboard() {
     let html = '<ol class="list-decimal list-inside space-y-3">';
     data.forEach(item => {
         const date = new Date(item.created_at).toLocaleDateString();
-        const name = item.user_name ? item.user_name : 'Anonymous';
+        let name = 'Anonymous';
+        if (item.user_name && !item.user_name.includes('@')) {
+            name = item.user_name;
+        } else if (item.file_name) {
+            name = item.file_name;
+            if (name.length > 25) {
+                name = name.substring(0, 22) + '...';
+            }
+        }
         html += `<li class="p-3 rounded-lg border border-border bg-background-light">
                     <div class="flex justify-between items-center">
                         <span class="font-semibold text-primary">${item.score.toFixed(1)}%</span>
