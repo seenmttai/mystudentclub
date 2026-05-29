@@ -1933,3 +1933,139 @@
 .go-btn-group:active {
   transform: scale(0.95);
 }
+
+/* Notify Me Push Notification Styles */
+.notify-me-btn, button.notify-me-btn, #notifyMeBtn, #notifyMeFinalBtn {
+  background: linear-gradient(135deg, #0ea5e9 0%, #22c55e 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-family: 'Noto Sans', 'Outfit', sans-serif !important;
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  padding: 16px 36px !important;
+  border-radius: 12px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 8px 24px rgba(14, 165, 233, 0.25) !important;
+  text-decoration: none !important;
+  outline: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.notify-me-btn:hover, button.notify-me-btn:hover, #notifyMeBtn:hover, #notifyMeFinalBtn:hover {
+  transform: translateY(-3px) scale(1.02) !important;
+  box-shadow: 0 15px 35px rgba(14, 165, 233, 0.45) !important;
+  background: linear-gradient(135deg, #0284c7 0%, #16a34a 100%) !important;
+}
+
+.notify-me-btn:active, button.notify-me-btn:active, #notifyMeBtn:active, #notifyMeFinalBtn:active {
+  transform: translateY(-1px) scale(0.99) !important;
+}
+
+.notify-me-btn.subscribed, button.notify-me-btn.subscribed, #notifyMeBtn.subscribed, #notifyMeFinalBtn.subscribed {
+  background: #22c55e !important;
+  box-shadow: 0 8px 24px rgba(34, 197, 94, 0.25) !important;
+}
+
+/* Shine effect on hover */
+.notify-me-btn::before, #notifyMeFinalBtn::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important;
+  left: -100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  ) !important;
+  transition: all 0.5s ease !important;
+}
+
+.notify-me-btn:hover::before, #notifyMeFinalBtn:hover::before {
+  left: 100% !important;
+}
+
+.notify-status {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: rgba(15, 23, 42, 0.95);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.notify-status.show {
+  transform: translateX(-50%) translateY(0);
+}
+
+.notify-status--info {
+  border-left: 4px solid #0ea5e9;
+}
+
+.notify-status--success {
+  border-left: 4px solid #22c55e;
+}
+
+.notify-status--error {
+  border-left: 4px solid #ef4444;
+}
+
+/* Footer Notify Button */
+.notify-me-footer-btn, button.notify-me-footer-btn, #notifyMeFooterBtn {
+  background: linear-gradient(135deg, #0ea5e9 0%, #22c55e 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  font-family: 'Noto Sans', 'Outfit', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  padding: 12px 24px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+  transition: all 0.3s ease !important;
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2) !important;
+  margin-left: auto !important;
+  outline: none !important;
+  text-decoration: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+.notify-me-footer-btn:hover, button.notify-me-footer-btn:hover, #notifyMeFooterBtn:hover {
+  transform: translateY(-2px) scale(1.03) !important;
+  box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4) !important;
+  background: linear-gradient(135deg, #0284c7 0%, #16a34a 100%) !important;
+}
+
+.notify-me-footer-btn:active, button.notify-me-footer-btn:active, #notifyMeFooterBtn:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+
+.notify-me-footer-btn.subscribed, button.notify-me-footer-btn.subscribed, #notifyMeFooterBtn.subscribed {
+  background: #22c55e !important;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2) !important;
+}
