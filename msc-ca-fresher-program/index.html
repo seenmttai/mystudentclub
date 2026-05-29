@@ -16,6 +16,9 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/scripts/portal-style.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Firebase for push notifications -->
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
 </head>
 
 <body>
@@ -93,9 +96,10 @@
           Interviews in our 7 Day Masterclass
         </p>
         <div class="hero-cta-group" data-aos="fade-up" data-aos-delay="300">
-          <div class="primary-btn" style="text-decoration: none; opacity: 0.6; cursor: not-allowed; background-color: #6c757d; border-color: #6c757d; pointer-events: none;">
-            Registrations Temporarily Closed
-          </div>
+          <button id="notifyMeBtn" class="notify-me-btn">
+            <span class="notify-btn-icon">🔔</span>
+            <span class="notify-btn-text">Notify Me When Open</span>
+          </button>
           <a href="#curriculum" class="secondary-btn"
             onclick="document.querySelector('.curriculum').scrollIntoView({behavior: 'smooth'})">View Curriculum</a>
         </div>
@@ -438,8 +442,10 @@
         <span class="original">₹5999</span>
       </div>
     </div>
-    <div class="register-btn inline-cta"
-      style="margin-left: auto; text-decoration: none; opacity: 0.6; cursor: not-allowed; background-color: #6c757d; color: white; pointer-events: none;">Registrations Temporarily Closed</div>
+    <button id="notifyMeFooterBtn" class="notify-me-footer-btn">
+      <span class="notify-footer-icon">🔔</span>
+      <span class="notify-footer-text">Notify Me</span>
+    </button>
   </div>
 
   <section class="final-cta-section">
@@ -449,8 +455,10 @@
         <p>Don't leave your career transition to chance. Join the 1000+ CAs who have already launched their careers
           with
           us. Book your spot today and unlock the ultimate placement playbook.</p>
-        <div class="register-btn inline-cta"
-          style="text-decoration: none; display: inline-block; opacity: 0.6; cursor: not-allowed; background-color: #6c757d; color: white; pointer-events: none;">Registrations Temporarily Closed</div>
+        <button id="notifyMeFinalBtn" class="notify-me-btn">
+          <span class="notify-btn-icon">🔔</span>
+          <span class="notify-btn-text">Notify Me When Open</span>
+        </button>
       </div>
       <div class="cta-image" id="destination-svg-container">
         <!-- Animated SVG injected via script -->
@@ -513,13 +521,19 @@
         });
       });
 
-      // Auth Check
+      // Supabase Credentials
+      const SUPABASE_URL = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+      let sb = null;
       if (typeof supabase !== 'undefined') {
-        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        const sb = window.supabase.createClient(supabaseUrl, supabaseKey);
+        sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      }
 
-        const { data: { session } } = await sb.auth.getSession();
+      // Auth Check
+      let session = null;
+      if (sb) {
+        const { data } = await sb.auth.getSession();
+        session = data?.session;
         const authContainer = document.querySelector('.auth-buttons-container');
         const lmsLink = document.getElementById('lms-nav-link');
 
@@ -532,6 +546,154 @@
           }
         }
       }
+
+      // ==========================================
+      // NOTIFY ME PUSH NOTIFICATIONS FLOW
+      // ==========================================
+      const NOTIFY_FIREBASE_CONFIG = {
+        apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
+        authDomain: "msc-notif.firebaseapp.com",
+        projectId: "msc-notif",
+        storageBucket: "msc-notif.appspot.com",
+        messagingSenderId: "228639798414",
+        appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
+        measurementId: "G-X4M23TB936"
+      };
+      const NOTIFY_VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
+      const NOTIFY_TOPIC = "ca-fresher-program-notify";
+      const MANAGE_TOPIC_URL = "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription";
+
+      function getOrCreateDeviceKey() {
+        let key = localStorage.getItem('msc_device_key');
+        if (!key) {
+          key = 'dk_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 9);
+          localStorage.setItem('msc_device_key', key);
+        }
+        return key;
+      }
+
+      function setNotifyStatus(msg, type) {
+        const el = document.getElementById('notifyStatus');
+        if (!el) return;
+        el.textContent = msg;
+        el.className = 'notify-status show notify-status--' + type;
+        if (type !== 'error') setTimeout(() => el.className = 'notify-status', 4000);
+      }
+
+      async function saveToNotifiable(fcmToken) {
+        if (!sb) return;
+        const deviceKey = getOrCreateDeviceKey();
+        const email = session?.user?.email || null;
+        await sb
+          .from('notifiable')
+          .insert({ key: deviceKey, email, topic: 'ca-fresher' })
+          .throwOnError();
+      }
+
+      async function initNotifyMe() {
+        const btn = document.getElementById('notifyMeBtn');
+        const footerBtn = document.getElementById('notifyMeFooterBtn');
+        const finalBtn = document.getElementById('notifyMeFinalBtn');
+        const allBtns = [btn, footerBtn, finalBtn];
+
+        function syncButtonStates(subscribed) {
+          if (btn) {
+            btn.querySelector('.notify-btn-text').textContent = subscribed ? 'You Will Be Notified!' : 'Notify Me When Open';
+            btn.querySelector('.notify-btn-icon').textContent = subscribed ? '✅' : '🔔';
+            btn.classList.toggle('subscribed', subscribed);
+          }
+          if (footerBtn) {
+            footerBtn.querySelector('.notify-footer-text').textContent = subscribed ? 'Notified ✅' : 'Notify Me';
+            footerBtn.querySelector('.notify-footer-icon').textContent = subscribed ? '✅' : '🔔';
+            footerBtn.classList.toggle('subscribed', subscribed);
+          }
+          if (finalBtn) {
+            finalBtn.querySelector('.notify-btn-text').textContent = subscribed ? 'You Will Be Notified!' : 'Notify Me When Open';
+            finalBtn.querySelector('.notify-btn-icon').textContent = subscribed ? '✅' : '🔔';
+            finalBtn.classList.toggle('subscribed', subscribed);
+          }
+        }
+
+        const isSubscribed = localStorage.getItem('notif_ca_fresher_program') === '1';
+        syncButtonStates(isSubscribed);
+
+        async function handleNotifyClick() {
+          if (this.disabled) return;
+          allBtns.forEach(b => b && (b.disabled = true));
+
+          // Already subscribed — unsubscribe
+          if (localStorage.getItem('notif_ca_fresher_program') === '1') {
+            const token = localStorage.getItem('notif_fcm_token_caf');
+            if (token) {
+              try {
+                await fetch(MANAGE_TOPIC_URL, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ token, topic: NOTIFY_TOPIC, action: 'unsubscribe' })
+                });
+              } catch (_) {}
+            }
+            localStorage.removeItem('notif_ca_fresher_program');
+            localStorage.removeItem('notif_fcm_token_caf');
+            syncButtonStates(false);
+            setNotifyStatus('Unsubscribed.', 'info');
+            allBtns.forEach(b => b && (b.disabled = false));
+            return;
+          }
+
+          // Request notification permission
+          setNotifyStatus('Requesting permission…', 'info');
+          let permission;
+          try { permission = await Notification.requestPermission(); } catch (e) { permission = 'denied'; }
+
+          if (permission !== 'granted') {
+            setNotifyStatus('Please allow notifications in your browser settings.', 'error');
+            allBtns.forEach(b => b && (b.disabled = false));
+            return;
+          }
+
+          // Initialize Firebase & get FCM token
+          setNotifyStatus('Setting up…', 'info');
+          try {
+            if (!firebase.apps.length) firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
+            const messaging = firebase.messaging();
+            if ('serviceWorker' in navigator) {
+              await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+            }
+            const fcmToken = await messaging.getToken({ vapidKey: NOTIFY_VAPID_KEY });
+            if (!fcmToken) throw new Error('No FCM token');
+
+            // Subscribe to FCM topic
+            setNotifyStatus('Subscribing…', 'info');
+            const res = await fetch(MANAGE_TOPIC_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ token: fcmToken, topic: NOTIFY_TOPIC, action: 'subscribe' })
+            });
+            const data = await res.json();
+            if (!data.success) throw new Error(data.error || 'Subscription failed');
+
+            // Save to Supabase notifiable table
+            try { await saveToNotifiable(fcmToken); } catch (_) {/* ignore duplicate key */}
+
+            localStorage.setItem('notif_ca_fresher_program', '1');
+            localStorage.setItem('notif_fcm_token_caf', fcmToken);
+            syncButtonStates(true);
+            setNotifyStatus("You're on the list! We'll notify you when the program opens.", 'success');
+          } catch (err) {
+            console.error('NotifyMe error:', err);
+            setNotifyStatus('Something went wrong. Please try again.', 'error');
+          }
+
+          allBtns.forEach(b => b && (b.disabled = false));
+        }
+
+        allBtns.forEach(b => {
+          if (b) b.addEventListener('click', handleNotifyClick);
+        });
+      }
+
+      initNotifyMe();
 
       // Dynamic Batch Month Calculation (-1 month)
       const d = new Date();
@@ -886,5 +1048,16 @@
           .catch(console.error);
       }
     });
+  </script>
+  <!-- Beautiful Floating status alerts placeholder -->
+  <div id="notifyStatus" class="notify-status"></div>
+
+  <!-- Google Analytics -->
+  <script src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65" async></script>
+  <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-1450NCVE65');
   </script>
 </body>
