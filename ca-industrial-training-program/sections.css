@@ -1256,12 +1256,12 @@
 .hero {
   background: radial-gradient(circle at top right, rgba(0, 112, 243, 0.08) 0%, rgba(244, 247, 252, 0.4) 50%, #ffffff 100%) !important;
   color: var(--text-dark-primary) !important;
-  min-height: 85vh;
+  min-height: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 120px 24px 80px 24px !important;
+  justify-content: flex-start;
+  padding: 40px 24px 80px 24px !important;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -1737,6 +1737,9 @@
 }
 
 @media (max-width: 576px) {
+  .hero {
+    padding: 24px 16px 48px 16px !important;
+  }
   .bento-pane {
     padding: 40px 24px !important;
   }
