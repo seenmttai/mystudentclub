@@ -1295,6 +1295,34 @@
   animation: pulseDot 1.6s infinite;
 }
 
+.hero-container {
+  display: flex;
+  max-width: 1200px;
+  width: 100%;
+  gap: 60px;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+  margin-bottom: 50px;
+}
+
+.hero-content {
+  flex: 0 0 calc(100% - 500px);
+  max-width: calc(100% - 500px);
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.hero-visual {
+  flex: 0 0 450px;
+  max-width: 450px;
+  position: relative;
+  width: 100%;
+}
+
 .hero-title {
   font-family: var(--font-outfit);
   font-size: 64px !important;
@@ -1302,8 +1330,9 @@
   line-height: 1.15;
   letter-spacing: -0.03em;
   max-width: 900px;
-  margin: 0 auto 20px auto !important;
+  margin: 0 0 20px 0 !important;
   color: var(--text-dark-primary) !important;
+  text-align: left;
 }
 
 .highlight-blue {
@@ -1318,14 +1347,15 @@
   font-size: 20px;
   color: var(--text-dark-secondary);
   max-width: 650px;
-  margin: 0 auto 40px auto;
+  margin: 0 0 40px 0;
   line-height: 1.5;
+  text-align: left;
 }
 
 .hero-cta-group {
   display: flex;
   gap: 16px;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   margin-bottom: 30px;
   flex-wrap: wrap;
@@ -1391,9 +1421,9 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  justify-content: center;
+  justify-content: flex-start;
   font-family: var(--font-outfit);
-  margin-bottom: 60px;
+  margin-bottom: 30px;
 }
 
 .hero-rating .stars {
@@ -1449,9 +1479,46 @@
 }
 
 @media (max-width: 992px) {
+  .hero-container {
+    flex-direction: column;
+    text-align: center;
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+  
+  .hero-content {
+    flex: 1 1 100%;
+    max-width: 100%;
+    text-align: center;
+    align-items: center;
+  }
+  
+  .hero-visual {
+    flex: 1 1 100%;
+    max-width: 100%;
+    width: 100%;
+  }
+
   .hero-title {
     font-size: 48px !important;
+    text-align: center;
+    margin: 0 auto 20px auto !important;
   }
+
+  .hero-subtitle {
+    text-align: center;
+    margin: 0 auto 40px auto;
+  }
+
+  .hero-cta-group {
+    justify-content: center;
+  }
+
+  .hero-rating {
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+
   .stats-banner {
     grid-template-columns: repeat(2, 1fr);
     gap: 1px;
