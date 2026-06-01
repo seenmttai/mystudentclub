@@ -1379,12 +1379,32 @@ async function loadBanners() {
     const bannerSection = document.querySelector('.banner-section');
     if (!carousel || !bannerSection) return;
     try {
-        const { data, error } = await supabaseClient.from('Banners').select('Image, Hyperlink, Type');
+        const { data, error } = await supabaseClient.from('Banners').select('Image, Hyperlink, Type, visible_to_unenrolled');
         if (error) throw error;
         const banners = data;
         carousel.innerHTML = '';
         const currentType = currentTable === "Semi Qualified Jobs" ? "Semi-Qualified" : currentTable === "Fresher Jobs" ? "Freshers" : currentTable.split(' ')[0];
-        const relevantBanners = banners.filter(b => b.Type === 'All' || b.Type === currentType);
+
+        // Determine if current user is enrolled in any course
+        let isEnrolled = false;
+        if (currentSession?.user?.id) {
+            const { count, error: enrollErr } = await supabaseClient
+                .from('enrollment')
+                .select('course', { count: 'exact', head: true })
+                .eq('uuid', currentSession.user.id);
+            if (!enrollErr && count > 0) {
+                isEnrolled = true;
+            }
+        }
+
+        const relevantBanners = banners.filter(b => {
+            const matchesType = b.Type === 'All' || b.Type === currentType;
+            const matchesEnrollment = b.visible_to_unenrolled === null || 
+                                      b.visible_to_unenrolled === undefined || 
+                                      (b.visible_to_unenrolled === true && !isEnrolled) || 
+                                      (b.visible_to_unenrolled === false && isEnrolled);
+            return matchesType && matchesEnrollment;
+        });
 
         if (relevantBanners.length === 0) { bannerSection.style.display = 'none'; return; }
         bannerSection.style.display = 'block';
