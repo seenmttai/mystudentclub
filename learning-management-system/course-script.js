@@ -459,7 +459,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const checkEnrollment = async () => {
         try {
             const { data: enrollments, error } = await supabase
-                .from('enrollment').select('course').eq('uuid', state.user.id).eq('course', state.courseSlug);
+                .from('enrollment').select('course, created_at').eq('uuid', state.user.id).eq('course', state.courseSlug);
+            
+            // Check if any enrollment was created in May or June 2026
+            let isEligibleForUpdateNotice = false;
+            if (enrollments && enrollments.length > 0) {
+                for (let i = 0; i < enrollments.length; i++) {
+                    const dateStr = enrollments[i].created_at;
+                    if (dateStr) {
+                        const date = new Date(dateStr);
+                        if (date.getUTCFullYear() === 2026 && (date.getUTCMonth() === 4 || date.getUTCMonth() === 5)) {
+                            isEligibleForUpdateNotice = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (isEligibleForUpdateNotice) {
+                localStorage.setItem('msc_lecture_update_eligible', '1');
+            } else {
+                localStorage.removeItem('msc_lecture_update_eligible');
+            }
+
             if (error || !enrollments || enrollments.length === 0) {
                 state.isEnrolled = false;
                 DOMElements.enrollmentModal.style.display = 'flex';
@@ -468,7 +490,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 DOMElements.coursePageContent.style.display = 'block';
                 DOMElements.footer.style.display = 'block';
                 await loadCourseVideos();
-
             }
         } catch (error) {
             state.isEnrolled = false;

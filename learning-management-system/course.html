@@ -482,16 +482,17 @@
             var dismissBtn = document.getElementById('lecture-update-dismiss');
             var STORAGE_KEY = 'msc_lectures_update_alert_dismissed';
 
-            var isNewUser = !localStorage.getItem('msc_form_prompt_dismissed');
+            setTimeout(function() {
+                var isEligible = localStorage.getItem('msc_lecture_update_eligible') === '1';
+                var isDismissed = localStorage.getItem(STORAGE_KEY) === '1';
 
-            if (!localStorage.getItem(STORAGE_KEY) && isNewUser) {
-                setTimeout(function() {
+                if (isEligible && !isDismissed) {
                     overlay.classList.remove('hidden');
                     // Force reflow
                     overlay.offsetHeight;
                     overlay.classList.add('show');
-                }, 800);
-            }
+                }
+            }, 1200);
 
             function dismissAlert() {
                 overlay.classList.remove('show');
