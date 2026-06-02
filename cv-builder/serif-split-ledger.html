@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CV - Serif Split Ledger</title>
+    <style>
+        :root {
+            --blue-header: #17365d;
+            --light-blue-bg: #c5d9ed;
+            --section-bg: #efefef;
+            --border-color: #000000;
+            --text-black: #000000;
+            --bg-white: #ffffff;
+            --font-main: 'Times New Roman', Times, serif;
+            --viewer-bg: #525659;
+            --ref-width: 1000px;
+            --ref-height: 1414px;
+            --content-scale: 1;
+        }
+
+        html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.2s ease-in;
+        }
+
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .resume-container {
+            width: var(--ref-width);
+            height: var(--ref-height);
+            background: var(--bg-white);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            position: relative;
+            padding: calc(30px * var(--content-scale)) calc(35px * var(--content-scale));
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transform-origin: top center;
+            font-size: calc(16.5px * var(--content-scale));
+            color: var(--text-black);
+            line-height: 1.35;
+            overflow: hidden;
+        }
+
+        .bold { font-weight: bold; }
+        .template { display: none !important; }
+
+        .cv-border-box {
+            border: 1px solid var(--border-color);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-white);
+        }
+
+        .border-sep-bottom { border-bottom: 1px solid var(--border-color); }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 0 calc(12px * var(--content-scale)) 0;
+        }
+
+        h1 {
+            font-size: calc(32px * var(--content-scale));
+            font-weight: bold;
+            color: var(--text-black);
+            line-height: 1;
+        }
+
+        .contact-info {
+            font-size: calc(15px * var(--content-scale));
+            display: flex;
+            align-items: center;
+            gap: calc(10px * var(--content-scale));
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .contact-info .contact-icon-item {
+            display: inline-flex !important;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .contact-info .contact-sep { color: var(--text-black) !important; }
+
+        .contact-info .contact-icon-glyph {
+            width: calc(15px * var(--content-scale));
+            margin-right: calc(4px * var(--content-scale));
+        }
+
+        .contact-info a,
+        .contact-info .contact-icon-text {
+            color: #0f4c81 !important;
+        }
+
+        .contact-info a {
+            text-decoration: none !important;
+        }
+
+        .contact-info a .contact-icon-text {
+            text-decoration: underline !important;
+        }
+
+        .section-banner,
+        .section-header {
+            background-color: var(--blue-header);
+            color: white;
+            padding: calc(5px * var(--content-scale)) calc(8px * var(--content-scale));
+            font-weight: bold;
+            font-size: calc(17px * var(--content-scale));
+            text-transform: uppercase;
+            text-align: center;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-content {
+            padding: calc(10px * var(--content-scale)) calc(15px * var(--content-scale));
+            font-size: calc(15px * var(--content-scale));
+            text-align: justify;
+            line-height: 1.35;
+        }
+
+        .edu-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: calc(15px * var(--content-scale));
+            border: none;
+        }
+
+        .edu-table th,
+        .edu-table td {
+            border: 1px solid var(--border-color);
+            padding: calc(5px * var(--content-scale)) calc(8px * var(--content-scale));
+            vertical-align: middle;
+            text-align: center;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .edu-table th {
+            font-weight: bold;
+            background-color: var(--bg-white);
+            border-top: none;
+        }
+
+        .edu-table td:first-child,
+        .edu-table th:first-child { border-left: none; }
+        .edu-table td:last-child,
+        .edu-table th:last-child { border-right: none; }
+        .edu-table tr:last-child td { border-bottom: none; }
+
+        .col-exam { width: 22%; }
+        .col-year { width: 10%; }
+        .col-inst { width: 36%; }
+        .col-pct { width: 10%; }
+        .col-rem { width: 22%; }
+
+        .job-group { display: block; }
+
+        .job-header-row {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--light-blue-bg);
+            font-weight: bold;
+            font-style: italic;
+            font-size: calc(15.5px * var(--content-scale));
+            padding: calc(6px * var(--content-scale)) calc(12px * var(--content-scale));
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .job-title-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            gap: calc(12px * var(--content-scale));
+        }
+
+        .job-title-row span:last-child { white-space: nowrap; text-align: right; }
+
+        .grid-row {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        #experience-list .job-group:not(.template):last-child .grid-row,
+        .serif-group-last {
+            border-bottom: none;
+        }
+
+        .border-sep-bottom > .grid-row:last-child {
+            border-bottom: none;
+        }
+
+        .grid-left {
+            width: 18%;
+            font-weight: bold;
+            background-color: var(--section-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: calc(10px * var(--content-scale)) calc(8px * var(--content-scale));
+            border-right: 1px solid var(--border-color);
+            font-size: calc(15px * var(--content-scale));
+            flex-shrink: 0;
+            line-height: 1.25;
+        }
+
+        .grid-right {
+            width: 82%;
+            padding: calc(10px * var(--content-scale)) calc(15px * var(--content-scale));
+            vertical-align: top;
+            font-size: calc(15px * var(--content-scale));
+        }
+
+        .serif-detail-row.custom-section-injected {
+            display: flex;
+            width: 100%;
+        }
+
+        .serif-detail-row::before {
+            content: none;
+        }
+
+        .serif-detail-row.serif-group-start::before {
+            content: attr(data-group-title);
+            display: block;
+            width: 100%;
+            background-color: var(--blue-header);
+            color: white;
+            padding: calc(5px * var(--content-scale)) calc(8px * var(--content-scale));
+            font-weight: bold;
+            font-size: calc(16.5px * var(--content-scale));
+            text-transform: uppercase;
+            text-align: center;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-color);
+            box-sizing: border-box;
+        }
+
+        .list-content {
+            padding: calc(10px * var(--content-scale)) calc(15px * var(--content-scale));
+            font-size: calc(14.5px * var(--content-scale));
+        }
+
+        ul {
+            list-style-type: disc;
+            margin-left: calc(20px * var(--content-scale));
+        }
+
+        li {
+            font-size: calc(14.5px * var(--content-scale));
+            margin-bottom: calc(3px * var(--content-scale));
+            text-align: justify;
+            line-height: 1.35;
+        }
+
+        li:last-child { margin-bottom: 0; }
+
+        [data-field="summary"] p,
+        [data-field="summary"] ul,
+        [data-field="summary"] ol,
+        [data-field="skills"] ul,
+        [data-field="skills"] ol {
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .universal-injected .section-header,
+        .custom-section-injected .section-header {
+            background-color: var(--blue-header);
+            border-color: var(--blue-header);
+        }
+
+        .universal-injected .section-header + div,
+        .custom-section-injected .section-header + div {
+            padding: calc(10px * var(--content-scale)) calc(15px * var(--content-scale));
+            border-bottom: 1px solid var(--border-color);
+            font-size: calc(14.5px * var(--content-scale));
+        }
+
+        @media print {
+            @page { size: A4 portrait; margin: 0; }
+            html, body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                background: #ffffff !important;
+            }
+            #zoom-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                transform: none !important;
+            }
+            .resume-container {
+                width: 1000px !important;
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: none !important;
+                zoom: 0.7937;
+                -moz-transform: scale(0.7937);
+                -moz-transform-origin: top center;
+                transform: none !important;
+                position: static !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="zoom-wrapper">
+        <div class="resume-container" id="cv-page">
+            <header>
+                <h1 data-field="name"></h1>
+                <div class="contact-info" data-field="contact"></div>
+            </header>
+
+            <div class="cv-border-box" data-section-append-host>
+                <div class="border-sep-bottom sortable-section" data-section-id="summary">
+                    <div class="section-banner section-header border-sep-bottom">Career Objective</div>
+                    <div class="summary-content" data-field="summary"></div>
+                </div>
+
+                <div class="border-sep-bottom sortable-section" data-section-id="education">
+                    <div class="section-banner section-header border-sep-bottom">Education Qualifications</div>
+                    <table class="edu-table">
+                        <thead>
+                            <tr>
+                                <th class="col-exam">Course</th>
+                                <th class="col-year">Year</th>
+                                <th class="col-inst">College/Institution</th>
+                                <th class="col-pct">Score</th>
+                                <th class="col-rem">Remarks/Achievements</th>
+                            </tr>
+                        </thead>
+                        <tbody id="education-list">
+                            <tr class="template">
+                                <td class="bold" data-field="degree"></td>
+                                <td data-field="year"></td>
+                                <td data-field="institution"></td>
+                                <td data-field="marks"></td>
+                                <td data-field="remarks"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="border-sep-bottom sortable-section" data-section-id="experience">
+                    <div class="section-banner section-header border-sep-bottom">Work Experience</div>
+                    <div id="experience-list">
+                        <div class="job-group template">
+                            <div class="job-header-row job-header">
+                                <div class="job-title-row">
+                                    <span><span data-field="company"></span> - <span data-field="role"></span></span>
+                                    <span data-field="dates"></span>
+                                </div>
+                            </div>
+                            <div class="grid-row">
+                                <div class="grid-left" data-field="category"></div>
+                                <div class="grid-right">
+                                    <ul data-list="bullets"></ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-sep-bottom sortable-section" data-section-id="projects">
+                    <div class="section-banner section-header border-sep-bottom">Projects</div>
+                    <div id="projects-list">
+                        <div class="list-content template">
+                            <div class="bold" data-field="title"></div>
+                            <div data-field="description"></div>
+                            <ul data-list="bullets"></ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-row serif-detail-row sortable-section" data-section-id="achievements" data-serif-group="extra" data-group-title="Extracurricular Activities">
+                    <div class="grid-left">Academic &<br>Competitive<br>Achievements</div>
+                    <div class="grid-right">
+                        <ul data-list="achievements"></ul>
+                    </div>
+                </div>
+
+                <div class="grid-row serif-detail-row sortable-section" data-section-id="leadership" data-serif-group="extra">
+                    <div class="grid-left">Communication<br>& Leadership</div>
+                    <div class="grid-right">
+                        <ul data-list="leadership"></ul>
+                    </div>
+                </div>
+
+                <div class="grid-row serif-detail-row sortable-section" data-section-id="interests" data-serif-group="extra">
+                    <div class="grid-left">Interests<br>& Hobbies</div>
+                    <div class="grid-right">
+                        <ul data-list="interests"></ul>
+                    </div>
+                </div>
+
+                <div class="grid-row serif-detail-row sortable-section" data-section-id="skills" data-serif-group="skills" data-group-title="Skills">
+                    <div class="grid-left">Technical Skills</div>
+                    <div class="grid-right">
+                        <div data-field="skills"></div>
+                    </div>
+                </div>
+
+                <div class="grid-row serif-detail-row sortable-section" data-section-id="certifications" data-serif-group="skills">
+                    <div class="grid-left">Certifications</div>
+                    <div class="grid-right">
+                        <ul data-list="certifications"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="cv-common.js"></script>
+    <script>
+        const serifCustomSectionTitles = new Map();
+
+        function getSerifGroupTitle(group) {
+            return group === 'skills' ? 'Skills' : 'Extracurricular Activities';
+        }
+
+        function normalizeSerifCustomSections() {
+            const box = document.querySelector('.cv-border-box');
+            if (!box) return;
+
+            Array.from(box.querySelectorAll('.custom-section-injected[data-custom-section-root]')).forEach(section => {
+                section.classList.add('grid-row', 'serif-detail-row');
+                section.setAttribute('data-serif-group', section.getAttribute('data-serif-group') || 'extra');
+
+                const customId = section.getAttribute('data-custom-section-root') || section.getAttribute('data-section-id') || '';
+                const title = serifCustomSectionTitles.get(customId) ||
+                    section.querySelector('.section-header')?.textContent?.trim() ||
+                    'Custom Section';
+                if (section.getAttribute('data-serif-custom-normalized') === 'true') {
+                    const label = section.querySelector(':scope > .grid-left');
+                    if (label) label.textContent = title;
+                    return;
+                }
+
+                const list = section.querySelector('[data-list="custom-items"], .bullet-list, ul');
+                const items = list ? list.innerHTML : '';
+
+                section.innerHTML = `
+                    <div class="grid-left">${title}</div>
+                    <div class="grid-right">
+                        <ul class="bullet-list" data-list="custom-items">${items}</ul>
+                    </div>
+                `;
+                section.setAttribute('data-serif-custom-normalized', 'true');
+            });
+        }
+
+        function organizeSerifSplitSections() {
+            const box = document.querySelector('.cv-border-box');
+            if (!box) return;
+            normalizeSerifCustomSections();
+
+            const rows = Array.from(box.querySelectorAll(':scope > .serif-detail-row[data-serif-group]'));
+            if (!rows.length) return;
+
+            rows.forEach(row => {
+                row.classList.remove('serif-group-start', 'serif-group-last');
+                row.setAttribute('data-group-title', getSerifGroupTitle(row.getAttribute('data-serif-group') || 'extra'));
+            });
+
+            const rowsByGroup = new Map();
+            rows.forEach(row => {
+                if (row.style.display === 'none' || getComputedStyle(row).display === 'none') return;
+                const group = row.getAttribute('data-serif-group') || '';
+                if (!rowsByGroup.has(group)) rowsByGroup.set(group, []);
+                rowsByGroup.get(group).push(row);
+            });
+
+            rowsByGroup.forEach(groupRows => {
+                if (!groupRows.length) return;
+                groupRows[0].classList.add('serif-group-start');
+                groupRows[groupRows.length - 1].classList.add('serif-group-last');
+            });
+        }
+
+        let serifSplitFrame = null;
+        function scheduleSerifSplitSections() {
+            if (serifSplitFrame) cancelAnimationFrame(serifSplitFrame);
+            serifSplitFrame = requestAnimationFrame(() => {
+                serifSplitFrame = null;
+                organizeSerifSplitSections();
+            });
+        }
+
+        function scheduleSerifSplitSectionsAfterRender() {
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    scheduleSerifSplitSections();
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            scheduleSerifSplitSectionsAfterRender();
+        });
+
+        window.addEventListener('message', (event) => {
+            const data = event.data;
+            if (!data || data.type !== 'update-cv') return;
+
+            serifCustomSectionTitles.clear();
+            (data.payload?.customSections || []).forEach(section => {
+                if (section?.id) serifCustomSectionTitles.set(section.id, section.title || 'Custom Section');
+            });
+            scheduleSerifSplitSectionsAfterRender();
+        });
+
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            if (!page || document.body.classList.contains('print-mode')) return;
+            const targetWidth = window.innerWidth - 20;
+            const refWidth = 1000;
+            const scale = targetWidth < refWidth ? targetWidth / refWidth : 1;
+            page.style.transform = `scale(${scale})`;
+            const spaceToRemove = 1414 - (1414 * scale);
+            page.style.margin = '20px auto';
+            page.style.marginBottom = `${20 - spaceToRemove}px`;
+        }
+
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            if (!page) return;
+            let contentScale = 1;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+            let iterations = 0;
+            while (page.scrollHeight > 1414 && iterations < 60) {
+                contentScale -= 0.01;
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                iterations++;
+            }
+        }
+
+        let screenTransform = '';
+        let screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            if (!page) return;
+            screenTransform = page.style.transform;
+            screenMarginBottom = page.style.marginBottom;
+            document.body.classList.add('print-mode');
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+            shrinkContentToFit();
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            if (!page) return;
+            document.body.classList.remove('print-mode');
+            page.style.transform = screenTransform || '';
+            page.style.marginBottom = screenMarginBottom || '';
+            scaleToFit();
+        }
+
+        function handlePrintChange(e) {
+            if (e.matches) enablePrintMode();
+            else disablePrintMode();
+        }
+
+        function init() {
+            shrinkContentToFit();
+            scaleToFit();
+            document.body.style.opacity = '1';
+            const printMedia = window.matchMedia('print');
+            if (printMedia.addEventListener) printMedia.addEventListener('change', handlePrintChange);
+            else if (printMedia.addListener) printMedia.addListener(handlePrintChange);
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        }
+
+        window.addEventListener('load', init);
+
+        let resizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+</html>
