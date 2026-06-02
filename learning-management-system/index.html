@@ -975,7 +975,9 @@
             var dismissBtn = document.getElementById('lecture-update-dismiss');
             var STORAGE_KEY = 'msc_lectures_update_alert_dismissed';
 
-            if (!localStorage.getItem(STORAGE_KEY)) {
+            var isNewUser = !localStorage.getItem('msc_form_prompt_dismissed');
+
+            if (!localStorage.getItem(STORAGE_KEY) && isNewUser) {
                 setTimeout(function() {
                     overlay.classList.remove('hidden');
                     // Force reflow
