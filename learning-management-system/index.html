@@ -178,147 +178,6 @@
             border-radius: 6px;
             cursor: pointer;
         }
-
-
-
-        /* Lecture Update Alert Popup Styles */
-        .lecture-update-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.75);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-            padding: 1.5rem;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        .lecture-update-overlay.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .lecture-update-card {
-            background: rgba(255, 255, 255, 0.98);
-            border-radius: 24px;
-            padding: 2.5rem 2rem 2.25rem;
-            max-width: 480px;
-            width: 100%;
-            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.4);
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            transform: scale(0.9);
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .lecture-update-overlay.show .lecture-update-card {
-            transform: scale(1);
-        }
-
-        .lecture-update-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 6px;
-            background: linear-gradient(90deg, #f59e0b, #d97706, #ef4444);
-        }
-
-        .lecture-update-icon {
-            width: 72px;
-            height: 72px;
-            background: linear-gradient(135deg, #fef3c7, #fee2e2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-            font-size: 2.2rem;
-            color: #d97706;
-            box-shadow: 0 10px 20px rgba(217, 119, 6, 0.15);
-            animation: pulse-glow 2s infinite;
-        }
-
-        .lecture-update-card h2 {
-            font-size: 1.6rem;
-            font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 0.75rem;
-            letter-spacing: -0.025em;
-        }
-
-        .lecture-update-card p {
-            font-size: 0.95rem;
-            color: #475569;
-            line-height: 1.6;
-            margin-bottom: 1rem;
-        }
-
-        .lecture-update-card .lecture-update-subtext {
-            font-size: 0.9rem;
-            color: #b45309;
-            background: #fffbeb;
-            border: 1px dashed #fcd34d;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            margin-top: 1rem;
-            margin-bottom: 1.75rem;
-            font-weight: 500;
-        }
-
-        .lecture-update-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: linear-gradient(135deg, #d97706, #b45309);
-            color: white;
-            font-weight: 700;
-            font-size: 1rem;
-            padding: 0.85rem 2rem;
-            border-radius: 14px;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            box-shadow: 0 6px 20px rgba(217, 119, 6, 0.3);
-            width: 100%;
-            justify-content: center;
-            border: none;
-            cursor: pointer;
-            font-family: inherit;
-        }
-
-        .lecture-update-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(217, 119, 6, 0.4);
-            background: linear-gradient(135deg, #b45309, #92400e);
-        }
-
-        .lecture-update-btn:active {
-            transform: translateY(0);
-        }
-
-        @keyframes pulse-glow {
-            0% {
-                box-shadow: 0 0 0 0 rgba(217, 119, 6, 0.4);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(217, 119, 6, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(217, 119, 6, 0);
-            }
-        }
-        
-        .lecture-update-overlay.hidden {
-            display: none !important;
-        }
     </style>
 </head>
 
@@ -387,7 +246,8 @@
                     <h1 class="hero-title">
                         Welcome Back, <span class="gradient-text">{{ getUserName() }}</span>
                     </h1>
-                    <p class="hero-subtitle">Your journey to CA excellence continues here. Track your progress and master your skills.</p>
+                    <p class="hero-subtitle">Your journey to CA excellence continues here. Track your progress and
+                        master your skills.</p>
                     <div class="search-enhanced">
                         <div class="search-wrapper">
                             <i class="fas fa-search search-icon"></i>
@@ -417,7 +277,8 @@
 
             <section v-else class="courses-section-enhanced">
                 <div class="section-container">
-                    <div class="section-header-enhanced" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="section-header-enhanced"
+                        style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
                             <h2>My Learning Path</h2>
                             <p style="margin-bottom: 0;">Pick up where you left off</p>
@@ -488,7 +349,8 @@
                     </div>
                     <div class="analytics-grid">
                         <div class="analytics-card">
-                            <div class="analytics-icon" style="background: linear-gradient(135deg, #2563eb, #3b82f6);"><i class="fas fa-book-open"></i></div>
+                            <div class="analytics-icon" style="background: linear-gradient(135deg, #2563eb, #3b82f6);">
+                                <i class="fas fa-book-open"></i></div>
                             <div class="analytics-content">
                                 <h4>Active Courses</h4>
                                 <div class="analytics-value">{{ enrolledCourses.length }}</div>
@@ -496,7 +358,8 @@
                             </div>
                         </div>
                         <div class="analytics-card">
-                            <div class="analytics-icon" style="background: linear-gradient(135deg, #059669, #10b981);"><i class="fas fa-play-circle"></i></div>
+                            <div class="analytics-icon" style="background: linear-gradient(135deg, #059669, #10b981);">
+                                <i class="fas fa-play-circle"></i></div>
                             <div class="analytics-content">
                                 <h4>Videos Completed</h4>
                                 <div class="analytics-value">{{ analytics.totalVideosCompleted }}</div>
@@ -504,7 +367,8 @@
                             </div>
                         </div>
                         <div class="analytics-card">
-                            <div class="analytics-icon" style="background: linear-gradient(135deg, #d97706, #f59e0b);"><i class="fas fa-fire"></i></div>
+                            <div class="analytics-icon" style="background: linear-gradient(135deg, #d97706, #f59e0b);">
+                                <i class="fas fa-fire"></i></div>
                             <div class="analytics-content">
                                 <h4>Learning Streak</h4>
                                 <div class="analytics-value">{{ analytics.streak }} Days</div>
@@ -512,7 +376,8 @@
                             </div>
                         </div>
                         <div class="analytics-card">
-                            <div class="analytics-icon" style="background: linear-gradient(135deg, #7c3aed, #8b5cf6);"><i class="fas fa-trophy"></i></div>
+                            <div class="analytics-icon" style="background: linear-gradient(135deg, #7c3aed, #8b5cf6);">
+                                <i class="fas fa-trophy"></i></div>
                             <div class="analytics-content">
                                 <h4>Completion Rate</h4>
                                 <div class="analytics-value">{{ analytics.completionRate }}%</div>
@@ -586,22 +451,7 @@
         </footer>
     </div>
 
-    <!-- Lecture Update Alert Popup -->
-    <div id="lecture-update-overlay" class="lecture-update-overlay hidden">
-        <div class="lecture-update-card">
-            <div class="lecture-update-icon">
-                <i class="fas fa-clock"></i>
-            </div>
-            <h2>Lectures Updating</h2>
-            <p>We are currently updating our lectures and course resources to ensure you get the absolute best learning experience.</p>
-            <div class="lecture-update-subtext">
-                <i class="fas fa-exclamation-triangle"></i> Please avoid viewing the lectures today. All resources will be fully updated and ready for you by tomorrow.
-            </div>
-            <button class="lecture-update-btn" id="lecture-update-dismiss">
-                Understood, thank you!
-            </button>
-        </div>
-    </div>
+
 
     <script type="module">
         import { createApp } from 'vue';
@@ -734,29 +584,8 @@
                     try {
                         const { data: enrollments, error } = await supabase
                             .from('enrollment')
-                            .select('course, created_at')
+                            .select('course')
                             .eq('uuid', this.user.id);
-
-                        // Check if any enrollment was created in May or June 2026
-                        let isEligibleForUpdateNotice = false;
-                        if (enrollments && enrollments.length > 0) {
-                            for (let i = 0; i < enrollments.length; i++) {
-                                const dateStr = enrollments[i].created_at;
-                                if (dateStr) {
-                                    const date = new Date(dateStr);
-                                    if (date.getUTCFullYear() === 2026 && (date.getUTCMonth() === 4 || date.getUTCMonth() === 5)) {
-                                        isEligibleForUpdateNotice = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-
-                        if (isEligibleForUpdateNotice) {
-                            localStorage.setItem('msc_lecture_update_eligible', '1');
-                        } else {
-                            localStorage.removeItem('msc_lecture_update_eligible');
-                        }
 
                         if (error) throw error;
 
@@ -847,38 +676,7 @@
         }).mount('#app');
     </script>
 
-    <script>
-        // Lecture Update Alert Popup Handler
-        (function () {
-            var overlay = document.getElementById('lecture-update-overlay');
-            var dismissBtn = document.getElementById('lecture-update-dismiss');
-            var STORAGE_KEY = 'msc_lectures_update_alert_dismissed';
 
-            setTimeout(function() {
-                var isEligible = localStorage.getItem('msc_lecture_update_eligible') === '1';
-                var isDismissed = localStorage.getItem(STORAGE_KEY) === '1';
-
-                if (isEligible && !isDismissed) {
-                    overlay.classList.remove('hidden');
-                    // Force reflow
-                    overlay.offsetHeight;
-                    overlay.classList.add('show');
-                }
-            }, 1200);
-
-            function dismissAlert() {
-                overlay.classList.remove('show');
-                localStorage.setItem(STORAGE_KEY, '1');
-                setTimeout(function() {
-                    overlay.classList.add('hidden');
-                }, 300);
-            }
-
-            if (dismissBtn) {
-                dismissBtn.addEventListener('click', dismissAlert);
-            }
-        })();
-    </script>
 </body>
 
 </html>
