@@ -21,7 +21,7 @@
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
       text-align: center;
-      max-width: 550px;
+      max-width: 700px;
       width: 90%;
       border-top: 5px solid #10b981;
     }
@@ -205,6 +205,190 @@
         height: 64px;
       }
     }
+
+    /* Modern Onboarding Roadmap & Motivation Styles */
+    .roadmap-container {
+      text-align: left;
+      margin: 2.5rem 0;
+    }
+    
+    .roadmap-step {
+      position: relative;
+      padding-left: 3.5rem;
+      margin-bottom: 2rem;
+    }
+    
+    .roadmap-step::before {
+      content: '';
+      position: absolute;
+      left: 1.125rem;
+      top: 2.25rem;
+      bottom: -1.5rem;
+      width: 2px;
+      background: #e2e8f0;
+    }
+    
+    .roadmap-step:last-child::before {
+      display: none;
+    }
+    
+    .roadmap-icon-number {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 2.25rem;
+      height: 2.25rem;
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+    }
+    
+    .roadmap-content {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .roadmap-content:hover {
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      border-color: #cbd5e1;
+    }
+    
+    .roadmap-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .roadmap-text {
+      font-size: 0.95rem;
+      color: #475569;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .roadmap-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .roadmap-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .roadmap-btn-whatsapp {
+      background: #25D366;
+      color: white !important;
+    }
+
+    .roadmap-btn-whatsapp:hover {
+      background: #20ba5a;
+      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
+    }
+
+    .roadmap-btn-red {
+      background: #ef4444;
+      color: white !important;
+    }
+
+    .roadmap-btn-red:hover {
+      background: #dc2626;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+    }
+
+    .roadmap-btn-indigo {
+      background: #4f46e5;
+      color: white !important;
+    }
+
+    .roadmap-btn-indigo:hover {
+      background: #4338ca;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+    }
+
+    .roadmap-btn-teal {
+      background: #0d9488;
+      color: white !important;
+    }
+
+    .roadmap-btn-teal:hover {
+      background: #0f766e;
+      box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+    }
+
+    /* Message card styling */
+    .motivational-card {
+      background: linear-gradient(135deg, #f5f3ff, #fdf2f8);
+      border: 1px dashed #d8b4fe;
+      border-radius: 16px;
+      padding: 1.75rem;
+      text-align: left;
+      margin: 2.5rem 0;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);
+    }
+
+    .motivational-card p {
+      font-size: 0.975rem;
+      line-height: 1.65;
+      color: #334155;
+      margin-bottom: 1.25rem;
+    }
+
+    .motivational-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .motivational-heading {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #5b21b6;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Support block */
+    .support-card {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-left: 4px solid #22c55e;
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: left;
+      margin: 1.5rem 0;
+    }
+
+    .support-card p {
+      color: #14532d;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 0.75rem;
+    }
+    
+    .support-card p:last-child {
+      margin-bottom: 0;
+    }
   </style>
 </head>
 
@@ -287,12 +471,141 @@
 
     <div id="login-status" class="login-status" style="margin: 0.5rem 0; padding: 0.75rem;"></div>
 
-    <div
-      style="background-color: #eff6ff; border: 1px solid #bfdbfe; border-left: 4px solid #3b82f6; padding: 1rem; margin-bottom: 2rem; border-radius: 8px; text-align: left; font-size: 0.95rem; color: #1e3a8a;">
-      <p style="margin-bottom: 0.5rem;">Hey,</p>
-      <p style="margin-bottom: 0.5rem;">You can start finishing the recorded sessions, we will be connecting on 3rd June 10 PM over a Google Meet, where i will walk you through what exactly needs to be done step by step.</p>
-      <p style="margin-bottom: 0.5rem;">Links for Whatsapp Group and Google Meet will be shared over Mail within 48 hours.</p>
-      <p style="margin-bottom: 0;">Let’s Crack IT:)</p>
+    <div class="text-left mb-6">
+      <h2 class="text-xl font-bold text-indigo-700 mb-2">Hey,</h2>
+      <p class="text-gray-700 font-medium">Thanks for enrolling in MSCIT Program! ❤️</p>
+    </div>
+
+    <!-- Onboarding Roadmap -->
+    <div class="roadmap-container">
+      <!-- Step 1: Join WhatsApp -->
+      <div class="roadmap-step">
+        <div class="roadmap-icon-number">1</div>
+        <div class="roadmap-content">
+          <h3 class="roadmap-title">
+            <i class="fab fa-whatsapp text-green-500"></i> Join the WhatsApp Community
+          </h3>
+          <p class="roadmap-text">
+            First things first, please join the WhatsApp Community below and make sure you join both groups inside it. All announcements, vacancies, and updates will be shared there.
+          </p>
+          <a href="https://chat.whatsapp.com/DdxE3R5SpX00IFeqNBcJM7?mode=gi_t" target="_blank" rel="noopener" class="roadmap-btn roadmap-btn-whatsapp">
+            <i class="fab fa-whatsapp"></i> Join WhatsApp Community
+          </a>
+        </div>
+      </div>
+
+      <!-- Step 2: Day 0 Orientation Recording -->
+      <div class="roadmap-step">
+        <div class="roadmap-icon-number">2</div>
+        <div class="roadmap-content">
+          <h3 class="roadmap-title">
+            <i class="fas fa-video text-red-500"></i> Watch Day 0 Orientation Recording
+          </h3>
+          <p class="roadmap-text">
+            Your first and most important task is to watch the Day 0 Orientation Session Recording as soon as possible. This session was conducted on 3rd June specifically for your batch and contains the complete roadmap for the coming months, along with everything you need to know to get started correctly. Please watch it immediately.
+          </p>
+          <div class="mb-2">
+            <strong class="text-sm text-gray-600 block mb-1">📌 Day 0 Session Recording:</strong>
+            <a href="https://drive.google.com/file/d/1QEbHM3oyAGukRHXYh_cMR8lBZFrXZYKk/view?usp=sharing" target="_blank" rel="noopener" class="roadmap-btn roadmap-btn-red">
+              <i class="fab fa-google-drive"></i> Watch Day 0 Recording
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Commitment callout between steps -->
+      <div class="motivational-card">
+        <h4 class="motivational-heading">
+          <i class="fas fa-handshake text-purple-600"></i> Commitment Required
+        </h4>
+        <p><strong>See, I need one commitment from you: Patience & Consistent Efforts</strong></p>
+        <p>
+          This is a 3 Month journey and to be very honest, most calls will come in the last 3 weeks of 1st year. You should not get exhausted in the initial months. Instead, your efforts should increase every day, because every single day, every application, even every rejection is bringing you closer to the opportunity you're waiting for. So what shall we do now?
+        </p>
+      </div>
+
+      <!-- Step 3: Finish 6 Day Lectures -->
+      <div class="roadmap-step">
+        <div class="roadmap-icon-number">3</div>
+        <div class="roadmap-content">
+          <h3 class="roadmap-title">
+            <i class="fas fa-book-reader text-indigo-500"></i> Finish 6-Day Recorded Lectures
+          </h3>
+          <p class="roadmap-text">
+            Your task now is to finish the 6 Day Recorded Lectures ASAP using the below link. No matter how busy you are in articleship, your career should come first for you, so please finish all of them and also read the MSCIT Guidebook.
+          </p>
+          <a href="https://drive.google.com/drive/u/0/folders/1ybjPDtjvjfns-6DVYuD8EDiiRmhfZD2c" target="_blank" rel="noopener" class="roadmap-btn roadmap-btn-indigo">
+            <i class="fab fa-google-drive"></i> Access 6-Day Lectures & Guidebook
+          </a>
+        </div>
+      </div>
+
+      <!-- Step 4: Access Learning Portal resources -->
+      <div class="roadmap-step">
+        <div class="roadmap-icon-number">4</div>
+        <div class="roadmap-content">
+          <h3 class="roadmap-title">
+            <i class="fas fa-laptop-code text-blue-500"></i> Trust the Process & Access Resources
+          </h3>
+          <p class="roadmap-text">
+            You don't have to do anything else other than what is said in sessions, please just trust the process blindly, and give in your 100% efforts. All the resources can be accessed using the link below:
+          </p>
+          <a href="https://www.mystudentclub.com/learning-management-system/" class="roadmap-btn roadmap-btn-indigo">
+            <i class="fas fa-graduation-cap"></i> learning-management-system
+          </a>
+        </div>
+      </div>
+
+      <!-- Step 5: Join Daily Doubt Solving -->
+      <div class="roadmap-step">
+        <div class="roadmap-icon-number">5</div>
+        <div class="roadmap-content">
+          <h3 class="roadmap-title">
+            <i class="fas fa-comments text-teal-500"></i> Join Daily Doubt Solving Sessions
+          </h3>
+          <p class="roadmap-text">
+            In case you want to connect with me personally 1:1, you can join the Daily Doubt Solving Sessions at 9 PM (Mon–Fri) using the below link. Here we can move to a separate room and discuss queries 1:1:
+          </p>
+          <a href="https://meet.google.com/ntc-jnvd-zzr" target="_blank" rel="noopener" class="roadmap-btn roadmap-btn-teal">
+            <i class="fas fa-video"></i> Google Meet Room (9 PM Mon-Fri)
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technical & Queries Support Card -->
+    <div class="support-card">
+      <p>
+        <i class="fas fa-info-circle text-green-600 mr-1"></i> In case of any technical and website issues - kindly whatsapp at <strong>9558605393</strong>.
+      </p>
+      <p>
+        <i class="fab fa-whatsapp text-green-600 mr-1"></i> Just a small request — If you have any queries or need any help, I prefer WhatsApp messages on <strong>7228881182</strong> for queries (I'll reply within 24 hours).
+      </p>
+    </div>
+
+    <!-- Final Motivational Note -->
+    <div class="text-left mb-6 text-gray-700 space-y-4 border-l-4 border-emerald-500 pl-4 bg-emerald-50/50 py-4 pr-3 rounded-r-lg">
+      <p>
+        Guys, again I am saying it's going to be a long journey requiring a lot of patience. There will be days when you feel nothing is happening. That's normal.
+      </p>
+      <p>
+        You will surely cross the line but it's important to not give up in between and put in the efforts consistently throughout, make the perfect CV, connect with as many people as possible, apply the right way and together Let's Crack IT.
+      </p>
+      <p>
+        From my side, I'll do everything possible to help you get placed. All I need in return is your 100% efforts and consistency.
+      </p>
+      <p class="font-semibold text-gray-800">
+        And one day, hopefully soon, I'll receive the message I am waiting for from you:
+      </p>
+      <div class="bg-white border border-emerald-100 p-4 rounded-lg my-2 italic text-emerald-800 text-center font-bold text-lg shadow-sm">
+        "Sir, I got selected!" 🎉
+      </div>
+      <p>
+        I can't wait to like, comment on, and repost your Industrial Training joining post.
+      </p>
+      <p class="font-bold text-indigo-700">
+        Let's Crack IT! All the Best ❤️
+      </p>
     </div>
 
     <div class="form-required-banner">
