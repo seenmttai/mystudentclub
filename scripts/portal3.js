@@ -2347,14 +2347,21 @@ async function fetchAndCacheProfileData() {
 
         if (data) {
             const profileObj = data.profile || {};
+            console.log("DEBUG fetchAndCacheProfileData:", {
+                ocr_cv_length: data.ocr_cv ? data.ocr_cv.length : null,
+                profileObj_cv_cloud_synced: profileObj.cv_cloud_synced
+            });
             if (data.ocr_cv) {
                 localStorage.setItem('userCVText', data.ocr_cv);
                 if (profileObj.cv_cloud_synced) {
+                    console.log("DEBUG: Calling setCloudSyncFlag()");
                     setCloudSyncFlag();
                 } else {
+                    console.log("DEBUG: Calling clearCloudSyncFlag() because cv_cloud_synced is falsy");
                     clearCloudSyncFlag();
                 }
             } else {
+                console.log("DEBUG: Calling clearCloudSyncFlag() because ocr_cv is empty");
                 clearCloudSyncFlag();
             }
             // Inject dedicated columns to local cached profile representation
@@ -2559,6 +2566,11 @@ async function checkAndSyncCVBackground() {
     const userCVImages = localStorage.getItem('userCVImages');
     let userCVText = localStorage.getItem('userCVText');
 
+    console.log("DEBUG checkAndSyncCVBackground:", {
+        userCVImages_exists: !!userCVImages,
+        isCloudSynced: isCloudSynced()
+    });
+
     // If we have local images but they haven't been successfully synced yet during this user's lifecycle,
     // we upload them regardless of general cloud synced status (since they could be missing in the bucket)
     if (userCVImages) {
@@ -2567,7 +2579,11 @@ async function checkAndSyncCVBackground() {
         }
     } else {
         // No local images, fallback to checking general cloud sync
-        if (isCloudSynced()) return true;
+        if (isCloudSynced()) {
+            console.log("DEBUG: checkAndSyncCVBackground returning true because isCloudSynced is true");
+            return true;
+        }
+        console.log("DEBUG: checkAndSyncCVBackground returning false because isCloudSynced is false");
         return false; // Nothing to sync
     }
 
