@@ -2346,11 +2346,17 @@ async function fetchAndCacheProfileData() {
             .single();
 
         if (data) {
+            const profileObj = data.profile || {};
             if (data.ocr_cv) {
                 localStorage.setItem('userCVText', data.ocr_cv);
-                setCloudSyncFlag();
+                if (profileObj.cv_cloud_synced) {
+                    setCloudSyncFlag();
+                } else {
+                    clearCloudSyncFlag();
+                }
+            } else {
+                clearCloudSyncFlag();
             }
-            const profileObj = data.profile || {};
             // Inject dedicated columns to local cached profile representation
             profileObj.looking_for = data.looking_for;
             profileObj.articleship_1yr_end_date = data.articleship_1yr_end_date;
@@ -2598,9 +2604,21 @@ async function checkAndSyncCVBackground() {
                     localStorage.setItem('userCVText', finalOcrText);
                 }
 
+                // Get cached profile and update cv_cloud_synced
+                const cachedProfile = localStorage.getItem('userProfileData');
+                let profileObj = {};
+                if (cachedProfile) {
+                    try {
+                        profileObj = JSON.parse(cachedProfile);
+                    } catch (e) {}
+                }
+                profileObj.cv_cloud_synced = true;
+                localStorage.setItem('userProfileData', JSON.stringify(profileObj));
+
                 // Update Supabase
                 await supabaseClient.from('profiles').upsert({
                     uuid: currentSession.user.id,
+                    profile: profileObj,
                     ocr_cv: finalOcrText,
                     updated_at: new Date().toISOString()
                 });

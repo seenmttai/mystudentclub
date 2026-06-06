@@ -220,7 +220,13 @@ async function loadProfile() {
             }
             if (data.ocr_cv) {
                 localStorage.setItem('userCVText', data.ocr_cv);
-                setCloudSyncFlag();
+                if (data.profile && data.profile.cv_cloud_synced) {
+                    setCloudSyncFlag();
+                } else {
+                    clearCloudSyncFlag();
+                }
+            } else {
+                clearCloudSyncFlag();
             }
         } else {
             const localProfile = localStorage.getItem('userProfileData');
@@ -572,6 +578,11 @@ function parseGeminiJson(text) {
     }
 }
 
+function isCloudSynced() {
+    return localStorage.getItem('cv_cloud_synced') === 'true' ||
+        document.cookie.split(';').some(c => c.trim().startsWith('cv_cloud_synced=true'));
+}
+
 function setCloudSyncFlag() {
     localStorage.setItem('cv_cloud_synced', 'true');
     localStorage.setItem('cv_images_synced', 'true');
@@ -669,7 +680,7 @@ async function handleSave(e) {
         }
     }
 
-    if (!localStorage.getItem('userCVImages')) {
+    if (!localStorage.getItem('userCVImages') && !isCloudSynced()) {
         showToast('Please upload your resume. It is required to use the AI features.', 'warning');
         return;
     }
@@ -773,6 +784,12 @@ async function handleSave(e) {
         }
     }
     
+    let currentlySynced = isCloudSynced();
+    if (hasImagesToSync) {
+        currentlySynced = syncSuccess;
+    }
+    profileData.cv_cloud_synced = currentlySynced;
+
     localStorage.setItem('userProfileData', JSON.stringify(profileData));
 
     try {
@@ -783,7 +800,7 @@ async function handleSave(e) {
             updated_at: new Date().toISOString()
         });
         if (error) throw error;
-        if (!hasImagesToSync || syncSuccess) {
+        if (currentlySynced) {
             setCloudSyncFlag();
         } else {
             clearCloudSyncFlag();
