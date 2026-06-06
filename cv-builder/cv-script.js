@@ -818,7 +818,7 @@
             if (Array.isArray(incoming.education)) {
                 normalized.education = incoming.education.map(item => ({
                     degree: normalizeImportedString(item?.degree || ''),
-                    institute: normalizeImportedString(item?.institute || item?.institution || ''),
+                    institute: normalizeCategoryHTML(htmlToMultilineText(item?.institute || item?.institution || '')),
                     year: normalizeImportedString(item?.year || ''),
                     marks: normalizeImportedString(item?.marks || ''),
                     remarks: normalizeImportedString(item?.remarks || '')
@@ -1105,7 +1105,7 @@
                 return {
                     ...entry,
                     degree: normalizeImportedString(entry.degree || ''),
-                    institute: normalizeImportedString(entry.institute || entry.institution || ''),
+                    institute: normalizeCategoryHTML(htmlToMultilineText(entry.institute || entry.institution || '')),
                     year: normalizeImportedString(entry.year || ''),
                     marks: normalizeImportedString(entry.marks || ''),
                     remarks: normalizeImportedString(entry.remarks || '')
@@ -1529,8 +1529,8 @@
                         <input class="form-control" value="${edu.degree || ''}" oninput="updateEdu(${index}, 'degree', this.value)" placeholder="e.g. CA Intermediate">
                     </div>
                     <div class="form-group">
-                        <label>Institute / Board</label>
-                        <input class="form-control" value="${edu.institute || ''}" oninput="updateEdu(${index}, 'institute', this.value)" placeholder="e.g. ICAI">
+                        <label>Institute / Board <span style="font-size:10px; color:#6b7280; font-weight:400;">(Enter for new line)</span></label>
+                        <textarea class="form-control" style="min-height:56px; resize:vertical;" oninput="updateEdu(${index}, 'institute', this.value)" placeholder="e.g. ICAI&#10;(Mumbai University)">${htmlToMultilineText(edu.institute || '')}</textarea>
                     </div>
                     <div style="display:flex; gap:10px;">
                         <div class="form-group" style="flex:1">
@@ -1574,10 +1574,10 @@
                     ? `unmergeExpTitle(${index})`
                     : `mergeExpTitleWithPrevious(${index})`;
                 const titleMergeTitle = isTitleMergedChild
-                    ? 'Show this title again'
-                    : (canTitleMergeWithPrevious ? 'Reuse the previous title but keep a separate subsection' : 'First stint cannot title-merge backward');
+                    ? 'Remove subsection — show this title again'
+                    : (canTitleMergeWithPrevious ? 'Mark as subsection under the role above (reuses its title)' : 'First entry cannot be a subsection');
                 const titleMergeStyle = !isTitleMergedChild && !canTitleMergeWithPrevious ? 'opacity:.35;pointer-events:none;' : '';
-                const titleMergeLabel = isTitleMergedChild ? 'Show Title' : 'Title Merge';
+                const titleMergeLabel = isTitleMergedChild ? 'Remove Sub' : 'Subsection';
                 div.innerHTML = `
                     <div class="item-actions">
                         <div class="action-btn" onclick="moveExp(${index}, -1)">&#9650;</div>
@@ -1619,6 +1619,10 @@
                         </div>
                         <textarea id="exp-bullets-${index}" class="form-control" data-rich-exp-index="${index}" oninput="updateExp(${index}, 'bullets', this.value)" placeholder="Add bullet points with formatting">${bulletsToRichHTML(exp.bullets || [])}</textarea>
                     </div>
+                    ${!isMergedChild && !isTitleMergedChild ? `
+                    <button type="button" class="btn-dashed" style="margin-top:10px; font-size:11px; color:#0369a1; border-color:#bae6fd;" onclick="addSubsectionAfter(${index})" title="Add a subsection under this role (reuses the same title)">
+                        + Add Subsection
+                    </button>` : ''}
                 `;
                 container.appendChild(div);
             });
@@ -1713,9 +1717,13 @@
         }
 
         function updateEdu(index, field, value) {
-            cvData.education[index][field] = value;
+            if (field === 'institute') {
+                cvData.education[index][field] = normalizeCategoryHTML(value);
+            } else {
+                cvData.education[index][field] = value;
+            }
             postToFrame();
-            if (document.activeElement.tagName !== 'INPUT') renderEduInputs(); // Re-render only if clicked chip
+            if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') renderEduInputs();
         }
 
         function updateExp(index, field, value) {
@@ -1817,6 +1825,13 @@
         function unmergeExpTitle(i) {
             if (i <= 0 || !cvData.experience[i]) return;
             cvData.experience[i].titleMergedWithPrevious = false;
+            normalizeExperienceMerges();
+            renderExpInputs();
+            postToFrame();
+        }
+        function addSubsectionAfter(i) {
+            const newEntry = { role: "", company: cvData.experience[i]?.company || "", dates: "", category: "", bullets: [], mergedWithPrevious: false, titleMergedWithPrevious: true };
+            cvData.experience.splice(i + 1, 0, newEntry);
             normalizeExperienceMerges();
             renderExpInputs();
             postToFrame();
