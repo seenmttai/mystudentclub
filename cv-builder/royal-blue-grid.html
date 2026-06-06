@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CV - Royal Blue Grid</title>
+    <style>
+        :root {
+            --blue-header: #2d5294;
+            --light-blue-bg: #deeaf6;
+            --border-color: #000000;
+            --text-black: #000000;
+            --bg-white: #ffffff;
+            --font-main: "Times New Roman", Times, serif;
+            --viewer-bg: #525659;
+            --ref-width: 1000px;
+            --ref-height: 1414px;
+            --content-scale: 1;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.2s ease-in;
+        }
+
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .resume-container {
+            width: var(--ref-width);
+            height: var(--ref-height);
+            background: var(--bg-white);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            padding: calc(30px * var(--content-scale)) calc(35px * var(--content-scale));
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transform-origin: top center;
+            font-size: calc(16.5px * var(--content-scale));
+            color: var(--text-black);
+            line-height: 1.35;
+            overflow: hidden;
+        }
+
+        .template {
+            display: none !important;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: calc(10px * var(--content-scale));
+        }
+
+        h1[data-field="name"] {
+            font-size: calc(34px * var(--content-scale));
+            font-weight: bold;
+            margin-bottom: calc(2px * var(--content-scale));
+            line-height: 1.05;
+        }
+
+        .subtitle {
+            font-size: calc(18px * var(--content-scale));
+            margin-bottom: calc(8px * var(--content-scale));
+        }
+
+        .contact-info {
+            font-size: calc(16px * var(--content-scale));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: calc(14px * var(--content-scale));
+            min-height: calc(20px * var(--content-scale));
+        }
+
+        .contact-info .contact-sep {
+            color: inherit !important;
+            margin: 0 !important;
+        }
+
+        .contact-info .contact-icon-item {
+            display: inline-flex !important;
+            align-items: center;
+            gap: calc(4px * var(--content-scale));
+            white-space: nowrap;
+        }
+
+        .contact-info .contact-icon-glyph {
+            color: var(--text-black) !important;
+        }
+
+        .contact-info .contact-icon-text,
+        .contact-info .contact-icon-item a {
+            color: var(--blue-header) !important;
+        }
+
+        .contact-info .contact-icon-item a {
+            border-bottom-color: var(--blue-header) !important;
+        }
+
+        .contact-info .contact-icon-item a[href^="tel:"] {
+            color: var(--text-black) !important;
+            border-bottom-color: transparent !important;
+        }
+
+        .section-banner,
+        .section-header {
+            background-color: var(--blue-header);
+            color: #ffffff;
+            padding: calc(5px * var(--content-scale)) calc(8px * var(--content-scale));
+            font-weight: bold;
+            font-size: calc(18px * var(--content-scale));
+            text-transform: uppercase;
+            border: 1px solid var(--blue-header);
+            text-align: left;
+            letter-spacing: 0.5px;
+        }
+
+        .sortable-section {
+            margin-bottom: calc(10px * var(--content-scale));
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: calc(16.5px * var(--content-scale));
+            table-layout: fixed;
+            margin-bottom: calc(12px * var(--content-scale));
+        }
+
+        th,
+        td {
+            border: 1px solid var(--border-color);
+            padding: calc(4px * var(--content-scale)) calc(6px * var(--content-scale));
+            vertical-align: top;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        th {
+            text-align: center;
+            font-weight: bold;
+            background-color: var(--bg-white);
+            white-space: nowrap;
+        }
+
+        td.center,
+        th.center {
+            text-align: center;
+        }
+
+        td.middle {
+            vertical-align: middle;
+        }
+
+        .education-table .col-exam {
+            width: 18%;
+        }
+
+        .education-table .col-year {
+            width: 10%;
+        }
+
+        .education-table .col-inst {
+            width: 40%;
+        }
+
+        .education-table .col-pct {
+            width: 12%;
+        }
+
+        .education-table .col-remarks {
+            width: 20%;
+        }
+
+        .summary-box {
+            border: 1px solid var(--border-color);
+            border-top: none;
+            padding: calc(6px * var(--content-scale)) calc(8px * var(--content-scale));
+            text-align: justify;
+            min-height: calc(38px * var(--content-scale));
+        }
+
+        .summary-box p:last-child,
+        .summary-box ul:last-child,
+        .summary-box ol:last-child {
+            margin-bottom: 0;
+        }
+
+        .job-group {
+            display: block;
+        }
+
+        .job-headers-container {
+            border: 1px solid var(--border-color);
+            border-top: none;
+            background-color: var(--section-bg, var(--light-blue-bg));
+        }
+
+        .job-list-header {
+            display: flex;
+            justify-content: space-between;
+            gap: calc(12px * var(--content-scale));
+            font-weight: bold;
+            font-size: calc(16.5px * var(--content-scale));
+            padding: calc(4px * var(--content-scale)) calc(8px * var(--content-scale));
+        }
+
+        .job-list-header span:last-child {
+            white-space: nowrap;
+            text-align: right;
+        }
+
+        .sortable-section[data-section-id="experience"] > .section-banner,
+        .sortable-section[data-section-id="experience"] > .section-header {
+            margin-bottom: 0 !important;
+        }
+
+        .sortable-section[data-section-id="experience"] > #experience-list {
+            margin-top: 0 !important;
+        }
+
+        .sortable-section[data-section-id="experience"] #experience-list > .job-group:not(.template):first-child .job-headers-container {
+            margin-top: 0 !important;
+        }
+
+        .sortable-section[data-section-id="experience"] #experience-list .grid-table {
+            margin-bottom: 0 !important;
+        }
+
+        .grid-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+            margin-bottom: calc(12px * var(--content-scale));
+        }
+
+        .grid-table td {
+            border: 1px solid var(--border-color);
+            padding: calc(6px * var(--content-scale)) calc(8px * var(--content-scale));
+        }
+
+        .grid-left {
+            width: 18%;
+            background-color: var(--section-bg, var(--light-blue-bg));
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            font-size: calc(16px * var(--content-scale));
+            line-height: 1.25;
+        }
+
+        .grid-right {
+            width: 82%;
+            vertical-align: top;
+        }
+
+        .grid-right > * + * {
+            margin-top: calc(4px * var(--content-scale));
+        }
+
+        .cell-sub-header {
+            display: flex;
+            justify-content: space-between;
+            gap: calc(12px * var(--content-scale));
+            font-weight: bold;
+            font-size: calc(16.5px * var(--content-scale));
+        }
+
+        .cell-sub-header span:last-child {
+            white-space: nowrap;
+            text-align: right;
+        }
+
+        .item-meta {
+            font-style: italic;
+        }
+
+        ul,
+        ol {
+            margin: 0;
+            padding-left: calc(20px * var(--content-scale));
+        }
+
+        li {
+            font-size: calc(16.5px * var(--content-scale));
+            margin-bottom: calc(3px * var(--content-scale));
+            text-align: justify;
+            line-height: 1.35;
+        }
+
+        li:last-child {
+            margin-bottom: 0;
+        }
+
+        [data-field="skills"] ul,
+        [data-field="skills"] ol {
+            margin-top: 0;
+        }
+
+        .detail-table {
+            border-top: none;
+        }
+
+        .grouped-detail-table {
+            border-top: none;
+        }
+
+        .grouped-detail-table tbody + tbody tr:first-child > * {
+            border-top: none;
+        }
+
+        .grouped-support-block {
+            margin-bottom: calc(10px * var(--content-scale));
+        }
+
+        .detail-table td.section-label {
+            width: 18%;
+            background-color: var(--section-bg, var(--light-blue-bg));
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            font-size: calc(16px * var(--content-scale));
+            line-height: 1.25;
+        }
+
+        .detail-table td.section-content {
+            width: 82%;
+        }
+
+        .detail-table td.section-content > * + * {
+            margin-top: calc(4px * var(--content-scale));
+        }
+
+        .universal-injected,
+        .custom-section-injected {
+            margin-bottom: calc(8px * var(--content-scale));
+        }
+
+        .universal-injected ul,
+        .custom-section-injected ul {
+            padding-left: calc(20px * var(--content-scale));
+        }
+
+        .universal-injected .section-header,
+        .custom-section-injected .section-header {
+            background-color: var(--blue-header);
+            border-color: var(--blue-header);
+        }
+
+        .grouped-support-block .section-banner,
+        .job-headers-container,
+        .grid-left,
+        .detail-table td.section-label {
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                background: #ffffff !important;
+            }
+
+            #zoom-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                transform: none !important;
+            }
+
+            .resume-container {
+                width: 1000px !important;
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: none !important;
+                zoom: 0.7937;
+                -moz-transform: scale(0.7937);
+                -moz-transform-origin: top center;
+                transform: none !important;
+                position: static !important;
+                page-break-after: avoid !important;
+                page-break-inside: avoid !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="zoom-wrapper">
+        <div class="resume-container" id="cv-page">
+            <header>
+                <h1 data-field="name"></h1>
+                <div class="subtitle" data-field="tagline"></div>
+                <div class="contact-info" data-field="contact"></div>
+            </header>
+
+            <div class="sortable-section" data-section-id="summary">
+                <div class="section-banner section-header">Career Objective</div>
+                <div class="summary-box" data-field="summary"></div>
+            </div>
+
+            <div class="sortable-section" data-section-id="education">
+                <div class="section-banner section-header">Educational Qualifications</div>
+                <table class="education-table">
+                    <thead>
+                        <tr>
+                            <th class="col-exam">EXAMINATION</th>
+                            <th class="col-year">YEAR</th>
+                            <th class="col-inst">INSTITUTION</th>
+                            <th class="col-pct">PERCENTAGE</th>
+                            <th class="col-remarks">REMARKS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="education-list">
+                        <tr class="template">
+                            <td class="center middle" data-field="degree"></td>
+                            <td class="center middle" data-field="year"></td>
+                            <td class="center middle" data-field="institution"></td>
+                            <td class="center middle" data-field="marks"></td>
+                            <td class="center middle" data-field="remarks"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sortable-section" data-section-id="experience">
+                <div class="section-banner section-header">Work Experience</div>
+                <div id="experience-list">
+                    <div class="job-group template">
+                        <div class="job-headers-container job-header">
+                            <div class="job-list-header job-title-row">
+                                <span><span data-field="company"></span> - <span data-field="role"></span></span>
+                                <span data-field="dates"></span>
+                            </div>
+                        </div>
+                        <table class="grid-table">
+                            <tbody>
+                                <tr>
+                                    <td class="grid-left" data-field="category"></td>
+                                    <td class="grid-right">
+                                        <ul data-list="bullets"></ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sortable-section" data-section-id="projects">
+                <div class="section-banner section-header">Projects</div>
+                <div id="projects-list">
+                    <div class="job-group template">
+                        <table class="grid-table">
+                            <tbody>
+                                <tr>
+                                    <td class="grid-left">Project</td>
+                                    <td class="grid-right">
+                                        <div class="cell-sub-header">
+                                            <span data-field="title"></span>
+                                        </div>
+                                        <div class="item-meta" data-field="description"></div>
+                                        <ul data-list="bullets"></ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grouped-support-block sortable-section" data-section-id="supporting-details-group">
+                <div class="section-banner">Position of Responsibility, Extracurricular Activities, Certifications and Skills</div>
+                <table class="detail-table grouped-detail-table" data-preserve-label-columns data-section-append-host>
+                    <tbody class="sortable-section" data-section-id="leadership" data-section-label="Position of Responsibility">
+                        <tr>
+                            <td class="section-label">Position of<br>Responsibility</td>
+                            <td class="section-content">
+                                <ul data-list="leadership"></ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody class="sortable-section" data-section-id="skills" data-section-label="Technical Skills">
+                        <tr>
+                            <td class="section-label">Technical Skills</td>
+                            <td class="section-content">
+                                <div data-field="skills"></div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody class="sortable-section" data-section-id="certifications" data-section-label="Significant Awards & Certifications">
+                        <tr>
+                            <td class="section-label">Significant Awards<br>&amp; Certifications</td>
+                            <td class="section-content">
+                                <ul data-list="certifications"></ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody class="sortable-section" data-section-id="interests" data-section-label="Extra-Curricular">
+                        <tr>
+                            <td class="section-label">Extra-Curricular</td>
+                            <td class="section-content">
+                                <ul data-list="interests"></ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody class="sortable-section" data-section-id="achievements" data-section-label="Others">
+                        <tr>
+                            <td class="section-label">Achievements</td>
+                            <td class="section-content">
+                                <ul data-list="achievements"></ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="cv-common.js"></script>
+    <script>
+        function scaleToFit() {
+            const page = document.getElementById("cv-page");
+            if (!page || document.body.classList.contains("print-mode")) return;
+
+            const windowWidth = window.innerWidth;
+            const targetWidth = windowWidth - 20;
+            const refWidth = 1000;
+            let scale = 1;
+
+            if (targetWidth < refWidth) {
+                scale = targetWidth / refWidth;
+            }
+
+            page.style.transform = `scale(${scale})`;
+            const refHeight = 1414;
+            const currentVisualHeight = refHeight * scale;
+            const spaceToRemove = refHeight - currentVisualHeight;
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        function shrinkContentToFit() {
+            const page = document.getElementById("cv-page");
+            const maxHeight = 1414;
+            let contentScale = 1;
+            document.documentElement.style.setProperty("--content-scale", contentScale);
+
+            let iterations = 0;
+            while (page.scrollHeight > maxHeight && iterations < 60) {
+                contentScale -= 0.01;
+                document.documentElement.style.setProperty("--content-scale", contentScale);
+                iterations++;
+            }
+        }
+
+        let screenTransform = "";
+        let screenMarginBottom = "";
+
+        function enablePrintMode() {
+            const page = document.getElementById("cv-page");
+            screenTransform = page.style.transform;
+            screenMarginBottom = page.style.marginBottom;
+            document.body.classList.add("print-mode");
+            page.style.transform = "scale(1)";
+            page.style.marginBottom = "0px";
+            shrinkContentToFit();
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById("cv-page");
+            document.body.classList.remove("print-mode");
+            page.style.transform = screenTransform || "";
+            page.style.marginBottom = screenMarginBottom || "";
+            scaleToFit();
+        }
+
+        function handlePrintChange(e) {
+            if (e.matches) enablePrintMode();
+            else disablePrintMode();
+        }
+
+        function init() {
+            shrinkContentToFit();
+            scaleToFit();
+            document.body.style.opacity = "1";
+            const printMedia = window.matchMedia("print");
+            if (printMedia.addEventListener) printMedia.addEventListener("change", handlePrintChange);
+            else if (printMedia.addListener) printMedia.addListener(handlePrintChange);
+            window.addEventListener("beforeprint", enablePrintMode);
+            window.addEventListener("afterprint", disablePrintMode);
+        }
+
+        document.addEventListener("DOMContentLoaded", init);
+        window.addEventListener("load", function () {
+            scaleToFit();
+            shrinkContentToFit();
+        });
+
+        let resizeTimer;
+        window.addEventListener("resize", function () {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+</html>

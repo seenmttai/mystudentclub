@@ -278,6 +278,26 @@
             vertical-align: top;
         }
 
+        .section-detail-table td.section-label {
+            background-color: #f2f2f2;
+            font-weight: 900;
+            width: 18%;
+            text-align: center;
+            vertical-align: middle;
+            line-height: 1.25;
+            padding: calc(6px * var(--content-scale));
+        }
+
+        .section-detail-table td.section-content {
+            text-align: left;
+            vertical-align: top;
+            padding: calc(6px * var(--content-scale));
+        }
+
+        .section-detail-table .bullet-list {
+            margin: 0;
+        }
+
         .no-top-border {
             border-top: none;
         }
@@ -463,11 +483,11 @@
 
             <div class="sortable-section" data-section-id="skills">
                 <div class="section-header">SKILLS</div>
-                <table class="extra-table">
+                <table class="extra-table section-detail-table" data-preserve-label-columns>
                     <tbody>
                         <tr>
-                            <td class="category">Skills</td>
-                            <td class="details">
+                            <td class="section-label">Skills</td>
+                            <td class="section-content">
                                 <div data-field="skills"></div>
                             </td>
                         </tr>
@@ -477,11 +497,11 @@
 
             <div class="sortable-section" data-section-id="achievements">
                 <div class="section-header">ACHIEVEMENTS</div>
-                <table class="extra-table">
+                <table class="extra-table section-detail-table">
                     <tbody>
                         <tr>
-                            <td class="category">Achievements</td>
-                            <td class="details">
+                            <td class="section-label">Achievements</td>
+                            <td class="section-content">
                                 <ul class="bullet-list" data-list="achievements">
                                 </ul>
                             </td>
@@ -492,11 +512,11 @@
 
             <div class="sortable-section" data-section-id="certifications">
                 <div class="section-header">CERTIFICATIONS</div>
-                <table class="extra-table">
+                <table class="extra-table section-detail-table">
                     <tbody>
                         <tr>
-                            <td class="category">Certifications</td>
-                            <td class="details">
+                            <td class="section-label">Certifications</td>
+                            <td class="section-content">
                                 <ul class="bullet-list" data-list="certifications">
                                 </ul>
                             </td>
@@ -507,11 +527,11 @@
 
             <div class="sortable-section" data-section-id="interests">
                 <div class="section-header">INTERESTS</div>
-                <table class="extra-table">
+                <table class="extra-table section-detail-table">
                     <tbody>
                         <tr>
-                            <td class="category">Interests</td>
-                            <td class="details">
+                            <td class="section-label">Interests</td>
+                            <td class="section-content">
                                 <ul class="bullet-list" data-list="interests">
                                 </ul>
                             </td>
@@ -522,11 +542,11 @@
 
             <div class="sortable-section" data-section-id="leadership">
                 <div class="section-header">LEADERSHIP</div>
-                <table class="extra-table">
+                <table class="extra-table section-detail-table">
                     <tbody>
                         <tr>
-                            <td class="category">Leadership</td>
-                            <td class="details">
+                            <td class="section-label">Leadership</td>
+                            <td class="section-content">
                                 <ul class="bullet-list" data-list="leadership">
                                 </ul>
                             </td>
