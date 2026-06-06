@@ -2242,42 +2242,43 @@ async function checkAndPromptConsent() {
     }
 }
 
-// Consent Accept Button
-document.getElementById('cvConsentAcceptBtn')?.addEventListener('click', async () => {
-    document.getElementById('cvConsentPromptModal').style.display = 'none';
-    showToast('Syncing your CV to cloud...', 'info');
-    try {
-        const syncSuccess = await checkAndSyncCVBackground();
-        if (syncSuccess) {
-            const now = new Date().toISOString();
-            await supabaseClient.from('consentform').upsert({
-                user_id: currentSession.user.id,
-                cv_sharing_consent: true,
-                consent_text: DPDP_CONSENT_TEXT,
-                consented_at: now,
-                withdrawn_at: null,
-                user_agent: navigator.userAgent,
-                updated_at: now
-            }, { onConflict: 'user_id' });
-
-            showToast('Thank you! Your CV has been backed up and your consent has been recorded.', 'success');
-        } else {
-            showToast('CV backup sync failed. Please complete/update your profile to consent.', 'error', 8000);
-        }
-    } catch (e) {
-        console.error('Failed to sync CV and save consent:', e);
-        showToast('Could not save consent. Please try again from your profile.', 'error');
-    }
-});
-
-// Consent Decline Button
-document.getElementById('cvConsentDeclineBtn')?.addEventListener('click', () => {
-    document.getElementById('cvConsentPromptModal').style.display = 'none';
-    window.location.href = '/profile.html';
-});
-
-// Trigger consent check after page loads
+// Trigger consent check and register listeners after page loads
 document.addEventListener('DOMContentLoaded', () => {
+    // Consent Accept Button
+    document.getElementById('cvConsentAcceptBtn')?.addEventListener('click', async () => {
+        console.log("DEBUG: cvConsentAcceptBtn clicked!");
+        document.getElementById('cvConsentPromptModal').style.display = 'none';
+        showToast('Syncing your CV to cloud...', 'info');
+        try {
+            const syncSuccess = await checkAndSyncCVBackground();
+            if (syncSuccess) {
+                const now = new Date().toISOString();
+                await supabaseClient.from('consentform').upsert({
+                    user_id: currentSession.user.id,
+                    cv_sharing_consent: true,
+                    consent_text: DPDP_CONSENT_TEXT,
+                    consented_at: now,
+                    withdrawn_at: null,
+                    user_agent: navigator.userAgent,
+                    updated_at: now
+                }, { onConflict: 'user_id' });
+
+                showToast('Thank you! Your CV has been backed up and your consent has been recorded.', 'success');
+            } else {
+                showToast('CV backup sync failed. Please complete/update your profile to consent.', 'error', 8000);
+            }
+        } catch (e) {
+            console.error('Failed to sync CV and save consent:', e);
+            showToast('Could not save consent. Please try again from your profile.', 'error');
+        }
+    });
+
+    // Consent Decline Button
+    document.getElementById('cvConsentDeclineBtn')?.addEventListener('click', () => {
+        document.getElementById('cvConsentPromptModal').style.display = 'none';
+        window.location.href = '/profile.html';
+    });
+
     setTimeout(() => checkAndPromptConsent(), 2000);
 });
 
