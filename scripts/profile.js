@@ -594,7 +594,7 @@ async function loadConsentStatus() {
             .from('consentform')
             .select('cv_sharing_consent, consented_at, withdrawn_at')
             .eq('user_id', currentUser.id)
-            .single();
+            .maybeSingle();
 
         const checkbox = document.getElementById('cvSharingConsent');
         const statusText = document.getElementById('consentStatusText');
@@ -603,9 +603,12 @@ async function loadConsentStatus() {
 
         if (data && data.cv_sharing_consent) {
             if (checkbox) checkbox.checked = true;
-            if (statusText) statusText.textContent = 'Consent given on ' + new Date(data.consented_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+            const dateStr = data.consented_at
+                ? new Date(data.consented_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })
+                : '—';
+            if (statusText) statusText.textContent = 'Consent given on ' + dateStr;
             if (privacyStatus) { privacyStatus.textContent = 'Active'; privacyStatus.style.color = '#16A34A'; }
-            if (privacyDate) privacyDate.textContent = new Date(data.consented_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+            if (privacyDate) privacyDate.textContent = dateStr;
         } else {
             if (checkbox) checkbox.checked = false;
             if (statusText) statusText.textContent = data ? 'Consent withdrawn' : '';
@@ -639,8 +642,11 @@ async function saveConsentRecord(isConsented) {
             .from('consentform')
             .upsert(payload, { onConflict: 'user_id' });
         if (error) throw error;
+        return true;
     } catch (e) {
         console.error('Failed to save consent record:', e);
+        showToast('Could not save consent record. Please try again.', 'error', 6000);
+        return false;
     }
 }
 
@@ -2051,7 +2057,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const menuCloseBtn = document.getElementById('menuCloseBtn');
     const authButtonsContainer = document.querySelector('.auth-buttons-container');
 
-    if (user) {
+    if (user && authButtonsContainer) {
         let displayName = user.email;
         try {
             const pd = JSON.parse(localStorage.getItem('userProfileData') || '{}');
@@ -2069,7 +2075,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
 
-        document.getElementById('logoutBtn').addEventListener('click', async () => {
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) logoutBtn.addEventListener('click', async () => {
             await supabaseClient.auth.signOut();
             localStorage.clear();
             window.location.href = '/login.html';
@@ -2099,14 +2106,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Live update privacy card when consent checkbox changes
     const cvConsentCheckbox = document.getElementById('cvSharingConsent');
     if (cvConsentCheckbox) {
-        cvConsentCheckbox.addEventListener('change', () => {
-            if (!cvConsentCheckbox.checked) {
+        cvConsentCheckbox.addEventListener('change', async () => {
+            if (cvConsentCheckbox.checked) {
+                // Consent given — save immediately and reload from DB to get real timestamp
+                const saved = await saveConsentRecord(true);
+                if (saved) {
+                    await loadConsentStatus();
+                    showToast('CV sharing consent saved. Your CV can now be shared with employers.', 'success', 6000);
+                } else {
+                    // Revert checkbox if save failed
+                    cvConsentCheckbox.checked = false;
+                }
+            } else {
                 // Consent withdrawal — save immediately
-                saveConsentRecord(false);
-                updatePrivacyCard(false);
-                const statusText = document.getElementById('consentStatusText');
-                if (statusText) statusText.textContent = 'Consent withdrawn';
-                showToast('CV sharing consent withdrawn. Your CV will no longer be shared with employers.', 'warning', 8000);
+                const saved = await saveConsentRecord(false);
+                if (saved) {
+                    updatePrivacyCard(false);
+                    const statusText = document.getElementById('consentStatusText');
+                    if (statusText) statusText.textContent = 'Consent withdrawn';
+                    showToast('CV sharing consent withdrawn. Your CV will no longer be shared with employers.', 'warning', 8000);
+                } else {
+                    // Revert checkbox if save failed
+                    cvConsentCheckbox.checked = true;
+                }
             }
         });
     }
