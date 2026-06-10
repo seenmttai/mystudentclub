@@ -188,11 +188,17 @@ function updateFilterCache() {
 //  PORTAL MANAGEMENT
 function getDefaultPortalId() {
   try {
+    const profile = JSON.parse(localStorage.getItem("userProfileData") || "{}");
     const onboarding = JSON.parse(
       localStorage.getItem("onboardingSegmentData") || "{}",
     );
+    // Check every place the preference may live. PREF_TO_PORTAL maps both the
+    // career-form job_preference values and the onboarding looking_for labels.
     const pref =
-      localStorage.getItem("userJobPreference") || onboarding.looking_for;
+      localStorage.getItem("userJobPreference") ||
+      profile.job_preference ||
+      profile.looking_for ||
+      onboarding.looking_for;
     return PREF_TO_PORTAL[pref] || "industrial";
   } catch (_) {
     return "industrial";
@@ -202,6 +208,20 @@ function getDefaultPortalId() {
 function switchPortal(portalId) {
   const url = PORTAL_URLS[portalId];
   if (url) window.location.href = url;
+}
+
+// Redirect the home page to the user's preferred portal, once per browser session.
+// Returns true if a redirect was triggered (caller should stop further init).
+function maybeRedirectToPreferredPortal(pageConfig) {
+  if (!pageConfig.isHome) return false;
+  if (sessionStorage.getItem("msc_portal_redirected")) return false;
+  const defaultId = getDefaultPortalId();
+  if (defaultId && defaultId !== "industrial" && PORTAL_URLS[defaultId]) {
+    sessionStorage.setItem("msc_portal_redirected", "1");
+    window.location.href = PORTAL_URLS[defaultId];
+    return true;
+  }
+  return false;
 }
 
 function renderPortalChips() {
@@ -1219,6 +1239,8 @@ window.handleLogout = async () => {
       keysToRemove.push(key);
   }
   keysToRemove.forEach((k) => localStorage.removeItem(k));
+  // Reset the one-shot redirect guard so the next login re-evaluates the preferred portal
+  sessionStorage.removeItem("msc_portal_redirected");
   currentSession = null;
   appliedJobIds.clear();
   updateHeaderAuth(null);
@@ -1293,8 +1315,10 @@ async function fetchAndCacheProfileData() {
       profileObj.ca_final_attempt = data.ca_final_attempt;
       profileObj.years_of_experience = data.years_of_experience;
       localStorage.setItem("userProfileData", JSON.stringify(profileObj));
-      if (profileObj.job_preference)
-        localStorage.setItem("userJobPreference", profileObj.job_preference);
+      // Restore the portal preference. It may live in the career-form job_preference
+      // field or the onboarding looking_for column — PREF_TO_PORTAL maps both forms.
+      const prefValue = profileObj.job_preference || profileObj.looking_for;
+      if (prefValue) localStorage.setItem("userJobPreference", prefValue);
       if (profileObj.notification_subscriptions?.length) {
         localStorage.setItem(
           "subscribedTopics",
@@ -2310,35 +2334,51 @@ async function initializePage() {
   if (dom.jobsListTitle)
     dom.jobsListTitle.textContent = pageConfig.label + " Jobs";
 
-  // On the home page (Industrial Training), redirect to user's preferred portal
-  // Only fires once per browser session so the user can still navigate back to this page
-  if (pageConfig.isHome && !sessionStorage.getItem("msc_portal_redirected")) {
-    const defaultId = getDefaultPortalId();
-    if (defaultId && defaultId !== "industrial" && PORTAL_URLS[defaultId]) {
-      sessionStorage.setItem("msc_portal_redirected", "1");
-      window.location.href = PORTAL_URLS[defaultId];
-      return;
-    }
-  }
+  // One-shot "just logged in" signal. login.html sets it for email/password and
+  // native Google sign-in. The Google OAuth web flow instead returns to this page
+  // with the token in the URL hash, so treat that as a fresh login too.
+  const oauthReturn = window.location.hash.includes("access_token");
+  const justLoggedIn =
+    localStorage.getItem("justLoggedIn") === "true" || oauthReturn;
+  localStorage.removeItem("justLoggedIn");
+  // On a fresh login, clear the session guard so the redirect re-fires even if it
+  // was already set earlier in this tab (sessionStorage survives the logout nav).
+  if (justLoggedIn) sessionStorage.removeItem("msc_portal_redirected");
+
+  // Fast path: returning users whose preference is already cached get redirected
+  // before any async work (no flash). Skipped on a fresh login — there we must fetch
+  // the profile first so the redirect uses the account just signed into, not stale cache.
+  if (!justLoggedIn && maybeRedirectToPreferredPortal(pageConfig)) return;
 
   renderPortalChips();
 
   // Auth check
   const session = await checkAuth();
-  updateHeaderAuth(session);
 
   if (session) {
     localStorage.removeItem("portalVisitCount");
-    await initializeUserFeatures();
 
-    // Check if onboarding is needed
+    // Load the profile BEFORE rendering the header or redirecting, so both the
+    // greeting name and the preferred-portal redirect use up-to-date data. On a
+    // fresh login, always re-fetch from Supabase (ignore any stale cache).
     let profile = null;
     try {
       profile = JSON.parse(localStorage.getItem("userProfileData") || "null");
     } catch (_) {}
-    if (!profile?.looking_for) profile = await fetchAndCacheProfileData();
+    if (justLoggedIn || !profile?.looking_for)
+      profile = await fetchAndCacheProfileData();
+
+    // Greeting now reflects the fetched profile name.
+    updateHeaderAuth(session);
+
+    // Profile + preference are up to date — evaluate the home → portal redirect.
+    if (maybeRedirectToPreferredPortal(pageConfig)) return;
+
+    await initializeUserFeatures();
+
     if (!profile?.looking_for) setTimeout(showOnboardingSegmentModal, 800);
   } else {
+    updateHeaderAuth(session);
     let visits = parseInt(localStorage.getItem("portalVisitCount") || "0") + 1;
     localStorage.setItem("portalVisitCount", visits);
     if (visits === 3)

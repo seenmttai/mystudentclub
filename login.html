@@ -1143,6 +1143,7 @@
       window.addEventListener('DOMContentLoaded', async () => {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
+          localStorage.setItem('justLoggedIn', 'true');
           window.location.href = redirectUrl || '/';
         }
 
@@ -1241,6 +1242,7 @@
           });
 
           if (error) throw error;
+          localStorage.setItem('justLoggedIn', 'true');
           window.location.href = redirectUrl || '/';
 
         } catch (error) {
@@ -1301,6 +1303,7 @@
             signupSuccess.classList.add('show');
             signupForm.reset();
           } else if (data.session) {
+            localStorage.setItem('justLoggedIn', 'true');
             window.location.href = '/';
           }
 
@@ -1352,6 +1355,7 @@
           if (error) {
             alert('Could not complete Google Sign-In: ' + error.message);
           } else {
+            localStorage.setItem('justLoggedIn', 'true');
             window.location.href = redirectUrl || '/';
           }
         } catch (e) {
