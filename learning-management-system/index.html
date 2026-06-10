@@ -178,6 +178,245 @@
             border-radius: 6px;
             cursor: pointer;
         }
+
+        /* Consent Modal Styles */
+        .consent-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .consent-modal-content {
+            background: white;
+            padding: 2.25rem;
+            border-radius: 20px;
+            width: 92%;
+            max-width: 580px;
+            box-shadow: var(--shadow-2xl);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .consent-modal-header {
+            text-align: center;
+            margin-bottom: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .consent-icon-shield {
+            font-size: 2.5rem;
+            color: var(--primary-600);
+            margin-bottom: 0.75rem;
+            background: rgba(30, 58, 138, 0.1);
+            width: 70px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            animation: pulseShield 2s infinite;
+        }
+
+        @keyframes pulseShield {
+            0% {
+                box-shadow: 0 0 0 0 rgba(30, 58, 138, 0.2);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(30, 58, 138, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(30, 58, 138, 0);
+            }
+        }
+
+        .consent-modal-header h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 0.25rem;
+        }
+
+        .compliance-badge {
+            background: #dcfce7;
+            color: #166534;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            display: inline-block;
+            margin-top: 0.25rem;
+        }
+
+        .consent-modal-body {
+            overflow-y: auto;
+            padding-right: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--gray-700);
+        }
+
+        .consent-intro {
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .consent-detail-box {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .consent-detail-box h5 {
+            color: var(--gray-800);
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            margin-top: 0;
+        }
+
+        .consent-detail-box ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .consent-detail-box li {
+            position: relative;
+            padding-left: 1rem;
+            font-size: 0.825rem;
+            color: var(--gray-600);
+            text-align: left;
+        }
+
+        .consent-detail-box li::before {
+            content: "•";
+            color: var(--primary-600);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .consent-checkbox-wrap {
+            margin: 1rem 0 0.5rem 0;
+            padding: 0.75rem;
+            background: rgba(37, 99, 235, 0.04);
+            border: 1px dashed rgba(37, 99, 235, 0.2);
+            border-radius: 10px;
+            transition: var(--transition-fast);
+        }
+
+        .consent-checkbox-wrap:hover {
+            background: rgba(37, 99, 235, 0.07);
+        }
+
+        .consent-checkbox-label {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--gray-800);
+            user-select: none;
+            text-align: left;
+        }
+
+        .consent-checkbox-label input {
+            margin-top: 0.2rem;
+            width: 16px;
+            height: 16px;
+            accent-color: var(--primary-600);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .consent-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            border-top: 1px solid var(--gray-200);
+            padding-top: 1.25rem;
+        }
+
+        .btn-decline {
+            background: white;
+            color: var(--gray-600);
+            border: 1px solid var(--gray-300);
+            padding: 0.65rem 1.25rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        .btn-decline:hover {
+            background: var(--gray-50);
+            color: var(--gray-800);
+            border-color: var(--gray-400);
+        }
+
+        .btn-accept {
+            background: linear-gradient(135deg, var(--primary-500), var(--secondary-500));
+            color: white;
+            border: none;
+            padding: 0.65rem 1.5rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-accept:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-accept:disabled {
+            background: var(--gray-300);
+            color: var(--gray-500);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
     </style>
 </head>
 
@@ -404,6 +643,50 @@
             </div>
         </div>
 
+        <!-- DPDP Act Consent Modal -->
+        <div v-if="showConsentModal" class="consent-modal-overlay">
+            <div class="consent-modal-content">
+                <div class="consent-modal-header">
+                    <div class="consent-icon-shield">
+                        <i class="fas fa-shield-halved"></i>
+                    </div>
+                    <h3>Data Sharing Consent Notice</h3>
+                    <span class="compliance-badge">DPDP Act, 2023 Compliant</span>
+                </div>
+                <div class="consent-modal-body">
+                    <p class="consent-intro">
+                        My Student Club values your privacy. In accordance with the <strong>Digital Personal Data Protection (DPDP) Act, 2023</strong> of India, we require your explicit consent to share your professional details.
+                    </p>
+                    
+                    <div class="consent-detail-box">
+                        <h5><i class="fas fa-info-circle"></i> Key Information Notice:</h5>
+                        <ul>
+                            <li><strong>Purpose:</strong> To share your uploaded CV (Resume) and profile details with registered companies and recruitment partners to match you with career opportunities.</li>
+                            <li><strong>Data to be Processed:</strong> Full Name, Email, Phone Number, Educational Details, Work Experience, and uploaded CV/Resume file.</li>
+                            <li><strong>Right to Withdraw:</strong> You can withdraw this consent at any time, just as easily as giving it, by updating your profile settings on the <a href="https://mystudentclub.com/profile.html" target="_blank">My Profile</a> page.</li>
+                            <li><strong>Unconditional Choice:</strong> Providing consent is entirely voluntary. Declining will not affect your course access or learning dashboard, but you won't be considered for active placements.</li>
+                            <li><strong>Grievance Redressal:</strong> For any queries or concerns regarding your data, contact our Grievance Officer at <a href="mailto:padam@mystudentclub.com">padam@mystudentclub.com</a>.</li>
+                        </ul>
+                    </div>
+
+                    <div class="consent-checkbox-wrap">
+                        <label class="consent-checkbox-label">
+                            <input type="checkbox" v-model="consentChecked">
+                            <span class="checkbox-text">
+                                I explicitly consent to My Student Club sharing my CV and profile details with registered companies and recruiters for job-matching purposes.
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div class="consent-modal-footer">
+                    <button class="btn-decline" @click="submitConsent(false)">Decline / Keep Private</button>
+                    <button class="btn-accept" :disabled="!consentChecked" @click="submitConsent(true)">
+                        <i class="fas fa-check-circle"></i> Grant Consent
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <footer class="footer-enhanced">
             <div class="footer-content">
                 <div class="footer-main">
@@ -520,7 +803,9 @@
                         totalVideosCompleted: 0,
                         streak: 0,
                         completionRate: 0
-                    }
+                    },
+                    showConsentModal: false,
+                    consentChecked: false
                 }
             },
             computed: {
@@ -541,6 +826,7 @@
                     const { data: { session }, error } = await supabase.auth.getSession();
                     if (session && session.user) {
                         this.user = session.user;
+                        await this.checkConsentStatus();
                         await this.fetchUserEnrollments();
                     } else {
                         window.location.href = 'https://www.mystudentclub.com/login';
@@ -577,6 +863,66 @@
                     } catch (e) {
                         alert('Error submitting report. Please try again.');
                         console.error(e);
+                    }
+                },
+
+                async checkConsentStatus() {
+                    if (!this.user) return;
+                    try {
+                        const { data, error } = await supabase
+                            .from('consentform')
+                            .select('cv_sharing_consent, consented_at, withdrawn_at')
+                            .eq('user_id', this.user.id)
+                            .maybeSingle();
+
+                        if (error) {
+                            console.error("Error fetching consent status:", error);
+                            return;
+                        }
+
+                        // If no record exists, show the consent modal
+                        if (!data || data.cv_sharing_consent === null || data.cv_sharing_consent === undefined) {
+                            this.showConsentModal = true;
+                        }
+                    } catch (e) {
+                        console.error("Exception checking consent:", e);
+                    }
+                },
+
+                async submitConsent(isConsented) {
+                    if (!this.user) return;
+                    const now = new Date().toISOString();
+                    const payload = {
+                        user_id: this.user.id,
+                        cv_sharing_consent: isConsented,
+                        consent_text: 'I consent to My Student Club sharing my CV and profile details with registered companies and recruiters for job-matching purposes.',
+                        user_agent: navigator.userAgent,
+                        updated_at: now
+                    };
+                    if (isConsented) {
+                        payload.consented_at = now;
+                        payload.withdrawn_at = null;
+                    } else {
+                        payload.withdrawn_at = now;
+                    }
+
+                    try {
+                        const { error } = await supabase
+                            .from('consentform')
+                            .upsert(payload, { onConflict: 'user_id' });
+                        
+                        if (error) throw error;
+                        
+                        this.showConsentModal = false;
+                        
+                        if (isConsented) {
+                            alert("Thank you! Your consent has been recorded. We will now share your CV with matching companies.");
+                        } else {
+                            alert("Your choice has been recorded. Your CV will remain private and won't be shared with companies.");
+                        }
+                    } catch (e) {
+                        console.error('Failed to save consent:', e);
+                        alert("An error occurred while saving your response. Please try again.");
                     }
                 },
 
