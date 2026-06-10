@@ -76,14 +76,17 @@
 
   <div class="hero-container">
     <div class="hero-content" data-aos="fade-right">
+      <div class="closed-notice">
+        <i class="fas fa-info-circle"></i> Registrations Temporarily Closed
+      </div>
       <h1 class="hero-title">MSC <span class="highlight-blue">Industrial Training Program</span></h1>
       <p class="hero-subtitle">For Students Completing 1 Year Between 1st May to 31st August</p>
       
       <div class="hero-cta-group">
-        <a href="https://u.payu.in/4IknM3Yb3nEF" class="notify-me-btn" style="text-decoration: none;">
-          <span class="notify-btn-icon">⚡</span>
-          <span class="notify-btn-text">Enroll Now</span>
-        </a>
+        <button id="notifyMeBtn" class="notify-me-btn">
+          <span class="notify-btn-icon">🔔</span>
+          <span class="notify-btn-text">Notify Me When Open</span>
+        </button>
         <a href="#curriculum-section" class="btn-secondary">
           <i class="far fa-file-alt"></i> View Curriculum
         </a>
@@ -476,11 +479,13 @@
       </div>
       
       <div class="pricing-cta">
-        <a href="https://u.payu.in/4IknM3Yb3nEF" class="notify-me-btn" style="text-decoration: none;">
-          <span class="notify-btn-icon">⚡</span>
-          <span class="notify-btn-text">Enroll Now</span>
-        </a>
-
+        <button id="registerButtonWorkshop" class="notify-me-btn">
+          <span class="notify-btn-icon">🔔</span>
+          <span class="notify-btn-text">Notify Me When Open</span>
+        </button>
+        <p class="cta-subtext" style="color: #ef4444; font-weight: 700; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.95rem;">
+          <i class="fas fa-exclamation-circle"></i> Registrations Closed
+        </p>
       </div>
     </div>
   </div>
@@ -489,7 +494,7 @@
 <!-- Beautiful Floating status alerts placeholder -->
 <div id="notifyStatus" class="notify-status"></div>
 
-<div class="fixed-cta" id="cta-footer">
+<div class="fixed-cta closed" id="cta-footer">
   <div class="price-container">
     <span class="price-label">Program Fee</span>
     <div class="price">
@@ -497,10 +502,10 @@
       <span class="original">₹4999</span>
     </div>
   </div>
-  <a href="https://u.payu.in/4IknM3Yb3nEF" class="notify-me-footer-btn" style="margin-left: auto; text-decoration: none;">
-    <span class="notify-footer-icon">⚡</span>
-    <span class="notify-footer-text">Enroll Now</span>
-  </a>
+  <button id="notifyMeFooterBtn" class="notify-me-footer-btn" style="margin-left: auto;">
+    <span class="notify-footer-icon">🔔</span>
+    <span class="notify-footer-text">Notify Me</span>
+  </button>
 </div>
 
 
