@@ -73,11 +73,11 @@ body {
   padding: 0 18px;
   padding-top: max(10px, env(safe-area-inset-top, 10px));
 }
-.header-left { display: flex; align-items: center; gap: 10px; }
+.header-left { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; overflow: hidden; }
 .header-logo { height: 38px; width: auto; flex-shrink: 0; }
-.header-greeting { display: flex; flex-direction: column; justify-content: center; }
+.header-greeting { display: flex; flex-direction: column; justify-content: center; min-width: 0; overflow: hidden; }
 .header-greeting .greeting-sub { font-size: 10px; font-weight: 500; color: var(--sub); line-height: 1.4; }
-.header-greeting .greeting-name { font-size: 18px; font-weight: 800; color: var(--text); line-height: 1.2; letter-spacing: -.025em; margin-top: 1px; }
+.header-greeting .greeting-name { font-size: 18px; font-weight: 800; color: var(--text); line-height: 1.2; letter-spacing: -.025em; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .header-actions { display: flex; align-items: center; gap: 3px; }
 .hdr-icon-btn {
   width: 40px; height: 40px;
@@ -179,6 +179,9 @@ body {
   gap: 8px;
 }
 .menu-item:hover { background: var(--chip); }
+.menu-item--danger { color: #EF4444; margin-top: 8px; border-top: 1px solid var(--line); justify-content: flex-start; }
+.menu-item--danger:hover { background: #FEF2F2; }
+[data-theme="dark"] .menu-item--danger:hover { background: #450A0A; }
 .menu-item-dropdown { position: relative; }
 .dropdown-icon { width: 16px; height: 16px; transition: transform .2s; }
 .dropdown-icon.open { transform: rotate(180deg); }

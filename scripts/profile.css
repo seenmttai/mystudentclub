@@ -178,24 +178,29 @@
   border-radius: 16px;
   padding: 14px 16px;
 }
-.p2-missing-list { display: flex; flex-direction: column; gap: 7px; margin-bottom: 12px; }
+.p2-missing-list {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-bottom: 12px;
+}
 .p2-missing-row {
   display: flex; align-items: center; gap: 8px;
   font-size: 12px; color: var(--sub);
 }
-.p2-missing-row i { font-size: 11px; color: var(--brand); width: 14px; text-align: center; }
+.p2-missing-row i { font-size: 11px; color: var(--brand); width: 14px; flex-shrink: 0; text-align: center; }
+.p2-missing-row span:first-of-type { flex: 1; min-width: 0; }
 .p2-boost-sm {
-  margin-left: auto;
+  flex-shrink: 0;
   font-size: 11px; font-weight: 700;
   color: var(--p2-orange);
   background: rgba(249,115,22,.1);
   padding: 2px 7px; border-radius: 20px;
 }
 .p2-missing-cta {
-  display: block; text-align: center;
+  display: block; width: 100%; text-align: center;
   background: var(--brand); color: #fff;
-  border-radius: 12px; padding: 10px;
+  border-radius: 12px; padding: 11px;
   font-size: 13px; font-weight: 700;
+  box-sizing: border-box;
 }
 
 /* ── Section cards ── */
@@ -284,6 +289,33 @@ body.p2-modal-open { overflow: hidden; }
   padding: 0 20px calc(32px + var(--safe-bottom));
   box-shadow: 0 -8px 40px rgba(0,0,0,.35);
 }
+/* drag pill */
+.p2-card-form:not(.collapsed)::before {
+  content: '';
+  display: block;
+  width: 36px; height: 4px;
+  background: var(--line);
+  border-radius: 2px;
+  margin: 12px auto 0;
+}
+
+/* sticky header injected by JS */
+.p2-sheet-header {
+  position: sticky; top: 0;
+  background: var(--card);
+  z-index: 3;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 20px 13px;
+  margin: 4px -20px 16px;
+  border-bottom: 1px solid var(--line);
+}
+.p2-sheet-title {
+  flex: 1;
+  font-size: 15px; font-weight: 700; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* legacy — kept for any forms that still render their own title before JS runs */
 .p2-inline-form-title {
   font-size: 15px; font-weight: 700; color: var(--text);
   padding: 16px 0 14px;
@@ -358,16 +390,14 @@ body.p2-modal-open { overflow: hidden; }
   font-family: 'Poppins', sans-serif; cursor: pointer;
 }
 
-/* modal close (X) button — injected by profile.js */
+/* modal close (X) button — lives inside .p2-sheet-header */
 .p2-modal-close {
-  position: sticky; top: 12px;
-  float: right; margin: 12px -4px 0 0;
+  flex-shrink: 0;
   width: 32px; height: 32px;
   border: none; border-radius: 50%;
   background: var(--chip); color: var(--sub);
   display: flex; align-items: center; justify-content: center;
-  cursor: pointer; font-size: 14px; flex-shrink: 0;
-  z-index: 2;
+  cursor: pointer; font-size: 14px;
 }
 
 /* radio groups */

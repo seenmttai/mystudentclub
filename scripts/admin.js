@@ -1,4 +1,4 @@
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+﻿const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
@@ -7,7 +7,7 @@ const CLOUDFLARE_WORKER_URL = 'https://auth-check.bhansalimanan55.workers.dev';
 const PREDEFINED_LOCATIONS = ["mumbai", "bangalore", "bengaluru", "gurgaon", "gurugram", "pune", "kolkata", "delhi", "new delhi", "noida", "hyderabad", "ahmedabad", "chennai", "jaipur"];
 const JOB_TYPE_MAP = { "Industrial Training Job Portal": "industrial", "Fresher Jobs": "fresher", "Semi Qualified Jobs": "semi", "Articleship Jobs": "articleship" };
 const PORTAL_NAME_MAP = { "Industrial Training Job Portal": "Industrial Training", "Fresher Jobs": "Fresher", "Semi Qualified Jobs": "Semi Qualified", "Articleship Jobs": "Articleship" };
-const PORTAL_LINK_MAP = { "Industrial Training Job Portal": "https://www.mystudentclub.com/", "Fresher Jobs": "https://www.mystudentclub.com/ca-fresher-jobs", "Semi Qualified Jobs": "https://www.mystudentclub.com/semi-qualified-ca-jobs", "Articleship Jobs": "https://www.mystudentclub.com/ca-articleship-opportunities" };
+const PORTAL_LINK_MAP = { "Industrial Training Job Portal": "https://www.mystudentclub.com/", "Fresher Jobs": "https://www.mystudentclub.com/ca-fresher-jobs", "Semi Qualified Jobs": "https://www.mystudentclub.com/semi-qualified-ca-jobs", "Articleship Jobs": "https://www.mystudentclub.com/ca-articleship-jobs" };
 
 let currentSession = null;
 let isFetching = false;

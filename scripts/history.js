@@ -405,6 +405,13 @@ function setupEventListeners() {
     document.getElementById('menuButton')?.addEventListener('click', () => document.getElementById('expandedMenu')?.classList.add('active'));
     document.getElementById('menuCloseBtn')?.addEventListener('click', () => document.getElementById('expandedMenu')?.classList.remove('active'));
 
+    // Logout button in side menu
+    document.getElementById('logoutMenuBtn')?.addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        localStorage.clear();
+        window.location.href = '/login.html';
+    });
+
     // Resources dropdown
     document.getElementById('resourcesDropdownBtn')?.addEventListener('click', () => {
         const dd = document.getElementById('resourcesDropdown');

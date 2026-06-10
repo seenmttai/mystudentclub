@@ -1,4 +1,4 @@
-import { getDaysAgo } from './date-utils.js';
+﻿import { getDaysAgo } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, showResumeRedirectModal, showToast } from './ai-helper.js';
 
 // ============================================================
@@ -49,15 +49,15 @@ const PORTALS = [
 const PREF_TO_PORTAL = {
     'industrial': 'industrial', 'CA Industrial Training Default': 'industrial',
     'articleship': 'articleship', 'CA Articleship': 'articleship',
-    'fresher_fresher': 'fresher', 'fresher_experienced': 'fresher', 'CA Fresher': 'fresher',
-    'semi_fresher': 'semi', 'semi_experienced': 'semi', 'Semi Qualified CA': 'semi',
+    'fresher': 'fresher', 'fresher_fresher': 'fresher', 'fresher_experienced': 'fresher', 'CA Fresher': 'fresher',
+    'semi': 'semi', 'semi_fresher': 'semi', 'semi_experienced': 'semi', 'Semi Qualified CA': 'semi',
 };
 
 const PORTAL_URLS = {
-    industrial:  'index-new.html',
-    articleship: 'articleship-new.html',
-    fresher:     'fresher-new.html',
-    semi:        'semi-new.html',
+    industrial:  'index.html',
+    articleship: 'ca-articleship-jobs.html',
+    fresher:     'ca-fresher-jobs.html',
+    semi:        'semi-qualified-ca-jobs.html',
 };
 
 // ============================================================
@@ -141,7 +141,13 @@ function switchPortal(portalId) {
 
 function renderPortalChips() {
     if (!dom.portalChips) return;
-    dom.portalChips.innerHTML = PORTALS.map(p => {
+    const preferred = getDefaultPortalId() || 'industrial';
+    const sorted = [...PORTALS].sort((a, b) => {
+        if (a.id === preferred) return -1;
+        if (b.id === preferred) return 1;
+        return 0;
+    });
+    dom.portalChips.innerHTML = sorted.map(p => {
         if (p.id === currentPortalId) {
             return `<span class="portal-chip active">${p.label}</span>`;
         }
@@ -870,11 +876,19 @@ async function checkAuth() {
 function updateHeaderAuth(session) {
     const container = document.querySelector('.auth-buttons-container');
     if (session) {
-        let displayName = session.user.email || 'User';
+        let displayName = 'User';
         try {
             const p = JSON.parse(localStorage.getItem('userProfileData') || '{}');
-            if (p.name?.trim()) displayName = p.name.trim();
-        } catch (_) {}
+            if (p.name?.trim()) {
+                displayName = p.name.trim();
+            } else {
+                const email = session.user.email || '';
+                displayName = email.split('@')[0] || 'User';
+            }
+        } catch (_) {
+            const email = session.user.email || '';
+            displayName = email.split('@')[0] || 'User';
+        }
         const initial = displayName.charAt(0).toUpperCase();
         if (dom.greetingName) dom.greetingName.textContent = displayName || 'there';
         if (!container) return;
@@ -1284,7 +1298,7 @@ function initOnboardingSegmentForm() {
             localStorage.setItem('userProfileData', JSON.stringify(profileObj));
             hideOnboardingSegmentModal();
             showToast('Personalization complete! Enjoy your personalized feed.', 'success');
-            const prefMapping = { 'CA Industrial Training Default': 'industrial', 'CA Articleship': 'articleship', 'CA Fresher': 'fresher_fresher', 'Semi Qualified CA': 'semi_fresher' };
+            const prefMapping = { 'CA Industrial Training Default': 'industrial', 'CA Articleship': 'articleship', 'CA Fresher': 'fresher', 'Semi Qualified CA': 'semi' };
             const mappedPref = prefMapping[lookingFor];
             if (mappedPref) {
                 await saveJobPreference(mappedPref);
@@ -1330,7 +1344,7 @@ function initJobPreferenceModal() {
 async function checkAndPromptConsent() {
     if (!currentSession || !localStorage.getItem('userCVText')) return;
     try {
-        const { data } = await supabaseClient.from('consentform').select('cv_sharing_consent').eq('user_id', currentSession.user.id).single();
+        const { data } = await supabaseClient.from('consentform').select('cv_sharing_consent').eq('user_id', currentSession.user.id).maybeSingle();
         if (!data || !data.cv_sharing_consent) {
             setTimeout(() => { const modal = document.getElementById('cvConsentPromptModal'); if (modal) modal.style.display = 'flex'; }, 1500);
         }
@@ -1458,6 +1472,13 @@ function setupEventListeners() {
     // Menu
     dom.menuButton?.addEventListener('click', () => dom.expandedMenu?.classList.add('active'));
     dom.menuCloseBtn?.addEventListener('click', () => dom.expandedMenu?.classList.remove('active'));
+
+    // Logout button in side menu
+    document.getElementById('logoutMenuBtn')?.addEventListener('click', async () => {
+        await supabaseClient.auth.signOut();
+        localStorage.clear();
+        window.location.href = '/login.html';
+    });
 
     // Resources dropdown in menu
     const resourcesBtn = document.getElementById('resourcesDropdownBtn');
@@ -1589,9 +1610,11 @@ async function initializePage() {
     if (dom.jobsListTitle) dom.jobsListTitle.textContent = pageConfig.label + ' Jobs';
 
     // On the home page (Industrial Training), redirect to user's preferred portal
-    if (pageConfig.isHome) {
+    // Only fires once per browser session so the user can still navigate back to this page
+    if (pageConfig.isHome && !sessionStorage.getItem('msc_portal_redirected')) {
         const defaultId = getDefaultPortalId();
         if (defaultId && defaultId !== 'industrial' && PORTAL_URLS[defaultId]) {
+            sessionStorage.setItem('msc_portal_redirected', '1');
             window.location.href = PORTAL_URLS[defaultId];
             return;
         }
@@ -1678,3 +1701,4 @@ document.addEventListener('DOMContentLoaded', () => {
         initOnboardingSegmentForm();
     }, 600);
 });
+

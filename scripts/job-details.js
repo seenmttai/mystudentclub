@@ -1,4 +1,4 @@
-
+﻿
 import { getDaysAgo } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
@@ -57,7 +57,7 @@ function setBackLink(type) {
         'industrial': { url: '/', label: 'Industrial Training' },
         'fresher': { url: '/ca-fresher-jobs', label: 'Fresher Jobs' },
         'semi': { url: '/semi-qualified-ca-jobs', label: 'Semi Qualified' },
-        'articleship': { url: '/ca-articleship-opportunities', label: 'Articleship' }
+        'articleship': { url: '/ca-articleship-jobs', label: 'Articleship' }
     };
 
     const portal = portalMap[type] || portalMap['industrial'];
@@ -425,4 +425,5 @@ function showError(msg) {
 }
 
 init();
+
 

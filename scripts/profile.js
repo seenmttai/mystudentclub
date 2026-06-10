@@ -272,7 +272,12 @@ function populateForm(profileData) {
     }
 
     const jobPref = document.getElementById('job_preference');
-    if (jobPref) jobPref.dispatchEvent(new Event('change'));
+    if (jobPref) {
+        // Normalise legacy sub-type values to the 4-portal system
+        const JP_COMPAT = { 'fresher_fresher': 'fresher', 'fresher_experienced': 'fresher', 'semi_fresher': 'semi', 'semi_experienced': 'semi' };
+        if (JP_COMPAT[jobPref.value]) jobPref.value = JP_COMPAT[jobPref.value];
+        jobPref.dispatchEvent(new Event('change'));
+    }
 
     // Backward compatibility: old headline field maps to profile_summary if empty.
     const summaryField = document.getElementById('profile_summary');
@@ -780,6 +785,12 @@ async function handleSave(e) {
     }
     
     localStorage.setItem('userProfileData', JSON.stringify(profileData));
+    if (profileData.job_preference) {
+        const prev = localStorage.getItem('userJobPreference');
+        localStorage.setItem('userJobPreference', profileData.job_preference);
+        // Clear the one-shot redirect flag so the new preferred portal is honoured next visit to index.html
+        if (prev !== profileData.job_preference) sessionStorage.removeItem('msc_portal_redirected');
+    }
 
     try {
         const { error } = await supabaseClient.from('profiles').upsert({
@@ -878,7 +889,7 @@ function refreshHeader() {
 
     // ---- Completeness calc ----
     const pref = d.job_preference || '';
-    const needsCTC = ['fresher_experienced', 'semi_experienced'].includes(pref);
+    const needsCTC = ['fresher', 'semi'].includes(pref);
     const hasEducation = !!(
         (d.ca_final_course || '').trim() ||
         (d.ca_inter_course || '').trim() ||
@@ -954,7 +965,7 @@ function refreshHeader() {
     if (missing.length === 0) {
         missingCard.style.display = 'none';
     } else {
-        missingCard.style.display = 'flex';
+        missingCard.style.display = 'block';
         missingList.innerHTML = missing.slice(0, 4).map(m =>
             `<div class="p2-missing-row">
                 <i class="fas ${m.icon}"></i>
@@ -1408,10 +1419,13 @@ function refreshSavedDisplays(d) {
     const jobPortalMap = {
         'industrial': 'MSC Industrial Training Program',
         'articleship': 'Articleship',
-        'fresher_fresher': 'CA Fresher (Fresher)',
-        'fresher_experienced': 'CA Fresher (Experienced)',
-        'semi_fresher': 'Semi Qualified (Fresher)',
-        'semi_experienced': 'Semi Qualified (Experienced)'
+        'fresher': 'CA Fresher',
+        'semi': 'Semi Qualified CA',
+        // Legacy sub-type values — kept for users who haven't re-saved their profile yet
+        'fresher_fresher': 'CA Fresher',
+        'fresher_experienced': 'CA Fresher',
+        'semi_fresher': 'Semi Qualified CA',
+        'semi_experienced': 'Semi Qualified CA',
     };
     const jobPrefValue = (d.job_preference || '').trim();
     const jobPortalDisplay = jobPortalMap[jobPrefValue] || '';
@@ -1454,10 +1468,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (v === 'industrial') {
             if (artCompGroup) artCompGroup.style.display = 'block';
-        } else if (['articleship', 'fresher_fresher', 'fresher_experienced', 'semi_fresher', 'semi_experienced'].includes(v)) {
+        } else if (['articleship', 'fresher', 'semi'].includes(v)) {
             if (joiningGroup) joiningGroup.style.display = 'block';
         }
-        if (['fresher_experienced', 'semi_experienced'].includes(v)) {
+        if (['fresher', 'semi'].includes(v)) {
             if (ctcGroup) ctcGroup.style.display = 'block';
         }
 
@@ -1854,18 +1868,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.querySelectorAll('.p2-card-form').forEach(form => {
             if (!form.id) return;
 
-            // Top-right close button (X)
-            if (!form.querySelector('.p2-modal-close')) {
+            // Build sticky header (title + × close) at the top of each sheet
+            if (!form.querySelector('.p2-sheet-header')) {
+                const header = document.createElement('div');
+                header.className = 'p2-sheet-header';
+
+                // Derive title: prefer existing .p2-inline-form-title, else the card's h2
+                const existingTitle = form.querySelector('.p2-inline-form-title');
+                let titleText = '';
+                if (existingTitle) {
+                    titleText = existingTitle.textContent.trim();
+                    existingTitle.remove();
+                } else {
+                    const cardH2 = form.closest('.p2-card')?.querySelector('.p2-card-header h2');
+                    if (cardH2) titleText = cardH2.textContent.trim();
+                }
+                const titleEl = document.createElement('div');
+                titleEl.className = 'p2-sheet-title';
+                titleEl.textContent = titleText;
+                header.appendChild(titleEl);
+
+                // Close (×) button lives in the header
                 const closeBtn = document.createElement('button');
                 closeBtn.type = 'button';
                 closeBtn.className = 'p2-modal-close';
                 closeBtn.setAttribute('data-close', form.id);
                 closeBtn.setAttribute('aria-label', 'Close');
                 closeBtn.innerHTML = '<i class="fas fa-times"></i>';
-                form.appendChild(closeBtn);
+                header.appendChild(closeBtn);
+
+                form.prepend(header);
             }
 
-            // Ensure inline actions with Cancel + Save
+            // Remove any stale standalone close buttons outside the header
+            form.querySelectorAll('.p2-modal-close:not(.p2-sheet-header .p2-modal-close)').forEach(b => b.remove());
+
+            // Ensure inline actions (Cancel + Save) at the bottom
             let actions = form.querySelector('.p2-inline-actions');
             if (!actions) {
                 actions = document.createElement('div');
@@ -1890,8 +1928,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 saveBtn.textContent = 'Save';
                 actions.appendChild(saveBtn);
             } else if (actions.querySelector('.p2-btn-save') && !actions.querySelector('.p2-btn-save[data-save]')) {
-                const existingSave = actions.querySelector('.p2-btn-save');
-                existingSave.setAttribute('data-save', form.id);
+                actions.querySelector('.p2-btn-save').setAttribute('data-save', form.id);
             }
         });
     }
@@ -2085,6 +2122,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
     menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+
+    // Logout button in side menu
+    const logoutMenuBtn = document.getElementById('logoutMenuBtn');
+    if (logoutMenuBtn) {
+        logoutMenuBtn.addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            localStorage.clear();
+            window.location.href = '/login.html';
+        });
+    }
 
     // ----- DPDP Consent Initialization -----
     await loadConsentStatus();

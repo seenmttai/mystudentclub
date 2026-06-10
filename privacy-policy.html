@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -130,22 +130,22 @@
       gap: 8px;
     }
     .pp-list li {
-      display: flex;
-      gap: 10px;
+      display: block;
+      background: var(--chip);
+      border-radius: 10px;
+      border-left: 3px solid var(--brand);
+      padding: 10px 14px;
       font-size: 13px;
       color: var(--sub);
-      line-height: 1.6;
+      line-height: 1.65;
     }
-    .pp-list li::before {
-      content: '';
-      flex-shrink: 0;
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--brand);
-      margin-top: 7px;
+    .pp-list strong {
+      display: block;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 12.5px;
+      margin-bottom: 3px;
     }
-    .pp-list strong { color: var(--text); font-weight: 600; }
     .pp-list a { color: var(--brand); font-weight: 500; }
 
     /* ── Divider ── */
@@ -251,7 +251,7 @@
         <div class="dropdown-content" id="resourcesDropdown">
           <a href="/ca-fresher-training-resources.html" class="dropdown-item">CA Fresher</a>
           <a href="/ca-industrial-training-resources.html" class="dropdown-item">Industrial Training</a>
-          <a href="/ca-articleship-opportunities" class="dropdown-item">Articleship</a>
+          <a href="/ca-articleship-jobs" class="dropdown-item">Articleship</a>
         </div>
       </div>
       <a href="/contact.html" class="menu-item">Contact Us</a>
@@ -263,7 +263,7 @@
     <div class="pp-inner">
 
       <!-- Back -->
-      <button class="pp-back" onclick="history.back()">
+      <button class="pp-back" onclick="window.location.href='/index.html'">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
         Back
       </button>
@@ -480,3 +480,4 @@
   </script>
 </body>
 </html>
+
