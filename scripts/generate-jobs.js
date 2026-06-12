@@ -1,4 +1,4 @@
-require('dotenv').config();
+﻿require('dotenv').config();
 const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
@@ -209,7 +209,7 @@ const htmlTemplate = (job, jsonLd, categorySlug, jobId, tableName) => {
         'industrial': { url: '/', label: 'Industrial Training' },
         'fresher': { url: '/ca-fresher-jobs', label: 'Fresher Jobs' },
         'semi-qualified': { url: '/semi-qualified-ca-jobs', label: 'Semi Qualified' },
-        'articleship': { url: '/ca-articleship-opportunities', label: 'Articleship' }
+        'articleship': { url: '/ca-articleship-jobs', label: 'Articleship' }
     };
     const backLinkUrl = portalMap[categorySlug]?.url || '/';
 
@@ -1254,4 +1254,5 @@ async function generateSitemap(jobsDir) {
 }
 
 generateJobs();
+
 

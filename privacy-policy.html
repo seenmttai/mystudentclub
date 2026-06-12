@@ -1,395 +1,483 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Privacy Policy - My Student Club</title>
-    <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/scripts/portal-style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Privacy Policy — My Student Club</title>
+  <meta name="description" content="Privacy Policy for My Student Club. Learn how we collect, use, and protect your personal information.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/scripts/portal-style.css">
+  <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
+  <style>
+    /* ── Page layout ── */
+    .pp-main {
+      padding-top: calc(var(--header-h) + 16px);
+      padding-bottom: calc(32px + var(--safe-bottom));
+      min-height: 100vh;
+    }
+    .pp-inner {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-        :root {
-            --primary-text: #2d3748;
-            --secondary-text: #718096;
-            --accent-color: #005f73;
-            --border-color: #e2e8f0;
-            --background-light: #f7fafc;
-            --background-white: #ffffff;
-        }
+    /* ── Back button ── */
+    .pp-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--sub);
+      background: none;
+      border: none;
+      padding: 4px 0;
+      margin-bottom: 4px;
+      cursor: pointer;
+    }
+    .pp-back:active { opacity: .7; }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+    /* ── Hero card ── */
+    .pp-hero {
+      background: var(--brand);
+      border-radius: var(--r-card);
+      padding: 24px 20px 20px;
+      color: #fff;
+    }
+    .pp-hero h1 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -.03em;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .pp-hero-meta {
+      font-size: 12px;
+      font-weight: 500;
+      opacity: .8;
+    }
+    .pp-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,.18);
+      border-radius: 40px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 12px;
+    }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background-light);
-            color: var(--primary-text);
-            line-height: 1.7;
-            padding: 2rem 1rem;
-            padding-top: 80px;
-            /* Space for fixed header */
-        }
+    /* ── Section cards ── */
+    .pp-card {
+      background: var(--card);
+      border-radius: var(--r-card);
+      padding: 20px;
+      box-shadow: var(--shadow2);
+    }
+    .pp-card-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .pp-num {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: var(--chip);
+      color: var(--brand);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+    .pp-card h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.3;
+    }
+    .pp-card p {
+      font-size: 13px;
+      color: var(--sub);
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+    .pp-card p:last-child { margin-bottom: 0; }
+    .pp-card h3 {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 14px 0 8px;
+    }
 
-        .container {
-            max-width: 850px;
-            margin: 0 auto;
-            background-color: var(--background-white);
-            padding: 2rem 3rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-        }
+    /* ── Lists ── */
+    .pp-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .pp-list li {
+      display: block;
+      background: var(--chip);
+      border-radius: 10px;
+      border-left: 3px solid var(--brand);
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--sub);
+      line-height: 1.65;
+    }
+    .pp-list strong {
+      display: block;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 12.5px;
+      margin-bottom: 3px;
+    }
+    .pp-list a { color: var(--brand); font-weight: 500; }
 
-        header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-        }
+    /* ── Divider ── */
+    .pp-divider {
+      height: 1px;
+      background: var(--line);
+      margin: 14px 0;
+    }
 
-        h1 {
-            font-size: 2.25rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
+    /* ── Highlight box ── */
+    .pp-highlight {
+      background: var(--chip);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+    .pp-highlight p {
+      margin-bottom: 0;
+      font-size: 12.5px;
+    }
 
-        header p {
-            font-size: 1rem;
-            color: var(--secondary-text);
-        }
-
-        section {
-            margin-bottom: 2.5rem;
-        }
-
-        h2 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--accent-color);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid var(--accent-color);
-            display: inline-block;
-        }
-
-        h3 {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--primary-text);
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
-        }
-
-        ul {
-            list-style-position: inside;
-            padding-left: 0.5rem;
-        }
-
-        li {
-            margin-bottom: 0.75rem;
-            color: var(--secondary-text);
-        }
-
-        a {
-            color: #3B82F6;
-            text-decoration: none;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        strong {
-            font-weight: 600;
-            color: var(--primary-text);
-        }
-
-        code {
-            font-family: monospace;
-            background-color: #edf2f7;
-            padding: 0.2em 0.4em;
-            border-radius: 4px;
-            font-size: 0.9em;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 1rem 0.5rem;
-            }
-
-            .container {
-                padding: 1.5rem;
-            }
-
-            h1 {
-                font-size: 1.8rem;
-            }
-
-            h2 {
-                font-size: 1.3rem;
-            }
-        }
-    </style>
+    /* ── Contact card ── */
+    .pp-contact {
+      background: var(--card);
+      border-radius: var(--r-card);
+      padding: 20px;
+      box-shadow: var(--shadow2);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .pp-contact-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: var(--brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .pp-contact-icon svg { color: #fff; }
+    .pp-contact-body { flex: 1; }
+    .pp-contact-body h2 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .pp-contact-body p { font-size: 13px; color: var(--sub); margin: 0; }
+    .pp-contact-body a { color: var(--brand); font-weight: 600; }
+  </style>
 </head>
-
 <body>
-    <header class="site-header">
-        <div class="header-container">
-            <a href="/" class="brand-link">
-                <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
-            </a>
-            <div class="header-actions">
-                <div class="auth-buttons-container"></div>
-                <button class="menu-button-style" aria-label="Open menu" id="menuButton">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </header>
 
-    <div class="expanded-menu" id="expandedMenu">
-        <button class="menu-close-btn" id="menuCloseBtn">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+  <!-- HEADER -->
+  <header class="app-header" id="appHeader">
+    <div class="header-left">
+      <svg class="header-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 207 223" fill="none" aria-label="My Student Club">
+        <path d="m188.4 49.73-72.25-41.61c-9.06-5.29-18.21-4.74-26.19 0l-70.9 40.81c-7.32 4.03-10.97 11.88-10.97 19.86v14.89c2.12-1.59 4.37-1.94 6.61-1.87 2.38 0.08 4.05 0.7 5.79 1.95v-14.58c0-4.34 1.26-6.8 5.52-9.26l71.93-41.41c4.95-2.85 9.07-1.13 12.08 0.83l70.98 40.74c3.8 2.14 5.39 4.6 5.39 9.1v14.58c2.12-1.33 3.53-1.95 5.99-1.95 2.78-0.07 5.03 0.55 7.35 2.14v-15.16c0-7.78-4.5-15.18-11.33-19.06z" fill="url(#msc-g0)"/>
+        <path d="m199.7 128.3-2.24 3.32c-6.68 8.36-7.65 15.35-5.97 24.32 1.1 5.85 1.72 10.43-0.31 15.01 5.85-4.19 8.52-11.51 8.52-16.78v-25.87z" fill="url(#msc-g1)"/>
+        <path d="m8.12 127.8v26.34c0 6.72 2.93 13.52 8.79 17.94-1.95-4.73-1.49-9.15-0.23-16.09 1.59-9.05-1.04-17.8-6.52-24.4l-2.04-2.77v-1.02z" fill="url(#msc-g2)"/>
+        <path d="m199.4 90.46c-1.59-4.03-2.84-5.99-6.18-5.99-4.8 0-7.34 4.5-5.83 8.99 2.17 6.23 2.47 8.69 1.94 14.2-1.47 8.82-6.66 18.11-17.62 21.91-2.58 0.94-3.04 3.16-2.35 5.84l5.33 25.6c0.38 1.63-2.02 5.66-3.13 6.4-1.59 0-4.85-4.5-4.85-4.5v-24.19c0-3.7-1.05-6.46-4.31-6.84-6.61-0.74-15.44-1.91-20.77-0.5-2.46 0.65-2.92 9.09-2.15 15.69 1.18 7.02 4.44 20.34 3.74 29.02-0.85 9.05-4.51 14.56-10.36 17.88l-20.69 12.44c-5.56 3.32-12.96 2.93-18.29 0l-20.14-11.65c-6.68-3.32-9.14-8.44-9.14-19.69 0-8.06 3.11-18.67 3.49-24.9 0.94-11.41-2.56-18.45-5.82-18.83-5.41-0.66-10.36 0.27-17.26 0.42-3.5 0.08-4.94 2.12-4.94 6.61v24.19c0 1.17-3.66 5.51-4.6 5.36-1.59-0.31-3.76-4.42-3.69-5.08l5.93-25.53c0.77-2.84-0.08-5.43-3.01-6.25-10.49-3.24-17.17-13.07-17.24-23.4-0.08-5.51 1.65-9.75 2.7-13.85 1.18-4.49-2.4-9.07-6.44-9.07-3.81 0-5.42 1.69-7.01 6.27-5.11 12.13-3.45 26.9 3.71 37.71 7.26 9.37 8.85 15.9 7.11 27.52-1.82 9.13-1.36 15.78 5.9 19.81l67.46 38.73c7.82 4.03 16.03 3.29 23.51-0.59l69.51-38.41c6.34-3.33 6.15-11.62 4.35-19.54-2.24-10.41 0.31-18.26 6.99-27.09 7.48-10.1 8.73-24.38 4.15-38.69z" fill="url(#msc-g3)"/>
+        <path d="m43.26 104.1c-6.92 0-10.8 5.82-10.8 10.74 0 6.78 5.26 10.98 10.8 10.98 6.49 0 10.83-5.59 10.83-10.98 0-5.97-4.88-10.74-10.83-10.74z" fill="url(#msc-g4)"/>
+        <path d="m163.5 104.1c-7.4 0-11.05 6.23-11.05 10.74 0 6.39 5.25 10.98 10.66 10.98 6.99 0 11.33-5.59 11.33-10.98 0-5.97-5.07-10.74-10.94-10.74z" fill="url(#msc-g5)"/>
+        <path d="m103.4 76.34c-9.14-0.31-14.92 7.54-14.92 14.67 0 8.52 7.26 14.75 14.61 14.75 9.14 0 15-7.85 15-14.75 0-7.85-6.68-14.67-14.69-14.67z" fill="#0077BF"/>
+        <path d="m150.7 59.61c-2.11-4.19-4.78-4.85-8.04-4.85-6.6 0-9.54 6.25-7.8 11.37 2.86 6.56 3.55 11.05 3.09 18.06-1.39 13.72-12.85 26.7-28.26 29.94-2.46 0.31-3.4 1.94-4.66 4.25-0.54 0.94-0.31 0.71-0.38 1.88 1.41 14 6.49 46.02 7.1 52.58 0.15 1.02-6.68 9.23-6.68 9.23-1.59 1.31-3.08 0.47-4.11-1.06-1.87-2.15-6.01-6.64-6.24-7.58l6.92-52.52c-0.31-2.05-3.65-6.16-5.24-6.47-14.28-2.13-26.41-15.22-27.46-30.25-0.45-6.23 1.05-11.15 3.51-17.04 2.17-5.87-1.71-12.1-8.61-12.1-4.58 0-6.83 2.13-8.42 5.76-7.73 15.45-6.79 34.9 4.52 49.92 8.78 10.81 12.51 21.96 11.97 35.68-0.45 9.6-4.44 18.8-3.12 30.66 0.94 6.55 3.12 10.51 8.37 12.89l18.54 10.81c5.41 2.93 11.53 2.19 16.5-1.13l18.46-10.49c6.68-3.32 8.27-12.08 7.02-20.84-1.49-9.6-3.23-16.6-2.85-24.38 0.61-10.81 4.56-21.62 13.11-33.27 10.48-15.03 10.03-31.6 2.76-51.05z" fill="#0077BF"/>
+        <defs>
+          <linearGradient id="msc-g0" x1="18.89" x2="184.3" y1="17.93" y2="75.88" gradientUnits="userSpaceOnUse"><stop stop-color="#94ADB9"/><stop offset="1" stop-color="#889CA7"/></linearGradient>
+          <linearGradient id="msc-g1" x1="193.3" x2="199.8" y1="133.1" y2="166.8" gradientUnits="userSpaceOnUse"><stop stop-color="#889CA7"/><stop offset="1" stop-color="#A4B5BE"/></linearGradient>
+          <linearGradient id="msc-g2" x1="8.119" x2="16.14" y1="132.7" y2="169.1" gradientUnits="userSpaceOnUse"><stop stop-color="#738A98"/><stop offset="1" stop-color="#A4B5BE"/></linearGradient>
+          <linearGradient id="msc-g3" x1="8.087" x2="199.9" y1="101.3" y2="170.5" gradientUnits="userSpaceOnUse"><stop stop-color="#557484"/><stop offset="1" stop-color="#6E8793"/></linearGradient>
+          <linearGradient id="msc-g4" x1="32.46" x2="53.29" y1="104.1" y2="125.2" gradientUnits="userSpaceOnUse"><stop stop-color="#557484"/><stop offset="1" stop-color="#627D8B"/></linearGradient>
+          <linearGradient id="msc-g5" x1="152.4" x2="173.8" y1="104.1" y2="125.7" gradientUnits="userSpaceOnUse"><stop stop-color="#557484"/><stop offset="1" stop-color="#627D8B"/></linearGradient>
+        </defs>
+      </svg>
+      <div class="header-greeting">
+        <div class="greeting-sub">Legal</div>
+        <div class="greeting-name">Privacy Policy</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="themeToggleBtn" class="hdr-icon-btn" aria-label="Toggle dark mode">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button id="menuButton" class="hdr-icon-btn" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- SIDE MENU -->
+  <div class="expanded-menu" id="expandedMenu">
+    <button class="hdr-icon-btn menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="menu-items-container">
+      <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display:none">My Courses</a>
+      <a href="/history.html" class="menu-item" id="history-nav-link" style="display:none">My Activity</a>
+      <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
+      <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
+      <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
+      <div class="menu-item-dropdown">
+        <button class="menu-item" id="resourcesDropdownBtn">Free Resources
+          <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
         </button>
-        <div class="menu-items">
-            <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My
-                Courses</a>
-
-            <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
-            <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
-            <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
-
-            <div class="menu-item-dropdown">
-                <button class="menu-item" style="width: 100%; justify-content: space-between;">
-                    Free Resources
-                    <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-                <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
-                    <a href="/ca-fresher-training-resources.html" class="menu-item">CA Fresher</a>
-                    <a href="/ca-industrial-training-resources.html" class="menu-item">Industrial Training</a>
-                    <a href="/ca-articleship-opportunities" class="menu-item">Articleship</a>
-                </div>
-            </div>
-
-
-            <a href="/contact.html" class="menu-item">Contact Us</a>
+        <div class="dropdown-content" id="resourcesDropdown">
+          <a href="/ca-fresher-training-resources.html" class="dropdown-item">CA Fresher</a>
+          <a href="/ca-industrial-training-resources.html" class="dropdown-item">Industrial Training</a>
+          <a href="/ca-articleship-jobs" class="dropdown-item">Articleship</a>
         </div>
+      </div>
+      <a href="/contact.html" class="menu-item">Contact Us</a>
     </div>
+  </div>
 
-    <div class="container">
-        <header>
-            <h1>Privacy Policy</h1>
-            <p>Last Updated: 23rd May, 2026</p>
-        </header>
+  <!-- MAIN -->
+  <main class="pp-main">
+    <div class="pp-inner">
 
-        <section>
-            <h2>1. Introduction</h2>
-            <p>Welcome to My Student Club. We are committed to protecting your personal information and your right to
-                privacy. This Privacy Policy explains what information we collect, how we use it, and what rights you
-                have in relation to it. This policy applies to all information collected through our website
-                (mystudentclub.com) and any related services, sales, marketing, or events.</p>
-        </section>
+      <!-- Back -->
+      <button class="pp-back" onclick="window.location.href='/index.html'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        Back
+      </button>
 
-        <section>
-            <h2>2. Information We Collect</h2>
-            <p>We collect personal information that you voluntarily provide to us when you register on the website,
-                express an interest in obtaining information about us or our products and services, when you participate
-                in activities on the website, or otherwise when you contact us.</p>
-            <ul>
-                <li><strong>Account Information:</strong> We collect your email address and password for account
-                    creation and login. If you use Google Sign-In, we receive your email address and basic profile
-                    information from Google.</li>
-                <li><strong>Professional Profile Information:</strong> To provide our AI-powered services, we collect
-                    your full name, contact number, LinkedIn URL, resume/CV content, CA education details (level,
-                    attempts), achievements, work experience, and job preferences. This information is stored in your
-                    profile.</li>
-                <li><strong>Application Data:</strong> We track which jobs you apply for through our portal to help you
-                    manage your applications and to improve our services.</li>
-                <li><strong>Payment Information:</strong> When you purchase a course, your payment is processed by our
-                    third-party payment processor (e.g., PayU). We do not store your full credit card or financial
-                    details on our servers.</li>
-                <li><strong>Device and Notification Information:</strong> If you opt-in for push notifications, we
-                    collect a Firebase Cloud Messaging (FCM) token associated with your device to send you job alerts.
-                </li>
-                <li><strong>Usage Information:</strong> We may collect information about your interactions with our
-                    website through analytics providers like Google Analytics.</li>
-            </ul>
-        </section>
+      <!-- Hero -->
+      <div class="pp-hero">
+        <h1>Privacy Policy</h1>
+        <div class="pp-hero-meta">Last Updated: 23rd May, 2026</div>
+        <div class="pp-hero-badge">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          DPDP Act 2023 Compliant
+        </div>
+      </div>
 
-        <section>
-            <h2>3. How We Use Your Information</h2>
-            <p>We use the information we collect for various business purposes, including:</p>
-            <ul>
-                <li><strong>To provide and manage our services:</strong> This includes creating and managing your
-                    account, providing access to job portals, and delivering purchased courses through our Learning
-                    Management System (LMS).</li>
-                <li><strong>To power AI features:</strong> Your resume and profile information are sent to our secure AI
-                    models to provide services like the CV Reviewer, AI-Powered Apply, AI Interview Coach, and LinkedIn
-                    Note Generator.</li>
-                <li><strong>To send notifications:</strong> We use your FCM token and subscription preferences to send
-                    you relevant job alerts.</li>
-                <li><strong>To process transactions:</strong> We use enrollment information to grant access to paid
-                    content.</li>
-                <li><strong>To communicate with you:</strong> We may use your contact information to respond to your
-                    inquiries and provide support.</li>
-                <li><strong>To improve our services:</strong> We analyze usage data to understand how our services are
-                    used and to make improvements.</li>
-            </ul>
-        </section>
+      <!-- 1. Introduction -->
+      <div class="pp-card">
+        <div class="pp-card-head">
+          <div class="pp-num">1</div>
+          <h2>Introduction</h2>
+        </div>
+        <p>Welcome to My Student Club. We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains what information we collect, how we use it, and what rights you have in relation to it.</p>
+        <p>This policy applies to all information collected through our website (mystudentclub.com) and any related services, sales, marketing, or events.</p>
+      </div>
 
-        <section>
-            <h2>4. Data Sharing and Disclosure</h2>
-            <p>We do not sell your personal information. We may share your information with third-party vendors, service
-                providers, or agents who perform services for us or on our behalf and require access to such information
-                to do that work.</p>
-            <h3>Our key third-party services include:</h3>
-            <ul>
-                <li><strong>Supabase:</strong> Provides our backend infrastructure, including database hosting for
-                    profiles, jobs, and applications, as well as user authentication services.</li>
-                <li><strong>Google (Firebase & Analytics):</strong> Used for sending push notifications (Firebase Cloud
-                    Messaging) and for analyzing website traffic (Google Analytics).</li>
-                <li><strong>Cloudflare:</strong> Hosts our AI models on secure servers (Cloudflare Workers) to process
-                    data for features like the CV Reviewer and AI Apply.</li>
-                <li><strong>PayU (or similar):</strong> Processes payments for our paid courses.</li>
-            </ul>
+      <!-- 2. Information We Collect -->
+      <div class="pp-card">
+        <div class="pp-card-head">
+          <div class="pp-num">2</div>
+          <h2>Information We Collect</h2>
+        </div>
+        <p>We collect personal information that you voluntarily provide when you register, use our services, or contact us.</p>
+        <ul class="pp-list">
+          <li><strong>Account Information:</strong> Your email address and password for account creation. If you use Google Sign-In, we receive your email and basic profile from Google.</li>
+          <li><strong>Professional Profile:</strong> Full name, contact number, LinkedIn URL, resume/CV content, CA education details, achievements, work experience, and job preferences.</li>
+          <li><strong>Application Data:</strong> Jobs you apply for through our portal to help manage your applications.</li>
+          <li><strong>Payment Information:</strong> Payments are processed by our third-party processor (e.g., PayU). We do not store financial details on our servers.</li>
+          <li><strong>Device & Notification Info:</strong> If you opt-in for push notifications, we collect a Firebase Cloud Messaging (FCM) token to send job alerts.</li>
+          <li><strong>Usage Information:</strong> Interaction data collected via analytics providers like Google Analytics.</li>
+        </ul>
+      </div>
 
-            <h3>CV Sharing with Employers</h3>
-            <p>When you upload your CV/resume and provide explicit consent via our consent checkbox, we share your CV and profile details with registered companies and recruiters on our platform for the sole purpose of job-matching. Specifically:</p>
-            <ul>
-                <li>Your CV is shared <strong>only</strong> with employers registered on My Student Club.</li>
-                <li>Sharing occurs <strong>only after</strong> you have provided explicit, informed consent through our consent mechanism.</li>
-                <li>Employers may view your profile details including name, contact information, education, experience, and resume content.</li>
-                <li>Your CV data is <strong>never sold</strong> to third parties.</li>
-            </ul>
+      <!-- 3. How We Use Your Information -->
+      <div class="pp-card">
+        <div class="pp-card-head">
+          <div class="pp-num">3</div>
+          <h2>How We Use Your Information</h2>
+        </div>
+        <ul class="pp-list">
+          <li><strong>Provide & manage services:</strong> Creating and managing your account, providing access to job portals, and delivering purchased courses through our LMS.</li>
+          <li><strong>Power AI features:</strong> Your resume and profile are sent to our secure AI models for services like the CV Reviewer, AI-Powered Apply, and AI Interview Coach.</li>
+          <li><strong>Send notifications:</strong> Your FCM token and subscription preferences are used to send relevant job alerts.</li>
+          <li><strong>Process transactions:</strong> Enrollment information is used to grant access to paid content.</li>
+          <li><strong>Communicate with you:</strong> Your contact information is used to respond to inquiries and provide support.</li>
+          <li><strong>Improve our services:</strong> Usage data helps us understand how services are used and make improvements.</li>
+        </ul>
+      </div>
 
-            <p>We may also disclose your information where we are legally required to do so in order to comply with
-                applicable law, governmental requests, or legal process.</p>
-        </section>
+      <!-- 4. Data Sharing -->
+      <div class="pp-card">
+        <div class="pp-card-head">
+          <div class="pp-num">4</div>
+          <h2>Data Sharing and Disclosure</h2>
+        </div>
+        <p>We do not sell your personal information. We may share your information with third-party service providers who perform services on our behalf.</p>
+        <h3>Key third-party services</h3>
+        <ul class="pp-list">
+          <li><strong>Supabase:</strong> Backend infrastructure for database hosting and user authentication.</li>
+          <li><strong>Google (Firebase & Analytics):</strong> Push notifications via Firebase Cloud Messaging and website traffic analysis via Google Analytics.</li>
+          <li><strong>Cloudflare:</strong> Hosts our AI models on secure servers to process data for features like CV Reviewer and AI Apply.</li>
+          <li><strong>PayU (or similar):</strong> Processes payments for paid courses.</li>
+        </ul>
+        <div class="pp-divider"></div>
+        <h3>CV Sharing with Employers</h3>
+        <p>When you upload your CV and provide explicit consent, we share your CV and profile details with registered companies and recruiters for job-matching purposes.</p>
+        <ul class="pp-list">
+          <li>Your CV is shared <strong>only</strong> with employers registered on My Student Club.</li>
+          <li>Sharing occurs <strong>only after</strong> you have provided explicit, informed consent.</li>
+          <li>Employers may view your name, contact information, education, experience, and resume content.</li>
+          <li>Your CV data is <strong>never sold</strong> to third parties.</li>
+        </ul>
+        <div class="pp-highlight">
+          <p>We may also disclose your information where legally required to comply with applicable law, governmental requests, or legal process.</p>
+        </div>
+      </div>
 
-        <section>
-            <h2>5. Your Data Rights</h2>
-            <p>You have certain rights regarding your personal information:</p>
-            <ul>
-                <li><strong>Access and Update:</strong> You can review and update your personal information at any time
-                    by logging into your account and navigating to the <strong>Profile</strong> page.</li>
-                <li><strong>Opt-out of Notifications:</strong> You can manage your push notification preferences from
-                    the notification icon on the job portal pages or through your browser settings.</li>
-                <li><strong>Withdraw Consent:</strong> You can withdraw your CV sharing consent at any time by unchecking the consent checkbox on your <strong>Profile</strong> page. Upon withdrawal, your CV will no longer be shared with employers.</li>
-                <li><strong>Data Deletion (Right to Erasure):</strong> You can permanently delete your account and all associated data — including your profile, CV, consent records, application history, and course enrollments — from the <a href="/delete-account.html">Delete Account</a> page. Deletion is irreversible and takes effect immediately.</li>
-            </ul>
-        </section>
+      <!-- 5. Your Data Rights -->
+      <div class="pp-card">
+        <div class="pp-card-head">
+          <div class="pp-num">5</div>
+          <h2>Your Data Rights</h2>
+        </div>
+        <ul class="pp-list">
+          <li><strong>Access and Update:</strong> Review and update your personal information anytime from the <a href="/profile.html">Profile</a> page.</li>
+          <li><strong>Opt-out of Notifications:</strong> Manage push notification preferences from the notification icon on job portal pages or through your browser settings.</li>
+          <li><strong>Withdraw Consent:</strong> Withdraw your CV sharing consent at any time from your <a href="/profile.html">Profile</a> page. Withdrawal takes effect immediately.</li>
+          <li><strong>Data Deletion:</strong> Permanently delete your account and all associated data — including your profile, CV, consent records, and application history — from the <a href="/delete-account.html">Delete Account</a> page. Deletion is irreversible.</li>
+        </ul>
+      </div>
 
-        <section>
-            <h2>6. Data Security</h2>
-            <p>We have implemented appropriate technical and organizational security measures designed to protect the
-                security of any personal information we process. We use reputable third-party services like Supabase for
-                data storage and authentication. However, despite our safeguards and efforts to secure your information,
-                no electronic transmission over the Internet or information storage technology can be guaranteed to be
-                100% secure.</p>
-        </section>
+      <!-- 6. Data Security -->
+      <div class="pp-card">
+        <div class="pp-card-head">
+          <div class="pp-num">6</div>
+          <h2>Data Security</h2>
+        </div>
+        <p>We have implemented appropriate technical and organizational security measures to protect your personal information. We use reputable third-party services like Supabase for data storage and authentication.</p>
+        <div class="pp-highlight">
+          <p>No electronic transmission over the Internet or information storage technology can be guaranteed to be 100% secure. While we strive to protect your data, absolute security cannot be guaranteed.</p>
+        </div>
+      </div>
 
-        <section>
-            <h2>7. Changes to This Policy</h2>
-            <p>We may update this privacy policy from time to time. The updated version will be indicated by a revised
-                "Last Updated" date. We encourage you to review this privacy policy frequently to be informed of how we
-                are protecting your information.</p>
-        </section>
+      <!-- 7. Changes to Policy -->
+      <div class="pp-card">
+        <div class="pp-card-head">
+          <div class="pp-num">7</div>
+          <h2>Changes to This Policy</h2>
+        </div>
+        <p>We may update this privacy policy from time to time. The updated version will be indicated by a revised "Last Updated" date. We encourage you to review this policy frequently to stay informed of how we are protecting your information.</p>
+      </div>
 
-        <section>
-            <h2>8. DPDP Act Compliance</h2>
-            <p>My Student Club operates as a <strong>Data Fiduciary</strong> under India's <strong>Digital Personal Data Protection (DPDP) Act, 2023</strong>. In accordance with this legislation:</p>
-            <ul>
-                <li><strong>Lawful Basis:</strong> We process your personal data based on your explicit, informed consent. Consent is collected through a mandatory, un-pre-ticked checkbox before any CV data is shared with employers.</li>
-                <li><strong>Purpose Limitation:</strong> Your CV and profile data are used exclusively for job-matching and recruitment purposes.</li>
-                <li><strong>Data Minimisation:</strong> We collect only the information necessary to provide our services.</li>
-                <li><strong>Consent Records:</strong> We maintain timestamped records of your consent, including the exact text you agreed to, the date of consent, and your browser information, to demonstrate compliance. We log your IP address and browser User-Agent solely for the purpose of maintaining a legally required audit trail of your consent.</li>
-                <li><strong>Right to Withdraw:</strong> You may withdraw consent at any time from your Profile page. Withdrawal takes effect immediately.</li>
-                <li><strong>Data Retention:</strong> Your CV and consent records are retained only as long as your account is active and consent is in effect. Upon account deletion or consent withdrawal, relevant data is permanently removed.</li>
-            </ul>
-        </section>
+      <!-- 8. DPDP Act Compliance -->
+      <div class="pp-card">
+        <div class="pp-card-head">
+          <div class="pp-num">8</div>
+          <h2>DPDP Act Compliance</h2>
+        </div>
+        <p>My Student Club operates as a <strong>Data Fiduciary</strong> under India's <strong>Digital Personal Data Protection (DPDP) Act, 2023</strong>.</p>
+        <ul class="pp-list">
+          <li><strong>Lawful Basis:</strong> We process your personal data based on your explicit, informed consent — collected through a mandatory, un-pre-ticked checkbox before any CV data is shared with employers.</li>
+          <li><strong>Purpose Limitation:</strong> Your CV and profile data are used exclusively for job-matching and recruitment purposes.</li>
+          <li><strong>Data Minimisation:</strong> We collect only the information necessary to provide our services.</li>
+          <li><strong>Consent Records:</strong> We maintain timestamped records of your consent, including the exact text agreed to, the date of consent, and browser information, to demonstrate compliance. IP address and User-Agent are logged solely for the legally required audit trail.</li>
+          <li><strong>Right to Withdraw:</strong> You may withdraw consent at any time from your Profile page. Withdrawal takes effect immediately.</li>
+          <li><strong>Data Retention:</strong> Your CV and consent records are retained only as long as your account is active and consent is in effect. Upon account deletion or consent withdrawal, relevant data is permanently removed.</li>
+        </ul>
+      </div>
 
-        <section>
-            <h2>9. Employer Data Processing Obligations</h2>
-            <p>Employers and recruiters who access candidate CVs through My Student Club are bound by the following terms:</p>
-            <ul>
-                <li>Employers act as <strong>Data Processors</strong> upon receiving CV data from our platform.</li>
-                <li>CV data must be used <strong>solely for recruitment and job-matching purposes</strong>.</li>
-                <li>Employers must <strong>not sell, trade, lease, or share</strong> candidate data with any third party without the candidate's separate, explicit consent.</li>
-                <li>Employers must honour deletion requests from candidates and delete CV data within 30 days of such a request or upon completion of the hiring cycle, whichever is earlier.</li>
-                <li>Employers must implement appropriate security measures to protect candidate data from unauthorised access, disclosure, or loss.</li>
-                <li>Violation of these terms will result in immediate suspension of the employer's account and potential legal action under the DPDP Act.</li>
-            </ul>
-        </section>
+      <!-- 9. Employer Obligations -->
+      <div class="pp-card">
+        <div class="pp-card-head">
+          <div class="pp-num">9</div>
+          <h2>Employer Data Processing Obligations</h2>
+        </div>
+        <p>Employers and recruiters who access candidate CVs through My Student Club are bound by the following terms:</p>
+        <ul class="pp-list">
+          <li>Employers act as <strong>Data Processors</strong> upon receiving CV data from our platform.</li>
+          <li>CV data must be used <strong>solely for recruitment and job-matching purposes</strong>.</li>
+          <li>Employers must <strong>not sell, trade, lease, or share</strong> candidate data with any third party without separate, explicit consent.</li>
+          <li>Employers must honour deletion requests and delete CV data within 30 days of such a request or upon completion of the hiring cycle, whichever is earlier.</li>
+          <li>Employers must implement appropriate security measures to protect candidate data from unauthorised access, disclosure, or loss.</li>
+          <li>Violation of these terms will result in immediate suspension of the employer's account and potential legal action under the DPDP Act.</li>
+        </ul>
+      </div>
 
-        <section>
-            <h2>10. Grievance Officer & Contact Us</h2>
-            <p>In compliance with the DPDP Act, we have appointed a Grievance Officer to address your data privacy concerns. For any data privacy concerns, questions about this policy, or to exercise your data rights, please contact our Grievance Officer at:
-                <br><strong>Email:</strong> admin@mystudentclub.com
-            </p>
-        </section>
+      <!-- 10. Contact -->
+      <div class="pp-contact">
+        <div class="pp-contact-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <div class="pp-contact-body">
+          <h2>Grievance Officer &amp; Contact</h2>
+          <p>For data privacy concerns or to exercise your rights, contact our Grievance Officer at <a href="mailto:admin@mystudentclub.com">admin@mystudentclub.com</a></p>
+        </div>
+      </div>
+
     </div>
+  </main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Menu Toggle
-            const menuButton = document.getElementById('menuButton');
-            const expandedMenu = document.getElementById('expandedMenu');
-            const menuCloseBtn = document.getElementById('menuCloseBtn');
+  <script>
+    // Theme
+    (function () {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    })();
 
-            if (menuButton && expandedMenu) {
-                menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
-            }
-            if (menuCloseBtn && expandedMenu) {
-                menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
-            }
-
-            // Dropdowns
-            const dropdowns = document.querySelectorAll('.menu-item-dropdown button');
-            dropdowns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const content = btn.nextElementSibling;
-                    if (content) {
-                        content.style.display = content.style.display === 'block' ? 'none' : 'block';
-                        btn.classList.toggle('active');
-                    }
-                });
-            });
-
-            // Auth Check
-            if (window.supabase) {
-                const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-                const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-                const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-                const { data: { session } } = await supabase.auth.getSession();
-                const authContainer = document.querySelector('.auth-buttons-container');
-                const lmsLink = document.getElementById('lms-nav-link');
-
-                if (authContainer) {
-                    if (session) {
-                        authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn"><i class="fas fa-user"></i></a>';
-                        if (lmsLink) lmsLink.style.display = 'flex';
-                    } else {
-                        authContainer.innerHTML = '<a href="/login.html" class="auth-icon-btn"><i class="fas fa-sign-in-alt"></i></a>';
-                    }
-                }
-            }
+    document.addEventListener('DOMContentLoaded', () => {
+      // Theme toggle
+      const themeBtn = document.getElementById('themeToggleBtn');
+      if (themeBtn) {
+        themeBtn.addEventListener('click', () => {
+          const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+          document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+          localStorage.setItem('theme', isDark ? 'light' : 'dark');
         });
-    </script>
-</body>
+      }
 
+      // Menu open/close
+      const menuBtn = document.getElementById('menuButton');
+      const menu = document.getElementById('expandedMenu');
+      const closeBtn = document.getElementById('menuCloseBtn');
+      if (menuBtn && menu) menuBtn.addEventListener('click', () => menu.classList.add('active'));
+      if (closeBtn && menu) closeBtn.addEventListener('click', () => menu.classList.remove('active'));
+
+      // Resources dropdown
+      const dropBtn = document.getElementById('resourcesDropdownBtn');
+      const dropContent = document.getElementById('resourcesDropdown');
+      if (dropBtn && dropContent) {
+        dropBtn.addEventListener('click', () => {
+          dropContent.classList.toggle('open');
+          dropBtn.classList.toggle('active');
+        });
+      }
+
+      // Auth check — show History link if logged in
+      if (window._mscSupabaseClient) {
+        window._mscSupabaseClient.auth.getSession().then(({ data: { session } }) => {
+          if (session) {
+            const histLink = document.getElementById('history-nav-link');
+            if (histLink) histLink.style.display = 'flex';
+          }
+        });
+      }
+    });
+  </script>
+</body>
 </html>
+

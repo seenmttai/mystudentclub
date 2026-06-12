@@ -1,347 +1,447 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delete Account - My Student Club</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/scripts/portal-style.css">
-    <style>
-        body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            min-height: 100vh;
-            background-color: #f7fafc;
-            padding: 80px 1rem 1rem;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Delete Account — My Student Club</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/scripts/portal-style.css">
+  <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
+  <script src="/scripts/vendor/supabase.js"></script>
+  <style>
+    .da-main {
+      padding-top: calc(var(--header-h) + 16px);
+      padding-bottom: calc(32px + var(--safe-bottom));
+      min-height: 100vh;
+    }
+    .da-inner {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-        .container {
-            background-color: white;
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 550px;
-            border-top: 5px solid #ef4444;
-            margin: 2rem auto;
-        }
+    /* Back */
+    .da-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--sub);
+      background: none;
+      border: none;
+      padding: 4px 0;
+      margin-bottom: 4px;
+      cursor: pointer;
+    }
+    .da-back:active { opacity: .7; }
 
-        h1 {
-            margin: 0 0 0.5rem;
-            color: #b91c1c;
-            font-size: 1.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
+    /* Hero */
+    .da-hero {
+      background: #EF4444;
+      border-radius: var(--r-card);
+      padding: 24px 20px 20px;
+      color: #fff;
+    }
+    .da-hero-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .da-hero h1 {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -.03em;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+    .da-hero p {
+      font-size: 13px;
+      opacity: .85;
+      line-height: 1.5;
+    }
 
-        p {
-            margin-bottom: 1.5rem;
-            color: #4b5563;
-            line-height: 1.6;
-        }
+    /* Cards */
+    .da-card {
+      background: var(--card);
+      border-radius: var(--r-card);
+      padding: 20px;
+      box-shadow: var(--shadow2);
+    }
+    .da-card h2 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
 
-        strong {
-            color: #1f2937;
-        }
+    /* What gets deleted list */
+    .da-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .da-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--sub);
+      background: var(--chip);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .da-list li svg { flex-shrink: 0; color: #EF4444; }
 
-        #auth-status {
-            font-style: italic;
-            color: #718096;
-            margin-bottom: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 1.5rem;
-        }
+    /* Auth status */
+    .da-auth-status {
+      font-size: 13px;
+      color: var(--sub);
+      padding: 12px 14px;
+      background: var(--chip);
+      border-radius: 10px;
+      margin-bottom: 4px;
+    }
+    .da-auth-status strong { color: var(--text); }
+    .da-auth-status a { color: var(--brand); font-weight: 600; }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+    /* Form */
+    .da-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: block;
+    }
+    .da-label span {
+      font-family: 'Courier New', monospace;
+      background: var(--chip);
+      border: 1px solid var(--line);
+      padding: 2px 7px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #EF4444;
+      font-weight: 700;
+      letter-spacing: .05em;
+    }
+    .da-input {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--chip);
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'Poppins', sans-serif;
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s;
+      box-sizing: border-box;
+    }
+    .da-input:focus { border-color: #EF4444; }
+    .da-input::placeholder { font-weight: 400; color: var(--sub); }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
+    /* Delete button */
+    .da-btn-delete {
+      width: 100%;
+      padding: 14px;
+      background: #EF4444;
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      font-family: 'Poppins', sans-serif;
+      cursor: pointer;
+      margin-top: 12px;
+      transition: background .2s, opacity .2s;
+    }
+    .da-btn-delete:disabled {
+      background: var(--chip);
+      color: var(--sub);
+      cursor: not-allowed;
+    }
+    .da-btn-delete:not(:disabled):active { opacity: .85; }
 
-        .form-group input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            font-size: 1rem;
-            box-sizing: border-box;
-        }
+    /* Result message */
+    .da-result {
+      display: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      text-align: center;
+      line-height: 1.5;
+    }
+    .da-result.success { background: #D1FAE5; color: #065F46; }
+    .da-result.error   { background: #FEE2E2; color: #991B1B; }
 
-        .form-group input:focus {
-            outline: none;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-        }
-
-        .delete-btn {
-            width: 100%;
-            padding: 0.875rem;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s, opacity 0.2s;
-            background-color: #ef4444;
-            color: white;
-        }
-
-        .delete-btn:disabled {
-            background-color: #fca5a5;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        .delete-btn:hover:not(:disabled) {
-            background-color: #dc2626;
-        }
-
-        #result-message {
-            margin-top: 1.5rem;
-            padding: 1rem;
-            border-radius: 6px;
-            font-weight: 500;
-            text-align: center;
-            display: none;
-        }
-
-        #result-message.success {
-            background-color: #d1fae5;
-            color: #065f46;
-        }
-
-        #result-message.error {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-
-        .hidden {
-            display: none;
-        }
-    </style>
+    [data-theme="dark"] .da-result.success { background: #064E3B; color: #6EE7B7; }
+    [data-theme="dark"] .da-result.error   { background: #450A0A; color: #FCA5A5; }
+  </style>
 </head>
-
 <body>
-    <header class="site-header">
-        <div class="header-container">
-            <a href="/" class="brand-link">
-                <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
-            </a>
-            <div class="header-actions">
-                <div class="auth-buttons-container"></div>
-                <button class="menu-button-style" aria-label="Open menu" id="menuButton">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </header>
 
-    <div class="expanded-menu" id="expandedMenu">
-        <button class="menu-close-btn" id="menuCloseBtn">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
+  <!-- HEADER -->
+  <header class="app-header" id="appHeader">
+    <div class="header-left">
+      <svg class="header-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 207 223" fill="none" aria-label="My Student Club">
+        <path d="m188.4 49.73-72.25-41.61c-9.06-5.29-18.21-4.74-26.19 0l-70.9 40.81c-7.32 4.03-10.97 11.88-10.97 19.86v14.89c2.12-1.59 4.37-1.94 6.61-1.87 2.38 0.08 4.05 0.7 5.79 1.95v-14.58c0-4.34 1.26-6.8 5.52-9.26l71.93-41.41c4.95-2.85 9.07-1.13 12.08 0.83l70.98 40.74c3.8 2.14 5.39 4.6 5.39 9.1v14.58c2.12-1.33 3.53-1.95 5.99-1.95 2.78-0.07 5.03 0.55 7.35 2.14v-15.16c0-7.78-4.5-15.18-11.33-19.06z" fill="url(#msc-g0)"/>
+        <path d="m199.7 128.3-2.24 3.32c-6.68 8.36-7.65 15.35-5.97 24.32 1.1 5.85 1.72 10.43-0.31 15.01 5.85-4.19 8.52-11.51 8.52-16.78v-25.87z" fill="url(#msc-g1)"/>
+        <path d="m8.12 127.8v26.34c0 6.72 2.93 13.52 8.79 17.94-1.95-4.73-1.49-9.15-0.23-16.09 1.59-9.05-1.04-17.8-6.52-24.4l-2.04-2.77v-1.02z" fill="url(#msc-g2)"/>
+        <path d="m199.4 90.46c-1.59-4.03-2.84-5.99-6.18-5.99-4.8 0-7.34 4.5-5.83 8.99 2.17 6.23 2.47 8.69 1.94 14.2-1.47 8.82-6.66 18.11-17.62 21.91-2.58 0.94-3.04 3.16-2.35 5.84l5.33 25.6c0.38 1.63-2.02 5.66-3.13 6.4-1.59 0-4.85-4.5-4.85-4.5v-24.19c0-3.7-1.05-6.46-4.31-6.84-6.61-0.74-15.44-1.91-20.77-0.5-2.46 0.65-2.92 9.09-2.15 15.69 1.18 7.02 4.44 20.34 3.74 29.02-0.85 9.05-4.51 14.56-10.36 17.88l-20.69 12.44c-5.56 3.32-12.96 2.93-18.29 0l-20.14-11.65c-6.68-3.32-9.14-8.44-9.14-19.69 0-8.06 3.11-18.67 3.49-24.9 0.94-11.41-2.56-18.45-5.82-18.83-5.41-0.66-10.36 0.27-17.26 0.42-3.5 0.08-4.94 2.12-4.94 6.61v24.19c0 1.17-3.66 5.51-4.6 5.36-1.59-0.31-3.76-4.42-3.69-5.08l5.93-25.53c0.77-2.84-0.08-5.43-3.01-6.25-10.49-3.24-17.17-13.07-17.24-23.4-0.08-5.51 1.65-9.75 2.7-13.85 1.18-4.49-2.4-9.07-6.44-9.07-3.81 0-5.42 1.69-7.01 6.27-5.11 12.13-3.45 26.9 3.71 37.71 7.26 9.37 8.85 15.9 7.11 27.52-1.82 9.13-1.36 15.78 5.9 19.81l67.46 38.73c7.82 4.03 16.03 3.29 23.51-0.59l69.51-38.41c6.34-3.33 6.15-11.62 4.35-19.54-2.24-10.41 0.31-18.26 6.99-27.09 7.48-10.1 8.73-24.38 4.15-38.69z" fill="url(#msc-g3)"/>
+        <path d="m43.26 104.1c-6.92 0-10.8 5.82-10.8 10.74 0 6.78 5.26 10.98 10.8 10.98 6.49 0 10.83-5.59 10.83-10.98 0-5.97-4.88-10.74-10.83-10.74z" fill="url(#msc-g4)"/>
+        <path d="m163.5 104.1c-7.4 0-11.05 6.23-11.05 10.74 0 6.39 5.25 10.98 10.66 10.98 6.99 0 11.33-5.59 11.33-10.98 0-5.97-5.07-10.74-10.94-10.74z" fill="url(#msc-g5)"/>
+        <path d="m103.4 76.34c-9.14-0.31-14.92 7.54-14.92 14.67 0 8.52 7.26 14.75 14.61 14.75 9.14 0 15-7.85 15-14.75 0-7.85-6.68-14.67-14.69-14.67z" fill="#0077BF"/>
+        <path d="m150.7 59.61c-2.11-4.19-4.78-4.85-8.04-4.85-6.6 0-9.54 6.25-7.8 11.37 2.86 6.56 3.55 11.05 3.09 18.06-1.39 13.72-12.85 26.7-28.26 29.94-2.46 0.31-3.4 1.94-4.66 4.25-0.54 0.94-0.31 0.71-0.38 1.88 1.41 14 6.49 46.02 7.1 52.58 0.15 1.02-6.68 9.23-6.68 9.23-1.59 1.31-3.08 0.47-4.11-1.06-1.87-2.15-6.01-6.64-6.24-7.58l6.92-52.52c-0.31-2.05-3.65-6.16-5.24-6.47-14.28-2.13-26.41-15.22-27.46-30.25-0.45-6.23 1.05-11.15 3.51-17.04 2.17-5.87-1.71-12.1-8.61-12.1-4.58 0-6.83 2.13-8.42 5.76-7.73 15.45-6.79 34.9 4.52 49.92 8.78 10.81 12.51 21.96 11.97 35.68-0.45 9.6-4.44 18.8-3.12 30.66 0.94 6.55 3.12 10.51 8.37 12.89l18.54 10.81c5.41 2.93 11.53 2.19 16.5-1.13l18.46-10.49c6.68-3.32 8.27-12.08 7.02-20.84-1.49-9.6-3.23-16.6-2.85-24.38 0.61-10.81 4.56-21.62 13.11-33.27 10.48-15.03 10.03-31.6 2.76-51.05z" fill="#0077BF"/>
+        <defs>
+          <linearGradient id="msc-g0" x1="18.89" x2="184.3" y1="17.93" y2="75.88" gradientUnits="userSpaceOnUse"><stop stop-color="#94ADB9"/><stop offset="1" stop-color="#889CA7"/></linearGradient>
+          <linearGradient id="msc-g1" x1="193.3" x2="199.8" y1="133.1" y2="166.8" gradientUnits="userSpaceOnUse"><stop stop-color="#889CA7"/><stop offset="1" stop-color="#A4B5BE"/></linearGradient>
+          <linearGradient id="msc-g2" x1="8.119" x2="16.14" y1="132.7" y2="169.1" gradientUnits="userSpaceOnUse"><stop stop-color="#738A98"/><stop offset="1" stop-color="#A4B5BE"/></linearGradient>
+          <linearGradient id="msc-g3" x1="8.087" x2="199.9" y1="101.3" y2="170.5" gradientUnits="userSpaceOnUse"><stop stop-color="#557484"/><stop offset="1" stop-color="#6E8793"/></linearGradient>
+          <linearGradient id="msc-g4" x1="32.46" x2="53.29" y1="104.1" y2="125.2" gradientUnits="userSpaceOnUse"><stop stop-color="#557484"/><stop offset="1" stop-color="#627D8B"/></linearGradient>
+          <linearGradient id="msc-g5" x1="152.4" x2="173.8" y1="104.1" y2="125.7" gradientUnits="userSpaceOnUse"><stop stop-color="#557484"/><stop offset="1" stop-color="#627D8B"/></linearGradient>
+        </defs>
+      </svg>
+      <div class="header-greeting">
+        <div class="greeting-sub">Account</div>
+        <div class="greeting-name">Delete Account</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="themeToggleBtn" class="hdr-icon-btn" aria-label="Toggle dark mode">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button id="menuButton" class="hdr-icon-btn" aria-label="Menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- SIDE MENU -->
+  <div class="expanded-menu" id="expandedMenu">
+    <button class="hdr-icon-btn menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+    <div class="menu-items-container">
+      <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display:none">My Courses</a>
+      <a href="/history.html" class="menu-item" id="history-nav-link" style="display:none">My Activity</a>
+      <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
+      <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
+      <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
+      <div class="menu-item-dropdown">
+        <button class="menu-item" id="resourcesDropdownBtn">Free Resources
+          <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
         </button>
-        <div class="menu-items">
-            <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My
-                Courses</a>
-
-            <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
-            <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
-            <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
-
-            <div class="menu-item-dropdown">
-                <button class="menu-item" style="width: 100%; justify-content: space-between;">
-                    Free Resources
-                    <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-                <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
-                    <a href="/ca-fresher-training-resources.html" class="menu-item">CA Fresher</a>
-                    <a href="/ca-industrial-training-resources.html" class="menu-item">Industrial Training</a>
-                    <a href="/ca-articleship-opportunities" class="menu-item">Articleship</a>
-                </div>
-            </div>
-
-
-            <a href="/contact.html" class="menu-item">Contact Us</a>
+        <div class="dropdown-content" id="resourcesDropdown">
+          <a href="/ca-fresher-training-resources.html" class="dropdown-item">CA Fresher</a>
+          <a href="/ca-industrial-training-resources.html" class="dropdown-item">Industrial Training</a>
+          <a href="/ca-articleship-jobs" class="dropdown-item">Articleship</a>
         </div>
+      </div>
+      <a href="/contact.html" class="menu-item">Contact Us</a>
     </div>
+  </div>
 
-    <div class="container">
-        <h1>
-            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-                <path
-                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-            </svg>
-            Delete Your Account
-        </h1>
-        <p>This action is irreversible. When you delete your account, all of your personal data will be permanently removed, including:</p>
-        <ul style="margin: 0.75rem 0 1rem 1.5rem; color: #6b7280; line-height: 1.8; font-size: 0.95rem;">
-            <li>Profile data &amp; CV</li>
-            <li>CV sharing consent records (DPDP Act)</li>
-            <li>Course enrollments &amp; progress</li>
-            <li>Application history</li>
+  <!-- MAIN -->
+  <main class="da-main">
+    <div class="da-inner">
+
+      <!-- Back -->
+      <button class="da-back" onclick="window.location.href='/profile.html'">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        Back to Profile
+      </button>
+
+      <!-- Hero -->
+      <div class="da-hero">
+        <div class="da-hero-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+        </div>
+        <h1>Delete Your Account</h1>
+        <p>This action is permanent and cannot be undone.</p>
+      </div>
+
+      <!-- What gets deleted -->
+      <div class="da-card">
+        <h2>What will be permanently removed</h2>
+        <ul class="da-list">
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Profile data &amp; CV
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            CV sharing consent records (DPDP Act)
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Course enrollments &amp; progress
+          </li>
+          <li>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Application history
+          </li>
         </ul>
+      </div>
 
-        <div id="auth-status">Verifying your session...</div>
+      <!-- Confirm + Delete -->
+      <div class="da-card" id="deleteCard">
+        <div id="authStatus" class="da-auth-status">Verifying your session…</div>
 
-        <div id="delete-section" class="hidden">
-            <div class="form-group">
-                <label for="confirmation-text">To confirm, please type <strong>DELETE</strong> in the box below:</label>
-                <input type="text" id="confirmation-text" autocomplete="off">
-            </div>
-            <button id="delete-account-btn" class="delete-btn" disabled>Permanently Delete My Account</button>
+        <div id="deleteSection" style="display:none">
+          <label class="da-label" for="confirmationInput">
+            Type <span>DELETE</span> to confirm
+          </label>
+          <input
+            type="text"
+            id="confirmationInput"
+            class="da-input"
+            placeholder="Type DELETE here"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="characters"
+            spellcheck="false"
+          >
+          <button id="deleteBtn" class="da-btn-delete" disabled>
+            Permanently Delete My Account
+          </button>
         </div>
 
-        <div id="result-message"></div>
+        <div id="resultMessage" class="da-result"></div>
+      </div>
+
     </div>
+  </main>
 
-    <script>
-        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        
-        // Initialize client and attach to window to avoid scope issues across scripts.
-        // Use 'supabaseClient' instead of 'supabase' to avoid collision with the global library namespace.
-        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
-        window.supabaseClient = supabaseClient;
+  <script>
+    // Theme
+    (function () {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+    })();
 
-        const authStatusDiv = document.getElementById('auth-status');
-        const deleteSection = document.getElementById('delete-section');
-        const confirmationInput = document.getElementById('confirmation-text');
-        const deleteBtn = document.getElementById('delete-account-btn');
-        const resultMessage = document.getElementById('result-message');
-        let currentUser = null;
+    const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+    const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
 
-        function updateAuthUI(session) {
-            if (session && session.user) {
-                currentUser = session.user;
-                authStatusDiv.textContent = `You are logged in as: ${currentUser.email}`;
-                deleteSection.classList.remove('hidden');
-            } else {
-                currentUser = null;
-                authStatusDiv.innerHTML = 'You are not logged in. Please <a href="/login.html">log in</a> to delete your account.';
-                deleteSection.classList.add('hidden');
-            }
-        }
+    const authStatus    = document.getElementById('authStatus');
+    const deleteSection = document.getElementById('deleteSection');
+    const confirmInput  = document.getElementById('confirmationInput');
+    const deleteBtn     = document.getElementById('deleteBtn');
+    const resultMsg     = document.getElementById('resultMessage');
+    let currentUser = null;
 
-        // Listen for future auth changes
-        supabaseClient.auth.onAuthStateChange((_event, session) => {
-            updateAuthUI(session);
+    function updateAuthUI(session) {
+      if (session?.user) {
+        currentUser = session.user;
+        authStatus.innerHTML = `Logged in as <strong>${currentUser.email}</strong>`;
+        deleteSection.style.display = 'block';
+      } else {
+        currentUser = null;
+        authStatus.innerHTML = 'You are not logged in. <a href="/login.html">Log in</a> to delete your account.';
+        deleteSection.style.display = 'none';
+      }
+    }
+
+    supabaseClient.auth.onAuthStateChange((_event, session) => updateAuthUI(session));
+
+    (async () => {
+      try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        if (error) throw error;
+        updateAuthUI(session);
+      } catch (err) {
+        authStatus.innerHTML = 'Error verifying session. <a href="/login.html">Log in again</a>.';
+      }
+    })();
+
+    confirmInput.addEventListener('input', () => {
+      deleteBtn.disabled = confirmInput.value !== 'DELETE';
+    });
+
+    deleteBtn.addEventListener('click', async () => {
+      if (!currentUser || confirmInput.value !== 'DELETE') return;
+
+      deleteBtn.disabled = true;
+      deleteBtn.textContent = 'Deleting…';
+      resultMsg.style.display = 'none';
+
+      try {
+        // DPDP: remove consent record first
+        try {
+          await supabaseClient.from('consentform').delete().eq('user_id', currentUser.id);
+        } catch (_) {}
+
+        const { error } = await supabaseClient.rpc('delete_user_account');
+        if (error) throw error;
+
+        resultMsg.textContent = 'Your account has been successfully deleted. Redirecting…';
+        resultMsg.className = 'da-result success';
+        resultMsg.style.display = 'block';
+        deleteSection.style.display = 'none';
+
+        await supabaseClient.auth.signOut();
+        // Clear all local data
+        localStorage.clear();
+        setTimeout(() => { window.location.href = '/'; }, 3000);
+
+      } catch (err) {
+        resultMsg.textContent = err.message || 'Could not delete your account. Please try again or contact support.';
+        resultMsg.className = 'da-result error';
+        resultMsg.style.display = 'block';
+        deleteBtn.disabled = false;
+        deleteBtn.textContent = 'Permanently Delete My Account';
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Theme toggle
+      document.getElementById('themeToggleBtn')?.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        localStorage.setItem('theme', isDark ? 'light' : 'dark');
+      });
+
+      // Menu
+      const menuBtn  = document.getElementById('menuButton');
+      const menu     = document.getElementById('expandedMenu');
+      const closeBtn = document.getElementById('menuCloseBtn');
+      if (menuBtn)  menuBtn.addEventListener('click',  () => menu.classList.add('active'));
+      if (closeBtn) closeBtn.addEventListener('click', () => menu.classList.remove('active'));
+
+      // Resources dropdown
+      document.getElementById('resourcesDropdownBtn')?.addEventListener('click', () => {
+        document.getElementById('resourcesDropdown')?.classList.toggle('open');
+        document.getElementById('resourcesDropdownBtn')?.classList.toggle('active');
+      });
+
+      // Show history link if logged in
+      if (window._mscSupabaseClient) {
+        window._mscSupabaseClient.auth.getSession().then(({ data: { session } }) => {
+          if (session) {
+            const h = document.getElementById('history-nav-link');
+            if (h) h.style.display = 'flex';
+          }
         });
-
-        // Run explicit check immediately on load to prevent getting stuck
-        async function checkInitialSession() {
-            try {
-                const { data: { session }, error } = await supabaseClient.auth.getSession();
-                if (error) throw error;
-                updateAuthUI(session);
-            } catch (err) {
-                console.error('Session check error:', err);
-                authStatusDiv.innerHTML = 'Error verifying session. Please <a href="/login.html">log in</a> again.';
-            }
-        }
-        checkInitialSession();
-
-        confirmationInput.addEventListener('input', () => {
-            deleteBtn.disabled = confirmationInput.value !== 'DELETE';
-        });
-
-        deleteBtn.addEventListener('click', async () => {
-            if (!currentUser || confirmationInput.value !== 'DELETE') return;
-
-            deleteBtn.disabled = true;
-            deleteBtn.textContent = 'Deleting...';
-            resultMessage.style.display = 'none';
-
-            try {
-                // DPDP Act: Explicitly remove consent record before account deletion
-                try {
-                    await supabaseClient.from('consentform').delete().eq('user_id', currentUser.id);
-                } catch (consentErr) {
-                    console.log('Consent record cleanup:', consentErr);
-                }
-
-                const { error } = await supabaseClient.rpc('delete_user_account');
-
-                if (error) {
-                    throw error;
-                }
-
-                resultMessage.textContent = 'Your account has been successfully deleted. You will be redirected shortly.';
-                resultMessage.className = 'success';
-                resultMessage.style.display = 'block';
-
-                await supabaseClient.auth.signOut();
-                setTimeout(() => {
-                    window.location.href = '/';
-                }, 3000);
-
-            } catch (error) {
-                console.error('Error deleting account:', error);
-                resultMessage.textContent = `Error: ${error.message || 'Could not delete your account. Please try again or contact support.'}`;
-                resultMessage.className = 'error';
-                resultMessage.style.display = 'block';
-                deleteBtn.disabled = false;
-                deleteBtn.textContent = 'Permanently Delete My Account';
-            }
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Menu Toggle
-            const menuButton = document.getElementById('menuButton');
-            const expandedMenu = document.getElementById('expandedMenu');
-            const menuCloseBtn = document.getElementById('menuCloseBtn');
-
-            if (menuButton && expandedMenu) {
-                menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
-            }
-            if (menuCloseBtn && expandedMenu) {
-                menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
-            }
-
-            // Dropdowns
-            const dropdowns = document.querySelectorAll('.menu-item-dropdown button');
-            dropdowns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const content = btn.nextElementSibling;
-                    if (content) {
-                        content.style.display = content.style.display === 'block' ? 'none' : 'block';
-                        btn.classList.toggle('active');
-                    }
-                });
-            });
-
-            // Auth Check
-            if (window.supabaseClient) {
-                // Use the globally exposed supabaseClient
-                const { data: { session } } = await window.supabaseClient.auth.getSession();
-                const authContainer = document.querySelector('.auth-buttons-container');
-                const lmsLink = document.getElementById('lms-nav-link');
-
-                if (authContainer) {
-                    if (session) {
-                        authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn"><i class="fas fa-user"></i></a>';
-                        if (lmsLink) lmsLink.style.display = 'flex';
-                    } else {
-                        authContainer.innerHTML = '<a href="/login.html" class="auth-icon-btn"><i class="fas fa-sign-in-alt"></i></a>';
-                    }
-                }
-            }
-        });
-    </script>
+      }
+    });
+  </script>
 </body>
-
 </html>
+

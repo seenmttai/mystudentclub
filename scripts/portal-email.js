@@ -1,4 +1,4 @@
-import { getDaysAgo } from './date-utils.js';
+﻿import { getDaysAgo } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
 async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) {
@@ -2125,7 +2125,7 @@ const JOB_PREFERENCE_KEY = 'userJobPreference';
 // Map preference values to redirect URLs
 const PREFERENCE_REDIRECT_MAP = {
     'industrial': '/',
-    'articleship': '/ca-articleship-opportunities',
+    'articleship': '/ca-articleship-jobs',
     'fresher_fresher': '/ca-fresher-jobs',
     'fresher_experienced': '/experienced-ca-jobs',
     'semi_fresher': '/semi-qualified-ca-jobs',
@@ -2474,4 +2474,5 @@ document.addEventListener('DOMContentLoaded', async () => {
         initJobPreferenceModal();
     }, 500);
 });
+
 
