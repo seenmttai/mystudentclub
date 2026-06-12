@@ -804,6 +804,18 @@
     border-radius: 0;
 }
 
+.resource-viewer-content.pseudo-fullscreen {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
+    max-height: none !important;
+    border-radius: 0 !important;
+    z-index: 9999 !important;
+}
+
 .resource-viewer-header {
     display: flex;
     justify-content: space-between;

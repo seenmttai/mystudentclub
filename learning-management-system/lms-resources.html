@@ -806,6 +806,12 @@
                     // Non-template PDFs open in the ca-resource flipbook viewer
                     const isTemplate = resource.group && resource.group.toLowerCase().includes('template');
                     if (type === 'pdf' && !isTemplate) {
+                        // Pre-open window synchronously to prevent Safari/iOS popup blocker
+                        const newWindow = window.open('', '_blank');
+                        if (newWindow) {
+                            newWindow.document.write('<p style="font-family: sans-serif; text-align: center; margin-top: 20%; color: #64748b;">Loading resource preview...</p>');
+                        }
+
                         try {
                             const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
                             if (error) throw error;
@@ -822,9 +828,15 @@
                             if (this.isDocxPreviewResource(resource)) {
                                 viewerUrl += '&preview=docx';
                             }
-                            window.open(viewerUrl, '_blank');
+
+                            if (newWindow) {
+                                newWindow.location.href = viewerUrl;
+                            } else {
+                                window.open(viewerUrl, '_blank');
+                            }
                         } catch (err) {
                             console.error("Viewer error", err);
+                            if (newWindow) newWindow.close();
                             alert("Could not load resource.");
                         }
                         return;

@@ -119,6 +119,20 @@ document.addEventListener('DOMContentLoaded', () => {
         return iconMap[type ? type.toLowerCase() : ''] || 'fas fa-file';
     };
 
+    const getResourceFromElement = (el) => {
+        try {
+            const resAttr = el.dataset.resource;
+            if (!resAttr || resAttr === 'undefined') return null;
+            if (resAttr.startsWith('%')) {
+                return JSON.parse(decodeURIComponent(resAttr));
+            }
+            return JSON.parse(resAttr);
+        } catch (e) {
+            console.error("Error parsing resource dataset", e);
+            return null;
+        }
+    };
+
     const isDocxPreviewResource = (resource) => {
         const type = String(resource?.type || '').toLowerCase();
         const hasPreview = resource?.view_storage_path && resource.view_storage_path !== 'None';
@@ -263,8 +277,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             resourcesHTML += `<h5 class="sidebar-resource-group-title">${groupName}</h5>`;
                         }
                         groups[groupName].forEach(resource => {
+                            const safeResourceStr = encodeURIComponent(JSON.stringify(resource));
                             resourcesHTML += `
-                                <div class="resource-item-sidebar" data-resource='${JSON.stringify(resource).replace(/'/g, "&apos;")}'>
+                                <div class="resource-item-sidebar" data-resource="${safeResourceStr}">
                                     <span class="resource-icon-sidebar"><i class="${getResourceIcon(resource.type)}"></i></span>
                                     <span class="resource-title-sidebar">${resource.title}</span>
                                 </div>`;
@@ -324,7 +339,8 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.courseModulesContainer.querySelectorAll('.resource-item-sidebar').forEach(el => {
             el.addEventListener('click', (e) => {
                 e.stopPropagation();
-                handleResourceClick(JSON.parse(el.dataset.resource));
+                const resource = getResourceFromElement(el);
+                if (resource) handleResourceClick(resource);
             });
         });
     };
@@ -352,6 +368,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const logFrontendError = async (message, stack, source) => {
         if (state.errorLogCount >= 6) return;
+
+        // Process message object if it's an Event or CustomEvent
+        let errorMsg = message;
+        if (errorMsg && typeof errorMsg === 'object') {
+            if (errorMsg.detail) {
+                errorMsg = typeof errorMsg.detail === 'string' ? errorMsg.detail : JSON.stringify(errorMsg.detail);
+            } else if (errorMsg.message) {
+                errorMsg = errorMsg.message;
+            } else {
+                errorMsg = errorMsg.type ? `Event: ${errorMsg.type}` : JSON.stringify(errorMsg);
+            }
+        }
+        errorMsg = String(errorMsg || 'Unknown Error');
+
+        // Filter out non-actionable browser network noise
+        const noiseKeywords = [
+            'load failed',
+            'failed to fetch',
+            'networkerror',
+            'aborted',
+            'operation was aborted',
+            'cancelled'
+        ];
+        if (noiseKeywords.some(keyword => errorMsg.toLowerCase().includes(keyword))) {
+            return;
+        }
+
         state.errorLogCount++;
 
         const contextData = JSON.stringify({
@@ -365,7 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .from('frontend_errors')
                 .insert({
                     user_id: state.user ? state.user.id : null,
-                    error_message: `Source: ${source} | Message: ${message || 'Unknown Error'} | Context: ${contextData}`,
+                    error_message: `Source: ${source} | Message: ${errorMsg} | Context: ${contextData}`,
                     stack_trace: stack || 'No Stack Trace',
                     url: window.location.href,
                     user_agent: navigator.userAgent
@@ -1065,6 +1108,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const viewLabel = getResourceViewLabel(resource);
                     const downloadLabel = getResourceDownloadLabel(resource);
                     const formatNote = getResourceFormatNote(resource);
+                    const safeResourceStr = encodeURIComponent(JSON.stringify(resource));
                     resourcesHTML += `
                         <li class="resource-item">
                             <span class="resource-icon"><i class="${getResourceIcon(resource.type)}"></i></span>
@@ -1073,9 +1117,9 @@ document.addEventListener('DOMContentLoaded', () => {
                                 ${formatNote ? `<span class="resource-format-note">${formatNote}</span>` : ''}
                             </div>
                             <div class="resource-actions">
-                                <button class="resource-btn resource-btn-view" data-resource='${JSON.stringify(resource).replace(/'/g, "&apos;")}'><i class="fas fa-eye"></i> ${viewLabel}</button>
+                                <button class="resource-btn resource-btn-view" data-resource="${safeResourceStr}"><i class="fas fa-eye"></i> ${viewLabel}</button>
                                 ${resource.download_storage_path && resource.download_storage_path !== 'None' ?
-                            `<button class="resource-btn resource-btn-download" data-resource='${JSON.stringify(resource).replace(/'/g, "&apos;")}'><i class="fas fa-download"></i> ${downloadLabel}</button>` :
+                            `<button class="resource-btn resource-btn-download" data-resource="${safeResourceStr}"><i class="fas fa-download"></i> ${downloadLabel}</button>` :
                             `<span class="resource-btn resource-btn-download disabled"><i class="fas fa-download"></i> ${downloadLabel}</span>`
                         }
                             </div>
@@ -1086,12 +1130,16 @@ document.addEventListener('DOMContentLoaded', () => {
             DOMElements.tabContents.resources.innerHTML = resourcesHTML;
 
             DOMElements.tabContents.resources.querySelectorAll('.resource-btn-view').forEach(btn => {
-                btn.addEventListener('click', () => handleResourceClick(JSON.parse(btn.dataset.resource)));
+                btn.addEventListener('click', () => {
+                    const resource = getResourceFromElement(btn);
+                    if (resource) handleResourceClick(resource);
+                });
             });
             DOMElements.tabContents.resources.querySelectorAll('.resource-btn-download').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    downloadResource(JSON.parse(btn.dataset.resource));
+                    const resource = getResourceFromElement(btn);
+                    if (resource) downloadResource(resource);
                 });
             });
         }
@@ -1177,6 +1225,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 await openResourceViewer(resource, 'pdf');
             } else {
                 // All other PDFs open in the ca-resource flipbook viewer
+                // Pre-open window synchronously to prevent Safari/iOS popup blocker
+                const newWindow = window.open('', '_blank');
+                if (newWindow) {
+                    newWindow.document.write('<p style="font-family: sans-serif; text-align: center; margin-top: 20%; color: #64748b;">Loading resource preview...</p>');
+                }
+
                 try {
                     const { data: viewData, error: viewError } = await supabase.storage
                         .from('industrial-training-mastery-resources')
@@ -1201,9 +1255,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (isDocxPreviewResource(resource)) {
                         viewerUrl += '&preview=docx';
                     }
-                    window.open(viewerUrl, '_blank');
+
+                    if (newWindow) {
+                        newWindow.location.href = viewerUrl;
+                    } else {
+                        window.open(viewerUrl, '_blank');
+                    }
                 } catch (err) {
                     console.error('Error generating PDF link:', err);
+                    if (newWindow) newWindow.close();
                     alert('Could not open the resource. Please try again.');
                 }
             }
@@ -1525,13 +1585,44 @@ document.addEventListener('DOMContentLoaded', () => {
         state.pdfDoc = null; state.currentResource = null; state.previewType = null;
     };
 
+    const updateFullscreenButtonUI = () => {
+        const icon = DOMElements.viewerFullscreenBtn.querySelector('i');
+        if (icon) {
+            if (state.isFullscreen) {
+                icon.classList.remove('fa-expand');
+                icon.classList.add('fa-compress');
+            } else {
+                icon.classList.remove('fa-compress');
+                icon.classList.add('fa-expand');
+            }
+        }
+    };
+
     const toggleFullscreen = () => {
-        if (!document.fullscreenElement) {
-            DOMElements.viewerContent.requestFullscreen().catch(err => {
-                alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-            });
+        const viewer = DOMElements.viewerContent;
+        const hasNativeFullscreen = !!(viewer.requestFullscreen || viewer.webkitRequestFullscreen);
+
+        if (hasNativeFullscreen) {
+            if (viewer.requestFullscreen) {
+                if (!document.fullscreenElement) {
+                    viewer.requestFullscreen().catch(err => {
+                        console.warn(`Error attempting to enable full-screen mode: ${err.message}`);
+                    });
+                } else {
+                    document.exitFullscreen();
+                }
+            } else if (viewer.webkitRequestFullscreen) {
+                if (!document.webkitFullscreenElement) {
+                    viewer.webkitRequestFullscreen();
+                } else {
+                    document.webkitExitFullscreen();
+                }
+            }
         } else {
-            document.exitFullscreen();
+            // Pseudo fullscreen fallback for iPhone / iOS Safari
+            const isPseudo = viewer.classList.toggle('pseudo-fullscreen');
+            state.isFullscreen = isPseudo;
+            updateFullscreenButtonUI();
         }
     };
 
@@ -1630,6 +1721,16 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.pdfNextPage.addEventListener('click', () => { if (state.pdfCurrentPage < state.pdfTotalPages) renderPdfPage(state.pdfCurrentPage + 1); });
         DOMElements.viewerDownloadBtn.addEventListener('click', () => { if (state.currentResource) downloadResource(state.currentResource) });
 
+        // Synchronize state and UI when native fullscreen is entered/exited
+        document.addEventListener('fullscreenchange', () => {
+            state.isFullscreen = !!document.fullscreenElement;
+            updateFullscreenButtonUI();
+        });
+        document.addEventListener('webkitfullscreenchange', () => {
+            state.isFullscreen = !!document.webkitFullscreenElement;
+            updateFullscreenButtonUI();
+        });
+
         if (DOMElements.closeNoDownloadBtn) {
             DOMElements.closeNoDownloadBtn.addEventListener('click', () => {
                 DOMElements.noDownloadPopup.classList.remove('active');
@@ -1637,8 +1738,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const video = DOMElements.videoPlayer;
-
-        // Plyr initialization moved to initializePlyr function and called in selectVideo
 
         // Keep loading overlay logic
         video.addEventListener('loadedmetadata', () => {
@@ -1662,13 +1761,19 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        window.onerror = (msg, url, line, col, error) => logFrontendError(msg, error ? error.stack : `Line: ${line}, Col: ${col}`, url);
+        window.onerror = (msg, url, line, col, error) => {
+            logFrontendError(msg, error ? error.stack : `Line: ${line}, Col: ${col}`, url);
+        };
         window.addEventListener('unhandledrejection', (event) => {
             let errorMessage = 'Unhandled Promise Rejection';
             let errorStack = '';
             if (event.reason) {
-                errorMessage = event.reason.message || (typeof event.reason === 'string' ? event.reason : JSON.stringify(event.reason));
-                errorStack = event.reason.stack || '';
+                if (typeof event.reason === 'object') {
+                    errorMessage = event.reason.message || JSON.stringify(event.reason);
+                    errorStack = event.reason.stack || '';
+                } else {
+                    errorMessage = String(event.reason);
+                }
             }
             logFrontendError(errorMessage, errorStack, 'Promise Rejection');
         });

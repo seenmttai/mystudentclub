@@ -749,18 +749,45 @@
         window.onerror = function (message, source, lineno, colno, error) {
             if (errorCount < MAX_ERRORS) {
                 logFrontendError(message, source, lineno, colno, error ? error.stack : null);
-                errorCount++;
             }
         };
 
         async function logFrontendError(message, source, lineno, colno, stack) {
+            // Process message object if it's an Event or CustomEvent
+            let errorMsg = message;
+            if (errorMsg && typeof errorMsg === 'object') {
+                if (errorMsg.detail) {
+                    errorMsg = typeof errorMsg.detail === 'string' ? errorMsg.detail : JSON.stringify(errorMsg.detail);
+                } else if (errorMsg.message) {
+                    errorMsg = errorMsg.message;
+                } else {
+                    errorMsg = errorMsg.type ? `Event: ${errorMsg.type}` : JSON.stringify(errorMsg);
+                }
+            }
+            errorMsg = String(errorMsg || 'Unknown Error');
+
+            // Filter out non-actionable browser network noise
+            const noiseKeywords = [
+                'load failed',
+                'failed to fetch',
+                'networkerror',
+                'aborted',
+                'operation was aborted',
+                'cancelled'
+            ];
+            if (noiseKeywords.some(keyword => errorMsg.toLowerCase().includes(keyword))) {
+                return;
+            }
+
+            errorCount++;
+
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 const userId = session?.user?.id || null;
 
                 await supabase.from('frontend_errors').insert({
                     user_id: userId,
-                    error_message: message,
+                    error_message: errorMsg,
                     stack_trace: stack || `${source}:${lineno}:${colno}`,
                     url: window.location.href,
                     user_agent: navigator.userAgent
