@@ -1211,6 +1211,7 @@ function updateHeaderAuth(session) {
       .addEventListener("click", handleLogout);
     checkUserEnrollment();
   } else {
+    if (!container) return;
     container.innerHTML = `<a href="/login.html" class="hdr-icon-btn" aria-label="Login">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/>
