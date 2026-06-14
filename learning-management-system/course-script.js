@@ -499,6 +499,92 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const getDeviceFingerprint = () => {
+        try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                return btoa(navigator.userAgent + navigator.language + screen.width + "x" + screen.height);
+            }
+            canvas.width = 200;
+            canvas.height = 50;
+            ctx.textBaseline = "top";
+            ctx.font = "14px 'Arial'";
+            ctx.textBaseline = "alphabetic";
+            ctx.fillStyle = "#f60";
+            ctx.fillRect(125, 1, 62, 20);
+            ctx.fillStyle = "#069";
+            ctx.fillText("MSC LMS, device check! 😃", 2, 15);
+            ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
+            ctx.fillText("MSC LMS, device check! 😃", 4, 17);
+            const txt = canvas.toDataURL();
+            
+            let hash = 0;
+            for (let i = 0; i < txt.length; i++) {
+                const char = txt.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            
+            const screenStr = `${screen.width}x${screen.height}x${screen.colorDepth}_${navigator.userAgent}_${navigator.language}`;
+            let screenHash = 0;
+            for (let i = 0; i < screenStr.length; i++) {
+                const char = screenStr.charCodeAt(i);
+                screenHash = ((screenHash << 5) - screenHash) + char;
+                screenHash = screenHash & screenHash;
+            }
+            
+            return `FP_${Math.abs(hash)}_${Math.abs(screenHash)}`;
+        } catch (e) {
+            return 'FP_FALLBACK_' + btoa(navigator.userAgent + navigator.language + screen.width + "x" + screen.height).slice(0, 32);
+        }
+    };
+
+    const checkDeviceLimit = async () => {
+        try {
+            const currentFp = getDeviceFingerprint();
+
+            // Fetch registered devices for this user
+            const { data: devices, error } = await supabase
+                .from('user_devices')
+                .select('fingerprint')
+                .eq('user_id', state.user.id);
+
+            if (error) throw error;
+
+            const registeredFingerprints = devices ? devices.map(d => d.fingerprint) : [];
+
+            if (registeredFingerprints.includes(currentFp)) {
+                // Already registered device
+                return true;
+            }
+
+            if (registeredFingerprints.length < 2) {
+                // Register new device
+                const { error: insertError } = await supabase
+                    .from('user_devices')
+                    .insert({ user_id: state.user.id, fingerprint: currentFp });
+
+                if (insertError) {
+                    // Check if unique constraint error code matches (race condition fallback)
+                    if (insertError.code === '23505') {
+                        return true;
+                    }
+                    throw insertError;
+                }
+                return true;
+            }
+
+            // More than 2 devices registered
+            return false;
+        } catch (err) {
+            console.error("Device verification failed:", err);
+            logFrontendError("Device limit check failed: " + err.message, err.stack, 'checkDeviceLimit');
+            // Graceful degradation: let the user access if check fails to prevent accidental block
+            return true;
+        }
+    };
+
     const checkEnrollment = async () => {
         try {
             const { data: enrollments, error } = await supabase
@@ -508,6 +594,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 DOMElements.enrollmentModal.style.display = 'flex';
             } else {
                 state.isEnrolled = true;
+
+                // Perform device limit check
+                const isDeviceAllowed = await checkDeviceLimit();
+                if (!isDeviceAllowed) {
+                    const deviceLimitModal = document.getElementById('device-limit-modal');
+                    if (deviceLimitModal) {
+                        deviceLimitModal.style.display = 'flex';
+                        
+                        // Setup email support prefill
+                        const supportBtn = document.getElementById('device-limit-support-btn');
+                        if (supportBtn) {
+                            supportBtn.addEventListener('click', () => {
+                                const subject = encodeURIComponent("LMS Device Limit Reset Request");
+                                const body = encodeURIComponent(
+                                    `Hi Support Team,\n\nI would like to request a reset of the registered devices for my account.\n\nMy Account Email: ${state.user?.email || ''}\nUser ID: ${state.user?.id || ''}\nCourse: ${state.courseSlug || ''}`
+                                );
+                                window.location.href = `mailto:padam@mystudentclub.com?subject=${subject}&body=${body}`;
+                            });
+                        }
+                    }
+                    return;
+                }
+
                 DOMElements.coursePageContent.style.display = 'block';
                 DOMElements.footer.style.display = 'block';
                 await loadCourseVideos();
