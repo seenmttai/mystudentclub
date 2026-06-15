@@ -602,15 +602,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (deviceLimitModal) {
                         deviceLimitModal.style.display = 'flex';
                         
-                        // Setup email support prefill
+                        // Setup contact support redirect
                         const supportBtn = document.getElementById('device-limit-support-btn');
                         if (supportBtn) {
                             supportBtn.addEventListener('click', () => {
-                                const subject = encodeURIComponent("LMS Device Limit Reset Request");
-                                const body = encodeURIComponent(
-                                    `Hi Support Team,\n\nI would like to request a reset of the registered devices for my account.\n\nMy Account Email: ${state.user?.email || ''}\nUser ID: ${state.user?.id || ''}\nCourse: ${state.courseSlug || ''}`
-                                );
-                                window.location.href = `mailto:padam@mystudentclub.com?subject=${subject}&body=${body}`;
+                                window.location.href = 'https://www.mystudentclub.com/contact';
                             });
                         }
                     }
