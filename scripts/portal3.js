@@ -2111,7 +2111,7 @@ async function initializePage() {
         localStorage.setItem('portalVisitCount', visitCount);
 
         if (visitCount === 3) {
-            showToast("Create an account to unlock AI Apply and instant vacancy alerts!", "info");
+            showToast("Create a free account to keep browsing jobs, get vacancy alerts, and access exclusive career tools.", "info");
         } else if (visitCount >= 5) {
             const overlay = document.getElementById('loginPromptOverlay');
             if (overlay) {
