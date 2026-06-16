@@ -191,7 +191,8 @@
     .stats-row {
       display: flex;
       justify-content: center;
-      gap: 2rem;
+      flex-wrap: wrap;
+      gap: 1.5rem;
       margin-top: 1.5rem;
       padding-top: 1.5rem;
       border-top: 1px solid rgba(255, 255, 255, 0.15);
@@ -1025,7 +1026,7 @@
         <div class="testimonial-card active" data-index="0">
           <p class="testimonial-text">
             <strong>Top-Tier Opportunities:</strong> Access exclusive vacancies and get referrals to leading
-            organizations like Amazon, UBS, and Flipkart with stipends up to ₹1.25 Lakhs.
+            organizations like Amazon, UBS, and Flipkart.
           </p>
         </div>
 
@@ -1066,16 +1067,20 @@
 
       <div class="stats-row">
         <div class="stat-item">
-          <div class="stat-number" data-target="1000" data-suffix="'s of">0</div>
+          <div class="stat-number" data-target="1000" data-suffix="+">0</div>
           <div class="stat-label">Students Placed</div>
         </div>
         <div class="stat-item">
-          <div class="stat-number" data-target="500">0</div>
-          <div class="stat-label">Top Firms</div>
+          <div class="stat-number" data-target="2000" data-suffix="+">0</div>
+          <div class="stat-label">Hiring Companies</div>
         </div>
         <div class="stat-item">
-          <div class="stat-number" data-target="125000" data-prefix="₹" data-suffix="">0</div>
-          <div class="stat-label">Max Stipend</div>
+          <div class="stat-number" data-target="10000" data-comma="true" data-suffix="+">0</div>
+          <div class="stat-label">Career Opportunities</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" data-target="4.8" data-suffix="★">0</div>
+          <div class="stat-label">Student Rating</div>
         </div>
       </div>
     </div>
@@ -1147,18 +1152,24 @@
 
         // Animated Counter for Stats
         const animateCounter = (element) => {
-          const target = parseInt(element.dataset.target);
+          const targetStr = element.dataset.target;
+          const target = parseFloat(targetStr);
           const prefix = element.dataset.prefix || '';
           const suffix = element.dataset.suffix !== undefined ? element.dataset.suffix : '+';
           const duration = 2000;
           const increment = target / (duration / 16);
           let current = 0;
+          const isFloat = targetStr.includes('.');
 
           const updateCounter = () => {
             current += increment;
             if (current < target) {
               if (target >= 100000) {
                 element.textContent = prefix + (current / 100000).toFixed(2) + 'L';
+              } else if (isFloat) {
+                element.textContent = prefix + current.toFixed(1) + suffix;
+              } else if (element.dataset.comma !== undefined) {
+                element.textContent = prefix + Math.floor(current).toLocaleString('en-US') + suffix;
               } else {
                 element.textContent = prefix + Math.floor(current) + suffix;
               }
@@ -1166,6 +1177,10 @@
             } else {
               if (target >= 100000) {
                 element.textContent = prefix + (target / 100000).toFixed(2) + 'L';
+              } else if (isFloat) {
+                element.textContent = prefix + target.toFixed(1) + suffix;
+              } else if (element.dataset.comma !== undefined) {
+                element.textContent = prefix + Math.floor(target).toLocaleString('en-US') + suffix;
               } else {
                 element.textContent = prefix + target + suffix;
               }
