@@ -417,13 +417,29 @@ async function checkAuth() {
 export function updateHeaderAuth(session) {
   const authButtons = document.querySelector('.auth-buttons');
   if (session) {
-    let email = session.user.email, initial = email.charAt(0).toUpperCase();
+    let email = session.user.email || '';
+    let displayName = '';
+    try {
+      const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
+      if (profileData.name && profileData.name.trim()) {
+        displayName = profileData.name.trim();
+      }
+    } catch (e) {}
+    if (!displayName && session.user?.user_metadata?.full_name) {
+      displayName = session.user.user_metadata.full_name;
+    }
+    if (!displayName) {
+      displayName = email ? email.split('@')[0] : 'User';
+    }
+    let initial = displayName.charAt(0).toUpperCase();
+
     authButtons.innerHTML = `<div class="user-profile-container">
       <div class="user-icon-wrapper">
         <div class="user-icon" data-email="${email}">${initial}</div>
         <div class="user-hover-card">
           <div class="user-hover-content">
-            <p class="user-email">${email}</p>
+            <p class="user-email">${displayName}</p>
+            <a href="/profile.html" class="profile-link-btn" style="margin-bottom: 0.5rem; display: block; text-decoration: none; text-align: center;">Edit Profile</a>
             <button onclick="handleLogout()" class="logout-btn">Logout</button>
           </div>
         </div>

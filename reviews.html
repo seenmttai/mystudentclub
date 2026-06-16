@@ -1923,20 +1923,46 @@
                 dom.reviewFormLoginPrompt.style.display = 'none';
                 dom.reviewFormFieldset.disabled = false;
 
-                const initial = session.user.email.charAt(0).toUpperCase();
+                let email = session.user.email || '';
+                let displayName = '';
+                try {
+                    const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
+                    if (profileData.name && profileData.name.trim()) {
+                        displayName = profileData.name.trim();
+                    }
+                } catch (e) { }
+                if (!displayName && session.user.user_metadata && session.user.user_metadata.full_name) {
+                    displayName = session.user.user_metadata.full_name;
+                }
+                if (!displayName) {
+                    displayName = email ? email.split('@')[0] : 'User';
+                }
+                const initial = displayName.charAt(0).toUpperCase();
+
                 dom.authButtonsContainer.innerHTML = `
                     <div class="user-profile-container">
                         <div class="user-icon-wrapper">
-                            <div class="user-icon">${initial}</div>
+                            <div class="user-icon" data-email="${email}">${initial}</div>
                             <div class="user-hover-card">
                                 <div class="user-hover-content">
-                                    <p class="user-email">${session.user.email}</p>
+                                    <p class="user-email">${displayName}</p>
+                                    <a href="/profile.html" class="profile-link-btn" style="margin-bottom: 0.5rem; display: block; text-decoration: none; text-align: center;">Edit Profile</a>
                                     <button id="logoutBtn" class="logout-btn">Logout</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
+
+                const userProfileContainer = dom.authButtonsContainer.querySelector('.user-profile-container');
+                const userIconWrapper = userProfileContainer.querySelector('.user-icon-wrapper');
+                const userHoverCard = userProfileContainer.querySelector('.user-hover-card');
+
+                userIconWrapper.addEventListener('click', (event) => {
+                    event.stopPropagation();
+                    userHoverCard.classList.toggle('show');
+                });
+
                 document.getElementById('logoutBtn').addEventListener('click', async () => {
                     await supabaseClient.auth.signOut();
 
@@ -2129,6 +2155,19 @@
             expandedMenu.addEventListener('click', (e) => {
                 if (e.target === expandedMenu) {
                     expandedMenu.classList.remove('active');
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (expandedMenu && expandedMenu.classList.contains('active') && !expandedMenu.contains(e.target) && !menuButton.contains(e.target)) {
+                    expandedMenu.classList.remove('active');
+                }
+                const userProfileContainer = document.querySelector('.user-profile-container');
+                const userHoverCard = document.querySelector('.user-hover-card');
+                if (userProfileContainer && userHoverCard && userHoverCard.classList.contains('show')) {
+                    if (!userProfileContainer.contains(e.target)) {
+                        userHoverCard.classList.remove('show');
+                    }
                 }
             });
 

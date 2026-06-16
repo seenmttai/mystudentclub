@@ -1009,15 +1009,20 @@ function updateHeaderAuth(session) {
     if (!dom.authButtonsContainer) return;
     if (session) {
         let email = session.user.email || 'User';
-        // Try to get name from stored profile data
-        let displayName = email;
+        let displayName = '';
         try {
             const profileData = JSON.parse(localStorage.getItem('userProfileData') || '{}');
             if (profileData.name && profileData.name.trim()) {
                 displayName = profileData.name.trim();
             }
         } catch (e) {
-            // Fall back to email if profile data parsing fails
+            // Fall back to other name sources
+        }
+        if (!displayName && session.user && session.user.user_metadata && session.user.user_metadata.full_name) {
+            displayName = session.user.user_metadata.full_name;
+        }
+        if (!displayName) {
+            displayName = email.split('@')[0];
         }
         let initial = displayName.charAt(0).toUpperCase();
         dom.authButtonsContainer.innerHTML = `

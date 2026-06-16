@@ -2069,11 +2069,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     const authButtonsContainer = document.querySelector('.auth-buttons-container');
 
     if (user) {
-        let displayName = user.email;
+        let displayName = '';
         try {
             const pd = JSON.parse(localStorage.getItem('userProfileData') || '{}');
             if (pd.name && pd.name.trim()) displayName = pd.name.trim();
         } catch (e) { }
+        if (!displayName && user.user_metadata && user.user_metadata.full_name) {
+            displayName = user.user_metadata.full_name;
+        }
+        if (!displayName) {
+            displayName = user.email.split('@')[0];
+        }
         const initial = displayName.charAt(0).toUpperCase();
         authButtonsContainer.innerHTML = `<div class="user-profile-container"><div class="user-icon-wrapper"><div class="user-icon" data-email="${user.email}">${initial}</div><div class="user-hover-card"><div class="user-hover-content"><p class="user-email">${displayName}</p><a href="/profile.html" class="profile-link-btn">Edit Profile</a><button id="logoutBtn" class="logout-btn">Logout</button></div></div></div></div>`;
 
