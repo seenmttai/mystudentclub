@@ -749,9 +749,12 @@ function populateSalaryFilter() {
     ];
     else if (currentTable === "Fresher Jobs") options = [
         { value: '', text: 'Any Salary' },
-        { value: '0-1200000', text: '< 12 LPA' },
-        { value: '1200000-1800000', text: '12-18 LPA' },
-        { value: '1800000+', text: '> 18 LPA' }
+        { value: '0-800000', text: 'Below ₹8 LPA' },
+        { value: '800000-1200000', text: '₹8-12 LPA' },
+        { value: '1200000-1500000', text: '₹12-15 LPA' },
+        { value: '1500000-2000000', text: '₹15-20 LPA' },
+        { value: '2000000-3000000', text: '₹20-30 LPA' },
+        { value: '3000000+', text: '₹30+ LPA' }
     ];
 
     salaryFilters.forEach(select => {

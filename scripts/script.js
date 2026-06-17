@@ -188,7 +188,7 @@ function populateSalaryFilter(table) {
     options = [{ value: '', text: 'Any Salary' }, { value: '0-25000', text: 'Below ₹25,000' }, { value: '25000-35000', text: '₹25,000 - ₹35,000' }, { value: '35000-50000', text: '₹35,000 - ₹50,000' }, { value: '50000+', text: 'Above ₹50,000' }];
   }
   else if (table === "Fresher Jobs") {
-    options = [{ value: '', text: 'Any Salary' }, { value: '0-12', text: 'Less than 12 LPA' }, { value: '12-18', text: '12-18 LPA' }, { value: '18+', text: 'More than 18 LPA' }];
+    options = [{ value: '', text: 'Any Salary' }, { value: '0-800000', text: 'Below ₹8 LPA' }, { value: '800000-1200000', text: '₹8-12 LPA' }, { value: '1200000-1500000', text: '₹12-15 LPA' }, { value: '1500000-2000000', text: '₹15-20 LPA' }, { value: '2000000-3000000', text: '₹20-30 LPA' }, { value: '3000000+', text: '₹30+ LPA' }];
   }
   options.forEach(opt => {
     let o = document.createElement('option');
