@@ -463,7 +463,7 @@ function showModal(job) {
     // Build the bottom action link row with View Original Post if available
     let linksHtml = '';
     const connectButtonHtml = `
-        <a href="${connectLink}" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(33% - 0.5rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+        <a href="${connectLink}" id="modalConnectPeersBtn" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(33% - 0.5rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
             <i class="fab fa-linkedin"></i>
             Connect to Peers
         </a>`;
@@ -475,7 +475,7 @@ function showModal(job) {
     
     if (job.posts_link) {
         const originalPostHtml = `
-            <a href="${job.posts_link}" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(33% - 0.5rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-color: #0a66c2; color: #0a66c2;">
+            <a href="${job.posts_link}" id="modalOriginalPostBtn" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(33% - 0.5rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-color: #0a66c2; color: #0a66c2;">
                 <i class="fab fa-linkedin"></i>
                 Original Post
             </a>`;
@@ -605,7 +605,16 @@ function showModal(job) {
             // Since this is a module, we should import at top, but for inline replacement:
             modalAiApplyBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
-                await handleAiApplyClick(job, e.currentTarget, currentTable, applyLink);
+                if (!currentSession) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                const isEnrolled = await checkEnrollmentForTable(currentTable, currentSession.user.id);
+                if (isEnrolled) {
+                    await handleAiApplyClick(job, e.currentTarget, currentTable, applyLink);
+                } else {
+                    showEnrollmentRequiredPopup();
+                }
             });
         }
     } else {
@@ -619,6 +628,40 @@ function showModal(job) {
                 }
             });
         }
+    }
+
+    const modalConnectPeersBtn = document.getElementById('modalConnectPeersBtn');
+    if (modalConnectPeersBtn) {
+        modalConnectPeersBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (!currentSession) {
+                window.location.href = '/login.html';
+                return;
+            }
+            const isEnrolled = await checkEnrollmentForTable(currentTable, currentSession.user.id);
+            if (isEnrolled) {
+                window.open(connectLink, '_blank');
+            } else {
+                showEnrollmentRequiredPopup();
+            }
+        });
+    }
+
+    const modalOriginalPostBtn = document.getElementById('modalOriginalPostBtn');
+    if (modalOriginalPostBtn) {
+        modalOriginalPostBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (!currentSession) {
+                window.location.href = '/login.html';
+                return;
+            }
+            const isEnrolled = await checkEnrollmentForTable(currentTable, currentSession.user.id);
+            if (isEnrolled) {
+                window.open(job.posts_link, '_blank');
+            } else {
+                showEnrollmentRequiredPopup();
+            }
+        });
     }
 
     // Attach copy button event listeners (multiple buttons for comma-separated links)
@@ -1261,6 +1304,7 @@ function updateHeaderAuth(session) {
 }
 
 window.handleLogout = async () => {
+    userEnrollmentsCache = null;
     // Sign out from Supabase
     await supabaseClient.auth.signOut();
 
@@ -1312,6 +1356,75 @@ async function checkUserEnrollment() {
     if (historyNavLink && currentSession) {
         historyNavLink.style.display = 'flex';
     }
+}
+
+let userEnrollmentsCache = null;
+
+async function getUserEnrollments(userId) {
+    if (userEnrollmentsCache !== null) {
+        return userEnrollmentsCache;
+    }
+    try {
+        const { data, error } = await supabaseClient
+            .from('enrollment')
+            .select('course')
+            .eq('uuid', userId);
+        if (error) throw error;
+        userEnrollmentsCache = (data || []).map(e => e.course);
+        return userEnrollmentsCache;
+    } catch (err) {
+        console.error("Failed to fetch user enrollments:", err);
+        return [];
+    }
+}
+
+async function checkEnrollmentForTable(tableName, userId) {
+    if (!userId) return false;
+    const enrollments = await getUserEnrollments(userId);
+    if (tableName === 'Industrial Training Job Portal') {
+        return enrollments.includes('industrial-training-mastery');
+    } else if (tableName === 'Fresher Jobs') {
+        return enrollments.includes('msc-ca-freshers-program');
+    } else {
+        return enrollments.length > 0;
+    }
+}
+
+function showEnrollmentRequiredPopup() {
+    const existing = document.querySelector('.cv-popup-overlay');
+    if (existing) existing.remove();
+
+    const popupHtml = `
+        <div class="cv-popup-overlay">
+            <div class="cv-popup-card">
+                <div class="cv-popup-icon" style="background-color: #fef3c7; color: #d97706;">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>Exclusive Premium Feature</h3>
+                <p>This feature is exclusively only available for course enrolled students.</p>
+                <div class="cv-popup-btns">
+                    <a href="https://www.mystudentclub.com/#courses" target="_blank" class="cv-popup-btn-primary">View Courses</a>
+                    <button class="cv-popup-btn-secondary" id="closeEnrollmentPopup">Maybe Later</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', popupHtml);
+
+    const overlay = document.querySelector('.cv-popup-overlay');
+    setTimeout(() => overlay.classList.add('show'), 10);
+
+    const closeBtn = document.getElementById('closeEnrollmentPopup');
+    const closePopup = () => {
+        overlay.classList.remove('show');
+        setTimeout(() => overlay.remove(), 300);
+    };
+
+    closeBtn.addEventListener('click', closePopup);
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closePopup();
+    });
 }
 
 

@@ -213,9 +213,15 @@ function renderJob(job, tableName) {
                 
                 ${applyButtonsHtml}
 
-                <a href="${connectLink}" target="_blank" class="btn-large btn-linkedin">
+                <a href="${connectLink}" id="connectPeersBtn" target="_blank" class="btn-large btn-linkedin" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
                     <i class="fab fa-linkedin"></i> Connect to Peers
                 </a>
+                
+                ${job.posts_link ? `
+                <a href="${job.posts_link}" id="originalPostBtn" target="_blank" class="btn-large btn-linkedin" style="background: white; color: #0a66c2; border: 1px solid #0a66c2; margin-top: 0.5rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    <i class="fab fa-linkedin"></i> Original Post
+                </a>
+                ` : ''}
                 
                 <div class="action-card-footer">
                     False job vacancy? <a href="/contact.html">Report it</a>
@@ -234,6 +240,42 @@ function renderJob(job, tableName) {
         const aiApplyButtons = container.querySelectorAll('.btn-ai-apply');
         aiApplyButtons.forEach(btn => {
             btn.addEventListener('click', () => handleAiApply(job, btn, tableName));
+        });
+    }
+
+    const connectPeersBtn = container.querySelector('#connectPeersBtn');
+    if (connectPeersBtn) {
+        connectPeersBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const session = await getCurrentSession();
+            if (!session) {
+                window.location.href = '/login.html';
+                return;
+            }
+            const isEnrolled = await checkEnrollmentForTable(tableName, session.user.id);
+            if (isEnrolled) {
+                window.open(connectLink, '_blank');
+            } else {
+                showEnrollmentRequiredPopup();
+            }
+        });
+    }
+
+    const originalPostBtn = container.querySelector('#originalPostBtn');
+    if (originalPostBtn) {
+        originalPostBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const session = await getCurrentSession();
+            if (!session) {
+                window.location.href = '/login.html';
+                return;
+            }
+            const isEnrolled = await checkEnrollmentForTable(tableName, session.user.id);
+            if (isEnrolled) {
+                window.open(job.posts_link, '_blank');
+            } else {
+                showEnrollmentRequiredPopup();
+            }
         });
     }
 
@@ -331,6 +373,12 @@ async function handleAiApply(job, buttonElement, tableName) {
         return;
     }
 
+    const isEnrolled = await checkEnrollmentForTable(tableName, session.user.id);
+    if (!isEnrolled) {
+        showEnrollmentRequiredPopup();
+        return;
+    }
+
     if (!isProfileComplete()) {
         showResumeRedirectModal();
         return;
@@ -422,6 +470,75 @@ function showError(msg) {
         <p>${msg}</p>
         <a href="/" class="btn-large btn-secondary-large" style="margin-top: 1rem; display: inline-flex; width: auto;">Go Home</a>
         </div>`;
+}
+
+let userEnrollmentsCache = null;
+
+async function getUserEnrollments(userId) {
+    if (userEnrollmentsCache !== null) {
+        return userEnrollmentsCache;
+    }
+    try {
+        const { data, error } = await supabaseClient
+            .from('enrollment')
+            .select('course')
+            .eq('uuid', userId);
+        if (error) throw error;
+        userEnrollmentsCache = (data || []).map(e => e.course);
+        return userEnrollmentsCache;
+    } catch (err) {
+        console.error("Failed to fetch user enrollments:", err);
+        return [];
+    }
+}
+
+async function checkEnrollmentForTable(tableName, userId) {
+    if (!userId) return false;
+    const enrollments = await getUserEnrollments(userId);
+    if (tableName === 'Industrial Training Job Portal') {
+        return enrollments.includes('industrial-training-mastery');
+    } else if (tableName === 'Fresher Jobs') {
+        return enrollments.includes('msc-ca-freshers-program');
+    } else {
+        return enrollments.length > 0;
+    }
+}
+
+function showEnrollmentRequiredPopup() {
+    const existing = document.querySelector('.cv-popup-overlay');
+    if (existing) existing.remove();
+
+    const popupHtml = `
+        <div class="cv-popup-overlay">
+            <div class="cv-popup-card">
+                <div class="cv-popup-icon" style="background-color: #fef3c7; color: #d97706;">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>Exclusive Premium Feature</h3>
+                <p>This feature is exclusively only available for course enrolled students.</p>
+                <div class="cv-popup-btns">
+                    <a href="https://www.mystudentclub.com/#courses" target="_blank" class="cv-popup-btn-primary">View Courses</a>
+                    <button class="cv-popup-btn-secondary" id="closeEnrollmentPopup">Maybe Later</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', popupHtml);
+
+    const overlay = document.querySelector('.cv-popup-overlay');
+    setTimeout(() => overlay.classList.add('show'), 10);
+
+    const closeBtn = document.getElementById('closeEnrollmentPopup');
+    const closePopup = () => {
+        overlay.classList.remove('show');
+        setTimeout(() => overlay.remove(), 300);
+    };
+
+    closeBtn.addEventListener('click', closePopup);
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closePopup();
+    });
 }
 
 init();
