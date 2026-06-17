@@ -179,7 +179,7 @@ function populateSalaryFilter(table) {
   salaryFilter.innerHTML = '';
   let options = [];
   if (table === "Articleship Jobs") {
-    options = [{ value: '', text: 'Any Stipend' }, { value: '0-5000', text: 'Below ₹5,000' }, { value: '5000-10000', text: '₹5,000 - ₹10,000' }, { value: '10000-15000', text: '₹10,000 - ₹15,000' }, { value: '15000+', text: '₹15,000+' }];
+    options = [{ value: '', text: 'Any Stipend' }, { value: '0-5000', text: 'Below ₹5,000' }, { value: '5000-10000', text: '₹5,000-10,000' }, { value: '10000-15000', text: '₹10,000-15,000' }, { value: '15000-20000', text: '₹15,000-20,000' }, { value: '20000+', text: '₹20,000+' }];
   }
   else if (table === "Industrial Training Job Portal") {
     options = [{ value: '', text: 'Any Stipend' }, { value: '10000-20000', text: '₹10,000 - ₹20,000' }, { value: '20000-40000', text: '₹20,000 - ₹40,000' }, { value: '40000+', text: '₹40,000+' }];

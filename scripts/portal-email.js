@@ -734,10 +734,11 @@ function populateSalaryFilter() {
     ];
     else if (currentTable === "Articleship Jobs") options = [
         { value: '', text: 'Any Stipend' },
-        { value: '0-5000', text: 'Below ₹5k' },
-        { value: '5000-10000', text: '₹5k - ₹10k' },
-        { value: '10000-15000', text: '₹10k - ₹15k' },
-        { value: '15000+', text: '₹15k+' }
+        { value: '0-5000', text: 'Below ₹5,000' },
+        { value: '5000-10000', text: '₹5,000-10,000' },
+        { value: '10000-15000', text: '₹10,000-15,000' },
+        { value: '15000-20000', text: '₹15,000-20,000' },
+        { value: '20000+', text: '₹20,000+' }
     ];
     else if (currentTable === "Semi Qualified Jobs") options = [
         { value: '', text: 'Any Salary' },
