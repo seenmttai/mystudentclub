@@ -119,7 +119,10 @@ const state = {
     salary: '',
     experience: '',
     sortBy: 'newest',
-    applicationStatus: 'all'
+    applicationStatus: 'all',
+    companyType: '',
+    industryType: '',
+    firmType: ''
 };
 
 const dom = {};
@@ -202,6 +205,39 @@ function renderJobCard(job) {
     const applyLink = getApplicationLink(job['Application ID']);
     const applyButtonText = 'Apply Now';
 
+    // Premium tags and metadata values
+    const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
+    const secondaryDomain = (currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs') ? job['Secondary Domain'] : null;
+    const companyType = job['Company Type'];
+    const firmType = job['Firm Type'];
+    const industryType = job['Industry Type'];
+
+    // Compensation display parsing
+    let compText = '';
+    if (currentTable === 'Fresher Jobs') {
+        compText = job['CTC Range'] || (job.Salary ? `₹${job.Salary}` : '');
+    } else if (currentTable === 'Articleship Jobs' || currentTable === 'Industrial Training Job Portal') {
+        compText = job['Stipend Range'] || (job.Salary ? `₹${job.Salary}` : '');
+    } else {
+        compText = job.Salary ? `₹${job.Salary}` : '';
+    }
+
+    // Small tag array pills display
+    let tagPillsHtml = '';
+    let tagsList = [];
+    if (currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs') {
+        tagsList = Array.isArray(job.Tags) ? job.Tags : [];
+    } else if (currentTable === 'Articleship Jobs') {
+        tagsList = Array.isArray(job['Exposure Tags']) ? job['Exposure Tags'] : [];
+    }
+
+    if (tagsList && tagsList.length > 0) {
+        tagPillsHtml = `<div class="job-card-tags-row" style="display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.5rem; width: 100%;">
+            ${tagsList.slice(0, 4).map(t => `<span class="pill-badge" style="font-size: 0.75rem; padding: 0.2rem 0.5rem; background-color: #f1f5f9; color: #475569; border-radius: 9999px; border: 1px solid #e2e8f0; font-weight: 500;">${t}</span>`).join('')}
+            ${tagsList.length > 4 ? `<span class="pill-badge" style="font-size: 0.75rem; padding: 0.2rem 0.5rem; background-color: #f1f5f9; color: #475569; border-radius: 9999px; border: 1px solid #e2e8f0; font-weight: 500;">+${tagsList.length - 4} more</span>` : ''}
+        </div>`;
+    }
+
     jobCard.innerHTML = `
         <div class="job-card-logo">${companyInitial}</div>
         <div class="job-card-details">
@@ -209,14 +245,20 @@ function renderJobCard(job) {
                 <h3 class="job-card-company">${job.Company || 'N/A'}</h3>
                 <p class="job-card-posted">Posted ${postedDate}</p>
             </div>
+            <div class="job-card-tags" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
                 ${isPopular ? `<span class="job-tag" style="background-color: #fef3c7; color: #d97706; border: 1px solid #fcd34d;">Popular</span>` : ''}
                 <span class="job-tag">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     ${job.Location || 'N/A'}
                 </span>
-                ${job.Salary ? `<span class="job-tag"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>₹${job.Salary}</span>` : ''}
-                ${job.Category ? `<span class="job-tag">${job.Category}</span>` : ''}
+                ${compText ? `<span class="job-tag"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>${compText}</span>` : ''}
+                <span class="job-tag primary-domain-tag" style="background-color: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 600;">${primaryDomain}</span>
+                ${secondaryDomain ? `<span class="job-tag secondary-domain-tag" style="background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; font-weight: 500;">${secondaryDomain}</span>` : ''}
+                ${companyType ? `<span class="job-tag company-type-tag" style="background-color: #f3f4f6; color: #374151; border: 1px solid #e5e7eb;"><i class="fas fa-building" style="margin-right: 4px; color: #4b5563;"></i>${companyType}</span>` : ''}
+                ${firmType ? `<span class="job-tag firm-type-tag" style="background-color: #f3f4f6; color: #374151; border: 1px solid #e5e7eb;"><i class="fas fa-briefcase" style="margin-right: 4px; color: #4b5563;"></i>${firmType}</span>` : ''}
+                ${industryType ? `<span class="job-tag industry-type-tag" style="background-color: #f3f4f6; color: #374151; border: 1px solid #e5e7eb;"><i class="fas fa-industry" style="margin-right: 4px; color: #4b5563;"></i>${industryType}</span>` : ''}
             </div>
+            ${tagPillsHtml}
         </div>
         <div class="job-card-actions">
              <a href="${applyLink}" target="_blank" class="apply-now-card-btn primary ${buttonClass}" style="background: #3B82F6; color: white; text-decoration: none; padding: 0.5rem 1rem; display: inline-flex; align-items: center; justify-content: center; min-height: 2.5rem;">${applyButtonText}</a>
@@ -418,6 +460,39 @@ function showModal(job) {
         }
     }
 
+    // Build the bottom action link row with View Original Post if available
+    let linksHtml = '';
+    const connectButtonHtml = `
+        <a href="${connectLink}" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(33% - 0.5rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            <i class="fab fa-linkedin"></i>
+            Connect to Peers
+        </a>`;
+    const shareButtonHtml = `
+        <button id="modalShareBtnInline" class="btn btn-secondary" style="flex: 1; min-width: calc(33% - 0.5rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            <i class="fas fa-share-alt"></i>
+            Share this job
+        </button>`;
+    
+    if (job.posts_link) {
+        const originalPostHtml = `
+            <a href="${job.posts_link}" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(33% - 0.5rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-color: #0a66c2; color: #0a66c2;">
+                <i class="fab fa-linkedin"></i>
+                Original Post
+            </a>`;
+        linksHtml = `
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap;">
+                ${connectButtonHtml}
+                ${originalPostHtml}
+                ${shareButtonHtml}
+            </div>`;
+    } else {
+        linksHtml = `
+            <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap;">
+                ${connectButtonHtml}
+                ${shareButtonHtml}
+            </div>`;
+    }
+
     let actionsHtml = '';
     if (isMailto) {
         const simpleApplyText = 'Simple Apply';
@@ -434,17 +509,7 @@ function showModal(job) {
                     <i class="fas fa-spinner fa-spin"></i>
                 </button>
             </div>`;
-        actionsHtml += `
-            <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap;">
-                <a href="${connectLink}" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <i class="fab fa-linkedin"></i>
-                    Connect to Peers
-                </a>
-                <button id="modalShareBtnInline" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <i class="fas fa-share-alt"></i>
-                    Share this job
-                </button>
-            </div>`;
+        actionsHtml += linksHtml;
     } else {
         const applyText = 'Apply Now';
         actionsHtml = `
@@ -452,17 +517,37 @@ function showModal(job) {
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 ${applyText}
             </a>`;
-        actionsHtml += `
-            <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap;">
-                <a href="${connectLink}" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <i class="fab fa-linkedin"></i>
-                    Connect to Peers
-                </a>
-                <button id="modalShareBtnInline" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <i class="fas fa-share-alt"></i>
-                    Share this job
-                </button>
+        actionsHtml += linksHtml;
+    }
+
+    // Compensation display range parsing for modal
+    const compRange = currentTable === 'Fresher Jobs' ? job['CTC Range'] : (currentTable === 'Articleship Jobs' || currentTable === 'Industrial Training Job Portal') ? job['Stipend Range'] : null;
+    const compLabel = (currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs') ? 'Salary' : 'Stipend';
+    const compDisplay = compRange || (job.Salary ? `₹${job.Salary}` : null);
+
+    const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
+
+    // Detailed categorization tag pills
+    let tagsSectionsHtml = '';
+    const renderPillSection = (title, tags, bgColor, textColor, borderColor) => {
+        if (!Array.isArray(tags) || tags.length === 0) return '';
+        return `
+            <div class="modal-section" style="margin-top: 1rem;">
+                <h3 style="font-size: 1rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">${title}</h3>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                    ${tags.map(t => `<span class="modal-pill" style="font-size: 0.85rem; padding: 0.3rem 0.75rem; background-color: ${bgColor}; color: ${textColor}; border: 1px solid ${borderColor}; border-radius: 9999px; font-weight: 500;">${t}</span>`).join('')}
+                </div>
             </div>`;
+    };
+
+    if (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs") {
+        tagsSectionsHtml += renderPillSection("Key Skills & Tags", job.Tags, "#f1f5f9", "#334155", "#e2e8f0");
+    } else if (currentTable === "Industrial Training Job Portal") {
+        tagsSectionsHtml += renderPillSection("Functional Competencies", job["Functional Tags"], "#eff6ff", "#1e40af", "#bfdbfe");
+        tagsSectionsHtml += renderPillSection("Tech Stack & Tools", job["Technology Tags"], "#f5f3ff", "#5b21b6", "#ddd6fe");
+    } else if (currentTable === "Articleship Jobs") {
+        tagsSectionsHtml += renderPillSection("Areas of Exposure", job["Exposure Tags"], "#ecfdf5", "#065f46", "#a7f3d0");
+        tagsSectionsHtml += renderPillSection("Client Sector Exposure", job["Client Exposure Tags"], "#fff7ed", "#9a3412", "#ffedd5");
     }
 
     dom.modalBody.innerHTML = `
@@ -473,12 +558,17 @@ function showModal(job) {
                 <p>${job.Location}</p>
             </div>
         </div>
-        <div class="modal-meta-tags">
-            ${job.Salary ? `<span class="job-tag">${(currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
+        <div class="modal-meta-tags" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+            ${compDisplay ? `<span class="job-tag">${compLabel}: ${compDisplay}</span>` : ''}
             <span class="job-tag">Posted: ${postedDate}</span>
-            ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
+            <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">Category: ${primaryDomain}</span>
+            ${job['Secondary Domain'] ? `<span class="job-tag" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Secondary: ${job['Secondary Domain']}</span>` : ''}
+            ${job['Company Type'] ? `<span class="job-tag"><i class="fas fa-building" style="margin-right: 4px;"></i>${job['Company Type']}</span>` : ''}
+            ${job['Firm Type'] ? `<span class="job-tag"><i class="fas fa-briefcase" style="margin-right: 4px;"></i>${job['Firm Type']}</span>` : ''}
+            ${job['Industry Type'] ? `<span class="job-tag"><i class="fas fa-industry" style="margin-right: 4px;"></i>${job['Industry Type']}</span>` : ''}
         </div>
         <div class="modal-actions" style="display: flex; flex-direction: column; gap: 0;">${actionsHtml}</div>
+        ${tagsSectionsHtml}
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>Apply here!</h3>
             ${generateApplicationLinks(job['Application ID'])}
@@ -623,11 +713,15 @@ async function fetchJobs() {
     // if (dom.loadMoreButton) dom.loadMoreButton.style.display = 'none'; // Removed
 
     try {
-        let selectColumns = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID", application_count';
+        let selectColumns = 'id, Company, Location, Salary, Description, Created_At, Category, "Application ID", application_count, posts_link, "Primary Domain"';
         if (currentTable === "Fresher Jobs") {
-            selectColumns += ', Experience, yoe';
+            selectColumns += ', Experience, yoe, "Secondary Domain", Tags, "Company Type", "Industry Type", "CTC Range"';
         } else if (currentTable === "Semi Qualified Jobs") {
-            selectColumns += ', Experience';
+            selectColumns += ', Experience, "Secondary Domain", Tags, "Company Type", "Industry Type"';
+        } else if (currentTable === "Industrial Training Job Portal") {
+            selectColumns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags"';
+        } else if (currentTable === "Articleship Jobs") {
+            selectColumns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
         }
 
         let query = supabaseClient.from(currentTable).select(selectColumns);
@@ -636,11 +730,33 @@ async function fetchJobs() {
         if (state.keywords.length > 0) {
             const keywordOrs = [];
             for (let i = 0; i < state.keywords.length; i++) {
+                const keyword = state.keywords[i].trim();
                 // wildcard matching for spaces to find "PhonePe" from "Phone Pe"
-                const flexibleTerm = state.keywords[i].trim().replace(/\s+/g, '%');
-                keywordOrs.push(
-                    `Company.ilike."%${flexibleTerm}%",Description.ilike."%${flexibleTerm}%",Category.ilike."%${flexibleTerm}%",Location.ilike."%${flexibleTerm}%"`
-                );
+                const flexibleTerm = keyword.replace(/\s+/g, '%');
+                
+                const cols = [
+                    `Company.ilike."%${flexibleTerm}%"`,
+                    `Description.ilike."%${flexibleTerm}%"`,
+                    `Category.ilike."%${flexibleTerm}%"`,
+                    `Location.ilike."%${flexibleTerm}%"`,
+                    `"Primary Domain".ilike."%${flexibleTerm}%"`
+                ];
+                
+                if (currentTable === "Fresher Jobs") {
+                    cols.push(`"Secondary Domain".ilike."%${flexibleTerm}%"`);
+                    cols.push(`Tags.cs.{"${keyword}"}`);
+                } else if (currentTable === "Semi Qualified Jobs") {
+                    cols.push(`"Secondary Domain".ilike."%${flexibleTerm}%"`);
+                    cols.push(`Tags.cs.{"${keyword}"}`);
+                } else if (currentTable === "Industrial Training Job Portal") {
+                    cols.push(`"Functional Tags".cs.{"${keyword}"}`);
+                    cols.push(`"Technology Tags".cs.{"${keyword}"}`);
+                } else if (currentTable === "Articleship Jobs") {
+                    cols.push(`"Exposure Tags".cs.{"${keyword}"}`);
+                    cols.push(`"Client Exposure Tags".cs.{"${keyword}"}`);
+                }
+                
+                keywordOrs.push(...cols);
             }
             query = query.or(keywordOrs.join(','));
         }
@@ -656,7 +772,14 @@ async function fetchJobs() {
         if (state.categories.length > 0) {
             const categoryOr = [];
             for (let i = 0; i < state.categories.length; i++) {
-                categoryOr.push(`Category.ilike."%${state.categories[i]}%"`);
+                const cat = state.categories[i];
+                const hasSecondary = (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs");
+                
+                categoryOr.push(`"Primary Domain".eq."${cat}"`);
+                if (hasSecondary) {
+                    categoryOr.push(`"Secondary Domain".eq."${cat}"`);
+                }
+                categoryOr.push(`Category.ilike."%${cat}%"`);
             }
             query = query.or(categoryOr.join(','));
         }
@@ -684,6 +807,17 @@ async function fetchJobs() {
             query = query.eq('Experience', lockedValue);
         } else if (state.experience && currentTable === "Semi Qualified Jobs") {
             query = query.eq('Experience', state.experience);
+        }
+
+        // Apply new Company Type, Industry Type and Firm Type filters
+        if (state.companyType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs" || currentTable === "Industrial Training Job Portal")) {
+            query = query.eq('Company Type', state.companyType);
+        }
+        if (state.industryType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs" || currentTable === "Industrial Training Job Portal")) {
+            query = query.eq('Industry Type', state.industryType);
+        }
+        if (state.firmType && currentTable === "Articleship Jobs") {
+            query = query.eq('Firm Type', state.firmType);
         }
 
         if (state.applicationStatus === 'not_applied' && currentSession && appliedJobIds.size > 0) {
@@ -880,6 +1014,13 @@ function syncFiltersUI() {
     if (dom.salaryFilterMobile) dom.salaryFilterMobile.value = state.salary;
     if (dom.sortBySelect) dom.sortBySelect.value = state.sortBy;
     if (dom.sortBySelectMobile) dom.sortBySelectMobile.value = state.sortBy;
+
+    if (dom.companyTypeFilterDesktop) dom.companyTypeFilterDesktop.value = state.companyType;
+    if (dom.companyTypeFilterMobile) dom.companyTypeFilterMobile.value = state.companyType;
+    if (dom.industryTypeFilterDesktop) dom.industryTypeFilterDesktop.value = state.industryType;
+    if (dom.industryTypeFilterMobile) dom.industryTypeFilterMobile.value = state.industryType;
+    if (dom.firmTypeFilterDesktop) dom.firmTypeFilterDesktop.value = state.firmType;
+    if (dom.firmTypeFilterMobile) dom.firmTypeFilterMobile.value = state.firmType;
 
     document.querySelectorAll('.experience-filter-group .pill-btn').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.value === state.experience);
@@ -1713,6 +1854,9 @@ function setupEventListeners() {
 
     dom.applyFiltersBtn.addEventListener('click', () => {
         state.salary = dom.salaryFilterMobile.value;
+        if (dom.companyTypeFilterMobile) state.companyType = dom.companyTypeFilterMobile.value;
+        if (dom.industryTypeFilterMobile) state.industryType = dom.industryTypeFilterMobile.value;
+        if (dom.firmTypeFilterMobile) state.firmType = dom.firmTypeFilterMobile.value;
         syncAndFetch();
         dom.filterModalOverlay.classList.remove('show');
     });
@@ -1726,6 +1870,9 @@ function setupEventListeners() {
             state.experience = '';
             state.sortBy = 'newest';
             state.applicationStatus = 'all';
+            state.companyType = '';
+            state.industryType = '';
+            state.firmType = '';
             if (dom.searchInputMobile) dom.searchInputMobile.value = '';
             if (currentTable === 'Fresher Jobs') {
                 state.experience = isExperiencedFresherPortal() ? 'Experienced' : 'Freshers';
@@ -1737,6 +1884,9 @@ function setupEventListeners() {
     });
 
     if (dom.salaryFilterDesktop) dom.salaryFilterDesktop.addEventListener('change', () => updateState({ salary: dom.salaryFilterDesktop.value }));
+    if (dom.companyTypeFilterDesktop) dom.companyTypeFilterDesktop.addEventListener('change', () => updateState({ companyType: dom.companyTypeFilterDesktop.value }));
+    if (dom.industryTypeFilterDesktop) dom.industryTypeFilterDesktop.addEventListener('change', () => updateState({ industryType: dom.industryTypeFilterDesktop.value }));
+    if (dom.firmTypeFilterDesktop) dom.firmTypeFilterDesktop.addEventListener('change', () => updateState({ firmType: dom.firmTypeFilterDesktop.value }));
 
     // Experience filter UI is only meaningful for Semi Qualified now.
     document.querySelectorAll('.experience-filter-group .pill-options').forEach(group => {
@@ -1880,7 +2030,12 @@ function setupEventListeners() {
 
 // Optimal Custom Dropdown Implementation
 function initCustomSelects() {
-    const selectorIds = ['sortBySelect', 'salaryFilterDesktop', 'sortBySelectMobile', 'salaryFilterMobile', 'locationSelect', 'jobTypeSelect'];
+    const selectorIds = [
+        'sortBySelect', 'salaryFilterDesktop', 'sortBySelectMobile', 'salaryFilterMobile', 'locationSelect', 'jobTypeSelect',
+        'companyTypeFilterDesktop', 'companyTypeFilterMobile',
+        'industryTypeFilterDesktop', 'industryTypeFilterMobile',
+        'firmTypeFilterDesktop', 'firmTypeFilterMobile'
+    ];
 
     // Close dropdowns on outside click
     document.addEventListener('click', (e) => {
@@ -2049,6 +2204,9 @@ async function initializePage() {
     dom.menuCloseBtn = document.getElementById('menuCloseBtn');
     dom.authButtonsContainer = document.querySelector('.auth-buttons-container');
     dom.salaryFilterDesktop = document.getElementById('salaryFilterDesktop');
+    dom.companyTypeFilterDesktop = document.getElementById('companyTypeFilterDesktop');
+    dom.industryTypeFilterDesktop = document.getElementById('industryTypeFilterDesktop');
+    dom.firmTypeFilterDesktop = document.getElementById('firmTypeFilterDesktop');
     dom.locationPillsDesktop = document.getElementById('locationPillsDesktop');
     dom.categoryPillsDesktop = document.getElementById('categoryPillsDesktop');
     dom.desktopResetBtn = document.getElementById('desktopResetBtn');
@@ -2058,6 +2216,9 @@ async function initializePage() {
     dom.applyFiltersBtn = document.getElementById('applyFiltersBtn');
     dom.mobileResetBtn = document.getElementById('mobileResetBtn');
     dom.salaryFilterMobile = document.getElementById('salaryFilterMobile');
+    dom.companyTypeFilterMobile = document.getElementById('companyTypeFilterMobile');
+    dom.industryTypeFilterMobile = document.getElementById('industryTypeFilterMobile');
+    dom.firmTypeFilterMobile = document.getElementById('firmTypeFilterMobile');
     dom.locationPillsMobile = document.getElementById('locationPillsMobile');
     dom.categoryPillsMobile = document.getElementById('categoryPillsMobile');
     dom.notificationsBtn = document.getElementById('notificationsBtn');
