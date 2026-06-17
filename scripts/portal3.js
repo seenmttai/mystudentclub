@@ -188,6 +188,91 @@ function setActivePortalTab() {
     if (allLocations.length > 0 || Object.keys(allCategories).length > 0) {
         updateFilterCache();
     }
+
+    adjustFiltersForPortal();
+}
+
+function adjustFiltersForPortal() {
+    const getFilterGroup = (elementId) => {
+        const el = document.getElementById(elementId);
+        return el ? el.closest('.filter-group') : null;
+    };
+
+    const companyTypeGroupDesktop = getFilterGroup('companyTypeFilterDesktop');
+    const companyTypeGroupMobile = getFilterGroup('companyTypeFilterMobile');
+    const industryTypeGroupDesktop = getFilterGroup('industryTypeFilterDesktop');
+    const industryTypeGroupMobile = getFilterGroup('industryTypeFilterMobile');
+    const firmTypeGroupDesktop = getFilterGroup('firmTypeFilterDesktop');
+    const firmTypeGroupMobile = getFilterGroup('firmTypeFilterMobile');
+    const experienceGroupDesktop = document.querySelector('.filter-sidebar .experience-filter-group');
+    const experienceGroupMobile = document.querySelector('.filter-modal-content .experience-filter-group');
+    const salaryGroupDesktop = getFilterGroup('salaryFilterDesktop');
+    const salaryGroupMobile = getFilterGroup('salaryFilterMobile');
+
+    const show = (el) => { if (el) el.style.display = 'block'; };
+    const hide = (el) => { if (el) el.style.display = 'none'; };
+
+    if (currentTable === 'Industrial Training Job Portal') {
+        show(companyTypeGroupDesktop);
+        show(companyTypeGroupMobile);
+        show(industryTypeGroupDesktop);
+        show(industryTypeGroupMobile);
+        hide(firmTypeGroupDesktop);
+        hide(firmTypeGroupMobile);
+        hide(experienceGroupDesktop);
+        hide(experienceGroupMobile);
+        show(salaryGroupDesktop);
+        show(salaryGroupMobile);
+
+        document.querySelectorAll('label[for="salaryFilterDesktop"], label[for="salaryFilterMobile"]').forEach(label => {
+            label.textContent = 'Stipend';
+        });
+    } else if (currentTable === 'Articleship Jobs') {
+        hide(companyTypeGroupDesktop);
+        hide(companyTypeGroupMobile);
+        hide(industryTypeGroupDesktop);
+        hide(industryTypeGroupMobile);
+        show(firmTypeGroupDesktop);
+        show(firmTypeGroupMobile);
+        hide(experienceGroupDesktop);
+        hide(experienceGroupMobile);
+        show(salaryGroupDesktop);
+        show(salaryGroupMobile);
+
+        document.querySelectorAll('label[for="salaryFilterDesktop"], label[for="salaryFilterMobile"]').forEach(label => {
+            label.textContent = 'Stipend';
+        });
+    } else if (currentTable === 'Fresher Jobs') {
+        show(companyTypeGroupDesktop);
+        show(companyTypeGroupMobile);
+        show(industryTypeGroupDesktop);
+        show(industryTypeGroupMobile);
+        hide(firmTypeGroupDesktop);
+        hide(firmTypeGroupMobile);
+        hide(experienceGroupDesktop);
+        hide(experienceGroupMobile);
+        show(salaryGroupDesktop);
+        show(salaryGroupMobile);
+
+        document.querySelectorAll('label[for="salaryFilterDesktop"], label[for="salaryFilterMobile"]').forEach(label => {
+            label.textContent = 'Salary';
+        });
+    } else if (currentTable === 'Semi Qualified Jobs') {
+        show(companyTypeGroupDesktop);
+        show(companyTypeGroupMobile);
+        show(industryTypeGroupDesktop);
+        show(industryTypeGroupMobile);
+        hide(firmTypeGroupDesktop);
+        hide(firmTypeGroupMobile);
+        show(experienceGroupDesktop);
+        show(experienceGroupMobile);
+        show(salaryGroupDesktop);
+        show(salaryGroupMobile);
+
+        document.querySelectorAll('label[for="salaryFilterDesktop"], label[for="salaryFilterMobile"]').forEach(label => {
+            label.textContent = 'Salary';
+        });
+    }
 }
 
 function renderJobCard(job) {
