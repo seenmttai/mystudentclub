@@ -445,3 +445,15 @@ body {
     background: rgba(56, 189, 248, 0.15); /* Modern light-blue glow */
     border-color: rgba(56, 189, 248, 0.4);
 }
+
+/* ──────── Security & Focus Loss Blur ──────── */
+body.blurred #pdf-app {
+    filter: blur(25px);
+    pointer-events: none;
+    user-select: none;
+}
+
+#security-blur-overlay {
+    transition: opacity 0.1s ease-out;
+}
+
