@@ -1283,27 +1283,3 @@ if (previewModeChip && previewMode === 'docx') {
     previewModeChip.title = 'You are previewing the PDF version. Use download to get the original DOCX file.';
 }
 
-const dlBtn = document.getElementById('viewer-dl-btn');
-const dlSep = document.getElementById('viewer-dl-separator');
-if (dlBtn && dlSep) {
-    dlBtn.style.display = 'flex';
-    dlSep.style.display = 'block';
-    
-    if (paramDl) {
-        if (previewMode === 'docx') {
-            dlBtn.title = 'Download original DOCX document';
-            dlBtn.setAttribute('aria-label', 'Download DOCX');
-            dlBtn.innerHTML = '<i class="fas fa-download"></i><span class="toolbar-btn-label">DOCX</span>';
-        }
-        dlBtn.addEventListener('click', () => {
-            window.open(paramDl, '_blank');
-        });
-    } else {
-        dlBtn.style.opacity = '0.4';
-        dlBtn.style.cursor = 'not-allowed';
-        dlBtn.title = 'Download is disabled for this view-only resource';
-        dlBtn.addEventListener('click', () => {
-            alert('This resource is restricted to view-only mode. Downloading is currently disabled.');
-        });
-    }
-}
