@@ -280,43 +280,83 @@ async function fetchCategories() {
 
     if (currentTable === "Industrial Training Job Portal") {
       categoryFilter.innerHTML += `
-        <option value="Accounting">Accounting</option>
-        <option value="Auditing">Auditing</option>
-        <option value="Costing">Costing</option>
-        <option value="Finance">Finance</option>
-        <option value="Taxation">Taxation</option>
+        <option value="FP&A">FP&A</option>
+        <option value="Business Finance">Business Finance</option>
+        <option value="Controllership">Controllership</option>
+        <option value="Accounting & Reporting">Accounting & Reporting</option>
+        <option value="Treasury">Treasury</option>
+        <option value="Supply Chain Finance">Supply Chain Finance</option>
+        <option value="Internal Audit & Risk">Internal Audit & Risk</option>
+        <option value="Direct Tax">Direct Tax</option>
+        <option value="Indirect Tax (GST)">Indirect Tax (GST)</option>
+        <option value="Consulting">Consulting</option>
+        <option value="Valuation">Valuation</option>
+        <option value="Deals & Transaction Advisory">Deals & Transaction Advisory</option>
+        <option value="Investment Banking">Investment Banking</option>
+        <option value="Equity Research">Equity Research</option>
+        <option value="Banking & Credit">Banking & Credit</option>
+        <option value="Forensics & Investigation">Forensics & Investigation</option>
+        <option value="Other">Other</option>
       `;
     } else if (currentTable === "Fresher Jobs") {
       categoryFilter.innerHTML += `
-        <option value="Accounting">Accounting</option>
-        <option value="Audit">Audit</option>
-        <option value="Consultancy">Consultancy</option>
+        <option value="Statutory Audit">Statutory Audit</option>
+        <option value="Internal Audit & Risk">Internal Audit & Risk</option>
+        <option value="Direct Tax">Direct Tax</option>
+        <option value="Indirect Tax (GST)">Indirect Tax (GST)</option>
+        <option value="Accounting & Reporting">Accounting & Reporting</option>
+        <option value="FP&A">FP&A</option>
+        <option value="Business Finance">Business Finance</option>
         <option value="Controllership">Controllership</option>
-        <option value="Direct Taxation">Direct Taxation</option>
-        <option value="Equity Research">Equity Research</option>
-        <option value="Finance">Finance</option>
+        <option value="Supply Chain Finance">Supply Chain Finance</option>
+        <option value="Treasury">Treasury</option>
+        <option value="Consulting">Consulting</option>
+        <option value="Deals & Transaction Advisory">Deals & Transaction Advisory</option>
+        <option value="Valuation">Valuation</option>
         <option value="Investment Banking">Investment Banking</option>
-        <option value="Private Equity">Private Equity</option>
+        <option value="Equity Research">Equity Research</option>
+        <option value="Banking & Credit">Banking & Credit</option>
+        <option value="Costing & Plant Finance">Costing & Plant Finance</option>
+        <option value="ESG & Sustainability">ESG & Sustainability</option>
+        <option value="Forensics & Compliance">Forensics & Compliance</option>
+        <option value="Other">Other</option>
       `;
     } else if (currentTable === "Semi Qualified Jobs") {
       categoryFilter.innerHTML += `
-        <option value="Consultancy">Consultancy</option>
-        <option value="Controllership">Controllership</option>
-        <option value="Direct Taxation">Direct Taxation</option>
-        <option value="Finance">Finance</option>
-        <option value="Indirect Taxation">Indirect Taxation</option>
-        <option value="Internal Audit">Internal Audit</option>
-        <option value="Investment Banking">Investment Banking</option>
-        <option value="Private Equity">Private Equity</option>
         <option value="Statutory Audit">Statutory Audit</option>
+        <option value="Internal Audit & Risk">Internal Audit & Risk</option>
+        <option value="Direct Tax">Direct Tax</option>
+        <option value="Indirect Tax (GST)">Indirect Tax (GST)</option>
+        <option value="Accounting & Reporting">Accounting & Reporting</option>
+        <option value="FP&A">FP&A</option>
+        <option value="Business Finance">Business Finance</option>
+        <option value="Controllership">Controllership</option>
+        <option value="Supply Chain Finance">Supply Chain Finance</option>
+        <option value="Treasury">Treasury</option>
+        <option value="Consulting">Consulting</option>
+        <option value="Deals & Transaction Advisory">Deals & Transaction Advisory</option>
+        <option value="Valuation">Valuation</option>
+        <option value="Investment Banking">Investment Banking</option>
+        <option value="Equity Research">Equity Research</option>
+        <option value="Banking & Credit">Banking & Credit</option>
+        <option value="Costing & Plant Finance">Costing & Plant Finance</option>
+        <option value="ESG & Sustainability">ESG & Sustainability</option>
+        <option value="Forensics & Compliance">Forensics & Compliance</option>
+        <option value="Other">Other</option>
       `;
     } else if (currentTable === "Articleship Jobs") {
       categoryFilter.innerHTML += `
-        <option value="Accounting">Accounting</option>
-        <option value="Auditing">Auditing</option>
-        <option value="Costing">Costing</option>
-        <option value="Finance">Finance</option>
-        <option value="Taxation">Taxation</option>
+        <option value="Statutory Audit">Statutory Audit</option>
+        <option value="Internal Audit & Risk">Internal Audit & Risk</option>
+        <option value="Direct Tax">Direct Tax</option>
+        <option value="Indirect Tax (GST)">Indirect Tax (GST)</option>
+        <option value="Accounting & Bookkeeping">Accounting & Bookkeeping</option>
+        <option value="Compliance & ROC">Compliance & ROC</option>
+        <option value="Virtual CFO Services">Virtual CFO Services</option>
+        <option value="Valuation & Financial Modelling">Valuation & Financial Modelling</option>
+        <option value="Transaction Advisory (FDD)">Transaction Advisory (FDD)</option>
+        <option value="Forensics & Investigation">Forensics & Investigation</option>
+        <option value="Other">Other</option>
       `;
     }
   } catch (e) { }

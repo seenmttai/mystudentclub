@@ -182,6 +182,10 @@ function setActivePortalTab() {
         activeSelector = 'a[href="/"]';
     }
 
+    if (currentTable === 'Industrial Training Job Portal') {
+        state.companyType = '';
+    }
+
     document.querySelectorAll(activeSelector).forEach(el => el.classList.add('active'));
 
     // Update cache when table changes (categories are table-specific)
@@ -213,8 +217,8 @@ function adjustFiltersForPortal() {
     const hide = (el) => { if (el) el.style.display = 'none'; };
 
     if (currentTable === 'Industrial Training Job Portal') {
-        show(companyTypeGroupDesktop);
-        show(companyTypeGroupMobile);
+        hide(companyTypeGroupDesktop);
+        hide(companyTypeGroupMobile);
         show(industryTypeGroupDesktop);
         show(industryTypeGroupMobile);
         hide(firmTypeGroupDesktop);
@@ -938,7 +942,7 @@ async function fetchJobs() {
         }
 
         // Apply new Company Type, Industry Type and Firm Type filters
-        if (state.companyType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs" || currentTable === "Industrial Training Job Portal")) {
+        if (state.companyType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
             query = query.eq('Company Type', state.companyType);
         }
         if (state.industryType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs" || currentTable === "Industrial Training Job Portal")) {
