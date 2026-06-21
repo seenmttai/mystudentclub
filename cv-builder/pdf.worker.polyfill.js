@@ -10,4 +10,4 @@ if (typeof Promise.withResolvers === 'undefined') {
     };
 }
 
-importScripts('https://esm.sh/pdfjs-dist@4.8.69/build/pdf.worker.min.js');
+await import('https://esm.sh/pdfjs-dist@4.8.69/build/pdf.worker.min.js');
