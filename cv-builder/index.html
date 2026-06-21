@@ -26,6 +26,11 @@
             };
         }
     </script>
+    <!-- PDF.js Dependency for client-side PDF rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
     <!-- Old image-based PDF libs (replaced by Cloudflare Worker + Puppeteer for ATS-friendly PDFs) -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script> -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
@@ -861,8 +866,8 @@
             els.previewThumbnail.innerHTML = '<div style="padding:20px; text-align:center;">Loading Preview...</div>';
 
             try {
-                const pdfjsLib = await import('https://esm.sh/pdfjs-dist@3.11.174');
-                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                const pdfjsLib = window.pdfjsLib;
+                if (!pdfjsLib) throw new Error('PDF.js library not loaded.');
 
                 const arrayBuffer = await file.arrayBuffer();
                 const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;

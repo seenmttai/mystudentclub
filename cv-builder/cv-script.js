@@ -3449,8 +3449,8 @@ async function downloadCvFile(format = 'pdf') {
                 let images = [];
 
                 if (file.type === 'application/pdf') {
-                    const pdfjsLib = await import('https://esm.sh/pdfjs-dist@3.11.174');
-                    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                    const pdfjsLib = window.pdfjsLib;
+                    if (!pdfjsLib) throw new Error('PDF.js library not loaded.');
                     const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
 
                     // Limit to first 3 pages to avoid payload issues
