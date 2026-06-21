@@ -3450,7 +3450,7 @@ async function downloadCvFile(format = 'pdf') {
 
                 if (file.type === 'application/pdf') {
                     const pdfjsLib = await import('https://esm.sh/pdfjs-dist@4.8.69');
-                    pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.polyfill.js';
+                    pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('pdf.worker.polyfill.js', window.location.href).toString();
                     const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
 
                     // Limit to first 3 pages to avoid payload issues
