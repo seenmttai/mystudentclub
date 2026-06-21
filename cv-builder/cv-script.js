@@ -1,3 +1,15 @@
+        // Promise.withResolvers polyfill for older browsers/devices
+        if (typeof Promise.withResolvers === 'undefined') {
+            Promise.withResolvers = function() {
+                let resolve, reject;
+                const promise = new Promise((res, rej) => {
+                    resolve = res;
+                    reject = rej;
+                });
+                return { promise, resolve, reject };
+            };
+        }
+
         // Constants & Data
         const CA_SKILLS = ["Statutory Audit", "Tax Audit", "Internal Audit", "GST", "TDS", "Ind AS", "Excel", "Tally", "SAP", "Bank Audit"];
         const CA_DEGREES = ["CA Final", "CA Intermediate", "B.Com", "Class XII", "Class X"];
