@@ -861,8 +861,8 @@
             els.previewThumbnail.innerHTML = '<div style="padding:20px; text-align:center;">Loading Preview...</div>';
 
             try {
-                const pdfjsLib = await import('https://esm.sh/pdfjs-dist@4.8.69');
-                pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('pdf.worker.polyfill.js', window.location.href).toString();
+                const pdfjsLib = await import('https://esm.sh/pdfjs-dist@3.11.174');
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
                 const arrayBuffer = await file.arrayBuffer();
                 const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
