@@ -862,7 +862,7 @@
 
             try {
                 const pdfjsLib = await import('https://esm.sh/pdfjs-dist@4.8.69');
-                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://esm.sh/pdfjs-dist@4.8.69/build/pdf.worker.min.js';
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.polyfill.js';
 
                 const arrayBuffer = await file.arrayBuffer();
                 const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
