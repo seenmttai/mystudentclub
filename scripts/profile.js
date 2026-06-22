@@ -134,8 +134,8 @@ function showToast(message, type = 'info', duration = 6000) {
 const ENTRY_CLEAR_MAP = {
     'summary-entry-display': ['profile_summary', 'headline'],
     'cert-entry-display': ['cert_name', 'cert_issuer', 'cert_year', 'cert_url'],
-    'edu-final-display': ['ca_final_course', 'ca_final_attempts_type', 'ca_final_attempts', 'ca_final_clear_month', 'ca_final_clear_year', 'ca_final_app_month', 'ca_final_app_year'],
-    'edu-inter-display': ['ca_inter_course', 'ca_inter_attempts_type', 'ca_inter_attempts', 'ca_inter_clear_month', 'ca_inter_clear_year'],
+    'edu-final-display': ['ca_final_course', 'ca_final_attempts_type', 'ca_final_attempts', 'ca_final_clear_month', 'ca_final_clear_year', 'ca_final_app_month', 'ca_final_app_year', 'ca_final_air'],
+    'edu-inter-display': ['ca_inter_course', 'ca_inter_attempts_type', 'ca_inter_attempts', 'ca_inter_clear_month', 'ca_inter_clear_year', 'ca_inter_air'],
     'edu-found-display': ['ca_found_course', 'ca_found_attempts_type', 'ca_found_attempts', 'ca_found_clear_month', 'ca_found_clear_year'],
     'edu-grad-display': ['grad_degree', 'grad_university', 'grad_year', 'grad_percentage'],
     'edu-12-display': ['class12_board', 'class12_school', 'class12_year', 'class12_percentage'],
@@ -1160,6 +1160,8 @@ function refreshSavedDisplays(d) {
                 }
             }
             if (clearMonth && clearYear) metaParts.push(`Cleared: ${clearMonth} ${clearYear}`);
+            const air = (d.ca_final_air || '').trim();
+            if (air) metaParts.push(`AIR ${air}`);
         }
         document.getElementById('edu-final-meta').textContent = metaParts.join(' · ');
         if (addFinalLink) addFinalLink.style.display = 'none';
@@ -1187,6 +1189,8 @@ function refreshSavedDisplays(d) {
         const clearMonth = (d.ca_inter_clear_month || '').trim();
         const clearYear = (d.ca_inter_clear_year || '').trim();
         if (clearMonth && clearYear) metaParts.push(`Cleared: ${clearMonth} ${clearYear}`);
+        const air = (d.ca_inter_air || '').trim();
+        if (air) metaParts.push(`AIR ${air}`);
         document.getElementById('edu-inter-meta').textContent = metaParts.join(' · ');
         if (addInterLink) addInterLink.style.display = 'none';
     } else {

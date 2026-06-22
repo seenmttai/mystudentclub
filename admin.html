@@ -1853,9 +1853,9 @@
       'profile_summary', 'headline',
       'cert_name', 'cert_issuer', 'cert_year', 'cert_url',
       'ca_final_course', 'ca_final_attempts_type', 'ca_final_attempts',
-      'ca_final_clear_month', 'ca_final_clear_year', 'ca_final_app_month', 'ca_final_app_year',
+      'ca_final_clear_month', 'ca_final_clear_year', 'ca_final_app_month', 'ca_final_app_year', 'ca_final_air',
       'ca_inter_course', 'ca_inter_attempts_type', 'ca_inter_attempts',
-      'ca_inter_clear_month', 'ca_inter_clear_year',
+      'ca_inter_clear_month', 'ca_inter_clear_year', 'ca_inter_air',
       'ca_found_course', 'ca_found_attempts_type', 'ca_found_attempts',
       'ca_found_clear_month', 'ca_found_clear_year',
       'grad_degree', 'grad_university', 'grad_year', 'grad_percentage',
@@ -1908,11 +1908,13 @@
       ca_final_clear_year: 'CA Final Clear Year',
       ca_final_app_month: 'CA Final Attempt Month',
       ca_final_app_year: 'CA Final Attempt Year',
+      ca_final_air: 'CA Final AIR',
       ca_inter_course: 'CA Inter Course',
       ca_inter_attempts_type: 'CA Inter Attempts Type',
       ca_inter_attempts: 'CA Inter Attempts',
       ca_inter_clear_month: 'CA Inter Clear Month',
       ca_inter_clear_year: 'CA Inter Clear Year',
+      ca_inter_air: 'CA Inter AIR',
       ca_found_course: 'CA Foundation Course',
       ca_found_attempts_type: 'CA Foundation Attempts Type',
       ca_found_attempts: 'CA Foundation Attempts',
@@ -2224,8 +2226,8 @@
     }
     function formatCaTrack(profile) {
       const sections = [
-        joinNonEmpty([profile.ca_final_course, profile.ca_final_attempts && `Attempts: ${profile.ca_final_attempts}`, joinNonEmpty([profile.ca_final_clear_month, profile.ca_final_clear_year], ' ')]),
-        joinNonEmpty([profile.ca_inter_course, profile.ca_inter_attempts && `Attempts: ${profile.ca_inter_attempts}`, joinNonEmpty([profile.ca_inter_clear_month, profile.ca_inter_clear_year], ' ')]),
+        joinNonEmpty([profile.ca_final_course, profile.ca_final_attempts && `Attempts: ${profile.ca_final_attempts}`, profile.ca_final_air && `AIR: ${profile.ca_final_air}`, joinNonEmpty([profile.ca_final_clear_month, profile.ca_final_clear_year], ' ')]),
+        joinNonEmpty([profile.ca_inter_course, profile.ca_inter_attempts && `Attempts: ${profile.ca_inter_attempts}`, profile.ca_inter_air && `AIR: ${profile.ca_inter_air}`, joinNonEmpty([profile.ca_inter_clear_month, profile.ca_inter_clear_year], ' ')]),
         joinNonEmpty([profile.ca_found_course, profile.ca_found_attempts && `Attempts: ${profile.ca_found_attempts}`, joinNonEmpty([profile.ca_found_clear_month, profile.ca_found_clear_year], ' ')])
       ].filter(Boolean);
       return sections.join(' | ') || profile.ca_level || '';
