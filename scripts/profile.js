@@ -144,7 +144,8 @@ const ENTRY_CLEAR_MAP = {
     'emp-org-display': ['is_current_employment', 'employment_type', 'emp_exp_years', 'emp_exp_months', 'emp_company_name', 'emp_job_title', 'emp_join_year', 'emp_join_month', 'emp_salary_currency', 'emp_current_salary', 'emp_salary_breakdown', 'emp_skills_hidden', 'emp_job_profile', 'emp_notice_period'],
     'emp-art-display': ['articleship_firm_type', 'articleship_firm_name', 'articleship_domain', 'articleship_domain_other'],
     'emp-it-display': ['industrial_training_company'],
-    'project-entry-display': ['project_title', 'project_tag', 'project_client', 'project_status', 'project_worked_from_year', 'project_worked_from_month', 'project_details', 'project_attachment_name']
+    'project-entry-display': ['project_title', 'project_tag', 'project_client', 'project_status', 'project_worked_from_year', 'project_worked_from_month', 'project_details', 'project_attachment_name'],
+    'key-skills-entry-display': ['key_skills']
 };
 
 const ENTRY_DEFAULT_VALUE_MAP = {
@@ -177,6 +178,66 @@ const fileConfig = {
     }
 };
 
+// =================== SKILLS LOGIC ===================
+let skillsList = [];
+let keySkillsList = [];
+
+function renderSkills() {
+    const skillsInput = document.getElementById('skills_input');
+    const skillsContainer = document.getElementById('skills_container');
+    const skillsHidden = document.getElementById('emp_skills_hidden');
+    if (!skillsContainer) return;
+    
+    // clear old tags
+    document.querySelectorAll('.p2-skill-tag').forEach(tag => tag.remove());
+
+    skillsList.forEach((skill, index) => {
+        const tag = document.createElement('span');
+        tag.className = 'p2-skill-tag';
+        tag.innerHTML = `${skill} <i class="fas fa-times" data-index="${index}"></i>`;
+        skillsContainer.insertBefore(tag, skillsInput);
+    });
+
+    if (skillsHidden) skillsHidden.value = skillsList.join(', ');
+
+    // Remove listener
+    document.querySelectorAll('.p2-skill-tag i').forEach(closeBtn => {
+        closeBtn.addEventListener('click', (e) => {
+            const idx = parseInt(e.target.getAttribute('data-index'));
+            skillsList.splice(idx, 1);
+            renderSkills();
+        });
+    });
+}
+
+function renderKeySkills() {
+    const keySkillsInput = document.getElementById('key_skills_input');
+    const keySkillsContainer = document.getElementById('key_skills_container');
+    const keySkillsHidden = document.getElementById('key_skills');
+    if (!keySkillsContainer) return;
+
+    // clear old tags
+    document.querySelectorAll('.p2-key-skill-tag').forEach(tag => tag.remove());
+
+    keySkillsList.forEach((skill, index) => {
+        const tag = document.createElement('span');
+        tag.className = 'p2-key-skill-tag';
+        tag.innerHTML = `${skill} <i class="fas fa-times" data-key-index="${index}"></i>`;
+        keySkillsContainer.insertBefore(tag, keySkillsInput);
+    });
+
+    if (keySkillsHidden) keySkillsHidden.value = keySkillsList.join(', ');
+
+    // Remove listener
+    document.querySelectorAll('.p2-key-skill-tag i').forEach(closeBtn => {
+        closeBtn.addEventListener('click', (e) => {
+            const idx = parseInt(e.target.getAttribute('data-key-index'));
+            keySkillsList.splice(idx, 1);
+            renderKeySkills();
+        });
+    });
+}
+
 // =================== AUTH ===================
 async function checkAuth() {
     const { data: { session } } = await supabaseClient.auth.getSession();
@@ -200,8 +261,9 @@ function showLoading(visible, text = 'Loading...') {
 
 // =================== PROFILE LOAD ===================
 async function loadProfile() {
-    if (!currentUser) return;
+    if (!currentUser) return null;
     showLoading(true, 'Fetching your profile...');
+    let profileObj = null;
 
     try {
         const { data, error } = await supabaseClient
@@ -215,6 +277,7 @@ async function loadProfile() {
         if (data) {
             lastUpdatedISO = data.updated_at;
             if (data.profile) {
+                profileObj = data.profile;
                 populateForm(data.profile);
                 localStorage.setItem('userProfileData', JSON.stringify(data.profile));
             }
@@ -230,7 +293,10 @@ async function loadProfile() {
             }
         } else {
             const localProfile = localStorage.getItem('userProfileData');
-            if (localProfile) populateForm(JSON.parse(localProfile));
+            if (localProfile) {
+                profileObj = JSON.parse(localProfile);
+                populateForm(profileObj);
+            }
         }
 
         // Show cached files
@@ -247,12 +313,17 @@ async function loadProfile() {
         });
 
         setTimeout(() => refreshHeader(), 150);
+        return profileObj;
 
     } catch (e) {
         console.error(e);
         const localProfile = localStorage.getItem('userProfileData');
-        if (localProfile) populateForm(JSON.parse(localProfile));
+        if (localProfile) {
+            profileObj = JSON.parse(localProfile);
+            populateForm(profileObj);
+        }
         setTimeout(() => refreshHeader(), 150);
+        return profileObj;
     } finally {
         showLoading(false);
     }
@@ -295,6 +366,25 @@ function populateForm(profileData) {
     } else {
         hideProjectFileDisplay();
     }
+
+    if (profileData.emp_skills_hidden) {
+        skillsList = profileData.emp_skills_hidden.split(',').map(s => s.trim()).filter(Boolean);
+        renderSkills();
+    } else {
+        skillsList = [];
+        renderSkills();
+    }
+
+    if (profileData.key_skills) {
+        keySkillsList = profileData.key_skills.split(',').map(s => s.trim()).filter(Boolean);
+        renderKeySkills();
+    } else {
+        keySkillsList = [];
+        renderKeySkills();
+    }
+
+    const noticeSelect = document.getElementById('notice_period');
+    if (noticeSelect) noticeSelect.dispatchEvent(new Event('change'));
 }
 
 // =================== FILE HANDLING ===================
@@ -401,6 +491,11 @@ function clearEntryData(entryId) {
         if (summaryInput) summaryInput.value = '';
         if (headlineHidden) headlineHidden.value = '';
         if (summaryLeft) summaryLeft.textContent = '1000';
+    }
+
+    if (entryId === 'key-skills-entry-display') {
+        keySkillsList = [];
+        renderKeySkills();
     }
 
     refreshHeader();
@@ -1037,10 +1132,30 @@ function refreshSavedDisplays(d) {
         el.style.color = val ? 'var(--p2-text)' : 'var(--p2-blue)';
     };
 
-    const gender = (d.gender || '').trim();
-    const marital = (d.marital_status || '').trim();
-    const personalParts = [gender && gender.toLowerCase(), marital].filter(Boolean);
-    setPersonalValue('pd-personal', personalParts.join(', '), 'Add more info');
+    setPersonalValue('pd-gender', d.gender, 'Add gender');
+    setPersonalValue('pd-marital', d.marital_status, 'Add marital status');
+    setPersonalValue('pd-notice-period', d.notice_period, 'Add notice period');
+
+    let joiningDateText = '';
+    if ((d.earliest_joining_date || '').trim()) {
+        const dt = new Date(d.earliest_joining_date);
+        if (!Number.isNaN(dt.getTime())) {
+            const day = dt.getDate().toString().padStart(2, '0');
+            const mon = dt.toLocaleString('default', { month: 'short' });
+            const yr = dt.getFullYear();
+            joiningDateText = `${day} ${mon} ${yr}`;
+        }
+    }
+    setPersonalValue('pd-joining-date', joiningDateText, 'Add joining date');
+
+    const joiningWrap = document.getElementById('pd-joining-date-wrap');
+    if (joiningWrap) {
+        if (d.notice_period === 'Immediate Joiner') {
+            joiningWrap.style.display = 'none';
+        } else {
+            joiningWrap.style.display = 'block';
+        }
+    }
 
     let dobText = '';
     if ((d.date_of_birth || '').trim()) {
@@ -1452,6 +1567,23 @@ function refreshSavedDisplays(d) {
     setCareerValue('career-preferred-shift', d.preferred_shift, 'Add preferred shift');
     setCareerValue('career-preferred-location', d.preferred_locations, 'Add preferred location');
     setCareerValue('career-expected-salary', d.expected_salary, 'Add expected salary');
+
+    // --- KEY SKILLS ---
+    const keySkillsVal = (d.key_skills || '').trim();
+    const keySkillsEntry = document.getElementById('key-skills-entry-display');
+    const keySkillsTextDisplay = document.getElementById('key-skills-text-display');
+    const keySkillsBoost = document.getElementById('skillsBoost');
+    const keySkillsEditToggle = document.getElementById('keySkillsEditToggle');
+    if (keySkillsVal) {
+        if (keySkillsEntry) keySkillsEntry.style.display = 'block';
+        if (keySkillsTextDisplay) keySkillsTextDisplay.textContent = keySkillsVal;
+        if (keySkillsBoost) keySkillsBoost.style.display = 'none';
+        if (keySkillsEditToggle) keySkillsEditToggle.textContent = 'Edit key skills';
+    } else {
+        if (keySkillsEntry) keySkillsEntry.style.display = 'none';
+        if (keySkillsBoost) keySkillsBoost.style.display = 'inline-block';
+        if (keySkillsEditToggle) keySkillsEditToggle.textContent = 'Add key skills';
+    }
 }
 
 // ============================================
@@ -1467,21 +1599,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ----- Job Preference Logic -----
     const jobPrefSelect = document.getElementById('job_preference');
-    const joiningGroup = document.getElementById('earliest_joining_date_group');
     const artCompGroup = document.getElementById('articleship_completion_date_group');
     const ctcGroup = document.getElementById('current_ctc_group');
 
     // CA Final Groups handling
     function handleJobPrefChange() {
         const v = jobPrefSelect.value;
-        if (joiningGroup) joiningGroup.style.display = 'none';
         if (artCompGroup) artCompGroup.style.display = 'none';
         if (ctcGroup) ctcGroup.style.display = 'none';
 
         if (v === 'industrial') {
             if (artCompGroup) artCompGroup.style.display = 'block';
-        } else if (['articleship', 'fresher_fresher', 'fresher_experienced', 'semi_fresher', 'semi_experienced'].includes(v)) {
-            if (joiningGroup) joiningGroup.style.display = 'block';
         }
         if (['fresher_experienced', 'semi_experienced'].includes(v)) {
             if (ctcGroup) ctcGroup.style.display = 'block';
@@ -1506,6 +1634,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
     if (jobPrefSelect) jobPrefSelect.addEventListener('change', handleJobPrefChange);
+
+    // ----- Notice Period Logic -----
+    const noticeSelect = document.getElementById('notice_period');
+    const personalJoiningGroup = document.getElementById('earliest_joining_date_group');
+    function handleNoticePeriodChange() {
+        if (noticeSelect && personalJoiningGroup) {
+            const val = noticeSelect.value;
+            if (val && val !== 'Immediate Joiner') {
+                personalJoiningGroup.style.display = 'block';
+            } else {
+                personalJoiningGroup.style.display = 'none';
+            }
+        }
+    }
+    if (noticeSelect) noticeSelect.addEventListener('change', handleNoticePeriodChange);
 
     // ----- Domain Other -----
     const domainSelect = document.getElementById('articleship_domain');
@@ -1576,36 +1719,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     });
 
-    // Skills Tags Logic
+    // Skills Tags Listeners
     const skillsInput = document.getElementById('skills_input');
     const skillsContainer = document.getElementById('skills_container');
-    const skillsHidden = document.getElementById('emp_skills_hidden');
-    let skillsList = [];
-
-    function renderSkills() {
-        if (!skillsContainer) return;
-        // clear old tags
-        document.querySelectorAll('.p2-skill-tag').forEach(tag => tag.remove());
-
-        skillsList.forEach((skill, index) => {
-            const tag = document.createElement('span');
-            tag.className = 'p2-skill-tag';
-            tag.innerHTML = `${skill} <i class="fas fa-times" data-index="${index}"></i>`;
-            skillsContainer.insertBefore(tag, skillsInput);
-        });
-
-        if (skillsHidden) skillsHidden.value = skillsList.join(', ');
-
-        // Remove listener
-        document.querySelectorAll('.p2-skill-tag i').forEach(closeBtn => {
-            closeBtn.addEventListener('click', (e) => {
-                const idx = parseInt(e.target.getAttribute('data-index'));
-                skillsList.splice(idx, 1);
-                renderSkills();
-            });
-        });
-    }
-
     if (skillsInput) {
         skillsInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' || e.key === ',') {
@@ -1633,6 +1749,39 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (skillsContainer) {
             skillsContainer.addEventListener('click', () => skillsInput.focus());
+        }
+    }
+
+    // Key Skills Tags Listeners
+    const keySkillsInput = document.getElementById('key_skills_input');
+    const keySkillsContainer = document.getElementById('key_skills_container');
+    if (keySkillsInput) {
+        keySkillsInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ',') {
+                e.preventDefault();
+                const val = this.value.trim().replace(/,$/, '');
+                if (val && !keySkillsList.includes(val)) {
+                    keySkillsList.push(val);
+                    renderKeySkills();
+                }
+                this.value = '';
+            } else if (e.key === 'Backspace' && this.value === '' && keySkillsList.length > 0) {
+                keySkillsList.pop();
+                renderKeySkills();
+            }
+        });
+
+        keySkillsInput.addEventListener('blur', function () {
+            const val = this.value.trim().replace(/,$/, '');
+            if (val && !keySkillsList.includes(val)) {
+                keySkillsList.push(val);
+                renderKeySkills();
+            }
+            this.value = '';
+        });
+
+        if (keySkillsContainer) {
+            keySkillsContainer.addEventListener('click', () => keySkillsInput.focus());
         }
     }
 
@@ -1751,6 +1900,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (loadedSkills.length > 0) {
                 skillsList = loadedSkills;
                 renderSkills();
+            }
+        }
+        if (d && d.key_skills) {
+            let loadedKeySkills = d.key_skills.split(',').map(s => s.trim()).filter(Boolean);
+            if (loadedKeySkills.length > 0) {
+                keySkillsList = loadedKeySkills;
+                renderKeySkills();
             }
         }
         const projectDetailsInput = document.getElementById('project_details');

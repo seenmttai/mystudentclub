@@ -1127,6 +1127,12 @@ body.p2-modal-open {
 .p2-skill-tag i:hover { color: var(--p2-text); }
 #skills_input { flex: 1; border: none !important; box-shadow:none !important; padding: 0.2rem; outline: none; min-width: 120px; font-size: 0.9rem; font-family: var(--p2-font); color: var(--p2-text); background:transparent; }
 
+.p2-key-skill-tag { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.6rem; border: 1px solid var(--p2-border); border-radius: 12px; font-size: 0.82rem; font-weight: 500; background: #F3F4F6; color: var(--p2-text); }
+.p2-key-skill-tag i { cursor: pointer; color: var(--p2-text-muted); font-size: 0.8rem; }
+.p2-key-skill-tag i:hover { color: var(--p2-text); }
+#key_skills_input { flex: 1; border: none !important; box-shadow:none !important; padding: 0.2rem; outline: none; min-width: 120px; font-size: 0.9rem; font-family: var(--p2-font); color: var(--p2-text); background:transparent; }
+
+
 /* ========== Toast Notifications ========== */
 .toast-container {
     position: fixed;

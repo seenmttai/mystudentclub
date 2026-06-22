@@ -105,6 +105,7 @@
                 <nav class="p2-sidebar-links">
                     <a href="#sec-resume" class="p2-ql">Resume <span class="p2-ql-action">Upload</span></a>
                     <a href="#sec-headline" class="p2-ql">Profile Summary <span class="p2-ql-action">Add</span></a>
+                    <a href="#sec-skills" class="p2-ql">Key Skills <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-certification" class="p2-ql">Certification <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-ca-education" class="p2-ql">CA Education <span class="p2-ql-action">Add</span></a>
                     <a href="#sec-experience" class="p2-ql">Experience <span class="p2-ql-action">Add</span></a>
@@ -204,6 +205,38 @@
                             <input type="hidden" id="headline" name="headline">
                             <div class="p2-inline-actions">
                                 <button type="button" class="p2-inline-cancel" data-close="sec-headline-form">Cancel</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="p2-card" id="sec-skills">
+                        <div class="p2-card-header">
+                            <h2>Key Skills <span class="p2-boost" id="skillsBoost">Add 5%</span></h2>
+                            <a href="javascript:void(0)" class="p2-card-action" id="keySkillsEditToggle" data-toggle="sec-skills-form">Add key skills</a>
+                        </div>
+                        <p class="p2-card-sub">Add skills like Excel, PowerBI, Tally, Auditing, etc. to make your profile stand out.</p>
+                        <div class="p2-saved-display" id="key-skills-display">
+                            <div class="p2-saved-entry" id="key-skills-entry-display" style="display:none;">
+                                <div class="p2-saved-entry-header">
+                                    <div>
+                                        <div class="p2-saved-title">Key Skills</div>
+                                        <div class="p2-saved-meta" id="key-skills-text-display"></div>
+                                    </div>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-skills-form"><i class="fas fa-pencil-alt"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p2-card-form collapsed" id="sec-skills-form">
+                            <div class="p2-inline-form-title">Key Skills</div>
+                            <div class="p2-form-row p2-full-width">
+                                <label for="key_skills_input">Skills</label>
+                                <div class="p2-skills-container" id="key_skills_container">
+                                    <input type="text" id="key_skills_input" placeholder="Add skills (press Enter or comma)">
+                                </div>
+                                <input type="hidden" id="key_skills" name="key_skills">
+                            </div>
+                            <div class="p2-inline-actions">
+                                <button type="button" class="p2-inline-cancel" data-close="sec-skills-form">Cancel</button>
                             </div>
                         </div>
                     </section>
@@ -1025,10 +1058,6 @@
                                         <option value="semi_experienced">Semi Qualified (Experienced)</option>
                                     </select>
                                 </div>
-                                <div class="p2-form-row" id="earliest_joining_date_group" style="display:none;">
-                                    <label for="earliest_joining_date">Earliest Joining Date</label>
-                                    <input type="date" id="earliest_joining_date" name="earliest_joining_date">
-                                </div>
                                 <div class="p2-form-row" id="articleship_completion_date_group" style="display:none;">
                                     <label for="articleship_completion_date">Articleship 1 Year Completion Date</label>
                                     <input type="date" id="articleship_completion_date" name="articleship_completion_date">
@@ -1096,17 +1125,6 @@
                                     <label for="expected_salary">Expected Salary (INR)</label>
                                     <input type="text" id="expected_salary" name="expected_salary" placeholder="e.g., 15,00,000">
                                 </div>
-                                <div class="p2-form-row">
-                                    <label for="notice_period">Notice Period</label>
-                                    <select id="notice_period" name="notice_period">
-                                        <option value="">Select Notice Period</option>
-                                        <option value="Immediate Joiner">Immediate Joiner</option>
-                                        <option value="15 Days or less">15 Days or less</option>
-                                        <option value="1 Month">1 Month</option>
-                                        <option value="2 Months">2 Months</option>
-                                        <option value="3 Months">3 Months</option>
-                                    </select>
-                                </div>
                             </div>
                         </div>
                     </section>
@@ -1120,8 +1138,12 @@
                         <div class="p2-personal-display p2-display-clickable" id="personal-display" data-toggle="sec-personal-form" role="button" tabindex="0" aria-label="Edit personal details">
                             <div class="p2-personal-grid">
                                 <div class="p2-personal-item">
-                                    <div class="p2-personal-label">Personal</div>
-                                    <div class="p2-personal-value" id="pd-personal">Add more info</div>
+                                    <div class="p2-personal-label">Gender</div>
+                                    <div class="p2-personal-value" id="pd-gender">Add gender</div>
+                                </div>
+                                <div class="p2-personal-item">
+                                    <div class="p2-personal-label">Marital status</div>
+                                    <div class="p2-personal-value" id="pd-marital">Add marital status</div>
                                 </div>
                                 <div class="p2-personal-item">
                                     <div class="p2-personal-label">Work permit</div>
@@ -1138,6 +1160,14 @@
                                 <div class="p2-personal-item">
                                     <div class="p2-personal-label">Category</div>
                                     <div class="p2-personal-value" id="pd-category">Add Category</div>
+                                </div>
+                                <div class="p2-personal-item">
+                                    <div class="p2-personal-label">Notice Period</div>
+                                    <div class="p2-personal-value" id="pd-notice-period">Add notice period</div>
+                                </div>
+                                <div class="p2-personal-item" id="pd-joining-date-wrap">
+                                    <div class="p2-personal-label">Earliest Joining Date</div>
+                                    <div class="p2-personal-value" id="pd-joining-date">Add joining date</div>
                                 </div>
                             </div>
                             <div class="p2-personal-sep"></div>
@@ -1208,6 +1238,21 @@
                                 <div class="p2-form-row">
                                     <label for="work_permit">Work Permit</label>
                                     <input type="text" id="work_permit" name="work_permit" placeholder="e.g., India">
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="notice_period">Notice Period</label>
+                                    <select id="notice_period" name="notice_period">
+                                        <option value="">Select Notice Period</option>
+                                        <option value="Immediate Joiner">Immediate Joiner</option>
+                                        <option value="15 Days or less">15 Days or less</option>
+                                        <option value="1 Month">1 Month</option>
+                                        <option value="2 Months">2 Months</option>
+                                        <option value="3 Months">3 Months</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row" id="earliest_joining_date_group" style="display:none;">
+                                    <label for="earliest_joining_date">Earliest Joining Date</label>
+                                    <input type="date" id="earliest_joining_date" name="earliest_joining_date">
                                 </div>
                                 <div class="p2-form-row p2-full-width">
                                     <label for="address">Address</label>
