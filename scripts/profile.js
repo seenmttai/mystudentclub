@@ -315,6 +315,7 @@ function hideFileDisplay(type) {
     localStorage.removeItem(config.storageKeyText);
     localStorage.removeItem(config.storageKeyName);
     if (config.storageKeyImages) localStorage.removeItem(config.storageKeyImages);
+    if (type === 'resume') localStorage.removeItem('userCVPdf');
     config.input.value = '';
 }
 
@@ -454,6 +455,7 @@ async function handleFile(file, type) {
     try {
         let textContent = '';
         let images = [];
+        let base64Pdf = '';
 
         if (type === 'cover_letter' && file.type !== 'application/pdf') {
             showToast('Please upload your Cover Letter in PDF format only.', 'warning');
@@ -471,6 +473,18 @@ async function handleFile(file, type) {
             }
 
             if (type === 'resume') {
+                base64Pdf = await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result.split(',')[1]);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(file);
+                });
+                try {
+                    localStorage.setItem('userCVPdf', base64Pdf);
+                } catch (e) {
+                    console.error('Failed to cache PDF base64 in localStorage:', e);
+                }
+
                 showLoading(true, 'Converting resume to images...');
                 images = await convertPdfToImages(pdf);
                 if (images.length > 0) {
@@ -480,7 +494,7 @@ async function handleFile(file, type) {
                         showToast('Resume is too large. Please reupload your resume.', 'error');
                     }
                     showLoading(true, 'Validating and Autofilling details...');
-                    const extractResult = await extractProfileData(images, textContent);
+                    const extractResult = await extractProfileData(images, textContent, base64Pdf);
                     if (extractResult && extractResult.is_valid === false) {
                         showToast(extractResult.message, 'error', 8000);
                         hideFileDisplay('resume');
@@ -492,24 +506,8 @@ async function handleFile(file, type) {
                     }
                 }
             }
-        } else if (file.type === 'text/plain') {
-            textContent = await file.text();
-            if (type === 'resume') {
-                localStorage.setItem(config.storageKeyImages, JSON.stringify([]));
-                showLoading(true, 'Validating and Autofilling details...');
-                const extractResult = await extractProfileData([], textContent);
-                if (extractResult && extractResult.is_valid === false) {
-                    showToast(extractResult.message, 'error', 8000);
-                    hideFileDisplay('resume');
-                    return;
-                } else if (extractResult && extractResult.data) {
-                    populateForm(extractResult.data);
-                    refreshHeader();
-                    showToast('Profile auto-filled from your resume! Please review the details.', 'success', 8000);
-                }
-            }
         } else {
-            showToast('Unsupported file type. Please upload PDF or TXT.', 'warning');
+            showToast('Unsupported file type. Please upload PDF format only.', 'warning');
             return;
         }
 
@@ -544,13 +542,22 @@ async function convertPdfToImages(pdf) {
     return images;
 }
 
-async function extractProfileData(images, text) {
+async function extractProfileData(images, text, pdfBase64 = null) {
     if (!currentUser) return null;
     try {
+        const payload = {
+            user_id: currentUser.id,
+            images,
+            pdf_text: text
+        };
+        const pdf = pdfBase64 || localStorage.getItem('userCVPdf');
+        if (pdf) {
+            payload.pdf = pdf;
+        }
         const response = await fetch(WORKER_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_id: currentUser.id, images, pdf_text: text })
+            body: JSON.stringify(payload)
         });
         if (!response.ok) return null;
         const data = await response.json();
@@ -750,6 +757,10 @@ async function handleSave(e) {
                     images: images || [],
                     pdf_text: ocrText || ""
                 };
+                const cachedPdf = localStorage.getItem('userCVPdf');
+                if (cachedPdf) {
+                    payload.pdf = cachedPdf;
+                }
 
                 const syncResponse = await fetch('https://storer.bhansalimanan55.workers.dev', {
                     method: 'POST',

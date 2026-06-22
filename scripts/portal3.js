@@ -1332,12 +1332,27 @@ function processAndApplySearch(inputElement) {
     syncAndFetch();
 }
 
+async function updateLastAccessDate(userId) {
+    try {
+        const { error } = await supabaseClient
+            .from('profiles')
+            .update({ last_access_date: new Date().toISOString() })
+            .eq('uuid', userId);
+        if (error) throw error;
+    } catch (e) {
+        console.error('Failed to update last access date:', e);
+    }
+}
+
 async function checkAuth() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     currentSession = session;
 
     // If logged in, fetch and cache profile data
     if (session?.user?.id) {
+        // Update last access date when user opens the portal
+        updateLastAccessDate(session.user.id);
+
         // Check if profile data needs to be fetched (not in localStorage)
         const cachedProfile = localStorage.getItem('userProfileData');
         if (!cachedProfile) {
