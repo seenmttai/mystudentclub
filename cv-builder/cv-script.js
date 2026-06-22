@@ -2300,7 +2300,8 @@
             { file: 'navy-merit.html', name: 'Navy Merit', accent: '#0f2f63', style: 'merit' },
             { file: 'monochrome-ledger.html', name: 'Monochrome Ledger', accent: '#111111', style: 'mono' },
             { file: 'slate-split.html', name: 'Slate Split', accent: '#28535e', style: 'split' },
-            { file: 'blue-horizon-split.html', name: 'Blue Horizon Split', accent: '#1f385c', style: 'splitblue' }
+            { file: 'blue-horizon-split.html', name: 'Blue Horizon Split', accent: '#1f385c', style: 'splitblue' },
+            { file: 'blue-banner-professional.html', name: 'Blue Banner Professional', accent: '#155f82', style: 'bluebanner' }
         ];
         const TEMPLATE_COLOR_PRESETS = ['#2b2b2b', '#0f6cbd', '#155e95', '#1f8f63', '#c0392b', '#7b4db3'];
 
