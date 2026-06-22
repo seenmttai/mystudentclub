@@ -2524,6 +2524,7 @@ async function initializePage() {
     if (Notification.permission === 'granted' || window.flutter_app.isReady) {
         initializeFCM();
     }
+    renderProfileCompletionBanner();
 }
 
 // Check URL parameters and auto-open job modal if shared link
@@ -2580,7 +2581,50 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (session && !hasResume) {
             setTimeout(() => {
-                document.getElementById('resumePromptModal').style.display = 'flex';
+                const modal = document.getElementById('resumePromptModal');
+                if (modal) {
+                    let roleType = 'Industrial Trainees/Article Assistants/CA Freshers/Experienced CA/Semi Qualified CA';
+                    const cachedProfile = localStorage.getItem('userProfileData');
+                    let profile = null;
+                    if (cachedProfile) {
+                        try { profile = JSON.parse(cachedProfile); } catch (e) {}
+                    }
+                    const jobPref = localStorage.getItem('userJobPreference');
+                    const lookingFor = profile?.looking_for;
+
+                    if (jobPref === 'industrial' || lookingFor === 'CA Industrial Training Default') {
+                        roleType = 'Industrial Trainees';
+                    } else if (jobPref === 'articleship' || lookingFor === 'CA Articleship') {
+                        roleType = 'Article Assistants';
+                    } else if (jobPref === 'fresher_fresher') {
+                        roleType = 'CA Freshers';
+                    } else if (jobPref === 'fresher_experienced') {
+                        roleType = 'Experienced CA';
+                    } else if (lookingFor === 'CA Fresher') {
+                        roleType = 'CA Freshers';
+                    } else if (jobPref === 'semi_fresher' || jobPref === 'semi_experienced' || lookingFor === 'Semi Qualified CA') {
+                        roleType = 'Semi Qualified CA';
+                    } else {
+                        const path = window.location.pathname;
+                        if (path.includes('/articleship')) roleType = 'Article Assistants';
+                        else if (path.toLowerCase().includes('/experienced-ca')) roleType = 'Experienced CA';
+                        else if (path.includes('/fresher')) roleType = 'CA Freshers';
+                        else if (path.includes('/semi-qualified')) roleType = 'Semi Qualified CA';
+                        else roleType = 'Industrial Trainees';
+                    }
+
+                    const titleEl = document.getElementById('resumePromptTitle');
+                    const descEl = document.getElementById('resumePromptDesc');
+                    const roleTypeEl = document.getElementById('resumePromptRoleType');
+
+                    if (titleEl) titleEl.textContent = 'Complete your MSC Profile';
+                    if (roleTypeEl) {
+                        roleTypeEl.textContent = roleType;
+                    } else if (descEl) {
+                        descEl.innerHTML = `Complete your MSC Profile and get discovered by 1000+ recruiters hiring for <strong>${roleType}</strong>.`;
+                    }
+                    modal.style.display = 'flex';
+                }
             }, 1000);
         }
 
@@ -2590,12 +2634,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 document.getElementById('skipResumePrompt')?.addEventListener('click', () => {
-    document.getElementById('resumePromptModal').style.display = 'none';
+    const modal = document.getElementById('resumePromptModal');
+    if (modal) modal.style.display = 'none';
 });
 
 document.getElementById('resumePromptModal')?.addEventListener('click', (e) => {
     if (e.target.id === 'resumePromptModal') {
-        document.getElementById('resumePromptModal').style.display = 'none';
+        const modal = document.getElementById('resumePromptModal');
+        if (modal) modal.style.display = 'none';
     }
 });
 
@@ -2770,6 +2816,7 @@ async function fetchAndCacheProfileData() {
                 updateNotificationBadge();
             }
 
+            renderProfileCompletionBanner();
             return profileObj;
         }
     } catch (e) {
@@ -3266,5 +3313,80 @@ function initOnboardingSegmentForm() {
             submitBtn.innerHTML = originalBtnText;
         }
     });
+}
+
+function calculateProfileCompletion() {
+    const cachedProfile = localStorage.getItem('userProfileData');
+    const hasResume = localStorage.getItem('userCVText') || localStorage.getItem('userCVPdf');
+    
+    let profile = null;
+    if (cachedProfile) {
+        try { profile = JSON.parse(cachedProfile); } catch (e) {}
+    }
+
+    if (!currentSession) return 0;
+    if (!profile && !hasResume) return 10;
+
+    let score = 0;
+    
+    if (hasResume) {
+        score += 40;
+    }
+
+    if (profile) {
+        if (profile.full_name || profile.name) score += 10;
+        if (profile.mobile || profile.phone || profile.phone_number) score += 10;
+        if (profile.city || profile.location) score += 10;
+    }
+
+    if (profile && (profile.looking_for || profile.job_preference)) {
+        score += 15;
+    }
+
+    if (profile && (profile.key_skills || profile.skills || profile.emp_skills_hidden)) {
+        score += 15;
+    }
+
+    return Math.min(100, score);
+}
+
+function renderProfileCompletionBanner() {
+    const existing = document.getElementById('profile-completion-banner');
+    if (existing) existing.remove();
+
+    const percent = currentSession ? calculateProfileCompletion() : 0;
+    
+    if (percent === 100) {
+        document.body.classList.remove('with-completion-banner');
+        document.body.style.paddingTop = '';
+        const header = document.querySelector('.site-header, .floating-header');
+        if (header) header.style.top = '';
+        return;
+    }
+
+    const banner = document.createElement('div');
+    banner.id = 'profile-completion-banner';
+    banner.className = 'profile-completion-banner';
+    banner.style.display = 'flex';
+
+    banner.innerHTML = `
+        <div class="banner-text">
+            <span>🎯 Complete your Profile to get 5x higher interview opportunities.</span>
+            <span class="completion-badge">Profile Completion: ${percent}%</span>
+        </div>
+        <a href="/profile.html" class="banner-btn">Complete Profile</a>
+    `;
+
+    document.body.insertBefore(banner, document.body.firstChild);
+    document.body.classList.add('with-completion-banner');
+
+    setTimeout(() => {
+        const bannerHeight = banner.offsetHeight;
+        document.body.style.paddingTop = (70 + bannerHeight) + 'px';
+        const header = document.querySelector('.site-header, .floating-header');
+        if (header) {
+            header.style.top = bannerHeight + 'px';
+        }
+    }, 50);
 }
 

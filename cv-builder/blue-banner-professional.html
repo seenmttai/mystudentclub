@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My CV</title>
+    <style>
+        :root {
+            --blue-header: #155f82;
+            --light-blue-bg: #dbe8f8;
+            --text-black: #000000;
+            --bg-white: #ffffff;
+            --font-main: 'Calibri', 'Arial', sans-serif;
+            --viewer-bg: #525659;
+            --ref-width: 1000px;
+            --ref-height: 1414px;
+            --content-scale: 1;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .resume-container {
+            width: var(--ref-width);
+            height: var(--ref-height);
+            background: var(--bg-white);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            padding: calc(24px * var(--content-scale)) calc(22px * var(--content-scale));
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transform-origin: top center;
+            font-size: calc(15.5px * var(--content-scale));
+            color: var(--text-black);
+            line-height: 1.25;
+        }
+
+        /* ── Header ── */
+        header {
+            text-align: left;
+            margin-bottom: calc(6px * var(--content-scale));
+        }
+
+        h1 {
+            font-size: calc(22px * var(--content-scale));
+            font-weight: bold;
+            margin-bottom: calc(2px * var(--content-scale));
+        }
+
+        h1:empty {
+            display: none;
+        }
+
+        .header-tagline {
+            font-weight: bold;
+            font-size: calc(13px * var(--content-scale));
+            margin-bottom: calc(3px * var(--content-scale));
+            color: #333;
+        }
+
+        .header-tagline:empty {
+            display: none;
+        }
+
+        .contact-info {
+            display: block;
+            text-align: left;
+            margin-bottom: calc(4px * var(--content-scale));
+            font-weight: bold;
+            font-size: calc(13.5px * var(--content-scale));
+        }
+
+        .contact-info a,
+        .contact-info [data-field] a {
+            color: #0000ff;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        /* ── Section banners (static + cv-common.js-injected custom sections) ── */
+        .section-banner,
+        .section-header,
+        .section-header-2,
+        .section-title {
+            background-color: var(--blue-header);
+            color: white;
+            padding: calc(3px * var(--content-scale)) calc(6px * var(--content-scale));
+            font-weight: bold;
+            text-transform: uppercase;
+            text-align: left;
+            margin-top: calc(6px * var(--content-scale));
+            margin-bottom: calc(4px * var(--content-scale));
+            letter-spacing: 0.5px;
+            font-size: 1em;
+        }
+
+        /* ── Item rows (education / experience) ── */
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            background-color: var(--light-blue-bg);
+            padding: calc(2px * var(--content-scale)) calc(6px * var(--content-scale));
+            margin-top: calc(3px * var(--content-scale));
+            margin-bottom: calc(1px * var(--content-scale));
+        }
+
+        .item-left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-title {
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .item-date {
+            font-style: italic;
+            font-weight: normal;
+            text-align: right;
+            white-space: nowrap;
+            padding-left: calc(8px * var(--content-scale));
+            flex-shrink: 0;
+        }
+
+        .edu-inst-line {
+            font-size: calc(13.5px * var(--content-scale));
+            color: #333;
+            margin-top: calc(1px * var(--content-scale));
+        }
+
+        .edu-inst-line:empty {
+            display: none;
+        }
+
+        .exp-company-line {
+            font-size: calc(13.5px * var(--content-scale));
+            color: #333;
+            margin-top: calc(1px * var(--content-scale));
+        }
+
+        .exp-company-line:empty {
+            display: none;
+        }
+
+        /* ── Subtext (remarks, description) ── */
+        .edu-subtext {
+            margin-left: calc(8px * var(--content-scale));
+            margin-top: calc(1px * var(--content-scale));
+            margin-bottom: calc(2px * var(--content-scale));
+            line-height: 1.25;
+            color: #222;
+        }
+
+        .edu-subtext:empty {
+            display: none;
+        }
+
+        /* ── Sub-section titles (experience category) ── */
+        .sub-section-title {
+            font-weight: bold;
+            margin-top: calc(4px * var(--content-scale));
+            margin-bottom: calc(2px * var(--content-scale));
+            background-color: var(--light-blue-bg);
+            color: var(--text-black);
+            padding: calc(2px * var(--content-scale)) calc(6px * var(--content-scale));
+            display: block;
+        }
+
+        .sub-section-title:empty {
+            display: none;
+        }
+
+        /* ── Lists ── */
+        ul {
+            list-style-type: disc;
+            margin-left: calc(20px * var(--content-scale));
+            margin-bottom: calc(3px * var(--content-scale));
+            margin-top: calc(2px * var(--content-scale));
+        }
+
+        li {
+            margin-bottom: calc(1.5px * var(--content-scale));
+            text-align: justify;
+            line-height: 1.25;
+        }
+
+        li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Skills output from cv-common.js renderSkillsContent */
+        [data-field="skills"] ul,
+        [data-field="skills"] .cv-skills-list {
+            margin-left: calc(20px * var(--content-scale));
+        }
+
+        /* ── Summary / Career Objective ── */
+        .tagline-summary {
+            line-height: 1.35;
+            text-align: justify;
+            margin-bottom: calc(4px * var(--content-scale));
+        }
+
+        /* ── Print ── */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                background: #ffffff !important;
+            }
+
+            #zoom-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+            }
+
+            .resume-container {
+                width: 1000px !important;
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: none !important;
+                zoom: 0.7937;
+                transform-origin: top center;
+                position: static !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="zoom-wrapper">
+        <div class="resume-container" id="cv-page">
+
+            <!-- HEADER — not a sortable section, always at top -->
+            <header>
+                <h1 data-field="name"></h1>
+                <div class="header-tagline" data-field="tagline"></div>
+                <div class="contact-info contact-block" data-field="contact"></div>
+            </header>
+
+            <!-- CAREER OBJECTIVE -->
+            <div class="sortable-section" data-section-id="summary">
+                <div class="section-banner">Career Objective</div>
+                <div class="tagline-summary" data-field="summary"></div>
+            </div>
+
+            <!-- EDUCATION -->
+            <div class="sortable-section" data-section-id="education">
+                <div class="section-banner">Education</div>
+                <div id="education-list">
+                    <!-- template row — cloned by cv-common.js for each entry -->
+                    <div class="template" style="display:none;">
+                        <div class="item-row">
+                            <div class="item-left">
+                                <div class="item-title" data-field="degree"></div>
+                                <div class="edu-inst-line" data-field="institution"></div>
+                            </div>
+                            <span class="item-date" data-field="year"></span>
+                        </div>
+                        <div class="edu-subtext" data-field="remarks"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXPERIENCE -->
+            <div class="sortable-section" data-section-id="experience">
+                <div class="section-banner">Work Experience</div>
+                <div id="experience-list">
+                    <div class="template" style="display:none;">
+                        <div class="item-row">
+                            <div class="item-left">
+                                <div class="item-title" data-field="role"></div>
+                                <div class="exp-company-line" data-field="company"></div>
+                            </div>
+                            <span class="item-date" data-field="dates"></span>
+                        </div>
+                        <!-- category shown as sub-header when present (hidden by cv-common.js when empty) -->
+                        <div class="sub-section-title" data-field="category"></div>
+                        <ul data-list="bullets"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROJECTS -->
+            <div class="sortable-section" data-section-id="projects">
+                <div class="section-banner">Projects</div>
+                <div id="projects-list">
+                    <div class="template" style="display:none;">
+                        <div class="item-row">
+                            <div class="item-left">
+                                <div class="item-title" data-field="title"></div>
+                                <div class="exp-company-line" data-field="description"></div>
+                            </div>
+                        </div>
+                        <ul data-list="bullets"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CERTIFICATIONS -->
+            <div class="sortable-section" data-section-id="certifications">
+                <div class="section-banner">Certifications</div>
+                <ul data-list="certifications"></ul>
+            </div>
+
+            <!-- ACHIEVEMENTS -->
+            <div class="sortable-section" data-section-id="achievements">
+                <div class="section-banner">Achievements &amp; Awards</div>
+                <ul data-list="achievements"></ul>
+            </div>
+
+            <!-- LEADERSHIP -->
+            <div class="sortable-section" data-section-id="leadership">
+                <div class="section-banner">Leadership</div>
+                <ul data-list="leadership"></ul>
+            </div>
+
+            <!-- INTERESTS -->
+            <div class="sortable-section" data-section-id="interests">
+                <div class="section-banner">Interests &amp; Hobbies</div>
+                <ul data-list="interests"></ul>
+            </div>
+
+            <!-- SKILLS -->
+            <div class="sortable-section" data-section-id="skills">
+                <div class="section-banner">Skills</div>
+                <div data-field="skills"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- cv-common.js handles all postMessage rendering and section ordering -->
+    <script src="cv-common.js"></script>
+    <script>
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            const targetWidth = window.innerWidth - 20;
+            const scale = targetWidth < 1000 ? targetWidth / 1000 : 1;
+            page.style.transform = `scale(${scale})`;
+            const spaceToRemove = 1414 - (1414 * scale);
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            let contentScale = 1.0;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+            let i = 0;
+            while (page.scrollHeight > 1414 && i < 60) {
+                contentScale -= 0.01;
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                i++;
+            }
+        }
+
+        let _screenTransform = '';
+        let _screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            _screenTransform = page.style.transform;
+            _screenMarginBottom = page.style.marginBottom;
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+            shrinkContentToFit();
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            page.style.transform = _screenTransform || '';
+            page.style.marginBottom = _screenMarginBottom || '';
+            scaleToFit();
+        }
+
+        window.addEventListener('load', function () {
+            shrinkContentToFit();
+            scaleToFit();
+            const mq = window.matchMedia('print');
+            if (mq.addEventListener) {
+                mq.addEventListener('change', e => e.matches ? enablePrintMode() : disablePrintMode());
+            } else if (mq.addListener) {
+                mq.addListener(e => e.matches ? enablePrintMode() : disablePrintMode());
+            }
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        });
+
+        let _resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(_resizeTimer);
+            _resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+
+</html>
