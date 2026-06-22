@@ -414,8 +414,42 @@
         <div class="subscription-form" id="specific-subscription-form">
           <h4>Add Specific Subscription:</h4>
           <div class="subscription-selectors">
-            <select id="locationSelect" class="filter-control"></select>
-            <select id="jobTypeSelect" class="filter-control"></select>
+            <div class="custom-select" id="locationSelect" data-value="">
+              <button class="custom-select-trigger" type="button">
+                <span class="cs-label">Select Location</span>
+                <svg
+                  class="cs-chevron"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+              <div class="cs-dropdown"></div>
+            </div>
+            <div class="custom-select" id="jobTypeSelect" data-value="">
+              <button class="custom-select-trigger" type="button">
+                <span class="cs-label">Select Job Type</span>
+                <svg
+                  class="cs-chevron"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+              <div class="cs-dropdown"></div>
+            </div>
             <button id="subscribeBtn" class="action-button" disabled>
               Subscribe
             </button>
@@ -499,7 +533,6 @@
       <section class="jobs-section">
         <div class="section-row">
           <h2 class="section-title" id="jobsListTitle">Jobs</h2>
-          <span class="section-count" id="jobsCount"></span>
         </div>
         <div id="jobs-list" class="jobs-list-new"></div>
         <div id="loader" class="loader-wrap" style="display: none">
@@ -546,12 +579,28 @@
         <div class="sheet-body">
           <div class="filter-group-new">
             <label class="filter-label">Sort by</label>
-            <select id="sortBySelect" class="filter-select">
-              <option value="popular">🔥 Trending</option>
-              <option value="newest">🕐 Newest First</option>
-              <option value="salary_desc">💰 Stipend: High to Low</option>
-              <option value="salary_asc">💰 Stipend: Low to High</option>
-            </select>
+            <div
+              class="custom-select filter-custom-select"
+              id="sortBySelect"
+              data-value="popular"
+            >
+              <button class="custom-select-trigger" type="button">
+                <span class="cs-label">🔥 Trending</span>
+                <svg
+                  class="cs-chevron"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+              <div class="cs-dropdown"></div>
+            </div>
           </div>
           <div class="filter-group-new">
             <label class="filter-label">Location</label>
@@ -569,7 +618,28 @@
           </div>
           <div class="filter-group-new">
             <label class="filter-label">Stipend / Salary</label>
-            <select id="salaryFilter" class="filter-select"></select>
+            <div
+              class="custom-select filter-custom-select"
+              id="salaryFilter"
+              data-value=""
+            >
+              <button class="custom-select-trigger" type="button">
+                <span class="cs-label">Any Stipend</span>
+                <svg
+                  class="cs-chevron"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                >
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+              <div class="cs-dropdown"></div>
+            </div>
           </div>
           <div
             class="filter-group-new"
@@ -1055,22 +1125,28 @@
                 >
                 <div class="input-with-icon">
                   <i class="fas fa-history"></i>
-                  <select
+                  <div
+                    class="custom-select onboarding-custom-select"
                     id="ca_inter_attempt"
-                    class="form-input-custom select-custom"
+                    data-value=""
                   >
-                    <option value="" disabled selected>
-                      Select Attempt Month/Year
-                    </option>
-                    <option value="May 2026">May 2026</option>
-                    <option value="Nov 2026">Nov 2026</option>
-                    <option value="May 2027">May 2027</option>
-                    <option value="Nov 2027">Nov 2027</option>
-                    <option value="Cleared Both Groups">
-                      Cleared Both Groups
-                    </option>
-                    <option value="Other">Other</option>
-                  </select>
+                    <button class="custom-select-trigger" type="button">
+                      <span class="cs-label">Select Attempt Month/Year</span>
+                      <svg
+                        class="cs-chevron"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                      >
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
+                    </button>
+                    <div class="cs-dropdown"></div>
+                  </div>
                 </div>
               </div>
               <div class="onboarding-conditional-field" id="field-fresher">
@@ -1079,20 +1155,28 @@
                 >
                 <div class="input-with-icon">
                   <i class="fas fa-award"></i>
-                  <select
+                  <div
+                    class="custom-select onboarding-custom-select"
                     id="ca_final_attempt"
-                    class="form-input-custom select-custom"
+                    data-value=""
                   >
-                    <option value="" disabled selected>
-                      Select Attempt Month/Year
-                    </option>
-                    <option value="May 2026">May 2026</option>
-                    <option value="Nov 2026">Nov 2026</option>
-                    <option value="May 2027">May 2027</option>
-                    <option value="Nov 2027">Nov 2027</option>
-                    <option value="Cleared">Cleared / Passed</option>
-                    <option value="Other">Other</option>
-                  </select>
+                    <button class="custom-select-trigger" type="button">
+                      <span class="cs-label">Select Attempt Month/Year</span>
+                      <svg
+                        class="cs-chevron"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2.5"
+                        stroke-linecap="round"
+                      >
+                        <path d="M6 9l6 6 6-6" />
+                      </svg>
+                    </button>
+                    <div class="cs-dropdown"></div>
+                  </div>
                 </div>
               </div>
               <div class="onboarding-conditional-field" id="field-semi">

@@ -574,6 +574,41 @@ body.p2-modal-open {
   margin-top: 3px;
 }
 
+/* ── Enhanced custom <select> (matches the form control look) ── */
+.custom-select.cs-enhanced {
+  width: 100%;
+}
+.custom-select.cs-enhanced .custom-select-trigger {
+  width: 100%;
+  background: var(--chip);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-family: "Poppins", sans-serif;
+  color: var(--sub);
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+}
+.custom-select.cs-enhanced.has-value .custom-select-trigger {
+  color: var(--text);
+}
+.custom-select.cs-enhanced.open .custom-select-trigger {
+  border-color: var(--brand);
+  background: var(--card);
+}
+.custom-select.cs-enhanced.cs-disabled .custom-select-trigger {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+.cs-option.cs-opt-disabled {
+  opacity: 0.45;
+  cursor: default;
+  pointer-events: none;
+}
+
 /* inline actions */
 .p2-inline-actions {
   display: flex;
@@ -1307,4 +1342,45 @@ body.p2-modal-open {
 /* ── Misc ── */
 .p2-main {
   padding-top: var(--header-h);
+}
+
+/* ============================================================
+   TABLET & DESKTOP — widen the profile column to a readable
+   width (forms read poorly at full-bleed) and lay form fields
+   out two-up so the extra width is actually used.
+   Header/nav come from portal-style.css.
+   ============================================================ */
+@media (min-width: 768px) {
+  .pn-content {
+    max-width: 960px;
+  }
+  /* Form fields flow two columns; full-width rows span both.
+     Conditionally-shown rows (toggled via inline display by JS)
+     still participate as grid items, so this stays in sync. */
+  .p2-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 18px;
+    align-items: start;
+  }
+  .p2-form-grid > .p2-full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Larger screens: header card becomes a dashboard row —
+   profile info on the left, completion/missing panel on the right. */
+@media (min-width: 900px) {
+  .p2-header-card {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .p2-header-left {
+    flex: 1;
+    min-width: 0;
+  }
+  .p2-header-right {
+    flex: 0 0 280px;
+  }
 }

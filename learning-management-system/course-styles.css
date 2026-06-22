@@ -1050,7 +1050,7 @@
         transition: left 0.3s ease;
     }
 
-    .course-sidebar.active {
+    .course-sidebar.open {
         left: 0;
     }
 

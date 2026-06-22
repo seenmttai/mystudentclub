@@ -1,4 +1,4 @@
-﻿import { getDaysAgo } from "./date-utils.js";
+import { getDaysAgo } from "./date-utils.js";
 import {
   isProfileComplete,
   generateEmailBody,
@@ -328,7 +328,6 @@ function renderJobCard(job) {
             </button>
         </div>
         <div class="jc-chips">
-            ${portalLabel ? `<span class="jc-chip jc-chip-type">${portalLabel}</span>` : ""}
             ${job.Location ? `<span class="jc-chip">📍 ${job.Location.split(",")[0]}</span>` : ""}
             ${job.Experience ? `<span class="jc-chip">${job.Experience}</span>` : ""}
         </div>
@@ -455,7 +454,6 @@ async function fetchJobs() {
       if (dom.jobsList) dom.jobsList.appendChild(frag);
       page++;
       hasMoreData = data.length === limit;
-      if (dom.jobsCount) dom.jobsCount.textContent = `${page * limit}+ jobs`;
     } else {
       hasMoreData = false;
       if (page === 0 && dom.jobsList) {
@@ -687,16 +685,16 @@ function setupLocationDropdown() {
 
 function populateSalaryFilter() {
   if (!dom.salaryFilter) return;
-  let options = [];
+  let rawOptions = [];
   if (currentTable === "Industrial Training Job Portal")
-    options = [
+    rawOptions = [
       { value: "", text: "Any Stipend" },
       { value: "10000-20000", text: "₹10k - ₹20k" },
       { value: "20000-40000", text: "₹20k - ₹40k" },
       { value: "40000+", text: "₹40k+" },
     ];
   else if (currentTable === "Articleship Jobs")
-    options = [
+    rawOptions = [
       { value: "", text: "Any Stipend" },
       { value: "0-5000", text: "Below ₹5k" },
       { value: "5000-10000", text: "₹5k - ₹10k" },
@@ -704,7 +702,7 @@ function populateSalaryFilter() {
       { value: "15000+", text: "₹15k+" },
     ];
   else if (currentTable === "Semi Qualified Jobs")
-    options = [
+    rawOptions = [
       { value: "", text: "Any Salary" },
       { value: "0-25000", text: "Below ₹25k" },
       { value: "25000-35000", text: "₹25k - ₹35k" },
@@ -712,15 +710,15 @@ function populateSalaryFilter() {
       { value: "50000+", text: "Above ₹50k" },
     ];
   else if (currentTable === "Fresher Jobs")
-    options = [
+    rawOptions = [
       { value: "", text: "Any Salary" },
       { value: "0-1200000", text: "< 12 LPA" },
       { value: "1200000-1800000", text: "12-18 LPA" },
       { value: "1800000+", text: "> 18 LPA" },
     ];
-  dom.salaryFilter.innerHTML = options
-    .map((o) => `<option value="${o.value}">${o.text}</option>`)
-    .join("");
+  const options = rawOptions.map((o) => ({ value: o.value, label: o.text }));
+  const placeholder = options[0]?.label || "Any Stipend";
+  initCustomSelect(dom.salaryFilter, placeholder, options, null);
   dom.salaryFilter.value = state.salary;
 }
 
@@ -1614,27 +1612,175 @@ function updatePermissionStatusUI() {
   dom.permissionStatusDiv.style.display = "block";
 }
 
+function updateSubBtn() {
+  if (dom.subscribeBtnEl)
+    dom.subscribeBtnEl.disabled = !(
+      dom.locationSelectEl?.dataset.value && dom.jobTypeSelectEl?.dataset.value
+    );
+}
+
+function resetCustomSelect(el, placeholder) {
+  if (!el) return;
+  el.dataset.value = "";
+  el.classList.remove("has-value");
+  const label = el.querySelector(".cs-label");
+  if (label) label.textContent = placeholder;
+  el.querySelectorAll(".cs-option").forEach((o) => o.classList.remove("selected"));
+}
+
+function csCloseAll() {
+  document.querySelectorAll(".custom-select.open").forEach((s) => {
+    s.classList.remove("open");
+    if (s._csDropdown) s._csDropdown.style.display = "none";
+  });
+}
+
+function initCustomSelect(el, placeholder, options, onChange) {
+  if (!el) return;
+  const trigger = el.querySelector(".custom-select-trigger");
+  const label = el.querySelector(".cs-label");
+
+  if (!trigger) {
+    if (el.tagName === "SELECT") {
+      const prevVal = el.value || "";
+      el.innerHTML = "";
+      if (placeholder) {
+        const placeholderOpt = document.createElement("option");
+        placeholderOpt.value = "";
+        placeholderOpt.textContent = placeholder;
+        placeholderOpt.disabled = true;
+        placeholderOpt.selected = !prevVal;
+        el.appendChild(placeholderOpt);
+      }
+      options.forEach(({ value, label: text }) => {
+        const opt = document.createElement("option");
+        opt.value = value;
+        opt.textContent = text;
+        if (value === prevVal) {
+          opt.selected = true;
+        }
+        el.appendChild(opt);
+      });
+      if (!el._csInit) {
+        el._csInit = true;
+        el.addEventListener("change", () => {
+          onChange?.();
+        });
+      }
+    }
+    return;
+  }
+
+  // Store for .value setter and re-init
+  el._csOptions = options;
+  el._csPlaceholder = placeholder;
+
+  // Move dropdown to <body> to escape any transform/overflow ancestor
+  // (bottom-sheet uses transform which traps position:fixed children)
+  let dropdown = el._csDropdown;
+  if (!dropdown) {
+    const inPlace = el.querySelector(".cs-dropdown");
+    if (inPlace) inPlace.remove();
+    dropdown = document.createElement("div");
+    dropdown.className = "cs-dropdown";
+    dropdown.style.display = "none";
+    document.body.appendChild(dropdown);
+    el._csDropdown = dropdown;
+  }
+
+  dropdown.innerHTML = "";
+  options.forEach(({ value, label: text }) => {
+    const opt = document.createElement("div");
+    opt.className = "cs-option";
+    opt.textContent = text;
+    opt.dataset.value = value;
+    opt.addEventListener("click", (e) => {
+      e.stopPropagation();
+      el.dataset.value = value;
+      label.textContent = text;
+      el.classList.add("has-value");
+      dropdown.querySelectorAll(".cs-option").forEach((o) =>
+        o.classList.toggle("selected", o.dataset.value === value)
+      );
+      el.classList.remove("open");
+      dropdown.style.display = "none";
+      onChange?.();
+    });
+    dropdown.appendChild(opt);
+  });
+
+  // One-time setup: trigger listener + .value/.required/.disabled properties
+  if (!el._csInit) {
+    el._csInit = true;
+
+    trigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = el.classList.contains("open");
+      csCloseAll();
+      if (!isOpen) {
+        const rect = trigger.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        dropdown.style.position = "fixed";
+        dropdown.style.left = rect.left + "px";
+        dropdown.style.width = rect.width + "px";
+        dropdown.style.right = "auto";
+        if (spaceBelow < 220) {
+          dropdown.style.top = "auto";
+          dropdown.style.bottom = window.innerHeight - rect.top + 4 + "px";
+        } else {
+          dropdown.style.top = rect.bottom + 4 + "px";
+          dropdown.style.bottom = "auto";
+        }
+        dropdown.style.display = "block";
+        el.classList.add("open");
+      }
+    });
+
+    // Expose .value getter/setter so existing code works unchanged
+    Object.defineProperty(el, "value", {
+      get() { return el.dataset.value || ""; },
+      set(val) {
+        const opt = (el._csOptions || []).find((o) => o.value === val);
+        const lbl = el.querySelector(".cs-label");
+        if (opt) {
+          el.dataset.value = val;
+          if (lbl) lbl.textContent = opt.label;
+          el.classList.add("has-value");
+          el._csDropdown?.querySelectorAll(".cs-option").forEach((o) =>
+            o.classList.toggle("selected", o.dataset.value === val)
+          );
+        } else {
+          el.dataset.value = "";
+          if (lbl) lbl.textContent = el._csPlaceholder || "";
+          el.classList.remove("has-value");
+          el._csDropdown?.querySelectorAll(".cs-option").forEach((o) => o.classList.remove("selected"));
+        }
+      },
+      configurable: true,
+    });
+
+    // Stubs so onboarding field init code (.required, .disabled) doesn't throw
+    Object.defineProperty(el, "required", { set(_v) {}, get() { return false; }, configurable: true });
+    Object.defineProperty(el, "disabled", {
+      set(v) { trigger.disabled = !!v; el.classList.toggle("cs-disabled", !!v); },
+      get() { return !!trigger.disabled; },
+      configurable: true,
+    });
+  }
+}
+
 function populateNotificationDropdowns() {
-  if (dom.locationSelectEl) {
-    dom.locationSelectEl.innerHTML =
-      '<option value="" disabled selected>Select Location</option><option value="all">All India</option>';
-    LOCATIONS_NOTIF.sort().forEach((loc) => {
-      const o = document.createElement("option");
-      o.value = loc;
-      o.textContent = loc.charAt(0).toUpperCase() + loc.slice(1);
-      dom.locationSelectEl.appendChild(o);
-    });
-  }
-  if (dom.jobTypeSelectEl) {
-    dom.jobTypeSelectEl.innerHTML =
-      '<option value="" disabled selected>Select Job Type</option>';
-    JOB_TYPES_NOTIF.forEach((t) => {
-      const o = document.createElement("option");
-      o.value = t.value;
-      o.textContent = t.label;
-      dom.jobTypeSelectEl.appendChild(o);
-    });
-  }
+  const locationOptions = [
+    { value: "all", label: "All India" },
+    ...LOCATIONS_NOTIF.sort().map((loc) => ({
+      value: loc,
+      label: loc.charAt(0).toUpperCase() + loc.slice(1),
+    })),
+  ];
+  if (dom.locationSelectEl)
+    initCustomSelect(dom.locationSelectEl, "Select Location", locationOptions, updateSubBtn);
+  if (dom.jobTypeSelectEl)
+    initCustomSelect(dom.jobTypeSelectEl, "Select Job Type", JOB_TYPES_NOTIF, updateSubBtn);
 }
 
 async function initializeFCM() {
@@ -1757,6 +1903,29 @@ function hideOnboardingSegmentModal() {
 function initOnboardingSegmentForm() {
   const form = document.getElementById("onboardingSegmentForm");
   if (!form) return;
+
+  // Initialize attempt custom selects (must happen before fields object uses the elements)
+  const attemptOptions = [
+    { value: "May 2026", label: "May 2026" },
+    { value: "Nov 2026", label: "Nov 2026" },
+    { value: "May 2027", label: "May 2027" },
+    { value: "Nov 2027", label: "Nov 2027" },
+  ];
+  const interEl = document.getElementById("ca_inter_attempt");
+  if (interEl)
+    initCustomSelect(interEl, "Select Attempt Month/Year", [
+      ...attemptOptions,
+      { value: "Cleared Both Groups", label: "Cleared Both Groups" },
+      { value: "Other", label: "Other" },
+    ], null);
+  const finalEl = document.getElementById("ca_final_attempt");
+  if (finalEl)
+    initCustomSelect(finalEl, "Select Attempt Month/Year", [
+      ...attemptOptions,
+      { value: "Cleared", label: "Cleared / Passed" },
+      { value: "Other", label: "Other" },
+    ], null);
+
   const cards = document.querySelectorAll(".onboarding-option-card");
   const selectedInput = document.getElementById("selectedLookingFor");
   const fields = {
@@ -1971,10 +2140,7 @@ function setupEventListeners() {
     resetAndFetch();
   });
 
-  // Filter sheet sort + status toggles
-  dom.sortBySelect?.addEventListener("change", () => {
-    state.sortBy = dom.sortBySelect.value;
-  });
+  // Filter sheet status toggles
   document.querySelectorAll("#filterSheet .pill-toggle").forEach((btn) => {
     btn.addEventListener("click", () => {
       state.applicationStatus = btn.dataset.value;
@@ -2054,27 +2220,22 @@ function setupEventListeners() {
     }
   });
   dom.subscribeBtnEl?.addEventListener("click", async () => {
-    const location = dom.locationSelectEl?.value;
-    const jobType = dom.jobTypeSelectEl?.value;
+    const location = dom.locationSelectEl?.dataset.value;
+    const jobType = dom.jobTypeSelectEl?.dataset.value;
     if (!location || !jobType) return;
     let topicName;
     if (location === "all")
       topicName = `${jobType === "industrial" ? "Industrial" : jobType}-all`;
     else topicName = `${location}-${jobType}`;
     if (await subscribeToTopic(topicName)) {
-      if (dom.locationSelectEl) dom.locationSelectEl.selectedIndex = 0;
-      if (dom.jobTypeSelectEl) dom.jobTypeSelectEl.selectedIndex = 0;
+      resetCustomSelect(dom.locationSelectEl, "Select Location");
+      resetCustomSelect(dom.jobTypeSelectEl, "Select Job Type");
       if (dom.subscribeBtnEl) dom.subscribeBtnEl.disabled = true;
     }
   });
-  const updateSubBtn = () => {
-    if (dom.subscribeBtnEl)
-      dom.subscribeBtnEl.disabled = !(
-        dom.locationSelectEl?.value && dom.jobTypeSelectEl?.value
-      );
-  };
-  dom.locationSelectEl?.addEventListener("change", updateSubBtn);
-  dom.jobTypeSelectEl?.addEventListener("change", updateSubBtn);
+
+  // Close custom dropdowns on outside click
+  document.addEventListener("click", () => csCloseAll());
 
   // Theme toggle
   const themeBtn = document.getElementById("themeToggleBtn");
@@ -2409,6 +2570,22 @@ async function initializePage() {
 
   // Handle shared job URL
   checkAndOpenSharedJob();
+
+  // Initialize filter custom selects
+  if (dom.sortBySelect) {
+    initCustomSelect(
+      dom.sortBySelect,
+      "🔥 Trending",
+      [
+        { value: "popular", label: "🔥 Trending" },
+        { value: "newest", label: "🕐 Newest First" },
+        { value: "salary_desc", label: "💰 Stipend: High to Low" },
+        { value: "salary_asc", label: "💰 Stipend: Low to High" },
+      ],
+      () => { state.sortBy = dom.sortBySelect.value; }
+    );
+    dom.sortBySelect.value = state.sortBy;
+  }
 
   // Notifications setup
   populateNotificationDropdowns();

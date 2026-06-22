@@ -1,682 +1,1131 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | My Student Club LMS</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>My Courses — My Student Club</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/scripts/portal-style.css" />
+    <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script>
+      (function () {
+        const t = localStorage.getItem("msc-theme");
+        if (t) document.documentElement.setAttribute("data-theme", t);
+      })();
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="importmap">
-    {
+      {
         "imports": {
-            "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
+          "vue": "https://unpkg.com/vue@3/dist/vue.esm-browser.js"
         }
-    }
+      }
     </script>
     <style>
-        .logo-enhanced {
-            width: 180px;
-            height: auto;
-            object-fit: contain;
-            transition: transform 0.2s;
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "Poppins", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+      }
+      #app {
+        min-height: 100vh;
+      }
+      .lms-menu-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 27, 45, 0.4);
+        z-index: 390;
+      }
+      .lms-menu-overlay.active {
+        display: block;
+      }
+      .header-logo {
+        width: 32px;
+        height: 32px;
+      }
+      .lms-hero {
+        padding: calc(var(--header-h) + 10px) 20px 0;
+      }
+      .lms-hero h1 {
+        font-size: 22px;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.2;
+        margin-top: 10px;
+      }
+      .lms-hero p {
+        font-size: 13px;
+        color: var(--sub);
+        margin-top: 4px;
+      }
+      .lms-search {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 1.5px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 14px;
+        background: var(--card);
+        margin: 14px 20px 0;
+      }
+      .lms-search input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-family: "Poppins", sans-serif;
+        font-size: 13px;
+        background: transparent;
+        color: var(--text);
+      }
+      .lms-search svg {
+        color: var(--sub);
+        flex-shrink: 0;
+      }
+      .lms-stats-row {
+        display: flex;
+        gap: 12px;
+        overflow-x: auto;
+        padding: 16px 20px;
+        scrollbar-width: none;
+      }
+      .lms-stats-row::-webkit-scrollbar {
+        display: none;
+      }
+      .lms-stat-chip {
+        flex-shrink: 0;
+        min-width: 110px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--r-card);
+        padding: 14px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .lms-stat-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .lms-stat-num {
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .lms-stat-label {
+        font-size: 11px;
+        color: var(--sub);
+        font-weight: 500;
+      }
+      .lms-cards-area {
+        padding: 0 20px 20px;
+      }
+      .lms-course-card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: var(--r-card);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        margin-bottom: 14px;
+      }
+      .lms-course-card img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+        display: block;
+      }
+      .lms-card-body {
+        padding: 16px;
+      }
+      .lms-card-title {
+        font-size: 15px;
+        font-weight: 700;
+      }
+      .lms-card-desc {
+        font-size: 13px;
+        color: var(--sub);
+        margin-top: 4px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .lms-progress-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+        font-size: 12px;
+        color: var(--sub);
+        font-weight: 500;
+      }
+      .lms-progress-pct {
+        background: var(--chip);
+        color: var(--brand);
+        padding: 2px 8px;
+        border-radius: var(--r-chip);
+        font-weight: 700;
+      }
+      .lms-progress-bar-track {
+        height: 4px;
+        background: var(--line);
+        border-radius: 99px;
+        margin-top: 8px;
+      }
+      .lms-progress-bar-fill {
+        height: 100%;
+        background: var(--brand);
+        border-radius: 99px;
+        transition: width 0.4s ease;
+      }
+      .lms-btn-primary {
+        display: block;
+        width: 100%;
+        margin-top: 14px;
+        background: var(--brand);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        font-family: "Poppins", sans-serif;
+        cursor: pointer;
+        text-align: center;
+      }
+      .lms-center {
+        text-align: center;
+        padding: 48px 20px;
+        color: var(--sub);
+        font-size: 14px;
+      }
+      .lms-empty-icon {
+        font-size: 48px;
+        margin-bottom: 12px;
+      }
+      .lms-empty-title {
+        font-size: 17px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 8px;
+      }
+      .lms-empty-link {
+        display: inline-block;
+        margin-top: 16px;
+        background: var(--brand);
+        color: #fff;
+        border-radius: 12px;
+        padding: 12px 24px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        font-family: "Poppins", sans-serif;
+      }
+      .lms-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 27, 45, 0.5);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        z-index: 500;
+      }
+      .lms-modal {
+        background: var(--card);
+        border-radius: var(--r-sheet) var(--r-sheet) 0 0;
+        padding: 24px 20px;
+        width: 100%;
+        max-width: 430px;
+      }
+      .lms-modal h3 {
+        font-size: 17px;
+        font-weight: 700;
+        margin-bottom: 14px;
+      }
+      .lms-modal textarea {
+        width: 100%;
+        border: 1.5px solid var(--line);
+        border-radius: 10px;
+        padding: 10px 14px;
+        background: var(--card);
+        color: var(--text);
+        font-family: "Poppins", sans-serif;
+        font-size: 13px;
+        resize: vertical;
+        min-height: 100px;
+        outline: none;
+      }
+      .lms-modal textarea:focus {
+        border-color: var(--brand);
+      }
+      .lms-modal-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 14px;
+      }
+      .lms-btn-secondary {
+        background: var(--chip);
+        color: var(--brand);
+        border: 1.5px solid var(--line);
+        border-radius: 12px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        font-family: "Poppins", sans-serif;
+        cursor: pointer;
+      }
+      .lms-btn-danger {
+        background: #ef4444;
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 700;
+        font-family: "Poppins", sans-serif;
+        cursor: pointer;
+      }
+      .lms-content-pad {
+        padding-bottom: calc(var(--bnav-h) + var(--safe-bottom));
+      }
+      /* Tablet & desktop: center content to the shared app column
+         (--app-w from portal-style.css) and flow course cards two-up */
+      @media (min-width: 768px) {
+        .lms-content-pad {
+          max-width: var(--app-w, 1180px);
+          margin-left: auto;
+          margin-right: auto;
         }
-
-        .logo-enhanced:hover {
-            transform: scale(1.05);
+        .lms-cards-area {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+          gap: 16px;
+          align-items: start;
         }
-
-        /* Footer logo - larger size */
-        .footer-brand .logo-enhanced {
-            width: 200px;
+        .lms-course-card {
+          margin-bottom: 0;
         }
-
-        .profile-dropdown-container {
-            position: relative;
-            cursor: pointer;
-        }
-
-        .profile-dropdown-menu {
-            position: absolute;
-            top: 110%;
-            right: 0;
-            background: white;
-            border: 1px solid var(--border-color, #e2e8f0);
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            width: 220px;
-            display: none;
-            flex-direction: column;
-            z-index: 10000;
-            overflow: hidden;
-            animation: fadeIn 0.2s ease-out;
-        }
-
-        .profile-dropdown-container:hover .profile-dropdown-menu {
-            display: flex;
-        }
-
-        .profile-header {
-            padding: 1rem;
-            background: #f8fafc;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .profile-name {
-            font-weight: 700;
-            color: #1e293b;
-            display: block;
-        }
-
-        .profile-email {
-            font-size: 0.8rem;
-            color: #64748b;
-        }
-
-        .dropdown-item {
-            padding: 0.75rem 1rem;
-            color: #475569;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: background 0.2s;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-            font-size: 0.95rem;
-            cursor: pointer;
-        }
-
-        .dropdown-item:hover {
-            background: #f1f5f9;
-            color: #2563eb;
-        }
-
-        .dropdown-item i {
-            width: 20px;
-            text-align: center;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .loading-container {
-            min-height: 400px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #64748b;
-        }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-
-        .report-form textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            margin: 1rem 0;
-            min-height: 120px;
-            font-family: inherit;
-        }
-
-        .modal-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 1rem;
-        }
-
-        .btn-cancel {
-            background: #f1f5f9;
-            color: #64748b;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .btn-submit {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-        }
+      }
+      .lms-stat-icon--blue {
+        background: #eff6ff;
+      }
+      .lms-stat-icon--green {
+        background: #ecfdf5;
+      }
+      .lms-stat-icon--amber {
+        background: #fffbeb;
+      }
+      .lms-stat-icon--purple {
+        background: #f5f3ff;
+      }
+      [data-theme="dark"] .lms-stat-icon--blue {
+        background: #1e3a5f;
+      }
+      [data-theme="dark"] .lms-stat-icon--green {
+        background: #064e3b;
+      }
+      [data-theme="dark"] .lms-stat-icon--amber {
+        background: #78350f;
+      }
+      [data-theme="dark"] .lms-stat-icon--purple {
+        background: #3b0764;
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <div id="app">
-        <header class="glass-header">
-            <div class="header-container">
-                <div class="logo-container">
-                    <a href="https://mystudentclub.com/profile">
-                        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo"
-                            class="logo-enhanced">
-                    </a>
-                </div>
-                <nav>
-                    <div class="hamburger-menu" @click="toggleMenu">
-                        <div class="bar"></div>
-                        <div class="bar"></div>
-                        <div class="bar"></div>
-                    </div>
-                    <ul class="nav-links" :class="{ 'active': menuActive }">
-                        <li><a href="index.html" class="active nav-item">
-                                <i class="fas fa-graduation-cap"></i>
-                                <span>My Courses</span>
-                            </a></li>
-                        <li><a href="lms-resources.html" class="nav-item">
-                                <i class="fas fa-book-open"></i>
-                                <span>Resources</span>
-                            </a></li>
-                        <li><a href="https://mystudentclub.com/cv-reviewer/" class="nav-item">
-                                <i class="fas fa-file-alt"></i>
-                                <span>CV Review</span>
-                            </a></li>
+      <!-- HEADER -->
+      <header class="app-header" id="appHeader">
+        <div class="header-left">
+          <a href="\index.html">
+            <svg
+              class="header-logo"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 207 223"
+              fill="none"
+              aria-label="My Student Club"
+            >
+              <path
+                d="m188.4 49.73-72.25-41.61c-9.06-5.29-18.21-4.74-26.19 0l-70.9 40.81c-7.32 4.03-10.97 11.88-10.97 19.86v14.89c2.12-1.59 4.37-1.94 6.61-1.87 2.38 0.08 4.05 0.7 5.79 1.95v-14.58c0-4.34 1.26-6.8 5.52-9.26l71.93-41.41c4.95-2.85 9.07-1.13 12.08 0.83l70.98 40.74c3.8 2.14 5.39 4.6 5.39 9.1v14.58c2.12-1.33 3.53-1.95 5.99-1.95 2.78-0.07 5.03 0.55 7.35 2.14v-15.16c0-7.78-4.5-15.18-11.33-19.06z"
+                fill="url(#msc-g0)"
+              />
+              <path
+                d="m199.7 128.3-2.24 3.32c-6.68 8.36-7.65 15.35-5.97 24.32 1.1 5.85 1.72 10.43-0.31 15.01 5.85-4.19 8.52-11.51 8.52-16.78v-25.87z"
+                fill="url(#msc-g1)"
+              />
+              <path
+                d="m8.12 127.8v26.34c0 6.72 2.93 13.52 8.79 17.94-1.95-4.73-1.49-9.15-0.23-16.09 1.59-9.05-1.04-17.8-6.52-24.4l-2.04-2.77v-1.02z"
+                fill="url(#msc-g2)"
+              />
+              <path
+                d="m199.4 90.46c-1.59-4.03-2.84-5.99-6.18-5.99-4.8 0-7.34 4.5-5.83 8.99 2.17 6.23 2.47 8.69 1.94 14.2-1.47 8.82-6.66 18.11-17.62 21.91-2.58 0.94-3.04 3.16-2.35 5.84l5.33 25.6c0.38 1.63-2.02 5.66-3.13 6.4-1.59 0-4.85-4.5-4.85-4.5v-24.19c0-3.7-1.05-6.46-4.31-6.84-6.61-0.74-15.44-1.91-20.77-0.5-2.46 0.65-2.92 9.09-2.15 15.69 1.18 7.02 4.44 20.34 3.74 29.02-0.85 9.05-4.51 14.56-10.36 17.88l-20.69 12.44c-5.56 3.32-12.96 2.93-18.29 0l-20.14-11.65c-6.68-3.32-9.14-8.44-9.14-19.69 0-8.06 3.11-18.67 3.49-24.9 0.94-11.41-2.56-18.45-5.82-18.83-5.41-0.66-10.36 0.27-17.26 0.42-3.5 0.08-4.94 2.12-4.94 6.61v24.19c0 1.17-3.66 5.51-4.6 5.36-1.59-0.31-3.76-4.42-3.69-5.08l5.93-25.53c0.77-2.84-0.08-5.43-3.01-6.25-10.49-3.24-17.17-13.07-17.24-23.4-0.08-5.51 1.65-9.75 2.7-13.85 1.18-4.49-2.4-9.07-6.44-9.07-3.81 0-5.42 1.69-7.01 6.27-5.11 12.13-3.45 26.9 3.71 37.71 7.26 9.37 8.85 15.9 7.11 27.52-1.82 9.13-1.36 15.78 5.9 19.81l67.46 38.73c7.82 4.03 16.03 3.29 23.51-0.59l69.51-38.41c6.34-3.33 6.15-11.62 4.35-19.54-2.24-10.41 0.31-18.26 6.99-27.09 7.48-10.1 8.73-24.38 4.15-38.69z"
+                fill="url(#msc-g3)"
+              />
+              <path
+                d="m43.26 104.1c-6.92 0-10.8 5.82-10.8 10.74 0 6.78 5.26 10.98 10.8 10.98 6.49 0 10.83-5.59 10.83-10.98 0-5.97-4.88-10.74-10.83-10.74z"
+                fill="url(#msc-g4)"
+              />
+              <path
+                d="m163.5 104.1c-7.4 0-11.05 6.23-11.05 10.74 0 6.39 5.25 10.98 10.66 10.98 6.99 0 11.33-5.59 11.33-10.98 0-5.97-5.07-10.74-10.94-10.74z"
+                fill="url(#msc-g5)"
+              />
+              <path
+                d="m103.4 76.34c-9.14-0.31-14.92 7.54-14.92 14.67 0 8.52 7.26 14.75 14.61 14.75 9.14 0 15-7.85 15-14.75 0-7.85-6.68-14.67-14.69-14.67z"
+                fill="#0077BF"
+              />
+              <path
+                d="m150.7 59.61c-2.11-4.19-4.78-4.85-8.04-4.85-6.6 0-9.54 6.25-7.8 11.37 2.86 6.56 3.55 11.05 3.09 18.06-1.39 13.72-12.85 26.7-28.26 29.94-2.46 0.31-3.4 1.94-4.66 4.25-0.54 0.94-0.31 0.71-0.38 1.88 1.41 14 6.49 46.02 7.1 52.58 0.15 1.02-6.68 9.23-6.68 9.23-1.59 1.31-3.08 0.47-4.11-1.06-1.87-2.15-6.01-6.64-6.24-7.58l6.92-52.52c-0.31-2.05-3.65-6.16-5.24-6.47-14.28-2.13-26.41-15.22-27.46-30.25-0.45-6.23 1.05-11.15 3.51-17.04 2.17-5.87-1.71-12.1-8.61-12.1-4.58 0-6.83 2.13-8.42 5.76-7.73 15.45-6.79 34.9 4.52 49.92 8.78 10.81 12.51 21.96 11.97 35.68-0.45 9.6-4.44 18.8-3.12 30.66 0.94 6.55 3.12 10.51 8.37 12.89l18.54 10.81c5.41 2.93 11.53 2.19 16.5-1.13l18.46-10.49c6.68-3.32 8.27-12.08 7.02-20.84-1.49-9.6-3.23-16.6-2.85-24.38 0.61-10.81 4.56-21.62 13.11-33.27 10.48-15.03 10.03-31.6 2.76-51.05z"
+                fill="#0077BF"
+              />
+              <defs>
+                <linearGradient
+                  id="msc-g0"
+                  x1="18.89"
+                  x2="184.3"
+                  y1="17.93"
+                  y2="75.88"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#94ADB9" />
+                  <stop offset="1" stop-color="#889CA7" />
+                </linearGradient>
+                <linearGradient
+                  id="msc-g1"
+                  x1="193.3"
+                  x2="199.8"
+                  y1="133.1"
+                  y2="166.8"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#889CA7" />
+                  <stop offset="1" stop-color="#A4B5BE" />
+                </linearGradient>
+                <linearGradient
+                  id="msc-g2"
+                  x1="8.119"
+                  x2="16.14"
+                  y1="132.7"
+                  y2="169.1"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#738A98" />
+                  <stop offset="1" stop-color="#A4B5BE" />
+                </linearGradient>
+                <linearGradient
+                  id="msc-g3"
+                  x1="8.087"
+                  x2="199.9"
+                  y1="101.3"
+                  y2="170.5"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#557484" />
+                  <stop offset="1" stop-color="#6E8793" />
+                </linearGradient>
+                <linearGradient
+                  id="msc-g4"
+                  x1="32.46"
+                  x2="53.29"
+                  y1="104.1"
+                  y2="125.2"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#557484" />
+                  <stop offset="1" stop-color="#627D8B" />
+                </linearGradient>
+                <linearGradient
+                  id="msc-g5"
+                  x1="152.4"
+                  x2="173.8"
+                  y1="104.1"
+                  y2="125.7"
+                  gradientUnits="userSpaceOnUse"
+                >
+                  <stop stop-color="#557484" />
+                  <stop offset="1" stop-color="#627D8B" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </a>
+          <div class="header-greeting">
+            <span class="greeting-sub">Welcome!</span>
+            <span class="greeting-name" id="lmsGreetingName">Student</span>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button
+            class="hdr-icon-btn"
+            id="themeToggleBtn"
+            aria-label="Toggle theme"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="12" cy="12" r="5" />
+              <line x1="12" y1="1" x2="12" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="23" />
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+              <line x1="1" y1="12" x2="3" y2="12" />
+              <line x1="21" y1="12" x2="23" y2="12" />
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+            </svg>
+          </button>
+          <button class="hdr-icon-btn" id="lmsMenuBtn" aria-label="Menu" onclick="document.getElementById('lmsExpandedMenu').classList.add('active')">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </header>
 
-                        <li class="profile-link profile-dropdown-container">
-                            <a href="#" class="nav-item profile-nav" @click.prevent>
-                                <div class="profile-avatar">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <span v-if="user">{{ getUserName() }}</span>
-                                <span v-else>Login</span>
-                            </a>
-                            <div class="profile-dropdown-menu" v-if="user">
-                                <div class="profile-header">
-                                    <span class="profile-name">{{ getUserName() }}</span>
-                                    <span class="profile-email">{{ user.email }}</span>
-                                </div>
-                                <a href="https://mystudentclub.com/profile" class="dropdown-item">
-                                    <i class="fas fa-user-circle"></i> My Profile
-                                </a>
-                                <button class="dropdown-item" @click="openReportModal">
-                                    <i class="fas fa-bug"></i> Report a Problem
-                                </button>
-                                <button class="dropdown-item" @click="logout">
-                                    <i class="fas fa-sign-out-alt"></i> Logout
-                                </button>
-                            </div>
-                        </li>
-                    </ul>
-                </nav>
-            </div>
-        </header>
+      <!-- SIDE MENU -->
+      <div class="expanded-menu" id="lmsExpandedMenu">
+        <button
+          class="hdr-icon-btn menu-close-btn"
+          id="lmsMenuCloseBtn"
+          aria-label="Close menu"
+          onclick="document.getElementById('lmsExpandedMenu').classList.remove('active')"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+        <div class="menu-items-container">
+          <a href="/learning-management-system/index.html" class="menu-item"
+            >My Courses</a
+          >
+          <a
+            href="/learning-management-system/lms-resources.html"
+            class="menu-item"
+            >Resources</a
+          >
+          <a href="/cv-reviewer.html" class="menu-item"
+            >CV Review</a
+          >
+          <a href="/profile.html" class="menu-item"
+            >My Profile</a
+          >
+          <button class="menu-item" @click="openReportModal">
+            Report a Problem
+          </button>
+          <button id="lmsLogoutMenuBtn" class="menu-item menu-item--danger">
+            Logout
+          </button>
+        </div>
+      </div>
+      <div class="lms-menu-overlay" id="lmsMenuOverlay"></div>
 
-        <main>
-            <section class="hero-enhanced">
-                <div class="hero-content">
-                    <h1 class="hero-title">
-                        Welcome Back, <span class="gradient-text">{{ getUserName() }}</span>
-                    </h1>
-                    <p class="hero-subtitle">Your journey to CA excellence continues here. Track your progress and
-                        master your skills.</p>
-                    <div class="search-enhanced">
-                        <div class="search-wrapper">
-                            <i class="fas fa-search search-icon"></i>
-                            <input type="text" placeholder="Search your enrolled courses..." v-model="searchQuery"
-                                class="search-input">
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <div v-if="loading" class="loading-container">
-                <i class="fas fa-spinner fa-spin fa-3x" style="color: var(--primary-500); margin-bottom: 1rem;"></i>
-                <p>Loading your dashboard...</p>
-            </div>
-
-            <section v-else-if="enrolledCourses.length === 0" class="progress-dashboard">
-                <div class="section-container" style="text-align: center;">
-                    <i class="fas fa-folder-open fa-4x" style="color: #cbd5e1; margin-bottom: 1rem;"></i>
-                    <h2>No Enrolled Courses Found</h2>
-                    <p>It looks like you haven't enrolled in any courses yet.</p>
-                    <a href="https://www.mystudentclub.com/#courses" class="enroll-btn"
-                        style="display: inline-flex; margin-top: 1rem;">
-                        Browse Courses
-                    </a>
-                </div>
-            </section>
-
-            <section v-else class="courses-section-enhanced">
-                <div class="section-container">
-                    <div class="section-header-enhanced"
-                        style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <h2>My Learning Path</h2>
-                            <p style="margin-bottom: 0;">Pick up where you left off</p>
-                        </div>
-
-                        <div class="view-controls" style="margin-top: 0;">
-                            <div class="view-toggle">
-                                <button class="view-btn" :class="{ 'active': viewMode === 'grid' }"
-                                    @click="viewMode = 'grid'">
-                                    <i class="fas fa-th-large"></i>
-                                </button>
-                                <button class="view-btn" :class="{ 'active': viewMode === 'list' }"
-                                    @click="viewMode = 'list'">
-                                    <i class="fas fa-list"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="courses-container" :class="'view-' + viewMode">
-                        <div v-for="course in filteredEnrolledCourses" :key="course.id"
-                            class="course-card-enhanced-premium" @click="goToCourse(course.slug)">
-                            <div class="course-image-premium">
-                                <img :src="course.thumbnail" :alt="course.title">
-                                <div class="course-overlay-premium">
-                                    <div class="premium-badge">
-                                        <i class="fas fa-check-circle"></i> Enrolled
-                                    </div>
-                                    <button class="play-btn-premium">
-                                        <div class="play-icon"><i class="fas fa-play"></i></div>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="course-content-premium">
-                                <div class="course-header-premium">
-                                    <h3>{{ course.title }}</h3>
-                                </div>
-                                <p class="course-description">{{ course.description }}</p>
-
-                                <div class="course-progress-container-premium">
-                                    <div class="progress-info-row">
-                                        <span class="progress-label">Progress</span>
-                                        <span class="progress-percentage">{{ course.calculatedProgress }}%</span>
-                                    </div>
-                                    <div class="progress-bar-premium">
-                                        <div class="progress-fill-animated"
-                                            :style="{ width: course.calculatedProgress + '%' }"></div>
-                                    </div>
-                                </div>
-
-                                <div class="course-footer-premium">
-                                    <div class="instructor">
-                                        <img src="https://mystudentclub.com/assets/mentor_transparent.png"
-                                            alt="Padam Bhansali">
-                                        <span>Padam Bhansali</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="analytics-section" v-if="enrolledCourses.length > 0">
-                <div class="section-container">
-                    <div class="section-header-enhanced">
-                        <h2>Your Achievement Stats</h2>
-                    </div>
-                    <div class="analytics-grid">
-                        <div class="analytics-card">
-                            <div class="analytics-icon" style="background: linear-gradient(135deg, #2563eb, #3b82f6);">
-                                <i class="fas fa-book-open"></i></div>
-                            <div class="analytics-content">
-                                <h4>Active Courses</h4>
-                                <div class="analytics-value">{{ enrolledCourses.length }}</div>
-                                <p>Currently enrolled</p>
-                            </div>
-                        </div>
-                        <div class="analytics-card">
-                            <div class="analytics-icon" style="background: linear-gradient(135deg, #059669, #10b981);">
-                                <i class="fas fa-play-circle"></i></div>
-                            <div class="analytics-content">
-                                <h4>Videos Completed</h4>
-                                <div class="analytics-value">{{ analytics.totalVideosCompleted }}</div>
-                                <p>Total videos watched</p>
-                            </div>
-                        </div>
-                        <div class="analytics-card">
-                            <div class="analytics-icon" style="background: linear-gradient(135deg, #d97706, #f59e0b);">
-                                <i class="fas fa-fire"></i></div>
-                            <div class="analytics-content">
-                                <h4>Learning Streak</h4>
-                                <div class="analytics-value">{{ analytics.streak }} Days</div>
-                                <p>Keep the momentum going!</p>
-                            </div>
-                        </div>
-                        <div class="analytics-card">
-                            <div class="analytics-icon" style="background: linear-gradient(135deg, #7c3aed, #8b5cf6);">
-                                <i class="fas fa-trophy"></i></div>
-                            <div class="analytics-content">
-                                <h4>Completion Rate</h4>
-                                <div class="analytics-value">{{ analytics.completionRate }}%</div>
-                                <p>Average across all courses</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <div v-if="showReportModal" class="modal-overlay" @click.self="showReportModal = false">
-            <div class="modal-content">
-                <h2>Report a Problem</h2>
-                <p style="color: #64748b; font-size: 0.9rem;">Describe the issue you are facing. We will look into it
-                    shortly.</p>
-                <div class="report-form">
-                    <textarea v-model="reportText" placeholder="E.g., The video on Day 2 isn't loading..."></textarea>
-                </div>
-                <div class="modal-actions">
-                    <button class="btn-cancel" @click="showReportModal = false">Cancel</button>
-                    <button class="btn-submit" @click="submitReport">Submit Report</button>
-                </div>
-            </div>
+      <main class="lms-content-pad">
+        <!-- Hero -->
+        <div class="lms-hero">
+          <h1>My Learning Path</h1>
+          <p>Pick up where you left off</p>
         </div>
 
-        <footer class="footer-enhanced">
-            <div class="footer-content">
-                <div class="footer-main">
-                    <div class="footer-brand">
-                        <a href="https://mystudentclub.com">
-                            <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo"
-                                class="logo-enhanced">
-                        </a>
-                        <p>Empowering the next generation of Chartered Accountants with world-class education and
-                            resources.</p>
-                        <div class="social-links">
-                            <a href="https://www.linkedin.com/company/mystudentclub" target="_blank"><i
-                                    class="fab fa-linkedin"></i></a>
-                            <a href="https://www.instagram.com/my_student_club/" target="_blank"><i
-                                    class="fab fa-instagram"></i></a>
-                            <a href="https://www.youtube.com/@capadambhansali" target="_blank"><i
-                                    class="fab fa-youtube"></i></a>
-                        </div>
-                    </div>
-                    <div class="footer-links">
-                        <div class="footer-column">
-                            <h5>Learning</h5>
-                            <ul>
-                                <li><a href="index.html">My Dashboard</a></li>
-                                <li><a href="lms-resources.html">Resources Hub</a></li>
-                                <li><a href="https://mystudentclub.com/cv-reviewer/">CV Review</a></li>
-                            </ul>
-                        </div>
-                        <div class="footer-column">
-                            <h5>Support</h5>
-                            <ul>
-                                <li><a href="mailto:padam@mystudentclub.com">Contact Us</a></li>
-                                <li><a href="https://mystudentclub.com/privacy-policy">Privacy Policy</a></li>
-                                <li><a
-                                        href="https://www.mystudentclub.com/ca-industrial-training-program/terms-and-conditions">Terms
-                                        of Service</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+        <!-- Search -->
+        <div class="lms-search">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+          <input
+            type="text"
+            placeholder="Search your enrolled courses..."
+            v-model="searchQuery"
+          />
+        </div>
+
+        <!-- Stats strip -->
+        <div
+          class="lms-stats-row"
+          v-if="!loading && enrolledCourses.length > 0"
+        >
+          <div class="lms-stat-chip">
+            <div class="lms-stat-icon lms-stat-icon--blue">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#2563eb"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                <path d="M6 12v5c3 3 9 3 12 0v-5" />
+              </svg>
             </div>
-            <div class="footer-bottom">
-                <p>© 2025 My Student Club LMS. All rights reserved.</p>
+            <div class="lms-stat-num" style="color: var(--brand)">
+              {{ enrolledCourses.length }}
             </div>
-        </footer>
+            <div class="lms-stat-label">Active Courses</div>
+          </div>
+          <div class="lms-stat-chip">
+            <div class="lms-stat-icon lms-stat-icon--green">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#059669"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polygon points="23 7 16 12 23 17 23 7" />
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+              </svg>
+            </div>
+            <div class="lms-stat-num" style="color: #059669">
+              {{ analytics.totalVideosCompleted }}
+            </div>
+            <div class="lms-stat-label">Videos Done</div>
+          </div>
+          <div class="lms-stat-chip">
+            <div class="lms-stat-icon lms-stat-icon--amber">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#d97706"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+            <div class="lms-stat-num" style="color: #d97706">
+              {{ analytics.streak }}
+            </div>
+            <div class="lms-stat-label">Day Streak</div>
+          </div>
+          <div class="lms-stat-chip">
+            <div class="lms-stat-icon lms-stat-icon--purple">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#7c3aed"
+                stroke-width="2.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            </div>
+            <div class="lms-stat-num" style="color: #7c3aed">
+              {{ analytics.completionRate }}%
+            </div>
+            <div class="lms-stat-label">Completion</div>
+          </div>
+        </div>
+
+        <!-- Loading -->
+        <div v-if="loading" class="lms-center">
+          <i
+            class="fas fa-spinner fa-spin"
+            style="
+              font-size: 32px;
+              color: var(--brand);
+              margin-bottom: 12px;
+              display: block;
+            "
+          ></i>
+          Loading your dashboard…
+        </div>
+
+        <!-- Empty state -->
+        <div v-else-if="enrolledCourses.length === 0" class="lms-center">
+          <div class="lms-empty-icon">📚</div>
+          <div class="lms-empty-title">No Enrolled Courses Yet</div>
+          <p>Browse our courses to start learning.</p>
+          <a
+            href="https://www.mystudentclub.com/#courses"
+            class="lms-empty-link"
+            >Browse Courses</a
+          >
+        </div>
+
+        <!-- Course cards -->
+        <div v-else class="lms-cards-area">
+          <div
+            class="lms-course-card"
+            v-for="course in filteredEnrolledCourses"
+            :key="course.id"
+          >
+            <img :src="course.thumbnail" :alt="course.title" loading="lazy" />
+            <div class="lms-card-body">
+              <div class="lms-card-title">{{ course.title }}</div>
+              <div class="lms-card-desc">{{ course.description }}</div>
+              <div class="lms-progress-row">
+                <span>Progress</span>
+                <span class="lms-progress-pct"
+                  >{{ course.calculatedProgress }}%</span
+                >
+              </div>
+              <div class="lms-progress-bar-track">
+                <div
+                  class="lms-progress-bar-fill"
+                  :style="{ width: course.calculatedProgress + '%' }"
+                ></div>
+              </div>
+              <button class="lms-btn-primary" @click="goToCourse(course.slug)">
+                Continue →
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Report modal -->
+      <div
+        v-if="showReportModal"
+        class="lms-modal-overlay"
+        @click.self="showReportModal = false"
+      >
+        <div class="lms-modal">
+          <h3>Report a Problem</h3>
+          <textarea
+            v-model="reportText"
+            placeholder="E.g., The video on Day 2 isn't loading..."
+          ></textarea>
+          <div class="lms-modal-actions">
+            <button class="lms-btn-secondary" @click="showReportModal = false">
+              Cancel
+            </button>
+            <button class="lms-btn-danger" @click="submitReport">
+              Submit Report
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
-
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <div class="bottom-nav-inner">
+        <a
+          href="/learning-management-system/index.html"
+          class="bnav-item active"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+            <path d="M6 12v5c3 3 9 3 12 0v-5" />
+          </svg>
+          <span>My Courses</span>
+        </a>
+        <a
+          href="/learning-management-system/lms-resources.html"
+          class="bnav-item"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path
+              d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+            />
+          </svg>
+          <span>Resources</span>
+        </a>
+        <a href="https://mystudentclub.com/cv-reviewer/" class="bnav-item">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+            />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+          </svg>
+          <span>CV Review</span>
+        </a>
+        <a href="/profile.html" class="bnav-item">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          <span>Profile</span>
+        </a>
+      </div>
+    </nav>
 
     <script type="module">
-        import { createApp } from 'vue';
+      import { createApp } from "vue";
 
-        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+      const supabaseUrl = "https://izsggdtdiacxdsjjncdq.supabase.co";
+      const supabaseKey =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0";
+      const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-        const MAX_ERRORS = 6;
-        let errorCount = 0;
+      const MAX_ERRORS = 6;
+      let errorCount = 0;
 
-        window.onerror = function (message, source, lineno, colno, error) {
-            if (errorCount < MAX_ERRORS) {
-                logFrontendError(message, source, lineno, colno, error ? error.stack : null);
-                errorCount++;
-            }
-        };
-
-        async function logFrontendError(message, source, lineno, colno, stack) {
-            try {
-                const { data: { session } } = await supabase.auth.getSession();
-                const userId = session?.user?.id || null;
-
-                await supabase.from('frontend_errors').insert({
-                    user_id: userId,
-                    error_message: message,
-                    stack_trace: stack || `${source}:${lineno}:${colno}`,
-                    url: window.location.href,
-                    user_agent: navigator.userAgent
-                });
-            } catch (e) {
-                console.warn("Failed to log error to Supabase", e);
-            }
+      window.onerror = function (message, source, lineno, colno, error) {
+        if (errorCount < MAX_ERRORS) {
+          logFrontendError(
+            message,
+            source,
+            lineno,
+            colno,
+            error ? error.stack : null,
+          );
+          errorCount++;
         }
+      };
 
-        createApp({
-            data() {
-                return {
-                    menuActive: false,
-                    searchQuery: '',
-                    viewMode: 'list',
-                    user: null,
-                    loading: true,
-                    showReportModal: false,
-                    reportText: '',
-                    masterCatalog: [
-                        {
-                            id: 1,
-                            slug: 'industrial-training-mastery',
-                            title: 'MSC Industrial Training Program',
-                            description: 'Master industrial training requirements for CA candidates with real-world case studies.',
-                            thumbnail: '../assets/courseimg-industrial.png',
-                            videoCountEstimate: 7
-                        },
-                        {
-                            id: 2,
-                            slug: 'msc-ca-freshers-program',
-                            title: 'MSC CA Freshers Program',
-                            description: 'A comprehensive program for CA freshers to kickstart their career.',
-                            thumbnail: '../assets/courseimg-fresher.png',
-                            videoCountEstimate: 7
-                        }
-                    ],
-                    enrolledCourses: [],
-                    analytics: {
-                        totalVideosCompleted: 0,
-                        streak: 0,
-                        completionRate: 0
-                    }
-                }
+      async function logFrontendError(message, source, lineno, colno, stack) {
+        try {
+          const {
+            data: { session },
+          } = await supabase.auth.getSession();
+          const userId = session?.user?.id || null;
+
+          await supabase.from("frontend_errors").insert({
+            user_id: userId,
+            error_message: message,
+            stack_trace: stack || `${source}:${lineno}:${colno}`,
+            url: window.location.href,
+            user_agent: navigator.userAgent,
+          });
+        } catch (e) {
+          console.warn("Failed to log error to Supabase", e);
+        }
+      }
+
+      createApp({
+        data() {
+          return {
+            menuActive: false,
+            searchQuery: "",
+            viewMode: "list",
+            user: null,
+            loading: true,
+            showReportModal: false,
+            reportText: "",
+            masterCatalog: [
+              {
+                id: 1,
+                slug: "industrial-training-mastery",
+                title: "MSC Industrial Training Program",
+                description:
+                  "Master industrial training requirements for CA candidates with real-world case studies.",
+                thumbnail: "../assets/courseimg-industrial.png",
+                videoCountEstimate: 7,
+              },
+              {
+                id: 2,
+                slug: "msc-ca-freshers-program",
+                title: "MSC CA Freshers Program",
+                description:
+                  "A comprehensive program for CA freshers to kickstart their career.",
+                thumbnail: "../assets/courseimg-fresher.png",
+                videoCountEstimate: 7,
+              },
+            ],
+            enrolledCourses: [],
+            analytics: {
+              totalVideosCompleted: 0,
+              streak: 0,
+              completionRate: 0,
             },
-            computed: {
-                filteredEnrolledCourses() {
-                    if (!this.searchQuery) return this.enrolledCourses;
-                    return this.enrolledCourses.filter(course =>
-                        course.title.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                        course.description.toLowerCase().includes(this.searchQuery.toLowerCase())
-                    );
-                }
-            },
-            methods: {
-                toggleMenu() {
-                    this.menuActive = !this.menuActive;
-                },
+          };
+        },
+        computed: {
+          filteredEnrolledCourses() {
+            if (!this.searchQuery) return this.enrolledCourses;
+            return this.enrolledCourses.filter(
+              (course) =>
+                course.title
+                  .toLowerCase()
+                  .includes(this.searchQuery.toLowerCase()) ||
+                course.description
+                  .toLowerCase()
+                  .includes(this.searchQuery.toLowerCase()),
+            );
+          },
+        },
+        methods: {
+          toggleMenu() {
+            this.menuActive = !this.menuActive;
+          },
 
-                async checkAuth() {
-                    const { data: { session }, error } = await supabase.auth.getSession();
-                    if (session && session.user) {
-                        this.user = session.user;
-                        await this.fetchUserEnrollments();
-                    } else {
-                        window.location.href = 'https://www.mystudentclub.com/login';
-                    }
-                },
-
-                getUserName() {
-                    if (!this.user) return 'Student';
-                    return this.user.user_metadata?.full_name || this.user.email.split('@')[0];
-                },
-
-                async logout() {
-                    await supabase.auth.signOut();
-                    window.location.href = 'https://www.mystudentclub.com/login';
-                },
-
-                openReportModal() {
-                    this.showReportModal = true;
-                },
-
-                async submitReport() {
-                    if (!this.reportText.trim()) return;
-                    try {
-                        const { error } = await supabase.from('course_reports').insert({
-                            user_id: this.user.id,
-                            description: this.reportText,
-                            page_url: window.location.href,
-                            course_slug: 'dashboard'
-                        });
-                        if (error) throw error;
-                        alert('Report submitted successfully.');
-                        this.showReportModal = false;
-                        this.reportText = '';
-                    } catch (e) {
-                        alert('Error submitting report. Please try again.');
-                        console.error(e);
-                    }
-                },
-
-                async fetchUserEnrollments() {
-                    try {
-                        const { data: enrollments, error } = await supabase
-                            .from('enrollment')
-                            .select('course')
-                            .eq('uuid', this.user.id);
-
-                        if (error) throw error;
-
-                        if (!enrollments || enrollments.length === 0) {
-                            this.enrolledCourses = [];
-                            this.loading = false;
-                            return;
-                        }
-
-                        const enrolledSlugs = enrollments.map(e => e.course);
-
-                        this.enrolledCourses = this.masterCatalog
-                            .filter(course => enrolledSlugs.includes(course.slug))
-                            .map(course => {
-                                const progress = this.calculateCourseProgress(course.slug, course.videoCountEstimate);
-                                return {
-                                    ...course,
-                                    calculatedProgress: progress.percentage,
-                                    completedVideos: progress.completed
-                                };
-                            });
-
-                        this.updateGlobalAnalytics();
-
-                    } catch (err) {
-                        console.error("Error loading dashboard:", err);
-                        logFrontendError(err.message, 'index.html', 0, 0, err.stack);
-                    } finally {
-                        this.loading = false;
-                    }
-                },
-
-                calculateCourseProgress(slug, totalEstimate) {
-                    const storageKey = `courseVideos_${slug}`;
-                    const storedData = localStorage.getItem(storageKey);
-
-                    let completed = 0;
-                    if (storedData) {
-                        try {
-                            const videoMap = JSON.parse(storedData);
-                            completed = Object.values(videoMap).filter(val => val === true).length;
-                        } catch (e) { console.error("LS parse error", e); }
-                    }
-
-                    const percentage = totalEstimate > 0 ? Math.round((completed / totalEstimate) * 100) : 0;
-
-                    return {
-                        completed: completed,
-                        percentage: Math.min(percentage, 100)
-                    };
-                },
-
-                updateGlobalAnalytics() {
-                    let totalVideos = 0;
-                    let sumProgress = 0;
-
-                    this.enrolledCourses.forEach(c => {
-                        totalVideos += c.completedVideos;
-                        sumProgress += c.calculatedProgress;
-                    });
-
-                    this.analytics.totalVideosCompleted = totalVideos;
-                    this.analytics.completionRate = this.enrolledCourses.length > 0
-                        ? Math.round(sumProgress / this.enrolledCourses.length)
-                        : 0;
-
-                    const streak = localStorage.getItem('learningStreak');
-                    this.analytics.streak = streak ? parseInt(streak) : 0;
-                },
-
-                goToCourse(slug) {
-                    window.location.href = `course.html?course=${slug}`;
-                },
-
-                getFloatingStyle(index) {
-                    return {};
-                }
-            },
-            mounted() {
-                this.checkAuth();
-
-                supabase.auth.onAuthStateChange((event, session) => {
-                    if (event === 'SIGNED_OUT') {
-                        window.location.href = 'https://www.mystudentclub.com/login';
-                    }
-                });
+          async checkAuth() {
+            const {
+              data: { session },
+              error,
+            } = await supabase.auth.getSession();
+            if (session && session.user) {
+              this.user = session.user;
+              window._lmsLogout = async () => {
+                await supabase.auth.signOut();
+                window.location.href = "https://www.mystudentclub.com/login";
+              };
+              if (document.getElementById("lmsGreetingName"))
+                document.getElementById("lmsGreetingName").textContent =
+                  this.getUserName();
+              await this.fetchUserEnrollments();
+            } else {
+              window.location.href = "https://www.mystudentclub.com/login";
             }
-        }).mount('#app');
+          },
+
+          getUserName() {
+            if (!this.user) return "Student";
+            return (
+              this.user.user_metadata?.full_name ||
+              this.user.email.split("@")[0]
+            );
+          },
+
+          async logout() {
+            await supabase.auth.signOut();
+            window.location.href = "https://www.mystudentclub.com/login";
+          },
+
+          openReportModal() {
+            this.showReportModal = true;
+          },
+
+          async submitReport() {
+            if (!this.reportText.trim()) return;
+            try {
+              const { error } = await supabase.from("course_reports").insert({
+                user_id: this.user.id,
+                description: this.reportText,
+                page_url: window.location.href,
+                course_slug: "dashboard",
+              });
+              if (error) throw error;
+              alert("Report submitted successfully.");
+              this.showReportModal = false;
+              this.reportText = "";
+            } catch (e) {
+              alert("Error submitting report. Please try again.");
+              console.error(e);
+            }
+          },
+
+          async fetchUserEnrollments() {
+            try {
+              const { data: enrollments, error } = await supabase
+                .from("enrollment")
+                .select("course")
+                .eq("uuid", this.user.id);
+
+              if (error) throw error;
+
+              if (!enrollments || enrollments.length === 0) {
+                this.enrolledCourses = [];
+                this.loading = false;
+                return;
+              }
+
+              const enrolledSlugs = enrollments.map((e) => e.course);
+
+              this.enrolledCourses = this.masterCatalog
+                .filter((course) => enrolledSlugs.includes(course.slug))
+                .map((course) => {
+                  const progress = this.calculateCourseProgress(
+                    course.slug,
+                    course.videoCountEstimate,
+                  );
+                  return {
+                    ...course,
+                    calculatedProgress: progress.percentage,
+                    completedVideos: progress.completed,
+                  };
+                });
+
+              this.updateGlobalAnalytics();
+            } catch (err) {
+              console.error("Error loading dashboard:", err);
+              logFrontendError(err.message, "index.html", 0, 0, err.stack);
+            } finally {
+              this.loading = false;
+            }
+          },
+
+          calculateCourseProgress(slug, totalEstimate) {
+            const storageKey = `courseVideos_${slug}`;
+            const storedData = localStorage.getItem(storageKey);
+
+            let completed = 0;
+            if (storedData) {
+              try {
+                const videoMap = JSON.parse(storedData);
+                completed = Object.values(videoMap).filter(
+                  (val) => val === true,
+                ).length;
+              } catch (e) {
+                console.error("LS parse error", e);
+              }
+            }
+
+            const percentage =
+              totalEstimate > 0
+                ? Math.round((completed / totalEstimate) * 100)
+                : 0;
+
+            return {
+              completed: completed,
+              percentage: Math.min(percentage, 100),
+            };
+          },
+
+          updateGlobalAnalytics() {
+            let totalVideos = 0;
+            let sumProgress = 0;
+
+            this.enrolledCourses.forEach((c) => {
+              totalVideos += c.completedVideos;
+              sumProgress += c.calculatedProgress;
+            });
+
+            this.analytics.totalVideosCompleted = totalVideos;
+            this.analytics.completionRate =
+              this.enrolledCourses.length > 0
+                ? Math.round(sumProgress / this.enrolledCourses.length)
+                : 0;
+
+            const streak = localStorage.getItem("learningStreak");
+            this.analytics.streak = streak ? parseInt(streak) : 0;
+          },
+
+          goToCourse(slug) {
+            window.location.href = `course.html?course=${slug}`;
+          },
+
+          getFloatingStyle(index) {
+            return {};
+          },
+        },
+        mounted() {
+          this.checkAuth();
+
+          supabase.auth.onAuthStateChange((event, session) => {
+            if (event === "SIGNED_OUT") {
+              window.location.href = "https://www.mystudentclub.com/login";
+            }
+          });
+        },
+      }).mount("#app");
     </script>
 
-
-</body>
-
+    <script src="/learning-management-system/lms-portal.js"></script>
+  </body>
 </html>

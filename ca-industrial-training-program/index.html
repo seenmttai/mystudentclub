@@ -1,67 +1,245 @@
-﻿<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta charset="UTF-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+/>
 <title>MSC CA Industrial Training Program</title>
-<link rel="icon" type="image/png" href="https://mystudentclub.pages.dev/assets/icon-70x70.png">
-<link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="sections.css">
-<link rel="stylesheet" href="footer.css">
+<link
+  rel="icon"
+  type="image/png"
+  href="https://mystudentclub.pages.dev/assets/icon-70x70.png"
+/>
+<link rel="stylesheet" href="style.css" />
+<link rel="stylesheet" href="sections.css" />
+<link rel="stylesheet" href="footer.css" />
 <link
   href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Noto+Sans:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap"
-  rel="stylesheet">
+  rel="stylesheet"
+/>
 <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="/scripts/portal-style.css">
+<link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+/>
+<link rel="stylesheet" href="header.css" />
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <!-- Firebase for push notifications -->
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
 
-
-
-<header class="site-header">
-  <div class="header-container">
-    <a href="/" class="brand-link">
-      <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
-    </a>
-    <div class="header-actions">
-      <div class="auth-buttons-container"></div>
-      <button class="menu-button-style" aria-label="Open menu" id="menuButton">
-        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-      </button>
+<header class="app-header" id="appHeader">
+  <a href="/" class="header-left" aria-label="My Student Club — Home">
+    <svg
+      class="header-logo"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 207 223"
+      fill="none"
+      aria-label="My Student Club"
+    >
+      <path
+        d="m188.4 49.73-72.25-41.61c-9.06-5.29-18.21-4.74-26.19 0l-70.9 40.81c-7.32 4.03-10.97 11.88-10.97 19.86v14.89c2.12-1.59 4.37-1.94 6.61-1.87 2.38 0.08 4.05 0.7 5.79 1.95v-14.58c0-4.34 1.26-6.8 5.52-9.26l71.93-41.41c4.95-2.85 9.07-1.13 12.08 0.83l70.98 40.74c3.8 2.14 5.39 4.6 5.39 9.1v14.58c2.12-1.33 3.53-1.95 5.99-1.95 2.78-0.07 5.03 0.55 7.35 2.14v-15.16c0-7.78-4.5-15.18-11.33-19.06z"
+        fill="url(#msc-g0)"
+      />
+      <path
+        d="m199.7 128.3-2.24 3.32c-6.68 8.36-7.65 15.35-5.97 24.32 1.1 5.85 1.72 10.43-0.31 15.01 5.85-4.19 8.52-11.51 8.52-16.78v-25.87z"
+        fill="url(#msc-g1)"
+      />
+      <path
+        d="m8.12 127.8v26.34c0 6.72 2.93 13.52 8.79 17.94-1.95-4.73-1.49-9.15-0.23-16.09 1.59-9.05-1.04-17.8-6.52-24.4l-2.04-2.77v-1.02z"
+        fill="url(#msc-g2)"
+      />
+      <path
+        d="m199.4 90.46c-1.59-4.03-2.84-5.99-6.18-5.99-4.8 0-7.34 4.5-5.83 8.99 2.17 6.23 2.47 8.69 1.94 14.2-1.47 8.82-6.66 18.11-17.62 21.91-2.58 0.94-3.04 3.16-2.35 5.84l5.33 25.6c0.38 1.63-2.02 5.66-3.13 6.4-1.59 0-4.85-4.5-4.85-4.5v-24.19c0-3.7-1.05-6.46-4.31-6.84-6.61-0.74-15.44-1.91-20.77-0.5-2.46 0.65-2.92 9.09-2.15 15.69 1.18 7.02 4.44 20.34 3.74 29.02-0.85 9.05-4.51 14.56-10.36 17.88l-20.69 12.44c-5.56 3.32-12.96 2.93-18.29 0l-20.14-11.65c-6.68-3.32-9.14-8.44-9.14-19.69 0-8.06 3.11-18.67 3.49-24.9 0.94-11.41-2.56-18.45-5.82-18.83-5.41-0.66-10.36 0.27-17.26 0.42-3.5 0.08-4.94 2.12-4.94 6.61v24.19c0 1.17-3.66 5.51-4.6 5.36-1.59-0.31-3.76-4.42-3.69-5.08l5.93-25.53c0.77-2.84-0.08-5.43-3.01-6.25-10.49-3.24-17.17-13.07-17.24-23.4-0.08-5.51 1.65-9.75 2.7-13.85 1.18-4.49-2.4-9.07-6.44-9.07-3.81 0-5.42 1.69-7.01 6.27-5.11 12.13-3.45 26.9 3.71 37.71 7.26 9.37 8.85 15.9 7.11 27.52-1.82 9.13-1.36 15.78 5.9 19.81l67.46 38.73c7.82 4.03 16.03 3.29 23.51-0.59l69.51-38.41c6.34-3.33 6.15-11.62 4.35-19.54-2.24-10.41 0.31-18.26 6.99-27.09 7.48-10.1 8.73-24.38 4.15-38.69z"
+        fill="url(#msc-g3)"
+      />
+      <path
+        d="m43.26 104.1c-6.92 0-10.8 5.82-10.8 10.74 0 6.78 5.26 10.98 10.8 10.98 6.49 0 10.83-5.59 10.83-10.98 0-5.97-4.88-10.74-10.83-10.74z"
+        fill="url(#msc-g4)"
+      />
+      <path
+        d="m163.5 104.1c-7.4 0-11.05 6.23-11.05 10.74 0 6.39 5.25 10.98 10.66 10.98 6.99 0 11.33-5.59 11.33-10.98 0-5.97-5.07-10.74-10.94-10.74z"
+        fill="url(#msc-g5)"
+      />
+      <path
+        d="m103.4 76.34c-9.14-0.31-14.92 7.54-14.92 14.67 0 8.52 7.26 14.75 14.61 14.75 9.14 0 15-7.85 15-14.75 0-7.85-6.68-14.67-14.69-14.67z"
+        fill="#0077BF"
+      />
+      <path
+        d="m150.7 59.61c-2.11-4.19-4.78-4.85-8.04-4.85-6.6 0-9.54 6.25-7.8 11.37 2.86 6.56 3.55 11.05 3.09 18.06-1.39 13.72-12.85 26.7-28.26 29.94-2.46 0.31-3.4 1.94-4.66 4.25-0.54 0.94-0.31 0.71-0.38 1.88 1.41 14 6.49 46.02 7.1 52.58 0.15 1.02-6.68 9.23-6.68 9.23-1.59 1.31-3.08 0.47-4.11-1.06-1.87-2.15-6.01-6.64-6.24-7.58l6.92-52.52c-0.31-2.05-3.65-6.16-5.24-6.47-14.28-2.13-26.41-15.22-27.46-30.25-0.45-6.23 1.05-11.15 3.51-17.04 2.17-5.87-1.71-12.1-8.61-12.1-4.58 0-6.83 2.13-8.42 5.76-7.73 15.45-6.79 34.9 4.52 49.92 8.78 10.81 12.51 21.96 11.97 35.68-0.45 9.6-4.44 18.8-3.12 30.66 0.94 6.55 3.12 10.51 8.37 12.89l18.54 10.81c5.41 2.93 11.53 2.19 16.5-1.13l18.46-10.49c6.68-3.32 8.27-12.08 7.02-20.84-1.49-9.6-3.23-16.6-2.85-24.38 0.61-10.81 4.56-21.62 13.11-33.27 10.48-15.03 10.03-31.6 2.76-51.05z"
+        fill="#0077BF"
+      />
+      <defs>
+        <linearGradient
+          id="msc-g0"
+          x1="18.89"
+          x2="184.3"
+          y1="17.93"
+          y2="75.88"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#94ADB9" />
+          <stop offset="1" stop-color="#889CA7" />
+        </linearGradient>
+        <linearGradient
+          id="msc-g1"
+          x1="193.3"
+          x2="199.8"
+          y1="133.1"
+          y2="166.8"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#889CA7" />
+          <stop offset="1" stop-color="#A4B5BE" />
+        </linearGradient>
+        <linearGradient
+          id="msc-g2"
+          x1="8.119"
+          x2="16.14"
+          y1="132.7"
+          y2="169.1"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#738A98" />
+          <stop offset="1" stop-color="#A4B5BE" />
+        </linearGradient>
+        <linearGradient
+          id="msc-g3"
+          x1="8.087"
+          x2="199.9"
+          y1="101.3"
+          y2="170.5"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#557484" />
+          <stop offset="1" stop-color="#6E8793" />
+        </linearGradient>
+        <linearGradient
+          id="msc-g4"
+          x1="32.46"
+          x2="53.29"
+          y1="104.1"
+          y2="125.2"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#557484" />
+          <stop offset="1" stop-color="#627D8B" />
+        </linearGradient>
+        <linearGradient
+          id="msc-g5"
+          x1="152.4"
+          x2="173.8"
+          y1="104.1"
+          y2="125.7"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stop-color="#557484" />
+          <stop offset="1" stop-color="#627D8B" />
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="header-greeting">
+      <div class="greeting-sub">MSC</div>
+      <div class="greeting-name">Industrial Program</div>
     </div>
+  </a>
+  <div class="header-actions">
+    <div class="auth-buttons-container"></div>
+    <button
+      id="menuButton"
+      class="hdr-icon-btn"
+      aria-label="Menu"
+      onclick="document.getElementById('expandedMenu').classList.add('active')"
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
   </div>
 </header>
 
 <div class="expanded-menu" id="expandedMenu">
-  <button class="menu-close-btn" id="menuCloseBtn">
-    <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+  <button
+    class="menu-close-btn"
+    id="menuCloseBtn"
+    onclick="document.getElementById('expandedMenu').classList.remove('active')"
+  >
+    <svg
+      width="24"
+      height="24"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M6 18L18 6M6 6l12 12"
+      ></path>
     </svg>
   </button>
   <div class="menu-items">
-    <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
+    <a href="/" class="menu-item">Home</a>
+    <a
+      href="/learning-management-system/"
+      class="menu-item"
+      id="lms-nav-link"
+      style="display: none"
+      >My Courses</a
+    >
 
-    <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
-    <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
-    <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
+    <a href="/ca-industrial-training-program/" class="menu-item"
+      >MSC Industrial Training Program</a
+    >
+    <a href="/articleship-program/" class="menu-item"
+      >MSC Articleship Program</a
+    >
+    <a href="/msc-ca-fresher-program/" class="menu-item"
+      >MSC CA Freshers Program</a
+    >
 
     <div class="menu-item-dropdown">
-      <button class="menu-item" style="width: 100%; justify-content: space-between;">
+      <button
+        class="menu-item"
+        style="width: 100%; justify-content: space-between"
+      >
         Free Resources
-        <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+        <svg
+          class="dropdown-icon"
+          width="20"
+          height="20"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 9l-7 7-7-7"
+          ></path>
         </svg>
       </button>
-      <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
-        <a href="/ca-fresher-training-resources.html" class="menu-item">CA Fresher</a>
-        <a href="/ca-industrial-training-resources.html" class="menu-item">Industrial Training</a>
-        <a href="/ca-articleship-jobs" class="menu-item">Articleship</a>
+      <div class="dropdown-content" style="display: none; padding-left: 1.5rem">
+        <a href="/ca-fresher-training-resources.html" class="menu-item"
+          >CA Fresher</a
+        >
+        <a href="/ca-industrial-training-resources.html" class="menu-item"
+          >Industrial Training</a
+        >
+        <a href="/ca-articleship-opportunities" class="menu-item"
+          >Articleship</a
+        >
       </div>
     </div>
-
 
     <a href="/contact.html" class="menu-item">Contact Us</a>
   </div>
@@ -76,14 +254,21 @@
 
   <div class="hero-container">
     <div class="hero-content" data-aos="fade-right">
-      <h1 class="hero-title">MSC <span class="highlight-blue">Industrial Training Program</span></h1>
-      <p class="hero-subtitle">For Students Completing 1 Year Between 1st May to 31st August</p>
-      
+      <div class="closed-notice">
+        <i class="fas fa-info-circle"></i> Registrations Temporarily Closed
+      </div>
+      <h1 class="hero-title">
+        MSC <span class="highlight-blue">Industrial Training Program</span>
+      </h1>
+      <p class="hero-subtitle">
+        For Students Completing 1 Year Between 1st May to 31st August
+      </p>
+
       <div class="hero-cta-group">
-        <a href="https://u.payu.in/4IknM3Yb3nEF" class="notify-me-btn" style="text-decoration: none;">
-          <span class="notify-btn-icon">⚡</span>
-          <span class="notify-btn-text">Enroll Now</span>
-        </a>
+        <button id="notifyMeBtn" class="notify-me-btn">
+          <span class="notify-btn-icon">🔔</span>
+          <span class="notify-btn-text">Notify Me When Open</span>
+        </button>
         <a href="#curriculum-section" class="btn-secondary">
           <i class="far fa-file-alt"></i> View Curriculum
         </a>
@@ -96,7 +281,10 @@
     </div>
 
     <div class="hero-visual" data-aos="zoom-in" data-aos-delay="200">
-      <div class="linkedin-carousel-container" style="margin: 0; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
+      <div
+        class="linkedin-carousel-container"
+        style="margin: 0; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1)"
+      >
         <div class="linkedin-carousel" id="linkedinCarousel">
           <!-- Cards will be populated by JavaScript -->
         </div>
@@ -125,8 +313,10 @@
 </div>
 
 <section class="success-stories">
-  <h2>Our <span class="dynamic-batch-month-long">December</span> batch <span class="highlight">Students</span> placed
-    in Top Companies</h2>
+  <h2>
+    Our <span class="dynamic-batch-month-long">December</span> batch
+    <span class="highlight">Students</span> placed in Top Companies
+  </h2>
   <div class="carousel-container">
     <div class="carousel" id="studentCarousel"></div>
   </div>
@@ -136,49 +326,79 @@
   <div class="bento-container">
     <!-- Left Bento Pane: Pain Points / Struggles -->
     <div class="bento-pane struggles-pane">
-      <h2 class="pane-title">Are you too <span class="highlight-red">Struggling?</span></h2>
+      <h2 class="pane-title">
+        Are you too <span class="highlight-red">Struggling?</span>
+      </h2>
       <ul class="struggles-list">
         <li>
           <span class="status-icon status-warning">✕</span>
-          <span class="struggle-text">No Interview Calls for Industrial Training?</span>
+          <span class="struggle-text"
+            >No Interview Calls for Industrial Training?</span
+          >
         </li>
         <li>
           <span class="status-icon status-warning">✕</span>
-          <span class="struggle-text">Unsure how to stand out from 1000s of applicants?</span>
+          <span class="struggle-text"
+            >Unsure how to stand out from 1000s of applicants?</span
+          >
         </li>
         <li>
           <span class="status-icon status-warning">✕</span>
-          <span class="struggle-text">Struggling to find verified HR vacancies & emails?</span>
+          <span class="struggle-text"
+            >Struggling to find verified HR vacancies & emails?</span
+          >
         </li>
         <li>
           <span class="status-icon status-warning">✕</span>
-          <span class="struggle-text">Afraid of losing post-qualification brand opportunities?</span>
+          <span class="struggle-text"
+            >Afraid of losing post-qualification brand opportunities?</span
+          >
         </li>
       </ul>
       <div class="struggle-illustration">
-        <img src="/assets/successfulperson.svg" alt="Frustrated Student" class="illustration-img large-img">
+        <img
+          src="/assets/successfulperson.svg"
+          alt="Frustrated Student"
+          class="illustration-img large-img"
+        />
       </div>
     </div>
-    
+
     <!-- Right Bento Pane: Why Enroll -->
     <div class="bento-pane benefits-pane">
       <div class="rotated-badge">
         <span>That's why WE BUILT THIS</span>
       </div>
-      <h2 class="pane-title">Why <span class="highlight-green">Enroll?</span></h2>
-      <p class="pane-sub">Get direct access to everything you need to break through the competition.</p>
-      
+      <h2 class="pane-title">
+        Why <span class="highlight-green">Enroll?</span>
+      </h2>
+      <p class="pane-sub">
+        Get direct access to everything you need to break through the
+        competition.
+      </p>
+
       <div class="benefits-grid-savvy">
         <div class="benefit-item-savvy">
-          <img src="/assets/collaboration.svg" alt="Collaboration" class="benefit-icon medium-img">
+          <img
+            src="/assets/collaboration.svg"
+            alt="Collaboration"
+            class="benefit-icon medium-img"
+          />
           <div class="benefit-info-savvy">
             <h4>100+ Exclusive Vacancies & Referrals</h4>
-            <p>Direct entry and referrals to top corporate and business finance departments.</p>
+            <p>
+              Direct entry and referrals to top corporate and business finance
+              departments.
+            </p>
           </div>
         </div>
-        
+
         <div class="benefit-item-savvy">
-          <img src="/assets/offerletters.svg" alt="Offer Letters" class="benefit-icon medium-img">
+          <img
+            src="/assets/offerletters.svg"
+            alt="Offer Letters"
+            class="benefit-icon medium-img"
+          />
           <div class="benefit-info-savvy">
             <h4>Premium Industrial Training Resources & Tools</h4>
             <ul class="benefit-resources-list">
@@ -192,7 +412,10 @@
               </li>
               <li>
                 <span class="check-emoji">✅</span>
-                <span>Company-Specific & Domain-Specific Interview Prep Booklets</span>
+                <span
+                  >Company-Specific & Domain-Specific Interview Prep
+                  Booklets</span
+                >
               </li>
               <li>
                 <span class="check-emoji">✅</span>
@@ -204,7 +427,10 @@
               </li>
               <li>
                 <span class="check-emoji">✅</span>
-                <span>Exclusive AI Tools like MSC CV Builder, CV Reviewer, Mock Interview Bot</span>
+                <span
+                  >Exclusive AI Tools like MSC CV Builder, CV Reviewer, Mock
+                  Interview Bot</span
+                >
               </li>
               <li>
                 <span class="check-emoji">✅</span>
@@ -217,7 +443,7 @@
             </ul>
           </div>
         </div>
-        
+
         <div class="benefit-item-savvy flex-row-layout">
           <div class="benefit-subitem">
             <span class="checkmark-circle">✓</span>
@@ -243,14 +469,18 @@
 
 <section class="curriculum" id="curriculum-section">
   <h2>What will you <span class="highlight">Learn?</span></h2>
-  
+
   <div class="timeline-container">
     <div class="timeline-line"></div>
-    
+
     <!-- Day 1 -->
     <div class="timeline-item" data-aos="fade-up">
       <div class="timeline-dot">
-        <img src="/assets/suitcase.svg" alt="Day 1 Icon" class="timeline-icon-img">
+        <img
+          src="/assets/suitcase.svg"
+          alt="Day 1 Icon"
+          class="timeline-icon-img"
+        />
       </div>
       <div class="timeline-content-card">
         <div class="day-number">Day 1</div>
@@ -266,7 +496,11 @@
     <!-- Day 2 -->
     <div class="timeline-item" data-aos="fade-up">
       <div class="timeline-dot">
-        <img src="/assets/cvscanned.svg" alt="Day 2 Icon" class="timeline-icon-img">
+        <img
+          src="/assets/cvscanned.svg"
+          alt="Day 2 Icon"
+          class="timeline-icon-img"
+        />
       </div>
       <div class="timeline-content-card">
         <div class="day-number">Day 2</div>
@@ -283,7 +517,11 @@
     <!-- Day 3 -->
     <div class="timeline-item" data-aos="fade-up">
       <div class="timeline-dot">
-        <img src="/assets/laptop.svg" alt="Day 3 Icon" class="timeline-icon-img">
+        <img
+          src="/assets/laptop.svg"
+          alt="Day 3 Icon"
+          class="timeline-icon-img"
+        />
       </div>
       <div class="timeline-content-card">
         <div class="day-number">Day 3</div>
@@ -292,7 +530,9 @@
           <li>Finding Hidden Vacancies</li>
           <li>Figuring Out LinkedIn</li>
           <li>Getting Direct References</li>
-          <li>Applying the Right Way: Maximizing Shortlisting and Interview Calls</li>
+          <li>
+            Applying the Right Way: Maximizing Shortlisting and Interview Calls
+          </li>
         </ul>
       </div>
     </div>
@@ -300,7 +540,11 @@
     <!-- Day 4 -->
     <div class="timeline-item" data-aos="fade-up">
       <div class="timeline-dot">
-        <img src="/assets/offerletters.svg" alt="Day 4 Icon" class="timeline-icon-img">
+        <img
+          src="/assets/offerletters.svg"
+          alt="Day 4 Icon"
+          class="timeline-icon-img"
+        />
       </div>
       <div class="timeline-content-card">
         <div class="day-number">Day 4</div>
@@ -316,7 +560,11 @@
     <!-- Day 5 -->
     <div class="timeline-item" data-aos="fade-up">
       <div class="timeline-dot">
-        <img src="/assets/doubts.svg" alt="Day 5 Icon" class="timeline-icon-img">
+        <img
+          src="/assets/doubts.svg"
+          alt="Day 5 Icon"
+          class="timeline-icon-img"
+        />
       </div>
       <div class="timeline-content-card">
         <div class="day-number">Day 5</div>
@@ -325,7 +573,9 @@
           <li>How to prepare for Interviews</li>
           <li>Tips, Tricks and Hacks</li>
           <li>Personal Mock Interview & Feedback</li>
-          <li>Access to Company Specific & Domain Specific Interview Prep Material</li>
+          <li>
+            Access to Company Specific & Domain Specific Interview Prep Material
+          </li>
         </ul>
       </div>
     </div>
@@ -333,15 +583,19 @@
     <!-- Day 6 -->
     <div class="timeline-item" data-aos="fade-up">
       <div class="timeline-dot">
-        <img src="/assets/lms.svg" alt="Day 6 Icon" class="timeline-icon-img">
+        <img src="/assets/lms.svg" alt="Day 6 Icon" class="timeline-icon-img" />
       </div>
       <div class="timeline-content-card">
         <div class="day-number">Day 6</div>
         <h3>ICAI Formalities, Roadmap Ahead & Success Stories</h3>
         <ul>
-          <li>Form 109 & Form 104 – Complete Guidance and Common Mistakes to Avoid</li>
+          <li>
+            Form 109 & Form 104 – Complete Guidance and Common Mistakes to Avoid
+          </li>
           <li>Convincing Principal for Industrial Training Transfer</li>
-          <li>Real Success Stories from Students with Challenging Backgrounds</li>
+          <li>
+            Real Success Stories from Students with Challenging Backgrounds
+          </li>
           <li>Step-by-Step Roadmap for the Coming Days and Months</li>
         </ul>
       </div>
@@ -354,16 +608,22 @@
     <!-- Left Column: Certificate -->
     <div class="split-pane cert-pane" data-aos="fade-right">
       <h2 class="pane-title">Get <span class="highlight">Certified</span></h2>
-      <p class="pane-subtitle">Level up your career with MSC's industry-recognized, premium certificate.</p>
-      
+      <p class="pane-subtitle">
+        Level up your career with MSC's industry-recognized, premium
+        certificate.
+      </p>
+
       <div class="certificate-container">
         <div class="certificate-frame rotated">
           <div class="certificate-back"></div>
           <div class="certificate-frame-border"></div>
           <div class="certificate-glass">
             <div class="certificate-content">
-              <img class="certificate-image" src="https://mystudentclub.pages.dev/assets/certificate.jpg"
-                alt="MSC Certificate">
+              <img
+                class="certificate-image"
+                src="https://mystudentclub.pages.dev/assets/certificate.jpg"
+                alt="MSC Certificate"
+              />
               <div class="certificate-overlay"></div>
               <div class="shine-effect"></div>
             </div>
@@ -374,8 +634,8 @@
             <div class="floating-emblem">
               <svg class="award-icon" viewBox="0 0 24 24">
                 <path
-                  d="M12 2L8 6H3v5l-2 4 2 4v5h5l4 2 4-2h5v-5l2-4-2-4V6h-5L12 2zm0 3l2.5 2.5H15v3l1.5 3-1.5 3v3h-3l-3 1.5L6 17H3v-3L1.5 11 3 8V5h3l3-2.5L12 5z">
-                </path>
+                  d="M12 2L8 6H3v5l-2 4 2 4v5h5l4 2 4-2h5v-5l2-4-2-4V6h-5L12 2zm0 3l2.5 2.5H15v3l1.5 3-1.5 3v3h-3l-3 1.5L6 17H3v-3L1.5 11 3 8V5h3l3-2.5L12 5z"
+                ></path>
               </svg>
             </div>
           </div>
@@ -383,28 +643,36 @@
         </div>
       </div>
     </div>
-    
+
     <!-- Right Column: Mentor -->
     <div class="split-pane mentor-pane" data-aos="fade-left">
-      <h2 class="pane-title">Meet your <span class="highlight">Mentor</span></h2>
-      
+      <h2 class="pane-title">
+        Meet your <span class="highlight">Mentor</span>
+      </h2>
+
       <div class="mentor-card-savvy">
         <div class="mentor-profile-header">
           <div class="mentor-avatar-frame">
-            <img src="https://mystudentclub.pages.dev/assets/mentor_transparent.png" alt="CA Padam Bhansali"
-              class="mentor-img-savvy">
+            <img
+              src="https://mystudentclub.pages.dev/assets/mentor_transparent.png"
+              alt="CA Padam Bhansali"
+              class="mentor-img-savvy"
+            />
           </div>
           <div class="mentor-profile-title">
             <h3>CA Padam Bhansali</h3>
             <p class="mentor-subtitle-text">Founder, My Student Club</p>
           </div>
         </div>
-        
+
         <p class="mentor-description-savvy">
-          CA Padam Bhansali has helped thousands of CA students secure their dream Industrial Training roles in top organizations with stipends up to ₹1.25L! 
-          He did his own Industrial Training at Flipkart in Business Finance and has conducted 100+ guidance sessions impacting 35,000+ students globally.
+          CA Padam Bhansali has helped thousands of CA students secure their
+          dream Industrial Training roles in top organizations with stipends up
+          to ₹1.25L! He did his own Industrial Training at Flipkart in Business
+          Finance and has conducted 100+ guidance sessions impacting 35,000+
+          students globally.
         </p>
-        
+
         <div class="mentor-achievements-row">
           <div class="achievement-pill">
             <span class="achieve-num">100+</span>
@@ -433,19 +701,21 @@
       <div class="limited-seats-badge">
         <span>LIMITED SEATS</span>
       </div>
-      
+
       <div class="pricing-header">
         <span class="tagline">All In One Program</span>
         <h2>MSC CA Industrial Training Program</h2>
-        <p class="subtitle">Complete 6 Day Masterclass(Recorded), Exclusive Resources & Vacancies</p>
+        <p class="subtitle">
+          Complete 6 Day Masterclass(Recorded), Exclusive Resources & Vacancies
+        </p>
       </div>
-      
+
       <div class="pricing-amount">
         <span class="currency">₹</span>
         <span class="price-discounted">2499</span>
         <span class="price-original">₹4999</span>
       </div>
-      
+
       <div class="pricing-features-list">
         <ul>
           <li>
@@ -470,17 +740,33 @@
           </li>
           <li>
             <span class="check-icon">✓</span>
-            <span>Personal 1-on-1 CV Review, Mock Interview & much much more</span>
+            <span
+              >Personal 1-on-1 CV Review, Mock Interview & much much more</span
+            >
           </li>
         </ul>
       </div>
-      
-      <div class="pricing-cta">
-        <a href="https://u.payu.in/4IknM3Yb3nEF" class="notify-me-btn" style="text-decoration: none;">
-          <span class="notify-btn-icon">⚡</span>
-          <span class="notify-btn-text">Enroll Now</span>
-        </a>
 
+      <div class="pricing-cta">
+        <button id="registerButtonWorkshop" class="notify-me-btn">
+          <span class="notify-btn-icon">🔔</span>
+          <span class="notify-btn-text">Notify Me When Open</span>
+        </button>
+        <p
+          class="cta-subtext"
+          style="
+            color: #ef4444;
+            font-weight: 700;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.95rem;
+          "
+        >
+          <i class="fas fa-exclamation-circle"></i> Registrations Closed
+        </p>
       </div>
     </div>
   </div>
@@ -489,7 +775,7 @@
 <!-- Beautiful Floating status alerts placeholder -->
 <div id="notifyStatus" class="notify-status"></div>
 
-<div class="fixed-cta" id="cta-footer">
+<div class="fixed-cta closed" id="cta-footer">
   <div class="price-container">
     <span class="price-label">Program Fee</span>
     <div class="price">
@@ -497,46 +783,55 @@
       <span class="original">₹4999</span>
     </div>
   </div>
-  <a href="https://u.payu.in/4IknM3Yb3nEF" class="notify-me-footer-btn" style="margin-left: auto; text-decoration: none;">
-    <span class="notify-footer-icon">⚡</span>
-    <span class="notify-footer-text">Enroll Now</span>
-  </a>
+  <button
+    id="notifyMeFooterBtn"
+    class="notify-me-footer-btn"
+    style="margin-left: auto"
+  >
+    <span class="notify-footer-icon">🔔</span>
+    <span class="notify-footer-text">Notify Me</span>
+  </button>
 </div>
-
 
 <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
 <script src="app.js" type="module"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', async () => {
+  document.addEventListener("DOMContentLoaded", async () => {
     // Menu Toggle
-    const menuButton = document.getElementById('menuButton');
-    const expandedMenu = document.getElementById('expandedMenu');
-    const menuCloseBtn = document.getElementById('menuCloseBtn');
+    const menuButton = document.getElementById("menuButton");
+    const expandedMenu = document.getElementById("expandedMenu");
+    const menuCloseBtn = document.getElementById("menuCloseBtn");
 
     if (menuButton && expandedMenu) {
-      menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
+      menuButton.addEventListener("click", () =>
+        expandedMenu.classList.add("active"),
+      );
     }
     if (menuCloseBtn && expandedMenu) {
-      menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+      menuCloseBtn.addEventListener("click", () =>
+        expandedMenu.classList.remove("active"),
+      );
     }
 
     // Dropdowns
-    const dropdowns = document.querySelectorAll('.menu-item-dropdown button');
-    dropdowns.forEach(btn => {
-      btn.addEventListener('click', (e) => {
+    const dropdowns = document.querySelectorAll(".menu-item-dropdown button");
+    dropdowns.forEach((btn) => {
+      btn.addEventListener("click", (e) => {
         const content = btn.nextElementSibling;
         if (content) {
-          content.style.display = content.style.display === 'block' ? 'none' : 'block';
-          btn.classList.toggle('active');
+          content.style.display =
+            content.style.display === "block" ? "none" : "block";
+          btn.classList.toggle("active");
         }
       });
     });
 
     // Supabase Credentials
-    const SUPABASE_URL = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+    const SUPABASE_URL = "https://izsggdtdiacxdsjjncdq.supabase.co";
+    const SUPABASE_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0";
     let sb = null;
-    if (typeof supabase !== 'undefined') {
+    if (typeof supabase !== "undefined") {
       sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     }
 
@@ -545,15 +840,17 @@
     if (sb) {
       const { data } = await sb.auth.getSession();
       session = data?.session;
-      const authContainer = document.querySelector('.auth-buttons-container');
-      const lmsLink = document.getElementById('lms-nav-link');
+      const authContainer = document.querySelector(".auth-buttons-container");
+      const lmsLink = document.getElementById("lms-nav-link");
 
       if (authContainer) {
         if (session) {
-          authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn"><i class="fas fa-user"></i></a>';
-          if (lmsLink) lmsLink.style.display = 'flex';
+          authContainer.innerHTML =
+            '<a href="/profile.html" class="auth-icon-btn" aria-label="Your profile"><i class="fas fa-user"></i></a>';
+          if (lmsLink) lmsLink.style.display = "flex";
         } else {
-          authContainer.innerHTML = '<a href="/login.html" class="auth-icon-btn"><i class="fas fa-sign-in-alt"></i></a>';
+          authContainer.innerHTML =
+            '<a href="/login.html" class="auth-icon-btn" aria-label="Log in"><i class="fas fa-sign-in-alt"></i></a>';
         }
       }
     }
@@ -561,17 +858,23 @@
     // Dynamic Batch Month Calculation (-2 months)
     const d = new Date();
     d.setMonth(d.getMonth() - 2);
-    const monthShort = d.toLocaleString('en-US', { month: 'short' });
-    const monthLong = d.toLocaleString('en-US', { month: 'long' });
+    const monthShort = d.toLocaleString("en-US", { month: "short" });
+    const monthLong = d.toLocaleString("en-US", { month: "long" });
     const yearShort = d.getFullYear().toString().slice(-2);
 
     const batchFormat1 = `${monthShort}'${yearShort}`; // Dec'25
     const batchFormat2 = `${monthLong}`; // December
     const batchFormat3 = `${monthShort} '${yearShort}`; // Dec '25
 
-    document.querySelectorAll('.dynamic-batch-month').forEach(el => el.textContent = batchFormat1);
-    document.querySelectorAll('.dynamic-batch-month-long').forEach(el => el.textContent = batchFormat2);
-    document.querySelectorAll('.dynamic-batch-month-space').forEach(el => el.textContent = batchFormat3);
+    document
+      .querySelectorAll(".dynamic-batch-month")
+      .forEach((el) => (el.textContent = batchFormat1));
+    document
+      .querySelectorAll(".dynamic-batch-month-long")
+      .forEach((el) => (el.textContent = batchFormat2));
+    document
+      .querySelectorAll(".dynamic-batch-month-space")
+      .forEach((el) => (el.textContent = batchFormat3));
 
     // ==========================================
     // NOTIFY ME PUSH NOTIFICATIONS FLOW
@@ -583,27 +886,34 @@
       storageBucket: "msc-notif.appspot.com",
       messagingSenderId: "228639798414",
       appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
-      measurementId: "G-X4M23TB936"
+      measurementId: "G-X4M23TB936",
     };
-    const NOTIFY_VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
+    const NOTIFY_VAPID_KEY =
+      "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
     const NOTIFY_TOPIC = "industrial-training-program-notify";
-    const MANAGE_TOPIC_URL = "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription";
+    const MANAGE_TOPIC_URL =
+      "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription";
 
     function getOrCreateDeviceKey() {
-      let key = localStorage.getItem('msc_device_key');
+      let key = localStorage.getItem("msc_device_key");
       if (!key) {
-        key = 'dk_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 9);
-        localStorage.setItem('msc_device_key', key);
+        key =
+          "dk_" +
+          Date.now().toString(36) +
+          "_" +
+          Math.random().toString(36).slice(2, 9);
+        localStorage.setItem("msc_device_key", key);
       }
       return key;
     }
 
     function setNotifyStatus(msg, type) {
-      const el = document.getElementById('notifyStatus');
+      const el = document.getElementById("notifyStatus");
       if (!el) return;
       el.textContent = msg;
-      el.className = 'notify-status show notify-status--' + type;
-      if (type !== 'error') setTimeout(() => el.className = 'notify-status', 4000);
+      el.className = "notify-status show notify-status--" + type;
+      if (type !== "error")
+        setTimeout(() => (el.className = "notify-status"), 4000);
     }
 
     async function saveToNotifiable(fcmToken) {
@@ -611,111 +921,148 @@
       const deviceKey = getOrCreateDeviceKey();
       const email = session?.user?.email || null;
       await sb
-        .from('notifiable')
-        .insert({ key: deviceKey, email, topic: 'industrial-training' })
+        .from("notifiable")
+        .insert({ key: deviceKey, email, topic: "industrial-training" })
         .throwOnError();
     }
 
     async function initNotifyMe() {
-      const btn = document.getElementById('notifyMeBtn');
-      const workshopBtn = document.getElementById('registerButtonWorkshop');
-      const footerBtn = document.getElementById('notifyMeFooterBtn');
+      const btn = document.getElementById("notifyMeBtn");
+      const workshopBtn = document.getElementById("registerButtonWorkshop");
+      const footerBtn = document.getElementById("notifyMeFooterBtn");
       const allBtns = [btn, workshopBtn, footerBtn];
 
       function syncButtonStates(subscribed) {
         if (btn) {
-          btn.querySelector('.notify-btn-text').textContent = subscribed ? 'You Will Be Notified!' : 'Notify Me When Open';
-          btn.querySelector('.notify-btn-icon').textContent = subscribed ? '✅' : '🔔';
-          btn.classList.toggle('subscribed', subscribed);
+          btn.querySelector(".notify-btn-text").textContent = subscribed
+            ? "You Will Be Notified!"
+            : "Notify Me When Open";
+          btn.querySelector(".notify-btn-icon").textContent = subscribed
+            ? "✅"
+            : "🔔";
+          btn.classList.toggle("subscribed", subscribed);
         }
         if (workshopBtn) {
-          workshopBtn.querySelector('.notify-btn-text').textContent = subscribed ? 'You Will Be Notified!' : 'Notify Me When Open';
-          workshopBtn.querySelector('.notify-btn-icon').textContent = subscribed ? '✅' : '🔔';
-          workshopBtn.classList.toggle('subscribed', subscribed);
+          workshopBtn.querySelector(".notify-btn-text").textContent = subscribed
+            ? "You Will Be Notified!"
+            : "Notify Me When Open";
+          workshopBtn.querySelector(".notify-btn-icon").textContent = subscribed
+            ? "✅"
+            : "🔔";
+          workshopBtn.classList.toggle("subscribed", subscribed);
         }
         if (footerBtn) {
-          footerBtn.querySelector('.notify-footer-text').textContent = subscribed ? 'Notified' : 'Notify Me';
-          footerBtn.querySelector('.notify-footer-icon').textContent = subscribed ? '✅' : '🔔';
-          footerBtn.classList.toggle('subscribed', subscribed);
+          footerBtn.querySelector(".notify-footer-text").textContent =
+            subscribed ? "Notified" : "Notify Me";
+          footerBtn.querySelector(".notify-footer-icon").textContent =
+            subscribed ? "✅" : "🔔";
+          footerBtn.classList.toggle("subscribed", subscribed);
         }
       }
 
-      const isSubscribed = localStorage.getItem('notif_industrial_training_program') === '1';
+      const isSubscribed =
+        localStorage.getItem("notif_industrial_training_program") === "1";
       syncButtonStates(isSubscribed);
 
       async function handleNotifyClick() {
         if (this.disabled) return;
-        allBtns.forEach(b => b && (b.disabled = true));
+        allBtns.forEach((b) => b && (b.disabled = true));
 
         // Already subscribed — unsubscribe
-        if (localStorage.getItem('notif_industrial_training_program') === '1') {
-          const token = localStorage.getItem('notif_fcm_token_it');
+        if (localStorage.getItem("notif_industrial_training_program") === "1") {
+          const token = localStorage.getItem("notif_fcm_token_it");
           if (token) {
             try {
               await fetch(MANAGE_TOPIC_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token, topic: NOTIFY_TOPIC, action: 'unsubscribe' })
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  token,
+                  topic: NOTIFY_TOPIC,
+                  action: "unsubscribe",
+                }),
               });
             } catch (_) {}
           }
-          localStorage.removeItem('notif_industrial_training_program');
-          localStorage.removeItem('notif_fcm_token_it');
+          localStorage.removeItem("notif_industrial_training_program");
+          localStorage.removeItem("notif_fcm_token_it");
           syncButtonStates(false);
-          setNotifyStatus('Unsubscribed.', 'info');
-          allBtns.forEach(b => b && (b.disabled = false));
+          setNotifyStatus("Unsubscribed.", "info");
+          allBtns.forEach((b) => b && (b.disabled = false));
           return;
         }
 
         // Request notification permission
-        setNotifyStatus('Requesting permission…', 'info');
+        setNotifyStatus("Requesting permission…", "info");
         let permission;
-        try { permission = await Notification.requestPermission(); } catch (e) { permission = 'denied'; }
+        try {
+          permission = await Notification.requestPermission();
+        } catch (e) {
+          permission = "denied";
+        }
 
-        if (permission !== 'granted') {
-          setNotifyStatus('Please allow notifications in your browser settings.', 'error');
-          allBtns.forEach(b => b && (b.disabled = false));
+        if (permission !== "granted") {
+          setNotifyStatus(
+            "Please allow notifications in your browser settings.",
+            "error",
+          );
+          allBtns.forEach((b) => b && (b.disabled = false));
           return;
         }
 
         // Initialize Firebase & get FCM token
-        setNotifyStatus('Setting up…', 'info');
+        setNotifyStatus("Setting up…", "info");
         try {
-          if (!firebase.apps.length) firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
+          if (!firebase.apps.length)
+            firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
           const messaging = firebase.messaging();
-          if ('serviceWorker' in navigator) {
-            await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+          if ("serviceWorker" in navigator) {
+            await navigator.serviceWorker.register("/firebase-messaging-sw.js");
           }
-          const fcmToken = await messaging.getToken({ vapidKey: NOTIFY_VAPID_KEY });
-          if (!fcmToken) throw new Error('No FCM token');
+          const fcmToken = await messaging.getToken({
+            vapidKey: NOTIFY_VAPID_KEY,
+          });
+          if (!fcmToken) throw new Error("No FCM token");
 
           // Subscribe to FCM topic
-          setNotifyStatus('Subscribing…', 'info');
+          setNotifyStatus("Subscribing…", "info");
           const res = await fetch(MANAGE_TOPIC_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: fcmToken, topic: NOTIFY_TOPIC, action: 'subscribe' })
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              token: fcmToken,
+              topic: NOTIFY_TOPIC,
+              action: "subscribe",
+            }),
           });
           const data = await res.json();
-          if (!data.success) throw new Error(data.error || 'Subscription failed');
+          if (!data.success)
+            throw new Error(data.error || "Subscription failed");
 
           // Save to Supabase notifiable table
-          try { await saveToNotifiable(fcmToken); } catch (_) {/* ignore duplicate key */}
+          try {
+            await saveToNotifiable(fcmToken);
+          } catch (_) {
+            /* ignore duplicate key */
+          }
 
-          localStorage.setItem('notif_industrial_training_program', '1');
-          localStorage.setItem('notif_fcm_token_it', fcmToken);
+          localStorage.setItem("notif_industrial_training_program", "1");
+          localStorage.setItem("notif_fcm_token_it", fcmToken);
           syncButtonStates(true);
-          setNotifyStatus("You're on the list! We'll notify you when the program opens.", 'success');
+          setNotifyStatus(
+            "You're on the list! We'll notify you when the program opens.",
+            "success",
+          );
         } catch (err) {
-          console.error('NotifyMe error:', err);
-          setNotifyStatus('Something went wrong. Please try again.', 'error');
+          console.error("NotifyMe error:", err);
+          setNotifyStatus("Something went wrong. Please try again.", "error");
         }
 
-        allBtns.forEach(b => b && (b.disabled = false));
+        allBtns.forEach((b) => b && (b.disabled = false));
       }
 
-      allBtns.forEach(b => {
-        if (b) b.addEventListener('click', handleNotifyClick);
+      allBtns.forEach((b) => {
+        if (b) b.addEventListener("click", handleNotifyClick);
       });
     }
 
@@ -723,10 +1070,15 @@
   });
 </script>
 <!-- Google Analytics -->
-<script src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65" async></script>
+<script
+  src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65"
+  async
+></script>
 <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-1450NCVE65');
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
+  gtag("config", "G-1450NCVE65");
 </script>

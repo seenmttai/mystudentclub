@@ -1,6 +1,6 @@
 html {
   height: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -15,7 +15,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-x: hidden;
+  overflow-x: clip;
   min-height: 100%;
   -webkit-overflow-scrolling: touch;
 }

@@ -2,12 +2,21 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LMS Resources | My Student Club</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Using a slightly older, more stable version of PDF.js for better compatibility -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Resources Hub — My Student Club</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/scripts/portal-style.css" />
+    <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script>
+      (function() {
+        const t = localStorage.getItem('msc-theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="importmap">
@@ -18,646 +27,330 @@
     }
     </script>
     <style>
-        .logo-enhanced {
-            width: 180px;
-            height: auto;
-            object-fit: contain;
-            transition: transform 0.2s;
-        }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body { font-family: "Poppins", sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+      #app { min-height: 100vh; }
+      .lms-menu-overlay { display: none; position: fixed; inset: 0; background: rgba(15,27,45,0.4); z-index: 390; }
+      .lms-menu-overlay.active { display: block; }
+      .header-logo { width: 32px; height: 32px; }
 
-        .logo-enhanced:hover {
-            transform: scale(1.05);
-        }
+      /* Hero */
+      .lms-hero { padding: calc(var(--header-h) + 20px) 20px 0; }
+      .lms-back-chip { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: var(--r-chip); background: var(--chip); color: var(--sub); font-size: 12px; font-weight: 600; text-decoration: none; }
+      .lms-hero h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.2; margin-top: 10px; }
+      .lms-hero p { font-size: 13px; color: var(--sub); margin-top: 4px; margin-bottom: 4px; }
 
-        /* Footer logo - larger size */
-        .footer-brand .logo-enhanced {
-            width: 200px;
-        }
+      /* Resource list */
+      .lms-resource-list { padding: 16px 20px 20px; }
+      .lms-resource-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r-card); padding: 16px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+      .lms-resource-top { display: flex; align-items: flex-start; gap: 10px; }
+      .lms-type-chip { flex-shrink: 0; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 15px; }
+      .lms-type-pdf { background: #ef4444; }
+      .lms-type-docx, .lms-type-doc { background: #2563eb; }
+      .lms-type-xlsx, .lms-type-csv, .lms-type-spreadsheet { background: #059669; }
+      .lms-type-external_link { background: #7c3aed; }
+      .lms-type-default { background: var(--brand); }
+      .lms-resource-title { font-size: 14px; font-weight: 700; line-height: 1.3; }
+      .lms-resource-desc { font-size: 13px; color: var(--sub); }
+      .lms-resource-format { font-size: 12px; color: var(--sub); font-style: italic; }
+      .lms-resource-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+      .lms-btn-primary { flex: 1; background: var(--brand); color: #fff; border: none; border-radius: 12px; padding: 10px 16px; font-size: 13px; font-weight: 700; font-family: "Poppins", sans-serif; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-decoration: none; }
+      .lms-btn-secondary { flex: 1; background: var(--chip); color: var(--brand); border: 1.5px solid var(--line); border-radius: 12px; padding: 10px 16px; font-size: 13px; font-weight: 700; font-family: "Poppins", sans-serif; cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+      .lms-btn-full { width: 100%; flex: unset; }
+      .lms-center { text-align: center; padding: 48px 20px; color: var(--sub); font-size: 14px; }
 
-        .profile-dropdown-container {
-            position: relative;
-            cursor: pointer;
-        }
+      /* Viewer modal */
+      .lms-viewer-overlay { position: fixed; inset: 0; background: rgba(15,27,45,0.55); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 500; }
+      .lms-viewer-panel { background: var(--card); border-radius: var(--r-sheet); width: 94vw; height: 88vh; max-width: 900px; display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--shadow); }
+      .lms-viewer-header { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+      .lms-viewer-title { font-size: 14px; font-weight: 700; }
+      .lms-viewer-body { flex: 1; overflow: auto; position: relative; background: var(--chip); display: flex; justify-content: center; align-items: flex-start; }
+      .lms-viewer-nav { padding: 10px 16px; border-top: 1px solid var(--line); display: flex; align-items: center; justify-content: center; gap: 12px; flex-shrink: 0; }
+      .lms-page-counter { padding: 4px 12px; background: var(--chip); border-radius: var(--r-chip); font-size: 12px; font-weight: 600; color: var(--sub); }
 
-        .profile-dropdown-menu {
-            position: absolute;
-            top: 110%;
-            right: 0;
-            background: white;
-            border: 1px solid var(--border-color, #e2e8f0);
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            width: 220px;
-            display: none;
-            flex-direction: column;
-            z-index: 10000;
-            overflow: hidden;
-            animation: dropdownFadeIn 0.2s ease-out;
-        }
+      /* Iframe + PDF + CSV inside viewer */
+      .lms-iframe-wrap { position: absolute; inset: 0; background: var(--card); }
+      .lms-iframe-wrap iframe { width: 100%; height: 100%; border: none; }
+      .lms-iframe-overlay { position: absolute; top: 0; left: 0; width: calc(100% - 17px); height: calc(100% - 40px); z-index: 10; cursor: default; user-select: none; }
+      .lms-pdf-wrap { padding: 2rem; display: flex; justify-content: center; }
+      #pdf-canvas { box-shadow: var(--shadow); max-width: 100%; }
+      .lms-csv-wrap { padding: 1rem; width: 100%; height: 100%; overflow: auto; user-select: none; }
+      .lms-csv-table { border-collapse: collapse; background: var(--card); width: 100%; }
+      .lms-csv-table th, .lms-csv-table td { padding: 8px 12px; border: 1px solid var(--line); text-align: left; font-size: 13px; min-width: 120px; max-width: 350px; word-wrap: break-word; }
+      .lms-csv-table th { background: var(--chip); font-weight: 700; position: sticky; top: 0; z-index: 1; }
 
-        .profile-dropdown-container:hover .profile-dropdown-menu {
-            display: flex;
-        }
-
-        .profile-header {
-            padding: 1rem;
-            background: #f8fafc;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .profile-name {
-            font-weight: 700;
-            color: #1e293b;
-            display: block;
-        }
-
-        .profile-email {
-            font-size: 0.8rem;
-            color: #64748b;
-        }
-
-        .dropdown-item {
-            padding: 0.75rem 1rem;
-            color: #475569;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: background 0.2s;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-            font-size: 0.95rem;
-            cursor: pointer;
-        }
-
-        .dropdown-item:hover {
-            background: #f1f5f9;
-            color: #2563eb;
-        }
-
-        .dropdown-item i {
-            width: 20px;
-            text-align: center;
-        }
-
-        @keyframes dropdownFadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        main {
-            padding-top: 130px;
-            padding-bottom: 4rem;
-        }
-
-        .resources-container {
-            max-width: 1800px;
-            margin: 0 auto;
-            padding: 0 var(--space-6);
-        }
-
-        .page-header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
-        .page-header h1 {
-            font-size: var(--text-4xl);
-            font-weight: 800;
-            color: var(--primary-700);
-            margin-bottom: var(--space-3);
-        }
-
-        .page-header p {
-            font-size: var(--text-lg);
-            color: var(--text-secondary);
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .resources-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: var(--space-6);
-        }
-
-        .resource-card {
-            background-color: var(--surface-elevated);
-            border-radius: var(--radius-xl);
-            padding: var(--space-6);
-            border: 1px solid var(--border);
-            box-shadow: var(--shadow-md);
-            transition: all var(--transition-base);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .resource-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-xl);
-            border-color: var(--secondary-400);
-        }
-
-        .resource-header {
-            display: flex;
-            align-items: center;
-            gap: var(--space-4);
-            margin-bottom: var(--space-3);
-        }
-
-        .resource-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-500), var(--secondary-500));
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: var(--text-xl);
-            flex-shrink: 0;
-        }
-
-        .resource-title {
-            font-size: var(--text-lg);
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .resource-description {
-            color: var(--text-secondary);
-            font-size: var(--text-sm);
-            margin-bottom: var(--space-4);
-            flex-grow: 1;
-        }
-
-        .resource-format-note {
-            margin-top: 0.5rem;
-            font-size: 0.82rem;
-            color: var(--text-secondary);
-        }
-
-        .resource-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-shrink: 0;
-            margin-top: auto;
-        }
-
-        .resource-btn {
-            padding: 0.4rem 0.8rem;
-            font-size: 0.8rem;
-            border-radius: var(--radius-md, 0.5rem);
-            text-decoration: none;
-            transition: background-color 0.2s ease, color 0.2s ease;
-            border: 1px solid transparent;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-            cursor: pointer;
-            width: 100%;
-            justify-content: center;
-        }
-
-        .resource-btn i {
-            font-size: 0.9em;
-        }
-
-        .resource-btn-download {
-            background-color: var(--success-500, #059669);
-            color: white;
-        }
-
-        .resource-btn-download:hover {
-            background-color: var(--success-600, #047857);
-        }
-
-        .resource-btn-view {
-            background-color: var(--primary-500, #3b82f6);
-            color: white;
-        }
-
-        .resource-btn-view:hover {
-            background-color: var(--primary-600, #2563eb);
-        }
-
-        .resource-btn-link {
-            background-color: var(--secondary-500, #8b5cf6);
-            color: white;
-        }
-
-        .resource-btn-link:hover {
-            background-color: var(--secondary-600, #7c3aed);
-        }
-
-        .loading-state,
-        .empty-state {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: var(--space-12);
-            color: var(--text-secondary);
-        }
-
-        /* Modal Styles */
-        #resource-viewer-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10001;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .resource-viewer-content {
-            background: white;
-            border-radius: 12px;
-            width: 90%;
-            height: 90%;
-            max-width: 1200px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .resource-viewer-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
-            flex-shrink: 0;
-            background: white;
-            z-index: 20;
-        }
-
-        .resource-viewer-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .resource-viewer-title-wrap {
-            min-width: 0;
-        }
-
-        .resource-viewer-subtitle {
-            margin-top: 0.35rem;
-            font-size: 0.88rem;
-            color: #64748b;
-        }
-
-        .resource-viewer-close-button {
-            background: none;
-            border: none;
-            font-size: 2rem;
-            line-height: 1;
-            cursor: pointer;
-            color: #64748b;
-        }
-
-        .viewer-main-content {
-            flex-grow: 1;
-            overflow: auto;
-            position: relative;
-            background: #f1f5f9;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-
-        /* Iframe Styles */
-        .iframe-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-        }
-
-        #resource-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .iframe-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            /* Leave space for scrollbar on right (17px) and sheet tabs at bottom (40px) */
-            width: calc(100% - 17px);
-            height: calc(100% - 40px);
-            z-index: 10;
-            cursor: default;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        /* PDF & CSV Styles */
-        .pdf-canvas-container {
-            padding: 2rem;
-            display: flex;
-            justify-content: center;
-        }
-
-        #pdf-canvas {
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            max-width: 100%;
-        }
-
-        .csv-preview-container {
-            padding: 1rem;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-        }
-
-        .csv-preview-table {
-            border-collapse: collapse;
-            background: white;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-            table-layout: auto;
-        }
-
-        .csv-preview-table th,
-        .csv-preview-table td {
-            padding: 0.75rem 1rem;
-            border: 1px solid #e2e8f0;
-            text-align: left;
-            font-size: 0.9rem;
-            min-width: 120px;
-            max-width: 350px;
-            word-wrap: break-word;
-            white-space: normal;
-        }
-
-        .csv-preview-table th {
-            background-color: #f8fafc;
-            font-weight: 600;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-
-        .resource-viewer-controls {
-            padding: 1rem;
-            border-top: 1px solid #e2e8f0;
-            background: white;
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .viewer-nav-button {
-            padding: 0.5rem 1rem;
-            border: 1px solid #e2e8f0;
-            background: white;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .viewer-nav-button:hover:not(:disabled) {
-            background: #f1f5f9;
-            border-color: #cbd5e1;
-        }
-
-        .viewer-nav-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
+      /* Bottom nav safe area */
+      .lms-content-pad { padding-bottom: calc(var(--bnav-h) + var(--safe-bottom)); }
+      /* Tablet & desktop: center content to the shared app column
+         (--app-w from portal-style.css) and flow resource cards two-up */
+      @media (min-width: 768px) {
+        .lms-content-pad { max-width: var(--app-w, 1180px); margin-left: auto; margin-right: auto; }
+        .lms-resource-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; align-items: start; }
+        .lms-resource-card { margin-bottom: 0; }
+      }
     </style>
 </head>
 
 <body>
     <div id="app">
-        <header class="glass-header">
-            <div class="header-container">
-                <div class="logo-container">
-                    <a href="https://mystudentclub.com/profile">
-                        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo"
-                            class="logo-enhanced">
-                    </a>
-                </div>
-                <nav>
-                    <div class="hamburger-menu" @click="toggleMenu">
-                        <div class="bar"></div>
-                        <div class="bar"></div>
-                        <div class="bar"></div>
-                    </div>
-                    <ul class="nav-links" :class="{ 'active': menuActive }">
-                        <li><a href="index.html" class="nav-item">
-                                <i class="fas fa-graduation-cap"></i>
-                                <span>My Courses</span>
-                            </a></li>
-                        <li><a href="lms-resources.html" class="active nav-item">
-                                <i class="fas fa-book-open"></i>
-                                <span>Resources</span>
-                            </a></li>
-                        <li><a href="https://mystudentclub.com/cv-reviewer/" class="nav-item">
-                                <i class="fas fa-file-alt"></i>
-                                <span>CV Review</span>
-                            </a></li>
-
-                        <li class="profile-link profile-dropdown-container">
-                            <a href="#" class="nav-item profile-nav" @click.prevent>
-                                <div class="profile-avatar">
-                                    <i class="fas fa-user"></i>
-                                </div>
-                                <span v-if="user">{{ getUserName() }}</span>
-                                <span v-else>Login</span>
-                            </a>
-                            <div class="profile-dropdown-menu" v-if="user">
-                                <div class="profile-header">
-                                    <span class="profile-name">{{ getUserName() }}</span>
-                                    <span class="profile-email">{{ user.email }}</span>
-                                </div>
-                                <a href="https://mystudentclub.com/profile" class="dropdown-item">
-                                    <i class="fas fa-user-circle"></i> My Profile
-                                </a>
-                                <button class="dropdown-item" @click="logout">
-                                    <i class="fas fa-sign-out-alt"></i> Logout
-                                </button>
-                            </div>
-                        </li>
-                    </ul>
-                </nav>
+        <!-- HEADER -->
+        <header class="app-header" id="appHeader">
+          <div class="header-left">
+            <a href="/learning-management-system/index.html">
+              <svg
+                class="header-logo"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 207 223"
+                fill="none"
+                aria-label="My Student Club"
+              >
+                <path
+                  d="m188.4 49.73-72.25-41.61c-9.06-5.29-18.21-4.74-26.19 0l-70.9 40.81c-7.32 4.03-10.97 11.88-10.97 19.86v14.89c2.12-1.59 4.37-1.94 6.61-1.87 2.38 0.08 4.05 0.7 5.79 1.95v-14.58c0-4.34 1.26-6.8 5.52-9.26l71.93-41.41c4.95-2.85 9.07-1.13 12.08 0.83l70.98 40.74c3.8 2.14 5.39 4.6 5.39 9.1v14.58c2.12-1.33 3.53-1.95 5.99-1.95 2.78-0.07 5.03 0.55 7.35 2.14v-15.16c0-7.78-4.5-15.18-11.33-19.06z"
+                  fill="url(#msc-g0)"
+                />
+                <path
+                  d="m199.7 128.3-2.24 3.32c-6.68 8.36-7.65 15.35-5.97 24.32 1.1 5.85 1.72 10.43-0.31 15.01 5.85-4.19 8.52-11.51 8.52-16.78v-25.87z"
+                  fill="url(#msc-g1)"
+                />
+                <path
+                  d="m8.12 127.8v26.34c0 6.72 2.93 13.52 8.79 17.94-1.95-4.73-1.49-9.15-0.23-16.09 1.59-9.05-1.04-17.8-6.52-24.4l-2.04-2.77v-1.02z"
+                  fill="url(#msc-g2)"
+                />
+                <path
+                  d="m199.4 90.46c-1.59-4.03-2.84-5.99-6.18-5.99-4.8 0-7.34 4.5-5.83 8.99 2.17 6.23 2.47 8.69 1.94 14.2-1.47 8.82-6.66 18.11-17.62 21.91-2.58 0.94-3.04 3.16-2.35 5.84l5.33 25.6c0.38 1.63-2.02 5.66-3.13 6.4-1.59 0-4.85-4.5-4.85-4.5v-24.19c0-3.7-1.05-6.46-4.31-6.84-6.61-0.74-15.44-1.91-20.77-0.5-2.46 0.65-2.92 9.09-2.15 15.69 1.18 7.02 4.44 20.34 3.74 29.02-0.85 9.05-4.51 14.56-10.36 17.88l-20.69 12.44c-5.56 3.32-12.96 2.93-18.29 0l-20.14-11.65c-6.68-3.32-9.14-8.44-9.14-19.69 0-8.06 3.11-18.67 3.49-24.9 0.94-11.41-2.56-18.45-5.82-18.83-5.41-0.66-10.36 0.27-17.26 0.42-3.5 0.08-4.94 2.12-4.94 6.61v24.19c0 1.17-3.66 5.51-4.6 5.36-1.59-0.31-3.76-4.42-3.69-5.08l5.93-25.53c0.77-2.84-0.08-5.43-3.01-6.25-10.49-3.24-17.17-13.07-17.24-23.4-0.08-5.51 1.65-9.75 2.7-13.85 1.18-4.49-2.4-9.07-6.44-9.07-3.81 0-5.42 1.69-7.01 6.27-5.11 12.13-3.45 26.9 3.71 37.71 7.26 9.37 8.85 15.9 7.11 27.52-1.82 9.13-1.36 15.78 5.9 19.81l67.46 38.73c7.82 4.03 16.03 3.29 23.51-0.59l69.51-38.41c6.34-3.33 6.15-11.62 4.35-19.54-2.24-10.41 0.31-18.26 6.99-27.09 7.48-10.1 8.73-24.38 4.15-38.69z"
+                  fill="url(#msc-g3)"
+                />
+                <path
+                  d="m43.26 104.1c-6.92 0-10.8 5.82-10.8 10.74 0 6.78 5.26 10.98 10.8 10.98 6.49 0 10.83-5.59 10.83-10.98 0-5.97-4.88-10.74-10.83-10.74z"
+                  fill="url(#msc-g4)"
+                />
+                <path
+                  d="m163.5 104.1c-7.4 0-11.05 6.23-11.05 10.74 0 6.39 5.25 10.98 10.66 10.98 6.99 0 11.33-5.59 11.33-10.98 0-5.97-5.07-10.74-10.94-10.74z"
+                  fill="url(#msc-g5)"
+                />
+                <path
+                  d="m103.4 76.34c-9.14-0.31-14.92 7.54-14.92 14.67 0 8.52 7.26 14.75 14.61 14.75 9.14 0 15-7.85 15-14.75 0-7.85-6.68-14.67-14.69-14.67z"
+                  fill="#0077BF"
+                />
+                <path
+                  d="m150.7 59.61c-2.11-4.19-4.78-4.85-8.04-4.85-6.6 0-9.54 6.25-7.8 11.37 2.86 6.56 3.55 11.05 3.09 18.06-1.39 13.72-12.85 26.7-28.26 29.94-2.46 0.31-3.4 1.94-4.66 4.25-0.54 0.94-0.31 0.71-0.38 1.88 1.41 14 6.49 46.02 7.1 52.58 0.15 1.02-6.68 9.23-6.68 9.23-1.59 1.31-3.08 0.47-4.11-1.06-1.87-2.15-6.01-6.64-6.24-7.58l6.92-52.52c-0.31-2.05-3.65-6.16-5.24-6.47-14.28-2.13-26.41-15.22-27.46-30.25-0.45-6.23 1.05-11.15 3.51-17.04 2.17-5.87-1.71-12.1-8.61-12.1-4.58 0-6.83 2.13-8.42 5.76-7.73 15.45-6.79 34.9 4.52 49.92 8.78 10.81 12.51 21.96 11.97 35.68-0.45 9.6-4.44 18.8-3.12 30.66 0.94 6.55 3.12 10.51 8.37 12.89l18.54 10.81c5.41 2.93 11.53 2.19 16.5-1.13l18.46-10.49c6.68-3.32 8.27-12.08 7.02-20.84-1.49-9.6-3.23-16.6-2.85-24.38 0.61-10.81 4.56-21.62 13.11-33.27 10.48-15.03 10.03-31.6 2.76-51.05z"
+                  fill="#0077BF"
+                />
+                <defs>
+                  <linearGradient
+                    id="msc-g0"
+                    x1="18.89"
+                    x2="184.3"
+                    y1="17.93"
+                    y2="75.88"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stop-color="#94ADB9" />
+                    <stop offset="1" stop-color="#889CA7" />
+                  </linearGradient>
+                  <linearGradient
+                    id="msc-g1"
+                    x1="193.3"
+                    x2="199.8"
+                    y1="133.1"
+                    y2="166.8"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stop-color="#889CA7" />
+                    <stop offset="1" stop-color="#A4B5BE" />
+                  </linearGradient>
+                  <linearGradient
+                    id="msc-g2"
+                    x1="8.119"
+                    x2="16.14"
+                    y1="132.7"
+                    y2="169.1"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stop-color="#738A98" />
+                    <stop offset="1" stop-color="#A4B5BE" />
+                  </linearGradient>
+                  <linearGradient
+                    id="msc-g3"
+                    x1="8.087"
+                    x2="199.9"
+                    y1="101.3"
+                    y2="170.5"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stop-color="#557484" />
+                    <stop offset="1" stop-color="#6E8793" />
+                  </linearGradient>
+                  <linearGradient
+                    id="msc-g4"
+                    x1="32.46"
+                    x2="53.29"
+                    y1="104.1"
+                    y2="125.2"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stop-color="#557484" />
+                    <stop offset="1" stop-color="#627D8B" />
+                  </linearGradient>
+                  <linearGradient
+                    id="msc-g5"
+                    x1="152.4"
+                    x2="173.8"
+                    y1="104.1"
+                    y2="125.7"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stop-color="#557484" />
+                    <stop offset="1" stop-color="#627D8B" />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </a>
+            <div class="header-greeting">
+              <span class="greeting-sub">Welcome!</span>
+              <span class="greeting-name" id="lmsGreetingName">Student</span>
             </div>
+          </div>
+          <div class="header-actions">
+            <button class="hdr-icon-btn" id="themeToggleBtn" aria-label="Toggle theme">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </button>
+            <button class="hdr-icon-btn" id="lmsMenuBtn" aria-label="Menu">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+          </div>
         </header>
 
-        <main>
-            <div class="resources-container">
-                <div class="page-header">
-                    <h1>LMS Resources Hub</h1>
-                    <p>A centralized place for all important links and materials related to your courses.</p>
-                </div>
+        <!-- SIDE MENU -->
+        <div class="expanded-menu" id="lmsExpandedMenu">
+          <button class="hdr-icon-btn menu-close-btn" id="lmsMenuCloseBtn" aria-label="Close menu">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <div class="menu-items-container">
+            <a href="/learning-management-system/index.html" class="menu-item">My Courses</a>
+            <a href="/learning-management-system/lms-resources.html" class="menu-item">Resources</a>
+            <a href="https://mystudentclub.com/cv-reviewer/" class="menu-item">CV Review</a>
+            <a href="https://mystudentclub.com/profile" class="menu-item">My Profile</a>
+            <button id="lmsLogoutMenuBtn" class="menu-item menu-item--danger">Logout</button>
+          </div>
+        </div>
+        <div class="lms-menu-overlay" id="lmsMenuOverlay"></div>
 
-                <div class="page-header" style="margin-top: 4rem;">
-                    <h2>Course Materials</h2>
-                </div>
+        <main class="lms-content-pad">
+          <!-- Hero -->
+          <div class="lms-hero">
+            <a href="/learning-management-system/index.html" class="lms-back-chip">← My Courses</a>
+            <h1>Resources Hub</h1>
+            <p>All materials from your enrolled courses</p>
+          </div>
 
-                <div id="all-resources-grid" class="resources-grid">
-                    <div v-if="loading" class="loading-state">
-                        <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
-                        <p>Loading resources...</p>
-                    </div>
-                    <div v-else-if="allResources.length === 0" class="empty-state">
-                        <p>No resources found for your enrolled courses.</p>
-                    </div>
-                    <div v-else v-for="resource in allResources" :key="resource.title + resource.download_storage_path"
-                        class="resource-card">
-                        <div class="resource-header">
-                            <div class="resource-icon"><i :class="getResourceIcon(resource.type)"></i></div>
-                            <h3 class="resource-title">{{ resource.title }}</h3>
-                        </div>
-                        <div class="resource-description">
-                            <p>{{ resource.description || 'Access this resource below.' }}</p>
-                            <p v-if="getResourceFormatNote(resource)" class="resource-format-note">{{ getResourceFormatNote(resource) }}</p>
-                        </div>
-                        <div class="resource-actions">
-                            <button v-if="isSpecialSheet(resource)" @click="openViewer(resource, 'iframe')"
-                                class="resource-btn resource-btn-view">
-                                <i class="fas fa-eye"></i> View Sheet
-                            </button>
-
-                            <button v-else-if="hasViewPath(resource)"
-                                @click="openViewer(resource, getPreviewType(resource))"
-                                class="resource-btn resource-btn-view">
-                                <i class="fas fa-eye"></i> {{ getViewLabel(resource) }}
-                            </button>
-
-                            <a v-else-if="resource.type === 'external_link' && resource.url" :href="resource.url"
-                                target="_blank" rel="noopener noreferrer" class="resource-btn resource-btn-link">
-                                <i class="fas fa-external-link-alt"></i> Open Link
-                            </a>
-
-                            <button v-if="hasDownloadPath(resource)" @click.stop="downloadResource(resource)"
-                                class="resource-btn resource-btn-download">
-                                <i class="fas fa-download"></i> {{ getDownloadLabel(resource) }}
-                            </button>
-                        </div>
-                    </div>
-                </div>
+          <!-- Resource list -->
+          <div class="lms-resource-list">
+            <!-- Loading -->
+            <div v-if="loading" class="lms-center">
+              <i class="fas fa-spinner fa-spin" style="font-size:32px;color:var(--brand);margin-bottom:12px;display:block;"></i>
+              Loading resources…
             </div>
 
-            <!-- Modal Viewer -->
-            <div v-if="isViewerVisible" id="resource-viewer-modal">
-                <div class="resource-viewer-content">
-                    <div class="resource-viewer-header">
-                        <h2 class="resource-viewer-title">{{ currentResourceTitle }}{{ currentResourceSubtitle ? ' · PDF Preview' : '' }}</h2>
-                        <button @click="closeViewer" class="resource-viewer-close-button">×</button>
-                    </div>
-
-                    <div class="viewer-main-content">
-                        <div v-if="viewerLoading" class="loading-state" style="position:absolute; top:40%; width:100%">
-                            <i class="fas fa-spinner fa-spin" style="font-size: 2rem;"></i>
-                            <p>Loading...</p>
-                        </div>
-
-                        <!-- Iframe -->
-                        <div v-show="previewType === 'iframe'" class="iframe-container">
-                            <div class="iframe-overlay"></div>
-                            <iframe id="resource-iframe" :src="iframeSrc" title="Embedded Resource"></iframe>
-                        </div>
-
-                        <!-- PDF Canvas -->
-                        <div v-show="previewType === 'pdf'" class="pdf-canvas-container">
-                            <canvas ref="pdfCanvas" id="pdf-canvas"></canvas>
-                        </div>
-
-                        <!-- CSV Table -->
-                        <div v-show="previewType === 'csv'" class="csv-preview-container" @contextmenu.prevent
-                            @copy.prevent @cut.prevent @selectstart.prevent>
-                            <table class="csv-preview-table" v-html="csvHtml"></table>
-                        </div>
-                    </div>
-
-                    <!-- Controls (Only for PDF) -->
-                    <div v-if="previewType === 'pdf'" class="resource-viewer-controls">
-                        <button @click="renderPdfPage(pdfCurrentPage - 1)" :disabled="pdfCurrentPage <= 1"
-                            class="viewer-nav-button">Previous</button>
-                        <span>Page {{ pdfCurrentPage }} of {{ pdfTotalPages }}</span>
-                        <button @click="renderPdfPage(pdfCurrentPage + 1)" :disabled="pdfCurrentPage >= pdfTotalPages"
-                            class="viewer-nav-button">Next</button>
-                    </div>
-                </div>
+            <!-- Empty -->
+            <div v-else-if="allResources.length === 0" class="lms-center">
+              <div style="font-size:48px;margin-bottom:12px;">📂</div>
+              <div style="font-size:17px;font-weight:700;color:var(--text);margin-bottom:8px;">No Resources Found</div>
+              <p>Resources from your enrolled courses will appear here.</p>
             </div>
 
+            <!-- Resource cards -->
+            <template v-else>
+              <div class="lms-resource-card" v-for="resource in allResources" :key="resource.title + resource.download_storage_path">
+                <div class="lms-resource-top">
+                  <div :class="['lms-type-chip', 'lms-type-' + (resource.type || 'default')]">
+                    <i :class="getResourceIcon(resource.type)"></i>
+                  </div>
+                  <div>
+                    <div class="lms-resource-title">{{ resource.title }}</div>
+                    <div class="lms-resource-desc" v-if="resource.description">{{ resource.description }}</div>
+                  </div>
+                </div>
+                <div class="lms-resource-format" v-if="getResourceFormatNote(resource)">{{ getResourceFormatNote(resource) }}</div>
+                <div class="lms-resource-actions">
+                  <button v-if="isSpecialSheet(resource)" @click="openViewer(resource, 'iframe')" class="lms-btn-primary">
+                    <i class="fas fa-eye"></i> View Sheet
+                  </button>
+                  <button v-else-if="hasViewPath(resource)" @click="openViewer(resource, getPreviewType(resource))" class="lms-btn-primary">
+                    <i class="fas fa-eye"></i> {{ getViewLabel(resource) }}
+                  </button>
+                  <a v-else-if="resource.type === 'external_link' && resource.url" :href="resource.url" target="_blank" rel="noopener noreferrer" class="lms-btn-primary lms-btn-full">
+                    <i class="fas fa-external-link-alt"></i> Open Link
+                  </a>
+                  <button v-if="hasDownloadPath(resource)" @click.stop="downloadResource(resource)" class="lms-btn-secondary">
+                    <i class="fas fa-download"></i> {{ getDownloadLabel(resource) }}
+                  </button>
+                </div>
+              </div>
+            </template>
+          </div>
+
+          <!-- Resource viewer modal -->
+          <div v-if="isViewerVisible" class="lms-viewer-overlay" @click.self="closeViewer">
+            <div class="lms-viewer-panel">
+              <div class="lms-viewer-header">
+                <span class="lms-viewer-title">{{ currentResourceTitle }}{{ currentResourceSubtitle ? ' · PDF Preview' : '' }}</span>
+                <button class="hdr-icon-btn" @click="closeViewer" aria-label="Close">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+              <div class="lms-viewer-body">
+                <div v-if="viewerLoading" class="lms-center" style="position:absolute;top:40%;width:100%;">
+                  <i class="fas fa-spinner fa-spin" style="font-size:32px;color:var(--brand);display:block;margin-bottom:12px;"></i>
+                  Loading…
+                </div>
+                <!-- Iframe -->
+                <div v-show="previewType === 'iframe'" class="lms-iframe-wrap">
+                  <div class="lms-iframe-overlay"></div>
+                  <iframe id="resource-iframe" :src="iframeSrc" title="Embedded Resource"></iframe>
+                </div>
+                <!-- PDF Canvas -->
+                <div v-show="previewType === 'pdf'" class="lms-pdf-wrap">
+                  <canvas ref="pdfCanvas" id="pdf-canvas"></canvas>
+                </div>
+                <!-- CSV Table -->
+                <div v-show="previewType === 'csv'" class="lms-csv-wrap" @contextmenu.prevent @copy.prevent @cut.prevent @selectstart.prevent>
+                  <table class="lms-csv-table" v-html="csvHtml"></table>
+                </div>
+              </div>
+              <!-- PDF nav -->
+              <div v-if="previewType === 'pdf'" class="lms-viewer-nav">
+                <button class="lms-btn-secondary" style="flex:0 0 auto;" @click="renderPdfPage(pdfCurrentPage - 1)" :disabled="pdfCurrentPage <= 1">← Prev</button>
+                <span class="lms-page-counter">{{ pdfCurrentPage }} / {{ pdfTotalPages }}</span>
+                <button class="lms-btn-secondary" style="flex:0 0 auto;" @click="renderPdfPage(pdfCurrentPage + 1)" :disabled="pdfCurrentPage >= pdfTotalPages">Next →</button>
+              </div>
+            </div>
+          </div>
         </main>
 
-        <footer class="footer-enhanced">
-            <div class="footer-content">
-                <div class="footer-brand">
-                    <a href="https://mystudentclub.com">
-                        <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo"
-                            class="logo-enhanced">
-                    </a>
-                    <h4>My Student Club</h4>
-                    <p>Empowering the next generation of Chartered Accountants with world-class education and resources.
-                    </p>
-                </div>
-                <div class="footer-links">
-                    <div class="footer-column">
-                        <h5>Learning</h5>
-                        <ul>
-                            <li><a href="index.html">All Courses</a></li>
-                            <li><a href="lms-resources.html">Resources</a></li>
-                            <li><a href="cv-reviewer.html">CV Review</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-column">
-                        <h5>Support</h5>
-                        <ul>
-                            <li><a href="mailto:padam@mystudentclub.com">Contact Us</a></li>
-                            <li><a href="https://mystudentclub.com/privacy-policy">Privacy Policy</a></li>
-                            <li><a
-                                    href="https://www.mystudentclub.com/ca-industrial-training-program/terms-and-conditions">Terms
-                                    of Service</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>© 2025 My Student Club LMS. All rights reserved.</p>
-            </div>
-        </footer>
     </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <div class="bottom-nav-inner">
+        <a href="/learning-management-system/index.html" class="bnav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          <span>My Courses</span>
+        </a>
+        <a href="/learning-management-system/lms-resources.html" class="bnav-item active">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span>Resources</span>
+        </a>
+        <a href="https://mystudentclub.com/cv-reviewer/" class="bnav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <span>CV Review</span>
+        </a>
+        <a href="https://mystudentclub.com/profile" class="bnav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Profile</span>
+        </a>
+      </div>
+    </nav>
 
     <script type="module">
         import { createApp, markRaw } from 'vue';
@@ -705,6 +398,8 @@
                     const { data: { session } } = await supabase.auth.getSession();
                     if (session && session.user) {
                         this.user = session.user;
+                        window._lmsLogout = async () => { await supabase.auth.signOut(); window.location.href = 'https://www.mystudentclub.com/login.html'; };
+                        if (document.getElementById('lmsGreetingName')) document.getElementById('lmsGreetingName').textContent = this.getUserName();
                         const { data: enrollments, error } = await supabase.from('enrollment').select('course').eq('uuid', this.user.id);
                         if (error || enrollments.length === 0) {
                             window.location.href = 'index.html';
@@ -1008,6 +703,7 @@
             }
         }).mount('#app');
     </script>
+    <script src="/learning-management-system/lms-portal.js"></script>
 </body>
 
 </html>
