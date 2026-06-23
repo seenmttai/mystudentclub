@@ -1419,6 +1419,17 @@
             </div>
           </div>
         </div>
+        <button id="downloadAllTablesBtn" class="admin-btn profile-export-trigger" type="button">
+          <span class="profile-export-trigger__icon-wrap" aria-hidden="true">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+          </span>
+          <span class="profile-export-trigger__text">
+            <span class="profile-export-trigger__label">All Tables</span>
+            <span class="profile-export-trigger__hint">Export as CSV</span>
+          </span>
+        </button>
         <span class="admin-badge">Super Admin</span>
       </div>
     </header>
@@ -2325,6 +2336,58 @@
       } catch (error) {
         console.error('Profile export failed:', error);
         setProfileExportStatus(`Export failed: ${error.message}`, true);
+      } finally {
+        if (button) button.disabled = false;
+      }
+    }
+    const PORTAL_TABLES_EXPORT = [
+      { name: 'Industrial Training Job Portal', slug: 'industrial_training' },
+      { name: 'Fresher Jobs', slug: 'fresher_jobs' },
+      { name: 'Semi Qualified Jobs', slug: 'semi_qualified_jobs' },
+      { name: 'Articleship Jobs', slug: 'articleship_jobs' }
+    ];
+    async function fetchAllRowsFromPortalTable(tableName) {
+      const rows = [];
+      let from = 0;
+      const batchSize = 1000;
+      while (true) {
+        const { data, error } = await supabaseClient
+          .from(tableName)
+          .select('*')
+          .order('Created_At', { ascending: false })
+          .range(from, from + batchSize - 1);
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        rows.push(...data);
+        if (data.length < batchSize) break;
+        from += batchSize;
+      }
+      return rows;
+    }
+    async function downloadAllPortalTables(button) {
+      if (button) button.disabled = true;
+      const today = new Date().toISOString().slice(0, 10);
+      try {
+        for (const { name: tableName, slug } of PORTAL_TABLES_EXPORT) {
+          const rows = await fetchAllRowsFromPortalTable(tableName);
+          if (!rows.length) continue;
+          const columns = Object.keys(rows[0]);
+          const csvLines = [columns.map(escapeCsvValue).join(',')];
+          rows.forEach((row) => {
+            csvLines.push(columns.map((col) => escapeCsvValue(row[col] ?? '')).join(','));
+          });
+          const blob = new Blob([csvLines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `${slug}_${today}.csv`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }
+      } catch (error) {
+        alert('Export failed: ' + error.message);
       } finally {
         if (button) button.disabled = false;
       }
@@ -3327,6 +3390,7 @@
         profileExportCloseBtn: document.getElementById('profileExportCloseBtn'),
         profileExportResetBtn: document.getElementById('profileExportResetBtn'),
         profileExportConfirmBtn: document.getElementById('profileExportConfirmBtn'),
+        downloadAllTablesBtn: document.getElementById('downloadAllTablesBtn'),
         lmsCourseSelect: document.getElementById('lmsCourseSelect'),
         lmsVideoSelect: document.getElementById('lmsVideoSelect'),
         lmsResourceSearchInput: document.getElementById('lmsResourceSearchInput'),
@@ -3385,6 +3449,9 @@
           event.stopPropagation();
           toggleProfileExportPanel(false);
         });
+      }
+      if (dom.downloadAllTablesBtn) {
+        dom.downloadAllTablesBtn.addEventListener('click', () => downloadAllPortalTables(dom.downloadAllTablesBtn));
       }
       if (dom.profileExportPanel) {
         dom.profileExportPanel.addEventListener('change', (event) => {

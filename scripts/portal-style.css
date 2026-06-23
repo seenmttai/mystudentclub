@@ -2227,3 +2227,31 @@ body:has(.portal-nav-bar) {
   background: #f3f4f6;
   transform: translateY(-1px);
 }
+
+@media (max-width: 600px) {
+  .profile-completion-banner {
+    flex-wrap: nowrap;
+    gap: 0.5rem;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.75rem;
+  }
+  .profile-completion-banner .banner-text {
+    gap: 0.35rem;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  .profile-completion-banner .banner-desc {
+    display: none;
+  }
+  .profile-completion-banner .completion-badge {
+    font-size: 0.7rem;
+    padding: 0.15rem 0.4rem;
+    white-space: nowrap;
+  }
+  .profile-completion-banner .banner-btn {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.5rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+}

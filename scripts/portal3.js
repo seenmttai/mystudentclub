@@ -3371,7 +3371,7 @@ function renderProfileCompletionBanner() {
 
     banner.innerHTML = `
         <div class="banner-text">
-            <span>🎯 Complete your Profile to get 5x higher interview opportunities.</span>
+            <span>🎯 Complete your Profile<span class="banner-desc"> to get 5x higher interview opportunities</span>.</span>
             <span class="completion-badge">Profile Completion: ${percent}%</span>
         </div>
         <a href="/profile.html" class="banner-btn">Complete Profile</a>
