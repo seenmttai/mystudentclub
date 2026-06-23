@@ -35,7 +35,7 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
         const aiMailto = `mailto:${email}?subject=${subject}&body=${encodeURIComponent(emailBody)}`;
 
         await recordApplication(job, btnElement);
-        window.open(aiMailto, '_blank');
+        openMailtoLink(aiMailto);
 
     } catch (error) {
         console.error("AI Apply Failed:", error);
@@ -50,7 +50,7 @@ async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) 
 
         await recordApplication(job, btnElement);
         setTimeout(() => {
-            window.open(simpleMailto, '_blank');
+            openMailtoLink(simpleMailto);
         }, 3000);
     } finally {
         // Reset button state
@@ -727,10 +727,12 @@ function showModal(job) {
                 window.location.href = '/login.html';
                 return;
             }
+            const newWin = window.open('', '_blank');
             const isEnrolled = await checkEnrollmentForTable(currentTable, currentSession.user.id);
             if (isEnrolled) {
-                window.open(connectLink, '_blank');
+                newWin.location.href = connectLink;
             } else {
+                newWin.close();
                 showEnrollmentRequiredPopup();
             }
         });
@@ -744,10 +746,12 @@ function showModal(job) {
                 window.location.href = '/login.html';
                 return;
             }
+            const newWin = window.open('', '_blank');
             const isEnrolled = await checkEnrollmentForTable(currentTable, currentSession.user.id);
             if (isEnrolled) {
-                window.open(job.posts_link, '_blank');
+                newWin.location.href = job.posts_link;
             } else {
+                newWin.close();
                 showEnrollmentRequiredPopup();
             }
         });
