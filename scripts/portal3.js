@@ -1492,13 +1492,22 @@ async function getUserEnrollments(userId) {
 
 async function checkEnrollmentForTable(tableName, userId) {
     if (!userId) return false;
-    const enrollments = await getUserEnrollments(userId);
-    if (tableName === 'Industrial Training Job Portal') {
-        return enrollments.includes('industrial-training-mastery');
-    } else if (tableName === 'Fresher Jobs') {
-        return enrollments.includes('msc-ca-freshers-program');
-    } else {
-        return enrollments.length > 0;
+    try {
+        let query = supabaseClient
+            .from('enrollment')
+            .select('course', { count: 'exact', head: true })
+            .eq('uuid', userId);
+        if (tableName === 'Industrial Training Job Portal') {
+            query = query.eq('course', 'industrial-training-mastery');
+        } else if (tableName === 'Fresher Jobs') {
+            query = query.eq('course', 'msc-ca-freshers-program');
+        }
+        const { count, error } = await query;
+        if (error) throw error;
+        return count > 0;
+    } catch (err) {
+        console.error('Failed to check enrollment:', err);
+        return false;
     }
 }
 
