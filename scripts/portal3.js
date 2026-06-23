@@ -690,16 +690,13 @@ function showModal(job) {
             });
         }
         if (modalAiApplyBtn) {
-            // Import the helper dynamically or assume it's available via module
-            // Since this is a module, we should import at top, but for inline replacement:
             modalAiApplyBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
                 if (!currentSession) {
                     window.location.href = '/login.html';
                     return;
                 }
-                const isEnrolled = await checkEnrollmentForTable(currentTable, currentSession.user.id);
-                if (isEnrolled) {
+                if (isEnrolledSync(currentTable)) {
                     await handleAiApplyClick(job, e.currentTarget, currentTable, applyLink);
                 } else {
                     showEnrollmentRequiredPopup();
@@ -721,18 +718,12 @@ function showModal(job) {
 
     const modalConnectPeersBtn = document.getElementById('modalConnectPeersBtn');
     if (modalConnectPeersBtn) {
-        modalConnectPeersBtn.addEventListener('click', async (e) => {
+        modalConnectPeersBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            if (!currentSession) {
-                window.location.href = '/login.html';
-                return;
-            }
-            const newWin = window.open('', '_blank');
-            const isEnrolled = await checkEnrollmentForTable(currentTable, currentSession.user.id);
-            if (isEnrolled) {
-                newWin.location.href = connectLink;
+            if (!currentSession) { window.location.href = '/login.html'; return; }
+            if (isEnrolledSync(currentTable)) {
+                window.open(connectLink, '_blank');
             } else {
-                newWin.close();
                 showEnrollmentRequiredPopup();
             }
         });
@@ -740,18 +731,12 @@ function showModal(job) {
 
     const modalOriginalPostBtn = document.getElementById('modalOriginalPostBtn');
     if (modalOriginalPostBtn) {
-        modalOriginalPostBtn.addEventListener('click', async (e) => {
+        modalOriginalPostBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            if (!currentSession) {
-                window.location.href = '/login.html';
-                return;
-            }
-            const newWin = window.open('', '_blank');
-            const isEnrolled = await checkEnrollmentForTable(currentTable, currentSession.user.id);
-            if (isEnrolled) {
-                newWin.location.href = job.posts_link;
+            if (!currentSession) { window.location.href = '/login.html'; return; }
+            if (isEnrolledSync(currentTable)) {
+                window.open(job.posts_link, '_blank');
             } else {
-                newWin.close();
                 showEnrollmentRequiredPopup();
             }
         });
@@ -1354,6 +1339,7 @@ async function checkAuth() {
 
     // If logged in, fetch and cache profile data
     if (session?.user?.id) {
+        prefetchEnrollmentStatus(session.user.id); // fire-and-forget, populates enrollmentStatusCache
         // Update last access date when user opens the portal
         updateLastAccessDate(session.user.id);
 
@@ -1417,6 +1403,7 @@ function updateHeaderAuth(session) {
 
 window.handleLogout = async () => {
     userEnrollmentsCache = null;
+    enrollmentStatusCache = null;
     // Sign out from Supabase
     await supabaseClient.auth.signOut();
 
@@ -1471,6 +1458,37 @@ async function checkUserEnrollment() {
 }
 
 let userEnrollmentsCache = null;
+let enrollmentStatusCache = null; // { any, industrialTraining, freshers }
+
+async function prefetchEnrollmentStatus(userId) {
+    try {
+        const { count: anyCount, error: e1 } = await supabaseClient
+            .from('enrollment')
+            .select('course', { count: 'exact', head: true })
+            .eq('uuid', userId);
+        if (e1) throw e1;
+        const hasAny = (anyCount || 0) > 0;
+        enrollmentStatusCache = { any: hasAny, industrialTraining: false, freshers: false };
+        if (hasAny) {
+            const [r1, r2] = await Promise.all([
+                supabaseClient.from('enrollment').select('course', { count: 'exact', head: true }).eq('uuid', userId).eq('course', 'industrial-training-mastery'),
+                supabaseClient.from('enrollment').select('course', { count: 'exact', head: true }).eq('uuid', userId).eq('course', 'msc-ca-freshers-program')
+            ]);
+            enrollmentStatusCache.industrialTraining = (r1.count || 0) > 0;
+            enrollmentStatusCache.freshers = (r2.count || 0) > 0;
+        }
+    } catch (e) {
+        console.error('Failed to prefetch enrollment:', e);
+        enrollmentStatusCache = { any: false, industrialTraining: false, freshers: false };
+    }
+}
+
+function isEnrolledSync(tableName) {
+    if (!enrollmentStatusCache) return false;
+    if (tableName === 'Industrial Training Job Portal') return enrollmentStatusCache.industrialTraining;
+    if (tableName === 'Fresher Jobs') return enrollmentStatusCache.freshers;
+    return enrollmentStatusCache.any;
+}
 
 async function getUserEnrollments(userId) {
     if (userEnrollmentsCache !== null) {
