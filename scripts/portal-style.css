@@ -2233,7 +2233,7 @@ body:has(.portal-nav-bar) {
     flex-wrap: nowrap;
     gap: 0.4rem;
     padding: 0.3rem 0.6rem;
-    font-size: 0.75rem;
+    font-size: 0.65rem;
     justify-content: space-between;
   }
   .profile-completion-banner .banner-text {
@@ -2252,10 +2252,7 @@ body:has(.portal-nav-bar) {
     display: none;
   }
   .profile-completion-banner .completion-badge {
-    font-size: 0.68rem;
-    padding: 0.1rem 0.35rem;
-    white-space: nowrap;
-    flex-shrink: 0;
+    display: none;
   }
   .profile-completion-banner .banner-btn {
     font-size: 0.68rem;
