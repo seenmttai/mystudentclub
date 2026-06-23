@@ -1,1065 +1,1673 @@
 ﻿<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <title>MSC CA Freshers Program</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://mystudentclub.pages.dev/assets/icon-70x70.png"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="sections.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <script
+      src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs"
+      type="module"
+    ></script>
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="header.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Firebase for push notifications -->
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>MSC CA Freshers Program</title>
-  <link rel="icon" type="image/png" href="https://mystudentclub.pages.dev/assets/icon-70x70.png">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="sections.css">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap"
-    rel="stylesheet">
-  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-  <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
-  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="/scripts/portal-style.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Firebase for push notifications -->
-  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
-</head>
-
-<body>
-  <header class="site-header">
-    <div class="header-container">
-      <a href="/" class="brand-link">
-        <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
+  <body>
+    <header class="app-header" id="appHeader">
+      <a href="/" class="header-left" aria-label="My Student Club — Home">
+        <svg
+          class="header-logo"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 207 223"
+          fill="none"
+          aria-label="My Student Club"
+        >
+          <path
+            d="m188.4 49.73-72.25-41.61c-9.06-5.29-18.21-4.74-26.19 0l-70.9 40.81c-7.32 4.03-10.97 11.88-10.97 19.86v14.89c2.12-1.59 4.37-1.94 6.61-1.87 2.38 0.08 4.05 0.7 5.79 1.95v-14.58c0-4.34 1.26-6.8 5.52-9.26l71.93-41.41c4.95-2.85 9.07-1.13 12.08 0.83l70.98 40.74c3.8 2.14 5.39 4.6 5.39 9.1v14.58c2.12-1.33 3.53-1.95 5.99-1.95 2.78-0.07 5.03 0.55 7.35 2.14v-15.16c0-7.78-4.5-15.18-11.33-19.06z"
+            fill="url(#msc-g0)"
+          />
+          <path
+            d="m199.7 128.3-2.24 3.32c-6.68 8.36-7.65 15.35-5.97 24.32 1.1 5.85 1.72 10.43-0.31 15.01 5.85-4.19 8.52-11.51 8.52-16.78v-25.87z"
+            fill="url(#msc-g1)"
+          />
+          <path
+            d="m8.12 127.8v26.34c0 6.72 2.93 13.52 8.79 17.94-1.95-4.73-1.49-9.15-0.23-16.09 1.59-9.05-1.04-17.8-6.52-24.4l-2.04-2.77v-1.02z"
+            fill="url(#msc-g2)"
+          />
+          <path
+            d="m199.4 90.46c-1.59-4.03-2.84-5.99-6.18-5.99-4.8 0-7.34 4.5-5.83 8.99 2.17 6.23 2.47 8.69 1.94 14.2-1.47 8.82-6.66 18.11-17.62 21.91-2.58 0.94-3.04 3.16-2.35 5.84l5.33 25.6c0.38 1.63-2.02 5.66-3.13 6.4-1.59 0-4.85-4.5-4.85-4.5v-24.19c0-3.7-1.05-6.46-4.31-6.84-6.61-0.74-15.44-1.91-20.77-0.5-2.46 0.65-2.92 9.09-2.15 15.69 1.18 7.02 4.44 20.34 3.74 29.02-0.85 9.05-4.51 14.56-10.36 17.88l-20.69 12.44c-5.56 3.32-12.96 2.93-18.29 0l-20.14-11.65c-6.68-3.32-9.14-8.44-9.14-19.69 0-8.06 3.11-18.67 3.49-24.9 0.94-11.41-2.56-18.45-5.82-18.83-5.41-0.66-10.36 0.27-17.26 0.42-3.5 0.08-4.94 2.12-4.94 6.61v24.19c0 1.17-3.66 5.51-4.6 5.36-1.59-0.31-3.76-4.42-3.69-5.08l5.93-25.53c0.77-2.84-0.08-5.43-3.01-6.25-10.49-3.24-17.17-13.07-17.24-23.4-0.08-5.51 1.65-9.75 2.7-13.85 1.18-4.49-2.4-9.07-6.44-9.07-3.81 0-5.42 1.69-7.01 6.27-5.11 12.13-3.45 26.9 3.71 37.71 7.26 9.37 8.85 15.9 7.11 27.52-1.82 9.13-1.36 15.78 5.9 19.81l67.46 38.73c7.82 4.03 16.03 3.29 23.51-0.59l69.51-38.41c6.34-3.33 6.15-11.62 4.35-19.54-2.24-10.41 0.31-18.26 6.99-27.09 7.48-10.1 8.73-24.38 4.15-38.69z"
+            fill="url(#msc-g3)"
+          />
+          <path
+            d="m43.26 104.1c-6.92 0-10.8 5.82-10.8 10.74 0 6.78 5.26 10.98 10.8 10.98 6.49 0 10.83-5.59 10.83-10.98 0-5.97-4.88-10.74-10.83-10.74z"
+            fill="url(#msc-g4)"
+          />
+          <path
+            d="m163.5 104.1c-7.4 0-11.05 6.23-11.05 10.74 0 6.39 5.25 10.98 10.66 10.98 6.99 0 11.33-5.59 11.33-10.98 0-5.97-5.07-10.74-10.94-10.74z"
+            fill="url(#msc-g5)"
+          />
+          <path
+            d="m103.4 76.34c-9.14-0.31-14.92 7.54-14.92 14.67 0 8.52 7.26 14.75 14.61 14.75 9.14 0 15-7.85 15-14.75 0-7.85-6.68-14.67-14.69-14.67z"
+            fill="#0077BF"
+          />
+          <path
+            d="m150.7 59.61c-2.11-4.19-4.78-4.85-8.04-4.85-6.6 0-9.54 6.25-7.8 11.37 2.86 6.56 3.55 11.05 3.09 18.06-1.39 13.72-12.85 26.7-28.26 29.94-2.46 0.31-3.4 1.94-4.66 4.25-0.54 0.94-0.31 0.71-0.38 1.88 1.41 14 6.49 46.02 7.1 52.58 0.15 1.02-6.68 9.23-6.68 9.23-1.59 1.31-3.08 0.47-4.11-1.06-1.87-2.15-6.01-6.64-6.24-7.58l6.92-52.52c-0.31-2.05-3.65-6.16-5.24-6.47-14.28-2.13-26.41-15.22-27.46-30.25-0.45-6.23 1.05-11.15 3.51-17.04 2.17-5.87-1.71-12.1-8.61-12.1-4.58 0-6.83 2.13-8.42 5.76-7.73 15.45-6.79 34.9 4.52 49.92 8.78 10.81 12.51 21.96 11.97 35.68-0.45 9.6-4.44 18.8-3.12 30.66 0.94 6.55 3.12 10.51 8.37 12.89l18.54 10.81c5.41 2.93 11.53 2.19 16.5-1.13l18.46-10.49c6.68-3.32 8.27-12.08 7.02-20.84-1.49-9.6-3.23-16.6-2.85-24.38 0.61-10.81 4.56-21.62 13.11-33.27 10.48-15.03 10.03-31.6 2.76-51.05z"
+            fill="#0077BF"
+          />
+          <defs>
+            <linearGradient
+              id="msc-g0"
+              x1="18.89"
+              x2="184.3"
+              y1="17.93"
+              y2="75.88"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#94ADB9" />
+              <stop offset="1" stop-color="#889CA7" />
+            </linearGradient>
+            <linearGradient
+              id="msc-g1"
+              x1="193.3"
+              x2="199.8"
+              y1="133.1"
+              y2="166.8"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#889CA7" />
+              <stop offset="1" stop-color="#A4B5BE" />
+            </linearGradient>
+            <linearGradient
+              id="msc-g2"
+              x1="8.119"
+              x2="16.14"
+              y1="132.7"
+              y2="169.1"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#738A98" />
+              <stop offset="1" stop-color="#A4B5BE" />
+            </linearGradient>
+            <linearGradient
+              id="msc-g3"
+              x1="8.087"
+              x2="199.9"
+              y1="101.3"
+              y2="170.5"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#557484" />
+              <stop offset="1" stop-color="#6E8793" />
+            </linearGradient>
+            <linearGradient
+              id="msc-g4"
+              x1="32.46"
+              x2="53.29"
+              y1="104.1"
+              y2="125.2"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#557484" />
+              <stop offset="1" stop-color="#627D8B" />
+            </linearGradient>
+            <linearGradient
+              id="msc-g5"
+              x1="152.4"
+              x2="173.8"
+              y1="104.1"
+              y2="125.7"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#557484" />
+              <stop offset="1" stop-color="#627D8B" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="header-greeting">
+          <div class="greeting-sub">MSC</div>
+          <div class="greeting-name">Freshers Program</div>
+        </div>
       </a>
       <div class="header-actions">
         <div class="auth-buttons-container"></div>
-        <button class="menu-button-style" aria-label="Open menu" id="menuButton">
-          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        <button
+          id="menuButton"
+          class="hdr-icon-btn"
+          aria-label="Menu"
+          onclick="
+            document.getElementById('expandedMenu').classList.add('active')
+          "
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
       </div>
+    </header>
+
+    <div class="expanded-menu" id="expandedMenu">
+      <button
+        class="menu-close-btn"
+        id="menuCloseBtn"
+        onclick="
+          document.getElementById('expandedMenu').classList.remove('active')
+        "
+      >
+        <svg
+          width="24"
+          height="24"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+      <div class="menu-items">
+        <a href="/" class="menu-item">Home</a>
+        <a
+          href="/learning-management-system/"
+          class="menu-item"
+          id="lms-nav-link"
+          style="display: none"
+          >My Courses</a
+        >
+
+        <a href="/ca-industrial-training-program/" class="menu-item"
+          >MSC Industrial Training Program</a
+        >
+        <a href="/articleship-program/" class="menu-item"
+          >MSC Articleship Program</a
+        >
+        <a href="/msc-ca-fresher-program/" class="menu-item"
+          >MSC CA Freshers Program</a
+        >
+
+        <div class="menu-item-dropdown">
+          <button
+            class="menu-item"
+            style="width: 100%; justify-content: space-between"
+          >
+            Free Resources
+            <svg
+              class="dropdown-icon"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+          <div
+            class="dropdown-content"
+            style="display: none; padding-left: 1.5rem"
+          >
+            <a href="/ca-fresher-training-resources.html" class="menu-item"
+              >CA Fresher</a
+            >
+            <a href="/ca-industrial-training-resources.html" class="menu-item"
+              >Industrial Training</a
+            >
+            <a href="/ca-articleship-jobs" class="menu-item">Articleship</a>
+          </div>
+        </div>
+
+        <a href="/contact.html" class="menu-item">Contact Us</a>
+      </div>
     </div>
-  </header>
 
-  <div class="expanded-menu" id="expandedMenu">
-    <button class="menu-close-btn" id="menuCloseBtn">
-      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
-    <div class="menu-items">
-      <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
-
-      <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
-      <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
-      <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
-
-      <div class="menu-item-dropdown">
-        <button class="menu-item" style="width: 100%; justify-content: space-between;">
-          Free Resources
-          <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-        <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
-          <a href="/ca-fresher-training-resources.html" class="menu-item">CA Fresher</a>
-          <a href="/ca-industrial-training-resources.html" class="menu-item">Industrial Training</a>
-          <a href="/ca-articleship-jobs" class="menu-item">Articleship</a>
+    <div class="hero modern-hero">
+      <div class="hero-glow"></div>
+      <div class="hero-container">
+        <div class="hero-content">
+          <div
+            class="hero-eyebrow"
+            data-aos="fade-up"
+            data-aos-delay="50"
+            style="
+              color: #4caf50;
+              font-weight: 700;
+              letter-spacing: 1px;
+              text-transform: uppercase;
+              margin-bottom: 10px;
+              font-size: 0.9rem;
+            "
+          >
+            MSC CA Fresher Program
+          </div>
+          <h1 class="hero-title" data-aos="fade-up" data-aos-delay="100">
+            Launch Your <span class="text-gradient">Dream Career</span>
+          </h1>
+          <div
+            class="hero-promo-banner"
+            data-aos="fade-up"
+            data-aos-delay="150"
+            style="
+              background: linear-gradient(90deg, #fffbeb, #fef3c7);
+              border-left: 4px solid #f59e0b;
+              padding: 12px 16px;
+              border-radius: 0 8px 8px 0;
+              margin-bottom: 24px;
+              display: inline-block;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            "
+          >
+            <span
+              style="
+                font-weight: 700;
+                color: #b45309;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 15px;
+                margin-bottom: 8px;
+              "
+            >
+              <img
+                src="assets/magnet.svg"
+                alt="Exclusive"
+                style="width: 20px; height: 20px"
+              />
+              Exclusive Batch for Jan & May’26 Students
+            </span>
+            <span
+              style="
+                font-weight: 600;
+                color: #d97706;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 14px;
+              "
+            >
+              <img
+                src="assets/universitywithcap.svg"
+                alt="Status"
+                style="width: 20px; height: 20px"
+              />
+              Recorded Batch now available
+            </span>
+          </div>
+          <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">
+            Stop getting ignored by recruiters. Master your CV, Apply the Right
+            Way and Learn to Crack Technical Interviews in our 7 Day Masterclass
+          </p>
+          <div class="hero-cta-group" data-aos="fade-up" data-aos-delay="300">
+            <button id="notifyMeBtn" class="notify-me-btn">
+              <span class="notify-btn-icon">🔔</span>
+              <span class="notify-btn-text">Notify Me When Open</span>
+            </button>
+            <a
+              href="#curriculum"
+              class="secondary-btn"
+              onclick="
+                document
+                  .querySelector('.curriculum')
+                  .scrollIntoView({ behavior: 'smooth' })
+              "
+              >View Curriculum</a
+            >
+          </div>
+          <div class="hero-stats-strip" data-aos="fade-up" data-aos-delay="400">
+            <div class="hero-stat-item">
+              <span class="hero-stat-number">1000+</span>
+              <span class="hero-stat-label">Students Placed</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat-item">
+              <span class="hero-stat-number">500+</span>
+              <span class="hero-stat-label">Recruiting Partners</span>
+            </div>
+            <div class="hero-stat-divider"></div>
+            <div class="hero-stat-item">
+              <span class="hero-stat-number">₹11 LPA</span>
+              <span class="hero-stat-label">Avg. CTC</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-visual" data-aos="zoom-in" data-aos-delay="200">
+          <div
+            class="linkedin-carousel-container"
+            style="margin: 0; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1)"
+          >
+            <div class="linkedin-carousel" id="linkedinCarousel">
+              <!-- Cards will be populated by JavaScript -->
+            </div>
+          </div>
         </div>
       </div>
-
-
-
-      <a href="/contact.html" class="menu-item">Contact Us</a>
     </div>
-  </div>
 
-  <div class="hero modern-hero">
-    <div class="hero-glow"></div>
-    <div class="hero-container">
-      <div class="hero-content">
-        <div class="hero-eyebrow" data-aos="fade-up" data-aos-delay="50"
-          style="color: #4caf50; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; font-size: 0.9rem;">
-          MSC CA Fresher Program</div>
-        <h1 class="hero-title" data-aos="fade-up" data-aos-delay="100">
-          Launch Your <span class="text-gradient">Dream Career</span>
-        </h1>
-        <div class="hero-promo-banner" data-aos="fade-up" data-aos-delay="150"
-          style="background: linear-gradient(90deg, #fffbeb, #fef3c7); border-left: 4px solid #f59e0b; padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 24px; display: inline-block; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
-          <span
-            style="font-weight: 700; color: #b45309; display: flex; align-items: center; gap: 8px; font-size: 15px; margin-bottom: 8px;">
-            <img src="assets/magnet.svg" alt="Exclusive" style="width: 20px; height: 20px;"> Exclusive Batch for Jan & May’26 Students
-          </span>
-          <span
-            style="font-weight: 600; color: #d97706; display: flex; align-items: center; gap: 8px; font-size: 14px;">
-            <img src="assets/universitywithcap.svg" alt="Status" style="width: 20px; height: 20px;"> Recorded Batch
-            now available
-          </span>
+    <section class="success-stories">
+      <h2>
+        Our <span class="dynamic-batch-month-long">January</span> batch
+        <span class="highlight">Students</span> placed in Top Companies
+      </h2>
+      <div class="carousel-container">
+        <div class="carousel" id="studentCarousel"></div>
+      </div>
+    </section>
+
+    <section class="hero-journey scrollytelling">
+      <div class="journey-container">
+        <div class="journey-text">
+          <div class="journey-step step-1">
+            <h2>The Reality Check: Are You Struggling?</h2>
+            <div class="struggles-list">
+              <div class="struggle-bullet">
+                <i class="fas fa-times-circle"></i> Cleared CA but hearing "No
+                Vacancy"?
+              </div>
+              <div class="struggle-bullet">
+                <i class="fas fa-question-circle"></i> Confused between Industry
+                vs. Big 4?
+              </div>
+              <div class="struggle-bullet">
+                <i class="fas fa-chart-pie"></i> Want to break into your dream
+                domain?
+              </div>
+              <div class="struggle-bullet">
+                <i class="fas fa-user-tie"></i> Scared of Technical Interview
+                rounds?
+              </div>
+              <div class="struggle-bullet">
+                <i class="fas fa-money-bill-wave"></i> Don't know how to
+                negotiate your first salary?
+              </div>
+            </div>
+          </div>
         </div>
-        <p class="hero-subtitle" data-aos="fade-up" data-aos-delay="200">
-          Stop getting ignored by recruiters. Master your CV, Apply the Right Way and Learn to Crack Technical
-          Interviews in our 7 Day Masterclass
-        </p>
-        <div class="hero-cta-group" data-aos="fade-up" data-aos-delay="300">
-          <button id="notifyMeBtn" class="notify-me-btn">
+        <div class="journey-visual">
+          <div
+            class="visual-wrapper"
+            id="heroJourneyVisual"
+            style="
+              position: relative;
+              width: 100%;
+              max-width: 350px;
+              aspect-ratio: 1;
+              margin: 0 auto;
+            "
+          >
+            <img
+              id="svg1"
+              src="assets/scrollytelling1.svg"
+              style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                transition: opacity 0.3s;
+                opacity: 1;
+                transform: none;
+              "
+            />
+            <img
+              id="svg2"
+              src="assets/scrollytelling2offerletterinhand.svg"
+              style="
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+                transition: opacity 0.3s;
+                opacity: 0;
+                transform: none;
+              "
+            />
+            <canvas
+              id="morphCanvas"
+              width="700"
+              height="700"
+              style="
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                display: block;
+                opacity: 0;
+                transition: opacity 0.3s;
+                pointer-events: none;
+              "
+            ></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="journey-step-full">
+        <div class="journey-step step-2">
+          <h2>Launch Your Career 🚀</h2>
+          <p class="solution">
+            That's why we created the MSC CA Freshers Program. We ensure you
+            don't just get a job, but launch a career you love, with our 7-day
+            intensive masterclass.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="lottie-scrolly-wrapper">
+      <div class="lottie-scrolly-sticky">
+        <div class="ls-points-header">
+          <h2>Why Enroll?</h2>
+          <p>Unlock an ecosystem redesigned for your hyper-growth.</p>
+        </div>
+        <div class="ls-progress" id="lsProgressDots">
+          <span class="ls-progress-dot active"></span>
+          <span class="ls-progress-dot"></span>
+          <span class="ls-progress-dot"></span>
+          <span class="ls-progress-dot"></span>
+          <span class="ls-progress-dot"></span>
+          <span class="ls-progress-dot"></span>
+          <span class="ls-progress-dot"></span>
+          <span class="ls-progress-dot"></span>
+          <span class="ls-progress-dot"></span>
+        </div>
+        <div class="lottie-scrolly-row">
+          <!-- Left side: Lottie Animation -->
+          <div class="ls-lottie-col">
+            <dotlottie-player
+              id="scrollLottiePlayer"
+              src="assets/job cv.lottie"
+              background="transparent"
+              speed="1"
+              style="
+                width: 100%;
+                height: 100%;
+                max-width: 300px;
+                max-height: 300px;
+                margin: auto;
+              "
+            >
+            </dotlottie-player>
+          </div>
+
+          <!-- Right side: Content Points -->
+          <div class="ls-content-col" id="lottiePointsContainer">
+            <div class="ls-benefit-item" data-index="0">
+              <div class="ls-icon">
+                <img src="assets/9dayclass.svg" alt="7-Day Class" />
+              </div>
+              <div class="ls-text">
+                <h3>7-Day Intensive Masterclass</h3>
+                <p>
+                  Immerse yourself in a meticulously crafted curriculum pushing
+                  you beyond the standard CA syllabus.
+                </p>
+              </div>
+            </div>
+
+            <div class="ls-benefit-item" data-index="1">
+              <div class="ls-icon">
+                <img src="assets/owlfriend.svg" alt="Expert Support" />
+              </div>
+              <div class="ls-text">
+                <h3>Expert Support</h3>
+                <p>
+                  Get guided by industry veterans. Learn the unspoken rules of
+                  the corporate ladder.
+                </p>
+              </div>
+            </div>
+
+            <div class="ls-benefit-item" data-index="2">
+              <div class="ls-icon">
+                <img src="assets/giantpencilcheckmark.svg" alt="CV Review" />
+              </div>
+              <div class="ls-text">
+                <h3>Personal CV Review</h3>
+                <p>
+                  Transform your CV from a generic summary to a compelling
+                  professional narrative.
+                </p>
+              </div>
+            </div>
+
+            <div class="ls-benefit-item" data-index="3">
+              <div class="ls-icon">
+                <img src="assets/retromike.svg" alt="Mock Interviews" />
+              </div>
+              <div class="ls-text">
+                <h3>Mock Interviews</h3>
+                <p>Undergo AI driven mock interviews</p>
+              </div>
+            </div>
+
+            <div class="ls-benefit-item" data-index="4">
+              <div class="ls-icon">
+                <img src="assets/keywithcase.svg" alt="Exclusive Vacancies" />
+              </div>
+              <div class="ls-text">
+                <h3>Exclusive Vacancies</h3>
+                <p>
+                  Gain priority access to off-campus drives, hidden roles, and
+                  direct referrals.
+                </p>
+              </div>
+            </div>
+
+            <div class="ls-benefit-item" data-index="5">
+              <div class="ls-icon">
+                <img src="assets/overflowingfolder.svg" alt="Resources" />
+              </div>
+              <div class="ls-text">
+                <h3>A Vault of Resources</h3>
+                <p>
+                  Gain unlimited access to our repository of technical guides
+                  and interview cheat sheets.
+                </p>
+              </div>
+            </div>
+
+            <div class="ls-benefit-item" data-index="6">
+              <div class="ls-icon">
+                <img src="assets/owlfriend.svg" alt="Apply Strategy" />
+              </div>
+              <div class="ls-text">
+                <h3>Learn Applying the Right Way</h3>
+                <p>
+                  Stop blindly sending resumes. Learn the strategic approaches
+                  to catching recruiter attention.
+                </p>
+              </div>
+            </div>
+
+            <div class="ls-benefit-item" data-index="7">
+              <div class="ls-icon">
+                <img
+                  src="assets/giantpencilcheckmark.svg"
+                  alt="Placement Tips"
+                />
+              </div>
+              <div class="ls-text">
+                <h3>Campus Placement Tips & Tricks</h3>
+                <p>
+                  Master the specific dynamics of campus placements with proven
+                  strategies and inside knowledge.
+                </p>
+              </div>
+            </div>
+
+            <div class="ls-benefit-item" data-index="8">
+              <div class="ls-icon">
+                <img src="assets/keywithcase.svg" alt="Exclusive Vacancies" />
+              </div>
+              <div class="ls-text">
+                <h3>Access to Exclusives Vacancies</h3>
+                <p>
+                  Get direct access to unlisted opportunities and roles sourced
+                  directly from our network.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="curriculum">
+      <h2>What will you Learn?</h2>
+      <div class="days-grid">
+        <div class="day-card">
+          <div class="day-card-header">
+            <img src="assets/smilingpaper.svg" alt="Day 1" class="day-icon" />
+
+            <h3>Day 1: Crafting Perfect CV</h3>
+          </div>
+          <ul>
+            <li>
+              Structuring a High-Impact CV: Move beyond basic formats to
+              "Recruiter-Ready" layouts
+            </li>
+            <li>Beating the ATS: Keywords and formatting to pass ATS</li>
+            <li>
+              Personal CV Review: Personal 1:1 CV Review by Founder Himself
+            </li>
+            <li>
+              MSC AI CV Reviewer: Access to our proprietary tool for instant
+              feedback
+            </li>
+          </ul>
+        </div>
+        <div class="day-card">
+          <div class="day-card-header">
+            <img src="assets/magnet.svg" alt="Day 2" class="day-icon" />
+
+            <h3>Day 2: Navigating LinkedIn & Unknown Tricks</h3>
+          </div>
+          <ul>
+            <li>
+              Profile Optimization - Creating an Impactful Personal Profile
+            </li>
+            <li>
+              Right way to Apply - How to find jobs that aren't posted publicly
+            </li>
+            <li>
+              Getting Referrals - The exact way to get referrals from strangers
+            </li>
+            <li>Following Up - How to Follow up without being annoying</li>
+          </ul>
+        </div>
+        <div class="day-card">
+          <div class="day-card-header">
+            <img
+              src="assets/chubbymagnifyingglass.svg"
+              alt="Day 3"
+              class="day-icon"
+            />
+
+            <h3>Day 3: Mastering Naukri</h3>
+          </div>
+          <ul>
+            <li>
+              Profile Ranking: How to appear on the first page of recruiter
+              searches
+            </li>
+            <li>
+              The Recruiter's View: Understanding what HR actually sees on their
+              dashboard
+            </li>
+            <li>
+              10x Your Calls: Proven hacks to get more interview calls quickly
+            </li>
+          </ul>
+        </div>
+        <div class="day-card">
+          <div class="day-card-header">
+            <img src="assets/pudgyrobot.svg" alt="Day 4" class="day-icon" />
+
+            <h3>Day 4: Automating Applications & Cold Mailing</h3>
+          </div>
+          <ul>
+            <li>
+              Application Automation: Automating Mail Applications & LinkedIn
+            </li>
+            <li>
+              Customized CVs: How to customize your CV for specific JDs
+              instantly
+            </li>
+            <li>
+              Cold Email Mastery: Getting access to HR inboxes with
+              high-conversion templates
+            </li>
+          </ul>
+        </div>
+        <div class="day-card">
+          <div class="day-card-header">
+            <img src="assets/piechartcake.svg" alt="Day 5" class="day-icon" />
+
+            <h3>Day 5: Domain Clarity</h3>
+          </div>
+          <ul>
+            <li>
+              Decoding Roles: Understanding FP&A, Stat Audit, Internal Audit,
+              Treasury, and all domains
+            </li>
+            <li>
+              Fitment Analysis: Matching your personality and articleship
+              experience to the right domain
+            </li>
+            <li>
+              Target List: Identifying which companies are aggressively hiring
+              for your chosen role
+            </li>
+          </ul>
+        </div>
+        <div class="day-card">
+          <div class="day-card-header">
+            <img src="assets/excel.svg" alt="Day 6" class="day-icon" />
+
+            <h3>Day 6: Cracking Interviews</h3>
+          </div>
+          <ul>
+            <li>
+              Behavioural Interview Guide: How to clear the initial 10-minute
+              telephonic round
+            </li>
+            <li>
+              Technical Booklet: A cheat sheet for technical interview prep
+            </li>
+            <li>
+              Beyond the Interview: Preparation tips to help you cross Group
+              Discussions (GD), Assessment Tests, and more!
+            </li>
+          </ul>
+        </div>
+        <div class="day-card">
+          <div class="day-card-header">
+            <img src="assets/piggycoin.svg" alt="Day 7" class="day-icon" />
+
+            <h3>Day 7: Getting your Offer Letter</h3>
+          </div>
+          <ul>
+            <li>
+              Negotiation Scripts: Exact way to try increasing your package
+              without risking the offer
+            </li>
+            <li>
+              Offer Letter Red Flags: Terms you need to check before signing
+              Offer Letter
+            </li>
+            <li>
+              Final Reminders: Important tips and strategies to keep in mind as
+              you kick off your job hunt.
+            </li>
+          </ul>
+        </div>
+        <div class="day-card">
+          <div class="day-card-header">
+            <img
+              src="assets/universitywithcap.svg"
+              alt="Bonus"
+              class="day-icon"
+            />
+
+            <h3>Bonus: ICAI Campus Placement Strategy</h3>
+          </div>
+          <ul>
+            <li>
+              Center Selection: Data-backed advice on which Campus center to
+              choose
+            </li>
+            <li>
+              Shortlisting Logic: How big companies filter candidates for Campus
+              rounds
+            </li>
+            <li>
+              Cracking Interviews: Managing multiple interviews and
+              psychological pressure on Campus day
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="get-certified" data-aos="fade-up">
+      <h2 data-aos="zoom-in">Get <span class="highlight">Certified</span></h2>
+      <p data-aos="zoom-in" data-aos-delay="100">
+        Level up your career with MSC's industry recognised certificate.
+      </p>
+      <div
+        class="certificate-container"
+        data-aos="flip-left"
+        data-aos-delay="200"
+      >
+        <div class="certificate-frame rotated">
+          <div class="certificate-back"></div>
+          <div class="certificate-frame-border"></div>
+          <div class="certificate-glass">
+            <div class="certificate-content">
+              <img
+                class="certificate-image"
+                src="assets/freshercert.jpeg"
+                alt="MSC Certificate"
+              />
+              <div class="certificate-overlay"></div>
+              <div class="shine-effect"></div>
+            </div>
+            <div class="certificate-corner corner-tl"></div>
+            <div class="certificate-corner corner-tr"></div>
+            <div class="certificate-corner corner-bl"></div>
+            <div class="certificate-corner corner-br"></div>
+            <div class="floating-emblem">
+              <svg class="award-icon" viewBox="0 0 24 24">
+                <path
+                  d="M12 2L8 6H3v5l-2 4 2 4v5h5l4 2 4-2h5v-5l2-4-2-4V6h-5L12 2zm0 3l2.5 2.5H15v3l1.5 3-1.5 3v3h-3l-3 1.5L6 17H3v-3L1.5 11 3 8V5h3l3-2.5L12 5z"
+                />
+              </svg>
+            </div>
+          </div>
+          <div class="certificate-shadow"></div>
+        </div>
+      </div>
+      <div
+        class="action-btn"
+        data-aos="fade-up"
+        data-aos-delay="400"
+        style="
+          opacity: 0.6;
+          cursor: not-allowed;
+          background-color: #6c757d;
+          border-color: #6c757d;
+          pointer-events: none;
+        "
+      >
+        <span class="btn-content"> Registrations Temporarily Closed </span>
+      </div>
+    </section>
+
+    <div class="fixed-cta" id="cta-footer">
+      <div class="price-container">
+        <!--<span class="price-label">Program Fee:</span>-->
+        <div class="price">
+          <span class="discounted">₹2000</span>
+          <span class="original">₹5999</span>
+        </div>
+      </div>
+      <button id="notifyMeFooterBtn" class="notify-me-footer-btn">
+        <span class="notify-footer-icon">🔔</span>
+        <span class="notify-footer-text">Notify Me</span>
+      </button>
+    </div>
+
+    <section class="final-cta-section">
+      <div class="cta-content">
+        <div class="cta-text">
+          <h2>Ready to Land Your Dream Job?</h2>
+          <p>
+            Don't leave your career transition to chance. Join the 1000+ CAs who
+            have already launched their careers with us. Book your spot today
+            and unlock the ultimate placement playbook.
+          </p>
+          <button id="notifyMeFinalBtn" class="notify-me-btn">
             <span class="notify-btn-icon">🔔</span>
             <span class="notify-btn-text">Notify Me When Open</span>
           </button>
-          <a href="#curriculum" class="secondary-btn"
-            onclick="document.querySelector('.curriculum').scrollIntoView({behavior: 'smooth'})">View Curriculum</a>
         </div>
-        <div class="hero-stats-strip" data-aos="fade-up" data-aos-delay="400">
-          <div class="hero-stat-item">
-            <span class="hero-stat-number">1000+</span>
-            <span class="hero-stat-label">Students Placed</span>
-          </div>
-          <div class="hero-stat-divider"></div>
-          <div class="hero-stat-item">
-            <span class="hero-stat-number">500+</span>
-            <span class="hero-stat-label">Recruiting Partners</span>
-          </div>
-          <div class="hero-stat-divider"></div>
-          <div class="hero-stat-item">
-            <span class="hero-stat-number">₹11 LPA</span>
-            <span class="hero-stat-label">Avg. CTC</span>
-          </div>
+        <div class="cta-image" id="destination-svg-container">
+          <!-- Animated SVG injected via script -->
         </div>
       </div>
-      <div class="hero-visual" data-aos="zoom-in" data-aos-delay="200">
-        <div class="linkedin-carousel-container" style="margin: 0; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);">
-          <div class="linkedin-carousel" id="linkedinCarousel">
-            <!-- Cards will be populated by JavaScript -->
-          </div>
+    </section>
+
+    <section class="mentor" style="margin-bottom: 2rem">
+      <div class="mentor-profile">
+        <div class="mentor-image">
+          <img
+            src="https://mystudentclub.pages.dev/assets/mentor_transparent.png"
+            alt="CA Padam Bhansali"
+            class="mentor-img"
+          />
         </div>
-
-      </div>
-    </div>
-  </div>
-
-  <section class="success-stories">
-    <h2>Our <span class="dynamic-batch-month-long">January</span> batch <span class="highlight">Students</span> placed in Top Companies</h2>
-    <div class="carousel-container">
-      <div class="carousel" id="studentCarousel"></div>
-    </div>
-  </section>
-
-  <section class="hero-journey scrollytelling">
-    <div class="journey-container">
-      <div class="journey-text">
-        <div class="journey-step step-1">
-          <h2>The Reality Check: Are You Struggling?</h2>
-          <div class="struggles-list">
-            <div class="struggle-bullet"><i class="fas fa-times-circle"></i> Cleared CA but hearing "No Vacancy"?</div>
-            <div class="struggle-bullet"><i class="fas fa-question-circle"></i> Confused between Industry vs. Big 4?
-            </div>
-            <div class="struggle-bullet"><i class="fas fa-chart-pie"></i> Want to break into your dream domain?</div>
-            <div class="struggle-bullet"><i class="fas fa-user-tie"></i> Scared of Technical Interview rounds?</div>
-            <div class="struggle-bullet"><i class="fas fa-money-bill-wave"></i> Don't know how to negotiate your first
-              salary?</div>
+        <div class="mentor-info">
+          <h2>Meet your <span class="highlight">Mentor</span></h2>
+          <h3>CA Padam Bhansali</h3>
+          <p class="mentor-title">Founder, My Student Club</p>
+          <p class="mentor-description">
+            CA Padam Bhansali, Founder of My Student Club, has helped thousands
+            of CA students secure their dream roles in top companies for CTC
+            upto 25L! He did his Industrial Training from Flipkart in Business
+            Finance domain and has conducted 100+ guidance sessions positively
+            impacting 35,000+ students.<br /><br />
+            Want to secure your dream role? Join the MSC CA Freshers Program for
+            priority access to top opportunities!
+          </p>
+          <div class="mentor-achievements">
+            <div class="achievement">Helped 100+ Companies</div>
+            <div class="achievement">Placed 1000+ Students</div>
+            <div class="achievement">35k+ LinkedIn Followers</div>
           </div>
         </div>
       </div>
-      <div class="journey-visual">
-        <div class="visual-wrapper" id="heroJourneyVisual"
-          style="position: relative; width: 100%; max-width: 350px; aspect-ratio: 1; margin: 0 auto;">
-          <img id="svg1" src="assets/scrollytelling1.svg"
-            style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit: contain; transition: opacity 0.3s; opacity: 1; transform: none;">
-          <img id="svg2" src="assets/scrollytelling2offerletterinhand.svg"
-            style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit: contain; transition: opacity 0.3s; opacity: 0; transform: none;">
-          <canvas id="morphCanvas" width="700" height="700"
-            style="position: absolute; top:-50%; left:-50%; width: 200%; height: 200%; display: block; opacity: 0; transition: opacity 0.3s; pointer-events: none;"></canvas>
-        </div>
-      </div>
-    </div>
-    <div class="journey-step-full">
-      <div class="journey-step step-2">
-        <h2>Launch Your Career 🚀</h2>
-        <p class="solution">That's why we created the MSC CA Freshers Program. We ensure you don't just get a job, but
-          launch a career you love, with our 7-day intensive masterclass.</p>
-      </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="lottie-scrolly-wrapper">
-    <div class="lottie-scrolly-sticky">
-      <div class="ls-points-header">
-        <h2>Why Enroll?</h2>
-        <p>Unlock an ecosystem redesigned for your hyper-growth.</p>
-      </div>
-      <div class="ls-progress" id="lsProgressDots">
-        <span class="ls-progress-dot active"></span>
-        <span class="ls-progress-dot"></span>
-        <span class="ls-progress-dot"></span>
-        <span class="ls-progress-dot"></span>
-        <span class="ls-progress-dot"></span>
-        <span class="ls-progress-dot"></span>
-        <span class="ls-progress-dot"></span>
-        <span class="ls-progress-dot"></span>
-        <span class="ls-progress-dot"></span>
-      </div>
-      <div class="lottie-scrolly-row">
-        <!-- Left side: Lottie Animation -->
-        <div class="ls-lottie-col">
-          <dotlottie-player id="scrollLottiePlayer" src="assets/job cv.lottie" background="transparent" speed="1"
-            style="width: 100%; height: 100%; max-width: 300px; max-height: 300px; margin: auto;">
-          </dotlottie-player>
-        </div>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script src="script.js" type="module"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        // Menu Toggle
+        const menuButton = document.getElementById("menuButton");
+        const expandedMenu = document.getElementById("expandedMenu");
+        const menuCloseBtn = document.getElementById("menuCloseBtn");
 
-        <!-- Right side: Content Points -->
-        <div class="ls-content-col" id="lottiePointsContainer">
-          <div class="ls-benefit-item" data-index="0">
-            <div class="ls-icon"><img src="assets/9dayclass.svg" alt="7-Day Class"></div>
-            <div class="ls-text">
-              <h3>7-Day Intensive Masterclass</h3>
-              <p>Immerse yourself in a meticulously crafted curriculum pushing you beyond the standard CA syllabus.</p>
-            </div>
-          </div>
-
-          <div class="ls-benefit-item" data-index="1">
-            <div class="ls-icon"><img src="assets/owlfriend.svg" alt="Expert Support"></div>
-            <div class="ls-text">
-              <h3>Expert Support</h3>
-              <p>Get guided by industry veterans. Learn the unspoken rules of the corporate ladder.</p>
-            </div>
-          </div>
-
-          <div class="ls-benefit-item" data-index="2">
-            <div class="ls-icon"><img src="assets/giantpencilcheckmark.svg" alt="CV Review"></div>
-            <div class="ls-text">
-              <h3>Personal CV Review</h3>
-              <p>Transform your CV from a generic summary to a compelling professional narrative.</p>
-            </div>
-          </div>
-
-          <div class="ls-benefit-item" data-index="3">
-            <div class="ls-icon"><img src="assets/retromike.svg" alt="Mock Interviews"></div>
-            <div class="ls-text">
-              <h3>Mock Interviews</h3>
-              <p>Undergo AI driven mock interviews</p>
-            </div>
-          </div>
-
-          <div class="ls-benefit-item" data-index="4">
-            <div class="ls-icon"><img src="assets/keywithcase.svg" alt="Exclusive Vacancies"></div>
-            <div class="ls-text">
-              <h3>Exclusive Vacancies</h3>
-              <p>Gain priority access to off-campus drives, hidden roles, and direct referrals.</p>
-            </div>
-          </div>
-
-          <div class="ls-benefit-item" data-index="5">
-            <div class="ls-icon"><img src="assets/overflowingfolder.svg" alt="Resources"></div>
-            <div class="ls-text">
-              <h3>A Vault of Resources</h3>
-              <p>Gain unlimited access to our repository of technical guides and interview cheat sheets.</p>
-            </div>
-          </div>
-
-          <div class="ls-benefit-item" data-index="6">
-            <div class="ls-icon"><img src="assets/owlfriend.svg" alt="Apply Strategy"></div>
-            <div class="ls-text">
-              <h3>Learn Applying the Right Way</h3>
-              <p>Stop blindly sending resumes. Learn the strategic approaches to catching recruiter attention.</p>
-            </div>
-          </div>
-
-          <div class="ls-benefit-item" data-index="7">
-            <div class="ls-icon"><img src="assets/giantpencilcheckmark.svg" alt="Placement Tips"></div>
-            <div class="ls-text">
-              <h3>Campus Placement Tips & Tricks</h3>
-              <p>Master the specific dynamics of campus placements with proven strategies and inside knowledge.</p>
-            </div>
-          </div>
-
-          <div class="ls-benefit-item" data-index="8">
-            <div class="ls-icon"><img src="assets/keywithcase.svg" alt="Exclusive Vacancies"></div>
-            <div class="ls-text">
-              <h3>Access to Exclusives Vacancies</h3>
-              <p>Get direct access to unlisted opportunities and roles sourced directly from our network.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="curriculum">
-    <h2>What will you Learn?</h2>
-    <div class="days-grid">
-      <div class="day-card">
-        <div class="day-card-header">
-
-          <img src="assets/smilingpaper.svg" alt="Day 1" class="day-icon">
-
-          <h3>Day 1: Crafting Perfect CV</h3>
-
-        </div>
-        <ul>
-          <li>Structuring a High-Impact CV: Move beyond basic formats to "Recruiter-Ready" layouts</li>
-          <li>Beating the ATS: Keywords and formatting to pass ATS</li>
-          <li>Personal CV Review: Personal 1:1 CV Review by Founder Himself</li>
-          <li>MSC AI CV Reviewer: Access to our proprietary tool for instant feedback</li>
-        </ul>
-      </div>
-      <div class="day-card">
-        <div class="day-card-header">
-
-          <img src="assets/magnet.svg" alt="Day 2" class="day-icon">
-
-          <h3>Day 2: Navigating LinkedIn & Unknown Tricks</h3>
-
-        </div>
-        <ul>
-          <li>Profile Optimization - Creating an Impactful Personal Profile</li>
-          <li>Right way to Apply - How to find jobs that aren't posted publicly</li>
-          <li>Getting Referrals - The exact way to get referrals from strangers</li>
-          <li>Following Up - How to Follow up without being annoying</li>
-        </ul>
-      </div>
-      <div class="day-card">
-        <div class="day-card-header">
-
-          <img src="assets/chubbymagnifyingglass.svg" alt="Day 3" class="day-icon">
-
-          <h3>Day 3: Mastering Naukri</h3>
-
-        </div>
-        <ul>
-          <li>Profile Ranking: How to appear on the first page of recruiter searches</li>
-          <li>The Recruiter's View: Understanding what HR actually sees on their dashboard</li>
-          <li>10x Your Calls: Proven hacks to get more interview calls quickly</li>
-        </ul>
-      </div>
-      <div class="day-card">
-        <div class="day-card-header">
-
-          <img src="assets/pudgyrobot.svg" alt="Day 4" class="day-icon">
-
-          <h3>Day 4: Automating Applications & Cold Mailing</h3>
-
-        </div>
-        <ul>
-          <li>Application Automation: Automating Mail Applications & LinkedIn</li>
-          <li>Customized CVs: How to customize your CV for specific JDs instantly</li>
-          <li>Cold Email Mastery: Getting access to HR inboxes with high-conversion templates</li>
-        </ul>
-      </div>
-      <div class="day-card">
-        <div class="day-card-header">
-
-          <img src="assets/piechartcake.svg" alt="Day 5" class="day-icon">
-
-          <h3>Day 5: Domain Clarity</h3>
-
-        </div>
-        <ul>
-          <li>Decoding Roles: Understanding FP&A, Stat Audit, Internal Audit, Treasury, and all domains</li>
-          <li>Fitment Analysis: Matching your personality and articleship experience to the right domain</li>
-          <li>Target List: Identifying which companies are aggressively hiring for your chosen role</li>
-        </ul>
-      </div>
-      <div class="day-card">
-        <div class="day-card-header">
-
-          <img src="assets/excel.svg" alt="Day 6" class="day-icon">
-
-          <h3>Day 6: Cracking Interviews</h3>
-
-        </div>
-        <ul>
-          <li>Behavioural Interview Guide: How to clear the initial 10-minute telephonic round</li>
-          <li>Technical Booklet: A cheat sheet for technical interview prep</li>
-          <li>Beyond the Interview: Preparation tips to help you cross Group Discussions (GD), Assessment Tests, and
-            more!</li>
-        </ul>
-      </div>
-      <div class="day-card">
-        <div class="day-card-header">
-
-          <img src="assets/piggycoin.svg" alt="Day 7" class="day-icon">
-
-          <h3>Day 7: Getting your Offer Letter</h3>
-
-        </div>
-        <ul>
-          <li>Negotiation Scripts: Exact way to try increasing your package without risking the offer</li>
-          <li>Offer Letter Red Flags: Terms you need to check before signing Offer Letter</li>
-          <li>Final Reminders: Important tips and strategies to keep in mind as you kick off your job hunt.</li>
-        </ul>
-      </div>
-      <div class="day-card">
-        <div class="day-card-header">
-
-          <img src="assets/universitywithcap.svg" alt="Bonus" class="day-icon">
-
-          <h3>Bonus: ICAI Campus Placement Strategy</h3>
-
-        </div>
-        <ul>
-          <li>Center Selection: Data-backed advice on which Campus center to choose</li>
-          <li>Shortlisting Logic: How big companies filter candidates for Campus rounds</li>
-          <li>Cracking Interviews: Managing multiple interviews and psychological pressure on Campus day</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-
-  <section class="get-certified" data-aos="fade-up">
-    <h2 data-aos="zoom-in">Get <span class="highlight">Certified</span></h2>
-    <p data-aos="zoom-in" data-aos-delay="100">Level up your career with MSC's industry recognised certificate.</p>
-    <div class="certificate-container" data-aos="flip-left" data-aos-delay="200">
-      <div class="certificate-frame rotated">
-        <div class="certificate-back"></div>
-        <div class="certificate-frame-border"></div>
-        <div class="certificate-glass">
-          <div class="certificate-content">
-            <img class="certificate-image" src="assets/freshercert.jpeg" alt="MSC Certificate" />
-            <div class="certificate-overlay"></div>
-            <div class="shine-effect"></div>
-          </div>
-          <div class="certificate-corner corner-tl"></div>
-          <div class="certificate-corner corner-tr"></div>
-          <div class="certificate-corner corner-bl"></div>
-          <div class="certificate-corner corner-br"></div>
-          <div class="floating-emblem">
-            <svg class="award-icon" viewBox="0 0 24 24">
-              <path
-                d="M12 2L8 6H3v5l-2 4 2 4v5h5l4 2 4-2h5v-5l2-4-2-4V6h-5L12 2zm0 3l2.5 2.5H15v3l1.5 3-1.5 3v3h-3l-3 1.5L6 17H3v-3L1.5 11 3 8V5h3l3-2.5L12 5z" />
-            </svg>
-          </div>
-        </div>
-        <div class="certificate-shadow"></div>
-      </div>
-    </div>
-    <div class="action-btn" data-aos="fade-up" data-aos-delay="400" style="opacity: 0.6; cursor: not-allowed; background-color: #6c757d; border-color: #6c757d; pointer-events: none;">
-      <span class="btn-content">
-        Registrations Temporarily Closed
-      </span>
-    </div>
-  </section>
-
-  <div class="fixed-cta" id="cta-footer">
-    <div class="price-container">
-      <!--<span class="price-label">Program Fee:</span>-->
-      <div class="price">
-        <span class="discounted">₹2000</span>
-        <span class="original">₹5999</span>
-      </div>
-    </div>
-    <button id="notifyMeFooterBtn" class="notify-me-footer-btn">
-      <span class="notify-footer-icon">🔔</span>
-      <span class="notify-footer-text">Notify Me</span>
-    </button>
-  </div>
-
-  <section class="final-cta-section">
-    <div class="cta-content">
-      <div class="cta-text">
-        <h2>Ready to Land Your Dream Job?</h2>
-        <p>Don't leave your career transition to chance. Join the 1000+ CAs who have already launched their careers
-          with
-          us. Book your spot today and unlock the ultimate placement playbook.</p>
-        <button id="notifyMeFinalBtn" class="notify-me-btn">
-          <span class="notify-btn-icon">🔔</span>
-          <span class="notify-btn-text">Notify Me When Open</span>
-        </button>
-      </div>
-      <div class="cta-image" id="destination-svg-container">
-        <!-- Animated SVG injected via script -->
-      </div>
-    </div>
-  </section>
-
-  <section class="mentor" style="margin-bottom: 2rem;">
-    <div class="mentor-profile">
-      <div class="mentor-image">
-        <img src="https://mystudentclub.pages.dev/assets/mentor_transparent.png" alt="CA Padam Bhansali"
-          class="mentor-img">
-      </div>
-      <div class="mentor-info">
-        <h2>Meet your <span class="highlight">Mentor</span></h2>
-        <h3>CA Padam Bhansali</h3>
-        <p class="mentor-title">Founder, My Student Club</p>
-        <p class="mentor-description">
-          CA Padam Bhansali, Founder of My Student Club, has helped thousands of CA students secure their dream
-          roles in top companies for CTC upto 25L! He did his Industrial Training from
-          Flipkart in Business Finance domain and has conducted 100+ guidance sessions positively impacting 35,000+
-          students.<br><br>
-          Want to secure your dream role? Join the MSC CA Freshers Program for priority access to top
-          opportunities!
-        </p>
-        <div class="mentor-achievements">
-          <div class="achievement">Helped 100+ Companies</div>
-          <div class="achievement">Placed 1000+ Students</div>
-          <div class="achievement">35k+ LinkedIn Followers</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-  <script src="script.js" type="module"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      // Menu Toggle
-      const menuButton = document.getElementById('menuButton');
-      const expandedMenu = document.getElementById('expandedMenu');
-      const menuCloseBtn = document.getElementById('menuCloseBtn');
-
-      if (menuButton && expandedMenu) {
-        menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
-      }
-      if (menuCloseBtn && expandedMenu) {
-        menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
-      }
-
-      // Dropdowns
-      const dropdowns = document.querySelectorAll('.menu-item-dropdown button');
-      dropdowns.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const content = btn.nextElementSibling;
-          if (content) {
-            content.style.display = content.style.display === 'block' ? 'none' : 'block';
-            btn.classList.toggle('active');
-          }
-        });
-      });
-
-      // Supabase Credentials
-      const SUPABASE_URL = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-      let sb = null;
-      if (typeof supabase !== 'undefined') {
-        sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-      }
-
-      // Auth Check
-      let session = null;
-      if (sb) {
-        const { data } = await sb.auth.getSession();
-        session = data?.session;
-        const authContainer = document.querySelector('.auth-buttons-container');
-        const lmsLink = document.getElementById('lms-nav-link');
-
-        if (authContainer) {
-          if (session) {
-            authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn"><i class="fas fa-user"></i></a>';
-            if (lmsLink) lmsLink.style.display = 'flex';
-          } else {
-            authContainer.innerHTML = '<a href="/login.html" class="auth-icon-btn"><i class="fas fa-sign-in-alt"></i></a>';
-          }
+        if (menuButton && expandedMenu) {
+          menuButton.addEventListener("click", () =>
+            expandedMenu.classList.add("active"),
+          );
         }
-      }
-
-      // ==========================================
-      // NOTIFY ME PUSH NOTIFICATIONS FLOW
-      // ==========================================
-      const NOTIFY_FIREBASE_CONFIG = {
-        apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
-        authDomain: "msc-notif.firebaseapp.com",
-        projectId: "msc-notif",
-        storageBucket: "msc-notif.appspot.com",
-        messagingSenderId: "228639798414",
-        appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
-        measurementId: "G-X4M23TB936"
-      };
-      const NOTIFY_VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
-      const NOTIFY_TOPIC = "ca-fresher-program-notify";
-      const MANAGE_TOPIC_URL = "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription";
-
-      function getOrCreateDeviceKey() {
-        let key = localStorage.getItem('msc_device_key');
-        if (!key) {
-          key = 'dk_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 9);
-          localStorage.setItem('msc_device_key', key);
-        }
-        return key;
-      }
-
-      function setNotifyStatus(msg, type) {
-        const el = document.getElementById('notifyStatus');
-        if (!el) return;
-        el.textContent = msg;
-        el.className = 'notify-status show notify-status--' + type;
-        if (type !== 'error') setTimeout(() => el.className = 'notify-status', 4000);
-      }
-
-      async function saveToNotifiable(fcmToken) {
-        if (!sb) return;
-        const deviceKey = getOrCreateDeviceKey();
-        const email = session?.user?.email || null;
-        await sb
-          .from('notifiable')
-          .insert({ key: deviceKey, email, topic: 'ca-fresher' })
-          .throwOnError();
-      }
-
-      async function initNotifyMe() {
-        const btn = document.getElementById('notifyMeBtn');
-        const footerBtn = document.getElementById('notifyMeFooterBtn');
-        const finalBtn = document.getElementById('notifyMeFinalBtn');
-        const allBtns = [btn, footerBtn, finalBtn];
-
-        function syncButtonStates(subscribed) {
-          if (btn) {
-            btn.querySelector('.notify-btn-text').textContent = subscribed ? 'You Will Be Notified!' : 'Notify Me When Open';
-            btn.querySelector('.notify-btn-icon').textContent = subscribed ? '✅' : '🔔';
-            btn.classList.toggle('subscribed', subscribed);
-          }
-          if (footerBtn) {
-            footerBtn.querySelector('.notify-footer-text').textContent = subscribed ? 'Notified ✅' : 'Notify Me';
-            footerBtn.querySelector('.notify-footer-icon').textContent = subscribed ? '✅' : '🔔';
-            footerBtn.classList.toggle('subscribed', subscribed);
-          }
-          if (finalBtn) {
-            finalBtn.querySelector('.notify-btn-text').textContent = subscribed ? 'You Will Be Notified!' : 'Notify Me When Open';
-            finalBtn.querySelector('.notify-btn-icon').textContent = subscribed ? '✅' : '🔔';
-            finalBtn.classList.toggle('subscribed', subscribed);
-          }
+        if (menuCloseBtn && expandedMenu) {
+          menuCloseBtn.addEventListener("click", () =>
+            expandedMenu.classList.remove("active"),
+          );
         }
 
-        const isSubscribed = localStorage.getItem('notif_ca_fresher_program') === '1';
-        syncButtonStates(isSubscribed);
-
-        async function handleNotifyClick() {
-          if (this.disabled) return;
-          allBtns.forEach(b => b && (b.disabled = true));
-
-          // Already subscribed — unsubscribe
-          if (localStorage.getItem('notif_ca_fresher_program') === '1') {
-            const token = localStorage.getItem('notif_fcm_token_caf');
-            if (token) {
-              try {
-                await fetch(MANAGE_TOPIC_URL, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ token, topic: NOTIFY_TOPIC, action: 'unsubscribe' })
-                });
-              } catch (_) {}
-            }
-            localStorage.removeItem('notif_ca_fresher_program');
-            localStorage.removeItem('notif_fcm_token_caf');
-            syncButtonStates(false);
-            setNotifyStatus('Unsubscribed.', 'info');
-            allBtns.forEach(b => b && (b.disabled = false));
-            return;
-          }
-
-          // Request notification permission
-          setNotifyStatus('Requesting permission…', 'info');
-          let permission;
-          try { permission = await Notification.requestPermission(); } catch (e) { permission = 'denied'; }
-
-          if (permission !== 'granted') {
-            setNotifyStatus('Please allow notifications in your browser settings.', 'error');
-            allBtns.forEach(b => b && (b.disabled = false));
-            return;
-          }
-
-          // Initialize Firebase & get FCM token
-          setNotifyStatus('Setting up…', 'info');
-          try {
-            if (!firebase.apps.length) firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
-            const messaging = firebase.messaging();
-            if ('serviceWorker' in navigator) {
-              await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-            }
-            const fcmToken = await messaging.getToken({ vapidKey: NOTIFY_VAPID_KEY });
-            if (!fcmToken) throw new Error('No FCM token');
-
-            // Subscribe to FCM topic
-            setNotifyStatus('Subscribing…', 'info');
-            const res = await fetch(MANAGE_TOPIC_URL, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ token: fcmToken, topic: NOTIFY_TOPIC, action: 'subscribe' })
-            });
-            const data = await res.json();
-            if (!data.success) throw new Error(data.error || 'Subscription failed');
-
-            // Save to Supabase notifiable table
-            try { await saveToNotifiable(fcmToken); } catch (_) {/* ignore duplicate key */}
-
-            localStorage.setItem('notif_ca_fresher_program', '1');
-            localStorage.setItem('notif_fcm_token_caf', fcmToken);
-            syncButtonStates(true);
-            setNotifyStatus("You're on the list! We'll notify you when the program opens.", 'success');
-          } catch (err) {
-            console.error('NotifyMe error:', err);
-            setNotifyStatus('Something went wrong. Please try again.', 'error');
-          }
-
-          allBtns.forEach(b => b && (b.disabled = false));
-        }
-
-        allBtns.forEach(b => {
-          if (b) b.addEventListener('click', handleNotifyClick);
-        });
-      }
-
-      initNotifyMe();
-
-      // Dynamic Batch Month Calculation (-1 month)
-      const d = new Date();
-      d.setMonth(d.getMonth() - 1);
-      const monthShort = d.toLocaleString('en-US', { month: 'short' });
-      const monthLong = d.toLocaleString('en-US', { month: 'long' });
-      const yearShort = d.getFullYear().toString().slice(-2);
-
-      const batchFormat1 = `${monthShort}'${yearShort}`; // Dec'25
-      const batchFormat2 = `${monthLong}`; // December
-      const batchFormat3 = `${monthShort} '${yearShort}`; // Dec '25
-
-      document.querySelectorAll('.dynamic-batch-month').forEach(el => el.textContent = batchFormat1);
-      document.querySelectorAll('.dynamic-batch-month-long').forEach(el => el.textContent = batchFormat2);
-      document.querySelectorAll('.dynamic-batch-month-space').forEach(el => el.textContent = batchFormat3);
-
-      // Hero Journey Morphing Logic
-      const steps = document.querySelectorAll('.journey-step');
-      const morphCanvas = document.getElementById('morphCanvas');
-
-      if (steps.length > 0 && morphCanvas && document.getElementById('svg1')) {
-        const svg1 = document.getElementById('svg1');
-        const svg2 = document.getElementById('svg2');
-        const ctx = morphCanvas.getContext('2d', { willReadFrequently: true });
-
-        // Handle High-DPI Displays (Retina) for sharp quality
-        const dpr = window.devicePixelRatio || 1;
-
-        // The display size in CSS (matches original img layout roughly)
-        const displayWidth = 350;
-        const displayHeight = 350;
-
-        // The actual pixel resolution backing the canvas (200% larger to prevent clipping particles)
-        const canvasWidth = displayWidth * 2 * dpr;
-        const canvasHeight = displayHeight * 2 * dpr;
-
-        morphCanvas.width = canvasWidth;
-        morphCanvas.height = canvasHeight;
-
-        // Scale context so internal drawing logic uses CSS pixels
-        ctx.scale(dpr, dpr);
-        // Translate context to perfectly center the 100% drawing inside the new 200% canvas bounds
-        ctx.translate(displayWidth / 2, displayHeight / 2);
-
-        let particles = [];
-        let isLoaded = false;
-        let morphProgress = 0;
-
-        // Animation state machine
-        let currentSequenceStep = 0;
-        let isAnimating = false;
-        let lastTime = 0;
-        let inView = false;
-        let isFirstLoop = true;
-
-        // Toggles visibility of the 3 layers
-        function setVisibility(showCanvas, showIm1, showIm2) {
-          morphCanvas.style.opacity = showCanvas ? '1' : '0';
-          svg1.style.opacity = showIm1 ? '1' : '0';
-          svg2.style.opacity = showIm2 ? '1' : '0';
-        }
-
-        // Global scales calculated per image to ensure perfect sizing at rest
-        let scaleImg1 = 1;
-        let scaleImg2 = 1;
-
-        class Particle {
-          constructor(x, y, color1, destX, destY, color2) {
-            this.startX = x;
-            this.startY = y;
-            this.color1 = color1;
-            this.destX = destX;
-            this.destY = destY;
-            this.color2 = color2;
-
-            // Random explosion offsets for "pixels flying apart" feeling
-            this.randX = (Math.random() - 0.5) * 150;
-            this.randY = (Math.random() - 0.5) * 150;
-
-            // Particles enlarge dynamically in mid-air
-            this.maxAddSize = Math.random() * 10 + 4;
-          }
-
-          draw(ctx, progress) {
-            // Easing function for smoother movement
-            const easeInOutCubic = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-            let p = easeInOutCubic(progress);
-            let flyout = Math.sin(progress * Math.PI);
-
-            let currentX = this.startX + (this.destX - this.startX) * p + this.randX * flyout;
-            let currentY = this.startY + (this.destY - this.startY) * p + this.randY * flyout;
-
-            // The scale offset logic:
-            // At 0% and 100% progress, we want the particles to be pin-prick small (sub-pixel)
-            // so they merge identically with the high-res SVG without blockiness.
-            // As they fly out, they swell to their normal/enlarged size.
-
-            // Calculate how close we are to the exact start (0) or end (1). 
-            // 0 = edge, 1 = middle of animation
-            let edgeProximity = Math.sin(progress * Math.PI);
-
-            // Base size shrinks to 0.4 near edges for hyper-resolution, scales up to 1.2 mid-flight
-            let baseSize = 0.4 + (0.8 * edgeProximity);
-
-            // Add the dynamic enlargement for the "burst" effect only in the middle
-            let enlarge = baseSize + flyout * this.maxAddSize;
-
-            let r = this.color1[0] + (this.color2[0] - this.color1[0]) * p | 0;
-            let g = this.color1[1] + (this.color2[1] - this.color1[1]) * p | 0;
-            let b = this.color1[2] + (this.color2[2] - this.color1[2]) * p | 0;
-            let a = (this.color1[3] + (this.color2[3] - this.color1[3]) * p) / 255;
-
-            if (a < 0.05) return;
-
-            ctx.fillStyle = `rgba(${r},${g},${b},${a.toFixed(2)})`;
-            // Drawing the rect perfectly centered on its grid coordinate
-            ctx.fillRect(currentX - enlarge / 2, currentY - enlarge / 2, enlarge, enlarge);
-          }
-        }
-
-        const img1 = new Image();
-        const img2 = new Image();
-        img1.src = 'assets/scrollytelling1.svg';
-        img2.src = 'assets/scrollytelling2offerletterinhand.svg';
-
-        Promise.all([
-          new Promise(res => { img1.onload = res; }),
-          new Promise(res => { img2.onload = res; })
-        ]).then(() => {
-          const offMain = document.createElement('canvas');
-          offMain.width = displayWidth;
-          offMain.height = displayHeight;
-          const offCtx = offMain.getContext('2d', { willReadFrequently: true });
-
-          function getPixels(img) {
-            offCtx.clearRect(0, 0, displayWidth, displayHeight);
-
-            // Emulate object-fit: contain precisely
-            const imgRatio = img.width / img.height;
-            const boxRatio = displayWidth / displayHeight;
-
-            let drawW, drawH, drawX, drawY;
-
-            if (imgRatio > boxRatio) {
-              drawW = displayWidth;
-              drawH = displayWidth / imgRatio;
-              drawX = 0;
-              drawY = (displayHeight - drawH) / 2;
-            } else {
-              drawW = displayHeight * imgRatio;
-              drawH = displayHeight;
-              drawX = (displayWidth - drawW) / 2;
-              drawY = 0;
-            }
-
-            offCtx.drawImage(img, drawX, drawY, drawW, drawH);
-            const data = offCtx.getImageData(0, 0, displayWidth, displayHeight).data;
-            const pixels = [];
-
-            // Step size dictates resolution. Lower = sharper, higher particle count.
-            const step = 2;
-            for (let y = 0; y < displayHeight; y += step) {
-              for (let x = 0; x < displayWidth; x += step) {
-                const i = (y * displayWidth + x) * 4;
-
-                // Extremely strict alpha check (avoid sampling dropshadows/anti-aliasing 
-                // that synthetically bloat the canvas size far past the sharp SVG edge)
-                if (data[i + 3] > 150) {
-                  // We also record the actual drawn color, NOT the pre-multiplied canvas color
-                  pixels.push({ x, y, c: [data[i], data[i + 1], data[i + 2], data[i + 3]] });
-                }
-              }
-            }
-            return pixels;
-          }
-
-          let img1Pixels = getPixels(img1);
-          let img2Pixels = getPixels(img2);
-
-          let maxCount = Math.max(img1Pixels.length, img2Pixels.length);
-          if (maxCount === 0) return;
-
-          // Fill out the lesser array by randomly selecting from its own pixels
-          while (img1Pixels.length < maxCount) { img1Pixels.push(img1Pixels[Math.floor(Math.random() * img1Pixels.length)]); }
-          while (img2Pixels.length < maxCount) { img2Pixels.push(img2Pixels[Math.floor(Math.random() * img2Pixels.length)]); }
-
-          // Organic mapping: rather than full random which turns into a static mess, 
-          // we shuffle slightly to keep nearby pixels generally moving together,
-          // creating a highly structured "breaking apart" feel.
-          function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-              const j = Math.floor(Math.random() * (i + 1));
-              [array[i], array[j]] = [array[j], array[i]];
-            }
-          }
-          shuffleArray(img1Pixels);
-          shuffleArray(img2Pixels);
-
-          for (let i = 0; i < maxCount; i++) {
-            particles.push(new Particle(
-              img1Pixels[i].x, img1Pixels[i].y, img1Pixels[i].c,
-              img2Pixels[i].x, img2Pixels[i].y, img2Pixels[i].c
-            ));
-          }
-          isLoaded = true;
-
-          // Initialize view - Native SVG 1 showing, canvas hidden
-          morphCanvas.style.transition = 'opacity 0.5s ease-in-out';
-          svg1.style.transition = 'opacity 0.5s ease-in-out';
-          svg2.style.transition = 'opacity 0.5s ease-in-out';
-          setVisibility(false, true, false);
-
-          // If it was already in view before load finished, start it!
-          if (inView && !isAnimating) {
-            startSequence();
-          }
-        });
-
-        // The Animation Sequence Steps
-        const runSequence = (time) => {
-          if (!isLoaded || !isAnimating) return;
-
-          if (!lastTime) lastTime = time;
-          const delta = time - lastTime;
-          lastTime = time;
-
-          if (currentSequenceStep === 1 || currentSequenceStep === 3) {
-            // We are actively morphing, draw the canvas particles
-            ctx.clearRect(-displayWidth, -displayHeight, displayWidth * 3, displayHeight * 3);
-            for (let i = 0; i < particles.length; i++) {
-              particles[i].draw(ctx, morphProgress);
-            }
-          }
-
-          if (currentSequenceStep === 0) {
-            // Hold native purely clean SVG 1
-            // Start morph to SVG 2 immediately on scroll-in
-            setVisibility(false, true, false);
-
-            // Pre-draw canvas at progress 0 so it's ready for the crossfade
-            ctx.clearRect(-displayWidth, -displayHeight, displayWidth * 3, displayHeight * 3);
-            for (let i = 0; i < particles.length; i++) { particles[i].draw(ctx, 0); }
-
-            currentSequenceStep = 0.5; // transitional wait state
-
-            let holdSVG1Duration = isFirstLoop ? 0 : 3000;
-            isFirstLoop = false;
-
-            setTimeout(() => {
-              if (isAnimating) {
-                setVisibility(true, false, false); // Crossfade to Canvas
-                // Wait lightly for CSS transition to catch up before moving particles
-                setTimeout(() => {
-                  if (isAnimating) {
-                    currentSequenceStep = 1;
-                    lastTime = 0;
-                    requestAnimationFrame(runSequence);
-                  }
-                }, 200);
-              }
-            }, holdSVG1Duration); // 0 sec hold on first morph, 3 sec afterwards
-            return;
-          }
-          else if (currentSequenceStep === 1) {
-            // Morphing Canvas 1 -> 2
-            morphProgress += delta / 2000;
-            if (morphProgress >= 1) {
-              morphProgress = 1;
-
-              // Draw final frame perfectly aligned
-              ctx.clearRect(-displayWidth, -displayHeight, displayWidth * 3, displayHeight * 3);
-              for (let i = 0; i < particles.length; i++) { particles[i].draw(ctx, 1); }
-
-              currentSequenceStep = 2; // Jump to hold SVG 2
-            }
-          }
-          else if (currentSequenceStep === 2) {
-            // Hold native purely clean SVG 2
-            // Crossfade from Canvas 100% back to SVG 2
-            setVisibility(false, false, true);
-
-            // Pre-draw canvas at 100% so it's ready for next loop
-            ctx.clearRect(-displayWidth, -displayHeight, displayWidth * 3, displayHeight * 3);
-            for (let i = 0; i < particles.length; i++) { particles[i].draw(ctx, 1); }
-
-            currentSequenceStep = 2.5;
-            setTimeout(() => {
-              if (isAnimating) {
-                setVisibility(true, false, false); // Crossfade backing to Canvas
-                setTimeout(() => {
-                  if (isAnimating) {
-                    currentSequenceStep = 3;
-                    lastTime = 0;
-                    requestAnimationFrame(runSequence);
-                  }
-                }, 200);
-              }
-            }, 3000); // 3 sec hold on SVG 2
-            return;
-          }
-          else if (currentSequenceStep === 3) {
-            // Morphing Canvas 2 -> 1
-            morphProgress -= delta / 2000;
-            if (morphProgress <= 0) {
-              morphProgress = 0;
-
-              // Draw final zero frame
-              ctx.clearRect(-displayWidth, -displayHeight, displayWidth * 3, displayHeight * 3);
-              for (let i = 0; i < particles.length; i++) { particles[i].draw(ctx, 0); }
-
-              currentSequenceStep = 0; // Jump to hold SVG 1
-            }
-          }
-
-          if (isAnimating) requestAnimationFrame(runSequence);
-        };
-
-        function startSequence() {
-          isAnimating = true;
-          lastTime = 0;
-          morphProgress = 0;
-          currentSequenceStep = 0;
-          requestAnimationFrame(runSequence);
-        }
-
-        const journeySection = document.querySelector('.hero-journey');
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              inView = true;
-              if (isLoaded && !isAnimating) {
-                startSequence();
-              }
-            } else {
-              inView = false;
-              isAnimating = false;
+        // Dropdowns
+        const dropdowns = document.querySelectorAll(
+          ".menu-item-dropdown button",
+        );
+        dropdowns.forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            const content = btn.nextElementSibling;
+            if (content) {
+              content.style.display =
+                content.style.display === "block" ? "none" : "block";
+              btn.classList.toggle("active");
             }
           });
-        }, { threshold: 0.2 });
+        });
 
-        if (journeySection) observer.observe(journeySection);
-      }
+        // Supabase Credentials
+        const SUPABASE_URL = "https://izsggdtdiacxdsjjncdq.supabase.co";
+        const SUPABASE_KEY =
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0";
+        let sb = null;
+        if (typeof supabase !== "undefined") {
+          sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        }
 
-      // Fetch animated SVG
-      const ctaImageContainer = document.getElementById('destination-svg-container');
-      if (ctaImageContainer) {
-        fetch('assets/destinationdreamjob_animated.svg')
-          .then(res => res.text())
-          .then(svg => {
-            ctaImageContainer.innerHTML = svg;
-          })
-          .catch(console.error);
-      }
-    });
-  </script>
-  <!-- Beautiful Floating status alerts placeholder -->
-  <div id="notifyStatus" class="notify-status"></div>
+        // Auth Check
+        let session = null;
+        if (sb) {
+          const { data } = await sb.auth.getSession();
+          session = data?.session;
+          const authContainer = document.querySelector(
+            ".auth-buttons-container",
+          );
+          const lmsLink = document.getElementById("lms-nav-link");
 
-  <!-- Google Analytics -->
-  <script src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65" async></script>
-  <script>
+          if (authContainer) {
+            if (session) {
+              authContainer.innerHTML =
+                '<a href="/profile.html" class="auth-icon-btn" aria-label="Your profile"><i class="fas fa-user"></i></a>';
+              if (lmsLink) lmsLink.style.display = "flex";
+            } else {
+              authContainer.innerHTML =
+                '<a href="/login.html" class="auth-icon-btn" aria-label="Log in"><i class="fas fa-sign-in-alt"></i></a>';
+            }
+          }
+        }
+
+        // ==========================================
+        // NOTIFY ME PUSH NOTIFICATIONS FLOW
+        // ==========================================
+        const NOTIFY_FIREBASE_CONFIG = {
+          apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
+          authDomain: "msc-notif.firebaseapp.com",
+          projectId: "msc-notif",
+          storageBucket: "msc-notif.appspot.com",
+          messagingSenderId: "228639798414",
+          appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
+          measurementId: "G-X4M23TB936",
+        };
+        const NOTIFY_VAPID_KEY =
+          "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
+        const NOTIFY_TOPIC = "ca-fresher-program-notify";
+        const MANAGE_TOPIC_URL =
+          "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription";
+
+        function getOrCreateDeviceKey() {
+          let key = localStorage.getItem("msc_device_key");
+          if (!key) {
+            key =
+              "dk_" +
+              Date.now().toString(36) +
+              "_" +
+              Math.random().toString(36).slice(2, 9);
+            localStorage.setItem("msc_device_key", key);
+          }
+          return key;
+        }
+
+        function setNotifyStatus(msg, type) {
+          const el = document.getElementById("notifyStatus");
+          if (!el) return;
+          el.textContent = msg;
+          el.className = "notify-status show notify-status--" + type;
+          if (type !== "error")
+            setTimeout(() => (el.className = "notify-status"), 4000);
+        }
+
+        async function saveToNotifiable(fcmToken) {
+          if (!sb) return;
+          const deviceKey = getOrCreateDeviceKey();
+          const email = session?.user?.email || null;
+          await sb
+            .from("notifiable")
+            .insert({ key: deviceKey, email, topic: "ca-fresher" })
+            .throwOnError();
+        }
+
+        async function initNotifyMe() {
+          const btn = document.getElementById("notifyMeBtn");
+          const footerBtn = document.getElementById("notifyMeFooterBtn");
+          const finalBtn = document.getElementById("notifyMeFinalBtn");
+          const allBtns = [btn, footerBtn, finalBtn];
+
+          function syncButtonStates(subscribed) {
+            if (btn) {
+              btn.querySelector(".notify-btn-text").textContent = subscribed
+                ? "You Will Be Notified!"
+                : "Notify Me When Open";
+              btn.querySelector(".notify-btn-icon").textContent = subscribed
+                ? "✅"
+                : "🔔";
+              btn.classList.toggle("subscribed", subscribed);
+            }
+            if (footerBtn) {
+              footerBtn.querySelector(".notify-footer-text").textContent =
+                subscribed ? "Notified ✅" : "Notify Me";
+              footerBtn.querySelector(".notify-footer-icon").textContent =
+                subscribed ? "✅" : "🔔";
+              footerBtn.classList.toggle("subscribed", subscribed);
+            }
+            if (finalBtn) {
+              finalBtn.querySelector(".notify-btn-text").textContent =
+                subscribed ? "You Will Be Notified!" : "Notify Me When Open";
+              finalBtn.querySelector(".notify-btn-icon").textContent =
+                subscribed ? "✅" : "🔔";
+              finalBtn.classList.toggle("subscribed", subscribed);
+            }
+          }
+
+          const isSubscribed =
+            localStorage.getItem("notif_ca_fresher_program") === "1";
+          syncButtonStates(isSubscribed);
+
+          async function handleNotifyClick() {
+            if (this.disabled) return;
+            allBtns.forEach((b) => b && (b.disabled = true));
+
+            // Already subscribed — unsubscribe
+            if (localStorage.getItem("notif_ca_fresher_program") === "1") {
+              const token = localStorage.getItem("notif_fcm_token_caf");
+              if (token) {
+                try {
+                  await fetch(MANAGE_TOPIC_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      token,
+                      topic: NOTIFY_TOPIC,
+                      action: "unsubscribe",
+                    }),
+                  });
+                } catch (_) {}
+              }
+              localStorage.removeItem("notif_ca_fresher_program");
+              localStorage.removeItem("notif_fcm_token_caf");
+              syncButtonStates(false);
+              setNotifyStatus("Unsubscribed.", "info");
+              allBtns.forEach((b) => b && (b.disabled = false));
+              return;
+            }
+
+            // Request notification permission
+            setNotifyStatus("Requesting permission…", "info");
+            let permission;
+            try {
+              permission = await Notification.requestPermission();
+            } catch (e) {
+              permission = "denied";
+            }
+
+            if (permission !== "granted") {
+              setNotifyStatus(
+                "Please allow notifications in your browser settings.",
+                "error",
+              );
+              allBtns.forEach((b) => b && (b.disabled = false));
+              return;
+            }
+
+            // Initialize Firebase & get FCM token
+            setNotifyStatus("Setting up…", "info");
+            try {
+              if (!firebase.apps.length)
+                firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
+              const messaging = firebase.messaging();
+              if ("serviceWorker" in navigator) {
+                await navigator.serviceWorker.register(
+                  "/firebase-messaging-sw.js",
+                );
+              }
+              const fcmToken = await messaging.getToken({
+                vapidKey: NOTIFY_VAPID_KEY,
+              });
+              if (!fcmToken) throw new Error("No FCM token");
+
+              // Subscribe to FCM topic
+              setNotifyStatus("Subscribing…", "info");
+              const res = await fetch(MANAGE_TOPIC_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  token: fcmToken,
+                  topic: NOTIFY_TOPIC,
+                  action: "subscribe",
+                }),
+              });
+              const data = await res.json();
+              if (!data.success)
+                throw new Error(data.error || "Subscription failed");
+
+              // Save to Supabase notifiable table
+              try {
+                await saveToNotifiable(fcmToken);
+              } catch (_) {
+                /* ignore duplicate key */
+              }
+
+              localStorage.setItem("notif_ca_fresher_program", "1");
+              localStorage.setItem("notif_fcm_token_caf", fcmToken);
+              syncButtonStates(true);
+              setNotifyStatus(
+                "You're on the list! We'll notify you when the program opens.",
+                "success",
+              );
+            } catch (err) {
+              console.error("NotifyMe error:", err);
+              setNotifyStatus(
+                "Something went wrong. Please try again.",
+                "error",
+              );
+            }
+
+            allBtns.forEach((b) => b && (b.disabled = false));
+          }
+
+          allBtns.forEach((b) => {
+            if (b) b.addEventListener("click", handleNotifyClick);
+          });
+        }
+
+        initNotifyMe();
+
+        // Dynamic Batch Month Calculation (-1 month)
+        const d = new Date();
+        d.setMonth(d.getMonth() - 1);
+        const monthShort = d.toLocaleString("en-US", { month: "short" });
+        const monthLong = d.toLocaleString("en-US", { month: "long" });
+        const yearShort = d.getFullYear().toString().slice(-2);
+
+        const batchFormat1 = `${monthShort}'${yearShort}`; // Dec'25
+        const batchFormat2 = `${monthLong}`; // December
+        const batchFormat3 = `${monthShort} '${yearShort}`; // Dec '25
+
+        document
+          .querySelectorAll(".dynamic-batch-month")
+          .forEach((el) => (el.textContent = batchFormat1));
+        document
+          .querySelectorAll(".dynamic-batch-month-long")
+          .forEach((el) => (el.textContent = batchFormat2));
+        document
+          .querySelectorAll(".dynamic-batch-month-space")
+          .forEach((el) => (el.textContent = batchFormat3));
+
+        // Hero Journey Morphing Logic
+        const steps = document.querySelectorAll(".journey-step");
+        const morphCanvas = document.getElementById("morphCanvas");
+
+        if (
+          steps.length > 0 &&
+          morphCanvas &&
+          document.getElementById("svg1")
+        ) {
+          const svg1 = document.getElementById("svg1");
+          const svg2 = document.getElementById("svg2");
+          const ctx = morphCanvas.getContext("2d", {
+            willReadFrequently: true,
+          });
+
+          // Handle High-DPI Displays (Retina) for sharp quality
+          const dpr = window.devicePixelRatio || 1;
+
+          // The display size in CSS (matches original img layout roughly)
+          const displayWidth = 350;
+          const displayHeight = 350;
+
+          // The actual pixel resolution backing the canvas (200% larger to prevent clipping particles)
+          const canvasWidth = displayWidth * 2 * dpr;
+          const canvasHeight = displayHeight * 2 * dpr;
+
+          morphCanvas.width = canvasWidth;
+          morphCanvas.height = canvasHeight;
+
+          // Scale context so internal drawing logic uses CSS pixels
+          ctx.scale(dpr, dpr);
+          // Translate context to perfectly center the 100% drawing inside the new 200% canvas bounds
+          ctx.translate(displayWidth / 2, displayHeight / 2);
+
+          let particles = [];
+          let isLoaded = false;
+          let morphProgress = 0;
+
+          // Animation state machine
+          let currentSequenceStep = 0;
+          let isAnimating = false;
+          let lastTime = 0;
+          let inView = false;
+          let isFirstLoop = true;
+
+          // Toggles visibility of the 3 layers
+          function setVisibility(showCanvas, showIm1, showIm2) {
+            morphCanvas.style.opacity = showCanvas ? "1" : "0";
+            svg1.style.opacity = showIm1 ? "1" : "0";
+            svg2.style.opacity = showIm2 ? "1" : "0";
+          }
+
+          // Global scales calculated per image to ensure perfect sizing at rest
+          let scaleImg1 = 1;
+          let scaleImg2 = 1;
+
+          class Particle {
+            constructor(x, y, color1, destX, destY, color2) {
+              this.startX = x;
+              this.startY = y;
+              this.color1 = color1;
+              this.destX = destX;
+              this.destY = destY;
+              this.color2 = color2;
+
+              // Random explosion offsets for "pixels flying apart" feeling
+              this.randX = (Math.random() - 0.5) * 150;
+              this.randY = (Math.random() - 0.5) * 150;
+
+              // Particles enlarge dynamically in mid-air
+              this.maxAddSize = Math.random() * 10 + 4;
+            }
+
+            draw(ctx, progress) {
+              // Easing function for smoother movement
+              const easeInOutCubic = (t) =>
+                t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+              let p = easeInOutCubic(progress);
+              let flyout = Math.sin(progress * Math.PI);
+
+              let currentX =
+                this.startX +
+                (this.destX - this.startX) * p +
+                this.randX * flyout;
+              let currentY =
+                this.startY +
+                (this.destY - this.startY) * p +
+                this.randY * flyout;
+
+              // The scale offset logic:
+              // At 0% and 100% progress, we want the particles to be pin-prick small (sub-pixel)
+              // so they merge identically with the high-res SVG without blockiness.
+              // As they fly out, they swell to their normal/enlarged size.
+
+              // Calculate how close we are to the exact start (0) or end (1).
+              // 0 = edge, 1 = middle of animation
+              let edgeProximity = Math.sin(progress * Math.PI);
+
+              // Base size shrinks to 0.4 near edges for hyper-resolution, scales up to 1.2 mid-flight
+              let baseSize = 0.4 + 0.8 * edgeProximity;
+
+              // Add the dynamic enlargement for the "burst" effect only in the middle
+              let enlarge = baseSize + flyout * this.maxAddSize;
+
+              let r =
+                (this.color1[0] + (this.color2[0] - this.color1[0]) * p) | 0;
+              let g =
+                (this.color1[1] + (this.color2[1] - this.color1[1]) * p) | 0;
+              let b =
+                (this.color1[2] + (this.color2[2] - this.color1[2]) * p) | 0;
+              let a =
+                (this.color1[3] + (this.color2[3] - this.color1[3]) * p) / 255;
+
+              if (a < 0.05) return;
+
+              ctx.fillStyle = `rgba(${r},${g},${b},${a.toFixed(2)})`;
+              // Drawing the rect perfectly centered on its grid coordinate
+              ctx.fillRect(
+                currentX - enlarge / 2,
+                currentY - enlarge / 2,
+                enlarge,
+                enlarge,
+              );
+            }
+          }
+
+          const img1 = new Image();
+          const img2 = new Image();
+          img1.src = "assets/scrollytelling1.svg";
+          img2.src = "assets/scrollytelling2offerletterinhand.svg";
+
+          Promise.all([
+            new Promise((res) => {
+              img1.onload = res;
+            }),
+            new Promise((res) => {
+              img2.onload = res;
+            }),
+          ]).then(() => {
+            const offMain = document.createElement("canvas");
+            offMain.width = displayWidth;
+            offMain.height = displayHeight;
+            const offCtx = offMain.getContext("2d", {
+              willReadFrequently: true,
+            });
+
+            function getPixels(img) {
+              offCtx.clearRect(0, 0, displayWidth, displayHeight);
+
+              // Emulate object-fit: contain precisely
+              const imgRatio = img.width / img.height;
+              const boxRatio = displayWidth / displayHeight;
+
+              let drawW, drawH, drawX, drawY;
+
+              if (imgRatio > boxRatio) {
+                drawW = displayWidth;
+                drawH = displayWidth / imgRatio;
+                drawX = 0;
+                drawY = (displayHeight - drawH) / 2;
+              } else {
+                drawW = displayHeight * imgRatio;
+                drawH = displayHeight;
+                drawX = (displayWidth - drawW) / 2;
+                drawY = 0;
+              }
+
+              offCtx.drawImage(img, drawX, drawY, drawW, drawH);
+              const data = offCtx.getImageData(
+                0,
+                0,
+                displayWidth,
+                displayHeight,
+              ).data;
+              const pixels = [];
+
+              // Step size dictates resolution. Lower = sharper, higher particle count.
+              const step = 2;
+              for (let y = 0; y < displayHeight; y += step) {
+                for (let x = 0; x < displayWidth; x += step) {
+                  const i = (y * displayWidth + x) * 4;
+
+                  // Extremely strict alpha check (avoid sampling dropshadows/anti-aliasing
+                  // that synthetically bloat the canvas size far past the sharp SVG edge)
+                  if (data[i + 3] > 150) {
+                    // We also record the actual drawn color, NOT the pre-multiplied canvas color
+                    pixels.push({
+                      x,
+                      y,
+                      c: [data[i], data[i + 1], data[i + 2], data[i + 3]],
+                    });
+                  }
+                }
+              }
+              return pixels;
+            }
+
+            let img1Pixels = getPixels(img1);
+            let img2Pixels = getPixels(img2);
+
+            let maxCount = Math.max(img1Pixels.length, img2Pixels.length);
+            if (maxCount === 0) return;
+
+            // Fill out the lesser array by randomly selecting from its own pixels
+            while (img1Pixels.length < maxCount) {
+              img1Pixels.push(
+                img1Pixels[Math.floor(Math.random() * img1Pixels.length)],
+              );
+            }
+            while (img2Pixels.length < maxCount) {
+              img2Pixels.push(
+                img2Pixels[Math.floor(Math.random() * img2Pixels.length)],
+              );
+            }
+
+            // Organic mapping: rather than full random which turns into a static mess,
+            // we shuffle slightly to keep nearby pixels generally moving together,
+            // creating a highly structured "breaking apart" feel.
+            function shuffleArray(array) {
+              for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+              }
+            }
+            shuffleArray(img1Pixels);
+            shuffleArray(img2Pixels);
+
+            for (let i = 0; i < maxCount; i++) {
+              particles.push(
+                new Particle(
+                  img1Pixels[i].x,
+                  img1Pixels[i].y,
+                  img1Pixels[i].c,
+                  img2Pixels[i].x,
+                  img2Pixels[i].y,
+                  img2Pixels[i].c,
+                ),
+              );
+            }
+            isLoaded = true;
+
+            // Initialize view - Native SVG 1 showing, canvas hidden
+            morphCanvas.style.transition = "opacity 0.5s ease-in-out";
+            svg1.style.transition = "opacity 0.5s ease-in-out";
+            svg2.style.transition = "opacity 0.5s ease-in-out";
+            setVisibility(false, true, false);
+
+            // If it was already in view before load finished, start it!
+            if (inView && !isAnimating) {
+              startSequence();
+            }
+          });
+
+          // The Animation Sequence Steps
+          const runSequence = (time) => {
+            if (!isLoaded || !isAnimating) return;
+
+            if (!lastTime) lastTime = time;
+            const delta = time - lastTime;
+            lastTime = time;
+
+            if (currentSequenceStep === 1 || currentSequenceStep === 3) {
+              // We are actively morphing, draw the canvas particles
+              ctx.clearRect(
+                -displayWidth,
+                -displayHeight,
+                displayWidth * 3,
+                displayHeight * 3,
+              );
+              for (let i = 0; i < particles.length; i++) {
+                particles[i].draw(ctx, morphProgress);
+              }
+            }
+
+            if (currentSequenceStep === 0) {
+              // Hold native purely clean SVG 1
+              // Start morph to SVG 2 immediately on scroll-in
+              setVisibility(false, true, false);
+
+              // Pre-draw canvas at progress 0 so it's ready for the crossfade
+              ctx.clearRect(
+                -displayWidth,
+                -displayHeight,
+                displayWidth * 3,
+                displayHeight * 3,
+              );
+              for (let i = 0; i < particles.length; i++) {
+                particles[i].draw(ctx, 0);
+              }
+
+              currentSequenceStep = 0.5; // transitional wait state
+
+              let holdSVG1Duration = isFirstLoop ? 0 : 3000;
+              isFirstLoop = false;
+
+              setTimeout(() => {
+                if (isAnimating) {
+                  setVisibility(true, false, false); // Crossfade to Canvas
+                  // Wait lightly for CSS transition to catch up before moving particles
+                  setTimeout(() => {
+                    if (isAnimating) {
+                      currentSequenceStep = 1;
+                      lastTime = 0;
+                      requestAnimationFrame(runSequence);
+                    }
+                  }, 200);
+                }
+              }, holdSVG1Duration); // 0 sec hold on first morph, 3 sec afterwards
+              return;
+            } else if (currentSequenceStep === 1) {
+              // Morphing Canvas 1 -> 2
+              morphProgress += delta / 2000;
+              if (morphProgress >= 1) {
+                morphProgress = 1;
+
+                // Draw final frame perfectly aligned
+                ctx.clearRect(
+                  -displayWidth,
+                  -displayHeight,
+                  displayWidth * 3,
+                  displayHeight * 3,
+                );
+                for (let i = 0; i < particles.length; i++) {
+                  particles[i].draw(ctx, 1);
+                }
+
+                currentSequenceStep = 2; // Jump to hold SVG 2
+              }
+            } else if (currentSequenceStep === 2) {
+              // Hold native purely clean SVG 2
+              // Crossfade from Canvas 100% back to SVG 2
+              setVisibility(false, false, true);
+
+              // Pre-draw canvas at 100% so it's ready for next loop
+              ctx.clearRect(
+                -displayWidth,
+                -displayHeight,
+                displayWidth * 3,
+                displayHeight * 3,
+              );
+              for (let i = 0; i < particles.length; i++) {
+                particles[i].draw(ctx, 1);
+              }
+
+              currentSequenceStep = 2.5;
+              setTimeout(() => {
+                if (isAnimating) {
+                  setVisibility(true, false, false); // Crossfade backing to Canvas
+                  setTimeout(() => {
+                    if (isAnimating) {
+                      currentSequenceStep = 3;
+                      lastTime = 0;
+                      requestAnimationFrame(runSequence);
+                    }
+                  }, 200);
+                }
+              }, 3000); // 3 sec hold on SVG 2
+              return;
+            } else if (currentSequenceStep === 3) {
+              // Morphing Canvas 2 -> 1
+              morphProgress -= delta / 2000;
+              if (morphProgress <= 0) {
+                morphProgress = 0;
+
+                // Draw final zero frame
+                ctx.clearRect(
+                  -displayWidth,
+                  -displayHeight,
+                  displayWidth * 3,
+                  displayHeight * 3,
+                );
+                for (let i = 0; i < particles.length; i++) {
+                  particles[i].draw(ctx, 0);
+                }
+
+                currentSequenceStep = 0; // Jump to hold SVG 1
+              }
+            }
+
+            if (isAnimating) requestAnimationFrame(runSequence);
+          };
+
+          function startSequence() {
+            isAnimating = true;
+            lastTime = 0;
+            morphProgress = 0;
+            currentSequenceStep = 0;
+            requestAnimationFrame(runSequence);
+          }
+
+          const journeySection = document.querySelector(".hero-journey");
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  inView = true;
+                  if (isLoaded && !isAnimating) {
+                    startSequence();
+                  }
+                } else {
+                  inView = false;
+                  isAnimating = false;
+                }
+              });
+            },
+            { threshold: 0.2 },
+          );
+
+          if (journeySection) observer.observe(journeySection);
+        }
+
+        // Fetch animated SVG
+        const ctaImageContainer = document.getElementById(
+          "destination-svg-container",
+        );
+        if (ctaImageContainer) {
+          fetch("assets/destinationdreamjob_animated.svg")
+            .then((res) => res.text())
+            .then((svg) => {
+              ctaImageContainer.innerHTML = svg;
+            })
+            .catch(console.error);
+        }
+      });
+    </script>
+    <!-- Beautiful Floating status alerts placeholder -->
+    <div id="notifyStatus" class="notify-status"></div>
+
+    <!-- Google Analytics -->
+    <script
+      src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65"
+      async
+    ></script>
+    <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag() { dataLayer.push(arguments); }
-      gtag('js', new Date());
-      gtag('config', 'G-1450NCVE65');
-  </script>
-</body>
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-1450NCVE65");
+    </script>
+  </body>
+</html>

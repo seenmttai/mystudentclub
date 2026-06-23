@@ -1011,7 +1011,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTabsAndContent();
 
         if (window.innerWidth < 768) {
-            DOMElements.courseSidebar.classList.remove('active');
+            DOMElements.courseSidebar.classList.remove('open');
         }
         localStorage.setItem(`lastVideoId_${state.courseSlug}`, videoId);
         fetchComments();
@@ -1566,10 +1566,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const setupEventListeners = () => {
         DOMElements.hamburgerMenu.addEventListener('click', () => DOMElements.navLinks.classList.toggle('active'));
-        DOMElements.logoutButton.addEventListener('click', async () => {
+        window._lmsLogout = async () => {
             await supabase.auth.signOut();
             window.location.href = 'https://mystudentclub.com/login';
-        });
+        };
+        DOMElements.logoutButton.addEventListener('click', window._lmsLogout);
 
 
         DOMElements.enrollRedirectBtn.addEventListener('click', () => {
@@ -1580,8 +1581,8 @@ document.addEventListener('DOMContentLoaded', () => {
             DOMElements.downloadCertificateBtn.addEventListener('click', generateCertificate);
         }
 
-        DOMElements.sidebarToggleBtn.addEventListener('click', () => DOMElements.courseSidebar.classList.add('active'));
-        DOMElements.sidebarCloseBtn.addEventListener('click', () => DOMElements.courseSidebar.classList.remove('active'));
+        DOMElements.sidebarToggleBtn.addEventListener('click', () => DOMElements.courseSidebar.classList.add('open'));
+        DOMElements.sidebarCloseBtn.addEventListener('click', () => DOMElements.courseSidebar.classList.remove('open'));
 
         DOMElements.prevVideoBtn.addEventListener('click', () => { const v = getAdjacentVideo('previous'); if (v) selectVideo(v.id); });
         DOMElements.nextVideoBtn.addEventListener('click', () => { const v = getAdjacentVideo('next'); if (v) selectVideo(v.id); });

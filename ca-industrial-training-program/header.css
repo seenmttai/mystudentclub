@@ -1,0 +1,353 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
+
+:root {
+  --primary-brand: #3b82f6;
+  --surface-bg: #ffffff;
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --border-light: #e5e7eb;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --shadow-lg:
+    0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --transition-fast: 0.15s ease-out;
+  --transition-std: 0.25s ease-out;
+
+  --af-bg: #f9fafb;
+  --af-text: #0f1b2d;
+  --af-sub: #647592;
+  --af-chip: #eef2f9;
+  --af-brand: #2563eb;
+  --af-header-h: 64px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Poppins", sans-serif;
+  background-color: var(--af-bg);
+  color: #1f2937;
+  padding-top: calc(var(--af-header-h) + env(safe-area-inset-top, 0px));
+  padding-bottom: 65px;
+  line-height: 1.6;
+}
+
+/* ── Airy Flow app header ── */
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--af-header-h) + env(safe-area-inset-top, 0px));
+  background: var(--af-bg);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 18px;
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-decoration: none;
+}
+
+.header-logo {
+  height: 40px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+.header-greeting {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.header-greeting .greeting-sub {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--af-sub);
+  line-height: 1.4;
+}
+
+.header-greeting .greeting-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--af-text);
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Header action icons ── */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.auth-buttons-container {
+  display: flex;
+  align-items: center;
+}
+
+.hdr-icon-btn,
+.menu-button-style,
+.auth-icon-btn {
+  width: 42px;
+  height: 42px;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  color: var(--af-text);
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+  position: relative;
+}
+
+.hdr-icon-btn:hover,
+.menu-button-style:hover,
+.auth-icon-btn:hover {
+  background: var(--af-chip);
+}
+
+.hdr-icon-btn:active,
+.menu-button-style:active,
+.auth-icon-btn:active {
+  transform: scale(0.94);
+}
+
+.hdr-icon-btn svg,
+.menu-button-style svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* Account button keeps a soft brand tint so it reads as "you" */
+.auth-icon-btn {
+  background: #eaf1ff;
+  color: var(--af-brand);
+}
+
+.auth-icon-btn:hover {
+  background: #dbe7ff;
+}
+
+.auth-icon-btn i {
+  font-size: 1.05rem;
+}
+
+/* ── Slide-in expanded menu (side menu) ── */
+.expanded-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  max-width: 86vw;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--surface-bg);
+  box-shadow: var(--shadow-lg);
+  padding: 1.5rem;
+  padding-top: 4.5rem;
+  transform: translateX(100%);
+  transition: transform 0.3s var(--transition-std);
+  z-index: 1100;
+  overflow-y: auto;
+}
+
+.expanded-menu.active {
+  transform: translateX(0);
+}
+
+.menu-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  background: var(--af-chip);
+  color: #dc2626;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.menu-close-btn:hover {
+  background: #fde2e2;
+  transform: scale(1.05);
+}
+
+.menu-close-btn svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.5;
+}
+
+.menu-items-container,
+.menu-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.menu-item {
+  padding: 0.8rem 1rem;
+  color: var(--af-text);
+  text-decoration: none;
+  border-radius: 12px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+}
+
+.menu-item:hover {
+  background-color: var(--af-chip);
+  color: var(--af-brand);
+}
+
+/* ── Dropdown groups inside the menu ── */
+.menu-item-dropdown {
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdown-icon {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s var(--transition-fast);
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+}
+
+.dropdown-icon.open {
+  transform: rotate(180deg);
+}
+
+.dropdown-content {
+  display: none;
+  padding-left: 1rem;
+  margin-top: 0.25rem;
+}
+
+.dropdown-content.active {
+  display: block;
+}
+
+.dropdown-item {
+  display: block;
+  padding: 0.6rem 1rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(37, 99, 235, 0.08);
+  color: var(--af-brand);
+}
+
+/* ── Expanded-menu scrollbar ── */
+.expanded-menu::-webkit-scrollbar {
+  width: 6px;
+}
+
+.expanded-menu::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.expanded-menu::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #cbd5e1 0%, #94a3b8 100%);
+  border-radius: 10px;
+}
+
+.expanded-menu {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  :root {
+    --af-header-h: 58px;
+  }
+
+  body {
+    padding-bottom: 60px;
+  }
+
+  .app-header {
+    padding: 0 14px;
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .header-logo {
+    height: 36px;
+  }
+
+  .header-greeting .greeting-name {
+    font-size: 16px;
+  }
+
+  .hdr-icon-btn,
+  .menu-button-style,
+  .auth-icon-btn {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 380px) {
+  .header-greeting .greeting-sub {
+    font-size: 10px;
+  }
+
+  .header-greeting .greeting-name {
+    font-size: 15px;
+  }
+}

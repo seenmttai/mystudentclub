@@ -1,87 +1,269 @@
 ﻿<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MSC Articleship Program</title>
-  <link rel="icon" type="image/png" href="https://mystudentclub.pages.dev/assets/icon-70x70.png">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="sections.css">
-  <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="/scripts/portal-style.css">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- Firebase for push notifications -->
-  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
-</head>
-
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MSC Articleship Program</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="https://mystudentclub.pages.dev/assets/icon-70x70.png"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="sections.css" />
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="header.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Firebase for push notifications -->
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
+  </head>
 
   <body>
-    <header class="site-header">
-      <div class="header-container">
-        <a href="/" class="brand-link">
-          <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
-        </a>
-        <div class="header-actions">
-          <div class="auth-buttons-container"></div>
-          <button class="menu-button-style" aria-label="Open menu" id="menuButton">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+    <header class="app-header" id="appHeader">
+      <a href="/" class="header-left" aria-label="My Student Club — Home">
+        <svg
+          class="header-logo"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 207 223"
+          fill="none"
+          aria-label="My Student Club"
+        >
+          <path
+            d="m188.4 49.73-72.25-41.61c-9.06-5.29-18.21-4.74-26.19 0l-70.9 40.81c-7.32 4.03-10.97 11.88-10.97 19.86v14.89c2.12-1.59 4.37-1.94 6.61-1.87 2.38 0.08 4.05 0.7 5.79 1.95v-14.58c0-4.34 1.26-6.8 5.52-9.26l71.93-41.41c4.95-2.85 9.07-1.13 12.08 0.83l70.98 40.74c3.8 2.14 5.39 4.6 5.39 9.1v14.58c2.12-1.33 3.53-1.95 5.99-1.95 2.78-0.07 5.03 0.55 7.35 2.14v-15.16c0-7.78-4.5-15.18-11.33-19.06z"
+            fill="url(#msc-g0)"
+          />
+          <path
+            d="m199.7 128.3-2.24 3.32c-6.68 8.36-7.65 15.35-5.97 24.32 1.1 5.85 1.72 10.43-0.31 15.01 5.85-4.19 8.52-11.51 8.52-16.78v-25.87z"
+            fill="url(#msc-g1)"
+          />
+          <path
+            d="m8.12 127.8v26.34c0 6.72 2.93 13.52 8.79 17.94-1.95-4.73-1.49-9.15-0.23-16.09 1.59-9.05-1.04-17.8-6.52-24.4l-2.04-2.77v-1.02z"
+            fill="url(#msc-g2)"
+          />
+          <path
+            d="m199.4 90.46c-1.59-4.03-2.84-5.99-6.18-5.99-4.8 0-7.34 4.5-5.83 8.99 2.17 6.23 2.47 8.69 1.94 14.2-1.47 8.82-6.66 18.11-17.62 21.91-2.58 0.94-3.04 3.16-2.35 5.84l5.33 25.6c0.38 1.63-2.02 5.66-3.13 6.4-1.59 0-4.85-4.5-4.85-4.5v-24.19c0-3.7-1.05-6.46-4.31-6.84-6.61-0.74-15.44-1.91-20.77-0.5-2.46 0.65-2.92 9.09-2.15 15.69 1.18 7.02 4.44 20.34 3.74 29.02-0.85 9.05-4.51 14.56-10.36 17.88l-20.69 12.44c-5.56 3.32-12.96 2.93-18.29 0l-20.14-11.65c-6.68-3.32-9.14-8.44-9.14-19.69 0-8.06 3.11-18.67 3.49-24.9 0.94-11.41-2.56-18.45-5.82-18.83-5.41-0.66-10.36 0.27-17.26 0.42-3.5 0.08-4.94 2.12-4.94 6.61v24.19c0 1.17-3.66 5.51-4.6 5.36-1.59-0.31-3.76-4.42-3.69-5.08l5.93-25.53c0.77-2.84-0.08-5.43-3.01-6.25-10.49-3.24-17.17-13.07-17.24-23.4-0.08-5.51 1.65-9.75 2.7-13.85 1.18-4.49-2.4-9.07-6.44-9.07-3.81 0-5.42 1.69-7.01 6.27-5.11 12.13-3.45 26.9 3.71 37.71 7.26 9.37 8.85 15.9 7.11 27.52-1.82 9.13-1.36 15.78 5.9 19.81l67.46 38.73c7.82 4.03 16.03 3.29 23.51-0.59l69.51-38.41c6.34-3.33 6.15-11.62 4.35-19.54-2.24-10.41 0.31-18.26 6.99-27.09 7.48-10.1 8.73-24.38 4.15-38.69z"
+            fill="url(#msc-g3)"
+          />
+          <path
+            d="m43.26 104.1c-6.92 0-10.8 5.82-10.8 10.74 0 6.78 5.26 10.98 10.8 10.98 6.49 0 10.83-5.59 10.83-10.98 0-5.97-4.88-10.74-10.83-10.74z"
+            fill="url(#msc-g4)"
+          />
+          <path
+            d="m163.5 104.1c-7.4 0-11.05 6.23-11.05 10.74 0 6.39 5.25 10.98 10.66 10.98 6.99 0 11.33-5.59 11.33-10.98 0-5.97-5.07-10.74-10.94-10.74z"
+            fill="url(#msc-g5)"
+          />
+          <path
+            d="m103.4 76.34c-9.14-0.31-14.92 7.54-14.92 14.67 0 8.52 7.26 14.75 14.61 14.75 9.14 0 15-7.85 15-14.75 0-7.85-6.68-14.67-14.69-14.67z"
+            fill="#0077BF"
+          />
+          <path
+            d="m150.7 59.61c-2.11-4.19-4.78-4.85-8.04-4.85-6.6 0-9.54 6.25-7.8 11.37 2.86 6.56 3.55 11.05 3.09 18.06-1.39 13.72-12.85 26.7-28.26 29.94-2.46 0.31-3.4 1.94-4.66 4.25-0.54 0.94-0.31 0.71-0.38 1.88 1.41 14 6.49 46.02 7.1 52.58 0.15 1.02-6.68 9.23-6.68 9.23-1.59 1.31-3.08 0.47-4.11-1.06-1.87-2.15-6.01-6.64-6.24-7.58l6.92-52.52c-0.31-2.05-3.65-6.16-5.24-6.47-14.28-2.13-26.41-15.22-27.46-30.25-0.45-6.23 1.05-11.15 3.51-17.04 2.17-5.87-1.71-12.1-8.61-12.1-4.58 0-6.83 2.13-8.42 5.76-7.73 15.45-6.79 34.9 4.52 49.92 8.78 10.81 12.51 21.96 11.97 35.68-0.45 9.6-4.44 18.8-3.12 30.66 0.94 6.55 3.12 10.51 8.37 12.89l18.54 10.81c5.41 2.93 11.53 2.19 16.5-1.13l18.46-10.49c6.68-3.32 8.27-12.08 7.02-20.84-1.49-9.6-3.23-16.6-2.85-24.38 0.61-10.81 4.56-21.62 13.11-33.27 10.48-15.03 10.03-31.6 2.76-51.05z"
+            fill="#0077BF"
+          />
+          <defs>
+            <linearGradient
+              id="msc-g0"
+              x1="18.89"
+              x2="184.3"
+              y1="17.93"
+              y2="75.88"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#94ADB9" />
+              <stop offset="1" stop-color="#889CA7" />
+            </linearGradient>
+            <linearGradient
+              id="msc-g1"
+              x1="193.3"
+              x2="199.8"
+              y1="133.1"
+              y2="166.8"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#889CA7" />
+              <stop offset="1" stop-color="#A4B5BE" />
+            </linearGradient>
+            <linearGradient
+              id="msc-g2"
+              x1="8.119"
+              x2="16.14"
+              y1="132.7"
+              y2="169.1"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#738A98" />
+              <stop offset="1" stop-color="#A4B5BE" />
+            </linearGradient>
+            <linearGradient
+              id="msc-g3"
+              x1="8.087"
+              x2="199.9"
+              y1="101.3"
+              y2="170.5"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#557484" />
+              <stop offset="1" stop-color="#6E8793" />
+            </linearGradient>
+            <linearGradient
+              id="msc-g4"
+              x1="32.46"
+              x2="53.29"
+              y1="104.1"
+              y2="125.2"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#557484" />
+              <stop offset="1" stop-color="#627D8B" />
+            </linearGradient>
+            <linearGradient
+              id="msc-g5"
+              x1="152.4"
+              x2="173.8"
+              y1="104.1"
+              y2="125.7"
+              gradientUnits="userSpaceOnUse"
+            >
+              <stop stop-color="#557484" />
+              <stop offset="1" stop-color="#627D8B" />
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="header-greeting">
+          <div class="greeting-sub">MSC</div>
+          <div class="greeting-name">Articleship Program</div>
         </div>
+      </a>
+      <div class="header-actions">
+        <div class="auth-buttons-container"></div>
+        <button
+          id="menuButton"
+          class="hdr-icon-btn"
+          aria-label="Menu"
+          onclick="
+            document.getElementById('expandedMenu').classList.add('active')
+          "
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
       </div>
     </header>
 
     <div class="expanded-menu" id="expandedMenu">
-      <button class="menu-close-btn" id="menuCloseBtn">
-        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      <button
+        class="menu-close-btn"
+        id="menuCloseBtn"
+        onclick="
+          document.getElementById('expandedMenu').classList.remove('active')
+        "
+      >
+        <svg
+          width="24"
+          height="24"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
         </svg>
       </button>
       <div class="menu-items">
-        <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
+        <a href="/" class="menu-item">Home</a>
+        <a
+          href="/learning-management-system/"
+          class="menu-item"
+          id="lms-nav-link"
+          style="display: none"
+          >My Courses</a
+        >
 
-        <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
-        <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
-        <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
+        <a href="/ca-industrial-training-program/" class="menu-item"
+          >MSC Industrial Training Program</a
+        >
+        <a href="/articleship-program/" class="menu-item"
+          >MSC Articleship Program</a
+        >
+        <a href="/msc-ca-fresher-program/" class="menu-item"
+          >MSC CA Freshers Program</a
+        >
 
         <div class="menu-item-dropdown">
-          <button class="menu-item" style="width: 100%; justify-content: space-between;">
+          <button
+            class="menu-item"
+            style="width: 100%; justify-content: space-between"
+          >
             Free Resources
-            <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            <svg
+              class="dropdown-icon"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
-          <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
-            <a href="/ca-fresher-training-resources.html" class="menu-item">CA Fresher</a>
-            <a href="/ca-industrial-training-resources.html" class="menu-item">Industrial Training</a>
+          <div
+            class="dropdown-content"
+            style="display: none; padding-left: 1.5rem"
+          >
+            <a href="/ca-fresher-training-resources.html" class="menu-item"
+              >CA Fresher</a
+            >
+            <a href="/ca-industrial-training-resources.html" class="menu-item"
+              >Industrial Training</a
+            >
             <a href="/ca-articleship-jobs" class="menu-item">Articleship</a>
           </div>
         </div>
-
 
         <a href="/contact.html" class="menu-item">Contact Us</a>
       </div>
     </div>
 
-    <div class="hero" style="margin-top: 80px;">
+    <div class="hero" style="margin-top: 80px">
       <div class="badge">Limited Seats Left!</div>
-      <h1>MSC Articleship<br>Program</h1>
+      <h1>MSC Articleship<br />Program</h1>
 
       <div class="features">
         <div class="feature">
           <svg class="checkmark" viewBox="0 0 24 24">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+            <path
+              d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
+            />
           </svg>
           All-in-one Program
         </div>
         <div class="feature">
           <svg class="checkmark" viewBox="0 0 24 24">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+            <path
+              d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"
+            />
           </svg>
           Trusted By 1000+ Students
         </div>
@@ -89,21 +271,27 @@
           <span class="stars">★★★★★</span>
           4.9 / 5 Rated Workshop
         </div>
-
       </div>
 
-      <div class="stats">
-
-      </div>
+      <div class="stats"></div>
     </div>
 
     <section class="success-stories">
       <div class="section-bg">
-        <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_pwohahvd.json" background="transparent"
-          speed="1" style="width: 100%; height: 100%;" loop autoplay>
+        <lottie-player
+          src="https://assets2.lottiefiles.com/packages/lf20_pwohahvd.json"
+          background="transparent"
+          speed="1"
+          style="width: 100%; height: 100%"
+          loop
+          autoplay
+        >
         </lottie-player>
       </div>
-      <h2>Our <span class="dynamic-batch-month">Oct'25</span> Batch <span class="highlight">Students</span> placed in Top Companies</h2>
+      <h2>
+        Our <span class="dynamic-batch-month">Oct'25</span> Batch
+        <span class="highlight">Students</span> placed in Top Companies
+      </h2>
       <div class="carousel-container">
         <div class="carousel" id="studentCarousel"></div>
       </div>
@@ -111,8 +299,14 @@
 
     <section class="pain-points">
       <div class="section-bg">
-        <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_kkflmtur.json" background="transparent"
-          speed="1" style="width: 100%; height: 100%;" loop autoplay>
+        <lottie-player
+          src="https://assets5.lottiefiles.com/packages/lf20_kkflmtur.json"
+          background="transparent"
+          speed="1"
+          style="width: 100%; height: 100%"
+          loop
+          autoplay
+        >
         </lottie-player>
       </div>
       <div class="pain-points-content">
@@ -121,16 +315,27 @@
           <div class="struggle-item">No Interview Calls for Articleship?</div>
           <div class="struggle-item">Want to Land your dream opportunity?</div>
           <div class="struggle-item">Want to earn Good Stipend?</div>
-          <div class="struggle-item">Want to add a brand to your CV for post qualification?</div>
+          <div class="struggle-item">
+            Want to add a brand to your CV for post qualification?
+          </div>
         </div>
-        <p class="solution">That's why we created a program to ensure you land your dream opportunity</p>
+        <p class="solution">
+          That's why we created a program to ensure you land your dream
+          opportunity
+        </p>
       </div>
     </section>
 
     <section class="benefits">
       <div class="section-bg">
-        <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_47frevky.json" background="transparent"
-          speed="1" style="width: 100%; height: 100%;" loop autoplay>
+        <lottie-player
+          src="https://assets9.lottiefiles.com/packages/lf20_47frevky.json"
+          background="transparent"
+          speed="1"
+          style="width: 100%; height: 100%"
+          loop
+          autoplay
+        >
         </lottie-player>
       </div>
       <div class="benefits-content">
@@ -138,11 +343,15 @@
         <div class="benefits-grid">
           <div class="benefit-card">Access to 100+ Exclusive Vacancies</div>
           <div class="benefit-card">Personal CV Evaluation by Founder</div>
-          <div class="benefit-card">6 Day Masterclass on CV Preparation to Placement</div>
+          <div class="benefit-card">
+            6 Day Masterclass on CV Preparation to Placement
+          </div>
           <div class="benefit-card">Get Referrals in Top Firm</div>
           <div class="benefit-card">Mock Interviews</div>
           <div class="benefit-card">1000+ HR Mail IDs List</div>
-          <div class="benefit-card">MSC LMS - Videos of Trainees from Top Orgs</div>
+          <div class="benefit-card">
+            MSC LMS - Videos of Trainees from Top Orgs
+          </div>
           <div class="benefit-card">Personal Mentor</div>
           <div class="benefit-card">Regular One-One Call with Founder</div>
         </div>
@@ -151,8 +360,14 @@
 
     <section class="curriculum">
       <div class="section-bg">
-        <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_pwohahvd.json" background="transparent"
-          speed="1" style="width: 100%; height: 100%;" loop autoplay>
+        <lottie-player
+          src="https://assets2.lottiefiles.com/packages/lf20_pwohahvd.json"
+          background="transparent"
+          speed="1"
+          style="width: 100%; height: 100%"
+          loop
+          autoplay
+        >
         </lottie-player>
       </div>
       <h2>What will you Learn?</h2>
@@ -212,15 +427,24 @@
 
     <section class="get-certified" data-aos="fade-up">
       <h2 data-aos="zoom-in">Get <span class="highlight">Certified</span></h2>
-      <p data-aos="zoom-in" data-aos-delay="100">Level up your career with MSC's industry recognised certificate.</p>
-      <div class="certificate-container" data-aos="flip-left" data-aos-delay="200">
+      <p data-aos="zoom-in" data-aos-delay="100">
+        Level up your career with MSC's industry recognised certificate.
+      </p>
+      <div
+        class="certificate-container"
+        data-aos="flip-left"
+        data-aos-delay="200"
+      >
         <div class="certificate-frame rotated">
           <div class="certificate-back"></div>
           <div class="certificate-frame-border"></div>
           <div class="certificate-glass">
             <div class="certificate-content">
-              <img class="certificate-image" src="https://mystudentclub.pages.dev/assets/certificate2.png"
-                alt="MSC Certificate" />
+              <img
+                class="certificate-image"
+                src="https://mystudentclub.pages.dev/assets/certificate2.png"
+                alt="MSC Certificate"
+              />
               <div class="certificate-overlay"></div>
               <div class="shine-effect"></div>
             </div>
@@ -231,38 +455,51 @@
             <div class="floating-emblem">
               <svg class="award-icon" viewBox="0 0 24 24">
                 <path
-                  d="M12 2L8 6H3v5l-2 4 2 4v5h5l4 2 4-2h5v-5l2-4-2-4V6h-5L12 2zm0 3l2.5 2.5H15v3l1.5 3-1.5 3v3h-3l-3 1.5L6 17H3v-3L1.5 11 3 8V5h3l3-2.5L12 5z" />
+                  d="M12 2L8 6H3v5l-2 4 2 4v5h5l4 2 4-2h5v-5l2-4-2-4V6h-5L12 2zm0 3l2.5 2.5H15v3l1.5 3-1.5 3v3h-3l-3 1.5L6 17H3v-3L1.5 11 3 8V5h3l3-2.5L12 5z"
+                />
               </svg>
             </div>
           </div>
           <div class="certificate-shadow"></div>
         </div>
       </div>
-      <a href="#" class="action-btn" data-aos="fade-up" data-aos-delay="400">Get Your Certificate</a>
+      <a href="#" class="action-btn" data-aos="fade-up" data-aos-delay="400"
+        >Get Your Certificate</a
+      >
     </section>
 
     <section class="mentor">
       <div class="section-bg">
-        <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_kkflmtur.json" background="transparent"
-          speed="1" style="width: 100%; height: 100%;" loop autoplay>
+        <lottie-player
+          src="https://assets5.lottiefiles.com/packages/lf20_kkflmtur.json"
+          background="transparent"
+          speed="1"
+          style="width: 100%; height: 100%"
+          loop
+          autoplay
+        >
         </lottie-player>
       </div>
       <div class="mentor-profile">
         <div class="mentor-image">
-          <img src="https://mystudentclub.pages.dev/assets/mentor_transparent.png" alt="CA Padam Bhansali"
-            class="mentor-img">
+          <img
+            src="https://mystudentclub.pages.dev/assets/mentor_transparent.png"
+            alt="CA Padam Bhansali"
+            class="mentor-img"
+          />
         </div>
         <div class="mentor-info">
           <h2>Meet your <span class="highlight">Mentor</span></h2>
           <h3>CA Padam Bhansali</h3>
           <p class="mentor-title">Founder, My Student Club</p>
           <p class="mentor-description">
-            CA Padam Bhansali, Founder of My Student Club, has helped thousands of CA students secure their dream roles
-            in
-            top companies for stipends upto 1.25L! He did his Industrial Training from Flipkart in Business Finance
-            domain
-            and has conducted 100+ guidance sessions positively impacting 35,000+ students.<br><br>
-            Want to secure your dream role? Join the MSC Articleship Program for priority access to top opportunities!
+            CA Padam Bhansali, Founder of My Student Club, has helped thousands
+            of CA students secure their dream roles in top companies for
+            stipends upto 1.25L! He did his Industrial Training from Flipkart in
+            Business Finance domain and has conducted 100+ guidance sessions
+            positively impacting 35,000+ students.<br /><br />
+            Want to secure your dream role? Join the MSC Articleship Program for
+            priority access to top opportunities!
           </p>
           <div class="mentor-achievements">
             <div class="achievement">Helped 100+ Companies</div>
@@ -277,14 +514,24 @@
     <section class="notify-section" data-aos="fade-up">
       <div class="notify-section-inner">
         <div class="notify-icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
           </svg>
         </div>
         <div class="notify-text">
           <h2>Program Currently <span class="highlight">Closed</span></h2>
-          <p>Get notified the moment the next batch opens. Be the first to secure your seat.</p>
+          <p>
+            Get notified the moment the next batch opens. Be the first to secure
+            your seat.
+          </p>
         </div>
         <div class="notify-action">
           <button id="notifyMeBtn" class="notify-me-btn">
@@ -301,7 +548,8 @@
         <span>Registration Closed</span>
       </div>
       <div class="price">
-        <span class="original">₹2999</span> <span class="discounted">₹1499</span>
+        <span class="original">₹2999</span>
+        <span class="discounted">₹1499</span>
       </div>
       <button id="notifyMeFooterBtn" class="notify-me-footer-btn">
         <span class="notify-footer-icon">🔔</span>
@@ -313,47 +561,61 @@
     <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
     <script src="app.js" type="module"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', async () => {
+      document.addEventListener("DOMContentLoaded", async () => {
         // Menu Toggle
-        const menuButton = document.getElementById('menuButton');
-        const expandedMenu = document.getElementById('expandedMenu');
-        const menuCloseBtn = document.getElementById('menuCloseBtn');
+        const menuButton = document.getElementById("menuButton");
+        const expandedMenu = document.getElementById("expandedMenu");
+        const menuCloseBtn = document.getElementById("menuCloseBtn");
 
         if (menuButton && expandedMenu) {
-          menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
+          menuButton.addEventListener("click", () =>
+            expandedMenu.classList.add("active"),
+          );
         }
         if (menuCloseBtn && expandedMenu) {
-          menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+          menuCloseBtn.addEventListener("click", () =>
+            expandedMenu.classList.remove("active"),
+          );
         }
 
         // Dropdowns
-        const dropdowns = document.querySelectorAll('.menu-item-dropdown button');
-        dropdowns.forEach(btn => {
-          btn.addEventListener('click', (e) => {
+        const dropdowns = document.querySelectorAll(
+          ".menu-item-dropdown button",
+        );
+        dropdowns.forEach((btn) => {
+          btn.addEventListener("click", (e) => {
             const content = btn.nextElementSibling;
             if (content) {
-              content.style.display = content.style.display === 'block' ? 'none' : 'block';
-              btn.classList.toggle('active');
+              content.style.display =
+                content.style.display === "block" ? "none" : "block";
+              btn.classList.toggle("active");
             }
           });
         });
 
         // Auth Check
-        if (typeof supabase !== 'undefined') {
-          const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-          const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        if (typeof supabase !== "undefined") {
+          const supabaseUrl = "https://izsggdtdiacxdsjjncdq.supabase.co";
+          const supabaseKey =
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0";
           const sb = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-          const { data: { session } } = await sb.auth.getSession();
-          const authContainer = document.querySelector('.auth-buttons-container');
-          const lmsLink = document.getElementById('lms-nav-link');
+          const {
+            data: { session },
+          } = await sb.auth.getSession();
+          const authContainer = document.querySelector(
+            ".auth-buttons-container",
+          );
+          const lmsLink = document.getElementById("lms-nav-link");
 
           if (authContainer) {
             if (session) {
-              authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn"><i class="fas fa-user"></i></a>';
-              if (lmsLink) lmsLink.style.display = 'flex';
+              authContainer.innerHTML =
+                '<a href="/profile.html" class="auth-icon-btn" aria-label="Your profile"><i class="fas fa-user"></i></a>';
+              if (lmsLink) lmsLink.style.display = "flex";
             } else {
-              authContainer.innerHTML = '<a href="/login.html" class="auth-icon-btn"><i class="fas fa-sign-in-alt"></i></a>';
+              authContainer.innerHTML =
+                '<a href="/login.html" class="auth-icon-btn" aria-label="Log in"><i class="fas fa-sign-in-alt"></i></a>';
             }
           }
         }
@@ -366,138 +628,189 @@
           storageBucket: "msc-notif.appspot.com",
           messagingSenderId: "228639798414",
           appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
-          measurementId: "G-X4M23TB936"
+          measurementId: "G-X4M23TB936",
         };
-        const NOTIFY_VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
+        const NOTIFY_VAPID_KEY =
+          "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
         const NOTIFY_TOPIC = "articleship-program-notify";
-        const MANAGE_TOPIC_URL = "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription";
-        const SUPABASE_URL = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const MANAGE_TOPIC_URL =
+          "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription";
+        const SUPABASE_URL = "https://izsggdtdiacxdsjjncdq.supabase.co";
+        const SUPABASE_KEY =
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0";
 
         function getOrCreateDeviceKey() {
-          let key = localStorage.getItem('msc_device_key');
+          let key = localStorage.getItem("msc_device_key");
           if (!key) {
-            key = 'dk_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 9);
-            localStorage.setItem('msc_device_key', key);
+            key =
+              "dk_" +
+              Date.now().toString(36) +
+              "_" +
+              Math.random().toString(36).slice(2, 9);
+            localStorage.setItem("msc_device_key", key);
           }
           return key;
         }
 
         function setNotifyStatus(msg, type) {
-          const el = document.getElementById('notifyStatus');
+          const el = document.getElementById("notifyStatus");
           if (!el) return;
           el.textContent = msg;
-          el.className = 'notify-status show notify-status--' + type;
-          if (type !== 'error') setTimeout(() => el.className = 'notify-status', 4000);
+          el.className = "notify-status show notify-status--" + type;
+          if (type !== "error")
+            setTimeout(() => (el.className = "notify-status"), 4000);
         }
 
         async function saveToNotifiable(sb, session, fcmToken) {
           const deviceKey = getOrCreateDeviceKey();
           const email = session?.user?.email || null;
           const { error } = await sb
-            .from('notifiable')
+            .from("notifiable")
             .insert({ key: deviceKey, email })
             .throwOnError();
           // Unique key constraint handles duplicates silently
         }
 
         async function initNotifyMe() {
-          const btn = document.getElementById('notifyMeBtn');
-          const footerBtn = document.getElementById('notifyMeFooterBtn');
+          const btn = document.getElementById("notifyMeBtn");
+          const footerBtn = document.getElementById("notifyMeFooterBtn");
           if (!btn && !footerBtn) return;
 
           function syncButtonStates(subscribed) {
             if (btn) {
-              btn.querySelector('.notify-btn-text').textContent = subscribed ? 'You Will Be Notified!' : 'Notify Me When Open';
-              btn.querySelector('.notify-btn-icon').textContent = subscribed ? '✅' : '🔔';
-              btn.classList.toggle('subscribed', subscribed);
+              btn.querySelector(".notify-btn-text").textContent = subscribed
+                ? "You Will Be Notified!"
+                : "Notify Me When Open";
+              btn.querySelector(".notify-btn-icon").textContent = subscribed
+                ? "✅"
+                : "🔔";
+              btn.classList.toggle("subscribed", subscribed);
             }
             if (footerBtn) {
-              footerBtn.querySelector('.notify-footer-text').textContent = subscribed ? 'Notified' : 'Notify Me';
-              footerBtn.querySelector('.notify-footer-icon').textContent = subscribed ? '✅' : '🔔';
-              footerBtn.classList.toggle('subscribed', subscribed);
+              footerBtn.querySelector(".notify-footer-text").textContent =
+                subscribed ? "Notified" : "Notify Me";
+              footerBtn.querySelector(".notify-footer-icon").textContent =
+                subscribed ? "✅" : "🔔";
+              footerBtn.classList.toggle("subscribed", subscribed);
             }
           }
 
-          const isSubscribed = localStorage.getItem('notif_articleship_program') === '1';
+          const isSubscribed =
+            localStorage.getItem("notif_articleship_program") === "1";
           syncButtonStates(isSubscribed);
 
           async function handleNotifyClick() {
             const activeBtn = this;
             if (activeBtn.disabled) return;
-            [btn, footerBtn].forEach(b => b && (b.disabled = true));
+            [btn, footerBtn].forEach((b) => b && (b.disabled = true));
 
             // Already subscribed — unsubscribe
-            if (localStorage.getItem('notif_articleship_program') === '1') {
-              const token = localStorage.getItem('notif_fcm_token_ap');
+            if (localStorage.getItem("notif_articleship_program") === "1") {
+              const token = localStorage.getItem("notif_fcm_token_ap");
               if (token) {
                 try {
                   await fetch(MANAGE_TOPIC_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, topic: NOTIFY_TOPIC, action: 'unsubscribe' })
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      token,
+                      topic: NOTIFY_TOPIC,
+                      action: "unsubscribe",
+                    }),
                   });
                 } catch (_) {}
               }
-              localStorage.removeItem('notif_articleship_program');
-              localStorage.removeItem('notif_fcm_token_ap');
+              localStorage.removeItem("notif_articleship_program");
+              localStorage.removeItem("notif_fcm_token_ap");
               syncButtonStates(false);
-              setNotifyStatus('Unsubscribed.', 'info');
-              [btn, footerBtn].forEach(b => b && (b.disabled = false));
+              setNotifyStatus("Unsubscribed.", "info");
+              [btn, footerBtn].forEach((b) => b && (b.disabled = false));
               return;
             }
 
             // Request notification permission
-            setNotifyStatus('Requesting permission…', 'info');
+            setNotifyStatus("Requesting permission…", "info");
             let permission;
-            try { permission = await Notification.requestPermission(); } catch (e) { permission = 'denied'; }
+            try {
+              permission = await Notification.requestPermission();
+            } catch (e) {
+              permission = "denied";
+            }
 
-            if (permission !== 'granted') {
-              setNotifyStatus('Please allow notifications in your browser settings.', 'error');
-              [btn, footerBtn].forEach(b => b && (b.disabled = false));
+            if (permission !== "granted") {
+              setNotifyStatus(
+                "Please allow notifications in your browser settings.",
+                "error",
+              );
+              [btn, footerBtn].forEach((b) => b && (b.disabled = false));
               return;
             }
 
             // Initialize Firebase & get FCM token
-            setNotifyStatus('Setting up…', 'info');
+            setNotifyStatus("Setting up…", "info");
             try {
-              if (!firebase.apps.length) firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
+              if (!firebase.apps.length)
+                firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
               const messaging = firebase.messaging();
-              if ('serviceWorker' in navigator) {
-                await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+              if ("serviceWorker" in navigator) {
+                await navigator.serviceWorker.register(
+                  "/firebase-messaging-sw.js",
+                );
               }
-              const fcmToken = await messaging.getToken({ vapidKey: NOTIFY_VAPID_KEY });
-              if (!fcmToken) throw new Error('No FCM token');
+              const fcmToken = await messaging.getToken({
+                vapidKey: NOTIFY_VAPID_KEY,
+              });
+              if (!fcmToken) throw new Error("No FCM token");
 
               // Subscribe to FCM topic
-              setNotifyStatus('Subscribing…', 'info');
+              setNotifyStatus("Subscribing…", "info");
               const res = await fetch(MANAGE_TOPIC_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token: fcmToken, topic: NOTIFY_TOPIC, action: 'subscribe' })
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  token: fcmToken,
+                  topic: NOTIFY_TOPIC,
+                  action: "subscribe",
+                }),
               });
               const data = await res.json();
-              if (!data.success) throw new Error(data.error || 'Subscription failed');
+              if (!data.success)
+                throw new Error(data.error || "Subscription failed");
 
               // Save to Supabase notifiable table
-              const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-              const { data: { session } } = await sb.auth.getSession();
-              try { await saveToNotifiable(sb, session, fcmToken); } catch (_) {/* ignore duplicate key */}
+              const sb = window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY,
+              );
+              const {
+                data: { session },
+              } = await sb.auth.getSession();
+              try {
+                await saveToNotifiable(sb, session, fcmToken);
+              } catch (_) {
+                /* ignore duplicate key */
+              }
 
-              localStorage.setItem('notif_articleship_program', '1');
-              localStorage.setItem('notif_fcm_token_ap', fcmToken);
+              localStorage.setItem("notif_articleship_program", "1");
+              localStorage.setItem("notif_fcm_token_ap", fcmToken);
               syncButtonStates(true);
-              setNotifyStatus("You're on the list! We'll notify you when the program opens.", 'success');
+              setNotifyStatus(
+                "You're on the list! We'll notify you when the program opens.",
+                "success",
+              );
             } catch (err) {
-              console.error('NotifyMe error:', err);
-              setNotifyStatus('Something went wrong. Please try again.', 'error');
+              console.error("NotifyMe error:", err);
+              setNotifyStatus(
+                "Something went wrong. Please try again.",
+                "error",
+              );
             }
 
-            [btn, footerBtn].forEach(b => b && (b.disabled = false));
+            [btn, footerBtn].forEach((b) => b && (b.disabled = false));
           }
 
-          if (btn) btn.addEventListener('click', handleNotifyClick);
-          if (footerBtn) footerBtn.addEventListener('click', handleNotifyClick);
+          if (btn) btn.addEventListener("click", handleNotifyClick);
+          if (footerBtn) footerBtn.addEventListener("click", handleNotifyClick);
         }
 
         initNotifyMe();
@@ -505,27 +818,37 @@
         // Dynamic Batch Month Calculation (-2 months)
         const d = new Date();
         d.setMonth(d.getMonth() - 2);
-        const monthShort = d.toLocaleString('en-US', { month: 'short' });
-        const monthLong = d.toLocaleString('en-US', { month: 'long' });
+        const monthShort = d.toLocaleString("en-US", { month: "short" });
+        const monthLong = d.toLocaleString("en-US", { month: "long" });
         const yearShort = d.getFullYear().toString().slice(-2);
-        
+
         const batchFormat1 = `${monthShort}'${yearShort}`; // Dec'25
         const batchFormat2 = `${monthLong}`; // December
         const batchFormat3 = `${monthShort} '${yearShort}`; // Dec '25
 
-        document.querySelectorAll('.dynamic-batch-month').forEach(el => el.textContent = batchFormat1);
-        document.querySelectorAll('.dynamic-batch-month-long').forEach(el => el.textContent = batchFormat2);
-        document.querySelectorAll('.dynamic-batch-month-space').forEach(el => el.textContent = batchFormat3);
+        document
+          .querySelectorAll(".dynamic-batch-month")
+          .forEach((el) => (el.textContent = batchFormat1));
+        document
+          .querySelectorAll(".dynamic-batch-month-long")
+          .forEach((el) => (el.textContent = batchFormat2));
+        document
+          .querySelectorAll(".dynamic-batch-month-space")
+          .forEach((el) => (el.textContent = batchFormat3));
       });
     </script>
     <!-- Google Analytics -->
-    <script src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65" async></script>
+    <script
+      src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65"
+      async
+    ></script>
     <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-1450NCVE65');
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+      gtag("config", "G-1450NCVE65");
     </script>
   </body>
-
 </html>

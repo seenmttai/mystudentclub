@@ -3,11 +3,21 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Video Player | My Student Club LMS</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/scripts/portal-style.css" />
     <link rel="stylesheet" href="course-styles.css">
+    <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+      (function() {
+        const t = localStorage.getItem('msc-theme');
+        if (t) document.documentElement.setAttribute('data-theme', t);
+      })();
+    </script>
     <script type="importmap">
     {
         "imports": {
@@ -16,9 +26,14 @@
     }
     </script>
     <style>
+      body { font-family: "Poppins", sans-serif; }
+      .lms-menu-overlay { display: none; position: fixed; inset: 0; background: rgba(15,27,45,0.4); z-index: 390; }
+      .lms-menu-overlay.active { display: block; }
+      .header-logo { width: 32px; height: 32px; }
         .video-fullpage {
-            height: calc(100vh - 80px);
+            height: calc(100vh - var(--header-h) - var(--bnav-h) - var(--safe-bottom));
             display: flex;
+            margin-top: var(--header-h);
         }
 
         .video-sidebar {
@@ -144,7 +159,7 @@
             .playlist-toggle {
                 display: block;
                 position: fixed;
-                bottom: 20px;
+                bottom: calc(var(--bnav-h) + var(--safe-bottom) + 12px);
                 right: 20px;
                 width: 50px;
                 height: 50px;
@@ -170,26 +185,58 @@
 
 <body>
     <div id="app">
-        <header>
-            <div class="logo-container">
-                <img src="https://www.mystudentclub.com/assets/logo.png" alt="My Student Club Logo" class="logo">
+        <!-- HEADER -->
+        <header class="app-header" id="appHeader">
+          <div class="header-left">
+            <a href="/learning-management-system/index.html">
+              <svg class="header-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 207 223" fill="none" aria-label="My Student Club">
+                <path d="m188.4 49.73-72.25-41.61c-9.06-5.29-18.21-4.74-26.19 0l-70.9 40.81c-7.32 4.03-10.97 11.88-10.97 19.86v14.89c2.12-1.59 4.37-1.94 6.61-1.87 2.38 0.08 4.05 0.7 5.79 1.95v-14.58c0-4.34 1.26-6.8 5.52-9.26l71.93-41.41c4.95-2.85 9.07-1.13 12.08 0.83l70.98 40.74c3.8 2.14 5.39 4.6 5.39 9.1v14.58c2.12-1.33 3.53-1.95 5.99-1.95 2.78-0.07 5.03 0.55 7.35 2.14v-15.16c0-7.78-4.5-15.18-11.33-19.06z" fill="url(#vg0)"/>
+                <path d="m199.7 128.3-2.24 3.32c-6.68 8.36-7.65 15.35-5.97 24.32 1.1 5.85 1.72 10.43-0.31 15.01 5.85-4.19 8.52-11.51 8.52-16.78v-25.87z" fill="url(#vg1)"/>
+                <path d="m8.12 127.8v26.34c0 6.72 2.93 13.52 8.79 17.94-1.95-4.73-1.49-9.15-0.23-16.09 1.59-9.05-1.04-17.8-6.52-24.4l-2.04-2.77v-1.02z" fill="url(#vg2)"/>
+                <path d="m199.4 90.46c-1.59-4.03-2.84-5.99-6.18-5.99-4.8 0-7.34 4.5-5.83 8.99 2.17 6.23 2.47 8.69 1.94 14.2-1.47 8.82-6.66 18.11-17.62 21.91-2.58 0.94-3.04 3.16-2.35 5.84l5.33 25.6c0.38 1.63-2.02 5.66-3.13 6.4-1.59 0-4.85-4.5-4.85-4.5v-24.19c0-3.7-1.05-6.46-4.31-6.84-6.61-0.74-15.44-1.91-20.77-0.5-2.46 0.65-2.92 9.09-2.15 15.69 1.18 7.02 4.44 20.34 3.74 29.02-0.85 9.05-4.51 14.56-10.36 17.88l-20.69 12.44c-5.56 3.32-12.96 2.93-18.29 0l-20.14-11.65c-6.68-3.32-9.14-8.44-9.14-19.69 0-8.06 3.11-18.67 3.49-24.9 0.94-11.41-2.56-18.45-5.82-18.83-5.41-0.66-10.36 0.27-17.26 0.42-3.5 0.08-4.94 2.12-4.94 6.61v24.19c0 1.17-3.66 5.51-4.6 5.36-1.59-0.31-3.76-4.42-3.69-5.08l5.93-25.53c0.77-2.84-0.08-5.43-3.01-6.25-10.49-3.24-17.17-13.07-17.24-23.4-0.08-5.51 1.65-9.75 2.7-13.85 1.18-4.49-2.4-9.07-6.44-9.07-3.81 0-5.42 1.69-7.01 6.27-5.11 12.13-3.45 26.9 3.71 37.71 7.26 9.37 8.85 15.9 7.11 27.52-1.82 9.13-1.36 15.78 5.9 19.81l67.46 38.73c7.82 4.03 16.03 3.29 23.51-0.59l69.51-38.41c6.34-3.33 6.15-11.62 4.35-19.54-2.24-10.41 0.31-18.26 6.99-27.09 7.48-10.1 8.73-24.38 4.15-38.69z" fill="url(#vg3)"/>
+                <path d="m43.26 104.1c-6.92 0-10.8 5.82-10.8 10.74 0 6.78 5.26 10.98 10.8 10.98 6.49 0 10.83-5.59 10.83-10.98 0-5.97-4.88-10.74-10.83-10.74z" fill="url(#vg4)"/>
+                <path d="m163.5 104.1c-7.4 0-11.05 6.23-11.05 10.74 0 6.39 5.25 10.98 10.66 10.98 6.99 0 11.33-5.59 11.33-10.98 0-5.97-5.07-10.74-10.94-10.74z" fill="url(#vg5)"/>
+                <path d="m103.4 76.34c-9.14-0.31-14.92 7.54-14.92 14.67 0 8.52 7.26 14.75 14.61 14.75 9.14 0 15-7.85 15-14.75 0-7.85-6.68-14.67-14.69-14.67z" fill="#0077BF"/>
+                <path d="m150.7 59.61c-2.11-4.19-4.78-4.85-8.04-4.85-6.6 0-9.54 6.25-7.8 11.37 2.86 6.56 3.55 11.05 3.09 18.06-1.39 13.72-12.85 26.7-28.26 29.94-2.46 0.31-3.4 1.94-4.66 4.25-0.54 0.94-0.31 0.71-0.38 1.88 1.41 14 6.49 46.02 7.1 52.58 0.15 1.02-6.68 9.23-6.68 9.23-1.59 1.31-3.08 0.47-4.11-1.06-1.87-2.15-6.01-6.64-6.24-7.58l6.92-52.52c-0.31-2.05-3.65-6.16-5.24-6.47-14.28-2.13-26.41-15.22-27.46-30.25-0.45-6.23 1.05-11.15 3.51-17.04 2.17-5.87-1.71-12.1-8.61-12.1-4.58 0-6.83 2.13-8.42 5.76-7.73 15.45-6.79 34.9 4.52 49.92 8.78 10.81 12.51 21.96 11.97 35.68-0.45 9.6-4.44 18.8-3.12 30.66 0.94 6.55 3.12 10.51 8.37 12.89l18.54 10.81c5.41 2.93 11.53 2.19 16.5-1.13l18.46-10.49c6.68-3.32 8.27-12.08 7.02-20.84-1.49-9.6-3.23-16.6-2.85-24.38 0.61-10.81 4.56-21.62 13.11-33.27 10.48-15.03 10.03-31.6 2.76-51.05z" fill="#0077BF"/>
+                <defs>
+                  <linearGradient id="vg0" x1="18.89" x2="184.3" y1="17.93" y2="75.88" gradientUnits="userSpaceOnUse"><stop stop-color="#94ADB9"/><stop offset="1" stop-color="#889CA7"/></linearGradient>
+                  <linearGradient id="vg1" x1="193.3" x2="199.8" y1="133.1" y2="166.8" gradientUnits="userSpaceOnUse"><stop stop-color="#889CA7"/><stop offset="1" stop-color="#A4B5BE"/></linearGradient>
+                  <linearGradient id="vg2" x1="8.119" x2="16.14" y1="132.7" y2="169.1" gradientUnits="userSpaceOnUse"><stop stop-color="#738A98"/><stop offset="1" stop-color="#A4B5BE"/></linearGradient>
+                  <linearGradient id="vg3" x1="8.087" x2="199.9" y1="101.3" y2="170.5" gradientUnits="userSpaceOnUse"><stop stop-color="#557484"/><stop offset="1" stop-color="#6E8793"/></linearGradient>
+                  <linearGradient id="vg4" x1="32.46" x2="53.29" y1="104.1" y2="125.2" gradientUnits="userSpaceOnUse"><stop stop-color="#557484"/><stop offset="1" stop-color="#627D8B"/></linearGradient>
+                  <linearGradient id="vg5" x1="152.4" x2="173.8" y1="104.1" y2="125.7" gradientUnits="userSpaceOnUse"><stop stop-color="#557484"/><stop offset="1" stop-color="#627D8B"/></linearGradient>
+                </defs>
+              </svg>
+            </a>
+            <div class="header-greeting">
+              <span class="greeting-sub">LMS</span>
+              <span class="greeting-name">Video Player</span>
             </div>
-            <nav>
-                <div class="hamburger-menu" @click="toggleMenu">
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                </div>
-                <ul class="nav-links" :class="{ 'active': menuActive }">
-                    <li><a href="index.html">Courses</a></li>
-                    <li><a href="resources.html">Resources</a></li>
-                    <li><a href="cv-reviewer.html">CV Review</a></li>
-                    <li class="profile-link">
-                        <a href="#"><i class="fas fa-user-circle"></i> My Profile</a>
-                    </li>
-                </ul>
-            </nav>
+          </div>
+          <div class="header-actions">
+            <button class="hdr-icon-btn" id="themeToggleBtn" aria-label="Toggle theme">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </button>
+            <button class="hdr-icon-btn" id="lmsMenuBtn" aria-label="Menu">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            </button>
+          </div>
         </header>
+
+        <!-- SIDE MENU -->
+        <div class="expanded-menu" id="lmsExpandedMenu">
+          <button class="hdr-icon-btn menu-close-btn" id="lmsMenuCloseBtn" aria-label="Close menu">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+          <div class="menu-items-container">
+            <a href="/learning-management-system/index.html" class="menu-item">My Courses</a>
+            <a href="/learning-management-system/lms-resources.html" class="menu-item">Resources</a>
+            <a href="https://mystudentclub.com/cv-reviewer/" class="menu-item">CV Review</a>
+            <a href="https://mystudentclub.com/profile" class="menu-item">My Profile</a>
+            <button id="lmsLogoutMenuBtn" class="menu-item menu-item--danger">Logout</button>
+          </div>
+        </div>
+        <div class="lms-menu-overlay" id="lmsMenuOverlay"></div>
 
         <div class="video-fullpage">
             <aside class="video-sidebar" :class="{ 'active': sidebarActive }">
@@ -559,6 +606,29 @@
             }
         }).mount('#app');
     </script>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+      <div class="bottom-nav-inner">
+        <a href="/learning-management-system/index.html" class="bnav-item active">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          <span>My Courses</span>
+        </a>
+        <a href="/learning-management-system/lms-resources.html" class="bnav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span>Resources</span>
+        </a>
+        <a href="https://mystudentclub.com/cv-reviewer/" class="bnav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <span>CV Review</span>
+        </a>
+        <a href="https://mystudentclub.com/profile" class="bnav-item">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Profile</span>
+        </a>
+      </div>
+    </nav>
+    <script src="/learning-management-system/lms-portal.js"></script>
 </body>
 
 </html>

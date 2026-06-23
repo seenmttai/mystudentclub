@@ -1,3 +1,7 @@
+html {
+  overflow-x: clip;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -7,6 +11,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-x: clip;
 }
 
 .hero {

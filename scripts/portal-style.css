@@ -459,22 +459,88 @@ body {
   margin-bottom: 6px;
 }
 .subscription-selectors {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 6px;
 }
-.filter-control {
-  flex: 1;
-  min-width: 100px;
+#subscribeBtn {
+  grid-column: 1 / -1;
+}
+/* Custom themed dropdown */
+.custom-select {
+  position: relative;
+  min-width: 0;
+}
+.custom-select-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
   padding: 8px 10px;
   border: 1.5px solid var(--line);
   border-radius: 10px;
-  font-family: inherit;
+  font-family: "Poppins", sans-serif;
   font-size: 12.5px;
   background: var(--card);
+  color: var(--sub);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s;
+}
+.cs-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.custom-select.open .custom-select-trigger,
+.custom-select-trigger:focus {
+  border-color: var(--brand);
+  outline: none;
+}
+.custom-select.has-value .custom-select-trigger {
   color: var(--text);
-  appearance: none;
-  -webkit-appearance: none;
+}
+.cs-chevron {
+  flex-shrink: 0;
+  color: var(--sub);
+  transition: transform 0.2s;
+}
+.custom-select.open .cs-chevron {
+  transform: rotate(180deg);
+}
+.cs-dropdown {
+  display: none;
+  position: fixed;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+  z-index: 99999;
+  max-height: 190px;
+  overflow-y: auto;
+  padding: 4px;
+}
+.custom-select.open .cs-dropdown {
+  display: block;
+}
+.cs-option {
+  padding: 8px 10px;
+  font-size: 12.5px;
+  font-family: "Poppins", sans-serif;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--text);
+}
+.cs-option:hover {
+  background: var(--chip);
+}
+.cs-option.selected {
+  color: var(--brand);
+  font-weight: 600;
+  background: var(--chip);
 }
 #subscribeBtn {
   padding: 8px 14px;
@@ -1204,6 +1270,54 @@ body {
   color: var(--text);
   appearance: none;
   -webkit-appearance: none;
+}
+.filter-custom-select {
+  width: 100%;
+}
+.filter-custom-select .custom-select-trigger {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  font-size: 13.5px;
+  background: var(--card);
+  color: var(--text);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.filter-custom-select.open .custom-select-trigger,
+.filter-custom-select .custom-select-trigger:focus {
+  border-color: var(--brand);
+}
+.onboarding-custom-select {
+  width: 100%;
+}
+.onboarding-custom-select .custom-select-trigger {
+  width: 100%;
+  padding: 0.72rem 1rem 0.72rem 2.5rem;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  font-size: 0.875rem;
+  background: var(--card);
+  color: var(--text);
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  transition: border-color 0.2s;
+}
+.onboarding-custom-select.open .custom-select-trigger,
+.onboarding-custom-select .custom-select-trigger:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+.cs-disabled .custom-select-trigger {
+  opacity: 0.5;
+  pointer-events: none;
 }
 .filter-input {
   width: 100%;
@@ -2195,8 +2309,11 @@ body {
   left: 0;
   right: 0;
   background: var(--card);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
+  /* NOTE: backdrop-filter removed intentionally. On a fixed element it
+     promotes its own compositing layer, and Chrome frequently fails to
+     re-rasterize that layer when the viewport size changes (DevTools
+     device switch / window resize), making the whole bar vanish until a
+     reflow. The background is already opaque, so the blur added nothing. */
   border-top: 1px solid var(--line);
   z-index: 200;
   display: flex;
@@ -2388,4 +2505,46 @@ body {
   font-size: 0.85rem;
   color: var(--sub);
   line-height: 1.6;
+}
+
+/* ============================================================
+   TABLET & DESKTOP (>=768px)
+   - Content goes full-bleed: a centered ~1180-1280px container
+     with responsive multi-column card grids.
+   - The bottom nav stays exactly as on phones (fixed to the
+     bottom of the viewport at every size) — mobile rules apply
+     untouched. It is correctly viewport-fixed; if it looks
+     "missing" in DevTools device mode that's the preview panel
+     scrolling, not the page.
+   ============================================================ */
+@media (min-width: 768px) {
+  :root {
+    --app-w: 1180px;
+  }
+
+  /* Center the header bar to the content container */
+  .app-header {
+    max-width: var(--app-w);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Full-bleed content container */
+  .app-main {
+    max-width: var(--app-w);
+  }
+
+  /* Job cards flow into as many columns as fit (2 → 3 → 4) */
+  .jobs-list-new {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 16px;
+    align-items: start;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --app-w: 1280px;
+  }
 }

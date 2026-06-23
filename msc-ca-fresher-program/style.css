@@ -1,6 +1,6 @@
 html {
   height: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
@@ -14,18 +14,22 @@ body {
     Roboto,
     sans-serif;
   background:
-    radial-gradient(1000px 600px at 80% -10%,
+    radial-gradient(
+      1000px 600px at 80% -10%,
       rgba(14, 165, 233, 0.08),
-      transparent 60%),
-    radial-gradient(900px 500px at -10% 20%,
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at -10% 20%,
       rgba(76, 175, 80, 0.08),
-      transparent 60%),
+      transparent 60%
+    ),
     #ffffff;
   color: #111;
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-x: hidden;
+  overflow-x: clip;
   min-height: 100%;
   -webkit-overflow-scrolling: touch;
 }
@@ -49,9 +53,11 @@ body {
   content: "";
   position: absolute;
   inset: -2px;
-  background: radial-gradient(600px 300px at 10% 0%,
-      rgba(14, 165, 233, 0.08),
-      transparent 60%);
+  background: radial-gradient(
+    600px 300px at 10% 0%,
+    rgba(14, 165, 233, 0.08),
+    transparent 60%
+  );
   z-index: 0;
   pointer-events: none;
 }
@@ -76,9 +82,11 @@ body {
   height: 240px;
   top: -60px;
   right: 5%;
-  background: radial-gradient(circle at 30% 30%,
-      rgba(14, 165, 233, 0.25),
-      rgba(14, 165, 233, 0.05));
+  background: radial-gradient(
+    circle at 30% 30%,
+    rgba(14, 165, 233, 0.25),
+    rgba(14, 165, 233, 0.05)
+  );
 }
 
 .layer.l2 {
@@ -86,9 +94,11 @@ body {
   height: 320px;
   bottom: -80px;
   left: 0;
-  background: radial-gradient(circle at 70% 70%,
-      rgba(76, 175, 80, 0.22),
-      rgba(76, 175, 80, 0.05));
+  background: radial-gradient(
+    circle at 70% 70%,
+    rgba(76, 175, 80, 0.22),
+    rgba(76, 175, 80, 0.05)
+  );
 }
 
 .layer.l3 {
@@ -96,9 +106,11 @@ body {
   height: 180px;
   top: 30%;
   left: 75%;
-  background: radial-gradient(circle at 50% 50%,
-      rgba(0, 0, 0, 0.04),
-      transparent 60%);
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(0, 0, 0, 0.04),
+    transparent 60%
+  );
 }
 
 h1 {
@@ -860,9 +872,11 @@ h1 {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle,
-      rgba(255, 255, 255, 0.3) 0%,
-      transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.3) 0%,
+    transparent 70%
+  );
   transform: rotate(30deg);
   pointer-events: none;
 }
@@ -892,10 +906,12 @@ h1 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg,
-      rgba(255, 255, 255, 0.1) 0%,
-      rgba(255, 255, 255, 0.3) 50%,
-      rgba(255, 255, 255, 0.1) 100%);
+  background: linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
   border-radius: 15px;
   transform: translateZ(20px);
   pointer-events: none;
@@ -907,10 +923,12 @@ h1 {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(120deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.5) 50%,
-      rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
   transform: translateZ(30px);
   opacity: 0;
   transition: opacity 0.5s ease;
@@ -1430,10 +1448,12 @@ h1 {
   right: -10%;
   width: 800px;
   height: 800px;
-  background: radial-gradient(circle,
-      rgba(14, 165, 233, 0.15) 0%,
-      rgba(76, 175, 80, 0.1) 40%,
-      transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(14, 165, 233, 0.15) 0%,
+    rgba(76, 175, 80, 0.1) 40%,
+    transparent 70%
+  );
   filter: blur(60px);
   z-index: 0;
   pointer-events: none;
@@ -1755,11 +1775,14 @@ h1 {
 }
 
 /* Notify Me Push Notification Styles */
-.notify-me-btn, button.notify-me-btn, #notifyMeBtn, #notifyMeFinalBtn {
+.notify-me-btn,
+button.notify-me-btn,
+#notifyMeBtn,
+#notifyMeFinalBtn {
   background: linear-gradient(135deg, #0ea5e9 0%, #22c55e 100%) !important;
   color: #ffffff !important;
   border: none !important;
-  font-family: 'Noto Sans', 'Outfit', sans-serif !important;
+  font-family: "Noto Sans", "Outfit", sans-serif !important;
   font-size: 18px !important;
   font-weight: 700 !important;
   padding: 16px 36px !important;
@@ -1780,23 +1803,33 @@ h1 {
   overflow: hidden !important;
 }
 
-.notify-me-btn:hover, button.notify-me-btn:hover, #notifyMeBtn:hover, #notifyMeFinalBtn:hover {
+.notify-me-btn:hover,
+button.notify-me-btn:hover,
+#notifyMeBtn:hover,
+#notifyMeFinalBtn:hover {
   transform: translateY(-3px) scale(1.02) !important;
   box-shadow: 0 15px 35px rgba(14, 165, 233, 0.45) !important;
   background: linear-gradient(135deg, #0284c7 0%, #16a34a 100%) !important;
 }
 
-.notify-me-btn:active, button.notify-me-btn:active, #notifyMeBtn:active, #notifyMeFinalBtn:active {
+.notify-me-btn:active,
+button.notify-me-btn:active,
+#notifyMeBtn:active,
+#notifyMeFinalBtn:active {
   transform: translateY(-1px) scale(0.99) !important;
 }
 
-.notify-me-btn.subscribed, button.notify-me-btn.subscribed, #notifyMeBtn.subscribed, #notifyMeFinalBtn.subscribed {
+.notify-me-btn.subscribed,
+button.notify-me-btn.subscribed,
+#notifyMeBtn.subscribed,
+#notifyMeFinalBtn.subscribed {
   background: #22c55e !important;
   box-shadow: 0 8px 24px rgba(34, 197, 94, 0.25) !important;
 }
 
 /* Shine effect on hover */
-.notify-me-btn::before, #notifyMeFinalBtn::before {
+.notify-me-btn::before,
+#notifyMeFinalBtn::before {
   content: "" !important;
   position: absolute !important;
   top: 0 !important;
@@ -1812,7 +1845,8 @@ h1 {
   transition: all 0.5s ease !important;
 }
 
-.notify-me-btn:hover::before, #notifyMeFinalBtn:hover::before {
+.notify-me-btn:hover::before,
+#notifyMeFinalBtn:hover::before {
   left: 100% !important;
 }
 
@@ -1851,11 +1885,13 @@ h1 {
 }
 
 /* Footer Notify Button */
-.notify-me-footer-btn, button.notify-me-footer-btn, #notifyMeFooterBtn {
+.notify-me-footer-btn,
+button.notify-me-footer-btn,
+#notifyMeFooterBtn {
   background: linear-gradient(135deg, #0ea5e9 0%, #22c55e 100%) !important;
   color: #ffffff !important;
   border: none !important;
-  font-family: 'Noto Sans', 'Outfit', sans-serif !important;
+  font-family: "Noto Sans", "Outfit", sans-serif !important;
   font-size: 14px !important;
   font-weight: 700 !important;
   padding: 12px 24px !important;
@@ -1875,17 +1911,23 @@ h1 {
   appearance: none !important;
 }
 
-.notify-me-footer-btn:hover, button.notify-me-footer-btn:hover, #notifyMeFooterBtn:hover {
+.notify-me-footer-btn:hover,
+button.notify-me-footer-btn:hover,
+#notifyMeFooterBtn:hover {
   transform: translateY(-2px) scale(1.03) !important;
   box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4) !important;
   background: linear-gradient(135deg, #0284c7 0%, #16a34a 100%) !important;
 }
 
-.notify-me-footer-btn:active, button.notify-me-footer-btn:active, #notifyMeFooterBtn:active {
+.notify-me-footer-btn:active,
+button.notify-me-footer-btn:active,
+#notifyMeFooterBtn:active {
   transform: translateY(0) scale(0.98) !important;
 }
 
-.notify-me-footer-btn.subscribed, button.notify-me-footer-btn.subscribed, #notifyMeFooterBtn.subscribed {
+.notify-me-footer-btn.subscribed,
+button.notify-me-footer-btn.subscribed,
+#notifyMeFooterBtn.subscribed {
   background: #22c55e !important;
   box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2) !important;
 }
