@@ -1760,10 +1760,10 @@ h1 {
   color: #ffffff !important;
   border: none !important;
   font-family: 'Noto Sans', 'Outfit', sans-serif !important;
-  font-size: 18px !important;
+  font-size: 22px !important;
   font-weight: 700 !important;
-  padding: 16px 36px !important;
-  border-radius: 12px !important;
+  padding: 20px 48px !important;
+  border-radius: 14px !important;
   cursor: pointer !important;
   display: inline-flex !important;
   align-items: center !important;
