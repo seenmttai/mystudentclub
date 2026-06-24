@@ -719,26 +719,34 @@ function showModal(job) {
     const modalConnectPeersBtn = document.getElementById('modalConnectPeersBtn');
     if (modalConnectPeersBtn) {
         modalConnectPeersBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (!currentSession) { window.location.href = '/login.html'; return; }
-            if (isEnrolledSync(currentTable)) {
-                window.open(connectLink, '_blank');
-            } else {
+            if (!currentSession) {
+                e.preventDefault();
+                window.location.href = '/login.html';
+                return;
+            }
+            console.log('[Enrollment] cache:', enrollmentStatusCache, 'table:', currentTable);
+            if (!isEnrolledSync(currentTable)) {
+                e.preventDefault();
                 showEnrollmentRequiredPopup();
             }
+            // enrolled: let natural <a href target="_blank"> open the link
         });
     }
 
     const modalOriginalPostBtn = document.getElementById('modalOriginalPostBtn');
     if (modalOriginalPostBtn) {
         modalOriginalPostBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (!currentSession) { window.location.href = '/login.html'; return; }
-            if (isEnrolledSync(currentTable)) {
-                window.open(job.posts_link, '_blank');
-            } else {
+            if (!currentSession) {
+                e.preventDefault();
+                window.location.href = '/login.html';
+                return;
+            }
+            console.log('[Enrollment] cache:', enrollmentStatusCache, 'table:', currentTable);
+            if (!isEnrolledSync(currentTable)) {
+                e.preventDefault();
                 showEnrollmentRequiredPopup();
             }
+            // enrolled: let natural <a href target="_blank"> open the link
         });
     }
 
@@ -2940,74 +2948,7 @@ function redirectToPreferredPortal(preference) {
     return false;
 }
 
-// Show job preference modal
-function showJobPreferenceModal() {
-    const modal = document.getElementById('jobPreferenceModal');
-    if (modal) {
-        modal.style.display = 'flex';
-    }
-}
 
-// Hide job preference modal
-function hideJobPreferenceModal() {
-    const modal = document.getElementById('jobPreferenceModal');
-    if (modal) {
-        modal.style.display = 'none';
-    }
-}
-
-// Initialize preference modal event listeners
-function initJobPreferenceModal() {
-    const preferenceOptions = document.querySelectorAll('.pref-option-btn');
-
-    preferenceOptions.forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const preference = btn.dataset.preference;
-            if (!preference) return;
-
-            preferenceOptions.forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-
-            await saveJobPreference(preference);
-
-            setTimeout(() => {
-                hideJobPreferenceModal();
-
-                if (preference === 'fresher_experienced' || preference === 'semi_experienced') {
-                    state.experience = 'Experienced';
-                } else if (preference === 'fresher_fresher' || preference === 'semi_fresher') {
-                    state.experience = 'Freshers';
-                }
-
-                // Redirect to preferred portal
-                if (!redirectToPreferredPortal(preference)) {
-                    syncFiltersUI();
-                    resetAndFetch();
-                }
-            }, 300);
-        });
-    });
-
-    const skipBtn = document.getElementById('skipPreferenceBtn');
-    if (skipBtn) {
-        skipBtn.addEventListener('click', async () => {
-            await saveJobPreference('industrial');
-            hideJobPreferenceModal();
-
-            const path = window.location.pathname;
-            if (path !== '/' && path !== '/index.html') {
-                window.location.href = '/';
-            }
-        });
-    }
-
-    const modal = document.getElementById('jobPreferenceModal');
-    if (modal) {
-        modal.addEventListener('click', (e) => {
-            // Don't close on background click - user must select an option
-        });
-    }
-}
 function isCloudSynced() {
     return localStorage.getItem('cv_cloud_synced') === 'true' ||
         document.cookie.split(';').some(c => c.trim().startsWith('cv_cloud_synced=true'));
@@ -3133,14 +3074,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     setTimeout(async () => {
         const preference = await loadJobPreferenceFromProfile();
 
-        if (currentSession && !preference) {
-            const path = window.location.pathname;
-            if (path === '/' || path === '/index.html' ||
-                path.includes('/articleship') || path.includes('/fresher') ||
-                path.includes('/semi-qualified')) {
-                showJobPreferenceModal();
-            }
-        } else if (currentSession && preference) {
+        if (currentSession && preference) {
             if (preference === 'fresher_experienced' && currentTable === 'Fresher Jobs') {
                 state.experience = 'Experienced';
                 syncFiltersUI();
@@ -3158,8 +3092,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             // redirectToPreferredPortal(preference);
         }
 
-        // Initialize modal event listeners
-        initJobPreferenceModal();
         initOnboardingSegmentForm();
     }, 500);
 });
@@ -3199,77 +3131,78 @@ function initOnboardingSegmentForm() {
     const selectedInput = document.getElementById('selectedLookingFor');
 
     const fields = {
-        'CA Industrial Training Default': {
-            element: document.getElementById('field-industrial'),
-            input: document.getElementById('articleship_1yr_end_date')
-        },
-        'CA Articleship': {
-            element: document.getElementById('field-articleship'),
-            input: document.getElementById('ca_inter_attempt')
-        },
-        'CA Fresher': {
-            element: document.getElementById('field-fresher'),
-            input: document.getElementById('ca_final_attempt')
-        },
-        'Semi Qualified CA': {
-            element: document.getElementById('field-semi'),
-            input: document.getElementById('years_of_experience')
-        }
+        'CA Industrial Training Default': { element: document.getElementById('field-industrial') },
+        'CA Articleship':                 { element: document.getElementById('field-articleship') },
+        'CA Fresher':                     { element: document.getElementById('field-fresher') },
+        'Semi Qualified CA':              { element: document.getElementById('field-semi') }
     };
 
-    // Make sure we have proper state initialized
+    function setFieldActive(key, isActive) {
+        const { element } = fields[key];
+        element.classList.toggle('active', isActive);
+        element.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]), select').forEach(el => {
+            el.disabled = !isActive;
+        });
+    }
+
+    // Initialise state
     const defaultVal = selectedInput.value;
-    Object.keys(fields).forEach(key => {
-        const item = fields[key];
-        if (key === defaultVal) {
-            item.element.classList.add('active');
-            item.input.required = true;
-            item.input.disabled = false;
-        } else {
-            item.element.classList.remove('active');
-            item.input.required = false;
-            item.input.disabled = true;
-        }
-    });
+    Object.keys(fields).forEach(key => setFieldActive(key, key === defaultVal));
 
     // Card Selection Click Handlers
     cards.forEach(card => {
         card.addEventListener('click', () => {
             const value = card.getAttribute('data-value');
             if (!value) return;
-
-            // Highlight selected card
             cards.forEach(c => c.classList.remove('active'));
             card.classList.add('active');
-
-            // Save to hidden input
             selectedInput.value = value;
-
-            // Toggle dynamic fields visibility and validation constraints
-            Object.keys(fields).forEach(key => {
-                const item = fields[key];
-                if (key === value) {
-                    item.element.classList.add('active');
-                    item.input.required = true;
-                    item.input.disabled = false;
-                } else {
-                    item.element.classList.remove('active');
-                    item.input.required = false;
-                    item.input.disabled = true;
-                }
-            });
+            Object.keys(fields).forEach(key => setFieldActive(key, key === value));
         });
     });
 
-    // Auto-format date input as DD/MM/YYYY while typing
+    // Sync month+year selects → hidden attempt inputs
+    function syncAttempt(monthId, yearId, clearedId, hiddenId, pickerRowId) {
+        const monthEl  = document.getElementById(monthId);
+        const yearEl   = document.getElementById(yearId);
+        const clearedEl = document.getElementById(clearedId);
+        const hiddenEl = document.getElementById(hiddenId);
+        const rowEl    = document.getElementById(pickerRowId);
+        if (!monthEl || !yearEl || !clearedEl || !hiddenEl) return;
+
+        function update() {
+            if (clearedEl.checked) {
+                hiddenEl.value = clearedId === 'ca_inter_cleared' ? 'Cleared Both Groups' : 'Cleared';
+                rowEl.classList.add('cleared-active');
+            } else {
+                rowEl.classList.remove('cleared-active');
+                hiddenEl.value = (monthEl.value && yearEl.value) ? `${monthEl.value} ${yearEl.value}` : '';
+            }
+        }
+
+        monthEl.addEventListener('change', update);
+        yearEl.addEventListener('change', update);
+        clearedEl.addEventListener('change', update);
+    }
+
+    syncAttempt('ca_final_attempt_month', 'ca_final_attempt_year', 'ca_final_cleared', 'ca_final_attempt', 'final-attempt-picker');
+
+    // Date input validation helpers
     const dateInput = document.getElementById('articleship_1yr_end_date');
+
+    function daysInMonth(month, year) {
+        return new Date(year, month, 0).getDate();
+    }
+
+    function validateDateParts(d, m, y) {
+        if (m < 1 || m > 12) return 'Month must be between 01 and 12.';
+        if (d < 1 || d > daysInMonth(m, y)) return `Day must be between 01 and ${daysInMonth(m, y)} for that month.`;
+        if (y < 2000 || y > 2100) return 'Year must be between 2000 and 2100.';
+        return null;
+    }
+
     if (dateInput) {
-        dateInput.addEventListener('input', (e) => {
-            let v = e.target.value.replace(/\D/g, '');
-            if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2);
-            if (v.length >= 6) v = v.slice(0, 5) + '/' + v.slice(5, 9);
-            e.target.value = v;
-        });
+        dateInput.addEventListener('change', () => dateInput.setCustomValidity(''));
     }
 
     // Form submission sync to database
@@ -3282,21 +3215,77 @@ function initOnboardingSegmentForm() {
         }
 
         const lookingFor = selectedInput.value;
+        // type="date" value is YYYY-MM-DD or empty
         const articleshipDateRaw = document.getElementById('articleship_1yr_end_date').value;
-        const articleshipDate = articleshipDateRaw
-            ? (([d, m, y]) => `${y}-${m}-${d}`)(articleshipDateRaw.split('/'))
-            : '';
-        const caInterAttempt = document.getElementById('ca_inter_attempt').value;
+
+        if (lookingFor === 'CA Industrial Training Default') {
+            if (!articleshipDateRaw) {
+                dateInput.setCustomValidity('Please select a date.');
+                dateInput.reportValidity();
+                dateInput.addEventListener('change', () => dateInput.setCustomValidity(''), { once: true });
+                return;
+            }
+            const [yyyy, mm, dd] = articleshipDateRaw.split('-').map(Number);
+            const dateErr = validateDateParts(dd, mm, yyyy);
+            if (dateErr) {
+                dateInput.setCustomValidity(dateErr);
+                dateInput.reportValidity();
+                dateInput.addEventListener('change', () => dateInput.setCustomValidity(''), { once: true });
+                return;
+            }
+        }
+
+        // Keep as YYYY-MM-DD for the database
+        const articleshipDate = articleshipDateRaw || '';
+
+        const earliestJoiningRaw = document.getElementById('articleship_earliest_joining')?.value || '';
+        if (lookingFor === 'CA Articleship') {
+            const joiningEl = document.getElementById('articleship_earliest_joining');
+            if (!earliestJoiningRaw) {
+                joiningEl.setCustomValidity('Please select your earliest joining date.');
+                joiningEl.reportValidity();
+                joiningEl.addEventListener('change', () => joiningEl.setCustomValidity(''), { once: true });
+                return;
+            }
+            const [yyyy, mm, dd] = earliestJoiningRaw.split('-').map(Number);
+            const joiningErr = validateDateParts(dd, mm, yyyy);
+            if (joiningErr) {
+                joiningEl.setCustomValidity(joiningErr);
+                joiningEl.reportValidity();
+                joiningEl.addEventListener('change', () => joiningEl.setCustomValidity(''), { once: true });
+                return;
+            }
+        }
+
         const caFinalAttempt = document.getElementById('ca_final_attempt').value;
         const yearsOfExp = document.getElementById('years_of_experience').value;
 
-        // Construct update object strictly using dedicated columns (NOT inside JSONB)
+        if (lookingFor === 'CA Fresher' && !caFinalAttempt) {
+            const monthEl = document.getElementById('ca_final_attempt_month');
+            monthEl.setCustomValidity('Please select both month and year, or tick Already Cleared.');
+            monthEl.reportValidity();
+            monthEl.addEventListener('change', () => monthEl.setCustomValidity(''), { once: true });
+            return;
+        }
+
+        // Fetch current profile JSONB so we can merge without overwriting other fields
+        const { data: existingRow } = await supabaseClient
+            .from('profiles')
+            .select('profile')
+            .eq('uuid', currentSession.user.id)
+            .single();
+        const mergedProfile = existingRow?.profile || {};
+        if (lookingFor === 'CA Articleship') mergedProfile.articleship_earliest_joining_date = earliestJoiningRaw;
+        if (lookingFor === 'CA Fresher') mergedProfile.fresher_years_of_experience = document.getElementById('fresher_years_of_experience').value;
+
+        // Construct update object
         const updateData = {
             looking_for: lookingFor,
             articleship_1yr_end_date: lookingFor === 'CA Industrial Training Default' ? (articleshipDate || null) : null,
-            ca_inter_attempt: lookingFor === 'CA Articleship' ? (caInterAttempt || null) : null,
+            ca_inter_attempt: null,
             ca_final_attempt: lookingFor === 'CA Fresher' ? (caFinalAttempt || null) : null,
             years_of_experience: lookingFor === 'Semi Qualified CA' ? (yearsOfExp || null) : null,
+            profile: mergedProfile,
             updated_at: new Date().toISOString()
         };
 

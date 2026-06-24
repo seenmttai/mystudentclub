@@ -56,6 +56,29 @@
 
     <div id="p2_global_backdrop" class="p2-global-backdrop" style="display:none;"></div>
 
+    <!-- ========== PROFILE CREATION WIZARD ========== -->
+    <div id="profile-wizard" style="display:none;">
+        <div class="wz-topbar">
+            <a href="/" class="wz-brand"><img src="/assets/logo.png" alt="MSC" class="wz-brand-logo"></a>
+            <div class="wz-progress-wrap">
+                <div class="wz-progress-track"><div class="wz-progress-fill" id="wz-progress-fill"></div></div>
+                <span class="wz-step-pill" id="wz-step-pill">Step 1</span>
+            </div>
+        </div>
+        <div class="wz-body" id="wz-body">
+            <div class="wz-screen wz-screen-a wz-active" id="wz-screen-a"></div>
+            <div class="wz-screen wz-screen-b" id="wz-screen-b"></div>
+        </div>
+        <div class="wz-footer">
+            <button type="button" class="wz-back-btn" id="wz-back-btn" style="visibility:hidden;">← Back</button>
+            <div class="wz-footer-right">
+                <button type="button" class="wz-skip-btn" id="wz-skip-btn" style="display:none;">Skip</button>
+                <button type="button" class="wz-next-btn" id="wz-next-btn">Continue →</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="profile-main" style="display:none;">
     <main class="p2-main">
 
         <section class="p2-header-card" id="section-header">
@@ -704,14 +727,14 @@
                     <section class="p2-card" id="sec-experience">
                         <div class="p2-card-header">
                             <h2>Employment <span class="p2-boost" id="empBoost">Add 10%</span></h2>
-                            <a href="javascript:void(0)" class="p2-card-action" id="empEditToggle" data-toggle="sec-experience-form">Add employment</a>
+                            <a href="javascript:void(0)" class="p2-card-action" id="empEditToggle" data-toggle="sec-experience-form" data-portal="fresher_experienced,semi_fresher,semi_experienced">Add employment</a>
                         </div>
                         <p class="p2-card-sub">Your employment details will help recruiters understand your experience</p>
 
                         <!-- Saved display area -->
                         <div class="p2-saved-display" id="emp-display">
                             <!-- Current Org -->
-                            <div class="p2-saved-entry" id="emp-org-display" style="display:none;">
+                            <div class="p2-saved-entry" id="emp-org-display" style="display:none;" data-portal="fresher_experienced,semi_fresher,semi_experienced">
                                 <div class="p2-saved-entry-header">
                                     <div>
                                         <div class="p2-saved-title" id="emp-org-title">Organization</div>
@@ -731,7 +754,7 @@
                                 </div>
                             </div>
                             <!-- Industrial Training -->
-                            <div class="p2-saved-entry" id="emp-it-display" style="display:none;">
+                            <div class="p2-saved-entry" id="emp-it-display" style="display:none;" data-portal="industrial,fresher_fresher,fresher_experienced">
                                 <div class="p2-saved-entry-header">
                                     <div>
                                         <div class="p2-saved-title" id="emp-it-title">Industrial Training</div>
@@ -744,13 +767,13 @@
 
                         <!-- Add-more links -->
                         <div class="p2-add-links" id="emp-add-links">
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-experience-form" id="addOrgLink"><i class="fas fa-plus-circle"></i> Add current organization</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-experience-form" id="addOrgLink" data-portal="fresher_experienced,semi_fresher,semi_experienced"><i class="fas fa-plus-circle"></i> Add current organization</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-art-form" id="addArtLink"><i class="fas fa-plus-circle"></i> Add articleship details</a>
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-it-form" id="addITLink"><i class="fas fa-plus-circle"></i> Add industrial training</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-it-form" id="addITLink" data-portal="industrial,fresher_fresher,fresher_experienced"><i class="fas fa-plus-circle"></i> Add industrial training</a>
                         </div>
 
                         <!-- Current Employment Form -->
-                        <div class="p2-card-form collapsed" id="sec-experience-form">
+                        <div class="p2-card-form collapsed" id="sec-experience-form" data-portal="fresher_experienced,semi_fresher,semi_experienced">
                             <div class="p2-inline-form-title">Employment</div>
                             <div class="p2-card-sub" style="margin-bottom: 1rem; color: #555; font-size:0.85rem;">Details like job title, company name, etc, help employers understand your work</div>
                             
@@ -912,7 +935,7 @@
                         </div>
 
                         <!-- Industrial Training Form -->
-                        <div class="p2-card-form collapsed" id="sec-it-form">
+                        <div class="p2-card-form collapsed" id="sec-it-form" data-portal="industrial,fresher_fresher,fresher_experienced">
                             <div class="p2-inline-form-title">Industrial Training</div>
                             <div class="p2-form-grid">
                                 <div class="p2-form-row">
@@ -1314,6 +1337,7 @@
             </div>
         </div>
     </main>
+    </div><!-- #profile-main -->
 
     <!-- Consent Required Popup -->
     <div class="p2-consent-modal-overlay" id="consentRequiredModal" style="display:none;">

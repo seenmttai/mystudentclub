@@ -10,6 +10,7 @@ const loadingOverlay = document.getElementById('loading-overlay');
 const saveBtn = document.getElementById('saveBtn');
 let currentUser = null;
 let lastUpdatedISO = null;
+let currentLookingFor = null;
 
 // =================== TOAST NOTIFICATIONS ===================
 function showToast(message, type = 'info', duration = 6000) {
@@ -259,6 +260,1319 @@ function showLoading(visible, text = 'Loading...') {
     }
 }
 
+// =================== WIZARD CONSTANTS ===================
+const WZ_QUESTION_CONFIGS = {
+    preferred_locations: {
+        id: 'preferred_locations', icon: '📍',
+        question: 'Where are you looking for opportunities?',
+        hint: 'Select all that apply — or type a city and press Enter',
+        type: 'chips_custom',
+        options: ['Mumbai', 'Delhi NCR', 'Bangalore', 'Hyderabad', 'Pune', 'Chennai', 'Kolkata', 'Ahmedabad', 'Jaipur', 'PAN India'],
+        profileKey: 'preferred_locations', optional: true
+    },
+    relocation: {
+        id: 'relocation', icon: '🔄',
+        question: 'Are you open to relocating for the right opportunity?',
+        hint: null, type: 'radio',
+        options: [
+            { label: 'Yes, open to relocation', value: 'Yes' },
+            { label: 'No, prefer current city', value: 'No' },
+            { label: 'PAN India — anywhere in India', value: 'PAN India' }
+        ],
+        profileKey: 'relocation_preference', optional: false
+    },
+    joining_date: {
+        id: 'joining_date', icon: '📅',
+        question: 'When can you start?',
+        hint: 'Earliest date you can join',
+        type: 'date', profileKey: 'earliest_joining_date', optional: true
+    },
+    expected_ctc: {
+        id: 'expected_ctc', icon: '💰',
+        question: 'What is your expected CTC?',
+        hint: 'Annual package in INR',
+        type: 'salary', profileKey: 'expected_salary', optional: true
+    },
+    expected_stipend: {
+        id: 'expected_stipend', icon: '💰',
+        question: 'What monthly stipend are you expecting?',
+        hint: 'In ₹ — leave blank if not sure',
+        type: 'salary', profileKey: 'expected_salary', optional: true
+    },
+    preferred_domains: {
+        id: 'preferred_domains', icon: '🎯',
+        question: 'Which domains are you interested in?',
+        hint: 'Select all that apply',
+        type: 'chips',
+        options: ['FP&A', 'Business Finance', 'Treasury', 'Controllership', 'Financial Reporting', 'Internal Audit', 'Risk Management', 'Direct Tax', 'GST', 'Transfer Pricing', 'Valuation', 'Due Diligence', 'Investment Banking', 'Equity Research', 'Consulting', 'Data Analytics / Power BI', 'ESG & Sustainability', 'Other'],
+        profileKey: 'preferred_domains', optional: true
+    },
+    preferred_firm_type: {
+        id: 'preferred_firm_type', icon: '🏢',
+        question: 'What type of CA firm are you looking for?',
+        hint: 'Select all that apply',
+        type: 'chips',
+        options: ['Big 4', 'Big 6', 'Big 10', 'Mid Size', 'Small Size', 'Any'],
+        profileKey: 'preferred_firm_type', optional: true
+    },
+    preferred_industries: {
+        id: 'preferred_industries', icon: '🏭',
+        question: 'Which industries would you like to work in?',
+        hint: 'Select all that apply',
+        type: 'chips',
+        options: ['Banking', 'Financial Services', 'FMCG', 'Manufacturing', 'Pharma', 'IT', 'E-Commerce', 'Automobile', 'Infrastructure', 'Real Estate', 'Consulting', 'Retail', 'Energy', 'Telecom', 'Logistics', 'Others'],
+        profileKey: 'preferred_industries', optional: true
+    },
+    notice_period: {
+        id: 'notice_period', icon: '📋',
+        question: 'What is your current notice period?',
+        hint: null, type: 'radio',
+        options: [
+            { label: 'Immediate Joiner', value: 'Immediate Joiner' },
+            { label: '15 Days or less', value: '15 Days or less' },
+            { label: '1 Month', value: '1 Month' },
+            { label: '2 Months', value: '2 Months' },
+            { label: '3 Months', value: '3 Months' }
+        ],
+        profileKey: 'notice_period', optional: true
+    },
+    employment_status: {
+        id: 'employment_status', icon: '💼',
+        question: 'What is your current employment status?',
+        hint: null, type: 'radio',
+        options: [
+            { label: 'Currently Employed', value: 'Employed' },
+            { label: 'Currently Unemployed / Actively looking', value: 'Unemployed' }
+        ],
+        profileKey: 'current_employment_status', optional: false
+    }
+};
+
+const WZ_ROLE_QUESTIONS = {
+    'industrial':          ['preferred_locations', 'relocation', 'joining_date', 'expected_stipend', 'preferred_domains', 'preferred_industries'],
+    'articleship':         ['preferred_locations', 'relocation', 'joining_date', 'expected_stipend', 'preferred_domains', 'preferred_firm_type', 'preferred_industries'],
+    'fresher_fresher':     ['preferred_locations', 'relocation', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries'],
+    'fresher_experienced': ['preferred_locations', 'relocation', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'notice_period'],
+    'semi_fresher':        ['preferred_locations', 'relocation', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
+    'semi_experienced':    ['preferred_locations', 'relocation', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
+};
+
+// Fields checked for "missing" after AI extraction — portal-specific
+function getWzMissingFields(portalType) {
+    const common = [
+        { id: 'name',           label: 'Full Name',        icon: '👤', type: 'text',     inputName: 'name',           profileKey: 'name',           required: true  },
+        { id: 'contact_number', label: 'Contact Number',   icon: '📱', type: 'tel',      inputName: 'contact_number', profileKey: 'contact_number', required: true  },
+        { id: 'current_city',   label: 'Current City',     icon: '📍', type: 'text',     inputName: 'current_city',   profileKey: 'current_city',   required: false },
+        { id: 'linkedin_url',   label: 'LinkedIn Profile', icon: '💼', type: 'url',      inputName: 'linkedin_url',   profileKey: 'linkedin_url',   required: false, optional: true },
+        { id: 'profile_summary',label: 'Profile Summary',  icon: '📝', type: 'textarea', inputName: 'profile_summary',profileKey: 'profile_summary',required: false, optional: true },
+    ];
+    if (portalType === 'industrial' || portalType === 'articleship') {
+        return [...common,
+            { id: 'ca_inter_clear_year',  label: 'CA Inter Cleared Year',   icon: '🎓', type: 'text', inputName: 'ca_inter_clear_year',  profileKey: 'ca_inter_clear_year',  required: false },
+            { id: 'articleship_firm_name',label: 'Articleship / IT Firm',    icon: '🏢', type: 'text', inputName: 'articleship_firm_name', profileKey: 'articleship_firm_name', required: false, optional: true },
+        ];
+    }
+    if (portalType === 'semi_fresher' || portalType === 'semi_experienced') {
+        return [...common,
+            { id: 'ca_inter_clear_year',  label: 'CA Inter Cleared Year',   icon: '🎓', type: 'text', inputName: 'ca_inter_clear_year',  profileKey: 'ca_inter_clear_year',  required: false },
+            { id: 'emp_company_name',     label: 'Current Company',          icon: '🏢', type: 'text', inputName: 'emp_company_name',     profileKey: 'emp_company_name',     required: false, optional: true },
+        ];
+    }
+    // fresher_fresher, fresher_experienced (default)
+    return [...common,
+        { id: 'ca_final_clear_year',  label: 'CA Final Cleared Year',   icon: '🎓', type: 'text', inputName: 'ca_final_clear_year',  profileKey: 'ca_final_clear_year',  required: false },
+        { id: 'articleship_firm_name',label: 'Articleship Firm',         icon: '🏢', type: 'text', inputName: 'articleship_firm_name', profileKey: 'articleship_firm_name', required: false, optional: true },
+    ];
+}
+
+// =================== WIZARD CONTROLLER ===================
+const WZ = (() => {
+    const st = {
+        phase: 'cv',
+        programType: null,
+        profileData: {},
+        answers: {},
+        prefQueue: [],
+        prefIdx: 0,
+        missingQueue: [],
+        missingIdx: 0,
+        reviewItems: [],
+        history: [],
+        currentSlot: 'a',
+        aiStatus: 'idle',
+        aiData: null,
+        storerDone: false,
+    };
+
+    // DOM refs
+    const dom = {};
+
+    // ------ Init ------
+    function init(profileData, lookingFor) {
+        st.profileData = profileData || {};
+        const isNewUser = !profileData || !profileData.name;
+        const hasType = !!lookingFor;
+        if (!isNewUser && hasType) {
+            showMain();
+            return;
+        }
+        dom.wizard   = document.getElementById('profile-wizard');
+        dom.body     = document.getElementById('wz-body');
+        dom.screenA  = document.getElementById('wz-screen-a');
+        dom.screenB  = document.getElementById('wz-screen-b');
+        dom.fill     = document.getElementById('wz-progress-fill');
+        dom.pill     = document.getElementById('wz-step-pill');
+        dom.backBtn  = document.getElementById('wz-back-btn');
+        dom.nextBtn  = document.getElementById('wz-next-btn');
+        dom.skipBtn  = document.getElementById('wz-skip-btn');
+
+        if (lookingFor) {
+            st.programType = resolveSubtype(mapLookingForToType(lookingFor), profileData);
+        }
+
+        dom.wizard.style.display = 'flex';
+
+        dom.nextBtn.addEventListener('click', () => handleNext());
+        dom.backBtn.addEventListener('click', () => handleBack());
+        dom.skipBtn.addEventListener('click', () => handleSkip());
+
+        goTo('cv', 'forward');
+    }
+
+    function showMain() {
+        const m = document.getElementById('profile-main');
+        if (m) m.style.display = '';
+        const wz = document.getElementById('profile-wizard');
+        if (wz) wz.style.display = 'none';
+        applyPortalSections(st.programType);
+    }
+
+    function applyPortalSections(type) {
+        if (!type) return;
+        document.querySelectorAll('[data-portal]').forEach(el => {
+            const portals = el.dataset.portal.split(',').map(s => s.trim());
+            el.style.display = portals.includes(type) ? '' : 'none';
+        });
+    }
+
+    // Resolve fresher/semi subtype from YOE in profileData; null means "ask wizard"
+    function resolveSubtype(type, profileData) {
+        if (type !== 'fresher_fresher' && type !== 'semi_fresher') return type;
+        const yoeRaw = profileData ? (profileData.emp_exp_years != null ? profileData.emp_exp_years : profileData.yoe_years) : null;
+        const yoe = parseInt(yoeRaw || '', 10);
+        if (isNaN(yoe) || yoeRaw == null) return null; // unknown — ask in wizard
+        if (yoe >= 1) return type === 'fresher_fresher' ? 'fresher_experienced' : 'semi_experienced';
+        return type; // 0 years = fresher/semi_fresher confirmed
+    }
+
+    function mapLookingForToType(lf) {
+        const map = {
+            'CA Industrial Training Default': 'industrial',
+            'CA Articleship': 'articleship',
+            'CA Freshers': 'fresher_fresher',
+            'CA Fresher (Fresher)': 'fresher_fresher',
+            'CA Fresher (Experienced)': 'fresher_experienced',
+            'Semi Qualified CA': 'semi_fresher',
+        };
+        return map[lf] || null;
+    }
+
+    function typeToLookingFor(type) {
+        const map = {
+            'industrial': 'CA Industrial Training Default',
+            'articleship': 'CA Articleship',
+            'fresher_fresher': 'CA Freshers',
+            'fresher_experienced': 'CA Fresher (Experienced)',
+            'semi_fresher': 'Semi Qualified CA',
+            'semi_experienced': 'Semi Qualified CA',
+        };
+        return map[type] || 'CA Freshers';
+    }
+
+    // ------ Progress ------
+    function updateProgress() {
+        const phases = ['cv', 'type', 'subtype', 'prefs', 'missing', 'review', 'preview', 'publish'];
+        const idx = phases.indexOf(st.phase);
+        const total = phases.length;
+        const pct = Math.round(((idx + 1) / total) * 100);
+        if (dom.fill) dom.fill.style.width = pct + '%';
+
+        let label = 'Step ' + (idx + 1);
+        if (st.phase === 'prefs' && st.prefQueue.length) {
+            label = `Preferences ${st.prefIdx + 1}/${st.prefQueue.length}`;
+        } else if (st.phase === 'missing' && st.missingQueue.length) {
+            label = `Details ${st.missingIdx + 1}/${st.missingQueue.length}`;
+        }
+        if (dom.pill) dom.pill.textContent = label;
+    }
+
+    // ------ Screen transitions ------
+    function goTo(phase, direction) {
+        st.phase = phase;
+        updateProgress();
+
+        const html = buildScreen(phase);
+        const currentSlot = st.currentSlot;
+        const nextSlot = currentSlot === 'a' ? 'b' : 'a';
+        const currentEl = document.getElementById('wz-screen-' + currentSlot);
+        const nextEl    = document.getElementById('wz-screen-' + nextSlot);
+
+        nextEl.innerHTML = html;
+        nextEl.className = 'wz-screen wz-screen-' + nextSlot + ' wz-enter-' + (direction === 'forward' ? 'fwd' : 'back');
+
+        // force reflow
+        void nextEl.offsetHeight;
+
+        requestAnimationFrame(() => {
+            currentEl.classList.remove('wz-active');
+            currentEl.classList.add(direction === 'forward' ? 'wz-exit-fwd' : 'wz-exit-back');
+
+            nextEl.classList.remove('wz-enter-fwd', 'wz-enter-back');
+            nextEl.classList.add('wz-active');
+            st.currentSlot = nextSlot;
+
+            setTimeout(() => mountScreen(phase), 420);
+        });
+
+        // Back button visibility
+        dom.backBtn.style.visibility = (st.history.length > 0 || phase !== 'cv') ? 'visible' : 'hidden';
+        dom.skipBtn.style.display = 'none';
+        dom.nextBtn.style.display = '';
+        dom.nextBtn.textContent = (phase === 'publish') ? 'View Full Profile →' : 'Continue →';
+    }
+
+    // ------ Screen HTML builders ------
+    function buildScreen(phase) {
+        switch (phase) {
+            case 'cv':       return buildCV();
+            case 'type':     return buildType();
+            case 'subtype':  return buildSubtype();
+            case 'prefs':    return buildQuestion(WZ_QUESTION_CONFIGS[st.prefQueue[st.prefIdx]]);
+            case 'missing':  return buildMissing(st.missingQueue[st.missingIdx]);
+            case 'review':   return buildReview();
+            case 'preview':  return buildPreview();
+            case 'publish':  return buildPublish();
+            default: return '';
+        }
+    }
+
+    function buildCV() {
+        const cachedName = localStorage.getItem('userCVFileName') || '';
+        const hasFile = !!cachedName;
+        return `<div class="wz-inner">
+            <div class="wz-q-icon">🚀</div>
+            <h2 class="wz-q-title">Create your MSC Profile in under 2 minutes</h2>
+            <p class="wz-q-hint">Upload your resume to auto-fill details. AI will extract your information while you answer a few quick questions.</p>
+            ${hasFile ? `
+            <div class="wz-cv-file-tag" id="wz-cv-tag">
+                <i class="fas fa-file-pdf"></i>
+                <span id="wz-cv-fname">${escHtml(cachedName)}</span>
+                <button type="button" class="wz-cv-file-remove" id="wz-cv-remove"><i class="fas fa-times"></i></button>
+            </div>` : `
+            <div class="wz-cv-upload-zone" id="wz-cv-zone">
+                <input type="file" id="wz-cv-input" accept=".pdf">
+                <div class="wz-cv-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                <p class="wz-cv-label">Click to upload resume</p>
+                <p class="wz-cv-sub">PDF only — Max 5 MB</p>
+            </div>
+            <div class="wz-cv-or">or</div>
+            <button type="button" class="wz-cv-skip" id="wz-cv-skip-upload">Continue Without Resume</button>`}
+            <div class="wz-consent-card">
+                <label class="wz-consent-label" for="wz-consent-chk">
+                    <input type="checkbox" id="wz-consent-chk" ${document.getElementById('cvSharingConsent')?.checked ? 'checked' : ''}>
+                    <span>I consent to My Student Club sharing my CV and profile details with registered companies and recruiters for job-matching purposes.</span>
+                </label>
+                <div class="wz-consent-footer">
+                    <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer" class="wz-consent-link"><i class="fas fa-external-link-alt"></i> Privacy Policy</a>
+                    <span class="wz-consent-status" id="wz-consent-status"></span>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function buildType() {
+        return `<div class="wz-inner">
+            <div class="wz-q-icon">🎓</div>
+            <h2 class="wz-q-title">What are you looking for?</h2>
+            <p class="wz-q-hint">This helps us show you the right jobs and ask the right questions.</p>
+            <div class="wz-type-grid" id="wz-type-grid">
+                <div class="wz-type-card" data-type="industrial">
+                    <div class="wz-type-icon">🏭</div>
+                    <div class="wz-type-label">Industrial Training</div>
+                    <div class="wz-type-sub">CA Final — 6-month IT</div>
+                </div>
+                <div class="wz-type-card" data-type="articleship">
+                    <div class="wz-type-icon">📜</div>
+                    <div class="wz-type-label">Articleship</div>
+                    <div class="wz-type-sub">3-year CA articleship</div>
+                </div>
+                <div class="wz-type-card" data-type="fresher">
+                    <div class="wz-type-icon">🎓</div>
+                    <div class="wz-type-label">CA Fresher</div>
+                    <div class="wz-type-sub">Qualified CA</div>
+                </div>
+                <div class="wz-type-card" data-type="semi">
+                    <div class="wz-type-icon">📊</div>
+                    <div class="wz-type-label">Semi-Qualified CA</div>
+                    <div class="wz-type-sub">CA Inter / pursuing</div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function buildSubtype() {
+        return `<div class="wz-inner">
+            <div class="wz-q-icon">💼</div>
+            <h2 class="wz-q-title">Are you a fresher or experienced?</h2>
+            <p class="wz-q-hint">As a qualified CA, let us know your experience level.</p>
+            <div class="wz-radio-grid" id="wz-subtype-grid">
+                <div class="wz-radio-card" data-sub="fresher_fresher">
+                    <div class="wz-radio-dot"></div>
+                    <div>
+                        <div class="wz-radio-label">Fresher (0–2 years)</div>
+                        <div class="wz-radio-sub">No significant post-qualification experience</div>
+                    </div>
+                </div>
+                <div class="wz-radio-card" data-sub="fresher_experienced">
+                    <div class="wz-radio-dot"></div>
+                    <div>
+                        <div class="wz-radio-label">Experienced (2+ years)</div>
+                        <div class="wz-radio-sub">Post-qualification work experience</div>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    function buildQuestion(cfg) {
+        if (!cfg) return '<div class="wz-inner"><p>Loading...</p></div>';
+        let inputHtml = '';
+        const saved = st.answers[cfg.id];
+        if (cfg.type === 'radio') {
+            inputHtml = `<div class="wz-radio-grid" id="wz-q-radio">` +
+                cfg.options.map(opt => {
+                    const val = typeof opt === 'object' ? opt.value : opt;
+                    const lbl = typeof opt === 'object' ? opt.label : opt;
+                    const sel = saved === val ? ' wz-selected' : '';
+                    return `<div class="wz-radio-card${sel}" data-val="${escHtml(val)}">
+                        <div class="wz-radio-dot"></div>
+                        <div><div class="wz-radio-label">${escHtml(lbl)}</div></div>
+                    </div>`;
+                }).join('') + `</div>`;
+        } else if (cfg.type === 'chips' || cfg.type === 'chips_custom') {
+            const savedArr = Array.isArray(saved) ? saved : [];
+            inputHtml = `<div class="wz-chip-grid" id="wz-q-chips">` +
+                cfg.options.map(o => {
+                    const sel = savedArr.includes(o) ? ' wz-selected' : '';
+                    return `<span class="wz-chip${sel}" data-val="${escHtml(o)}">${escHtml(o)}</span>`;
+                }).join('') + `</div>`;
+            if (cfg.type === 'chips_custom') {
+                inputHtml += `<div class="wz-input-wrap" style="margin-top:12px;">
+                    <input class="wz-input" id="wz-custom-chip-input" placeholder="Type a city and press Enter…">
+                </div>`;
+            }
+        } else if (cfg.type === 'date') {
+            inputHtml = `<div class="wz-input-wrap"><input class="wz-input" type="date" id="wz-q-date" value="${escHtml(saved || '')}"></div>`;
+        } else if (cfg.type === 'salary') {
+            inputHtml = `<div class="wz-input-wrap">
+                <input class="wz-input" type="text" id="wz-q-salary" placeholder="e.g., 6,00,000" value="${escHtml(saved || '')}">
+                <span class="wz-not-sure-link" id="wz-not-sure">Not sure / Skip</span>
+            </div>`;
+        }
+        const skipBtn = cfg.optional ? `<span class="wz-not-sure-link" style="display:inline-block;margin-top:14px;" id="wz-q-skip">Skip this question</span>` : '';
+        return `<div class="wz-inner">
+            <div class="wz-q-icon">${cfg.icon}</div>
+            <h2 class="wz-q-title">${escHtml(cfg.question)}</h2>
+            ${cfg.hint ? `<p class="wz-q-hint">${escHtml(cfg.hint)}</p>` : '<p></p>'}
+            ${inputHtml}
+            ${skipBtn}
+        </div>`;
+    }
+
+    function buildMissing(field) {
+        if (!field) return '<div class="wz-inner"><p>Almost done...</p></div>';
+        const saved = st.answers['missing_' + field.id] || getFormValue(field.inputName) || '';
+        let inputHtml = '';
+        if (field.type === 'textarea') {
+            inputHtml = `<textarea class="wz-textarea" id="wz-missing-input" rows="4" placeholder="Write a brief professional summary...">${escHtml(saved)}</textarea>`;
+        } else {
+            inputHtml = `<input class="wz-input" type="${field.type}" id="wz-missing-input" placeholder="${field.type === 'url' ? 'https://linkedin.com/in/yourprofile' : ''}" value="${escHtml(saved)}">`;
+        }
+        const aiTag = st.aiStatus === 'loading' ? `<div class="wz-ai-banner"><div class="wz-ai-dot"></div>Resume is being auto-filled in the background…</div>` : '';
+        const skipHtml = field.optional ? `<span class="wz-not-sure-link" style="display:inline-block;margin-top:14px;" id="wz-q-skip">Skip</span>` : '';
+        return `<div class="wz-inner">
+            ${aiTag}
+            <div class="wz-q-icon">${field.icon}</div>
+            <h2 class="wz-q-title">${escHtml(field.label)}</h2>
+            <div class="wz-input-wrap" style="margin-top:0.5rem;">${inputHtml}</div>
+            ${skipHtml}
+        </div>`;
+    }
+
+    function buildReview() {
+        const groups = buildReviewGroups();
+        const hasAny = groups.some(g => g.fields.some(f => f.value));
+        if (!hasAny) return `<div class="wz-inner"><h2 class="wz-q-title">Almost there!</h2><p class="wz-q-hint">Click Continue to preview your profile.</p></div>`;
+        return `<div class="wz-inner" style="max-width:620px;">
+            <div class="wz-q-icon">✅</div>
+            <h2 class="wz-q-title">Review auto-filled details</h2>
+            <p class="wz-q-hint">Your resume was processed. Verify and edit anything that looks wrong.</p>
+            ${groups.filter(g => g.fields.some(f => f.value)).map(g => `
+            <div style="margin-bottom:1.25rem;">
+                <div style="font-size:0.78rem;font-weight:700;color:#999;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">${escHtml(g.label)}</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    ${g.fields.filter(f => f.value).map(f => `
+                    <div class="${f.wide ? 'wz-review-field wz-review-field-wide' : 'wz-review-field'}" style="${f.wide ? 'grid-column:1/-1;' : ''}">
+                        <label class="wz-review-field-label">${escHtml(f.label)}</label>
+                        ${f.textarea
+                            ? `<textarea class="wz-input wz-textarea" name="rv_${escHtml(f.key)}" rows="3">${escHtml(f.value)}</textarea>`
+                            : `<input class="wz-input" name="rv_${escHtml(f.key)}" type="text" value="${escHtml(f.value)}">`
+                        }
+                    </div>`).join('')}
+                </div>
+            </div>`).join('')}
+        </div>`;
+    }
+
+    function buildPreview() {
+        const nameVal = getFormValue('name') || st.answers['missing_name'] || 'Your Name';
+        const emailVal = currentUser?.email || '';
+        const phone = getFormValue('contact_number') || st.answers['missing_contact_number'] || '—';
+        const city = getFormValue('current_city') || st.answers['missing_current_city'] || '—';
+        const summary = getFormValue('profile_summary') || st.answers['missing_profile_summary'] || '';
+        const prefLoc = formatArrayAnswer(st.answers['preferred_locations']) || '—';
+        const domain = formatArrayAnswer(st.answers['preferred_domains']) || '—';
+        const industry = formatArrayAnswer(st.answers['preferred_industries']) || '—';
+        return `<div class="wz-inner" style="max-width:640px;">
+            <h2 class="wz-q-title">Review Your Profile</h2>
+            <p class="wz-q-hint">Here's a summary of what we've collected. You can edit everything after publishing.</p>
+            <div style="background:#F5F6FA;border-radius:12px;padding:1.25rem;margin-bottom:1rem;">
+                <div style="font-size:1.2rem;font-weight:700;margin-bottom:4px;">${escHtml(nameVal)}</div>
+                <div style="font-size:0.85rem;color:#555;margin-bottom:10px;">${escHtml(emailVal)} · ${escHtml(phone)} · ${escHtml(city)}</div>
+                ${summary ? `<div style="font-size:0.9rem;color:#333;line-height:1.55;border-top:1px solid #E8E8E8;padding-top:10px;">${escHtml(summary)}</div>` : ''}
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                ${previewItem('Preferred Locations', prefLoc)}
+                ${previewItem('Domains', domain)}
+                ${previewItem('Industries', industry)}
+                ${previewItem('Relocation', st.answers['relocation'] || '—')}
+                ${previewItem('Expected Salary / Stipend', st.answers['expected_ctc'] || st.answers['expected_stipend'] || getFormValue('expected_salary') || '—')}
+                ${previewItem('Joining Date', st.answers['joining_date'] || getFormValue('earliest_joining_date') || '—')}
+            </div>
+        </div>`;
+    }
+
+    function previewItem(label, value) {
+        return `<div style="background:#fff;border:1px solid #E8E8E8;border-radius:8px;padding:10px 12px;">
+            <div style="font-size:0.75rem;color:#999;margin-bottom:2px;">${escHtml(label)}</div>
+            <div style="font-size:0.88rem;font-weight:500;color:#1A1A1A;">${escHtml(String(value))}</div>
+        </div>`;
+    }
+
+    function buildPublish() {
+        const name = getFormValue('name') || st.answers['missing_name'] || 'Your';
+        const pct = calcCompleteness();
+        const missing = buildCompletenessTips(pct);
+        dom.nextBtn.style.display = 'none';
+        dom.backBtn.style.visibility = 'hidden';
+        return `<div class="wz-inner wz-publish-screen">
+            <div class="wz-publish-icon">🎉</div>
+            <h2 class="wz-publish-title">Profile Created!</h2>
+            <p class="wz-publish-sub">Your profile is now visible to recruiters, ${escHtml(name.split(' ')[0])}.</p>
+            <div style="max-width:360px;margin:0 auto 1rem;">
+                <div style="display:flex;justify-content:space-between;font-size:0.85rem;font-weight:600;color:#1A1A1A;margin-bottom:4px;"><span>Profile Completeness</span><span>${pct}%</span></div>
+                <div class="wz-completeness-bar-wrap"><div class="wz-completeness-bar" id="wz-comp-bar" style="width:0%"></div></div>
+            </div>
+            ${missing}
+            <div class="wz-publish-actions">
+                <button type="button" class="wz-btn-secondary" id="wz-complete-later">Complete Later</button>
+                <button type="button" class="wz-btn-primary" id="wz-improve-profile">View Full Profile →</button>
+            </div>
+        </div>`;
+    }
+
+    function buildCompletenessTips(pct) {
+        if (pct >= 90) return '';
+        const tips = [];
+        if (!getFormValue('profile_summary') && !st.answers['missing_profile_summary']) tips.push('+8% Add Profile Summary');
+        if (!getFormValue('linkedin_url') && !st.answers['missing_linkedin_url']) tips.push('+5% Add LinkedIn Profile');
+        if (!getFormValue('key_skills') && !getFormValue('emp_skills_hidden')) tips.push('+5% Add Key Skills');
+        if (!tips.length) return '';
+        return `<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:12px 14px;max-width:360px;margin:0 auto 1rem;text-align:left;">
+            <div style="font-size:0.82rem;color:#F97316;font-weight:600;margin-bottom:6px;">Complete to improve visibility:</div>
+            ${tips.slice(0, 3).map(t => `<div style="font-size:0.82rem;color:#555;padding:2px 0;">${escHtml(t)}</div>`).join('')}
+        </div>`;
+    }
+
+    // ------ Mount (bind events after render) ------
+    function mountScreen(phase) {
+        const activeEl = document.getElementById('wz-screen-' + st.currentSlot);
+        switch (phase) {
+            case 'cv':       mountCV(activeEl); break;
+            case 'type':     mountType(activeEl); break;
+            case 'subtype':  mountSubtype(activeEl); break;
+            case 'prefs':    mountQuestion(activeEl); break;
+            case 'missing':  mountMissing(activeEl); break;
+            case 'review':   mountReview(); break;
+            case 'preview':  break;
+            case 'publish':  mountPublish(); break;
+        }
+    }
+
+    function mountCV(el) {
+        const zone = el.querySelector('#wz-cv-zone');
+        const inp = el.querySelector('#wz-cv-input');
+        const removeBtn = el.querySelector('#wz-cv-remove');
+        const skipUpload = el.querySelector('#wz-cv-skip-upload');
+
+        if (inp) {
+            inp.addEventListener('change', e => {
+                const f = e.target.files[0];
+                if (f) handleWzFileSelect(f);
+            });
+        }
+        if (zone) {
+            ['dragenter', 'dragover'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.add('hover'); }));
+            ['dragleave', 'drop'].forEach(ev => zone.addEventListener(ev, e => { e.preventDefault(); zone.classList.remove('hover'); }));
+            zone.addEventListener('drop', e => {
+                const f = e.dataTransfer.files[0];
+                if (f) handleWzFileSelect(f);
+            });
+        }
+        if (removeBtn) {
+            removeBtn.addEventListener('click', () => {
+                localStorage.removeItem('userCVFileName');
+                localStorage.removeItem('userCVText');
+                localStorage.removeItem('userCVImages');
+                localStorage.removeItem('userCVPdf');
+                clearCloudSyncFlag();
+                goTo('cv', 'forward');
+            });
+        }
+        if (skipUpload) {
+            skipUpload.addEventListener('click', () => {
+                saveConsentFromWizard();
+                proceedAfterCV();
+            });
+        }
+    }
+
+    function mountType(el) {
+        el.querySelectorAll('.wz-type-card').forEach(card => {
+            card.addEventListener('click', () => {
+                el.querySelectorAll('.wz-type-card').forEach(c => c.classList.remove('wz-selected'));
+                card.classList.add('wz-selected');
+                st._pendingType = card.getAttribute('data-type');
+            });
+        });
+    }
+
+    function mountSubtype(el) {
+        el.querySelectorAll('.wz-radio-card').forEach(card => {
+            card.addEventListener('click', () => {
+                el.querySelectorAll('.wz-radio-card').forEach(c => c.classList.remove('wz-selected'));
+                card.classList.add('wz-selected');
+                st._pendingSubtype = card.getAttribute('data-sub');
+            });
+        });
+    }
+
+    function mountQuestion(el) {
+        const cfg = WZ_QUESTION_CONFIGS[st.prefQueue[st.prefIdx]];
+        if (!cfg) return;
+
+        if (cfg.type === 'radio') {
+            el.querySelectorAll('.wz-radio-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    el.querySelectorAll('.wz-radio-card').forEach(c => c.classList.remove('wz-selected'));
+                    card.classList.add('wz-selected');
+                });
+            });
+        } else if (cfg.type === 'chips' || cfg.type === 'chips_custom') {
+            el.querySelectorAll('.wz-chip').forEach(chip => {
+                chip.addEventListener('click', () => chip.classList.toggle('wz-selected'));
+            });
+            if (cfg.type === 'chips_custom') {
+                const customInp = el.querySelector('#wz-custom-chip-input');
+                if (customInp) {
+                    customInp.addEventListener('keydown', e => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const val = customInp.value.trim();
+                            if (!val) return;
+                            const grid = el.querySelector('#wz-q-chips');
+                            if (grid) {
+                                const chip = document.createElement('span');
+                                chip.className = 'wz-chip wz-selected';
+                                chip.dataset.val = val;
+                                chip.textContent = val;
+                                chip.addEventListener('click', () => chip.classList.toggle('wz-selected'));
+                                grid.appendChild(chip);
+                            }
+                            customInp.value = '';
+                        }
+                    });
+                }
+            }
+        }
+
+        const skipLink = el.querySelector('#wz-q-skip');
+        if (skipLink) skipLink.addEventListener('click', () => advancePref(null));
+
+        const notSure = el.querySelector('#wz-not-sure');
+        if (notSure) notSure.addEventListener('click', () => advancePref(null));
+    }
+
+    function mountMissing(el) {
+        const skipLink = el.querySelector('#wz-q-skip');
+        if (skipLink) skipLink.addEventListener('click', () => advanceMissing(null));
+    }
+
+    function mountPublish() {
+        setTimeout(() => {
+            const bar = document.getElementById('wz-comp-bar');
+            if (bar) bar.style.width = calcCompleteness() + '%';
+        }, 100);
+
+        const later = document.getElementById('wz-complete-later');
+        const improve = document.getElementById('wz-improve-profile');
+        const finish = () => { finishWizard(); };
+        if (later) later.addEventListener('click', finish);
+        if (improve) improve.addEventListener('click', finish);
+    }
+
+    // ------ Navigation logic ------
+    function handleNext() {
+        const phase = st.phase;
+        if (phase === 'cv') {
+            if (!document.getElementById('wz-consent-chk')?.checked) {
+                showToast('Please accept the data sharing consent to continue.', 'warning', 5000);
+                return;
+            }
+            saveConsentFromWizard();
+            fireStorerAndProfill();
+            proceedAfterCV();
+        } else if (phase === 'type') {
+            if (!st._pendingType) { showToast('Please select what you are looking for.', 'warning'); return; }
+            const t = st._pendingType;
+            if (t === 'fresher') {
+                st.history.push({ phase: 'type' });
+                goTo('subtype', 'forward');
+            } else {
+                st.programType = t === 'semi' ? 'semi_fresher' : t;
+                buildPrefQueue();
+                st.history.push({ phase: 'type' });
+                goTo('prefs', 'forward');
+            }
+        } else if (phase === 'subtype') {
+            if (!st._pendingSubtype) { showToast('Please select your experience level.', 'warning'); return; }
+            st.programType = st._pendingSubtype;
+            buildPrefQueue();
+            st.history.push({ phase: 'subtype' });
+            goTo('prefs', 'forward');
+        } else if (phase === 'prefs') {
+            collectPrefAnswer();
+            advancePref('collected');
+        } else if (phase === 'missing') {
+            collectMissingAnswer();
+            advanceMissing('collected');
+        } else if (phase === 'review') {
+            collectReviewAnswers();
+            saveProgress(); // save reviewed/confirmed AI data to Supabase
+            st.history.push({ phase: 'review' });
+            goTo('preview', 'forward');
+        } else if (phase === 'preview') {
+            st.history.push({ phase: 'preview' });
+            goTo('publish', 'forward');
+        } else if (phase === 'publish') {
+            finishWizard();
+        }
+    }
+
+    function handleBack() {
+        const prev = st.history.pop();
+        if (!prev) return;
+        if (prev.phase === 'prefs') {
+            st.prefIdx = typeof prev.idx === 'number' ? prev.idx : Math.max(0, st.prefIdx - 1);
+        } else if (prev.phase === 'missing') {
+            st.missingIdx = typeof prev.idx === 'number' ? prev.idx : Math.max(0, st.missingIdx - 1);
+        }
+        goTo(prev.phase, 'back');
+    }
+
+    function handleSkip() { handleNext(); }
+
+    function proceedAfterCV() {
+        if (!st.programType) {
+            st.history.push({ phase: 'cv' });
+            goTo('type', 'forward');
+            return;
+        }
+        // For fresher/semi from DB, subtype may still be unresolved if YOE was absent
+        if (st.programType === 'fresher_fresher' || st.programType === 'semi_fresher') {
+            const yoeRaw = getFormValue('emp_exp_years') || (st.profileData ? st.profileData.emp_exp_years : null);
+            const yoe = parseInt(yoeRaw || '', 10);
+            if (isNaN(yoe) || yoeRaw == null) {
+                // YOE unknown — show subtype screen so user can choose
+                st._pendingType = st.programType === 'fresher_fresher' ? 'fresher' : 'semi';
+                st.history.push({ phase: 'cv' });
+                goTo('subtype', 'forward');
+                return;
+            }
+        }
+        buildPrefQueue();
+        st.history.push({ phase: 'cv' });
+        goTo('prefs', 'forward');
+    }
+
+    // ------ Preferences phase ------
+    function buildPrefQueue() {
+        st.prefQueue = WZ_ROLE_QUESTIONS[st.programType] || WZ_ROLE_QUESTIONS['fresher_fresher'];
+        st.prefIdx = 0;
+    }
+
+    function collectPrefAnswer() {
+        const cfg = WZ_QUESTION_CONFIGS[st.prefQueue[st.prefIdx]];
+        if (!cfg) return;
+        const el = document.getElementById('wz-screen-' + st.currentSlot);
+        let val = null;
+        if (cfg.type === 'radio') {
+            const sel = el.querySelector('.wz-radio-card.wz-selected');
+            val = sel ? sel.getAttribute('data-val') : null;
+        } else if (cfg.type === 'chips' || cfg.type === 'chips_custom') {
+            val = Array.from(el.querySelectorAll('.wz-chip.wz-selected')).map(c => c.getAttribute('data-val'));
+            if (!val.length) val = null;
+        } else if (cfg.type === 'date') {
+            val = el.querySelector('#wz-q-date')?.value || null;
+        } else if (cfg.type === 'salary') {
+            val = el.querySelector('#wz-q-salary')?.value?.trim() || null;
+        }
+        if (val !== null) st.answers[cfg.id] = val;
+    }
+
+    function advancePref(_collected) {
+        saveProgress(); // save after every single preference question
+        st.history.push({ phase: 'prefs', idx: st.prefIdx });
+        st.prefIdx++;
+        if (st.prefIdx >= st.prefQueue.length) {
+            buildMissingQueue();
+            if (st.missingQueue.length) {
+                goTo('missing', 'forward');
+            } else {
+                buildReviewItems();
+                if (st.reviewItems.length) goTo('review', 'forward');
+                else goTo('preview', 'forward');
+            }
+        } else {
+            goTo('prefs', 'forward');
+        }
+    }
+
+    // ------ Missing fields phase ------
+    function buildMissingQueue() {
+        const fields = getWzMissingFields(st.programType);
+        st.missingQueue = fields.filter(f => {
+            const formVal = getFormValue(f.inputName);
+            const answerVal = st.answers['missing_' + f.id];
+            return !formVal && !answerVal;
+        });
+        st.missingIdx = 0;
+    }
+
+    function collectMissingAnswer() {
+        const field = st.missingQueue[st.missingIdx];
+        if (!field) return;
+        const el = document.getElementById('wz-screen-' + st.currentSlot);
+        const inp = el.querySelector('#wz-missing-input');
+        const val = inp ? inp.value.trim() : '';
+        if (val) {
+            st.answers['missing_' + field.id] = val;
+            // Also set in the main form for continuity
+            const mainInput = document.getElementById(field.inputName) || profileForm.elements[field.inputName];
+            if (mainInput) mainInput.value = val;
+        }
+    }
+
+    function advanceMissing(_collected) {
+        saveProgress(); // save after every single missing-field question
+        st.history.push({ phase: 'missing', idx: st.missingIdx });
+        st.missingIdx++;
+        if (st.missingIdx >= st.missingQueue.length) {
+            buildReviewItems();
+            if (st.reviewItems.length) goTo('review', 'forward');
+            else goTo('preview', 'forward');
+        } else {
+            goTo('missing', 'forward');
+        }
+    }
+
+    // ------ Review items ------
+    function buildReviewItems() {
+        // Show review step whenever a resume was uploaded (AI may have filled fields)
+        // or when any AI data is available. buildReviewGroups() handles the actual content.
+        const hasFile = !!localStorage.getItem('userCVFileName');
+        const hasAI   = !!st.aiData;
+        st.reviewItems = (hasFile || hasAI) ? [{ label: '_show', value: '_show' }] : [];
+    }
+
+    function buildReviewGroups() {
+        const type = st.programType || 'fresher_fresher';
+        // fv: form value first, then AI data fallback
+        const fv = k => { const v = getFormValue(k); return v || (st.aiData ? (st.aiData[k] || '') : ''); };
+        const fv2 = (k1, k2) => { const a = fv(k1); const b = fv(k2); return a ? (b ? a + ' ' + b : a) : b; };
+
+        const personalGroup = {
+            label: 'Personal Details',
+            fields: [
+                { key: 'name',            label: 'Full Name',        value: fv('name') },
+                { key: 'contact_number',  label: 'Contact Number',   value: fv('contact_number') },
+                { key: 'current_city',    label: 'Current City',     value: fv('current_city') },
+                { key: 'current_location',label: 'Current Location', value: fv('current_location') },
+                { key: 'gender',          label: 'Gender',           value: fv('gender') },
+                { key: 'date_of_birth',   label: 'Date of Birth',    value: fv('date_of_birth') },
+                { key: 'linkedin_url',    label: 'LinkedIn URL',     value: fv('linkedin_url'), wide: true },
+                { key: 'profile_summary', label: 'Profile Summary',  value: fv('profile_summary'), wide: true, textarea: true },
+            ]
+        };
+
+        const educationGroup = {
+            label: 'Education',
+            fields: [
+                { key: 'grad_degree',        label: 'Graduation Degree', value: fv('grad_degree') },
+                { key: 'grad_university',    label: 'University',        value: fv('grad_university') },
+                { key: 'grad_year',          label: 'Graduation Year',   value: fv('grad_year') },
+                { key: 'grad_percentage',    label: 'Graduation %/CGPA', value: fv('grad_percentage') },
+                { key: 'class12_school',     label: 'Class XII School',  value: fv('class12_school') },
+                { key: 'class12_percentage', label: 'Class XII %',       value: fv('class12_percentage') },
+                { key: 'class10_school',     label: 'Class X School',    value: fv('class10_school') },
+                { key: 'class10_percentage', label: 'Class X %',         value: fv('class10_percentage') },
+            ]
+        };
+
+        if (type === 'industrial' || type === 'articleship') {
+            return [
+                personalGroup,
+                {
+                    label: 'CA Journey',
+                    fields: [
+                        { key: 'ca_inter_course',      label: 'CA Inter',          value: fv('ca_inter_course') },
+                        { key: 'ca_inter_clear_month', label: 'CA Inter Cleared',  value: fv2('ca_inter_clear_month','ca_inter_clear_year') },
+                        { key: 'ca_inter_air',         label: 'CA Inter AIR',      value: fv('ca_inter_air') },
+                        { key: 'ca_found_course',      label: 'CA Foundation',     value: fv('ca_found_course') },
+                        { key: 'ca_found_clear_month', label: 'Foundation Cleared',value: fv2('ca_found_clear_month','ca_found_clear_year') },
+                        { key: 'ca_final_app_month',   label: 'CA Final Appearing',value: fv2('ca_final_app_month','ca_final_app_year') },
+                    ]
+                },
+                educationGroup,
+                {
+                    label: 'Articleship',
+                    fields: [
+                        { key: 'articleship_firm_type', label: 'Firm Type',  value: fv('articleship_firm_type') },
+                        { key: 'articleship_firm_name', label: 'Firm Name',  value: fv('articleship_firm_name') },
+                        { key: 'articleship_domain',    label: 'Domain',     value: fv('articleship_domain') },
+                        { key: 'industrial_training_company', label: 'Industrial Training Company', value: fv('industrial_training_company'), wide: true },
+                    ]
+                },
+            ];
+        }
+
+        if (type === 'semi_fresher' || type === 'semi_experienced') {
+            return [
+                personalGroup,
+                {
+                    label: 'CA Journey',
+                    fields: [
+                        { key: 'ca_inter_course',      label: 'CA Inter',           value: fv('ca_inter_course') },
+                        { key: 'ca_inter_clear_month', label: 'CA Inter Cleared',   value: fv2('ca_inter_clear_month','ca_inter_clear_year') },
+                        { key: 'ca_inter_air',         label: 'CA Inter AIR',       value: fv('ca_inter_air') },
+                        { key: 'ca_final_app_month',   label: 'CA Final Appearing', value: fv2('ca_final_app_month','ca_final_app_year') },
+                    ]
+                },
+                educationGroup,
+                {
+                    label: 'Articleship',
+                    fields: [
+                        { key: 'articleship_firm_type', label: 'Firm Type', value: fv('articleship_firm_type') },
+                        { key: 'articleship_firm_name', label: 'Firm Name', value: fv('articleship_firm_name') },
+                        { key: 'articleship_domain',    label: 'Domain',    value: fv('articleship_domain') },
+                    ]
+                },
+                {
+                    label: 'Employment',
+                    fields: [
+                        { key: 'emp_company_name', label: 'Company',    value: fv('emp_company_name') },
+                        { key: 'emp_job_title',    label: 'Designation',value: fv('emp_job_title') },
+                        { key: 'emp_join_year',    label: 'Joined',     value: fv2('emp_join_month','emp_join_year') },
+                        { key: 'emp_job_profile',  label: 'Profile',    value: fv('emp_job_profile'), wide: true, textarea: true },
+                    ]
+                },
+            ];
+        }
+
+        // fresher_fresher, fresher_experienced (default)
+        return [
+            personalGroup,
+            {
+                label: 'CA Journey',
+                fields: [
+                    { key: 'ca_final_course',      label: 'CA Final',          value: fv('ca_final_course') },
+                    { key: 'ca_final_clear_month', label: 'CA Final Cleared',  value: fv2('ca_final_clear_month','ca_final_clear_year') },
+                    { key: 'ca_final_air',         label: 'CA Final AIR',      value: fv('ca_final_air') },
+                    { key: 'ca_inter_course',      label: 'CA Inter',          value: fv('ca_inter_course') },
+                    { key: 'ca_inter_clear_month', label: 'CA Inter Cleared',  value: fv2('ca_inter_clear_month','ca_inter_clear_year') },
+                    { key: 'ca_inter_air',         label: 'CA Inter AIR',      value: fv('ca_inter_air') },
+                    { key: 'ca_found_course',      label: 'CA Foundation',     value: fv('ca_found_course') },
+                ]
+            },
+            educationGroup,
+            {
+                label: 'Articleship',
+                fields: [
+                    { key: 'articleship_firm_type', label: 'Firm Type', value: fv('articleship_firm_type') },
+                    { key: 'articleship_firm_name', label: 'Firm Name', value: fv('articleship_firm_name') },
+                    { key: 'articleship_domain',    label: 'Domain',    value: fv('articleship_domain') },
+                    { key: 'industrial_training_company', label: 'Industrial Training Company', value: fv('industrial_training_company'), wide: true },
+                ]
+            },
+            {
+                label: 'Employment',
+                fields: [
+                    { key: 'emp_company_name', label: 'Company',     value: fv('emp_company_name') },
+                    { key: 'emp_job_title',    label: 'Designation', value: fv('emp_job_title') },
+                    { key: 'emp_join_year',    label: 'Joined',      value: fv2('emp_join_month','emp_join_year') },
+                    { key: 'emp_job_profile',  label: 'Profile',     value: fv('emp_job_profile'), wide: true, textarea: true },
+                ]
+            },
+        ];
+    }
+
+    function mountReview() {
+        if (st.aiStatus !== 'loading') return; // already done or no file — render is already correct
+        // AI still in flight — show a "hold on" banner and re-render once it resolves
+        const activeEl = document.getElementById('wz-screen-' + st.currentSlot);
+        if (!activeEl) return;
+        const banner = document.createElement('div');
+        banner.className = 'wz-ai-banner';
+        banner.id = 'wz-review-ai-banner';
+        banner.innerHTML = '<div class="wz-ai-dot"></div>Extracting resume details — refreshing in a moment…';
+        const inner = activeEl.querySelector('.wz-inner');
+        if (inner) inner.prepend(banner);
+
+        const poll = setInterval(() => {
+            if (st.aiStatus !== 'loading') {
+                clearInterval(poll);
+                // Re-render the review screen in-place with the now-populated form data
+                const el2 = document.getElementById('wz-screen-' + st.currentSlot);
+                if (el2 && st.phase === 'review') {
+                    el2.innerHTML = buildReview();
+                }
+            }
+        }, 600);
+    }
+
+    function collectReviewAnswers() {
+        const activeEl = document.getElementById('wz-screen-' + st.currentSlot);
+        if (!activeEl) return;
+        activeEl.querySelectorAll('[name^="rv_"]').forEach(inp => {
+            const key = inp.name.replace('rv_', '');
+            const val = inp.value.trim();
+            if (!val) return;
+            // Write back to the main form
+            const mainEl = document.getElementById(key) || profileForm.elements[key];
+            if (mainEl) mainEl.value = val;
+        });
+    }
+
+    // ------ Fire storer + profill in parallel, no await — user never waits ------
+    function fireStorerAndProfill() {
+        const images = (() => { try { return JSON.parse(localStorage.getItem('userCVImages') || '[]'); } catch { return []; } })();
+        if (!images.length) return; // no resume uploaded, nothing to do
+
+        const base64Pdf = localStorage.getItem('userCVPdf') || '';
+        const userId = currentUser?.id;
+        st.aiStatus = 'loading';
+
+        // ── Storer: does OCR, uploads file, returns ocr_text ──
+        fetch('https://storer.bhansalimanan55.workers.dev', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, images, pdf: base64Pdf, pdf_text: '' })
+        })
+        .then(r => r.json())
+        .then(d => {
+            if (!d.ok) return;
+            if (d.ocr_text) localStorage.setItem('userCVText', d.ocr_text);
+            if (d.uploaded) {
+                st.storerDone = true;
+                setCloudSyncFlag();
+                const consentGiven = document.getElementById('cvSharingConsent')?.checked;
+                if (consentGiven) saveConsentRecord(true).catch(() => {});
+            }
+        })
+        .catch(() => {});
+
+        // ── Profill: needs only images + portal type so it extracts the right fields ──
+        fetch(WORKER_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: userId, images, pdf_text: '', pdf: base64Pdf, portal_type: st.programType || 'fresher_fresher' })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (!data.ok) { st.aiStatus = 'failed'; return; }
+            if (data.is_cv === false) {
+                st.aiStatus = 'failed';
+                showToast('The uploaded file does not appear to be a valid resume.', 'warning', 6000);
+                return;
+            }
+            const parsed = parseGeminiJson(data.response);
+            if (!parsed) { st.aiStatus = 'failed'; return; }
+            if (parsed.is_valid_cv === false) {
+                st.aiStatus = 'failed';
+                showToast('The uploaded file does not appear to be a valid resume.', 'warning', 6000);
+                return;
+            }
+            st.aiData = parsed;
+            st.aiStatus = 'done';
+            // Only fill form fields that are still empty — never override what user typed
+            populateFormSafe(parsed);
+            refreshHeader();
+            // If already in missing-fields phase, trim fields AI just filled
+            if (st.phase === 'missing') {
+                st.missingQueue = st.missingQueue.filter(f => {
+                    if (st.answers['missing_' + f.id]) return false;
+                    return !getFormValue(f.inputName);
+                });
+            }
+        })
+        .catch(() => { st.aiStatus = 'failed'; });
+    }
+
+    async function saveConsentFromWizard() {
+        const chk = document.getElementById('wz-consent-chk');
+        const mainChk = document.getElementById('cvSharingConsent');
+        if (chk && mainChk) {
+            mainChk.checked = chk.checked;
+            if (!chk.checked) return;
+        }
+        // Will be formally saved when storer succeeds (same as current logic)
+    }
+
+    // ------ File handling in wizard — images + base64 only, no text extraction, no AI calls ------
+    async function handleWzFileSelect(file) {
+        if (!file) return;
+        if (file.type !== 'application/pdf') { showToast('Please upload a PDF file.', 'warning'); return; }
+        if (file.size > 5 * 1024 * 1024) { showToast('File size must be under 5 MB.', 'warning'); return; }
+
+        const nextBtn = document.getElementById('wz-next-btn');
+        if (nextBtn) { nextBtn.disabled = true; nextBtn.textContent = 'Reading PDF…'; }
+
+        try {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+
+            // Canvas render only — no text extraction
+            const images = await convertPdfToImages(pdfDoc);
+
+            // Base64 encode PDF for storer
+            const base64Pdf = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+
+            try { localStorage.setItem('userCVImages', JSON.stringify(images)); } catch { showToast('Resume too large to cache locally.', 'warning'); }
+            try { localStorage.setItem('userCVPdf', base64Pdf); } catch { /* ignore */ }
+            localStorage.setItem('userCVFileName', file.name);
+            localStorage.removeItem('userCVText'); // storer will set this on Next
+
+            if (st.phase === 'cv') goTo('cv', 'forward');
+        } catch (e) {
+            console.error(e);
+            showToast('Could not read the PDF. Please try a different file.', 'error');
+        } finally {
+            if (nextBtn) { nextBtn.disabled = false; nextBtn.textContent = 'Continue →'; }
+        }
+    }
+
+    // ------ Final save ------
+    async function finishWizard() {
+        if (!currentUser) { showMain(); return; }
+        showLoading(true, 'Saving your profile…');
+        try {
+            // Collect all wizard answers into the main form
+            applyAnswersToForm();
+
+            // Build profile object from form
+            const profileData = buildProfileFromForm();
+            profileData.cv_cloud_synced = isCloudSynced();
+
+            // Wizard-specific fields (stored in profile JSON)
+            if (st.answers['preferred_locations']) profileData.preferred_locations = Array.isArray(st.answers['preferred_locations']) ? st.answers['preferred_locations'].join(', ') : st.answers['preferred_locations'];
+            if (st.answers['relocation']) profileData.relocation_preference = st.answers['relocation'];
+            if (st.answers['joining_date']) profileData.earliest_joining_date = st.answers['joining_date'];
+            if (st.answers['expected_ctc'] || st.answers['expected_stipend']) profileData.expected_salary = st.answers['expected_ctc'] || st.answers['expected_stipend'];
+            if (st.answers['preferred_domains']) profileData.preferred_domains = Array.isArray(st.answers['preferred_domains']) ? st.answers['preferred_domains'].join(', ') : st.answers['preferred_domains'];
+            if (st.answers['preferred_industries']) profileData.preferred_industries = Array.isArray(st.answers['preferred_industries']) ? st.answers['preferred_industries'].join(', ') : st.answers['preferred_industries'];
+            if (st.answers['preferred_firm_type']) profileData.preferred_firm_type = Array.isArray(st.answers['preferred_firm_type']) ? st.answers['preferred_firm_type'].join(', ') : st.answers['preferred_firm_type'];
+            if (st.answers['notice_period']) profileData.notice_period = st.answers['notice_period'];
+            if (st.answers['employment_status']) profileData.current_employment_status = st.answers['employment_status'];
+
+            // Set job_preference to match programType
+            if (st.programType) profileData.job_preference = st.programType;
+
+            const lookingForVal = typeToLookingFor(st.programType);
+
+            const { error } = await supabaseClient.from('profiles').upsert({
+                uuid: currentUser.id,
+                profile: profileData,
+                ocr_cv: localStorage.getItem('userCVText') || '',
+                looking_for: lookingForVal,
+                updated_at: new Date().toISOString()
+            });
+            if (error) throw error;
+            currentLookingFor = lookingForVal;
+            localStorage.setItem('userProfileData', JSON.stringify(profileData));
+            refreshHeader();
+        } catch (e) {
+            console.error(e);
+            showToast('Could not save profile. Please try again.', 'error');
+        } finally {
+            showLoading(false);
+        }
+        showMain();
+    }
+
+    function applyAnswersToForm() {
+        const fieldMap = {
+            'missing_name': 'name',
+            'missing_contact_number': 'contact_number',
+            'missing_current_city': 'current_city',
+            'missing_linkedin_url': 'linkedin_url',
+            'missing_profile_summary': 'profile_summary',
+        };
+        Object.entries(fieldMap).forEach(([ansKey, inputName]) => {
+            const val = st.answers[ansKey];
+            if (!val) return;
+            const el = document.getElementById(inputName) || profileForm.elements[inputName];
+            if (el) el.value = val;
+        });
+        if (st.answers['joining_date']) {
+            const el = document.getElementById('earliest_joining_date') || profileForm.elements['earliest_joining_date'];
+            if (el) el.value = st.answers['joining_date'];
+        }
+        if (st.answers['notice_period']) {
+            const el = document.getElementById('notice_period') || profileForm.elements['notice_period'];
+            if (el) el.value = st.answers['notice_period'];
+        }
+        if (st.answers['expected_ctc'] || st.answers['expected_stipend']) {
+            const el = document.getElementById('expected_salary') || profileForm.elements['expected_salary'];
+            if (el) el.value = st.answers['expected_ctc'] || st.answers['expected_stipend'] || '';
+        }
+        if (st.answers['preferred_locations']) {
+            const el = document.getElementById('preferred_locations') || profileForm.elements['preferred_locations'];
+            const val = Array.isArray(st.answers['preferred_locations']) ? st.answers['preferred_locations'].join(', ') : st.answers['preferred_locations'];
+            if (el) el.value = val;
+        }
+        if (st.programType) {
+            const jp = document.getElementById('job_preference');
+            if (jp) jp.value = st.programType;
+        }
+    }
+
+    function buildProfileFromForm() {
+        const obj = {};
+        if (!profileForm) return obj;
+        Array.from(profileForm.elements).forEach(el => {
+            if (!el.name || el.disabled) return;
+            if (el.type === 'checkbox') { obj[el.name] = el.checked; return; }
+            if (el.value) obj[el.name] = el.value;
+        });
+        return obj;
+    }
+
+    // ------ populateFormSafe: like populateForm but never overwrites existing values ------
+    function populateFormSafe(profileData) {
+        if (!profileForm || !profileData) return;
+        for (const key in profileData) {
+            if (key === 'resume' || key === 'cover_letter' || key === 'project_attachment') continue;
+            const val = profileData[key];
+            if (val === null || val === undefined || val === '') continue;
+            const field = profileForm.elements[key];
+            if (!field) continue;
+            if (field.value && field.value.trim()) continue; // user already filled this — skip
+            field.value = val;
+        }
+        // Also sync email from auth in case it was cleared
+        const emailField = document.getElementById('email');
+        if (emailField && !emailField.value && currentUser?.email) {
+            emailField.value = currentUser.email;
+        }
+    }
+
+    // ------ Progressive save: upsert current state to Supabase without blocking ------
+    function saveProgress() {
+        if (!currentUser) return;
+        applyAnswersToForm();
+        const profileData = buildProfileFromForm();
+        profileData.cv_cloud_synced = isCloudSynced();
+        // Wizard preference fields
+        if (st.answers['preferred_locations']) profileData.preferred_locations = formatArrayAnswer(st.answers['preferred_locations']);
+        if (st.answers['relocation'])          profileData.relocation_preference = st.answers['relocation'];
+        if (st.answers['joining_date'])        profileData.earliest_joining_date = st.answers['joining_date'];
+        if (st.answers['expected_ctc'] || st.answers['expected_stipend']) profileData.expected_salary = st.answers['expected_ctc'] || st.answers['expected_stipend'];
+        if (st.answers['preferred_domains'])   profileData.preferred_domains = formatArrayAnswer(st.answers['preferred_domains']);
+        if (st.answers['preferred_industries'])profileData.preferred_industries = formatArrayAnswer(st.answers['preferred_industries']);
+        if (st.answers['preferred_firm_type']) profileData.preferred_firm_type = formatArrayAnswer(st.answers['preferred_firm_type']);
+        if (st.answers['notice_period'])       profileData.notice_period = st.answers['notice_period'];
+        if (st.answers['employment_status'])   profileData.current_employment_status = st.answers['employment_status'];
+        if (st.programType)                    profileData.job_preference = st.programType;
+
+        const lookingForVal = st.programType ? typeToLookingFor(st.programType) : undefined;
+
+        const upsertData = { uuid: currentUser.id, profile: profileData, updated_at: new Date().toISOString() };
+        if (lookingForVal) upsertData.looking_for = lookingForVal;
+
+        supabaseClient.from('profiles').upsert(upsertData).then(({ error }) => {
+            if (error) console.warn('Progress save failed:', error.message);
+            else localStorage.setItem('userProfileData', JSON.stringify(profileData));
+        });
+    }
+
+    // ------ Helpers ------
+    function getFormValue(name) {
+        if (!profileForm) return '';
+        const el = profileForm.elements[name] || document.getElementById(name);
+        return el ? (el.value || '').trim() : '';
+    }
+
+    function formatArrayAnswer(val) {
+        if (!val) return '';
+        if (Array.isArray(val)) return val.join(', ');
+        return String(val);
+    }
+
+    function escHtml(s) {
+        return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function calcCompleteness() {
+        let score = 30; // base for having an account
+        if (getFormValue('name') || st.answers['missing_name']) score += 10;
+        if (getFormValue('contact_number') || st.answers['missing_contact_number']) score += 10;
+        if (localStorage.getItem('userCVFileName')) score += 15;
+        if (getFormValue('profile_summary') || st.answers['missing_profile_summary']) score += 10;
+        if (getFormValue('linkedin_url') || st.answers['missing_linkedin_url']) score += 5;
+        if (st.answers['preferred_locations']) score += 5;
+        if (st.answers['preferred_domains']) score += 5;
+        if (st.programType) score += 5;
+        return Math.min(score, 100);
+    }
+
+    return { init };
+})();
+
 // =================== PROFILE LOAD ===================
 async function loadProfile() {
     if (!currentUser) return null;
@@ -268,14 +1582,15 @@ async function loadProfile() {
     try {
         const { data, error } = await supabaseClient
             .from('profiles')
-            .select('profile, ocr_cv, updated_at')
+            .select('profile, ocr_cv, updated_at, looking_for')
             .eq('uuid', currentUser.id)
-            .single();
+            .maybeSingle();
 
-        if (error && error.code !== 'PGRST116') throw error;
+        if (error) throw error;
 
         if (data) {
             lastUpdatedISO = data.updated_at;
+            if (data.looking_for) currentLookingFor = data.looking_for;
             if (data.profile) {
                 profileObj = data.profile;
                 populateForm(data.profile);
@@ -703,11 +2018,11 @@ const CONSENT_TEXT = 'I consent to My Student Club sharing my CV and profile det
 async function loadConsentStatus() {
     if (!currentUser) return;
     try {
-        const { data, error } = await supabaseClient
+        const { data } = await supabaseClient
             .from('consentform')
             .select('cv_sharing_consent, consented_at, withdrawn_at')
             .eq('user_id', currentUser.id)
-            .single();
+            .maybeSingle();
 
         const checkbox = document.getElementById('cvSharingConsent');
         const statusText = document.getElementById('consentStatusText');
@@ -865,7 +2180,7 @@ async function handleSave(e) {
 
                 if (syncResponse.ok) {
                     const syncData = await syncResponse.json();
-                    if (syncData.ok && syncData.response) {
+                    if (syncData.ok) {
                         if (syncData.ocr_text) {
                             ocrText = syncData.ocr_text;
                             localStorage.setItem('userCVText', ocrText);
@@ -878,7 +2193,7 @@ async function handleSave(e) {
                             showToast('Resume saved, but cloud backup failed. It will retry on next save.', 'warning', 8000);
                         }
                     } else {
-                        showToast('Could not validate resume format.', 'warning', 8000);
+                        showToast('Resume backup sync failed. Please try saving again.', 'warning', 8000);
                     }
                 } else {
                     showToast('Resume backup sync failed.', 'warning', 8000);
@@ -1065,7 +2380,6 @@ function refreshHeader() {
 
     // Missing card
     const missingList = document.getElementById('missingList');
-    const missingCta = document.getElementById('missingCta');
     const missingCard = document.getElementById('missingCard');
 
     if (missing.length === 0) {
@@ -1892,8 +3206,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    // ----- Load profile -----
+    // ----- Load profile + wizard -----
     loadProfile().then(d => {
+        WZ.init(d, currentLookingFor);
         // Pre-fill skills on load if existing
         if (d && d.emp_skills_hidden) {
             let loadedSkills = d.emp_skills_hidden.split(',').map(s => s.trim()).filter(Boolean);
