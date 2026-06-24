@@ -184,6 +184,7 @@ function renderCV(data) {
         setHTMLIn(block, '[data-field="role"]', item.role);
         setHTMLIn(block, '[data-field="company"]', item.company);
         setHTMLIn(block, '[data-field="dates"]', item.dates);
+        setHTMLIn(block, '[data-field="intro"]', item.intro); // Role/firm intro shown once under the header
         setHTMLIn(block, '[data-field="category"]', item.category); // Department/Area like "Business Finance"
         applyExperienceTitleMergeDisplayV2(block, item);
 
@@ -191,8 +192,12 @@ function renderCV(data) {
         if (roleEl) roleEl.style.display = stripTags(item.role || '').trim() ? '' : 'none';
         const categoryEl = block.querySelector('[data-field="category"]');
         if (categoryEl) categoryEl.style.display = stripTags(item.category || '').trim() ? '' : 'none';
+        // Intro belongs to the header, so only the primary entry shows it; subsections hide it.
+        const introEl = block.querySelector('[data-field="intro"]');
+        if (introEl) introEl.style.display = (stripTags(item.intro || '').trim() && !item.titleMergedWithPrevious) ? '' : 'none';
         if (item.titleMergedWithPrevious) {
             if (roleEl) roleEl.style.display = 'none';
+            if (introEl) introEl.style.display = 'none';
             const companyEl = block.querySelector('[data-field="company"]');
             const datesEl = block.querySelector('[data-field="dates"]');
             if (companyEl) companyEl.style.display = 'none';

@@ -1,4 +1,4 @@
-        // Promise.withResolvers polyfill for older browsers/devices
+﻿        // Promise.withResolvers polyfill for older browsers/devices
         if (typeof Promise.withResolvers === 'undefined') {
             Promise.withResolvers = function() {
                 let resolve, reject;
@@ -84,14 +84,41 @@
             ],
             experience: [
                 {
-                    role: "Article Trainee",
-                    company: "Firm Name",
-                    dates: "Aug 2024 - Present",
-                    category: "GST & Compliance",
+                    role: "Article Assistant",
+                    company: "Firm Name | Mumbai",
+                    dates: "Dec 2025 - Present",
+                    intro: "Top-tier CA firm (est. 1928) with 14 partners serving 3000+ clients across industries.",
+                    category: "PSU Audit",
                     bullets: [
-                        "Handled preparation and filing of GSTR-1 and GSTR-3B for multi-industry clients with timely compliance.",
-                        "Performed monthly ITC reconciliations and maintained inward/outward registers for GSTR-9 and GSTR-9C readiness.",
-                        "Supported GST departmental audits with documentation, reconciliations, and notice tracking."
+                        "Core audit team member for interim & final statutory audits of Maharashtra's largest state-owned power generation company with ₹40,000 Cr+ turnover.",
+                        "Independently audited Other Current Assets & Receivables using SAP, identifying ₹2,000+ Cr disputed receivables.",
+                        "Conducted field visits across multiple TPS and independently coordinated with officials to manage audit access in restricted zones."
+                    ]
+                },
+                {
+                    role: "",
+                    company: "Firm Name | Mumbai",
+                    dates: "",
+                    intro: "",
+                    category: "RBI Audit",
+                    titleMergedWithPrevious: true,
+                    bullets: [
+                        "Part of audit team for Statutory Audit of RBI, Bhopal Regional Office.",
+                        "Led digital archiving of 3,000+ audit documents in compliance with SA 230.",
+                        "Assisted in preparation of SRM (Summary Review Memorandum) and final audit presentations."
+                    ]
+                },
+                {
+                    role: "",
+                    company: "Firm Name | Mumbai",
+                    dates: "",
+                    intro: "",
+                    category: "Key Contributions",
+                    titleMergedWithPrevious: true,
+                    bullets: [
+                        "Led end-to-end audits of Purchases, Inventory, Trade Payables, Payroll, and Other Expenses across Manufacturing, Chemical, Pharma, and Service sectors.",
+                        "Conducted stock audits using floor-sheet and sheet-floor verification, identifying ₹60+ lakh dead stock.",
+                        "Reported delayed statutory payments (TDS, PF, PT, ESIC, LWF) of ₹2 lakh+ under CARO 2020 Para 3(vii)(a)."
                     ]
                 }
             ],
@@ -842,6 +869,7 @@
                     role: normalizeImportedString(item?.role || ''),
                     company: normalizeImportedString(item?.company || ''),
                     dates: normalizeImportedString(item?.dates || ''),
+                    intro: normalizeImportedString(item?.intro || ''),
                     category: normalizeCategoryHTML(htmlToMultilineText(item?.category || '')),
                     bullets: applyBoldToBulletList(item?.bullets || [], 'experience'),
                     mergedWithPrevious: !!item?.mergedWithPrevious && index > 0,
@@ -1130,6 +1158,7 @@
                     role: normalizeImportedString(entry.role || ''),
                     company: normalizeImportedString(entry.company || ''),
                     dates: normalizeImportedString(entry.dates || ''),
+                    intro: normalizeImportedString(entry.intro || ''),
                     category: normalizeCategoryHTML(htmlToMultilineText(entry.category || '')),
                     mergedWithPrevious: !!entry.mergedWithPrevious && index > 0,
                     titleMergedWithPrevious: !!entry.titleMergedWithPrevious && index > 0 && !entry.mergedWithPrevious,
@@ -1612,6 +1641,11 @@
                         <label>Duration</label>
                         <input class="form-control" value="${exp.dates || ''}" oninput="updateExp(${index}, 'dates', this.value)" placeholder="e.g. Jan 2023 - Present">
                     </div>
+                    ${!isMergedChild && !isTitleMergedChild ? `
+                    <div class="form-group">
+                        <label>Intro / Description (optional)</label>
+                        <textarea class="form-control" style="min-height:60px" oninput="updateExp(${index}, 'intro', this.value)" placeholder="Short italic intro shown once under the header&#10;e.g. Top-tier CA firm (est. 1928) serving 3000+ clients">${exp.intro || ''}</textarea>
+                    </div>` : ''}
                     <div class="form-group" data-section="category">
                         <label>Department / Category (optional)</label>
                         <textarea class="form-control" style="min-height:78px" oninput="updateExp(${index}, 'category', this.value)" placeholder="Add one department/category per line&#10;e.g. Accounting&#10;Auditing & Assurance">${htmlToMultilineText(exp.category || '')}</textarea>
@@ -1631,7 +1665,7 @@
                         </div>
                         <textarea id="exp-bullets-${index}" class="form-control" data-rich-exp-index="${index}" oninput="updateExp(${index}, 'bullets', this.value)" placeholder="Add bullet points with formatting">${bulletsToRichHTML(exp.bullets || [])}</textarea>
                     </div>
-                    ${!isMergedChild && !isTitleMergedChild ? `
+                    ${!isMergedChild ? `
                     <button type="button" class="btn-dashed" style="margin-top:10px; font-size:11px; color:#0369a1; border-color:#bae6fd;" onclick="addSubsectionAfter(${index})" title="Add a subsection under this role (reuses the same title)">
                         + Add Subsection
                     </button>` : ''}
@@ -1797,7 +1831,7 @@
         }
 
         function addExperience() {
-            cvData.experience.push({ role: "", company: "", dates: "", category: "", bullets: [], mergedWithPrevious: false, titleMergedWithPrevious: false });
+            cvData.experience.push({ role: "", company: "", dates: "", intro: "", category: "", bullets: [], mergedWithPrevious: false, titleMergedWithPrevious: false });
             normalizeExperienceMerges();
             renderExpInputs();
             postToFrame();
@@ -1842,7 +1876,7 @@
             postToFrame();
         }
         function addSubsectionAfter(i) {
-            const newEntry = { role: "", company: cvData.experience[i]?.company || "", dates: "", category: "", bullets: [], mergedWithPrevious: false, titleMergedWithPrevious: true };
+            const newEntry = { role: "", company: cvData.experience[i]?.company || "", dates: "", intro: "", category: "", bullets: [], mergedWithPrevious: false, titleMergedWithPrevious: true };
             cvData.experience.splice(i + 1, 0, newEntry);
             normalizeExperienceMerges();
             renderExpInputs();
@@ -2301,7 +2335,8 @@
             { file: 'monochrome-ledger.html', name: 'Monochrome Ledger', accent: '#111111', style: 'mono' },
             { file: 'slate-split.html', name: 'Slate Split', accent: '#28535e', style: 'split' },
             { file: 'blue-horizon-split.html', name: 'Blue Horizon Split', accent: '#1f385c', style: 'splitblue' },
-            { file: 'blue-banner-professional.html', name: 'Blue Banner Professional', accent: '#155f82', style: 'bluebanner' }
+            { file: 'blue-banner-professional.html', name: 'Blue Banner Professional', accent: '#155f82', style: 'bluebanner' },
+            { file: 'navy-professional.html', name: 'Navy Professional', accent: '#1F4E79', style: 'navypro' }
         ];
         const TEMPLATE_COLOR_PRESETS = ['#2b2b2b', '#0f6cbd', '#155e95', '#1f8f63', '#c0392b', '#7b4db3'];
 
