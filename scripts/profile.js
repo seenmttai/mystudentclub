@@ -1170,7 +1170,7 @@ function refreshSavedDisplays(d) {
     setPersonalValue('pd-dob', dobText, 'Add date of birth');
     setPersonalValue('pd-category', d.category, 'Add Category');
     setPersonalValue('pd-work-permit', d.work_permit, 'Add Work permit');
-    setPersonalValue('pd-address', d.address, 'Add Address');
+    setPersonalValue('pd-current-city', d.current_city, 'Add city');
 
     const langBody = document.getElementById('pd-lang-body');
     if (langBody) {
