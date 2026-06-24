@@ -3261,6 +3261,17 @@ function initOnboardingSegmentForm() {
         });
     });
 
+    // Auto-format date input as DD/MM/YYYY while typing
+    const dateInput = document.getElementById('articleship_1yr_end_date');
+    if (dateInput) {
+        dateInput.addEventListener('input', (e) => {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2);
+            if (v.length >= 6) v = v.slice(0, 5) + '/' + v.slice(5, 9);
+            e.target.value = v;
+        });
+    }
+
     // Form submission sync to database
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -3271,7 +3282,10 @@ function initOnboardingSegmentForm() {
         }
 
         const lookingFor = selectedInput.value;
-        const articleshipDate = document.getElementById('articleship_1yr_end_date').value;
+        const articleshipDateRaw = document.getElementById('articleship_1yr_end_date').value;
+        const articleshipDate = articleshipDateRaw
+            ? (([d, m, y]) => `${y}-${m}-${d}`)(articleshipDateRaw.split('/'))
+            : '';
         const caInterAttempt = document.getElementById('ca_inter_attempt').value;
         const caFinalAttempt = document.getElementById('ca_final_attempt').value;
         const yearsOfExp = document.getElementById('years_of_experience').value;
