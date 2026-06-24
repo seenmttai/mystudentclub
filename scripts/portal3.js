@@ -3139,6 +3139,7 @@ function initOnboardingSegmentForm() {
 
     function setFieldActive(key, isActive) {
         const { element } = fields[key];
+        if (!element) return;
         element.classList.toggle('active', isActive);
         element.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]), select').forEach(el => {
             el.disabled = !isActive;
@@ -3273,7 +3274,7 @@ function initOnboardingSegmentForm() {
             .from('profiles')
             .select('profile')
             .eq('uuid', currentSession.user.id)
-            .single();
+            .maybeSingle();
         const mergedProfile = existingRow?.profile || {};
         if (lookingFor === 'CA Articleship') mergedProfile.articleship_earliest_joining_date = earliestJoiningRaw;
         if (lookingFor === 'CA Fresher') mergedProfile.fresher_years_of_experience = document.getElementById('fresher_years_of_experience').value;
