@@ -137,64 +137,108 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
 10. **achievements**: Brief summary of academic achievements, ranks, or high marks.
 
 ### CA Final Details (extract only if relevant to portal — see portal context above):
-11. **ca_final_course**: "CA Final (Both Groups)", "CA Final G1", or "CA Final G2" — only if cleared or registered.
-12. **ca_final_attempts_type**: "First Attempt" or "Other".
-13. **ca_final_attempts**: Integer number of attempts.
-14. **ca_final_clear_month**: Month cleared (e.g. "Jan", "May", "Nov") — ONLY if actually cleared.
-15. **ca_final_clear_year**: 4-digit year cleared — ONLY if actually cleared.
-16. **ca_final_air**: AIR integer, or null.
-17. **ca_final_app_month**: Expected appearance month — ONLY if not yet cleared and upcoming attempt exists.
-18. **ca_final_app_year**: Expected appearance year — ONLY if not yet cleared.
+11. **ca_final_status**: (Semi-Qualified only) "Appearing", "Group 1 Pending", "Group 2 Pending", "Both Groups Pending", or "Not Pursuing" — only set for semi portal types.
+12. **ca_final_groups_cleared**: (Semi-Qualified only) "None", "Group 1", "Group 2", or "Both" — which CA Final groups have been cleared so far.
+13. **ca_final_course**: "CA Final (Both Groups)", "CA Final G1", or "CA Final G2" — only if cleared or registered.
+14. **ca_final_attempts_type**: "First Attempt" or "Other".
+15. **ca_final_attempts**: Integer number of attempts.
+16. **ca_final_score**: Score percentage as string e.g. "62.5" — ONLY if actually cleared.
+17. **ca_final_performance**: "All India Rank Holder", "Above 60%", or "Other" — ONLY if cleared.
+18. **ca_final_clear_month**: Month cleared (e.g. "Jan", "May", "Nov") — ONLY if actually cleared.
+19. **ca_final_clear_year**: 4-digit year cleared — ONLY if actually cleared.
+20. **ca_final_air**: AIR integer, or null — ONLY if performance is "All India Rank Holder".
+21. **ca_final_app_month**: Expected appearance month — ONLY if not yet cleared and upcoming attempt exists.
+22. **ca_final_app_year**: Expected appearance year — ONLY if not yet cleared.
 
 ### CA Inter Details:
-19. **ca_inter_course**: "CA Inter (Both Groups)", "CA Inter G1", or "CA Inter G2".
-20. **ca_inter_attempts_type**: "First Attempt" or "Other".
-21. **ca_inter_attempts**: Integer.
-22. **ca_inter_clear_month**: Month cleared.
-23. **ca_inter_clear_year**: 4-digit year.
-24. **ca_inter_air**: AIR integer, or null.
+21. **ca_inter_course**: "CA Inter (Both Groups)", "CA Inter G1", or "CA Inter G2".
+22. **ca_inter_attempts_type**: "First Attempt" or "Other".
+23. **ca_inter_attempts**: Integer.
+24. **ca_inter_score**: Score percentage as string.
+25. **ca_inter_performance**: "All India Rank Holder", "Above 60%", or "Other".
+26. **ca_inter_clear_month**: Month cleared.
+27. **ca_inter_clear_year**: 4-digit year.
+28. **ca_inter_air**: AIR integer, or null.
 
 ### CA Foundation Details:
-25. **ca_found_course**: "CA Foundation" if cleared.
-26. **ca_found_attempts_type**: "First Attempt" or "Other".
-27. **ca_found_attempts**: Integer.
-28. **ca_found_clear_month**: Month cleared.
-29. **ca_found_clear_year**: 4-digit year.
+29. **ca_found_course**: "CA Foundation" if cleared.
+30. **ca_found_attempts_type**: "First Attempt" or "Other".
+31. **ca_found_attempts**: Integer.
+32. **ca_found_score**: Score percentage as string.
+33. **ca_found_clear_month**: Month cleared.
+34. **ca_found_clear_year**: 4-digit year.
 
 ### Graduation:
-30. **grad_degree**: "B.Com", "BBA", "BA", etc.
-31. **grad_university**: University/Institute name.
-32. **grad_year**: Passing year.
-33. **grad_percentage**: Percentage or CGPA.
+35. **grad_degree**: "B.Com", "BBA", "BA", etc.
+36. **grad_college**: College/Institute name.
+37. **grad_university**: University name.
+38. **grad_status**: "Pursuing", "Graduated", or "Dropped".
+39. **grad_year**: Passing year.
+40. **grad_percentage**: Percentage or CGPA.
 
 ### Class XII:
-34. **class12_board**: "CBSE", "ICSE / ISC", "State Board", etc.
-35. **class12_school**: School name.
-36. **class12_year**: Passing year.
-37. **class12_percentage**: Percentage.
+41. **class12_board**: "CBSE", "ICSE / ISC", "State Board", etc.
+42. **class12_school**: School name.
+43. **class12_year**: Passing year.
+44. **class12_percentage**: Percentage.
 
 ### Class X:
-38. **class10_board**: "CBSE", "ICSE", "State Board", etc.
-39. **class10_school**: School name.
-40. **class10_year**: Passing year.
-41. **class10_percentage**: Percentage.
+45. **class10_board**: "CBSE", "ICSE", "State Board", etc.
+46. **class10_school**: School name.
+47. **class10_year**: Passing year.
+48. **class10_percentage**: Percentage.
 
 ### Articleship:
-42. **articleship_firm_type**: "Big 4", "Big 6", "Big 10", "Mid Size Firm", "Small Size Firm", or "None".
-43. **articleship_firm_name**: Name of the articleship CA firm.
-44. **articleship_domain**: "Statutory Audit", "Internal Audit", "Direct Tax", "Indirect Tax", "Overall Exposure", or "Other".
+49. **articleship_firm_type**: "Big 4", "Big 6", "Big 10", "Mid Size Firm", "Small Size Firm", or "None".
+50. **articleship_firm_name**: Name of the articleship CA firm.
+51. **articleship_start_month**: Month articleship started.
+52. **articleship_start_year**: Year articleship started.
+53. **articleship_end_month**: Month articleship ended or expected to end.
+54. **articleship_end_year**: Year articleship ended or expected to end.
+55. **articleship_domain**: Comma-separated list of ALL domains the candidate worked in, from: "Statutory Audit", "Internal Audit & Risk", "SOX / IFC Controls", "Forensics & Compliance", "Direct Tax", "Indirect Tax (GST)", "International Taxation", "Transfer Pricing", "Accounting & Reporting", "FP&A", "Controllership", "Treasury", "Costing & Plant Finance", "Supply Chain Finance", "Commercial Finance", "Business Finance", "Consulting", "Due Diligence", "Valuation", "Deals & Transaction Advisory", "M&A Advisory", "Project Finance", "Banking & Credit", "Investment Banking", "Equity Research", "ESG", "Financial Reporting (IND AS / IFRS)", "Data Analytics", "Overall Exposure", "Other". Include every domain mentioned.
+56. **articleship_client_industries**: Comma-separated list of client industries from: "Banking", "Financial Services", "FMCG", "Manufacturing", "Pharma", "IT", "E-Commerce", "Automobile", "Infrastructure", "Real Estate", "Consulting", "Retail", "Energy", "Telecom", "Logistics", "Others".
+57. **articleship_responsibilities**: Paragraph summarising key responsibilities during articleship.
 
 ### Industrial Training:
-45. **industrial_training_company**: Company name if industrial training is mentioned.
+58. **industrial_training_company**: Company name if industrial training is mentioned.
+59. **it_industry**: Industry of the industrial training company.
+60. **it_start_month**: Month IT started.
+61. **it_start_year**: Year IT started.
+62. **it_end_month**: Month IT ended.
+63. **it_end_year**: Year IT ended.
+64. **it_responsibilities**: Key responsibilities during industrial training.
 
 ### Employment (post-qualification jobs only — see portal context):
-46. **is_current_employment**: "Yes" or "No".
-47. **employment_type**: "Full-time", "Part-time", "Contract", "Internship", or "Freelance".
-48. **emp_company_name**: Current/most-recent employer.
-49. **emp_job_title**: Job title.
-50. **emp_job_profile**: Full paragraph summarising all responsibilities and achievements for this role.
-51. **emp_join_year**: Year started.
-52. **emp_join_month**: Month started.
+65. **is_current_employment**: "Yes" or "No".
+66. **employment_type**: "Full-time", "Part-time", "Contract", "Internship", or "Freelance".
+67. **emp_company_name**: Current/most-recent employer.
+68. **emp_company_type**: "Big 4", "Big 6", "Big 10", "CA Firm", "MNC", "Listed Company", "Startup", "GCC / SSC", "PSU", or "Industry".
+69. **emp_industry**: Industry of current employer.
+70. **emp_domain**: Comma-separated list of ALL domains of work (from: "Statutory Audit", "Internal Audit & Risk", "SOX / IFC Controls", "Forensics & Compliance", "Direct Tax", "Indirect Tax (GST)", "International Taxation", "Transfer Pricing", "Accounting & Reporting", "FP&A", "Controllership", "Treasury", "Costing & Plant Finance", "Supply Chain Finance", "Commercial Finance", "Business Finance", "Consulting", "Due Diligence", "Valuation", "Deals & Transaction Advisory", "M&A Advisory", "Project Finance", "Banking & Credit", "Investment Banking", "Equity Research", "ESG", "Financial Reporting (IND AS / IFRS)", "Data Analytics", "Overall Exposure", "Other"). Include ALL domains mentioned — do NOT limit to one.
+71. **emp_job_title**: Job title.
+72. **emp_job_profile**: Full paragraph summarising all responsibilities and achievements for this role.
+73. **emp_join_year**: Year started.
+74. **emp_join_month**: Month started.
+75. **emp_team_handling**: "Individual Contributor", "Managed 1–5 People", "Managed 6–20 People", or "Managed 20+ People" — only for experienced candidates.
+
+### Previous Employment (if a second job is mentioned):
+76. **prev_emp_company_name**: Previous employer name.
+77. **prev_emp_company_type**: Type (same options as emp_company_type).
+78. **prev_emp_industry**: Industry.
+79. **prev_emp_domain**: Comma-separated list of ALL domains of work (same domain list as emp_domain). Include ALL domains mentioned — do NOT limit to one.
+80. **prev_emp_job_title**: Designation.
+81. **prev_emp_start_month**: Start month.
+82. **prev_emp_start_year**: Start year.
+83. **prev_emp_end_month**: End month.
+84. **prev_emp_end_year**: End year.
+
+### Achievements:
+83. **achievement_air**: AIR or academic rank mentions (e.g. "CA Final AIR 42").
+84. **achievement_scholarships**: Any scholarships mentioned.
+85. **achievement_awards**: Awards or recognitions.
+86. **achievement_leadership**: Leadership positions held.
+87. **achievement_positions**: Positions of responsibility in college/institute.
+88. **achievement_extracurricular**: Extracurricular activities.
 
 ### Critical Rules:
 - **Strict duplication prevention**: Articleship → articleship fields only. Industrial training → industrial_training_company only. Regular employment → emp_* fields only.
@@ -256,27 +300,10 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
         console.warn("Primary model failed, falling back to Cloudflare Workers AI:", primaryError.message);
 
         try {
-            let userMessageContent;
-
-            if (images && images.length > 0) {
-                userMessageContent = [];
-                userMessageContent.push({
-                    type: "text",
-                    text: pdfText ? `**Extracted Text from PDF:**\n${pdfText}` : "Extract the requested fields from the provided resume images."
-                });
-                images.forEach((img) => {
-                    userMessageContent.push({
-                        type: "image_url",
-                        image_url: { url: `data:image/jpeg;base64,${img}` }
-                    });
-                });
-            } else {
-                userMessageContent = `**Extracted Text from PDF:**\n${pdfText}`;
-            }
-
+            // Gemma on Cloudflare is text-only — never pass image payloads
             const messages = [
                 { role: "system", content: systemPrompt },
-                { role: "user", content: userMessageContent }
+                { role: "user", content: pdfText ? `**Extracted Text from PDF:**\n${pdfText}` : "No text could be extracted from the resume." }
             ];
 
             const cfResponse = await env.AI.run("@cf/google/gemma-4-26b-a4b-it", { messages });

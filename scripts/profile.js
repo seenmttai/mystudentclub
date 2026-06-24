@@ -357,32 +357,89 @@ const WZ_ROLE_QUESTIONS = {
     'semi_experienced':    ['preferred_locations', 'relocation', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
 };
 
-// Fields checked for "missing" after AI extraction — portal-specific
+// Master list of fields to check after AI extraction — portal-specific
 function getWzMissingFields(portalType) {
+    const f = (id, label, icon, type, optional) => ({ id, label, icon, type, inputName: id, profileKey: id, required: !optional, optional: !!optional });
+
     const common = [
-        { id: 'name',           label: 'Full Name',        icon: '👤', type: 'text',     inputName: 'name',           profileKey: 'name',           required: true  },
-        { id: 'contact_number', label: 'Contact Number',   icon: '📱', type: 'tel',      inputName: 'contact_number', profileKey: 'contact_number', required: true  },
-        { id: 'current_city',   label: 'Current City',     icon: '📍', type: 'text',     inputName: 'current_city',   profileKey: 'current_city',   required: false },
-        { id: 'linkedin_url',   label: 'LinkedIn Profile', icon: '💼', type: 'url',      inputName: 'linkedin_url',   profileKey: 'linkedin_url',   required: false, optional: true },
-        { id: 'profile_summary',label: 'Profile Summary',  icon: '📝', type: 'textarea', inputName: 'profile_summary',profileKey: 'profile_summary',required: false, optional: true },
+        f('name',            'Full Name',        '👤', 'text'),
+        f('contact_number',  'Contact Number',   '📱', 'tel'),
+        f('current_city',    'Current City',     '📍', 'text', true),
+        f('linkedin_url',    'LinkedIn Profile', '💼', 'url',  true),
+        f('profile_summary', 'Profile Summary',  '📝', 'textarea', true),
+        f('grad_degree',     'Graduation Degree','🎓', 'text', true),
     ];
-    if (portalType === 'industrial' || portalType === 'articleship') {
-        return [...common,
-            { id: 'ca_inter_clear_year',  label: 'CA Inter Cleared Year',   icon: '🎓', type: 'text', inputName: 'ca_inter_clear_year',  profileKey: 'ca_inter_clear_year',  required: false },
-            { id: 'articleship_firm_name',label: 'Articleship / IT Firm',    icon: '🏢', type: 'text', inputName: 'articleship_firm_name', profileKey: 'articleship_firm_name', required: false, optional: true },
-        ];
-    }
-    if (portalType === 'semi_fresher' || portalType === 'semi_experienced') {
-        return [...common,
-            { id: 'ca_inter_clear_year',  label: 'CA Inter Cleared Year',   icon: '🎓', type: 'text', inputName: 'ca_inter_clear_year',  profileKey: 'ca_inter_clear_year',  required: false },
-            { id: 'emp_company_name',     label: 'Current Company',          icon: '🏢', type: 'text', inputName: 'emp_company_name',     profileKey: 'emp_company_name',     required: false, optional: true },
-        ];
-    }
-    // fresher_fresher, fresher_experienced (default)
-    return [...common,
-        { id: 'ca_final_clear_year',  label: 'CA Final Cleared Year',   icon: '🎓', type: 'text', inputName: 'ca_final_clear_year',  profileKey: 'ca_final_clear_year',  required: false },
-        { id: 'articleship_firm_name',label: 'Articleship Firm',         icon: '🏢', type: 'text', inputName: 'articleship_firm_name', profileKey: 'articleship_firm_name', required: false, optional: true },
+
+    const caInterFields = [
+        f('ca_inter_clear_year',          'CA Inter Cleared Year',              '📚', 'text',   true),
+        f('ca_inter_score',               'CA Inter Score %',                   '📊', 'text',   true),
+        f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true),
+        f('articleship_firm_name',        'Articleship Firm',                   '🏢', 'text',   true),
+        f('articleship_domain',           'Articleship Domain(s)',              '📂', 'text',   true),
+        f('articleship_client_industries','Client Industries (comma-separated)','🏭', 'text',   true),
+        f('additional_qualifications',    'Additional Qualifications (e.g., CFA, CPA)','🎓','text',true),
     ];
+
+    const caFinalFields = [
+        f('ca_final_clear_year',          'CA Final Cleared Year',              '🏆', 'text',   true),
+        f('ca_final_score',               'CA Final Score %',                   '📊', 'text',   true),
+        f('ca_final_attempts',            'CA Final Attempts',                  '🔄', 'number', true),
+        f('ca_inter_clear_year',          'CA Inter Cleared Year',              '📚', 'text',   true),
+        f('ca_inter_score',               'CA Inter Score %',                   '📊', 'text',   true),
+        f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true),
+        f('articleship_firm_name',        'Articleship Firm',                   '🏢', 'text',   true),
+        f('articleship_domain',           'Articleship Domain(s)',              '📂', 'text',   true),
+        f('articleship_client_industries','Client Industries (comma-separated)','🏭', 'text',   true),
+        f('additional_qualifications',    'Additional Qualifications (e.g., CFA, CPA)','🎓','text',true),
+    ];
+
+    const empFields = [
+        f('emp_company_name',  'Current Company',   '🏢', 'text', true),
+        f('emp_job_title',     'Current Job Title', '💼', 'text', true),
+        f('emp_current_salary','Current CTC',       '💰', 'text', true),
+    ];
+
+    if (portalType === 'industrial' || portalType === 'articleship') return [...common, ...caInterFields];
+    if (portalType === 'semi_fresher')    return [...common, ...caInterFields];
+    if (portalType === 'semi_experienced')return [...common, ...caInterFields, ...empFields];
+    if (portalType === 'fresher_experienced') return [...common, ...caFinalFields, ...empFields];
+    return [...common, ...caFinalFields]; // fresher_fresher
+}
+
+
+// =================== PORTAL SECTIONS ===================
+function applyPortalSections(type) {
+    if (!type) return;
+    document.querySelectorAll('[data-portal]').forEach(el => {
+        const portals = el.dataset.portal.split(',').map(s => s.trim());
+        el.style.display = portals.includes(type) ? '' : 'none';
+    });
+}
+
+// =================== CHIP MULTI-SELECT HELPERS ===================
+function initChipMultiSelect(containerSelector, hiddenId) {
+    const container = document.getElementById(containerSelector);
+    const hidden = document.getElementById(hiddenId);
+    if (!container || !hidden) return;
+    container.addEventListener('click', e => {
+        const chip = e.target.closest('.p2-chip');
+        if (!chip) return;
+        const chk = chip.querySelector('input[type="checkbox"]');
+        if (!chk) return;
+        chk.checked = !chk.checked;
+        chip.classList.toggle('selected', chk.checked);
+        hidden.value = Array.from(container.querySelectorAll('input[type="checkbox"]:checked')).map(c => c.value).join(', ');
+    });
+}
+
+function restoreChipMultiSelect(containerSelector, hiddenId) {
+    const container = document.getElementById(containerSelector);
+    const hidden = document.getElementById(hiddenId);
+    if (!container || !hidden || !hidden.value) return;
+    const vals = hidden.value.split(',').map(s => s.trim());
+    container.querySelectorAll('input[type="checkbox"]').forEach(chk => {
+        if (vals.includes(chk.value)) { chk.checked = true; chk.closest('.p2-chip').classList.add('selected'); }
+    });
 }
 
 // =================== WIZARD CONTROLLER ===================
@@ -445,14 +502,6 @@ const WZ = (() => {
         const wz = document.getElementById('profile-wizard');
         if (wz) wz.style.display = 'none';
         applyPortalSections(st.programType);
-    }
-
-    function applyPortalSections(type) {
-        if (!type) return;
-        document.querySelectorAll('[data-portal]').forEach(el => {
-            const portals = el.dataset.portal.split(',').map(s => s.trim());
-            el.style.display = portals.includes(type) ? '' : 'none';
-        });
     }
 
     // Resolve fresher/semi subtype from YOE in profileData; null means "ask wizard"
@@ -691,14 +740,19 @@ const WZ = (() => {
 
     function buildMissing(field) {
         if (!field) return '<div class="wz-inner"><p>Almost done...</p></div>';
-        const saved = st.answers['missing_' + field.id] || getFormValue(field.inputName) || '';
+        // Priority: wizard answer → DB/form value → AI prefill (user reviews before confirming)
+        const userAnswered = st.answers['missing_' + field.id] || getFormValue(field.inputName);
+        const aiPrefill = userAnswered ? '' : String(getAiVal(field) || '');
+        const saved = userAnswered || aiPrefill;
         let inputHtml = '';
         if (field.type === 'textarea') {
             inputHtml = `<textarea class="wz-textarea" id="wz-missing-input" rows="4" placeholder="Write a brief professional summary...">${escHtml(saved)}</textarea>`;
         } else {
             inputHtml = `<input class="wz-input" type="${field.type}" id="wz-missing-input" placeholder="${field.type === 'url' ? 'https://linkedin.com/in/yourprofile' : ''}" value="${escHtml(saved)}">`;
         }
-        const aiTag = st.aiStatus === 'loading' ? `<div class="wz-ai-banner"><div class="wz-ai-dot"></div>Resume is being auto-filled in the background…</div>` : '';
+        const aiTag = st.aiStatus === 'loading'
+            ? `<div class="wz-ai-banner"><div class="wz-ai-dot"></div>Resume is being auto-filled in the background…</div>`
+            : (aiPrefill ? `<div class="wz-ai-banner" style="background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.25);"><span style="font-size:0.85em;">✨ Auto-filled from your CV — edit if needed</span></div>` : '');
         const skipHtml = field.optional ? `<span class="wz-not-sure-link" style="display:inline-block;margin-top:14px;" id="wz-q-skip">Skip</span>` : '';
         return `<div class="wz-inner">
             ${aiTag}
@@ -795,8 +849,11 @@ const WZ = (() => {
         if (pct >= 90) return '';
         const tips = [];
         if (!getFormValue('profile_summary') && !st.answers['missing_profile_summary']) tips.push('+8% Add Profile Summary');
-        if (!getFormValue('linkedin_url') && !st.answers['missing_linkedin_url']) tips.push('+5% Add LinkedIn Profile');
-        if (!getFormValue('key_skills') && !getFormValue('emp_skills_hidden')) tips.push('+5% Add Key Skills');
+        if (!getFormValue('linkedin_url') && !st.answers['missing_linkedin_url'])       tips.push('+5% Add LinkedIn Profile');
+        if (!getFormValue('key_skills') && !getFormValue('emp_skills_hidden'))          tips.push('+5% Add Key Skills');
+        if (!getFormValue('articleship_client_industries'))                             tips.push('+6% Add Client Industry Exposure');
+        if (!getFormValue('cert_name'))                                                 tips.push('+3% Add a Certification');
+        if (!getFormValue('preferred_domains') && !st.answers['preferred_domains'])    tips.push('+6% Add Preferred Domains');
         if (!tips.length) return '';
         return `<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:12px 14px;max-width:360px;margin:0 auto 1rem;text-align:left;">
             <div style="font-size:0.82rem;color:#F97316;font-weight:600;margin-bottom:6px;">Complete to improve visibility:</div>
@@ -945,11 +1002,14 @@ const WZ = (() => {
     function handleNext() {
         const phase = st.phase;
         if (phase === 'cv') {
-            if (!document.getElementById('wz-consent-chk')?.checked) {
+            const consentGiven = document.getElementById('wz-consent-chk')?.checked
+                || document.getElementById('cvSharingConsent')?.checked;
+            if (!consentGiven) {
                 showToast('Please accept the data sharing consent to continue.', 'warning', 5000);
                 return;
             }
             saveConsentFromWizard();
+            saveConsentRecord(true).catch(console.error); // fire independently — don't wait on storer
             fireStorerAndProfill();
             proceedAfterCV();
         } else if (phase === 'type') {
@@ -1051,6 +1111,10 @@ const WZ = (() => {
     }
 
     function advancePref(_collected) {
+        if (_collected === null) {
+            const cfg = WZ_QUESTION_CONFIGS[st.prefQueue[st.prefIdx]];
+            if (cfg) delete st.answers[cfg.id]; // purge any previously saved answer for this question
+        }
         saveProgress(); // save after every single preference question
         st.history.push({ phase: 'prefs', idx: st.prefIdx });
         st.prefIdx++;
@@ -1068,13 +1132,25 @@ const WZ = (() => {
         }
     }
 
+    // AI field name aliases: form field id → AI response key when they differ
+    const AI_KEY_ALIASES = { current_city: 'current_location' };
+
+    function getAiVal(f) {
+        if (!st.aiData) return '';
+        const alias = AI_KEY_ALIASES[f.id];
+        return st.aiData[alias] || st.aiData[f.inputName] || st.aiData[f.id] || '';
+    }
+
     // ------ Missing fields phase ------
     function buildMissingQueue() {
         const fields = getWzMissingFields(st.programType);
+        const skipped = JSON.parse(localStorage.getItem('wz_skipped_fields') || '[]');
         st.missingQueue = fields.filter(f => {
-            const formVal = getFormValue(f.inputName);
-            const answerVal = st.answers['missing_' + f.id];
-            return !formVal && !answerVal;
+            if (skipped.includes(f.id)) return false;           // user previously skipped — never re-ask
+            if (st.answers['missing_' + f.id]) return false;   // user already answered in wizard
+            if (getFormValue(f.inputName)) return false;        // form already has a DB/profile value
+            return true;
+            // Note: AI data is shown as a pre-fill inside the input, not used to skip fields
         });
         st.missingIdx = 0;
     }
@@ -1094,6 +1170,14 @@ const WZ = (() => {
     }
 
     function advanceMissing(_collected) {
+        if (_collected === null) {
+            const field = st.missingQueue[st.missingIdx];
+            if (field) {
+                const skipped = JSON.parse(localStorage.getItem('wz_skipped_fields') || '[]');
+                if (!skipped.includes(field.id)) skipped.push(field.id);
+                localStorage.setItem('wz_skipped_fields', JSON.stringify(skipped));
+            }
+        }
         saveProgress(); // save after every single missing-field question
         st.history.push({ phase: 'missing', idx: st.missingIdx });
         st.missingIdx++;
@@ -1275,9 +1359,7 @@ const WZ = (() => {
         if (!activeEl) return;
         activeEl.querySelectorAll('[name^="rv_"]').forEach(inp => {
             const key = inp.name.replace('rv_', '');
-            const val = inp.value.trim();
-            if (!val) return;
-            // Write back to the main form
+            const val = inp.value.trim(); // intentionally allow empty — user may have deleted wrong AI value
             const mainEl = document.getElementById(key) || profileForm.elements[key];
             if (mainEl) mainEl.value = val;
         });
@@ -1285,10 +1367,13 @@ const WZ = (() => {
 
     // ------ Fire storer + profill in parallel, no await — user never waits ------
     function fireStorerAndProfill() {
-        const images = (() => { try { return JSON.parse(localStorage.getItem('userCVImages') || '[]'); } catch { return []; } })();
+        // Prefer in-memory (survives localStorage quota failures), fall back to localStorage
+        const images = window._wzCVImages?.length
+            ? window._wzCVImages
+            : (() => { try { return JSON.parse(localStorage.getItem('userCVImages') || '[]'); } catch { return []; } })();
         if (!images.length) return; // no resume uploaded, nothing to do
 
-        const base64Pdf = localStorage.getItem('userCVPdf') || '';
+        const base64Pdf = window._wzCVPdf || localStorage.getItem('userCVPdf') || '';
         const userId = currentUser?.id;
         st.aiStatus = 'loading';
 
@@ -1336,13 +1421,53 @@ const WZ = (() => {
             st.aiStatus = 'done';
             // Only fill form fields that are still empty — never override what user typed
             populateFormSafe(parsed);
+            // Trigger change on attempts dropdowns so hidden count inputs become visible
+            ['ca_final_attempts_type', 'ca_inter_attempts_type', 'ca_found_attempts_type'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.value) el.dispatchEvent(new Event('change'));
+            });
+            // Trigger AIR visibility based on AI-populated performance values
+            ['ca_final_performance', 'ca_inter_performance'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && el.value) el.dispatchEvent(new Event('change'));
+            });
+            // Sync chip UI for any multi-select fields AI populated
+            restoreChipMultiSelect('art_client_industries_chips', 'articleship_client_industries');
+            restoreChipMultiSelect('art_domain_chips', 'articleship_domain');
+            restoreChipMultiSelect('addl_qual_chips', 'additional_qualifications');
+            restoreChipMultiSelect('preferred_domains_chips', 'preferred_domains');
+            restoreChipMultiSelect('preferred_industries_chips', 'preferred_industries');
+            restoreChipMultiSelect('preferred_firm_type_chips', 'preferred_firm_type');
+            restoreChipMultiSelect('preferred_company_type_chips', 'preferred_company_type');
+            restoreChipMultiSelect('emp_domain_chips', 'emp_domain');
+            restoreChipMultiSelect('prev_emp_domain_chips', 'prev_emp_domain');
             refreshHeader();
-            // If already in missing-fields phase, trim fields AI just filled
+            // If AI arrives while the user is mid-missing-phase, prefill the current visible
+            // input with the AI value — but only if the user hasn't typed anything yet
             if (st.phase === 'missing') {
-                st.missingQueue = st.missingQueue.filter(f => {
-                    if (st.answers['missing_' + f.id]) return false;
-                    return !getFormValue(f.inputName);
-                });
+                const field = st.missingQueue[st.missingIdx];
+                if (field) {
+                    const aiVal = String(getAiVal(field) || '').trim();
+                    if (aiVal) {
+                        const activeEl = document.getElementById('wz-screen-' + st.currentSlot);
+                        const inp = activeEl?.querySelector('#wz-missing-input');
+                        if (inp && !inp.value.trim()) {
+                            inp.value = aiVal;
+                            // Show "auto-filled" banner if not already present
+                            const inner = activeEl?.querySelector('.wz-inner');
+                            if (inner && !inner.querySelector('.wz-ai-banner')) {
+                                const banner = document.createElement('div');
+                                banner.className = 'wz-ai-banner';
+                                banner.style.cssText = 'background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.25);';
+                                banner.innerHTML = '<span style="font-size:0.85em;">✨ Auto-filled from your CV — edit if needed</span>';
+                                inner.prepend(banner);
+                            } else if (inner) {
+                                const existing = inner.querySelector('.wz-ai-banner');
+                                if (existing) existing.innerHTML = '<span style="font-size:0.85em;">✨ Auto-filled from your CV — edit if needed</span>';
+                            }
+                        }
+                    }
+                }
             }
         })
         .catch(() => { st.aiStatus = 'failed'; });
@@ -1382,7 +1507,12 @@ const WZ = (() => {
                 reader.readAsDataURL(file);
             });
 
-            try { localStorage.setItem('userCVImages', JSON.stringify(images)); } catch { showToast('Resume too large to cache locally.', 'warning'); }
+            // Keep images in memory so fireStorerAndProfill can still run if localStorage is full
+            window._wzCVImages  = images;
+            window._wzCVPdf     = base64Pdf;
+            try { localStorage.setItem('userCVImages', JSON.stringify(images)); } catch {
+                showToast('Resume is large — AI will still process it, but local caching was skipped.', 'warning');
+            }
             try { localStorage.setItem('userCVPdf', base64Pdf); } catch { /* ignore */ }
             localStorage.setItem('userCVFileName', file.name);
             localStorage.removeItem('userCVText'); // storer will set this on Next
@@ -1401,8 +1531,14 @@ const WZ = (() => {
         if (!currentUser) { showMain(); return; }
         showLoading(true, 'Saving your profile…');
         try {
-            // Collect all wizard answers into the main form
+            // Collect all wizard answers into the main form (writes values + hidden inputs)
             applyAnswersToForm();
+
+            // Visually restore chip UI so career section shows correct selections immediately
+            restoreChipMultiSelect('preferred_domains_chips', 'preferred_domains');
+            restoreChipMultiSelect('preferred_industries_chips', 'preferred_industries');
+            restoreChipMultiSelect('preferred_firm_type_chips', 'preferred_firm_type');
+            restoreChipMultiSelect('preferred_company_type_chips', 'preferred_company_type');
 
             // Build profile object from form
             const profileData = buildProfileFromForm();
@@ -1412,7 +1548,8 @@ const WZ = (() => {
             if (st.answers['preferred_locations']) profileData.preferred_locations = Array.isArray(st.answers['preferred_locations']) ? st.answers['preferred_locations'].join(', ') : st.answers['preferred_locations'];
             if (st.answers['relocation']) profileData.relocation_preference = st.answers['relocation'];
             if (st.answers['joining_date']) profileData.earliest_joining_date = st.answers['joining_date'];
-            if (st.answers['expected_ctc'] || st.answers['expected_stipend']) profileData.expected_salary = st.answers['expected_ctc'] || st.answers['expected_stipend'];
+            if (st.answers['expected_ctc'])     profileData.expected_salary    = st.answers['expected_ctc'];
+            if (st.answers['expected_stipend']) profileData.expected_stipend_min = st.answers['expected_stipend'];
             if (st.answers['preferred_domains']) profileData.preferred_domains = Array.isArray(st.answers['preferred_domains']) ? st.answers['preferred_domains'].join(', ') : st.answers['preferred_domains'];
             if (st.answers['preferred_industries']) profileData.preferred_industries = Array.isArray(st.answers['preferred_industries']) ? st.answers['preferred_industries'].join(', ') : st.answers['preferred_industries'];
             if (st.answers['preferred_firm_type']) profileData.preferred_firm_type = Array.isArray(st.answers['preferred_firm_type']) ? st.answers['preferred_firm_type'].join(', ') : st.answers['preferred_firm_type'];
@@ -1458,6 +1595,22 @@ const WZ = (() => {
             const el = document.getElementById(inputName) || profileForm.elements[inputName];
             if (el) el.value = val;
         });
+
+        // Attempts: user typed a number → set the count input + auto-switch the type dropdown
+        ['ca_final_attempts', 'ca_inter_attempts', 'ca_found_attempts'].forEach(field => {
+            const raw = st.answers['missing_' + field];
+            if (!raw) return;
+            const num = parseInt(raw, 10);
+            if (isNaN(num)) return;
+            const countEl = document.getElementById(field);
+            const typeEl  = document.getElementById(field + '_type');
+            if (countEl) countEl.value = num;
+            if (typeEl) {
+                typeEl.value = num <= 1 ? 'First Attempt' : 'Other';
+                typeEl.dispatchEvent(new Event('change'));
+            }
+        });
+
         if (st.answers['joining_date']) {
             const el = document.getElementById('earliest_joining_date') || profileForm.elements['earliest_joining_date'];
             if (el) el.value = st.answers['joining_date'];
@@ -1466,15 +1619,53 @@ const WZ = (() => {
             const el = document.getElementById('notice_period') || profileForm.elements['notice_period'];
             if (el) el.value = st.answers['notice_period'];
         }
-        if (st.answers['expected_ctc'] || st.answers['expected_stipend']) {
+        if (st.answers['expected_stipend']) {
+            const el = document.getElementById('expected_stipend_min') || profileForm.elements['expected_stipend_min'];
+            if (el) el.value = st.answers['expected_stipend'];
+        }
+        if (st.answers['expected_ctc']) {
             const el = document.getElementById('expected_salary') || profileForm.elements['expected_salary'];
-            if (el) el.value = st.answers['expected_ctc'] || st.answers['expected_stipend'] || '';
+            if (el) el.value = st.answers['expected_ctc'];
         }
         if (st.answers['preferred_locations']) {
             const el = document.getElementById('preferred_locations') || profileForm.elements['preferred_locations'];
             const val = Array.isArray(st.answers['preferred_locations']) ? st.answers['preferred_locations'].join(', ') : st.answers['preferred_locations'];
             if (el) el.value = val;
         }
+        if (st.answers['relocation']) {
+            const el = document.getElementById('relocation_preference');
+            if (el) el.value = st.answers['relocation'];
+        }
+        if (st.answers['employment_status']) {
+            const el = document.getElementById('current_employment_status');
+            if (el) el.value = st.answers['employment_status'];
+        }
+        if (st.answers['preferred_domains']) {
+            const el = document.getElementById('preferred_domains');
+            if (el) el.value = formatArrayAnswer(st.answers['preferred_domains']);
+        }
+        if (st.answers['preferred_industries']) {
+            const el = document.getElementById('preferred_industries');
+            if (el) el.value = formatArrayAnswer(st.answers['preferred_industries']);
+        }
+        if (st.answers['preferred_firm_type']) {
+            const el = document.getElementById('preferred_firm_type');
+            if (el) el.value = formatArrayAnswer(st.answers['preferred_firm_type']);
+        }
+        // Chip fields from missing-fields wizard (user typed comma-separated) → hidden input + restore chips
+        if (st.answers['missing_articleship_domain']) {
+            const el = document.getElementById('articleship_domain');
+            if (el) { el.value = st.answers['missing_articleship_domain']; restoreChipMultiSelect('art_domain_chips', 'articleship_domain'); }
+        }
+        if (st.answers['missing_articleship_client_industries']) {
+            const el = document.getElementById('articleship_client_industries');
+            if (el) { el.value = st.answers['missing_articleship_client_industries']; restoreChipMultiSelect('art_client_industries_chips', 'articleship_client_industries'); }
+        }
+        if (st.answers['missing_additional_qualifications']) {
+            const el = document.getElementById('additional_qualifications');
+            if (el) { el.value = st.answers['missing_additional_qualifications']; restoreChipMultiSelect('addl_qual_chips', 'additional_qualifications'); }
+        }
+
         if (st.programType) {
             const jp = document.getElementById('job_preference');
             if (jp) jp.value = st.programType;
@@ -1486,11 +1677,15 @@ const WZ = (() => {
         if (!profileForm) return obj;
         Array.from(profileForm.elements).forEach(el => {
             if (!el.name || el.disabled) return;
-            if (el.type === 'checkbox') { obj[el.name] = el.checked; return; }
+            if (el.type === 'radio') { if (el.checked) obj[el.name] = el.value; return; }
+            if (el.type === 'checkbox') return; // chip checkboxes are unnamed; named checkboxes saved via hidden inputs
             if (el.value) obj[el.name] = el.value;
         });
         return obj;
     }
+
+    // Maps AI response keys to form field names when they differ
+    const AI_TO_FORM_ALIASES = { current_location: 'current_city' };
 
     // ------ populateFormSafe: like populateForm but never overwrites existing values ------
     function populateFormSafe(profileData) {
@@ -1499,7 +1694,8 @@ const WZ = (() => {
             if (key === 'resume' || key === 'cover_letter' || key === 'project_attachment') continue;
             const val = profileData[key];
             if (val === null || val === undefined || val === '') continue;
-            const field = profileForm.elements[key];
+            const formKey = AI_TO_FORM_ALIASES[key] || key;
+            const field = profileForm.elements[formKey];
             if (!field) continue;
             if (field.value && field.value.trim()) continue; // user already filled this — skip
             field.value = val;
@@ -1511,8 +1707,13 @@ const WZ = (() => {
         }
     }
 
-    // ------ Progressive save: upsert current state to Supabase without blocking ------
+    // ------ Progressive save: debounced upsert — prevents concurrent 409s on rapid clicks ------
+    let _saveTimer = null;
     function saveProgress() {
+        clearTimeout(_saveTimer);
+        _saveTimer = setTimeout(_doSaveProgress, 400);
+    }
+    function _doSaveProgress() {
         if (!currentUser) return;
         applyAnswersToForm();
         const profileData = buildProfileFromForm();
@@ -1558,15 +1759,21 @@ const WZ = (() => {
     }
 
     function calcCompleteness() {
-        let score = 30; // base for having an account
-        if (getFormValue('name') || st.answers['missing_name']) score += 10;
-        if (getFormValue('contact_number') || st.answers['missing_contact_number']) score += 10;
-        if (localStorage.getItem('userCVFileName')) score += 15;
-        if (getFormValue('profile_summary') || st.answers['missing_profile_summary']) score += 10;
-        if (getFormValue('linkedin_url') || st.answers['missing_linkedin_url']) score += 5;
-        if (st.answers['preferred_locations']) score += 5;
-        if (st.answers['preferred_domains']) score += 5;
-        if (st.programType) score += 5;
+        const ans = k => st.answers['missing_' + k] || st.answers[k];
+        let score = 20; // base for having an account
+        if (getFormValue('name')           || ans('name'))           score += 10;
+        if (getFormValue('contact_number') || ans('contact_number')) score += 10;
+        if (localStorage.getItem('userCVFileName'))                  score += 10;
+        if (getFormValue('profile_summary')|| ans('profile_summary'))score += 8;
+        if (getFormValue('linkedin_url')   || ans('linkedin_url'))   score += 5;
+        if (st.answers['preferred_locations'] || getFormValue('preferred_locations')) score += 5;
+        if (st.answers['preferred_domains'] || getFormValue('preferred_domains'))     score += 6;
+        if (st.answers['preferred_industries'] || getFormValue('preferred_industries')) score += 5;
+        if (st.programType || getFormValue('job_preference'))        score += 5;
+        if (getFormValue('articleship_client_industries'))           score += 6;
+        if (getFormValue('cert_name'))                               score += 3;
+        if (getFormValue('key_skills') || getFormValue('emp_skills_hidden')) score += 5;
+        if (getFormValue('grad_degree'))                             score += 2;
         return Math.min(score, 100);
     }
 
@@ -2031,6 +2238,8 @@ async function loadConsentStatus() {
 
         if (data && data.cv_sharing_consent) {
             if (checkbox) checkbox.checked = true;
+            const wzChk = document.getElementById('wz-consent-chk');
+            if (wzChk) wzChk.checked = true;
             if (statusText) statusText.textContent = 'Consent given on ' + new Date(data.consented_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
             if (privacyStatus) { privacyStatus.textContent = 'Active'; privacyStatus.style.color = '#16A34A'; }
             if (privacyDate) privacyDate.textContent = new Date(data.consented_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -2447,29 +2656,7 @@ function refreshSavedDisplays(d) {
     };
 
     setPersonalValue('pd-gender', d.gender, 'Add gender');
-    setPersonalValue('pd-marital', d.marital_status, 'Add marital status');
-    setPersonalValue('pd-notice-period', d.notice_period, 'Add notice period');
-
-    let joiningDateText = '';
-    if ((d.earliest_joining_date || '').trim()) {
-        const dt = new Date(d.earliest_joining_date);
-        if (!Number.isNaN(dt.getTime())) {
-            const day = dt.getDate().toString().padStart(2, '0');
-            const mon = dt.toLocaleString('default', { month: 'short' });
-            const yr = dt.getFullYear();
-            joiningDateText = `${day} ${mon} ${yr}`;
-        }
-    }
-    setPersonalValue('pd-joining-date', joiningDateText, 'Add joining date');
-
-    const joiningWrap = document.getElementById('pd-joining-date-wrap');
-    if (joiningWrap) {
-        if (d.notice_period === 'Immediate Joiner') {
-            joiningWrap.style.display = 'none';
-        } else {
-            joiningWrap.style.display = 'block';
-        }
-    }
+    setPersonalValue('pd-current-city', d.current_city, 'Add city');
 
     let dobText = '';
     if ((d.date_of_birth || '').trim()) {
@@ -2482,9 +2669,37 @@ function refreshSavedDisplays(d) {
         }
     }
     setPersonalValue('pd-dob', dobText, 'Add date of birth');
-    setPersonalValue('pd-category', d.category, 'Add Category');
-    setPersonalValue('pd-work-permit', d.work_permit, 'Add Work permit');
-    setPersonalValue('pd-current-city', d.current_city, 'Add city');
+
+    // --- AVAILABILITY & COMPENSATION ---
+    const setAvailValue = (id, value) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        const val = (value || '').toString().trim();
+        el.textContent = val || '—';
+        el.style.color = val ? 'var(--p2-text)' : '#999';
+    };
+    setAvailValue('disp-emp-status', d.current_employment_status);
+    setAvailValue('disp-notice', d.notice_period);
+    setAvailValue('disp-curr-ctc', d.current_ctc);
+
+    let joiningDateText = '';
+    if ((d.earliest_joining_date || '').trim()) {
+        const dt = new Date(d.earliest_joining_date);
+        if (!Number.isNaN(dt.getTime())) {
+            const day = dt.getDate().toString().padStart(2, '0');
+            const mon = dt.toLocaleString('default', { month: 'short' });
+            const yr = dt.getFullYear();
+            joiningDateText = `${day} ${mon} ${yr}`;
+        }
+    }
+    setAvailValue('disp-joining', joiningDateText);
+    const dispJoiningWrap = document.getElementById('disp-joining-wrap');
+    if (dispJoiningWrap) dispJoiningWrap.style.display = d.notice_period === 'Immediate Joiner' ? 'none' : '';
+
+    // Expected CTC or stipend
+    const expCtc = (d.expected_salary || '').trim();
+    const expStipend = [d.expected_stipend_min, d.expected_stipend_max].filter(Boolean).join(' – ');
+    setAvailValue('disp-exp-ctc', expCtc || expStipend);
 
     const langBody = document.getElementById('pd-lang-body');
     if (langBody) {
@@ -2518,14 +2733,18 @@ function refreshSavedDisplays(d) {
     }
 
     // --- PROFILE SUMMARY ---
-    const summaryVal = (d.profile_summary || d.headline || '').trim();
+    const headlineVal = (d.headline || '').trim();
+    const summaryVal = (d.profile_summary || '').trim();
     const summaryEntry = document.getElementById('summary-entry-display');
     const summaryTextDisplay = document.getElementById('summary-text-display');
     const summaryBoost = document.getElementById('summaryBoost');
     const summaryEditToggle = document.getElementById('summaryEditToggle');
-    if (summaryVal) {
+    if (headlineVal || summaryVal) {
         if (summaryEntry) summaryEntry.style.display = 'block';
-        if (summaryTextDisplay) summaryTextDisplay.textContent = summaryVal;
+        if (summaryTextDisplay) {
+            const showHeadline = headlineVal && headlineVal !== summaryVal;
+            summaryTextDisplay.innerHTML = (showHeadline ? `<strong>${headlineVal}</strong><br>` : '') + summaryVal;
+        }
         if (summaryBoost) summaryBoost.style.display = 'none';
         if (summaryEditToggle) summaryEditToggle.textContent = 'Edit profile summary';
     } else {
@@ -2747,34 +2966,20 @@ function refreshSavedDisplays(d) {
     const currentCompany = (d.emp_company_name || '').trim();
     const currentTitle = (d.emp_job_title || '').trim();
     const orgDisplay = document.getElementById('emp-org-display');
-    const addOrgLink = document.getElementById('addOrgLink');
     if (currentCompany || currentTitle) {
-        orgDisplay.style.display = 'block';
-        document.getElementById('emp-org-title').textContent = currentTitle || currentCompany;
-        let metaParts = [];
-        if (currentTitle && currentCompany) {
-            metaParts.push(currentCompany);
+        if (orgDisplay) {
+            orgDisplay.style.display = 'block';
+            document.getElementById('emp-org-title').textContent = currentTitle || currentCompany;
+            let metaParts = [];
+            if (currentTitle && currentCompany) metaParts.push(currentCompany);
+            const expY = (d.emp_exp_years || '').trim();
+            const expM = (d.emp_exp_months || '').trim();
+            const expStr = [expY, expM].filter(Boolean).join(' ');
+            if (expStr) metaParts.push(expStr);
+            const type = (d.employment_type || '').trim();
+            if (type) metaParts.push(type);
+            document.getElementById('emp-org-meta').textContent = metaParts.join(' · ');
         }
-
-        const expY = (d.emp_exp_years || '').trim();
-        const expM = (d.emp_exp_months || '').trim();
-        const expStr = [expY, expM].filter(Boolean).join(' ');
-        if (expStr) metaParts.push(expStr);
-
-        const type = (d.employment_type || '').trim();
-        if (type) metaParts.push(type);
-
-        document.getElementById('emp-org-meta').textContent = metaParts.join(' · ');
-        if (addOrgLink) addOrgLink.style.display = 'none';
-
-        const empEditToggle = document.getElementById('empEditToggle');
-        if (empEditToggle) empEditToggle.textContent = 'Edit employment';
-    } else {
-        orgDisplay.style.display = 'none';
-        if (addOrgLink) addOrgLink.style.display = 'flex';
-
-        const empEditToggle = document.getElementById('empEditToggle');
-        if (empEditToggle) empEditToggle.textContent = 'Add employment';
     }
 
     // Articleship display
@@ -2809,13 +3014,22 @@ function refreshSavedDisplays(d) {
         if (addITLink) addITLink.style.display = 'flex';
     }
 
-    // Update Employment boost badge
+    // Update Articleship boost badge
     const empBoost = document.getElementById('empBoost');
-    if (currentCompany || currentTitle || artFirm || (artType && artType !== 'None') || itCompany) {
-        empBoost.style.display = 'none';
-    } else {
-        empBoost.style.display = 'inline-block';
+    if (empBoost) {
+        empBoost.style.display = (artFirm || (artType && artType !== 'None') || itCompany) ? 'none' : 'inline-block';
     }
+
+    // Update employment section header action text
+    const empEditToggle = document.getElementById('empEditToggle');
+    if (empEditToggle) {
+        empEditToggle.textContent = (currentCompany || currentTitle) ? 'Edit employment' : 'Add employment';
+    }
+    if (orgDisplay) {
+        orgDisplay.style.display = (currentCompany || currentTitle) ? 'block' : 'none';
+    }
+    const addOrgLink = document.getElementById('addOrgLink');
+    if (addOrgLink) addOrgLink.style.display = (currentCompany || currentTitle) ? 'none' : 'flex';
 
     // --- PROJECTS ---
     const projectTitle = (d.project_title || '').trim();
@@ -2872,15 +3086,11 @@ function refreshSavedDisplays(d) {
     const jobPortalDisplay = jobPortalMap[jobPrefValue] || '';
     setCareerValue('career-job-portal', jobPortalDisplay, 'Add default portal');
 
-    setCareerValue('career-current-industry', d.current_industry, 'Add current industry');
-    setCareerValue('career-department', d.department, 'Add department');
-    setCareerValue('career-role-category', d.role_category, 'Add role category');
-    setCareerValue('career-job-role', d.job_role, 'Add job role');
-    setCareerValue('career-desired-job-type', d.desired_job_type, 'Add desired job type');
-    setCareerValue('career-desired-employment-type', d.desired_employment_type, 'Add desired employment type');
-    setCareerValue('career-preferred-shift', d.preferred_shift, 'Add preferred shift');
-    setCareerValue('career-preferred-location', d.preferred_locations, 'Add preferred location');
-    setCareerValue('career-expected-salary', d.expected_salary, 'Add expected salary');
+    setCareerValue('career-preferred-location', d.preferred_locations, 'Add preferred locations');
+    setCareerValue('career-relocation', d.relocation_preference, 'Add relocation preference');
+    setCareerValue('career-preferred-domains', d.preferred_domains, 'Add preferred domains');
+    setCareerValue('career-preferred-industries', d.preferred_industries, 'Add preferred industries');
+    setCareerValue('career-preferred-company-type', d.preferred_company_type || d.preferred_firm_type, 'Add company type');
 
     // --- KEY SKILLS ---
     const keySkillsVal = (d.key_skills || '').trim();
@@ -2919,6 +3129,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // CA Final Groups handling
     function handleJobPrefChange() {
         const v = jobPrefSelect.value;
+        applyPortalSections(v);
         if (artCompGroup) artCompGroup.style.display = 'none';
         if (ctcGroup) ctcGroup.style.display = 'none';
 
@@ -2930,7 +3141,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         // Apply CA Final logic based on job preference
-        const isAppearingStudent = ['articleship', 'industrial'].includes(v);
+        const isAppearingStudent = ['articleship', 'industrial', 'semi_fresher', 'semi_experienced'].includes(v);
         document.querySelectorAll('.ca_final_cleared_fields').forEach(el => {
             if (el.classList.contains('attempts-count-group')) {
                 const typeDropdown = document.getElementById('ca_final_attempts_type');
@@ -2964,19 +3175,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     if (noticeSelect) noticeSelect.addEventListener('change', handleNoticePeriodChange);
 
-    // ----- Domain Other -----
-    const domainSelect = document.getElementById('articleship_domain');
+    // ----- Domain Other — triggered by chip click, not change event on hidden input -----
+    const artDomainChips = document.getElementById('art_domain_chips');
     const domainOtherGroup = document.getElementById('articleship_domain_other_group');
-    if (domainSelect && domainOtherGroup) {
-        domainSelect.addEventListener('change', () => {
-            domainOtherGroup.style.display = domainSelect.value === 'Other' ? 'block' : 'none';
+    if (artDomainChips && domainOtherGroup) {
+        artDomainChips.addEventListener('click', () => {
+            const otherChk = artDomainChips.querySelector('input[value="Other"]');
+            domainOtherGroup.style.display = (otherChk && otherChk.checked) ? 'block' : 'none';
         });
     }
 
     // ----- Populate Years -----
     const currentYear = new Date().getFullYear();
     document.querySelectorAll('.populate-past-years').forEach(sel => {
-        for (let y = currentYear; y >= 1990; y--) {
+        for (let y = currentYear + 1; y >= 1990; y--) {
             const opt = document.createElement('option');
             opt.value = opt.textContent = y;
             sel.appendChild(opt);
@@ -2999,6 +3211,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 targetEl.style.display = e.target.value === 'Other' ? 'flex' : 'none';
             }
         });
+    });
+
+    // ----- AIR fields: show only when Performance = "All India Rank Holder" -----
+    [['ca_final_performance', 'ca_final_air_group'], ['ca_inter_performance', 'ca_inter_air_group']].forEach(([perfId, groupId]) => {
+        const perfSel  = document.getElementById(perfId);
+        const airGroup = document.getElementById(groupId);
+        if (!perfSel || !airGroup) return;
+        const toggle = () => { airGroup.style.display = perfSel.value === 'All India Rank Holder' ? '' : 'none'; };
+        perfSel.addEventListener('change', toggle);
+        toggle();
     });
 
     // ----- Populate Employment Form Field Options -----
@@ -3040,11 +3262,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         skillsInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' || e.key === ',') {
                 e.preventDefault();
-                const val = this.value.trim().replace(/,$/, '');
-                if (val && !skillsList.includes(val)) {
-                    skillsList.push(val);
-                    renderSkills();
-                }
+                const raw = this.value.trim().replace(/,$/, '');
+                raw.split(',').forEach(s => { const t = s.trim(); if (t && !skillsList.includes(t)) skillsList.push(t); });
+                renderSkills();
                 this.value = '';
             } else if (e.key === 'Backspace' && this.value === '' && skillsList.length > 0) {
                 skillsList.pop();
@@ -3053,9 +3273,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         skillsInput.addEventListener('blur', function () {
-            const val = this.value.trim().replace(/,$/, '');
-            if (val && !skillsList.includes(val)) {
-                skillsList.push(val);
+            const raw = this.value.trim().replace(/,$/, '');
+            if (raw) {
+                raw.split(',').forEach(s => { const t = s.trim(); if (t && !skillsList.includes(t)) skillsList.push(t); });
                 renderSkills();
             }
             this.value = '';
@@ -3073,11 +3293,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         keySkillsInput.addEventListener('keydown', function (e) {
             if (e.key === 'Enter' || e.key === ',') {
                 e.preventDefault();
-                const val = this.value.trim().replace(/,$/, '');
-                if (val && !keySkillsList.includes(val)) {
-                    keySkillsList.push(val);
-                    renderKeySkills();
-                }
+                const raw = this.value.trim().replace(/,$/, '');
+                raw.split(',').forEach(s => { const t = s.trim(); if (t && !keySkillsList.includes(t)) keySkillsList.push(t); });
+                renderKeySkills();
                 this.value = '';
             } else if (e.key === 'Backspace' && this.value === '' && keySkillsList.length > 0) {
                 keySkillsList.pop();
@@ -3086,9 +3304,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         keySkillsInput.addEventListener('blur', function () {
-            const val = this.value.trim().replace(/,$/, '');
-            if (val && !keySkillsList.includes(val)) {
-                keySkillsList.push(val);
+            const raw = this.value.trim().replace(/,$/, '');
+            if (raw) {
+                raw.split(',').forEach(s => { const t = s.trim(); if (t && !keySkillsList.includes(t)) keySkillsList.push(t); });
                 renderKeySkills();
             }
             this.value = '';
@@ -3206,9 +3424,34 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // ----- Chip multi-select init -----
+    initChipMultiSelect('addl_qual_chips', 'additional_qualifications');
+    initChipMultiSelect('art_client_industries_chips', 'articleship_client_industries');
+    initChipMultiSelect('art_domain_chips', 'articleship_domain');
+    initChipMultiSelect('preferred_domains_chips', 'preferred_domains');
+    initChipMultiSelect('preferred_industries_chips', 'preferred_industries');
+    initChipMultiSelect('preferred_firm_type_chips', 'preferred_firm_type');
+    initChipMultiSelect('preferred_company_type_chips', 'preferred_company_type');
+    initChipMultiSelect('emp_domain_chips', 'emp_domain');
+    initChipMultiSelect('prev_emp_domain_chips', 'prev_emp_domain');
+
+    // Restore on profile load handled below in loadProfile().then()
+
     // ----- Load profile + wizard -----
     loadProfile().then(d => {
         WZ.init(d, currentLookingFor);
+        // Restore chip multi-selects from saved profile
+        if (d) {
+            restoreChipMultiSelect('addl_qual_chips', 'additional_qualifications');
+            restoreChipMultiSelect('art_client_industries_chips', 'articleship_client_industries');
+            restoreChipMultiSelect('art_domain_chips', 'articleship_domain');
+            restoreChipMultiSelect('preferred_domains_chips', 'preferred_domains');
+            restoreChipMultiSelect('preferred_industries_chips', 'preferred_industries');
+            restoreChipMultiSelect('preferred_firm_type_chips', 'preferred_firm_type');
+            restoreChipMultiSelect('preferred_company_type_chips', 'preferred_company_type');
+            restoreChipMultiSelect('emp_domain_chips', 'emp_domain');
+            restoreChipMultiSelect('prev_emp_domain_chips', 'prev_emp_domain');
+        }
         // Pre-fill skills on load if existing
         if (d && d.emp_skills_hidden) {
             let loadedSkills = d.emp_skills_hidden.split(',').map(s => s.trim()).filter(Boolean);

@@ -1851,7 +1851,7 @@ async function saveSubscribedTopics(topics) {
                 .from('profiles')
                 .select('profile')
                 .eq('uuid', currentSession.user.id)
-                .single();
+                .maybeSingle();
 
             const profileData = existingProfile?.profile || {};
             profileData.notification_subscriptions = topics;
@@ -2697,7 +2697,7 @@ async function checkAndPromptConsent() {
             .from('consentform')
             .select('cv_sharing_consent')
             .eq('user_id', currentSession.user.id)
-            .single();
+            .maybeSingle();
 
         // If no record or consent is false/withdrawn, show prompt
         if (!data || !data.cv_sharing_consent) {
@@ -2791,7 +2791,7 @@ async function saveJobPreference(preference) {
                 .from('profiles')
                 .select('profile')
                 .eq('uuid', currentSession.user.id)
-                .single();
+                .maybeSingle();
 
             const profileData = existingProfile?.profile || {};
             profileData.job_preference = preference;
@@ -2816,7 +2816,7 @@ async function fetchAndCacheProfileData() {
             .from('profiles')
             .select('profile, looking_for, articleship_1yr_end_date, ca_inter_attempt, ca_final_attempt, years_of_experience, ocr_cv')
             .eq('uuid', currentSession.user.id)
-            .single();
+            .maybeSingle();
 
         if (data) {
             const profileObj = data.profile || {};

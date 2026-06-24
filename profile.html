@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -70,10 +70,10 @@
             <div class="wz-screen wz-screen-b" id="wz-screen-b"></div>
         </div>
         <div class="wz-footer">
-            <button type="button" class="wz-back-btn" id="wz-back-btn" style="visibility:hidden;">← Back</button>
+            <button type="button" class="wz-back-btn" id="wz-back-btn" style="visibility:hidden;">&#8592; Back</button>
             <div class="wz-footer-right">
                 <button type="button" class="wz-skip-btn" id="wz-skip-btn" style="display:none;">Skip</button>
-                <button type="button" class="wz-next-btn" id="wz-next-btn">Continue →</button>
+                <button type="button" class="wz-next-btn" id="wz-next-btn">Continue â†’</button>
             </div>
         </div>
     </div>
@@ -150,7 +150,7 @@
                             <div class="p2-upload-zone" id="resumeDropZone">
                                 <i class="fas fa-cloud-upload-alt"></i>
                                 <p><strong>Upload resume</strong></p>
-                                 <span>Supported Format: PDF — Max 5 MB</span>
+                                 <span>Supported Format: PDF â€” Max 5 MB</span>
                                  <input type="file" id="resume" name="resume" accept=".pdf">
                             </div>
                         </div>
@@ -179,28 +179,6 @@
                         </div>
                     </section>
 
-                    <section class="p2-card" id="sec-cover-letter">
-                        <div class="p2-card-header">
-                            <h2>Cover Letter <span class="p2-boost-optional">Optional</span></h2>
-                        </div>
-                        <p class="p2-card-sub">A well-written cover letter increases your chances</p>
-                        <div id="cover-letter-upload-area">
-                            <div class="p2-upload-zone" id="coverLetterDropZone">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                                <p><strong>Upload cover letter</strong></p>
-                                <span>Supported Format: PDF — Max 5 MB</span>
-                                <input type="file" id="cover_letter" name="cover_letter" accept=".pdf">
-                            </div>
-                        </div>
-                        <div id="cover-letter-display-area" style="display:none;">
-                            <div class="p2-file-tag">
-                                <i class="fas fa-file-pdf"></i>
-                                <span id="cover-letter-filename"></span>
-                                <button type="button" class="p2-remove-file" data-target="cover_letter"><i class="fas fa-times"></i></button>
-                            </div>
-                        </div>
-                    </section>
-
                     <section class="p2-card" id="sec-headline">
                         <div class="p2-card-header">
                             <h2>Profile Summary <span class="p2-boost" id="summaryBoost">Add 8%</span></h2>
@@ -221,11 +199,14 @@
                         <div class="p2-card-form collapsed" id="sec-headline-form">
                             <div class="p2-inline-form-title">Profile summary</div>
                             <div class="p2-form-row p2-full-width">
-                                <label for="profile_summary">Summary</label>
-                                <textarea id="profile_summary" name="profile_summary" rows="6" maxlength="1000" placeholder="Type here..."></textarea>
+                                <label for="headline">Resume Headline</label>
+                                <input type="text" id="headline" name="headline" placeholder="e.g. CA Fresher | Big 4 Articleship | Statutory Audit">
+                            </div>
+                            <div class="p2-form-row p2-full-width">
+                                <label for="profile_summary">Profile Summary</label>
+                                <textarea id="profile_summary" name="profile_summary" rows="6" maxlength="1000" placeholder="Brief overview of your career..."></textarea>
                                 <div class="p2-char-count"><span id="summary-left">1000</span> character(s) left</div>
                             </div>
-                            <input type="hidden" id="headline" name="headline">
                             <div class="p2-inline-actions">
                                 <button type="button" class="p2-inline-cancel" data-close="sec-headline-form">Cancel</button>
                             </div>
@@ -296,8 +277,15 @@
                                     <input type="text" id="cert_issuer" name="cert_issuer" placeholder="e.g., NSE Academy">
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="cert_year">Completion Year</label>
-                                    <input type="number" id="cert_year" name="cert_year" min="1990" max="2035" placeholder="e.g., 2025">
+                                    <label>Completion Date</label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <select id="cert_month" name="cert_month" style="flex:1;">
+                                            <option value="">Month</option>
+                                            <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option>
+                                            <option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                                        </select>
+                                        <input type="number" id="cert_year" name="cert_year" min="1990" max="2035" placeholder="Year" style="flex:1; max-width:100px;">
+                                    </div>
                                 </div>
                                 <div class="p2-form-row p2-full-width">
                                     <label for="cert_url">Credential URL (Optional)</label>
@@ -400,12 +388,63 @@
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-12-form" id="addClass12Link"><i class="fas fa-plus-circle"></i> Add Class XII details</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-10-form" id="addClass10Link"><i class="fas fa-plus-circle"></i> Add Class X details</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-other-edu-form" id="addOtherEduLink"><i class="fas fa-plus-circle"></i> Add other education details</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-addl-qual-form" id="addAddlQualLink"><i class="fas fa-plus-circle"></i> Add additional qualifications (CFA, CS, CMAâ€¦)</a>
+                        </div>
+
+                        <!-- Additional Qualifications Form -->
+                        <div class="p2-card-form collapsed" id="sec-addl-qual-form">
+                            <div class="p2-inline-form-title">Additional Qualifications</div>
+                            <div class="p2-form-grid">
+                                <div class="p2-form-row p2-full-width">
+                                    <label>Select all that apply</label>
+                                    <div class="p2-chip-group" id="addl_qual_chips" style="flex-wrap:wrap; gap:0.4rem;">
+                                        <label class="p2-chip"><input type="checkbox" value="CFA" style="display:none;"> CFA</label>
+                                        <label class="p2-chip"><input type="checkbox" value="CS" style="display:none;"> CS</label>
+                                        <label class="p2-chip"><input type="checkbox" value="CMA" style="display:none;"> CMA</label>
+                                        <label class="p2-chip"><input type="checkbox" value="ACCA" style="display:none;"> ACCA</label>
+                                        <label class="p2-chip"><input type="checkbox" value="CPA" style="display:none;"> CPA</label>
+                                        <label class="p2-chip"><input type="checkbox" value="FRM" style="display:none;"> FRM</label>
+                                        <label class="p2-chip"><input type="checkbox" value="MBA" style="display:none;"> MBA</label>
+                                        <label class="p2-chip"><input type="checkbox" value="LLB" style="display:none;"> LLB</label>
+                                        <label class="p2-chip"><input type="checkbox" value="DISA" style="display:none;"> DISA</label>
+                                        <label class="p2-chip"><input type="checkbox" value="CISA" style="display:none;"> CISA</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Financial Modelling" style="display:none;"> Financial Modelling</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Other" style="display:none;"> Other</label>
+                                    </div>
+                                    <input type="hidden" id="additional_qualifications" name="additional_qualifications">
+                                </div>
+                            </div>
+                            <div class="p2-inline-actions">
+                                <button type="button" class="p2-inline-cancel" data-close="sec-addl-qual-form">Cancel</button>
+                                <button type="button" class="p2-btn-save" id="saveAddlQualBtn">Save</button>
+                            </div>
                         </div>
 
                         <!-- CA Final Form -->
                         <div class="p2-card-form collapsed" id="sec-ca-final-form">
                             <div class="p2-inline-form-title">CA Final</div>
                             <div class="p2-form-grid">
+                                <div class="p2-form-row" data-portal="semi_fresher,semi_experienced">
+                                    <label for="ca_final_status">CA Final Status</label>
+                                    <select id="ca_final_status" name="ca_final_status">
+                                        <option value="">Select Status</option>
+                                        <option>Appearing</option>
+                                        <option>Group 1 Pending</option>
+                                        <option>Group 2 Pending</option>
+                                        <option>Both Groups Pending</option>
+                                        <option>Not Pursuing</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row" data-portal="semi_fresher,semi_experienced">
+                                    <label for="ca_final_groups_cleared">CA Final Groups Cleared</label>
+                                    <select id="ca_final_groups_cleared" name="ca_final_groups_cleared">
+                                        <option value="">Select</option>
+                                        <option value="None">None</option>
+                                        <option value="Group 1">Group 1 Cleared</option>
+                                        <option value="Group 2">Group 2 Cleared</option>
+                                        <option value="Both">Both Groups Cleared</option>
+                                    </select>
+                                </div>
                                 <div class="p2-form-row">
                                     <label>Education</label>
                                     <input type="text" value="Professional Course" disabled>
@@ -452,7 +491,20 @@
                                 </div>
 
                                 <div class="p2-form-row ca_final_cleared_fields">
-                                    <label for="ca_final_air">AIR (Optional)</label>
+                                    <label for="ca_final_score">Score %</label>
+                                    <input type="text" id="ca_final_score" name="ca_final_score" placeholder="e.g., 62.5">
+                                </div>
+                                <div class="p2-form-row ca_final_cleared_fields">
+                                    <label for="ca_final_performance">Performance</label>
+                                    <select id="ca_final_performance" name="ca_final_performance">
+                                        <option value="">Select</option>
+                                        <option>All India Rank Holder</option>
+                                        <option>Above 60%</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row ca_final_cleared_fields" id="ca_final_air_group" style="display:none;">
+                                    <label for="ca_final_air">AIR</label>
                                     <input type="number" id="ca_final_air" name="ca_final_air" min="1" placeholder="e.g., 25">
                                 </div>
 
@@ -494,6 +546,14 @@
                                         <option>CA Inter G2</option>
                                     </select>
                                 </div>
+                                <div class="p2-form-row" data-portal="articleship">
+                                    <label for="ca_inter_status">CA Inter Status</label>
+                                    <select id="ca_inter_status" name="ca_inter_status">
+                                        <option value="">Select Status</option>
+                                        <option value="Both Groups Cleared">Both Groups Cleared</option>
+                                        <option value="Result Awaited">Result Awaited</option>
+                                    </select>
+                                </div>
                                 
                                 <div class="p2-form-row">
                                     <label for="ca_inter_attempts_type">Attempts</label>
@@ -526,7 +586,20 @@
                                 </div>
 
                                 <div class="p2-form-row">
-                                    <label for="ca_inter_air">AIR (Optional)</label>
+                                    <label for="ca_inter_score">Score %</label>
+                                    <input type="text" id="ca_inter_score" name="ca_inter_score" placeholder="e.g., 58.25">
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="ca_inter_performance">Performance</label>
+                                    <select id="ca_inter_performance" name="ca_inter_performance">
+                                        <option value="">Select</option>
+                                        <option>All India Rank Holder</option>
+                                        <option>Above 60%</option>
+                                        <option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row" id="ca_inter_air_group" style="display:none;">
+                                    <label for="ca_inter_air">AIR</label>
                                     <input type="number" id="ca_inter_air" name="ca_inter_air" min="1" placeholder="e.g., 25">
                                 </div>
                             </div>
@@ -580,6 +653,18 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="p2-form-row">
+                                    <label for="ca_found_score">Score %</label>
+                                    <input type="text" id="ca_found_score" name="ca_found_score" placeholder="e.g., 65.0">
+                                </div>
+                                <div class="p2-form-row" data-portal="articleship">
+                                    <label for="ca_found_performance">CA Foundation Performance</label>
+                                    <select id="ca_found_performance" name="ca_found_performance">
+                                        <option value="">Select</option>
+                                        <option value="Above 60%">Above 60%</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="p2-inline-actions">
                                 <button type="button" class="p2-inline-cancel" data-close="sec-ca-foundation-form">Cancel</button>
@@ -603,8 +688,21 @@
                                     </select>
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="grad_university">University / Institute</label>
+                                    <label for="grad_college">College Name</label>
+                                    <input type="text" id="grad_college" name="grad_college" placeholder="e.g., H.R. College of Commerce">
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="grad_university">University</label>
                                     <input type="text" id="grad_university" name="grad_university" placeholder="e.g., Mumbai University">
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="grad_status">Graduation Status</label>
+                                    <select id="grad_status" name="grad_status">
+                                        <option value="">Select Status</option>
+                                        <option>Pursuing</option>
+                                        <option>Graduated</option>
+                                        <option>Dropped</option>
+                                    </select>
                                 </div>
                                 <div class="p2-form-row">
                                     <label for="grad_year">Passing Year</label>
@@ -724,25 +822,14 @@
                     </section>
 
                     <!-- ===== EMPLOYMENT ===== -->
-                    <section class="p2-card" id="sec-experience">
+                    <!-- ===== ARTICLESHIP & TRAINING ===== -->
+                    <section class="p2-card" id="sec-articleship">
                         <div class="p2-card-header">
-                            <h2>Employment <span class="p2-boost" id="empBoost">Add 10%</span></h2>
-                            <a href="javascript:void(0)" class="p2-card-action" id="empEditToggle" data-toggle="sec-experience-form" data-portal="fresher_experienced,semi_fresher,semi_experienced">Add employment</a>
+                            <h2>Articleship &amp; Industrial Training <span class="p2-boost" id="empBoost">Add 10%</span></h2>
                         </div>
-                        <p class="p2-card-sub">Your employment details will help recruiters understand your experience</p>
+                        <p class="p2-card-sub">Your articleship and training details help recruiters understand your practical experience</p>
 
-                        <!-- Saved display area -->
                         <div class="p2-saved-display" id="emp-display">
-                            <!-- Current Org -->
-                            <div class="p2-saved-entry" id="emp-org-display" style="display:none;" data-portal="fresher_experienced,semi_fresher,semi_experienced">
-                                <div class="p2-saved-entry-header">
-                                    <div>
-                                        <div class="p2-saved-title" id="emp-org-title">Organization</div>
-                                        <div class="p2-saved-meta" id="emp-org-meta"></div>
-                                    </div>
-                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-experience-form"><i class="fas fa-pencil-alt"></i></a>
-                                </div>
-                            </div>
                             <!-- Articleship -->
                             <div class="p2-saved-entry" id="emp-art-display" style="display:none;">
                                 <div class="p2-saved-entry-header">
@@ -765,126 +852,9 @@
                             </div>
                         </div>
 
-                        <!-- Add-more links -->
                         <div class="p2-add-links" id="emp-add-links">
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-experience-form" id="addOrgLink" data-portal="fresher_experienced,semi_fresher,semi_experienced"><i class="fas fa-plus-circle"></i> Add current organization</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-art-form" id="addArtLink"><i class="fas fa-plus-circle"></i> Add articleship details</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-it-form" id="addITLink" data-portal="industrial,fresher_fresher,fresher_experienced"><i class="fas fa-plus-circle"></i> Add industrial training</a>
-                        </div>
-
-                        <!-- Current Employment Form -->
-                        <div class="p2-card-form collapsed" id="sec-experience-form" data-portal="fresher_experienced,semi_fresher,semi_experienced">
-                            <div class="p2-inline-form-title">Employment</div>
-                            <div class="p2-card-sub" style="margin-bottom: 1rem; color: #555; font-size:0.85rem;">Details like job title, company name, etc, help employers understand your work</div>
-                            
-                            <div class="p2-form-grid">
-                                <div class="p2-form-row p2-full-width">
-                                    <label>Is this your current employment?</label>
-                                    <div class="p2-radio-group">
-                                        <label><input type="radio" name="is_current_employment" value="Yes" checked> Yes</label>
-                                        <label><input type="radio" name="is_current_employment" value="No"> No</label>
-                                    </div>
-                                </div>
-                                
-                                <div class="p2-form-row p2-full-width">
-                                    <label>Employment type</label>
-                                    <div class="p2-chip-group" id="emp_type_chips">
-                                        <label class="p2-chip selected"><input type="radio" name="employment_type" value="Full-time" checked style="display:none;"> Full-time</label>
-                                        <label class="p2-chip"><input type="radio" name="employment_type" value="Internship" style="display:none;"> Internship</label>
-                                    </div>
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label>Total experience <span style="color:var(--p2-red);">*</span></label>
-                                    <div style="display:flex; gap:0.5rem;">
-                                        <select id="emp_exp_years" name="emp_exp_years" style="flex:1;">
-                                            <option value="">Years</option>
-                                        </select>
-                                        <select id="emp_exp_months" name="emp_exp_months" style="flex:1;">
-                                            <option value="">Months</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="emp_company_name">Current company name <span style="color:var(--p2-red);">*</span></label>
-                                    <input type="text" id="emp_company_name" name="emp_company_name" placeholder="e.g. Flipkart">
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="emp_job_title">Current job title <span style="color:var(--p2-red);">*</span></label>
-                                    <input type="text" id="emp_job_title" name="emp_job_title" placeholder="e.g. Business Finance Intern">
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label>Joining date <span style="color:var(--p2-red);">*</span></label>
-                                    <div style="display:flex; gap:0.5rem;">
-                                        <select id="emp_join_year" name="emp_join_year" class="populate-past-years" style="flex:1;">
-                                            <option value="">Year</option>
-                                        </select>
-                                        <select id="emp_join_month" name="emp_join_month" style="flex:1;">
-                                            <option value="">Month</option>
-                                            <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="emp_current_salary">Current salary <span style="color:var(--p2-red);">*</span></label>
-                                    <div style="display:flex;">
-                                        <select id="emp_salary_currency" name="emp_salary_currency" style="width:75px; border-right:none; border-top-right-radius:0; border-bottom-right-radius:0; background-color:#F9F9F9;">
-                                            <option value="INR">₹</option>
-                                            <option value="USD">$</option>
-                                        </select>
-                                        <input type="text" id="emp_current_salary" name="emp_current_salary" placeholder="e.g. 12,00,000" style="flex:1; border-top-left-radius:0; border-bottom-left-radius:0;">
-                                    </div>
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="emp_salary_breakdown">Salary breakdown <span style="color:var(--p2-red);">*</span></label>
-                                    <select id="emp_salary_breakdown" name="emp_salary_breakdown">
-                                        <option value="">Select salary components</option>
-                                        <option value="Fixed">Fixed</option>
-                                        <option value="Variable">Variable</option>
-                                        <option value="Fixed + Variable">Fixed + Variable</option>
-                                    </select>
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="skills_input">Skills used <span style="color:var(--p2-red);">*</span></label>
-                                    <div class="p2-skills-container" id="skills_container">
-                                        <input type="text" id="skills_input" placeholder="Add skills (press Enter)">
-                                    </div>
-                                    <input type="hidden" id="emp_skills_hidden" name="emp_skills_hidden">
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="emp_job_profile">Job profile</label>
-                                    <div style="border:1px solid #E8E8E8; border-radius:8px; overflow:hidden;">
-                                        <div style="background:#FFF9F0; padding:0.5rem 0.8rem; border-bottom:1px solid #E8E8E8;">
-                                            <button type="button" style="background:none; border:1px solid #EAB308; color:#B45309; border-radius:12px; padding:0.15rem 0.5rem; font-size:0.75rem; font-weight:600; cursor:pointer;"><i class="fas fa-crown"></i> Improve with AI</button>
-                                        </div>
-                                        <textarea id="emp_job_profile" name="emp_job_profile" rows="5" placeholder="e.g. Assisted in identifying and implementing cost-saving strategies..." style="border:none; border-radius:0; box-shadow:none; width:100%; border-bottom:1px solid transparent;"></textarea>
-                                    </div>
-                                </div>
-
-                                <div class="p2-form-row p2-full-width">
-                                    <label for="emp_notice_period">Notice period <span style="color:var(--p2-red);">*</span></label>
-                                    <select id="emp_notice_period" name="emp_notice_period">
-                                        <option value="">Select notice period</option>
-                                        <option value="15 Days or less">15 Days or less</option>
-                                        <option value="1 Month">1 Month</option>
-                                        <option value="2 Months">2 Months</option>
-                                        <option value="3 Months">3 Months</option>
-                                        <option value="More than 3 Months">More than 3 Months</option>
-                                        <option value="Serving Notice Period">Serving Notice Period</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="p2-inline-actions">
-                                <button type="button" class="p2-inline-cancel" data-close="sec-experience-form">Cancel</button>
-                                <button type="button" class="p2-btn-save">Save</button>
-                            </div>
                         </div>
 
                         <!-- Articleship Form -->
@@ -908,29 +878,90 @@
                                     <input type="text" id="articleship_firm_name" name="articleship_firm_name" placeholder="e.g., Deloitte, KPMG">
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="articleship_domain">Domain</label>
-                                    <select id="articleship_domain" name="articleship_domain">
-                                        <option value="">Select Domain</option>
-                                        <option>Statutory Audit</option>
-                                        <option>Internal Audit & Risk</option>
-                                        <option>Direct Tax</option>
-                                        <option>Indirect Tax (GST)</option>
-                                        <option>Accounting & Bookkeeping</option>
-                                        <option>Compliance & ROC</option>
-                                        <option>Virtual CFO Services</option>
-                                        <option>Valuation & Financial Modelling</option>
-                                        <option>Transaction Advisory (FDD)</option>
-                                        <option>Forensics & Investigation</option>
-                                        <option>Other</option>
-                                    </select>
+                                    <label>Start Date</label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <select id="articleship_start_year" name="articleship_start_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="articleship_start_month" name="articleship_start_month" style="flex:1;">
+                                            <option value="">Month</option>
+                                            <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                                        </select>
+                                    </div>
                                 </div>
-                                <div class="p2-form-row" id="articleship_domain_other_group" style="display:none;">
-                                    <label for="articleship_domain_other">Specify Domain</label>
-                                    <input type="text" id="articleship_domain_other" name="articleship_domain_other" placeholder="Please specify your domain">
+                                <div class="p2-form-row">
+                                    <label>Completion Date</label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <select id="articleship_end_year" name="articleship_end_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="articleship_end_month" name="articleship_end_month" style="flex:1;">
+                                            <option value="">Month</option>
+                                            <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label>Domains (select all that apply)</label>
+                                    <div class="p2-chip-group" id="art_domain_chips" style="flex-wrap:wrap; gap:0.4rem;">
+                                        <label class="p2-chip"><input type="checkbox" value="Statutory Audit" style="display:none;"> Statutory Audit</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Internal Audit & Risk" style="display:none;"> Internal Audit &amp; Risk</label>
+                                        <label class="p2-chip"><input type="checkbox" value="SOX / IFC Controls" style="display:none;"> SOX / IFC Controls</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Forensics & Compliance" style="display:none;"> Forensics &amp; Compliance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Direct Tax" style="display:none;"> Direct Tax</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Indirect Tax (GST)" style="display:none;"> Indirect Tax (GST)</label>
+                                        <label class="p2-chip"><input type="checkbox" value="International Taxation" style="display:none;"> International Taxation</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Transfer Pricing" style="display:none;"> Transfer Pricing</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Accounting & Reporting" style="display:none;"> Accounting &amp; Reporting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="FP&A" style="display:none;"> FP&amp;A</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Controllership" style="display:none;"> Controllership</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Treasury" style="display:none;"> Treasury</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Costing & Plant Finance" style="display:none;"> Costing &amp; Plant Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Supply Chain Finance" style="display:none;"> Supply Chain Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Commercial Finance" style="display:none;"> Commercial Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Business Finance" style="display:none;"> Business Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Consulting" style="display:none;"> Consulting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Due Diligence" style="display:none;"> Due Diligence</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Valuation" style="display:none;"> Valuation</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Deals & Transaction Advisory" style="display:none;"> Deals &amp; Transaction Advisory</label>
+                                        <label class="p2-chip"><input type="checkbox" value="M&A Advisory" style="display:none;"> M&amp;A Advisory</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Project Finance" style="display:none;"> Project Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Banking & Credit" style="display:none;"> Banking &amp; Credit</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Investment Banking" style="display:none;"> Investment Banking</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Equity Research" style="display:none;"> Equity Research</label>
+                                        <label class="p2-chip"><input type="checkbox" value="ESG" style="display:none;"> ESG</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Financial Reporting (IND AS / IFRS)" style="display:none;"> Financial Reporting (IND AS / IFRS)</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Data Analytics" style="display:none;"> Data Analytics</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Other" style="display:none;"> Other</label>
+                                    </div>
+                                    <input type="hidden" id="articleship_domain" name="articleship_domain">
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label>Client Industries Exposure</label>
+                                    <div class="p2-chip-group" id="art_client_industries_chips" style="flex-wrap:wrap; gap:0.4rem;">
+                                        <label class="p2-chip"><input type="checkbox" value="Banking" style="display:none;"> Banking</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Financial Services" style="display:none;"> Financial Services</label>
+                                        <label class="p2-chip"><input type="checkbox" value="FMCG" style="display:none;"> FMCG</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Manufacturing" style="display:none;"> Manufacturing</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Pharma" style="display:none;"> Pharma</label>
+                                        <label class="p2-chip"><input type="checkbox" value="IT" style="display:none;"> IT</label>
+                                        <label class="p2-chip"><input type="checkbox" value="E-Commerce" style="display:none;"> E-Commerce</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Automobile" style="display:none;"> Automobile</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Infrastructure" style="display:none;"> Infrastructure</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Real Estate" style="display:none;"> Real Estate</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Consulting" style="display:none;"> Consulting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Retail" style="display:none;"> Retail</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Energy" style="display:none;"> Energy</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Telecom" style="display:none;"> Telecom</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Logistics" style="display:none;"> Logistics</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Others" style="display:none;"> Others</label>
+                                    </div>
+                                    <input type="hidden" id="articleship_client_industries" name="articleship_client_industries">
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="articleship_responsibilities">Key Responsibilities</label>
+                                    <textarea id="articleship_responsibilities" name="articleship_responsibilities" rows="4" placeholder="Describe your key responsibilities and work done during articleshipâ€¦"></textarea>
                                 </div>
                             </div>
                             <div class="p2-inline-actions">
                                 <button type="button" class="p2-inline-cancel" data-close="sec-art-form">Cancel</button>
+                                <button type="button" class="p2-btn-save">Save</button>
                             </div>
                         </div>
 
@@ -938,13 +969,306 @@
                         <div class="p2-card-form collapsed" id="sec-it-form" data-portal="industrial,fresher_fresher,fresher_experienced">
                             <div class="p2-inline-form-title">Industrial Training</div>
                             <div class="p2-form-grid">
-                                <div class="p2-form-row">
+                                <div class="p2-form-row p2-full-width">
                                     <label for="industrial_training_company">Company Name *</label>
                                     <input type="text" id="industrial_training_company" name="industrial_training_company" placeholder="e.g., Goldman Sachs, HUL">
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="it_industry">Industry</label>
+                                    <select id="it_industry" name="it_industry">
+                                        <option value="">Select Industry</option>
+                                        <option>Banking</option><option>Financial Services</option><option>FMCG</option>
+                                        <option>Manufacturing</option><option>Pharma</option><option>IT</option>
+                                        <option>E-Commerce</option><option>Automobile</option><option>Infrastructure</option>
+                                        <option>Real Estate</option><option>Consulting</option><option>Retail</option>
+                                        <option>Energy</option><option>Telecom</option><option>Logistics</option><option>Others</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label>Start Date</label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <select id="it_start_year" name="it_start_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="it_start_month" name="it_start_month" style="flex:1;">
+                                            <option value="">Month</option>
+                                            <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label>End Date</label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <select id="it_end_year" name="it_end_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="it_end_month" name="it_end_month" style="flex:1;">
+                                            <option value="">Month</option>
+                                            <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="it_responsibilities">Key Responsibilities</label>
+                                    <textarea id="it_responsibilities" name="it_responsibilities" rows="3" placeholder="Describe your key responsibilities during industrial trainingâ€¦"></textarea>
                                 </div>
                             </div>
                             <div class="p2-inline-actions">
                                 <button type="button" class="p2-inline-cancel" data-close="sec-it-form">Cancel</button>
+                                <button type="button" class="p2-btn-save">Save</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===== WORK EXPERIENCE ===== -->
+                    <section class="p2-card" id="sec-employment" data-portal="fresher_experienced,semi_experienced">
+                        <div class="p2-card-header">
+                            <h2>Work Experience</h2>
+                            <a href="javascript:void(0)" class="p2-card-action" id="empEditToggle" data-toggle="sec-experience-form">Add employment</a>
+                        </div>
+                        <p class="p2-card-sub">Your employment details will help recruiters understand your experience</p>
+
+                        <div class="p2-saved-display">
+                            <div class="p2-saved-entry" id="emp-org-display" style="display:none;">
+                                <div class="p2-saved-entry-header">
+                                    <div>
+                                        <div class="p2-saved-title" id="emp-org-title">Organization</div>
+                                        <div class="p2-saved-meta" id="emp-org-meta"></div>
+                                    </div>
+                                    <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-experience-form"><i class="fas fa-pencil-alt"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p2-add-links">
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-experience-form" id="addOrgLink"><i class="fas fa-plus-circle"></i> Add current organization</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-prev-experience-form" id="addPrevOrgLink"><i class="fas fa-plus-circle"></i> Add previous organization</a>
+                        </div>
+
+                        <!-- Current Employment Form -->
+                        <div class="p2-card-form collapsed" id="sec-experience-form">
+                            <div class="p2-inline-form-title">Employment</div>
+                            <div class="p2-card-sub" style="margin-bottom: 1rem; color: #555; font-size:0.85rem;">Details like job title, company name, etc, help employers understand your work</div>
+
+                            <div class="p2-form-grid">
+                                <div class="p2-form-row p2-full-width">
+                                    <label>Is this your current employment?</label>
+                                    <div class="p2-radio-group">
+                                        <label><input type="radio" name="is_current_employment" value="Yes" checked> Yes</label>
+                                        <label><input type="radio" name="is_current_employment" value="No"> No</label>
+                                    </div>
+                                </div>
+
+                                <div class="p2-form-row p2-full-width">
+                                    <label>Employment type</label>
+                                    <div class="p2-chip-group" id="emp_type_chips">
+                                        <label class="p2-chip selected"><input type="radio" name="employment_type" value="Full-time" checked style="display:none;"> Full-time</label>
+                                        <label class="p2-chip"><input type="radio" name="employment_type" value="Internship" style="display:none;"> Internship</label>
+                                    </div>
+                                </div>
+
+                                <div class="p2-form-row p2-full-width">
+                                    <label>Total experience <span style="color:var(--p2-red);">*</span></label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <select id="emp_exp_years" name="emp_exp_years" style="flex:1;">
+                                            <option value="">Years</option>
+                                        </select>
+                                        <select id="emp_exp_months" name="emp_exp_months" style="flex:1;">
+                                            <option value="">Months</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="p2-form-row">
+                                    <label for="emp_company_name">Company Name <span style="color:var(--p2-red);">*</span></label>
+                                    <input type="text" id="emp_company_name" name="emp_company_name" placeholder="e.g. Tata Consultancy Services">
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="emp_company_type">Employer Type</label>
+                                    <select id="emp_company_type" name="emp_company_type">
+                                        <option value="">Select Type</option>
+                                        <option>Big 4</option><option>Big 6</option><option>Big 10</option>
+                                        <option>CA Firm</option><option>MNC</option><option>Listed Company</option>
+                                        <option>Startup</option><option>GCC / SSC</option><option>PSU</option><option>Industry</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="emp_industry">Industry</label>
+                                    <select id="emp_industry" name="emp_industry">
+                                        <option value="">Select Industry</option>
+                                        <option>Banking</option><option>Financial Services</option><option>FMCG</option>
+                                        <option>Manufacturing</option><option>Pharma</option><option>IT</option>
+                                        <option>E-Commerce</option><option>Automobile</option><option>Infrastructure</option>
+                                        <option>Real Estate</option><option>Consulting</option><option>Retail</option>
+                                        <option>Energy</option><option>Telecom</option><option>Logistics</option><option>Others</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="emp_job_title">Job Title <span style="color:var(--p2-red);">*</span></label>
+                                    <input type="text" id="emp_job_title" name="emp_job_title" placeholder="e.g. Finance Manager">
+                                </div>
+                                <div class="p2-form-row">
+                                    <label>Join Date</label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <select id="emp_join_year" name="emp_join_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="emp_join_month" name="emp_join_month" style="flex:1;">
+                                            <option value="">Month</option>
+                                            <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label>Current Domain(s)</label>
+                                    <div class="p2-chip-group" id="emp_domain_chips" style="flex-wrap:wrap; gap:0.4rem;">
+                                        <label class="p2-chip"><input type="checkbox" value="Statutory Audit" style="display:none;"> Statutory Audit</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Internal Audit & Risk" style="display:none;"> Internal Audit &amp; Risk</label>
+                                        <label class="p2-chip"><input type="checkbox" value="SOX / IFC Controls" style="display:none;"> SOX / IFC Controls</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Forensics & Compliance" style="display:none;"> Forensics &amp; Compliance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Direct Tax" style="display:none;"> Direct Tax</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Indirect Tax (GST)" style="display:none;"> Indirect Tax (GST)</label>
+                                        <label class="p2-chip"><input type="checkbox" value="International Taxation" style="display:none;"> International Taxation</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Transfer Pricing" style="display:none;"> Transfer Pricing</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Accounting & Reporting" style="display:none;"> Accounting &amp; Reporting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="FP&A" style="display:none;"> FP&amp;A</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Controllership" style="display:none;"> Controllership</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Treasury" style="display:none;"> Treasury</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Costing & Plant Finance" style="display:none;"> Costing &amp; Plant Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Supply Chain Finance" style="display:none;"> Supply Chain Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Commercial Finance" style="display:none;"> Commercial Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Business Finance" style="display:none;"> Business Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Consulting" style="display:none;"> Consulting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Due Diligence" style="display:none;"> Due Diligence</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Valuation" style="display:none;"> Valuation</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Deals & Transaction Advisory" style="display:none;"> Deals &amp; Transaction Advisory</label>
+                                        <label class="p2-chip"><input type="checkbox" value="M&A Advisory" style="display:none;"> M&amp;A Advisory</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Project Finance" style="display:none;"> Project Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Banking & Credit" style="display:none;"> Banking &amp; Credit</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Investment Banking" style="display:none;"> Investment Banking</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Equity Research" style="display:none;"> Equity Research</label>
+                                        <label class="p2-chip"><input type="checkbox" value="ESG" style="display:none;"> ESG</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Financial Reporting (IND AS / IFRS)" style="display:none;"> Financial Reporting (IND AS / IFRS)</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Data Analytics" style="display:none;"> Data Analytics</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Other" style="display:none;"> Other</label>
+                                    </div>
+                                    <input type="hidden" id="emp_domain" name="emp_domain">
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="emp_current_salary">Current CTC (INR)</label>
+                                    <input type="text" id="emp_current_salary" name="emp_current_salary" placeholder="e.g., 12,00,000">
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="emp_job_profile">Job Profile</label>
+                                    <div class="p2-rich-textarea">
+                                        <div class="p2-rich-textarea-toolbar">
+                                            <button type="button" style="background:none; border:1px solid #EAB308; color:#B45309; border-radius:12px; padding:0.15rem 0.5rem; font-size:0.75rem; font-weight:600; cursor:pointer;"><i class="fas fa-crown"></i> Improve with AI</button>
+                                        </div>
+                                        <textarea id="emp_job_profile" name="emp_job_profile" rows="5" placeholder="e.g. Assisted in identifying and implementing cost-saving strategies..." style="border:none; border-radius:0; box-shadow:none; width:100%; border-bottom:1px solid transparent;"></textarea>
+                                    </div>
+                                </div>
+                                <div class="p2-form-row p2-full-width" data-portal="fresher_experienced,semi_experienced">
+                                    <label for="emp_team_handling">Team Handling</label>
+                                    <select id="emp_team_handling" name="emp_team_handling">
+                                        <option value="">Select</option>
+                                        <option>Individual Contributor</option>
+                                        <option>Managed 1â€“5 People</option>
+                                        <option>Managed 6â€“20 People</option>
+                                        <option>Managed 20+ People</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="p2-inline-actions">
+                                <button type="button" class="p2-inline-cancel" data-close="sec-experience-form">Cancel</button>
+                                <button type="button" class="p2-btn-save">Save</button>
+                            </div>
+                        </div>
+
+                        <!-- Previous Employment Form -->
+                        <div class="p2-card-form collapsed" id="sec-prev-experience-form">
+                            <div class="p2-inline-form-title">Previous Employment</div>
+                            <div class="p2-form-grid">
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="prev_emp_company_name">Company Name</label>
+                                    <input type="text" id="prev_emp_company_name" name="prev_emp_company_name" placeholder="e.g. Tata Consultancy Services">
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="prev_emp_company_type">Employer Type</label>
+                                    <select id="prev_emp_company_type" name="prev_emp_company_type">
+                                        <option value="">Select Type</option>
+                                        <option>Big 4</option><option>Big 6</option><option>Big 10</option>
+                                        <option>CA Firm</option><option>MNC</option><option>Listed Company</option>
+                                        <option>Startup</option><option>GCC / SSC</option><option>PSU</option><option>Industry</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="prev_emp_industry">Industry</label>
+                                    <select id="prev_emp_industry" name="prev_emp_industry">
+                                        <option value="">Select Industry</option>
+                                        <option>Banking</option><option>Financial Services</option><option>FMCG</option>
+                                        <option>Manufacturing</option><option>Pharma</option><option>IT</option>
+                                        <option>E-Commerce</option><option>Automobile</option><option>Infrastructure</option>
+                                        <option>Real Estate</option><option>Consulting</option><option>Retail</option>
+                                        <option>Energy</option><option>Telecom</option><option>Logistics</option><option>Others</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="prev_emp_job_title">Designation</label>
+                                    <input type="text" id="prev_emp_job_title" name="prev_emp_job_title" placeholder="e.g. Senior Analyst">
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label>Previous Domain(s)</label>
+                                    <div class="p2-chip-group" id="prev_emp_domain_chips" style="flex-wrap:wrap; gap:0.4rem;">
+                                        <label class="p2-chip"><input type="checkbox" value="Statutory Audit" style="display:none;"> Statutory Audit</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Internal Audit & Risk" style="display:none;"> Internal Audit &amp; Risk</label>
+                                        <label class="p2-chip"><input type="checkbox" value="SOX / IFC Controls" style="display:none;"> SOX / IFC Controls</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Forensics & Compliance" style="display:none;"> Forensics &amp; Compliance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Direct Tax" style="display:none;"> Direct Tax</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Indirect Tax (GST)" style="display:none;"> Indirect Tax (GST)</label>
+                                        <label class="p2-chip"><input type="checkbox" value="International Taxation" style="display:none;"> International Taxation</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Transfer Pricing" style="display:none;"> Transfer Pricing</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Accounting & Reporting" style="display:none;"> Accounting &amp; Reporting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="FP&A" style="display:none;"> FP&amp;A</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Controllership" style="display:none;"> Controllership</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Treasury" style="display:none;"> Treasury</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Costing & Plant Finance" style="display:none;"> Costing &amp; Plant Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Supply Chain Finance" style="display:none;"> Supply Chain Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Commercial Finance" style="display:none;"> Commercial Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Business Finance" style="display:none;"> Business Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Consulting" style="display:none;"> Consulting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Due Diligence" style="display:none;"> Due Diligence</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Valuation" style="display:none;"> Valuation</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Deals & Transaction Advisory" style="display:none;"> Deals &amp; Transaction Advisory</label>
+                                        <label class="p2-chip"><input type="checkbox" value="M&A Advisory" style="display:none;"> M&amp;A Advisory</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Project Finance" style="display:none;"> Project Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Banking & Credit" style="display:none;"> Banking &amp; Credit</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Investment Banking" style="display:none;"> Investment Banking</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Equity Research" style="display:none;"> Equity Research</label>
+                                        <label class="p2-chip"><input type="checkbox" value="ESG" style="display:none;"> ESG</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Financial Reporting (IND AS / IFRS)" style="display:none;"> Financial Reporting (IND AS / IFRS)</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Data Analytics" style="display:none;"> Data Analytics</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Other" style="display:none;"> Other</label>
+                                    </div>
+                                    <input type="hidden" id="prev_emp_domain" name="prev_emp_domain">
+                                </div>
+                                <div class="p2-form-row">
+                                    <label>Start Date</label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <select id="prev_emp_start_year" name="prev_emp_start_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="prev_emp_start_month" name="prev_emp_start_month" style="flex:1;">
+                                            <option value="">Month</option>
+                                            <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="p2-form-row">
+                                    <label>End Date</label>
+                                    <div style="display:flex; gap:0.5rem;">
+                                        <select id="prev_emp_end_year" name="prev_emp_end_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
+                                        <select id="prev_emp_end_month" name="prev_emp_end_month" style="flex:1;">
+                                            <option value="">Month</option>
+                                            <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p2-inline-actions">
+                                <button type="button" class="p2-inline-cancel" data-close="sec-prev-experience-form">Cancel</button>
+                                <button type="button" class="p2-btn-save">Save</button>
                             </div>
                         </div>
                     </section>
@@ -1023,6 +1347,24 @@
                                     </select>
                                 </div>
                                 <div class="p2-form-row p2-full-width">
+                                    <label for="project_domain">Project Domain</label>
+                                    <select id="project_domain" name="project_domain">
+                                        <option value="">Select Domain</option>
+                                        <option>Statutory Audit</option><option>Internal Audit &amp; Risk</option><option>SOX / IFC Controls</option><option>Forensics &amp; Compliance</option>
+                                        <option>Direct Tax</option><option>Indirect Tax (GST)</option><option>International Taxation</option><option>Transfer Pricing</option>
+                                        <option>Accounting &amp; Reporting</option><option>FP&amp;A</option><option>Controllership</option><option>Treasury</option>
+                                        <option>Costing &amp; Plant Finance</option><option>Supply Chain Finance</option><option>Commercial Finance</option><option>Business Finance</option>
+                                        <option>Consulting</option><option>Due Diligence</option><option>Valuation</option><option>Deals &amp; Transaction Advisory</option>
+                                        <option>M&amp;A Advisory</option><option>Project Finance</option><option>Banking &amp; Credit</option>
+                                        <option>Investment Banking</option><option>Equity Research</option><option>ESG</option><option>Financial Reporting (IND AS / IFRS)</option>
+                                        <option>Data Analytics</option><option>Overall Exposure</option><option>Other</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="project_skills">Skills Used</label>
+                                    <input type="text" id="project_skills" name="project_skills" placeholder="e.g., SAP, Excel, Python, IND AS">
+                                </div>
+                                <div class="p2-form-row p2-full-width">
                                     <label for="project_details">Details of project *</label>
                                     <textarea id="project_details" name="project_details" rows="6" maxlength="1000" placeholder="Type here..."></textarea>
                                     <div class="p2-char-count"><span id="project-details-left">1000</span> character(s) left</div>
@@ -1056,15 +1398,11 @@
                         <div class="p2-career-display p2-display-clickable" id="career-display" data-toggle="sec-career-form" role="button" tabindex="0" aria-label="Edit career profile">
                             <div class="p2-career-grid">
                                 <div class="p2-career-item"><div class="p2-career-label">Default portal</div><div class="p2-career-value" id="career-job-portal">Add default portal</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Current industry</div><div class="p2-career-value" id="career-current-industry">Add current industry</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Department</div><div class="p2-career-value" id="career-department">Add department</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Role category</div><div class="p2-career-value" id="career-role-category">Add role category</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Job role</div><div class="p2-career-value" id="career-job-role">Add job role</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Desired job type</div><div class="p2-career-value" id="career-desired-job-type">Add desired job type</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Desired employment type</div><div class="p2-career-value" id="career-desired-employment-type">Add desired employment type</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Preferred shift</div><div class="p2-career-value" id="career-preferred-shift">Add preferred shift</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Preferred work location</div><div class="p2-career-value" id="career-preferred-location">Add preferred location</div></div>
-                                <div class="p2-career-item"><div class="p2-career-label">Expected salary</div><div class="p2-career-value" id="career-expected-salary">Add expected salary</div></div>
+                                <div class="p2-career-item"><div class="p2-career-label">Preferred locations</div><div class="p2-career-value" id="career-preferred-location">Add preferred locations</div></div>
+                                <div class="p2-career-item"><div class="p2-career-label">Relocation</div><div class="p2-career-value" id="career-relocation">Add relocation preference</div></div>
+                                <div class="p2-career-item"><div class="p2-career-label">Preferred domains</div><div class="p2-career-value" id="career-preferred-domains">Add preferred domains</div></div>
+                                <div class="p2-career-item"><div class="p2-career-label">Preferred industries</div><div class="p2-career-value" id="career-preferred-industries">Add preferred industries</div></div>
+                                <div class="p2-career-item"><div class="p2-career-label">Preferred company type</div><div class="p2-career-value" id="career-preferred-company-type">Add company type</div></div>
                             </div>
                         </div>
                         <div class="p2-card-form collapsed" id="sec-career-form">
@@ -1085,72 +1423,72 @@
                                     <label for="articleship_completion_date">Articleship 1 Year Completion Date</label>
                                     <input type="date" id="articleship_completion_date" name="articleship_completion_date">
                                 </div>
+                        </div>
+                    </section>
+                    <!-- ===== AVAILABILITY & COMPENSATION ===== -->
+                    <section class="p2-card" id="sec-availability">
+                        <div class="p2-card-header">
+                            <h2>Availability &amp; Compensation</h2>
+                            <a href="javascript:void(0)" class="p2-card-action" data-toggle="sec-availability-form">Edit</a>
+                        </div>
+                        <div class="p2-personal-grid p2-display-clickable" data-toggle="sec-availability-form">
+                            <div class="p2-personal-item"><div class="p2-personal-label">Employment Status</div><div class="p2-personal-value" id="disp-emp-status">—</div></div>
+                            <div class="p2-personal-item"><div class="p2-personal-label">Notice Period</div><div class="p2-personal-value" id="disp-notice">—</div></div>
+                            <div class="p2-personal-item" id="disp-joining-wrap"><div class="p2-personal-label">Joining Date</div><div class="p2-personal-value" id="disp-joining">—</div></div>
+                            <div class="p2-personal-item"><div class="p2-personal-label">Current CTC</div><div class="p2-personal-value" id="disp-curr-ctc">—</div></div>
+                            <div class="p2-personal-item"><div class="p2-personal-label">Expected CTC / Stipend</div><div class="p2-personal-value" id="disp-exp-ctc">—</div></div>
+                        </div>
+                        <div class="p2-card-form collapsed" id="sec-availability-form">
+                            <div class="p2-form-grid">
                                 <div class="p2-form-row">
-                                    <label for="current_industry">Current Industry</label>
-                                    <input type="text" id="current_industry" name="current_industry" placeholder="e.g., Internet, Banking, Consulting">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="department">Department</label>
-                                    <input type="text" id="department" name="department" placeholder="e.g., Finance & Accounting">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="role_category">Role Category</label>
-                                    <input type="text" id="role_category" name="role_category" placeholder="e.g., Finance">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="job_role">Job Role</label>
-                                    <input type="text" id="job_role" name="job_role" placeholder="e.g., Analyst - FP&A">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="desired_job_type">Desired Job Type</label>
-                                    <select id="desired_job_type" name="desired_job_type">
-                                        <option value="">Select job type</option>
-                                        <option>Permanent</option>
-                                        <option>Contractual</option>
-                                        <option>Internship</option>
-                                        <option>Freelance</option>
+                                    <label for="current_employment_status">Employment Status</label>
+                                    <select id="current_employment_status" name="current_employment_status">
+                                        <option value="">Select Status</option>
+                                        <option value="Employed">Currently Employed</option>
+                                        <option value="Unemployed">Currently Unemployed / Actively looking</option>
+                                        <option value="Serving Notice">Serving Notice Period</option>
                                     </select>
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="desired_employment_type">Desired Employment Type</label>
-                                    <select id="desired_employment_type" name="desired_employment_type">
-                                        <option value="">Select employment type</option>
-                                        <option>Full-time</option>
-                                        <option>Part-time</option>
-                                        <option>Hybrid</option>
-                                        <option>Remote</option>
-                                        <option>On-site</option>
+                                    <label for="notice_period">Notice Period</label>
+                                    <select id="notice_period" name="notice_period">
+                                        <option value="">Select Notice Period</option>
+                                        <option value="Immediate Joiner">Immediate Joiner</option>
+                                        <option value="15 Days or less">15 Days or less</option>
+                                        <option value="1 Month">1 Month</option>
+                                        <option value="2 Months">2 Months</option>
+                                        <option value="3 Months">3 Months</option>
+                                        <option value="More than 3 Months">More than 3 Months</option>
                                     </select>
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="preferred_shift">Preferred Shift</label>
-                                    <select id="preferred_shift" name="preferred_shift">
-                                        <option value="">Select preferred shift</option>
-                                        <option>Day shift</option>
-                                        <option>Night shift</option>
-                                        <option>Rotational shift</option>
-                                        <option>Flexible shift</option>
-                                    </select>
+                                    <label for="earliest_joining_date">Earliest Joining Date</label>
+                                    <input type="date" id="earliest_joining_date" name="earliest_joining_date">
                                 </div>
-                                <div class="p2-form-row">
-                                    <label for="current_location">Current Location</label>
-                                    <input type="text" id="current_location" name="current_location" placeholder="e.g., Mumbai">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="preferred_locations">Preferred Locations</label>
-                                    <input type="text" id="preferred_locations" name="preferred_locations" placeholder="e.g., Bangalore, Gurgaon, Pune">
-                                </div>
-                                <div class="p2-form-row" id="current_ctc_group" style="display:none;">
+                                <div class="p2-form-row" data-portal="fresher_experienced,semi_experienced">
                                     <label for="current_ctc">Current CTC (INR)</label>
                                     <input type="text" id="current_ctc" name="current_ctc" placeholder="e.g., 12,00,000">
                                 </div>
-                                <div class="p2-form-row">
-                                    <label for="expected_salary">Expected Salary (INR)</label>
+                                <div class="p2-form-row" data-portal="fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
+                                    <label for="expected_salary">Expected CTC (INR)</label>
                                     <input type="text" id="expected_salary" name="expected_salary" placeholder="e.g., 15,00,000">
                                 </div>
+                                <div class="p2-form-row" data-portal="industrial,articleship">
+                                    <label for="expected_stipend_min">Expected Stipend — Min (₹/month)</label>
+                                    <input type="text" id="expected_stipend_min" name="expected_stipend_min" placeholder="e.g., 15000">
+                                </div>
+                                <div class="p2-form-row" data-portal="industrial,articleship">
+                                    <label for="expected_stipend_max">Expected Stipend — Max (₹/month)</label>
+                                    <input type="text" id="expected_stipend_max" name="expected_stipend_max" placeholder="e.g., 25000">
+                                </div>
+                            </div>
+                            <div class="p2-inline-actions">
+                                <button type="button" class="p2-inline-cancel" data-close="sec-availability-form">Cancel</button>
+                                <button type="button" class="p2-btn-save">Save</button>
                             </div>
                         </div>
                     </section>
+
                     <!-- ===== PERSONAL DETAILS ===== -->
                     <section class="p2-card" id="sec-personal">
                         <div class="p2-card-header">
@@ -1165,32 +1503,12 @@
                                     <div class="p2-personal-value" id="pd-gender">Add gender</div>
                                 </div>
                                 <div class="p2-personal-item">
-                                    <div class="p2-personal-label">Marital status</div>
-                                    <div class="p2-personal-value" id="pd-marital">Add marital status</div>
-                                </div>
-                                <div class="p2-personal-item">
-                                    <div class="p2-personal-label">Work permit</div>
-                                    <div class="p2-personal-value" id="pd-work-permit">Add Work permit</div>
-                                </div>
-                                <div class="p2-personal-item">
                                     <div class="p2-personal-label">Date of birth</div>
                                     <div class="p2-personal-value" id="pd-dob">Add date of birth</div>
                                 </div>
                                 <div class="p2-personal-item">
                                     <div class="p2-personal-label">Current City</div>
                                     <div class="p2-personal-value" id="pd-current-city">Add city</div>
-                                </div>
-                                <div class="p2-personal-item">
-                                    <div class="p2-personal-label">Category</div>
-                                    <div class="p2-personal-value" id="pd-category">Add Category</div>
-                                </div>
-                                <div class="p2-personal-item">
-                                    <div class="p2-personal-label">Notice Period</div>
-                                    <div class="p2-personal-value" id="pd-notice-period">Add notice period</div>
-                                </div>
-                                <div class="p2-personal-item" id="pd-joining-date-wrap">
-                                    <div class="p2-personal-label">Earliest Joining Date</div>
-                                    <div class="p2-personal-value" id="pd-joining-date">Add joining date</div>
                                 </div>
                             </div>
                             <div class="p2-personal-sep"></div>
@@ -1242,36 +1560,8 @@
                                     </select>
                                 </div>
                                 <div class="p2-form-row">
-                                    <label for="marital_status">Marital Status</label>
-                                    <select id="marital_status" name="marital_status">
-                                        <option value="">Select status</option>
-                                        <option>Single / unmarried</option>
-                                        <option>Married</option>
-                                        <option>Other</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row">
                                     <label for="date_of_birth">Date of Birth</label>
                                     <input type="date" id="date_of_birth" name="date_of_birth">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="category">Category</label>
-                                    <input type="text" id="category" name="category" placeholder="e.g., General">
-                                </div>
-                                <div class="p2-form-row">
-                                    <label for="notice_period">Notice Period</label>
-                                    <select id="notice_period" name="notice_period">
-                                        <option value="">Select Notice Period</option>
-                                        <option value="Immediate Joiner">Immediate Joiner</option>
-                                        <option value="15 Days or less">15 Days or less</option>
-                                        <option value="1 Month">1 Month</option>
-                                        <option value="2 Months">2 Months</option>
-                                        <option value="3 Months">3 Months</option>
-                                    </select>
-                                </div>
-                                <div class="p2-form-row" id="earliest_joining_date_group" style="display:none;">
-                                    <label for="earliest_joining_date">Earliest Joining Date</label>
-                                    <input type="date" id="earliest_joining_date" name="earliest_joining_date">
                                 </div>
                                 <div class="p2-form-row">
                                     <label for="current_city">Current City</label>
@@ -1292,6 +1582,67 @@
                                         <button type="button" class="p2-add-link" id="addLanguageRowBtn"><i class="fas fa-plus-circle"></i> Add language</button>
                                     </div>
                                     <input type="hidden" id="languages_json" name="languages_json">
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===== ACHIEVEMENTS ===== -->
+                    <section class="p2-card" id="sec-achievements">
+                        <div class="p2-card-header">
+                            <h2>Achievements <span class="p2-boost-optional">Optional</span></h2>
+                            <a href="javascript:void(0)" class="p2-card-action" data-toggle="sec-achievements-form">Edit</a>
+                        </div>
+                        <p class="p2-card-sub">Stand out by highlighting your academic and professional achievements</p>
+                        <div class="p2-card-form collapsed" id="sec-achievements-form">
+                            <div class="p2-form-grid">
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="achievement_air">AIR / Academic Rank</label>
+                                    <input type="text" id="achievement_air" name="achievement_air" placeholder="e.g., CA Final AIR 42, State Rank 1 in CA Inter">
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="achievement_scholarships">Scholarships</label>
+                                    <input type="text" id="achievement_scholarships" name="achievement_scholarships" placeholder="e.g., Merit Scholarship from ICAI">
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="achievement_awards">Awards & Recognition</label>
+                                    <input type="text" id="achievement_awards" name="achievement_awards" placeholder="e.g., Best Employee Q2 2024, Dean's List">
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="achievement_leadership">Leadership Positions</label>
+                                    <input type="text" id="achievement_leadership" name="achievement_leadership" placeholder="e.g., President â€“ College Finance Club">
+                                </div>
+                                <div class="p2-form-row p2-full-width" data-portal="fresher_fresher,articleship,industrial">
+                                    <label for="achievement_positions">Positions of Responsibility</label>
+                                    <textarea id="achievement_positions" name="achievement_positions" rows="2" placeholder="e.g., Class Representative, NSS Volunteerâ€¦"></textarea>
+                                </div>
+                                <div class="p2-form-row p2-full-width" data-portal="fresher_experienced,semi_experienced">
+                                    <label for="achievement_key">Key Achievements (Work)</label>
+                                    <textarea id="achievement_key" name="achievement_key" rows="2" placeholder="e.g., Reduced month-end close by 3 days, saved â‚¹2Cr through tax optimisationâ€¦"></textarea>
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="achievement_extracurricular">Extracurricular Activities</label>
+                                    <input type="text" id="achievement_extracurricular" name="achievement_extracurricular" placeholder="e.g., State-level chess player, TEDx volunteer">
+                                </div>
+                            </div>
+                            <div class="p2-inline-actions">
+                                <button type="button" class="p2-inline-cancel" data-close="sec-achievements-form">Cancel</button>
+                                <button type="button" class="p2-btn-save">Save</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- ===== PROFILE VISIBILITY ===== -->
+                    <section class="p2-card" id="sec-visibility">
+                        <div class="p2-card-header">
+                            <h2>Profile Visibility</h2>
+                        </div>
+                        <p class="p2-card-sub">Control whether recruiters can find and view your profile</p>
+                        <div class="p2-form-grid" style="padding:0 1.25rem 1.25rem;">
+                            <div class="p2-form-row p2-full-width">
+                                <div class="p2-radio-group">
+                                    <label><input type="radio" name="profile_visibility" value="Visible to Recruiters" checked> Visible to Recruiters</label>
+                                    <label><input type="radio" name="profile_visibility" value="Hidden"> Hidden</label>
                                 </div>
                             </div>
                         </div>
@@ -1323,7 +1674,7 @@
                                 <i class="fas fa-calendar-check"></i>
                                 <div>
                                     <div class="p2-privacy-label">Consent Date</div>
-                                    <div class="p2-privacy-value" id="privacyConsentDate">—</div>
+                                    <div class="p2-privacy-value" id="privacyConsentDate">â€”</div>
                                 </div>
                             </div>
                         </div>
@@ -1346,7 +1697,7 @@
             <h3>Consent Required</h3>
             <p>To use our platform and apply for jobs, you must allow us to share your CV with registered employers. Please tick the consent checkbox to continue.</p>
             <button class="consent-action-btn consent-accept-btn" id="consentModalAcceptBtn">
-                <i class="fas fa-check-circle"></i>&nbsp; I Understand — Take Me to Consent
+                <i class="fas fa-check-circle"></i>&nbsp; I Understand â€” Take Me to Consent
             </button>
         </div>
     </div>
