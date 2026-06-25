@@ -307,6 +307,14 @@ const WZ_QUESTION_CONFIGS = {
         options: ['FP&A', 'Business Finance', 'Treasury', 'Controllership', 'Financial Reporting', 'Internal Audit', 'Risk Management', 'Direct Tax', 'GST', 'Transfer Pricing', 'Valuation', 'Due Diligence', 'Investment Banking', 'Equity Research', 'Consulting', 'Data Analytics / Power BI', 'ESG & Sustainability', 'Other'],
         profileKey: 'preferred_domains', optional: true
     },
+    preferred_domains_industrial: {
+        id: 'preferred_domains', icon: '🎯',
+        question: 'Which domains are you interested in?',
+        hint: 'Select all that apply',
+        type: 'chips',
+        options: ['FP&A', 'Business Finance', 'Supply Chain Finance', 'Treasury', 'Controllership', 'Financial Reporting', 'Banking & Credit', 'Internal Audit', 'Forensics', 'Direct Tax', 'GST', 'Transfer Pricing', 'Valuation', 'Due Diligence', 'Investment Banking', 'Equity Research', 'Consulting', 'Strategy', 'Deal Advisory', 'Mergers & Acquisition', 'Costing', 'MIS Reporting', 'Other'],
+        profileKey: 'preferred_domains', optional: true
+    },
     preferred_firm_type: {
         id: 'preferred_firm_type', icon: '🏢',
         question: 'What type of CA firm are you looking for?',
@@ -321,6 +329,14 @@ const WZ_QUESTION_CONFIGS = {
         hint: 'Select all that apply',
         type: 'chips',
         options: ['Banking', 'Financial Services', 'FMCG', 'Manufacturing', 'Pharma', 'IT', 'E-Commerce', 'Automobile', 'Infrastructure', 'Real Estate', 'Consulting', 'Retail', 'Energy', 'Telecom', 'Logistics', 'Others'],
+        profileKey: 'preferred_industries', optional: true
+    },
+    preferred_industries_industrial: {
+        id: 'preferred_industries', icon: '🏭',
+        question: 'Which industries would you like to work in?',
+        hint: 'Select all that apply',
+        type: 'chips',
+        options: ['Banking', 'Financial Services', 'Insurance', 'Consulting', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Media & Entertainment', 'Other'],
         profileKey: 'preferred_industries', optional: true
     },
     notice_period: {
@@ -349,7 +365,7 @@ const WZ_QUESTION_CONFIGS = {
 };
 
 const WZ_ROLE_QUESTIONS = {
-    'industrial':          ['preferred_locations', 'relocation', 'joining_date', 'expected_stipend', 'preferred_domains', 'preferred_industries'],
+    'industrial':          ['preferred_locations', 'joining_date', 'expected_stipend', 'preferred_domains_industrial', 'preferred_industries_industrial'],
     'articleship':         ['preferred_locations', 'relocation', 'joining_date', 'expected_stipend', 'preferred_domains', 'preferred_firm_type', 'preferred_industries'],
     'fresher_fresher':     ['preferred_locations', 'relocation', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries'],
     'fresher_experienced': ['preferred_locations', 'relocation', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'notice_period'],
@@ -359,7 +375,7 @@ const WZ_ROLE_QUESTIONS = {
 
 // Master list of fields to check after AI extraction — portal-specific
 function getWzMissingFields(portalType) {
-    const f = (id, label, icon, type, optional) => ({ id, label, icon, type, inputName: id, profileKey: id, required: !optional, optional: !!optional });
+    const f = (id, label, icon, type, optional, placeholder, hint) => ({ id, label, icon, type, inputName: id, profileKey: id, required: !optional, optional: !!optional, placeholder: placeholder || '', hint: hint || '' });
 
     const common = [
         f('name',            'Full Name',        '👤', 'text'),
@@ -373,10 +389,10 @@ function getWzMissingFields(portalType) {
     const caInterFields = [
         f('ca_inter_clear_year',          'CA Inter Cleared Year',              '📚', 'text',   true),
         f('ca_inter_score',               'CA Inter Score %',                   '📊', 'text',   true),
-        f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true),
+        f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'e.g. Write 1 if First Attempt'),
         f('articleship_firm_name',        'Articleship Firm',                   '🏢', 'text',   true),
         f('articleship_domain',           'Articleship Domain(s)',              '📂', 'text',   true),
-        f('articleship_client_industries','Client Industries (comma-separated)','🏭', 'text',   true),
+        f('articleship_client_industries','Client Industries','🏭', 'text', true, 'e.g., Banking, FMCG, Manufacturing, IT, Pharma', "If you've worked with clients across multiple industries during your articleship, list them separated by commas (e.g., Banking, Manufacturing, FMCG). This helps recruiters understand your industry exposure."),
         f('additional_qualifications',    'Additional Qualifications (e.g., CFA, CPA)','🎓','text',true),
     ];
 
@@ -386,10 +402,10 @@ function getWzMissingFields(portalType) {
         f('ca_final_attempts',            'CA Final Attempts',                  '🔄', 'number', true),
         f('ca_inter_clear_year',          'CA Inter Cleared Year',              '📚', 'text',   true),
         f('ca_inter_score',               'CA Inter Score %',                   '📊', 'text',   true),
-        f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true),
+        f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'e.g. Write 1 if First Attempt'),
         f('articleship_firm_name',        'Articleship Firm',                   '🏢', 'text',   true),
         f('articleship_domain',           'Articleship Domain(s)',              '📂', 'text',   true),
-        f('articleship_client_industries','Client Industries (comma-separated)','🏭', 'text',   true),
+        f('articleship_client_industries','Client Industries','🏭', 'text', true, 'e.g., Banking, FMCG, Manufacturing, IT, Pharma', "If you've worked with clients across multiple industries during your articleship, list them separated by commas (e.g., Banking, Manufacturing, FMCG). This helps recruiters understand your industry exposure."),
         f('additional_qualifications',    'Additional Qualifications (e.g., CFA, CPA)','🎓','text',true),
     ];
 
@@ -642,28 +658,23 @@ const WZ = (() => {
     function buildType() {
         return `<div class="wz-inner">
             <div class="wz-q-icon">🎓</div>
-            <h2 class="wz-q-title">What are you looking for?</h2>
-            <p class="wz-q-hint">This helps us show you the right jobs and ask the right questions.</p>
+            <h2 class="wz-q-title">Choose Your Career Path</h2>
             <div class="wz-type-grid" id="wz-type-grid">
                 <div class="wz-type-card" data-type="industrial">
                     <div class="wz-type-icon">🏭</div>
-                    <div class="wz-type-label">Industrial Training</div>
-                    <div class="wz-type-sub">CA Final — 6-month IT</div>
+                    <div class="wz-type-label">CA Industrial Training</div>
                 </div>
                 <div class="wz-type-card" data-type="articleship">
                     <div class="wz-type-icon">📜</div>
                     <div class="wz-type-label">Articleship</div>
-                    <div class="wz-type-sub">3-year CA articleship</div>
                 </div>
                 <div class="wz-type-card" data-type="fresher">
                     <div class="wz-type-icon">🎓</div>
-                    <div class="wz-type-label">CA Fresher</div>
-                    <div class="wz-type-sub">Qualified CA</div>
+                    <div class="wz-type-label">CA Jobs</div>
                 </div>
                 <div class="wz-type-card" data-type="semi">
                     <div class="wz-type-icon">📊</div>
-                    <div class="wz-type-label">Semi-Qualified CA</div>
-                    <div class="wz-type-sub">CA Inter / pursuing</div>
+                    <div class="wz-type-label">Semi Qualified CA Opportunities</div>
                 </div>
             </div>
         </div>`;
@@ -728,7 +739,7 @@ const WZ = (() => {
                 <span class="wz-not-sure-link" id="wz-not-sure">Not sure / Skip</span>
             </div>`;
         }
-        const skipBtn = cfg.optional ? `<span class="wz-not-sure-link" style="display:inline-block;margin-top:14px;" id="wz-q-skip">Skip this question</span>` : '';
+        const skipBtn = (cfg.optional && cfg.type !== 'salary') ? `<span class="wz-not-sure-link" style="display:inline-block;margin-top:14px;" id="wz-q-skip">Skip this question</span>` : '';
         return `<div class="wz-inner">
             <div class="wz-q-icon">${cfg.icon}</div>
             <h2 class="wz-q-title">${escHtml(cfg.question)}</h2>
@@ -748,7 +759,8 @@ const WZ = (() => {
         if (field.type === 'textarea') {
             inputHtml = `<textarea class="wz-textarea" id="wz-missing-input" rows="4" placeholder="Write a brief professional summary...">${escHtml(saved)}</textarea>`;
         } else {
-            inputHtml = `<input class="wz-input" type="${field.type}" id="wz-missing-input" placeholder="${field.type === 'url' ? 'https://linkedin.com/in/yourprofile' : ''}" value="${escHtml(saved)}">`;
+            const ph = field.placeholder || (field.type === 'url' ? 'https://linkedin.com/in/yourprofile' : '');
+            inputHtml = `<input class="wz-input" type="${field.type}" id="wz-missing-input" placeholder="${escHtml(ph)}" value="${escHtml(saved)}">`;
         }
         const aiTag = st.aiStatus === 'loading'
             ? `<div class="wz-ai-banner"><div class="wz-ai-dot"></div>Resume is being auto-filled in the background…</div>`
@@ -758,6 +770,7 @@ const WZ = (() => {
             ${aiTag}
             <div class="wz-q-icon">${field.icon}</div>
             <h2 class="wz-q-title">${escHtml(field.label)}</h2>
+            ${field.hint ? `<p class="wz-q-hint">${escHtml(field.hint)}</p>` : ''}
             <div class="wz-input-wrap" style="margin-top:0.5rem;">${inputHtml}</div>
             ${skipHtml}
         </div>`;
