@@ -9,8 +9,10 @@
            CORE VARIABLES & RESET
            --------------------------------------------------------- */
         :root {
-            --blue-header: #4f81bc;
-            --header-bg: #e6eff7;
+            --blue-header: var(--accent-color, #4f81bc);
+            --header-bg: var(--sub-header-bg, #e6eff7);
+            --table-header-bg: var(--sub-header-bg, #D9D9D9);
+            --sub-bg-grey: var(--sub-bg, #E7E6E6);
             --border-color: #000000;
             --text-black: #000000;
             --bg-white: #ffffff;
@@ -110,7 +112,7 @@
 
         /* SECTION HEADERS */
         .section-header {
-            background-color: #2F557F;
+            background-color: var(--blue-header, #2F557F);
             color: white;
             font-weight: bold;
             padding: calc(4px * var(--content-scale)) calc(8px * var(--content-scale));
@@ -134,7 +136,7 @@
         }
         
         th {
-            background-color: #D9D9D9;
+            background-color: var(--table-header-bg);
             font-weight: bold;
         }
 
@@ -154,7 +156,7 @@
         .job-title-row {
             display: flex;
             justify-content: space-between;
-            background-color: #D9D9D9;
+            background-color: var(--table-header-bg);
             padding: calc(4px * var(--content-scale));
             font-weight: bold;
             border-bottom: 1px solid black;
@@ -167,7 +169,7 @@
         }
 
         .details-label {
-            background-color: #E7E6E6;
+            background-color: var(--sub-bg-grey);
             font-weight: bold;
             padding: calc(5px * var(--content-scale));
             border-right: 1px solid black;
@@ -212,7 +214,7 @@
             width: 140px;
             min-width: 140px;
             font-weight: bold;
-            background-color: #E7E6E6;
+            background-color: var(--sub-bg-grey);
             text-align: center !important;
             vertical-align: middle !important;
             line-height: 1.2;

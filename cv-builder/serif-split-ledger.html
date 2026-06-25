@@ -506,8 +506,10 @@
             });
 
             const rowsByGroup = new Map();
+            const visibleRowsList = [];
             rows.forEach(row => {
-                if (row.style.display === 'none' || getComputedStyle(row).display === 'none') return;
+                if (row.style.display === 'none') return;
+                visibleRowsList.push(row);
                 const group = row.getAttribute('data-serif-group') || '';
                 if (!rowsByGroup.has(group)) rowsByGroup.set(group, []);
                 rowsByGroup.get(group).push(row);
@@ -516,8 +518,11 @@
             rowsByGroup.forEach(groupRows => {
                 if (!groupRows.length) return;
                 groupRows[0].classList.add('serif-group-start');
-                groupRows[groupRows.length - 1].classList.add('serif-group-last');
             });
+
+            if (visibleRowsList.length > 0) {
+                visibleRowsList[visibleRowsList.length - 1].classList.add('serif-group-last');
+            }
         }
 
         let serifSplitFrame = null;

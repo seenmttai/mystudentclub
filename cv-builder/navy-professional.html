@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -426,6 +426,13 @@
             content: "\2022\00A0\00A0";
         }
 
+        .skills-table .val li p,
+        .skills-table .val li div {
+            display: inline !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
         /* Certifications & custom-section bullet lists — val-bullet style matching temp5 */
         .sortable-section[data-section-id="certifications"] ul,
         ul.bullet-list {
@@ -617,7 +624,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="lbl" style="vertical-align:top;">Interests and Hobbies<d>
+                            <td class="lbl" style="vertical-align:top;">Interests and Hobbies</td>
                             <td class="val">
                                 <ul data-list="interests"></ul>
                             </td>
@@ -733,14 +740,6 @@
         function shrinkContentToFit() {
             renderContactNavy();
             renderCertsBold();
-            // Keep the combined Skills/Achievements block directly below Certifications,
-            // regardless of the saved section order.
-            var _page = document.getElementById('cv-page');
-            var _certs = _page && _page.querySelector('.sortable-section[data-section-id="certifications"]');
-            var _skills = _page && _page.querySelector('.sortable-section[data-section-id="skills"]');
-            if (_certs && _skills && _certs.parentElement === _skills.parentElement) {
-                _certs.after(_skills);
-            }
             // Re-apply fixed layout to skills-table — stabilizeSectionLayouts() overrides it with auto
             var st = document.querySelector('.skills-table');
             if (st) st.style.setProperty('table-layout', 'fixed', 'important');

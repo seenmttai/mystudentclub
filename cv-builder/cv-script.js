@@ -62,7 +62,8 @@
             themeAccent: "",
             customSections: [],
             sectionOrder: [...BASE_SECTION_ORDER],
-            tableSettings: getDefaultTableSettings()
+            tableSettings: getDefaultTableSettings(),
+            sectionLabels: {}
         };
         
         const DEMO_PREVIEW_DATA = {
@@ -1192,6 +1193,7 @@
                 };
             });
             ensureTableSettingsShape();
+            ensureSectionLabelsShape();
         }
 
         function ensureTableSettingsShape() {
@@ -1226,6 +1228,114 @@
         function getEducationTableSettings() {
             ensureCvDataShape();
             return cvData.tableSettings.education.columns;
+        }
+
+        // --- Section Label Defaults ---
+        const SECTION_LABEL_DEFAULTS = {
+            certifications: 'Certifications',
+            interests: 'Interests',
+            skills: 'Skills',
+            achievements: 'Highlights',
+            leadership: 'Responsibility'
+        };
+
+        function ensureSectionLabelsShape() {
+            if (!cvData.sectionLabels || typeof cvData.sectionLabels !== 'object') {
+                cvData.sectionLabels = {};
+            }
+            Object.keys(SECTION_LABEL_DEFAULTS).forEach(key => {
+                if (!cvData.sectionLabels[key] || typeof cvData.sectionLabels[key] !== 'object') {
+                    cvData.sectionLabels[key] = { text: SECTION_LABEL_DEFAULTS[key], visible: true };
+                }
+                if (typeof cvData.sectionLabels[key].text !== 'string') {
+                    cvData.sectionLabels[key].text = SECTION_LABEL_DEFAULTS[key];
+                }
+                if (typeof cvData.sectionLabels[key].visible !== 'boolean') {
+                    cvData.sectionLabels[key].visible = true;
+                }
+            });
+        }
+
+        function updateSectionLabel(sectionId, field, value) {
+            ensureSectionLabelsShape();
+            // Auto-initialize label entry for custom sections (not pre-seeded by ensureSectionLabelsShape)
+            if (!cvData.sectionLabels[sectionId]) {
+                const customSection = (cvData.customSections || []).find(s => s.id === sectionId);
+                if (customSection) {
+                    cvData.sectionLabels[sectionId] = { text: customSection.title || '', visible: true };
+                } else {
+                    return;
+                }
+            }
+            if (field === 'visible') {
+                cvData.sectionLabels[sectionId].visible = !!value;
+            } else if (field === 'text') {
+                cvData.sectionLabels[sectionId].text = String(value || '');
+            }
+            postToFrame();
+            // Sync the panel UI for this section
+            const panelId = `section-label-panel-${sectionId}`;
+            const panel = document.getElementById(panelId);
+            if (panel && panel.classList.contains('open')) {
+                // Refresh the input values without closing
+                const textInput = panel.querySelector('.section-label-text-input');
+                const checkbox = panel.querySelector('.section-label-visible-check');
+                const config = cvData.sectionLabels[sectionId];
+                if (textInput && field !== 'text') textInput.value = config.text;
+                if (checkbox && field !== 'visible') checkbox.checked = config.visible;
+            }
+        }
+
+        function toggleSectionLabelPanel(sectionId, event) {
+            if (event) { event.preventDefault(); event.stopPropagation(); }
+            const panelId = `section-label-panel-${sectionId}`;
+            const panel = document.getElementById(panelId);
+            if (!panel) return;
+            const shouldOpen = !panel.classList.contains('open');
+            panel.classList.toggle('open', shouldOpen);
+            panel.setAttribute('aria-hidden', shouldOpen ? 'false' : 'true');
+            if (shouldOpen) renderSectionLabelPanel(sectionId);
+        }
+
+        function renderSectionLabelPanel(sectionId) {
+            ensureSectionLabelsShape();
+            const panelId = `section-label-panel-${sectionId}`;
+            const panel = document.getElementById(panelId);
+            if (!panel) return;
+            const customSectionDefault = (cvData.customSections || []).find(s => s.id === sectionId);
+            const config = cvData.sectionLabels[sectionId] || { text: SECTION_LABEL_DEFAULTS[sectionId] || (customSectionDefault ? customSectionDefault.title || '' : ''), visible: true };
+            panel.innerHTML = `
+                <div class="table-format-panel-head">
+                    <div>
+                        <div class="table-format-title">Section Label</div>
+                        <div class="table-format-subtitle">Rename or hide the grey left-label column.</div>
+                    </div>
+                    <button class="btn-mini" type="button" onclick="resetSectionLabel('${sectionId}')">Reset</button>
+                </div>
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <input type="text" class="form-control section-label-text-input" style="flex:1; min-width:120px;"
+                        value="${(config.text || '').replace(/"/g, '&quot;')}"
+                        placeholder="e.g. Certifications"
+                        oninput="updateSectionLabel('${sectionId}', 'text', this.value)">
+                    <label style="display:flex; align-items:center; gap:6px; font-size:13px; font-weight:600; white-space:nowrap; cursor:pointer;">
+                        <input type="checkbox" class="section-label-visible-check" ${config.visible ? 'checked' : ''}
+                            onchange="updateSectionLabel('${sectionId}', 'visible', this.checked)">
+                        Show label
+                    </label>
+                </div>
+            `;
+        }
+
+        function resetSectionLabel(sectionId) {
+            ensureSectionLabelsShape();
+            if (cvData.sectionLabels[sectionId]) {
+                // For custom sections, reset text to the section's own title
+                const customSection = (cvData.customSections || []).find(s => s.id === sectionId);
+                cvData.sectionLabels[sectionId].text = SECTION_LABEL_DEFAULTS[sectionId] || (customSection ? customSection.title || '' : '');
+                cvData.sectionLabels[sectionId].visible = true;
+            }
+            renderSectionLabelPanel(sectionId);
+            postToFrame();
         }
 
         function getSelectedTemplateFile() {
@@ -1407,6 +1517,12 @@
             document.getElementById('inp-email').value = cvData.personal.email || '';
             document.getElementById('inp-linkedin').value = cvData.personal.linkedin || '';
             document.getElementById('inp-location').value = cvData.personal.location || '';
+            const h1El = document.getElementById('inp-highlight1');
+            const h2El = document.getElementById('inp-highlight2');
+            const h3El = document.getElementById('inp-highlight3');
+            if (h1El) h1El.value = cvData.personal.highlight1 || '';
+            if (h2El) h2El.value = cvData.personal.highlight2 || '';
+            if (h3El) h3El.value = cvData.personal.highlight3 || '';
             setSummaryEditorValue(cvData.summary || '');
             setSkillsEditorValue(cvData.skills || '');
 
@@ -1426,6 +1542,7 @@
             renderSectionOrderEditor();
             renderEducationFormatControls();
             initSectionInlineRichEditors();
+            updateTemplateSpecificPanels();
         }
 
         function renderEducationFormatControls() {
@@ -1739,6 +1856,9 @@
             cvData.personal.email = document.getElementById('inp-email').value;
             cvData.personal.linkedin = document.getElementById('inp-linkedin').value;
             cvData.personal.location = document.getElementById('inp-location').value;
+            cvData.personal.highlight1 = document.getElementById('inp-highlight1')?.value || '';
+            cvData.personal.highlight2 = document.getElementById('inp-highlight2')?.value || '';
+            cvData.personal.highlight3 = document.getElementById('inp-highlight3')?.value || '';
             cvData.personal.contact = '';
             if (summaryQuill) {
                 syncSummaryFromEditor();
@@ -2027,8 +2147,13 @@
                 details.open = true;
                 details.setAttribute('data-section', section.id || '');
                 details.innerHTML = `
-                    <summary>${section.title || 'Custom Section'}</summary>
+                    <summary>
+                        <span>${section.title || 'Custom Section'}</span>
+                        <button class="chip" type="button" onclick="toggleSectionLabelPanel('${section.id}', event)"
+                            style="font-size:10px; padding:4px 8px;">Label</button>
+                    </summary>
                     <div class="section-body">
+                        <div id="section-label-panel-${section.id}" class="table-format-panel-wrap" aria-hidden="true"></div>
                         <div class="form-group">
                             <label>Section Title</label>
                             <input type="text" class="form-control" value="${section.title || ''}"
@@ -2588,10 +2713,17 @@
             updateUndoRedoControls();
         }
 
+        function updateTemplateSpecificPanels() {
+            const file = getSelectedTemplateFile();
+            const panel = document.getElementById('highlights-panel');
+            if (panel) panel.style.display = file === 'monochrome-ledger.html' ? '' : 'none';
+        }
+
         function changeTemplate(options = {}) {
             const select = document.getElementById('template-select');
             const frame = document.getElementById('cv-frame');
             const skipHistory = !!options.skipHistory;
+            updateTemplateSpecificPanels();
 
             document.querySelector('.loading-overlay').classList.add('active');
             frame.src = select.value;

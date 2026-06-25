@@ -50,6 +50,9 @@ function renderCV(data) {
     setHTML('[data-field="name"]', data.personal?.name);
     setHTML('[data-field="tagline"]', data.personal?.tagline);
     setHTML('[data-field="contact"]', data.personal?.contact);
+    setHTML('[data-field="highlight1"]', data.personal?.highlight1 || 'Top Academic Performer');
+    setHTML('[data-field="highlight2"]', data.personal?.highlight2 || 'Article Trainee Experience');
+    setHTML('[data-field="highlight3"]', data.personal?.highlight3 || 'Leadership & Awards');
     setHTML('[data-field="phone"]', data.personal?.phone);
     setHTML('[data-field="email"]', data.personal?.email);
     setHTML('[data-field="linkedin"]', data.personal?.linkedin);
@@ -191,7 +194,21 @@ function renderCV(data) {
         const roleEl = block.querySelector('[data-field="role"]');
         if (roleEl) roleEl.style.display = stripTags(item.role || '').trim() ? '' : 'none';
         const categoryEl = block.querySelector('[data-field="category"]');
-        if (categoryEl) categoryEl.style.display = stripTags(item.category || '').trim() ? '' : 'none';
+        if (categoryEl) {
+            const categoryEmpty = !stripTags(item.category || '').trim();
+            categoryEl.style.display = categoryEmpty ? 'none' : '';
+            // When category is hidden, let the bullets column fill the full row width
+            const bulletsCell = categoryEl.nextElementSibling;
+            if (bulletsCell && /^TD$/i.test(bulletsCell.tagName || '')) {
+                if (categoryEmpty) {
+                    bulletsCell.setAttribute('colspan', '2');
+                    bulletsCell.style.setProperty('width', '100%', 'important');
+                } else {
+                    bulletsCell.removeAttribute('colspan');
+                    bulletsCell.style.removeProperty('width');
+                }
+            }
+        }
         // Intro belongs to the header, so only the primary entry shows it; subsections hide it.
         const introEl = block.querySelector('[data-field="intro"]');
         if (introEl) introEl.style.display = (stripTags(item.intro || '').trim() && !item.titleMergedWithPrevious) ? '' : 'none';
@@ -284,6 +301,9 @@ function renderCV(data) {
     enforceExperienceOnlyLeftLabels();
     stabilizeSectionLayouts();
     applyTableFormatSettings(data.tableSettings || {});
+
+    // 12. Configurable section labels (rename / hide the grey left-label cells)
+    applySectionLabels(data.sectionLabels || {});
 
     // 12. Recalculate Layout (Scale/Shrink)
     // These functions exist in the templates script block
@@ -502,6 +522,168 @@ function stabilizeSectionLayouts() {
 function applyTableFormatSettings(tableSettings) {
     applyEducationTableFormat(tableSettings?.education?.columns || {});
 }
+
+/**
+ * Apply user-configurable label text and visibility to the grey left-label cells
+ * in Certifications, Interests, Skills, Achievements, Leadership sections.
+ *
+ * Works for ALL templates by detecting label cells heuristically (2-cell table rows
+ * where one cell has no data binding and the adjacent one does).
+ *
+ * Classic Blue special-case: normalizeClassicBlueDetailSections() moves the visible
+ * rows into a .classic-blue-detail-group table tagged with data-detail-source, and
+ * hides the original sections. We must apply label changes to those rows too.
+ */
+function applySectionLabels(sectionLabels) {
+    const LABEL_SECTIONS = ['certifications', 'interests', 'skills', 'achievements', 'leadership'];
+
+    // Helper: apply text + visibility to a single 2-cell table/div row
+    function applyToRow(row, customText, visible) {
+        let cells;
+        if (row.tagName === 'TR') {
+            cells = Array.from(row.children).filter(el => /^(TD|TH)$/i.test(el.tagName));
+        } else {
+            // For div-based rows (like Serif Split)
+            cells = Array.from(row.children).filter(el => /^(DIV|TD|TH)$/i.test(el.tagName) && !el.classList.contains('template'));
+        }
+        if (cells.length !== 2) return;
+
+        const [first, second] = cells;
+        const firstHasBinding = !!(first.querySelector('[data-list], [data-field]'));
+        const secondHasBinding = !!(second.querySelector('[data-list], [data-field]'));
+
+        let labelCell, contentCell;
+        if (!firstHasBinding && secondHasBinding) {
+            labelCell = first;
+            contentCell = second;
+        } else if (firstHasBinding && !secondHasBinding) {
+            labelCell = second;
+            contentCell = first;
+        } else {
+            return; // Both or neither have bindings — skip
+        }
+
+        // Apply custom text if provided
+        if (customText !== null && customText !== '') {
+            const currentText = (labelCell.textContent || '').trim();
+            if (currentText !== customText) {
+                labelCell.textContent = customText;
+            }
+        }
+
+        // Toggle label visibility
+        if (!visible) {
+            labelCell.style.display = 'none';
+            contentCell.setAttribute('colspan', '2');
+            contentCell.style.setProperty('width', '100%', 'important');
+        } else {
+            labelCell.style.display = '';
+            contentCell.removeAttribute('colspan');
+            contentCell.style.removeProperty('width');
+        }
+    }
+
+    // Classic Blue groups certifications/interests/skills/achievements/leadership
+    // into a single table with rows tagged data-detail-source="sectionId".
+    // These are the VISIBLE rows; the original sections are hidden.
+    const classicBlueGroup = document.querySelector('.sortable-section.classic-blue-detail-group');
+
+    // Combine built-in sections + any custom section IDs that have label config
+    const customSectionIds = Object.keys(sectionLabels).filter(id => !LABEL_SECTIONS.includes(id));
+
+    // --- Process built-in label sections ---
+    LABEL_SECTIONS.forEach(sectionId => {
+        const config = sectionLabels[sectionId];
+        const customText = config?.text || null;
+        const visible = config?.visible !== false; // default visible
+
+        // --- Pass 1: Classic Blue detail group rows (visible in Classic Blue) ---
+        if (classicBlueGroup) {
+            const detailRow = classicBlueGroup.querySelector(`tr[data-detail-source="${sectionId}"]`);
+            if (detailRow) applyToRow(detailRow, customText, visible);
+        }
+
+        // --- Pass 2: All other templates — look inside the sortable-section wrapper ---
+        // Special case: combined table where sections are inside a single table row rather than separate sortable-sections
+        const combinedBoundEl = document.querySelector(`table[data-preserve-label-columns] [data-field="${sectionId}"], table[data-preserve-label-columns] [data-list="${sectionId}"]`);
+        if (combinedBoundEl) {
+            const combinedRow = combinedBoundEl.closest('tr');
+            if (combinedRow) {
+                applyToRow(combinedRow, customText, visible);
+                return;
+            }
+        }
+
+        const section = document.querySelector(`.sortable-section[data-section-id="${sectionId}"]`);
+        if (!section) return;
+        // Skip the section if it is hidden (Classic Blue hides originals after grouping)
+        if (section.style.display === 'none') return;
+
+        const rows = section.querySelectorAll('tr');
+        if (rows.length > 0) {
+            rows.forEach(row => applyToRow(row, customText, visible));
+        } else {
+            // If there are no tr elements, the section container itself acts as the 2-column row (e.g. Serif Split)
+            applyToRow(section, customText, visible);
+        }
+    });
+
+    // --- Process custom section labels ---
+    const LABEL_SELECTORS = ['.category-label', '.skills-col-label', '.work-label', '.col-left', '.details-label', '.section-label', '.category'];
+
+    customSectionIds.forEach(sectionId => {
+        const config = sectionLabels[sectionId];
+        if (!config) return;
+        const customText = config.text || null;
+        const visible = config.visible !== false;
+
+        // Classic Blue: custom section rows are keyed as "custom-{id}" in the detail group
+        if (classicBlueGroup) {
+            const detailRow = classicBlueGroup.querySelector(`tr[data-detail-source="custom-${sectionId}"]`);
+            if (detailRow) applyToRow(detailRow, customText, visible);
+        }
+
+        // Other templates: find the wrapper by data-custom-section-root attribute
+        const wrapper = document.querySelector(`[data-custom-section-root="${sectionId}"]`);
+        if (!wrapper || wrapper.style.display === 'none') return;
+
+        // Find label element using the same selectors as setSectionBodyLabel
+        let labelEl = null;
+        for (const sel of LABEL_SELECTORS) {
+            labelEl = wrapper.querySelector(sel);
+            if (labelEl) break;
+        }
+        if (!labelEl) return;
+
+        // Apply custom text
+        if (customText !== null && customText !== '') {
+            labelEl.textContent = customText;
+        }
+
+        // Toggle visibility
+        if (!visible) {
+            labelEl.style.display = 'none';
+            // Try to expand the sibling content cell
+            const contentEl = labelEl.nextElementSibling || labelEl.parentElement?.querySelector('[data-list]')?.closest('td, .section-content');
+            if (contentEl) {
+                if (contentEl.tagName === 'TD' || contentEl.tagName === 'TH') {
+                    contentEl.setAttribute('colspan', '2');
+                    contentEl.style.setProperty('width', '100%', 'important');
+                }
+            }
+        } else {
+            labelEl.style.display = '';
+            const contentEl = labelEl.nextElementSibling;
+            if (contentEl) {
+                contentEl.removeAttribute('colspan');
+                contentEl.style.removeProperty('width');
+            }
+        }
+    });
+}
+
+
+
 
 function applyEducationTableFormat(columns) {
     const section = document.querySelector('.sortable-section[data-section-id="education"]');

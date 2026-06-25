@@ -6,9 +6,9 @@
     <title>CV - Template 14</title>
     <style>
         :root {
-            --bg-dark: #000000;
-            --bg-light-grey: #f2f2f2;
-            --border-color: #000000;
+            --bg-dark: var(--accent-color, #000000);
+            --bg-light-grey: var(--sub-bg, #f2f2f2);
+            --border-color: var(--blue-deep, #000000);
             --text-black: #000000;
             --bg-white: #ffffff;
             --font-main: 'Georgia', 'Times New Roman', serif;
@@ -89,7 +89,6 @@
             font-size: calc(44px * var(--content-scale));
             font-weight: 900;
             line-height: 1.1;
-            text-transform: uppercase;
         }
 
         .header-subtitle {
@@ -120,7 +119,7 @@
         }
 
         .highlight-box {
-            background-color: var(--bg-dark);
+            background-color: var(--accent-color, var(--bg-dark));
             color: #ffffff;
             flex: 1;
             text-align: center;
@@ -292,9 +291,9 @@
             </div>
 
             <div class="highlights">
-                <div class="highlight-box">Top Academic Performer</div>
-                <div class="highlight-box">Article Trainee Experience</div>
-                <div class="highlight-box">Leadership & Awards</div>
+                <div class="highlight-box" data-field="highlight1">Top Academic Performer</div>
+                <div class="highlight-box" data-field="highlight2">Article Trainee Experience</div>
+                <div class="highlight-box" data-field="highlight3">Leadership & Awards</div>
             </div>
 
             <div class="section sortable-section" data-section-id="summary">
