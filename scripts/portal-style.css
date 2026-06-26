@@ -765,6 +765,23 @@ body {
   display: block;
 }
 
+.multi-select-group-header {
+  padding: 0.4rem 1rem 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted, #888);
+  pointer-events: none;
+  border-top: 1px solid var(--border-color, #e5e7eb);
+  margin-top: 0.25rem;
+}
+
+.multi-select-group-header:first-child {
+  border-top: none;
+  margin-top: 0;
+}
+
 .multi-select-option {
   padding: 0.6rem 1rem;
   cursor: pointer;

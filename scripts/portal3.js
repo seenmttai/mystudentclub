@@ -788,6 +788,12 @@ function closeModal() {
     document.body.style.overflow = 'auto';
 }
 
+function flattenCategories(source) {
+    if (!source || source.length === 0) return [];
+    if (typeof source[0] === 'string') return source;
+    return source.flatMap(g => g.items || []);
+}
+
 function updateFilterCache() {
     cachedSortedLocations = allLocations.length > 0
         ? [...allLocations].sort((a, b) => b.length - a.length)
@@ -795,8 +801,9 @@ function updateFilterCache() {
 
 
     const currentCategories = allCategories[currentTable] || [];
-    cachedSortedCategories = currentCategories.length > 0
-        ? [...currentCategories].sort((a, b) => b.length - a.length)
+    const flatCategories = flattenCategories(currentCategories);
+    cachedSortedCategories = flatCategories.length > 0
+        ? [...flatCategories].sort((a, b) => b.length - a.length)
         : [];
 
 }
@@ -1178,32 +1185,51 @@ function setupMultiSelect(container) {
     const pillsContainerId = `${type}Pills${container.closest('.filter-modal-content') ? 'Mobile' : 'Desktop'}`;
     const pillsContainer = document.getElementById(pillsContainerId);
 
-    const renderOptions = (filter = '') => {
-        const source = type === 'location' ? allLocations : (allCategories[currentTable] || []);
-        const stateKey = type === 'location' ? 'locations' : 'categories';
+    const addOptionEl = (item, stateKey) => {
+        const optionEl = document.createElement('div');
+        optionEl.className = 'multi-select-option';
+        optionEl.textContent = item;
+        optionEl.onclick = () => {
+            if (!state[stateKey].includes(item)) {
+                state[stateKey].push(item);
+                renderPills(pillsContainer, state[stateKey], stateKey);
+                if (container.closest('.filter-sidebar')) resetAndFetch();
+            }
+            input.value = '';
+            optionsContainer.classList.remove('show');
+        };
+        optionsContainer.appendChild(optionEl);
+    };
 
-        const filteredSource = source.filter(item =>
-            item.toLowerCase().includes(filter.toLowerCase()) &&
-            !state[stateKey].includes(item)
-        );
+    const renderOptions = (filter = '') => {
+        const rawSource = type === 'location' ? allLocations : (allCategories[currentTable] || []);
+        const stateKey = type === 'location' ? 'locations' : 'categories';
+        const isGrouped = rawSource.length > 0 && typeof rawSource[0] === 'object';
 
         optionsContainer.innerHTML = '';
 
-        filteredSource.forEach(item => {
-            const optionEl = document.createElement('div');
-            optionEl.className = 'multi-select-option';
-            optionEl.textContent = item;
-            optionEl.onclick = () => {
-                if (!state[stateKey].includes(item)) {
-                    state[stateKey].push(item);
-                    renderPills(pillsContainer, state[stateKey], stateKey);
-                    if (container.closest('.filter-sidebar')) resetAndFetch();
+        if (isGrouped) {
+            rawSource.forEach(group => {
+                const filteredItems = group.items.filter(item =>
+                    item.toLowerCase().includes(filter.toLowerCase()) &&
+                    !state[stateKey].includes(item)
+                );
+                if (filteredItems.length > 0) {
+                    const headerEl = document.createElement('div');
+                    headerEl.className = 'multi-select-group-header';
+                    headerEl.textContent = group.group;
+                    optionsContainer.appendChild(headerEl);
+                    filteredItems.forEach(item => addOptionEl(item, stateKey));
                 }
-                input.value = '';
-                optionsContainer.classList.remove('show');
-            };
-            optionsContainer.appendChild(optionEl);
-        });
+            });
+        } else {
+            rawSource
+                .filter(item =>
+                    item.toLowerCase().includes(filter.toLowerCase()) &&
+                    !state[stateKey].includes(item)
+                )
+                .forEach(item => addOptionEl(item, stateKey));
+        }
 
         if (filter.trim()) {
             const customOption = document.createElement('div');
@@ -1236,7 +1262,8 @@ function setupMultiSelect(container) {
             if (filterValue) {
                 const stateKey = type === 'location' ? 'locations' : 'categories';
                 // Check if it's an exact match from the source list
-                const source = type === 'location' ? allLocations : (allCategories[currentTable] || []);
+                const rawSrc = type === 'location' ? allLocations : (allCategories[currentTable] || []);
+                const source = flattenCategories(rawSrc);
                 const exactMatch = source.find(item => item.toLowerCase() === filterValue.toLowerCase());
 
                 if (exactMatch && !state[stateKey].includes(exactMatch)) {
