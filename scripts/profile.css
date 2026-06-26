@@ -1127,6 +1127,15 @@ body.p2-modal-open {
 .p2-skill-tag i:hover { color: var(--p2-text); }
 #skills_input { flex: 1; border: none !important; box-shadow:none !important; padding: 0.2rem; outline: none; min-width: 120px; font-size: 0.9rem; font-family: var(--p2-font); color: var(--p2-text); background:transparent; }
 
+/* Additional Qualifications detail blocks */
+#addl-qual-details { border-top: 1.5px solid var(--p2-border); margin-top: 0.85rem; padding-top: 0.85rem; }
+.qual-detail-block { padding-bottom: 0.75rem; margin-bottom: 0.25rem; border-bottom: 1px solid var(--p2-border); }
+.qual-detail-block:last-child { border-bottom: none; padding-bottom: 0; }
+.qual-detail-title { font-size: 0.88rem; font-weight: 700; color: var(--p2-text); margin-bottom: 0.6rem; }
+.qual-status-group { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 0.25rem; }
+.qual-status-opt { display: flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; font-weight: 400; color: var(--p2-text-secondary); cursor: pointer; margin-bottom: 0; }
+.qual-status-opt input[type="radio"] { cursor: pointer; accent-color: var(--p2-blue); }
+
 .p2-key-skill-tag { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.6rem; border: 1px solid var(--p2-border); border-radius: 12px; font-size: 0.82rem; font-weight: 500; background: #F3F4F6; color: var(--p2-text); }
 .p2-key-skill-tag i { cursor: pointer; color: var(--p2-text-muted); font-size: 0.8rem; }
 .p2-key-skill-tag i:hover { color: var(--p2-text); }

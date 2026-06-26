@@ -134,7 +134,7 @@ function showToast(message, type = 'info', duration = 6000) {
 
 const ENTRY_CLEAR_MAP = {
     'summary-entry-display': ['profile_summary', 'headline'],
-    'cert-entry-display': ['cert_name', 'cert_issuer', 'cert_year', 'cert_url'],
+    'cert-entry-display': ['cert_name', 'cert_issuer', 'cert_month', 'cert_year', 'cert_url'],
     'edu-final-display': ['ca_final_course', 'ca_final_attempts_type', 'ca_final_attempts', 'ca_final_clear_month', 'ca_final_clear_year', 'ca_final_app_month', 'ca_final_app_year', 'ca_final_air'],
     'edu-inter-display': ['ca_inter_course', 'ca_inter_attempts_type', 'ca_inter_attempts', 'ca_inter_clear_month', 'ca_inter_clear_year', 'ca_inter_air'],
     'edu-found-display': ['ca_found_course', 'ca_found_attempts_type', 'ca_found_attempts', 'ca_found_clear_month', 'ca_found_clear_year'],
@@ -375,7 +375,7 @@ const WZ_ROLE_QUESTIONS = {
 
 // Master list of fields to check after AI extraction — portal-specific
 function getWzMissingFields(portalType) {
-    const f = (id, label, icon, type, optional, placeholder, hint) => ({ id, label, icon, type, inputName: id, profileKey: id, required: !optional, optional: !!optional, placeholder: placeholder || '', hint: hint || '' });
+    const f = (id, label, icon, type, optional, placeholder, hint, options) => ({ id, label, icon, type, inputName: id, profileKey: id, required: !optional, optional: !!optional, placeholder: placeholder || '', hint: hint || '', options: options || null });
 
     const common = [
         f('name',            'Full Name',        '👤', 'text'),
@@ -390,10 +390,10 @@ function getWzMissingFields(portalType) {
         f('ca_inter_clear_year',          'CA Inter Cleared Year',              '📚', 'text',   true),
         f('ca_inter_score',               'CA Inter Score %',                   '📊', 'text',   true),
         f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'e.g. Write 1 if First Attempt'),
-        f('articleship_firm_name',        'Articleship Firm',                   '🏢', 'text',   true),
-        f('articleship_domain',           'Articleship Domain(s)',              '📂', 'text',   true),
+        f('articleship_firm_type', 'Articleship Firm Type', '🏢', 'radio', true, '', null, ['Big 4', 'Big 6', 'Big 10', 'Mid Size Firm', 'Small Size Firm']),
+        f('articleship_domain', 'Articleship Domain(s)', '📂', 'chips', true, '', 'Select all that apply', ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other']),
         f('articleship_client_industries','Client Industries','🏭', 'text', true, 'e.g., Banking, FMCG, Manufacturing, IT, Pharma', "If you've worked with clients across multiple industries during your articleship, list them separated by commas (e.g., Banking, Manufacturing, FMCG). This helps recruiters understand your industry exposure."),
-        f('additional_qualifications',    'Additional Qualifications (e.g., CFA, CPA)','🎓','text',true),
+        f('additional_qualifications', 'Additional Qualifications', '🎓', 'chips', true, '', 'Select all that apply', ['CFA', 'CS', 'CMA', 'ACCA', 'CPA', 'FRM', 'MBA', 'LLB', 'DISA', 'CISA', 'Financial Modelling', 'Other']),
     ];
 
     const caFinalFields = [
@@ -403,10 +403,10 @@ function getWzMissingFields(portalType) {
         f('ca_inter_clear_year',          'CA Inter Cleared Year',              '📚', 'text',   true),
         f('ca_inter_score',               'CA Inter Score %',                   '📊', 'text',   true),
         f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'e.g. Write 1 if First Attempt'),
-        f('articleship_firm_name',        'Articleship Firm',                   '🏢', 'text',   true),
-        f('articleship_domain',           'Articleship Domain(s)',              '📂', 'text',   true),
+        f('articleship_firm_type', 'Articleship Firm Type', '🏢', 'radio', true, '', null, ['Big 4', 'Big 6', 'Big 10', 'Mid Size Firm', 'Small Size Firm']),
+        f('articleship_domain', 'Articleship Domain(s)', '📂', 'chips', true, '', 'Select all that apply', ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other']),
         f('articleship_client_industries','Client Industries','🏭', 'text', true, 'e.g., Banking, FMCG, Manufacturing, IT, Pharma', "If you've worked with clients across multiple industries during your articleship, list them separated by commas (e.g., Banking, Manufacturing, FMCG). This helps recruiters understand your industry exposure."),
-        f('additional_qualifications',    'Additional Qualifications (e.g., CFA, CPA)','🎓','text',true),
+        f('additional_qualifications', 'Additional Qualifications', '🎓', 'chips', true, '', 'Select all that apply', ['CFA', 'CS', 'CMA', 'ACCA', 'CPA', 'FRM', 'MBA', 'LLB', 'DISA', 'CISA', 'Financial Modelling', 'Other']),
     ];
 
     const empFields = [
@@ -465,6 +465,185 @@ function restoreChipMultiSelect(containerSelector, hiddenId) {
     container.querySelectorAll('input[type="checkbox"]').forEach(chk => {
         if (vals.includes(chk.value)) { chk.checked = true; chk.closest('.p2-chip').classList.add('selected'); }
     });
+}
+
+// =================== ADDITIONAL QUALIFICATIONS DETAILS ===================
+const QUAL_STAGES = {
+    'CFA':                 ['Level I', 'Level II', 'Level III', 'Charterholder'],
+    'CS':                  ['CSEET', 'Executive', 'Professional', 'Qualified'],
+    'CMA':                 ['Foundation', 'Intermediate', 'Final', 'Qualified'],
+    'ACCA':                ['Applied Knowledge', 'Applied Skills', 'Strategic Professional', 'Affiliate', 'Member'],
+    'CPA':                 ['Exams in Progress', 'Passed Exams', 'Licensed CPA'],
+    'FRM':                 ['Part I', 'Part II', 'Certified FRM'],
+    'MBA':                 ['1st Year', 'Final Year', 'Completed'],
+    'LLB':                 ['1st Year', '2nd Year', '3rd Year', '4th Year', '5th Year', 'Completed'],
+    'DISA':                ['Pursuing', 'Qualified'],
+    'CISA':                ['Pursuing', 'Qualified'],
+    'Financial Modelling': ['Beginner', 'Intermediate', 'Advanced', 'Certified'],
+    'Other':               null
+};
+const QUAL_COMPLETED_STAGES = new Set([
+    'Charterholder', 'Qualified', 'Completed', 'Licensed CPA', 'Certified FRM',
+    'Member', 'Certified', 'Affiliate'
+]);
+const QUAL_MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function qualFutureYears() {
+    const y = new Date().getFullYear();
+    return Array.from({length: 8}, (_, i) => y + i);
+}
+function qualPastYears() {
+    const y = new Date().getFullYear();
+    return Array.from({length: 10}, (_, i) => y - i);
+}
+
+function renderQualDetails(restore) {
+    const container = document.getElementById('addl-qual-details');
+    const hidden = document.getElementById('additional_qualifications');
+    const detailsHidden = document.getElementById('additional_qual_details');
+    if (!container || !hidden) return;
+
+    if (!restore) saveQualDetails();
+
+    const selected = hidden.value ? hidden.value.split(',').map(s => s.trim()).filter(Boolean) : [];
+    let saved = {};
+    try { saved = JSON.parse((detailsHidden && detailsHidden.value) || '{}'); } catch(e) { saved = {}; }
+
+    if (selected.length === 0) {
+        container.style.display = 'none';
+        container.innerHTML = '';
+        return;
+    }
+
+    const futureYrs = qualFutureYears();
+    const pastYrs = qualPastYears();
+
+    container.style.display = 'block';
+    container.innerHTML = selected.map(qual => {
+        const stages = QUAL_STAGES[qual];
+        const data = saved[qual] || {};
+        const currentStage = data.stage || '';
+        const autoStatus = QUAL_COMPLETED_STAGES.has(currentStage) ? 'qualified' : 'pursuing';
+        const currentStatus = data.status || autoStatus;
+        const isPursuing = currentStatus === 'pursuing';
+        const radioName = 'qual-status-' + qual.replace(/[\s/]+/g, '-');
+
+        let stageHtml;
+        if (qual === 'Other') {
+            stageHtml = `
+                <div class="p2-form-row">
+                    <label>Qualification Name</label>
+                    <input type="text" class="qual-custom-name" data-qual="Other" value="${(data.customName || '').replace(/"/g,'&quot;')}" placeholder="e.g., NISM, CFP">
+                </div>
+                <div class="p2-form-row">
+                    <label>Current Stage</label>
+                    <input type="text" class="qual-stage-text" data-qual="Other" value="${currentStage.replace(/"/g,'&quot;')}" placeholder="e.g., Pursuing, Year 2">
+                </div>`;
+        } else {
+            const opts = stages.map(s => `<option value="${s}"${currentStage === s ? ' selected' : ''}>${s}</option>`).join('');
+            stageHtml = `
+                <div class="p2-form-row">
+                    <label>Current Stage</label>
+                    <select class="qual-stage-select" data-qual="${qual}">
+                        <option value="">Select Stage</option>
+                        ${opts}
+                    </select>
+                </div>`;
+        }
+
+        const monthOpts = QUAL_MONTHS.map(m => `<option${data.expectedMonth === m ? ' selected' : ''}>${m}</option>`).join('');
+        const futureOpts = futureYrs.map(y => `<option${String(data.expectedYear) === String(y) ? ' selected' : ''}>${y}</option>`).join('');
+        const pastOpts = pastYrs.map(y => `<option${String(data.yearQualified) === String(y) ? ' selected' : ''}>${y}</option>`).join('');
+
+        return `<div class="qual-detail-block" data-qual="${qual}">
+            <div class="qual-detail-title">${qual}</div>
+            <div class="p2-form-grid">
+                ${stageHtml}
+                <div class="p2-form-row">
+                    <label>Current Status</label>
+                    <div class="qual-status-group">
+                        <label class="qual-status-opt"><input type="radio" name="${radioName}" value="pursuing"${isPursuing ? ' checked' : ''}> Pursuing</label>
+                        <label class="qual-status-opt"><input type="radio" name="${radioName}" value="qualified"${!isPursuing ? ' checked' : ''}> Qualified / Completed</label>
+                    </div>
+                </div>
+                <div class="p2-form-row qual-pursuing-row"${isPursuing ? '' : ' style="display:none;"'}>
+                    <label>Expected Completion</label>
+                    <div style="display:flex;gap:0.5rem;">
+                        <select class="qual-exp-month" data-qual="${qual}" style="flex:1;">
+                            <option value="">Month</option>${monthOpts}
+                        </select>
+                        <select class="qual-exp-year" data-qual="${qual}" style="flex:1;">
+                            <option value="">Year</option>${futureOpts}
+                        </select>
+                    </div>
+                </div>
+                <div class="p2-form-row qual-qualified-row"${!isPursuing ? '' : ' style="display:none;"'}>
+                    <label>Year Qualified</label>
+                    <select class="qual-year-qualified" data-qual="${qual}">
+                        <option value="">Select Year</option>${pastOpts}
+                    </select>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+
+    // Stage change → auto-map status
+    container.querySelectorAll('.qual-stage-select').forEach(sel => {
+        sel.addEventListener('change', () => {
+            const block = sel.closest('.qual-detail-block');
+            const isCompleted = QUAL_COMPLETED_STAGES.has(sel.value);
+            const status = isCompleted ? 'qualified' : 'pursuing';
+            block.querySelectorAll('input[type="radio"]').forEach(r => { r.checked = r.value === status; });
+            toggleQualStatusRows(block, status);
+            saveQualDetails();
+        });
+    });
+
+    // Status radio change
+    container.querySelectorAll('.qual-status-opt input[type="radio"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            if (!radio.checked) return;
+            toggleQualStatusRows(radio.closest('.qual-detail-block'), radio.value);
+            saveQualDetails();
+        });
+    });
+
+    // Any text/select change → persist
+    container.querySelectorAll('select, input[type="text"]').forEach(el => {
+        el.addEventListener('change', saveQualDetails);
+    });
+}
+
+function toggleQualStatusRows(block, status) {
+    const pursuing = block.querySelector('.qual-pursuing-row');
+    const qualified = block.querySelector('.qual-qualified-row');
+    if (pursuing) pursuing.style.display = status === 'pursuing' ? '' : 'none';
+    if (qualified) qualified.style.display = status === 'qualified' ? '' : 'none';
+}
+
+function saveQualDetails() {
+    const container = document.getElementById('addl-qual-details');
+    const detailsHidden = document.getElementById('additional_qual_details');
+    if (!container || !detailsHidden) return;
+    const result = {};
+    container.querySelectorAll('.qual-detail-block').forEach(block => {
+        const qual = block.dataset.qual;
+        const stageEl = block.querySelector('.qual-stage-select') || block.querySelector('.qual-stage-text');
+        const customNameEl = block.querySelector('.qual-custom-name');
+        const statusEl = block.querySelector('input[type="radio"]:checked');
+        const expMonth = block.querySelector('.qual-exp-month');
+        const expYear = block.querySelector('.qual-exp-year');
+        const yearQual = block.querySelector('.qual-year-qualified');
+        result[qual] = {
+            stage:         stageEl   ? stageEl.value   : '',
+            status:        statusEl  ? statusEl.value  : 'pursuing',
+            expectedMonth: expMonth  ? expMonth.value  : '',
+            expectedYear:  expYear   ? expYear.value   : '',
+            yearQualified: yearQual  ? yearQual.value  : ''
+        };
+        if (customNameEl) result[qual].customName = customNameEl.value;
+    });
+    detailsHidden.value = JSON.stringify(result);
 }
 
 // =================== WIZARD CONTROLLER ===================
@@ -565,17 +744,33 @@ const WZ = (() => {
 
     // ------ Progress ------
     function updateProgress() {
-        const phases = ['cv', 'type', 'subtype', 'prefs', 'missing', 'review', 'preview', 'publish'];
-        const idx = phases.indexOf(st.phase);
-        const total = phases.length;
-        const pct = Math.round(((idx + 1) / total) * 100);
+        // Fixed early phases: cv=1, type=2, subtype=3
+        // Then each pref question, then each missing question, then review, preview, publish
+        const FIXED_START = 3; // cv, type, subtype
+        const FIXED_END = 3;   // review, preview, publish
+        const nPrefs = st.prefQueue.length || 0;
+        const nMissing = st.missingQueue.length || 0;
+        const total = FIXED_START + nPrefs + nMissing + FIXED_END;
+
+        let current;
+        if (st.phase === 'cv')       current = 1;
+        else if (st.phase === 'type')    current = 2;
+        else if (st.phase === 'subtype') current = 3;
+        else if (st.phase === 'prefs')   current = FIXED_START + st.prefIdx + 1;
+        else if (st.phase === 'missing') current = FIXED_START + nPrefs + st.missingIdx + 1;
+        else if (st.phase === 'review')  current = FIXED_START + nPrefs + nMissing + 1;
+        else if (st.phase === 'preview') current = FIXED_START + nPrefs + nMissing + 2;
+        else if (st.phase === 'publish') current = total;
+        else current = 1;
+
+        const pct = Math.round((current / Math.max(total, 1)) * 100);
         if (dom.fill) dom.fill.style.width = pct + '%';
 
-        let label = 'Step ' + (idx + 1);
-        if (st.phase === 'prefs' && st.prefQueue.length) {
-            label = `Preferences ${st.prefIdx + 1}/${st.prefQueue.length}`;
-        } else if (st.phase === 'missing' && st.missingQueue.length) {
-            label = `Details ${st.missingIdx + 1}/${st.missingQueue.length}`;
+        let label = 'Step ' + current;
+        if (st.phase === 'prefs' && nPrefs) {
+            label = `Preferences ${st.prefIdx + 1}/${nPrefs}`;
+        } else if (st.phase === 'missing' && nMissing) {
+            label = `Details ${st.missingIdx + 1}/${nMissing}`;
         }
         if (dom.pill) dom.pill.textContent = label;
     }
@@ -767,6 +962,19 @@ const WZ = (() => {
         let inputHtml = '';
         if (field.type === 'textarea') {
             inputHtml = `<textarea class="wz-textarea" id="wz-missing-input" rows="4" placeholder="Write a brief professional summary...">${escHtml(saved)}</textarea>`;
+        } else if (field.type === 'radio' && field.options) {
+            inputHtml = `<div class="wz-radio-grid" id="wz-missing-radio">` +
+                field.options.map(o => {
+                    const sel = saved === o ? ' wz-selected' : '';
+                    return `<div class="wz-radio-card${sel}" data-val="${escHtml(o)}"><div class="wz-radio-dot"></div><div class="wz-radio-label">${escHtml(o)}</div></div>`;
+                }).join('') + `</div>`;
+        } else if (field.type === 'chips' && field.options) {
+            const savedArr = saved ? saved.split(',').map(s => s.trim()).filter(Boolean) : [];
+            inputHtml = `<div class="wz-chip-grid" id="wz-missing-chips">` +
+                field.options.map(o => {
+                    const sel = savedArr.includes(o) ? ' wz-selected' : '';
+                    return `<span class="wz-chip${sel}" data-val="${escHtml(o)}">${escHtml(o)}</span>`;
+                }).join('') + `</div>`;
         } else {
             const ph = field.placeholder || (field.type === 'url' ? 'https://linkedin.com/in/yourprofile' : '');
             inputHtml = `<input class="wz-input" type="${field.type}" id="wz-missing-input" placeholder="${escHtml(ph)}" value="${escHtml(saved)}">`;
@@ -1008,6 +1216,15 @@ const WZ = (() => {
     }
 
     function mountMissing(el) {
+        el.querySelectorAll('#wz-missing-radio .wz-radio-card').forEach(card => {
+            card.addEventListener('click', () => {
+                el.querySelectorAll('#wz-missing-radio .wz-radio-card').forEach(c => c.classList.remove('wz-selected'));
+                card.classList.add('wz-selected');
+            });
+        });
+        el.querySelectorAll('#wz-missing-chips .wz-chip').forEach(chip => {
+            chip.addEventListener('click', () => chip.classList.toggle('wz-selected'));
+        });
         const skipLink = el.querySelector('#wz-q-skip');
         if (skipLink) skipLink.addEventListener('click', () => advanceMissing(null));
     }
@@ -1187,11 +1404,19 @@ const WZ = (() => {
         const field = st.missingQueue[st.missingIdx];
         if (!field) return;
         const el = document.getElementById('wz-screen-' + st.currentSlot);
-        const inp = el.querySelector('#wz-missing-input');
-        const val = inp ? inp.value.trim() : '';
+        let val = '';
+        if (field.type === 'radio' && field.options) {
+            const sel = el.querySelector('#wz-missing-radio .wz-radio-card.wz-selected');
+            val = sel ? sel.getAttribute('data-val') : '';
+        } else if (field.type === 'chips' && field.options) {
+            const selected = Array.from(el.querySelectorAll('#wz-missing-chips .wz-chip.wz-selected')).map(c => c.getAttribute('data-val'));
+            val = selected.join(', ');
+        } else {
+            const inp = el.querySelector('#wz-missing-input');
+            val = inp ? inp.value.trim() : '';
+        }
         if (val) {
             st.answers['missing_' + field.id] = val;
-            // Also set in the main form for continuity
             const mainInput = document.getElementById(field.inputName) || profileForm.elements[field.inputName];
             if (mainInput) mainInput.value = val;
         }
@@ -1261,6 +1486,19 @@ const WZ = (() => {
             ]
         };
 
+        const achievementsGroup = {
+            label: 'Achievements',
+            fields: [
+                { key: 'achievement_air',             label: 'AIR / Academic Rank',         value: fv('achievement_air') },
+                { key: 'achievement_scholarships',    label: 'Scholarships',                value: fv('achievement_scholarships') },
+                { key: 'achievement_awards',          label: 'Awards & Recognition',        value: fv('achievement_awards') },
+                { key: 'achievement_leadership',      label: 'Leadership',                  value: fv('achievement_leadership') },
+                { key: 'achievement_positions',       label: 'Positions of Responsibility', value: fv('achievement_positions'), wide: true },
+                { key: 'achievement_key',             label: 'Key Achievements',            value: fv('achievement_key'), wide: true },
+                { key: 'achievement_extracurricular', label: 'Extracurricular',             value: fv('achievement_extracurricular'), wide: true },
+            ]
+        };
+
         if (type === 'industrial' || type === 'articleship') {
             return [
                 personalGroup,
@@ -1279,12 +1517,26 @@ const WZ = (() => {
                 {
                     label: 'Articleship',
                     fields: [
-                        { key: 'articleship_firm_type', label: 'Firm Type',  value: fv('articleship_firm_type') },
-                        { key: 'articleship_firm_name', label: 'Firm Name',  value: fv('articleship_firm_name') },
-                        { key: 'articleship_domain',    label: 'Domain',     value: fv('articleship_domain') },
+                        { key: 'articleship_firm_type',     label: 'Firm Type',              value: fv('articleship_firm_type') },
+                        { key: 'articleship_firm_name',     label: 'Firm Name',              value: fv('articleship_firm_name') },
+                        { key: 'articleship_start_month',   label: 'Start Month',            value: fv('articleship_start_month') },
+                        { key: 'articleship_start_year',    label: 'Start Year',             value: fv('articleship_start_year') },
+                        { key: 'articleship_domain',        label: 'Domain',                 value: fv('articleship_domain') },
                         { key: 'industrial_training_company', label: 'Industrial Training Company', value: fv('industrial_training_company'), wide: true },
+                        { key: 'articleship_responsibilities', label: 'Key Responsibilities', value: fv('articleship_responsibilities'), wide: true, textarea: true },
+                        { key: 'it_responsibilities',       label: 'IT Key Responsibilities', value: fv('it_responsibilities'), wide: true, textarea: true },
                     ]
                 },
+                {
+                    label: 'Certification',
+                    fields: [
+                        { key: 'cert_name',   label: 'Certification Name',   value: fv('cert_name'), wide: true },
+                        { key: 'cert_issuer', label: 'Issuing Organization',  value: fv('cert_issuer') },
+                        { key: 'cert_month',  label: 'Month',                 value: fv('cert_month') },
+                        { key: 'cert_year',   label: 'Year',                  value: fv('cert_year') },
+                    ]
+                },
+                achievementsGroup,
             ];
         }
 
@@ -1304,9 +1556,12 @@ const WZ = (() => {
                 {
                     label: 'Articleship',
                     fields: [
-                        { key: 'articleship_firm_type', label: 'Firm Type', value: fv('articleship_firm_type') },
-                        { key: 'articleship_firm_name', label: 'Firm Name', value: fv('articleship_firm_name') },
-                        { key: 'articleship_domain',    label: 'Domain',    value: fv('articleship_domain') },
+                        { key: 'articleship_firm_type',       label: 'Firm Type',              value: fv('articleship_firm_type') },
+                        { key: 'articleship_firm_name',       label: 'Firm Name',              value: fv('articleship_firm_name') },
+                        { key: 'articleship_start_month',     label: 'Start Month',            value: fv('articleship_start_month') },
+                        { key: 'articleship_start_year',      label: 'Start Year',             value: fv('articleship_start_year') },
+                        { key: 'articleship_domain',          label: 'Domain',                 value: fv('articleship_domain') },
+                        { key: 'articleship_responsibilities', label: 'Key Responsibilities',   value: fv('articleship_responsibilities'), wide: true, textarea: true },
                     ]
                 },
                 {
@@ -1318,6 +1573,16 @@ const WZ = (() => {
                         { key: 'emp_job_profile',  label: 'Profile',    value: fv('emp_job_profile'), wide: true, textarea: true },
                     ]
                 },
+                {
+                    label: 'Certification',
+                    fields: [
+                        { key: 'cert_name',   label: 'Certification Name',   value: fv('cert_name'), wide: true },
+                        { key: 'cert_issuer', label: 'Issuing Organization',  value: fv('cert_issuer') },
+                        { key: 'cert_month',  label: 'Month',                 value: fv('cert_month') },
+                        { key: 'cert_year',   label: 'Year',                  value: fv('cert_year') },
+                    ]
+                },
+                achievementsGroup,
             ];
         }
 
@@ -1340,10 +1605,13 @@ const WZ = (() => {
             {
                 label: 'Articleship',
                 fields: [
-                    { key: 'articleship_firm_type', label: 'Firm Type', value: fv('articleship_firm_type') },
-                    { key: 'articleship_firm_name', label: 'Firm Name', value: fv('articleship_firm_name') },
-                    { key: 'articleship_domain',    label: 'Domain',    value: fv('articleship_domain') },
+                    { key: 'articleship_firm_type',       label: 'Firm Type',              value: fv('articleship_firm_type') },
+                    { key: 'articleship_firm_name',       label: 'Firm Name',              value: fv('articleship_firm_name') },
+                    { key: 'articleship_start_month',     label: 'Start Month',            value: fv('articleship_start_month') },
+                    { key: 'articleship_start_year',      label: 'Start Year',             value: fv('articleship_start_year') },
+                    { key: 'articleship_domain',          label: 'Domain',                 value: fv('articleship_domain') },
                     { key: 'industrial_training_company', label: 'Industrial Training Company', value: fv('industrial_training_company'), wide: true },
+                    { key: 'articleship_responsibilities', label: 'Key Responsibilities',  value: fv('articleship_responsibilities'), wide: true, textarea: true },
                 ]
             },
             {
@@ -1355,6 +1623,16 @@ const WZ = (() => {
                     { key: 'emp_job_profile',  label: 'Profile',     value: fv('emp_job_profile'), wide: true, textarea: true },
                 ]
             },
+            {
+                label: 'Certification',
+                fields: [
+                    { key: 'cert_name',   label: 'Certification Name',   value: fv('cert_name'), wide: true },
+                    { key: 'cert_issuer', label: 'Issuing Organization',  value: fv('cert_issuer') },
+                    { key: 'cert_month',  label: 'Month',                 value: fv('cert_month') },
+                    { key: 'cert_year',   label: 'Year',                  value: fv('cert_year') },
+                ]
+            },
+            achievementsGroup,
         ];
     }
 
@@ -1607,6 +1885,11 @@ const WZ = (() => {
             showLoading(false);
         }
         showMain();
+
+        // loadProfile() ran before the wizard, so the resume display was never set.
+        // Refresh it now that the wizard has finished and the file is in localStorage.
+        const cvFileName = localStorage.getItem('userCVFileName');
+        if (cvFileName) showFileDisplay('resume', cvFileName);
     }
 
     function applyAnswersToForm() {
@@ -1888,6 +2171,9 @@ function populateForm(profileData) {
         const field = profileForm.elements[key];
         if (field) field.value = profileData[key];
     }
+    // Ensure profile visibility always defaults to visible
+    const visField = profileForm.elements['profile_visibility'];
+    if (visField && !visField.value) visField.value = 'Visible to Recruiters';
 
     const emailField = document.getElementById('email');
     if (emailField && !emailField.value && currentUser?.email) {
@@ -2803,6 +3089,7 @@ function refreshSavedDisplays(d) {
     // --- CERTIFICATION ---
     const certName = (d.cert_name || '').trim();
     const certIssuer = (d.cert_issuer || '').trim();
+    const certMonth = (d.cert_month || '').trim();
     const certYear = (d.cert_year || '').trim();
     const certUrl = (d.cert_url || '').trim();
     const certEntry = document.getElementById('cert-entry-display');
@@ -2815,7 +3102,8 @@ function refreshSavedDisplays(d) {
         if (certEntry) certEntry.style.display = 'block';
         if (certTitle) certTitle.textContent = certName || 'Certification';
         if (certMeta) {
-            const meta = [certIssuer, certYear, certUrl].filter(Boolean).join(' | ');
+            const dateStr = certMonth && certYear ? `${certMonth} ${certYear}` : certYear || certMonth;
+            const meta = [certIssuer, dateStr, certUrl].filter(Boolean).join(' | ');
             certMeta.textContent = meta;
         }
         if (addCertLink) addCertLink.style.display = 'none';
@@ -3138,6 +3426,43 @@ function refreshSavedDisplays(d) {
     setCareerValue('career-preferred-domains', d.preferred_domains, 'Add preferred domains');
     setCareerValue('career-preferred-industries', d.preferred_industries, 'Add preferred industries');
     setCareerValue('career-preferred-company-type', d.preferred_company_type || d.preferred_firm_type, 'Add company type');
+
+    // --- ACHIEVEMENTS ---
+    const achDisplay = document.getElementById('achievements-display');
+    if (achDisplay) {
+        const achFields = [
+            ['achievement_air',             'AIR / Academic Rank'],
+            ['achievement_scholarships',    'Scholarships'],
+            ['achievement_awards',          'Awards & Recognition'],
+            ['achievement_leadership',      'Leadership'],
+            ['achievement_positions',       'Positions of Responsibility'],
+            ['achievement_key',             'Key Achievements'],
+            ['achievement_extracurricular', 'Extracurricular'],
+        ];
+        const filledAch = achFields.filter(([k]) => (d[k] || '').trim());
+        if (filledAch.length) {
+            achDisplay.style.display = '';
+            achDisplay.innerHTML = '';
+            const list = document.createElement('div');
+            list.style.cssText = 'display:flex;flex-direction:column;gap:0.4rem;';
+            filledAch.forEach(([k, label]) => {
+                const row = document.createElement('div');
+                row.style.cssText = 'font-size:0.88rem;line-height:1.4;';
+                const lbl = document.createElement('span');
+                lbl.style.cssText = 'font-weight:600;color:#555;margin-right:0.3em;';
+                lbl.textContent = label + ':';
+                const val = document.createElement('span');
+                val.style.color = 'var(--p2-text,#1A1A1A)';
+                val.textContent = (d[k] || '').trim();
+                row.appendChild(lbl);
+                row.appendChild(val);
+                list.appendChild(row);
+            });
+            achDisplay.appendChild(list);
+        } else {
+            achDisplay.style.display = 'none';
+        }
+    }
 
     // --- KEY SKILLS ---
     const keySkillsVal = (d.key_skills || '').trim();
@@ -3496,6 +3821,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // ----- Chip multi-select init -----
     initChipMultiSelect('addl_qual_chips', 'additional_qualifications');
+    document.getElementById('addl_qual_chips')?.addEventListener('click', () => renderQualDetails());
     initChipMultiSelect('art_client_industries_chips', 'articleship_client_industries');
     initChipMultiSelect('art_domain_chips', 'articleship_domain');
     initChipMultiSelect('preferred_domains_chips', 'preferred_domains');
@@ -3513,6 +3839,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Restore chip multi-selects from saved profile
         if (d) {
             restoreChipMultiSelect('addl_qual_chips', 'additional_qualifications');
+            renderQualDetails(true);
             restoreChipMultiSelect('art_client_industries_chips', 'articleship_client_industries');
             restoreChipMultiSelect('art_domain_chips', 'articleship_domain');
             restoreChipMultiSelect('preferred_domains_chips', 'preferred_domains');

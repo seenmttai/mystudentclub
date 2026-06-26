@@ -191,10 +191,10 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
 ### Articleship:
 49. **articleship_firm_type**: "Big 4", "Big 6", "Big 10", "Mid Size Firm", "Small Size Firm", or "None".
 50. **articleship_firm_name**: Name of the articleship CA firm.
-51. **articleship_start_month**: Month articleship started.
-52. **articleship_start_year**: Year articleship started.
-53. **articleship_end_month**: Month articleship ended or expected to end.
-54. **articleship_end_year**: Year articleship ended or expected to end.
+51. **articleship_start_month**: Month articleship started (abbreviated: "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec").
+52. **articleship_start_year**: Year articleship started (4-digit integer).
+53. **articleship_end_month**: Month articleship ended or expected to end (abbreviated: "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec").
+54. **articleship_end_year**: Year articleship ended or expected to end (4-digit integer).
 55. **articleship_domain**: Comma-separated list of ALL domains the candidate worked in, from: "Statutory Audit", "Internal Audit & Risk", "SOX / IFC Controls", "Forensics & Compliance", "Direct Tax", "Indirect Tax (GST)", "International Taxation", "Transfer Pricing", "Accounting & Reporting", "FP&A", "Controllership", "Treasury", "Costing & Plant Finance", "Supply Chain Finance", "Commercial Finance", "Business Finance", "Consulting", "Due Diligence", "Valuation", "Deals & Transaction Advisory", "M&A Advisory", "Project Finance", "Banking & Credit", "Investment Banking", "Equity Research", "ESG", "Financial Reporting (IND AS / IFRS)", "Data Analytics", "Overall Exposure", "Other". Include every domain mentioned.
 56. **articleship_client_industries**: Comma-separated list of client industries from: "Banking", "Financial Services", "FMCG", "Manufacturing", "Pharma", "IT", "E-Commerce", "Automobile", "Infrastructure", "Real Estate", "Consulting", "Retail", "Energy", "Telecom", "Logistics", "Others".
 57. **articleship_responsibilities**: Paragraph summarising key responsibilities during articleship.
@@ -202,10 +202,10 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
 ### Industrial Training:
 58. **industrial_training_company**: Company name if industrial training is mentioned.
 59. **it_industry**: Industry of the industrial training company.
-60. **it_start_month**: Month IT started.
-61. **it_start_year**: Year IT started.
-62. **it_end_month**: Month IT ended.
-63. **it_end_year**: Year IT ended.
+60. **it_start_month**: Month IT started (abbreviated: "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec").
+61. **it_start_year**: Year IT started (4-digit integer).
+62. **it_end_month**: Month IT ended (abbreviated: "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec").
+63. **it_end_year**: Year IT ended (4-digit integer).
 64. **it_responsibilities**: Key responsibilities during industrial training.
 
 ### Employment (post-qualification jobs only — see portal context):
@@ -239,6 +239,14 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
 86. **achievement_leadership**: Leadership positions held.
 87. **achievement_positions**: Positions of responsibility in college/institute.
 88. **achievement_extracurricular**: Extracurricular activities.
+89. **achievement_key**: Key professional/work achievements (e.g. cost savings, process improvements, revenue impact). Compose from resume content if not explicitly listed. Return empty string if none found.
+
+### Certification (extract the primary or most notable certification from the resume):
+90. **cert_name**: Name of the certification (e.g., "Financial Modeling Certification", "CFA Level 1", "DISA", "Certified Internal Auditor"). Return empty string if none found.
+91. **cert_issuer**: Organization that issued the certification (e.g., "NSE Academy", "CFA Institute", "ICAI"). Return empty string if not mentioned.
+92. **cert_month**: Month the certification was completed (abbreviated: "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"). Return empty string if not mentioned.
+93. **cert_year**: Year the certification was completed as a 4-digit integer (e.g., 2022). Return empty string if not mentioned.
+94. **cert_url**: Credential URL if explicitly mentioned. Return empty string if not found.
 
 ### Critical Rules:
 - **Strict duplication prevention**: Articleship → articleship fields only. Industrial training → industrial_training_company only. Regular employment → emp_* fields only.

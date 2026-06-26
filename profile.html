@@ -150,7 +150,7 @@
                             <div class="p2-upload-zone" id="resumeDropZone">
                                 <i class="fas fa-cloud-upload-alt"></i>
                                 <p><strong>Upload resume</strong></p>
-                                 <span>Supported Format: PDF â€” Max 5 MB</span>
+                                 <span>Supported Format: PDF &mdash; Max 5 MB</span>
                                  <input type="file" id="resume" name="resume" accept=".pdf">
                             </div>
                         </div>
@@ -170,7 +170,7 @@
                             <label class="p2-consent-label" for="cvSharingConsent">
                                 <input type="checkbox" id="cvSharingConsent" name="cv_sharing_consent">
                                 <span class="p2-consent-checkmark"></span>
-                                <span class="p2-consent-text">I consent to My Student Club sharing my CV and profile details with registered companies and recruiters for job-matching purposes.</span>
+                                <span class="p2-consent-text">I consent to My Student Club sharing my CV and complete profile details with potential companies and recruiters for job-matching purposes.</span>
                             </label>
                             <div class="p2-consent-footer">
                                 <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer" class="p2-consent-link"><i class="fas fa-external-link-alt"></i> Read our Privacy Policy</a>
@@ -308,7 +308,7 @@
 
                         <div class="p2-saved-display" id="edu-display">
                             <!-- CA Final -->
-                            <div class="p2-saved-entry" id="edu-final-display" style="display:none;">
+                            <div class="p2-saved-entry" id="edu-final-display" style="display:none;" data-portal="fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
                                 <div class="p2-saved-entry-header">
                                     <div>
                                         <div class="p2-saved-title" id="edu-final-title">CA Final</div>
@@ -381,7 +381,7 @@
 
                         <!-- Add-more links (Naukri style) -->
                         <div class="p2-add-links" id="edu-add-links">
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-final-form" id="addFinalLink"><i class="fas fa-plus-circle"></i> Add CA Final details</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-final-form" id="addFinalLink" data-portal="fresher_fresher,fresher_experienced,semi_fresher,semi_experienced"><i class="fas fa-plus-circle"></i> Add CA Final details</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-inter-form" id="addInterLink"><i class="fas fa-plus-circle"></i> Add CA Inter details</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-foundation-form" id="addFoundLink"><i class="fas fa-plus-circle"></i> Add CA Foundation details</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-grad-form" id="addGradLink"><i class="fas fa-plus-circle"></i> Add B.Com / Graduation (Optional)</a>
@@ -412,7 +412,9 @@
                                         <label class="p2-chip"><input type="checkbox" value="Other" style="display:none;"> Other</label>
                                     </div>
                                     <input type="hidden" id="additional_qualifications" name="additional_qualifications">
+                                    <input type="hidden" id="additional_qual_details" name="additional_qual_details">
                                 </div>
+                                <div id="addl-qual-details" style="display:none; grid-column:1/-1;"></div>
                             </div>
                             <div class="p2-inline-actions">
                                 <button type="button" class="p2-inline-cancel" data-close="sec-addl-qual-form">Cancel</button>
@@ -421,7 +423,7 @@
                         </div>
 
                         <!-- CA Final Form -->
-                        <div class="p2-card-form collapsed" id="sec-ca-final-form">
+                        <div class="p2-card-form collapsed" id="sec-ca-final-form" data-portal="fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
                             <div class="p2-inline-form-title">CA Final</div>
                             <div class="p2-form-grid">
                                 <div class="p2-form-row" data-portal="semi_fresher,semi_experienced">
@@ -523,6 +525,10 @@
                                         </select>
                                     </div>
                                 </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="ca_final_remarks">Remarks</label>
+                                    <textarea id="ca_final_remarks" name="ca_final_remarks" rows="2" placeholder="Any additional info, e.g., subject toppers, exemptions..."></textarea>
+                                </div>
                             </div>
                             <div class="p2-inline-actions">
                                 <button type="button" class="p2-inline-cancel" data-close="sec-ca-final-form">Cancel</button>
@@ -602,6 +608,10 @@
                                     <label for="ca_inter_air">AIR</label>
                                     <input type="number" id="ca_inter_air" name="ca_inter_air" min="1" placeholder="e.g., 25">
                                 </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="ca_inter_remarks">Remarks</label>
+                                    <textarea id="ca_inter_remarks" name="ca_inter_remarks" rows="2" placeholder="Any additional info, e.g., subject toppers, exemptions..."></textarea>
+                                </div>
                             </div>
                             <div class="p2-inline-actions">
                                 <button type="button" class="p2-inline-cancel" data-close="sec-ca-inter-form">Cancel</button>
@@ -665,6 +675,10 @@
                                         <option value="Other">Other</option>
                                     </select>
                                 </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="ca_found_remarks">Remarks</label>
+                                    <textarea id="ca_found_remarks" name="ca_found_remarks" rows="2" placeholder="Any additional info, e.g., exemptions, subject toppers..."></textarea>
+                                </div>
                             </div>
                             <div class="p2-inline-actions">
                                 <button type="button" class="p2-inline-cancel" data-close="sec-ca-foundation-form">Cancel</button>
@@ -712,6 +726,10 @@
                                     <label for="grad_percentage">Percentage / CGPA</label>
                                     <input type="text" id="grad_percentage" name="grad_percentage" placeholder="e.g., 78% or 8.5 CGPA">
                                 </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="grad_remarks">Remarks</label>
+                                    <textarea id="grad_remarks" name="grad_remarks" rows="2" placeholder="Any additional info, e.g., honours, specialisation..."></textarea>
+                                </div>
                             </div>
                             <div class="p2-inline-actions">
                                 <button type="button" class="p2-inline-cancel" data-close="sec-grad-form">Cancel</button>
@@ -727,9 +745,11 @@
                                     <select id="class12_board" name="class12_board">
                                         <option value="">Select Board</option>
                                         <option>CBSE</option>
-                                        <option>ICSE / ISC</option>
+                                        <option>ICSE</option>
                                         <option>State Board</option>
-                                        <option>IB</option>
+                                        <option>IB (International Baccalaureate)</option>
+                                        <option>Cambridge (CAIE/CIE – IGCSE &amp; A Levels)</option>
+                                        <option>NIOS (National Institute of Open Schooling)</option>
                                         <option>Other</option>
                                     </select>
                                 </div>
@@ -744,6 +764,10 @@
                                 <div class="p2-form-row">
                                     <label for="class12_percentage">Percentage</label>
                                     <input type="text" id="class12_percentage" name="class12_percentage" placeholder="e.g., 92%">
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="class12_remarks">Remarks</label>
+                                    <textarea id="class12_remarks" name="class12_remarks" rows="2" placeholder="Any additional info, e.g., stream, top scorer..."></textarea>
                                 </div>
                             </div>
                             <div class="p2-inline-actions">
@@ -762,7 +786,9 @@
                                         <option>CBSE</option>
                                         <option>ICSE</option>
                                         <option>State Board</option>
-                                        <option>IB</option>
+                                        <option>IB (International Baccalaureate)</option>
+                                        <option>Cambridge (CAIE/CIE – IGCSE &amp; A Levels)</option>
+                                        <option>NIOS (National Institute of Open Schooling)</option>
                                         <option>Other</option>
                                     </select>
                                 </div>
@@ -777,6 +803,10 @@
                                 <div class="p2-form-row">
                                     <label for="class10_percentage">Percentage</label>
                                     <input type="text" id="class10_percentage" name="class10_percentage" placeholder="e.g., 95%">
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="class10_remarks">Remarks</label>
+                                    <textarea id="class10_remarks" name="class10_remarks" rows="2" placeholder="Any additional info, e.g., top scorer, distinction..."></textarea>
                                 </div>
                             </div>
                             <div class="p2-inline-actions">
@@ -813,6 +843,10 @@
                                 <div class="p2-form-row p2-full-width">
                                     <label for="other_edu_score">Percentage / CGPA</label>
                                     <input type="text" id="other_edu_score" name="other_edu_score" placeholder="e.g., 8.4 CGPA or 82%">
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="other_edu_remarks">Remarks</label>
+                                    <textarea id="other_edu_remarks" name="other_edu_remarks" rows="2" placeholder="Any additional info, e.g., specialisation, achievements..."></textarea>
                                 </div>
                             </div>
                             <div class="p2-inline-actions">
@@ -854,7 +888,7 @@
 
                         <div class="p2-add-links" id="emp-add-links">
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-art-form" id="addArtLink"><i class="fas fa-plus-circle"></i> Add articleship details</a>
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-it-form" id="addITLink" data-portal="industrial,fresher_fresher,fresher_experienced"><i class="fas fa-plus-circle"></i> Add industrial training</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-it-form" id="addITLink" data-portal="industrial,fresher_fresher,fresher_experienced"><i class="fas fa-plus-circle"></i> Add Other Work Experience (If Any)</a>
                         </div>
 
                         <!-- Articleship Form -->
@@ -959,12 +993,12 @@
                             </div>
                         </div>
 
-                        <!-- Industrial Training Form -->
+                        <!-- Other Work Experience Form -->
                         <div class="p2-card-form collapsed" id="sec-it-form" data-portal="industrial,fresher_fresher,fresher_experienced">
-                            <div class="p2-inline-form-title">Industrial Training</div>
+                            <div class="p2-inline-form-title">Other Work Experience</div>
                             <div class="p2-form-grid">
                                 <div class="p2-form-row p2-full-width">
-                                    <label for="industrial_training_company">Company Name *</label>
+                                    <label for="industrial_training_company">Organization / Company Name *</label>
                                     <input type="text" id="industrial_training_company" name="industrial_training_company" placeholder="e.g., Goldman Sachs, HUL">
                                 </div>
                                 <div class="p2-form-row">
@@ -1000,7 +1034,7 @@
                                 </div>
                                 <div class="p2-form-row p2-full-width">
                                     <label for="it_responsibilities">Key Responsibilities</label>
-                                    <textarea id="it_responsibilities" name="it_responsibilities" rows="3" placeholder="Describe your key responsibilities during industrial trainingâ€¦"></textarea>
+                                    <textarea id="it_responsibilities" name="it_responsibilities" rows="3" placeholder="Describe your key responsibilities and what you worked on..."></textarea>
                                 </div>
                             </div>
                             <div class="p2-inline-actions">
@@ -1400,6 +1434,7 @@
                             </div>
                         </div>
                         <div class="p2-card-form collapsed" id="sec-career-form">
+                            <div class="p2-inline-form-title">Career Preferences</div>
                             <div class="p2-form-grid">
                                 <div class="p2-form-row">
                                     <label for="job_preference">Default Job Portal</label>
@@ -1417,6 +1452,103 @@
                                     <label for="articleship_completion_date">Articleship 1 Year Completion Date</label>
                                     <input type="date" id="articleship_completion_date" name="articleship_completion_date">
                                 </div>
+                                <div class="p2-form-row">
+                                    <label for="preferred_locations">Preferred Locations</label>
+                                    <input type="text" id="preferred_locations" name="preferred_locations" placeholder="e.g., Mumbai, Delhi NCR, Bangalore">
+                                </div>
+                                <div class="p2-form-row">
+                                    <label for="relocation_preference">Open to Relocation</label>
+                                    <select id="relocation_preference" name="relocation_preference">
+                                        <option value="">Select</option>
+                                        <option value="Yes">Yes, open to relocation</option>
+                                        <option value="No">No, prefer current city</option>
+                                        <option value="PAN India">PAN India — anywhere in India</option>
+                                    </select>
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label>Preferred Domains (select all that apply)</label>
+                                    <div class="p2-chip-group" id="preferred_domains_chips" style="flex-wrap:wrap; gap:0.4rem;">
+                                        <label class="p2-chip"><input type="checkbox" value="FP&A" style="display:none;"> FP&amp;A</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Business Finance" style="display:none;"> Business Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Treasury" style="display:none;"> Treasury</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Controllership" style="display:none;"> Controllership</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Financial Reporting" style="display:none;"> Financial Reporting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Internal Audit" style="display:none;"> Internal Audit</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Risk Management" style="display:none;"> Risk Management</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Direct Tax" style="display:none;"> Direct Tax</label>
+                                        <label class="p2-chip"><input type="checkbox" value="GST" style="display:none;"> GST</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Transfer Pricing" style="display:none;"> Transfer Pricing</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Valuation" style="display:none;"> Valuation</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Due Diligence" style="display:none;"> Due Diligence</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Investment Banking" style="display:none;"> Investment Banking</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Equity Research" style="display:none;"> Equity Research</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Consulting" style="display:none;"> Consulting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Data Analytics / Power BI" style="display:none;"> Data Analytics / Power BI</label>
+                                        <label class="p2-chip"><input type="checkbox" value="ESG &amp; Sustainability" style="display:none;"> ESG &amp; Sustainability</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Supply Chain Finance" style="display:none;"> Supply Chain Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Costing" style="display:none;"> Costing</label>
+                                        <label class="p2-chip"><input type="checkbox" value="MIS Reporting" style="display:none;"> MIS Reporting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Other" style="display:none;"> Other</label>
+                                    </div>
+                                    <input type="hidden" id="preferred_domains" name="preferred_domains">
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label>Preferred Industries (select all that apply)</label>
+                                    <div class="p2-chip-group" id="preferred_industries_chips" style="flex-wrap:wrap; gap:0.4rem;">
+                                        <label class="p2-chip"><input type="checkbox" value="Banking" style="display:none;"> Banking</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Financial Services" style="display:none;"> Financial Services</label>
+                                        <label class="p2-chip"><input type="checkbox" value="FMCG" style="display:none;"> FMCG</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Manufacturing" style="display:none;"> Manufacturing</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Pharma" style="display:none;"> Pharma</label>
+                                        <label class="p2-chip"><input type="checkbox" value="IT" style="display:none;"> IT</label>
+                                        <label class="p2-chip"><input type="checkbox" value="E-Commerce" style="display:none;"> E-Commerce</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Automobile" style="display:none;"> Automobile</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Infrastructure" style="display:none;"> Infrastructure</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Real Estate" style="display:none;"> Real Estate</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Consulting" style="display:none;"> Consulting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Retail" style="display:none;"> Retail</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Energy" style="display:none;"> Energy</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Telecom" style="display:none;"> Telecom</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Logistics" style="display:none;"> Logistics</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Insurance" style="display:none;"> Insurance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Media &amp; Entertainment" style="display:none;"> Media &amp; Entertainment</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Others" style="display:none;"> Others</label>
+                                    </div>
+                                    <input type="hidden" id="preferred_industries" name="preferred_industries">
+                                </div>
+                                <div class="p2-form-row p2-full-width" data-portal="articleship,industrial">
+                                    <label>Preferred Firm Type (select all that apply)</label>
+                                    <div class="p2-chip-group" id="preferred_firm_type_chips" style="flex-wrap:wrap; gap:0.4rem;">
+                                        <label class="p2-chip"><input type="checkbox" value="Big 4" style="display:none;"> Big 4</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Big 6" style="display:none;"> Big 6</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Big 10" style="display:none;"> Big 10</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Mid Size" style="display:none;"> Mid Size</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Small Size" style="display:none;"> Small Size</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Any" style="display:none;"> Any</label>
+                                    </div>
+                                    <input type="hidden" id="preferred_firm_type" name="preferred_firm_type">
+                                </div>
+                                <div class="p2-form-row p2-full-width" data-portal="fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
+                                    <label>Preferred Company Type (select all that apply)</label>
+                                    <div class="p2-chip-group" id="preferred_company_type_chips" style="flex-wrap:wrap; gap:0.4rem;">
+                                        <label class="p2-chip"><input type="checkbox" value="Big 4" style="display:none;"> Big 4</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Big 6" style="display:none;"> Big 6</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Big 10" style="display:none;"> Big 10</label>
+                                        <label class="p2-chip"><input type="checkbox" value="CA Firm" style="display:none;"> CA Firm</label>
+                                        <label class="p2-chip"><input type="checkbox" value="MNC" style="display:none;"> MNC</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Listed Company" style="display:none;"> Listed Company</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Startup" style="display:none;"> Startup</label>
+                                        <label class="p2-chip"><input type="checkbox" value="GCC / SSC" style="display:none;"> GCC / SSC</label>
+                                        <label class="p2-chip"><input type="checkbox" value="PSU" style="display:none;"> PSU</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Any" style="display:none;"> Any</label>
+                                    </div>
+                                    <input type="hidden" id="preferred_company_type" name="preferred_company_type">
+                                </div>
+                            </div>
+                            <div class="p2-inline-actions">
+                                <button type="button" class="p2-inline-cancel" data-close="sec-career-form">Cancel</button>
+                                <button type="button" class="p2-btn-save">Save</button>
+                            </div>
                         </div>
                     </section>
                     <!-- ===== AVAILABILITY & COMPENSATION ===== -->
@@ -1588,6 +1720,7 @@
                             <a href="javascript:void(0)" class="p2-card-action" data-toggle="sec-achievements-form">Edit</a>
                         </div>
                         <p class="p2-card-sub">Stand out by highlighting your academic and professional achievements</p>
+                        <div id="achievements-display" class="p2-display-clickable" data-toggle="sec-achievements-form" style="display:none;padding:0.75rem 0 0.25rem;"></div>
                         <div class="p2-card-form collapsed" id="sec-achievements-form">
                             <div class="p2-form-grid">
                                 <div class="p2-form-row p2-full-width">
@@ -1604,11 +1737,11 @@
                                 </div>
                                 <div class="p2-form-row p2-full-width">
                                     <label for="achievement_leadership">Leadership Positions</label>
-                                    <input type="text" id="achievement_leadership" name="achievement_leadership" placeholder="e.g., President â€“ College Finance Club">
+                                    <input type="text" id="achievement_leadership" name="achievement_leadership" placeholder=”e.g., President - College Finance Club”>
                                 </div>
                                 <div class="p2-form-row p2-full-width" data-portal="fresher_fresher,articleship,industrial">
                                     <label for="achievement_positions">Positions of Responsibility</label>
-                                    <textarea id="achievement_positions" name="achievement_positions" rows="2" placeholder="e.g., Class Representative, NSS Volunteerâ€¦"></textarea>
+                                    <textarea id="achievement_positions" name="achievement_positions" rows="2" placeholder="e.g., Class Representative, NSS Volunteer..."></textarea>
                                 </div>
                                 <div class="p2-form-row p2-full-width" data-portal="fresher_experienced,semi_experienced">
                                     <label for="achievement_key">Key Achievements (Work)</label>
