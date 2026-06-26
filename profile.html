@@ -388,7 +388,7 @@
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-12-form" id="addClass12Link"><i class="fas fa-plus-circle"></i> Add Class XII details</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-10-form" id="addClass10Link"><i class="fas fa-plus-circle"></i> Add Class X details</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-other-edu-form" id="addOtherEduLink"><i class="fas fa-plus-circle"></i> Add other education details</a>
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-addl-qual-form" id="addAddlQualLink"><i class="fas fa-plus-circle"></i> Add additional qualifications (CFA, CS, CMAâ€¦)</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-addl-qual-form" id="addAddlQualLink"><i class="fas fa-plus-circle"></i> Add additional qualifications (CFA, CS, CMA...)</a>
                         </div>
 
                         <!-- Additional Qualifications Form -->
@@ -889,45 +889,39 @@
                                 </div>
                                 <div class="p2-form-row">
                                     <label>Completion Date</label>
-                                    <div style="display:flex; gap:0.5rem;">
+                                    <label style="display:flex;align-items:center;gap:0.4rem;font-size:0.85rem;font-weight:normal;margin-bottom:0.5rem;cursor:pointer;">
+                                        <input type="checkbox" id="articleship_currently_working" style="cursor:pointer;"> Currently working here
+                                    </label>
+                                    <div id="art_completion_date_wrap" style="display:flex; gap:0.5rem;">
                                         <select id="articleship_end_year" name="articleship_end_year" class="populate-past-years" style="flex:1;"><option value="">Year</option></select>
                                         <select id="articleship_end_month" name="articleship_end_month" style="flex:1;">
                                             <option value="">Month</option>
                                             <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
                                         </select>
                                     </div>
+                                    <input type="hidden" id="articleship_is_current" name="articleship_is_current" value="">
                                 </div>
                                 <div class="p2-form-row p2-full-width">
                                     <label>Domains (select all that apply)</label>
                                     <div class="p2-chip-group" id="art_domain_chips" style="flex-wrap:wrap; gap:0.4rem;">
                                         <label class="p2-chip"><input type="checkbox" value="Statutory Audit" style="display:none;"> Statutory Audit</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Internal Audit & Risk" style="display:none;"> Internal Audit &amp; Risk</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Internal Audit" style="display:none;"> Internal Audit</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Concurrent Audit" style="display:none;"> Concurrent Audit</label>
                                         <label class="p2-chip"><input type="checkbox" value="SOX / IFC Controls" style="display:none;"> SOX / IFC Controls</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Forensics & Compliance" style="display:none;"> Forensics &amp; Compliance</label>
                                         <label class="p2-chip"><input type="checkbox" value="Direct Tax" style="display:none;"> Direct Tax</label>
                                         <label class="p2-chip"><input type="checkbox" value="Indirect Tax (GST)" style="display:none;"> Indirect Tax (GST)</label>
                                         <label class="p2-chip"><input type="checkbox" value="International Taxation" style="display:none;"> International Taxation</label>
                                         <label class="p2-chip"><input type="checkbox" value="Transfer Pricing" style="display:none;"> Transfer Pricing</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Accounting & Reporting" style="display:none;"> Accounting &amp; Reporting</label>
-                                        <label class="p2-chip"><input type="checkbox" value="FP&A" style="display:none;"> FP&amp;A</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Controllership" style="display:none;"> Controllership</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Treasury" style="display:none;"> Treasury</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Costing & Plant Finance" style="display:none;"> Costing &amp; Plant Finance</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Supply Chain Finance" style="display:none;"> Supply Chain Finance</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Commercial Finance" style="display:none;"> Commercial Finance</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Business Finance" style="display:none;"> Business Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="M&amp;A Tax" style="display:none;"> M&amp;A Tax</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Forensics" style="display:none;"> Forensics</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Risk Advisory" style="display:none;"> Risk Advisory</label>
                                         <label class="p2-chip"><input type="checkbox" value="Consulting" style="display:none;"> Consulting</label>
                                         <label class="p2-chip"><input type="checkbox" value="Due Diligence" style="display:none;"> Due Diligence</label>
                                         <label class="p2-chip"><input type="checkbox" value="Valuation" style="display:none;"> Valuation</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Deals & Transaction Advisory" style="display:none;"> Deals &amp; Transaction Advisory</label>
-                                        <label class="p2-chip"><input type="checkbox" value="M&A Advisory" style="display:none;"> M&amp;A Advisory</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Project Finance" style="display:none;"> Project Finance</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Banking & Credit" style="display:none;"> Banking &amp; Credit</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Investment Banking" style="display:none;"> Investment Banking</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Equity Research" style="display:none;"> Equity Research</label>
-                                        <label class="p2-chip"><input type="checkbox" value="ESG" style="display:none;"> ESG</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Financial Reporting (IND AS / IFRS)" style="display:none;"> Financial Reporting (IND AS / IFRS)</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Data Analytics" style="display:none;"> Data Analytics</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Deals &amp; Transaction Advisory" style="display:none;"> Deals &amp; Transaction Advisory</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Accounting &amp; Reporting" style="display:none;"> Accounting &amp; Reporting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Financial Reporting (Ind AS / IFRS)" style="display:none;"> Financial Reporting (Ind AS / IFRS)</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Compliance" style="display:none;"> Compliance</label>
                                         <label class="p2-chip"><input type="checkbox" value="Other" style="display:none;"> Other</label>
                                     </div>
                                     <input type="hidden" id="articleship_domain" name="articleship_domain">

@@ -415,7 +415,16 @@ function getWzMissingFields(portalType) {
         f('emp_current_salary','Current CTC',       '💰', 'text', true),
     ];
 
-    if (portalType === 'industrial' || portalType === 'articleship') return [...common, ...caInterFields];
+    if (portalType === 'industrial') return [
+        ...common, ...caInterFields,
+        f('key_skills', 'Your Skills', '🛠️', 'text', true,
+            'e.g., Advanced Excel, Financial Modelling, SAP, Power BI, GST, Direct Tax, Financial Reporting, Internal Audit, Valuation, MIS Reporting',
+            'List your technical and professional skills separated by commas. Include software, finance, accounting, tax, audit, and analytical skills that highlight your strengths.'),
+        f('notice_period', 'Notice Period', '📋', 'text', true,
+            'e.g., Immediate Joiner, 1 Month, 2 Months, 3 Months',
+            'What is your current notice period?'),
+    ];
+    if (portalType === 'articleship') return [...common, ...caInterFields];
     if (portalType === 'semi_fresher')    return [...common, ...caInterFields];
     if (portalType === 'semi_experienced')return [...common, ...caInterFields, ...empFields];
     if (portalType === 'fresher_experienced') return [...common, ...caFinalFields, ...empFields];
@@ -921,7 +930,12 @@ const WZ = (() => {
         }
         if (skipUpload) {
             skipUpload.addEventListener('click', () => {
+                const consentGiven = document.getElementById('wz-consent-chk')?.checked;
                 saveConsentFromWizard();
+                if (consentGiven) {
+                    saveConsentRecord(true).catch(() => {});
+                    updatePrivacyCard(true);
+                }
                 proceedAfterCV();
             });
         }
@@ -1023,6 +1037,7 @@ const WZ = (() => {
             }
             saveConsentFromWizard();
             saveConsentRecord(true).catch(console.error); // fire independently — don't wait on storer
+            updatePrivacyCard(true); // refresh UI immediately — loadConsentStatus ran before wizard
             fireStorerAndProfill();
             proceedAfterCV();
         } else if (phase === 'type') {
@@ -1601,6 +1616,8 @@ const WZ = (() => {
             'missing_current_city': 'current_city',
             'missing_linkedin_url': 'linkedin_url',
             'missing_profile_summary': 'profile_summary',
+            'missing_notice_period': 'notice_period',
+            'missing_key_skills': 'key_skills',
         };
         Object.entries(fieldMap).forEach(([ansKey, inputName]) => {
             const val = st.answers[ansKey];
@@ -1881,6 +1898,18 @@ function populateForm(profileData) {
     const domainOtherGroup = document.getElementById('articleship_domain_other_group');
     if (domainOther && profileData.articleship_domain === 'Other') {
         if (domainOtherGroup) domainOtherGroup.style.display = 'block';
+    }
+
+    // Restore "currently working here" checkbox state
+    if (profileData.articleship_is_current === 'Yes') {
+        const chk  = document.getElementById('articleship_currently_working');
+        const wrap = document.getElementById('art_completion_date_wrap');
+        const yearSel  = document.getElementById('articleship_end_year');
+        const monthSel = document.getElementById('articleship_end_month');
+        if (chk)  chk.checked = true;
+        if (wrap) wrap.style.display = 'none';
+        if (yearSel)  { yearSel.disabled  = true; yearSel.value  = ''; }
+        if (monthSel) { monthSel.disabled = true; monthSel.value = ''; }
     }
 
     const jobPref = document.getElementById('job_preference');
@@ -2488,7 +2517,7 @@ function refreshHeader() {
         `https://ui-avatars.com/api/?name=${encodeURIComponent(nameVal || 'U')}&background=e8e8e8&color=555&size=96&bold=true`;
 
     // Header details
-    document.getElementById('hdLocation').textContent = d.current_location || 'Add location';
+    document.getElementById('hdLocation').textContent = d.current_city || d.current_location || 'Add location';
     document.getElementById('hdPhone').textContent = d.contact_number || 'Add mobile number';
     document.getElementById('hdExperience').textContent = d.total_experience || 'Fresher';
     document.getElementById('hdEmail').textContent = d.email || (currentUser ? currentUser.email : 'Add email');
@@ -2559,22 +2588,27 @@ function refreshHeader() {
         (d.industrial_training_company || '').trim()
     );
 
-    // Define tracked items: { label, icon, filled, boost }
+    const hasSkills = !!(d.key_skills || '').trim() || !!(d.emp_skills_hidden || '').trim();
+    const hasCerts = !!(d.cert_name || '').trim();
+
+    // Define tracked items — weights sum to 100
     const items = [
-        { label: 'Add full name', icon: 'fa-user', filled: !!nameVal, boost: 10 },
-        { label: 'Add mobile number', icon: 'fa-phone-alt', filled: !!(d.contact_number || '').trim(), boost: 10 },
-        { label: 'Add location', icon: 'fa-map-marker-alt', filled: !!(d.current_location || '').trim(), boost: 2 },
-        { label: 'Add resume', icon: 'fa-file-alt', filled: !!localStorage.getItem('userCVText'), boost: 10 },
-        { label: 'Add profile summary', icon: 'fa-heading', filled: !!((d.profile_summary || d.headline || '').trim()), boost: 8 },
-        { label: 'Add CA education', icon: 'fa-graduation-cap', filled: hasEducation, boost: 10 },
-        { label: 'Add experience', icon: 'fa-briefcase', filled: hasExperience, boost: 10 },
-        { label: 'Add notice period', icon: 'fa-calendar-check', filled: !!(d.notice_period || '').trim(), boost: 5 },
-        { label: 'Add current organization', icon: 'fa-building', filled: hasCurrentOrg, boost: 5 },
-        { label: 'Add job preference', icon: 'fa-bullseye', filled: !!pref, boost: 5 },
+        { label: 'Add full name',          icon: 'fa-user',            filled: !!nameVal,                                       boost: 14, section: 'sec-personal',     form: 'sec-personal-form' },
+        { label: 'Add mobile number',      icon: 'fa-phone-alt',       filled: !!(d.contact_number || '').trim(),               boost: 10, section: 'sec-personal',     form: 'sec-personal-form' },
+        { label: 'Add location',           icon: 'fa-map-marker-alt',  filled: !!(d.current_city || d.current_location || '').trim(), boost: 3, section: 'sec-personal', form: 'sec-personal-form' },
+        { label: 'Add resume',             icon: 'fa-file-alt',        filled: !!localStorage.getItem('userCVText'),            boost: 14, section: 'sec-resume',       form: '' },
+        { label: 'Add profile summary',    icon: 'fa-heading',         filled: !!((d.profile_summary || d.headline || '').trim()), boost: 10, section: 'sec-headline',  form: 'sec-headline-form' },
+        { label: 'Add CA education',       icon: 'fa-graduation-cap',  filled: hasEducation,                                    boost: 12, section: 'sec-ca-education', form: '' },
+        { label: 'Add experience',         icon: 'fa-briefcase',       filled: hasExperience,                                   boost: 12, section: 'sec-employment',   form: 'sec-experience-form' },
+        { label: 'Add notice period',      icon: 'fa-calendar-check',  filled: !!(d.notice_period || '').trim(),                boost: 7,  section: 'sec-availability', form: 'sec-availability-form' },
+        { label: 'Add current organization', icon: 'fa-building',      filled: hasCurrentOrg,                                   boost: 7,  section: 'sec-employment',   form: 'sec-experience-form' },
+        { label: 'Add job preference',     icon: 'fa-bullseye',        filled: !!pref,                                          boost: 7,  section: 'sec-career',       form: 'sec-career-form' },
+        { label: 'Add key skills',         icon: 'fa-tools',           filled: hasSkills,                                       boost: 2,  section: 'sec-skills',       form: 'sec-skills-form' },
+        { label: 'Add a certification',    icon: 'fa-certificate',     filled: hasCerts,                                        boost: 2,  section: 'sec-certification', form: 'sec-certification-form' },
     ];
 
     if (needsCTC) {
-        items.push({ label: 'Add current CTC', icon: 'fa-wallet', filled: !!(d.current_ctc || '').trim(), boost: 3 });
+        items.push({ label: 'Add current CTC', icon: 'fa-wallet', filled: !!(d.current_ctc || '').trim(), boost: 3, section: 'sec-availability', form: 'sec-availability-form' });
     }
 
     const totalBoost = items.reduce((s, i) => s + i.boost, 0);
@@ -2609,7 +2643,7 @@ function refreshHeader() {
     } else {
         missingCard.style.display = 'flex';
         missingList.innerHTML = missing.slice(0, 4).map(m =>
-            `<div class="p2-missing-row">
+            `<div class="p2-missing-row" style="cursor:pointer;" data-section="${m.section || ''}" data-form="${m.form || ''}">
                 <i class="fas ${m.icon}"></i>
                 <span>${m.label}</span>
                 <span class="p2-boost-sm">↑ ${m.boost}%</span>
@@ -3198,6 +3232,29 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
+    // ----- Articleship "Currently working here" toggle -----
+    (function () {
+        const chk    = document.getElementById('articleship_currently_working');
+        const wrap   = document.getElementById('art_completion_date_wrap');
+        const hidden = document.getElementById('articleship_is_current');
+        const yearSel  = document.getElementById('articleship_end_year');
+        const monthSel = document.getElementById('articleship_end_month');
+        if (!chk || !wrap || !hidden) return;
+
+        function applyCurrentState(isCurrent) {
+            wrap.style.display = isCurrent ? 'none' : 'flex';
+            if (yearSel)  yearSel.disabled  = isCurrent;
+            if (monthSel) monthSel.disabled = isCurrent;
+            hidden.value = isCurrent ? 'Yes' : '';
+            if (isCurrent) {
+                if (yearSel)  yearSel.value  = '';
+                if (monthSel) monthSel.value = '';
+            }
+        }
+
+        chk.addEventListener('change', () => applyCurrentState(chk.checked));
+    })();
+
     // ----- Populate Years -----
     const currentYear = new Date().getFullYear();
     document.querySelectorAll('.populate-past-years').forEach(sel => {
@@ -3654,6 +3711,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (target && target.classList.contains('collapsed')) {
             toggleForm(targetId);
         }
+    }
+
+    // Delegated click on missing-item rows — navigate to the relevant section/form
+    const missingListEl = document.getElementById('missingList');
+    if (missingListEl) {
+        missingListEl.addEventListener('click', e => {
+            const row = e.target.closest('.p2-missing-row');
+            if (!row) return;
+            const formId = row.dataset.form;
+            const sectionId = row.dataset.section;
+            if (formId) openFormIfCollapsed(formId);
+            if (sectionId) {
+                setTimeout(() => {
+                    const sectionEl = document.getElementById(sectionId);
+                    if (sectionEl) sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, formId ? 120 : 0);
+            }
+        });
     }
 
     function normalizeUrlField(input) {
