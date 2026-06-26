@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -204,6 +204,25 @@
                 </div>
             </details>
 
+            <details id="highlights-panel" style="display:none">
+                <summary>Highlight Banners</summary>
+                <div class="section-body">
+                    <p style="font-size:12px;color:#888;margin-bottom:10px;">These 3 banners appear at the top of the Monochrome Ledger template.</p>
+                    <div class="form-group">
+                        <label>Banner 1</label>
+                        <input type="text" class="form-control" id="inp-highlight1" placeholder="e.g. Top Academic Performer" oninput="updateCV()">
+                    </div>
+                    <div class="form-group">
+                        <label>Banner 2</label>
+                        <input type="text" class="form-control" id="inp-highlight2" placeholder="e.g. Article Trainee Experience" oninput="updateCV()">
+                    </div>
+                    <div class="form-group">
+                        <label>Banner 3</label>
+                        <input type="text" class="form-control" id="inp-highlight3" placeholder="e.g. Leadership & Awards" oninput="updateCV()">
+                    </div>
+                </div>
+            </details>
+
             <details data-section="summary">
                 <summary>Career Objective</summary>
                 <div class="section-body">
@@ -303,8 +322,13 @@
             </details>
 
             <details data-section="certifications">
-                <summary>Certifications</summary>
+                <summary>
+                    <span>Certifications</span>
+                    <button class="chip" type="button" onclick="toggleSectionLabelPanel('certifications', event)"
+                        style="font-size:10px; padding:4px 8px;">Label</button>
+                </summary>
                 <div class="section-body">
+                    <div id="section-label-panel-certifications" class="table-format-panel-wrap" aria-hidden="true"></div>
                     <div id="cert-container"></div>
                     <button class="btn-dashed" onclick="addCertification()">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
@@ -318,8 +342,13 @@
             </details>
 
             <details data-section="achievements">
-                <summary>Achievements & Awards</summary>
+                <summary>
+                    <span>Achievements &amp; Awards</span>
+                    <button class="chip" type="button" onclick="toggleSectionLabelPanel('achievements', event)"
+                        style="font-size:10px; padding:4px 8px;">Label</button>
+                </summary>
                 <div class="section-body">
+                    <div id="section-label-panel-achievements" class="table-format-panel-wrap" aria-hidden="true"></div>
                     <div class="form-group">
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                             <label style="margin-bottom:0;">Achievements (All)</label>
@@ -344,8 +373,13 @@
             </details>
 
             <details data-section="leadership">
-                <summary>Leadership</summary>
+                <summary>
+                    <span>Leadership</span>
+                    <button class="chip" type="button" onclick="toggleSectionLabelPanel('leadership', event)"
+                        style="font-size:10px; padding:4px 8px;">Label</button>
+                </summary>
                 <div class="section-body">
+                    <div id="section-label-panel-leadership" class="table-format-panel-wrap" aria-hidden="true"></div>
                     <div class="form-group">
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                             <label style="margin-bottom:0;">Leadership (All)</label>
@@ -370,8 +404,13 @@
             </details>
 
             <details data-section="interests">
-                <summary>Interests & Hobbies</summary>
+                <summary>
+                    <span>Interests &amp; Hobbies</span>
+                    <button class="chip" type="button" onclick="toggleSectionLabelPanel('interests', event)"
+                        style="font-size:10px; padding:4px 8px;">Label</button>
+                </summary>
                 <div class="section-body">
+                    <div id="section-label-panel-interests" class="table-format-panel-wrap" aria-hidden="true"></div>
                     <div class="form-group">
                         <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                             <label style="margin-bottom:0;">Interests (All)</label>
@@ -396,8 +435,13 @@
             </details>
 
             <details data-section="skills">
-                <summary>Skills</summary>
+                <summary>
+                    <span>Skills</span>
+                    <button class="chip" type="button" onclick="toggleSectionLabelPanel('skills', event)"
+                        style="font-size:10px; padding:4px 8px;">Label</button>
+                </summary>
                 <div class="section-body">
+                    <div id="section-label-panel-skills" class="table-format-panel-wrap" aria-hidden="true"></div>
                     <div class="chip-container" id="skills-chips"></div>
                     <div class="form-group">
                         <div
@@ -507,6 +551,7 @@
             <option value="slate-split.html">Slate Split</option>
             <option value="blue-horizon-split.html">Blue Horizon Split</option>
             <option value="blue-banner-professional.html">Blue Banner Professional</option>
+            <option value="navy-professional.html">Navy Professional</option>
         </select>
 
         <div class="preview-wrapper">

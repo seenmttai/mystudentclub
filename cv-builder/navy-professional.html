@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My CV</title>
+    <style>
+        :root {
+            --banner-color: #1f4e79;
+            --edu-header-bg: #DEEAF6;
+            --edu-exam-bg: #F1F1F1;
+            --work-sub-bg: #DDEBF7;
+            --header-box-bg: #F1F1F1;
+            --text-black: #000000;
+            --text-navy: #001F5F;
+            --text-link: #0461C1;
+            --bg-white: #ffffff;
+            --font-main: 'Arial', sans-serif;
+            --viewer-bg: #525659;
+            --ref-width: 1000px;
+            --ref-height: 1414px;
+            --content-scale: 1;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .resume-container {
+            width: var(--ref-width);
+            height: var(--ref-height);
+            background: var(--bg-white);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: relative;
+            padding: calc(45px * var(--content-scale)) calc(40px * var(--content-scale)) calc(35px * var(--content-scale));
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transform-origin: top center;
+            font-size: calc(16.5px * var(--content-scale));
+            color: var(--text-black);
+            line-height: 1.22;
+        }
+
+        .resume-container::before {
+            content: "";
+            position: absolute;
+            top: calc(24px * var(--content-scale));
+            bottom: calc(24px * var(--content-scale));
+            left: calc(24px * var(--content-scale));
+            right: calc(24px * var(--content-scale));
+            border: calc(1.5px * var(--content-scale)) solid #000000;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .header-box {
+            background-color: var(--header-box-bg);
+            border: calc(1.5px * var(--content-scale)) solid #000000;
+            padding: calc(8px * var(--content-scale)) calc(12px * var(--content-scale)) calc(8px * var(--content-scale));
+
+        }
+
+        .header-name {
+            font-size: calc(25px * var(--content-scale));
+            font-weight: bold;
+            color: #000000;
+            margin-bottom: calc(4px * var(--content-scale));
+        }
+
+        .header-name:empty {
+            display: none;
+        }
+
+        .header-tagline {
+            font-size: calc(13px * var(--content-scale));
+            font-weight: bold;
+            color: #333;
+            margin-bottom: calc(3px * var(--content-scale));
+        }
+
+        .header-tagline:empty {
+            display: none;
+        }
+
+        .header-contact {
+            font-size: calc(15px * var(--content-scale));
+            line-height: 1.35;
+        }
+
+        .header-contact:empty {
+            display: none;
+        }
+
+        .section-banner,
+        .section-header,
+        .section-header-2,
+        .section-title {
+            background-color: var(--banner-color);
+            color: #ffffff;
+            font-weight: bold;
+            font-size: calc(15.5px * var(--content-scale));
+            padding: calc(4px * var(--content-scale)) calc(8px * var(--content-scale));
+            text-align: left;
+            margin-top: 0;
+            margin-bottom: calc(6px * var(--content-scale));
+        }
+
+        .sortable-section[data-section-id="education"] .section-header,
+        .sortable-section[data-section-id="experience"] .section-header {
+            margin-top: 0 !important;
+        }
+
+        .we-section-banner {
+            text-align: left;
+            margin-top: calc(12px * var(--content-scale));
+            margin-bottom: calc(6px * var(--content-scale));
+        }
+
+        .summary-text {
+            font-size: calc(14.5px * var(--content-scale));
+            line-height: 1.3;
+            text-align: justify;
+
+        }
+
+        .summary-text:empty {
+            display: none;
+        }
+
+        .edu-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
+            font-size: calc(14.5px * var(--content-scale));
+        }
+
+        .edu-table th,
+        .edu-table td {
+            border: calc(0.5px * var(--content-scale)) solid #000000;
+            padding: calc(3px * var(--content-scale)) calc(5px * var(--content-scale));
+            vertical-align: middle;
+        }
+
+        .edu-table thead th {
+            background-color: var(--edu-header-bg);
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .edu-table col.c0 {
+            width: 19.0%;
+        }
+
+        .edu-table col.c1 {
+            width: 34.0%;
+        }
+
+        .edu-table col.c4 {
+            width: 11.0%;
+        }
+
+        .edu-table col.c2 {
+            width: 9.0%;
+        }
+
+        .edu-table col.c3 {
+            width: 27.0%;
+        }
+
+        .edu-table tbody td.exam {
+            background-color: var(--edu-exam-bg);
+            text-align: center;
+        }
+
+        .edu-table tbody td.board {
+            text-align: center;
+        }
+
+        .edu-table tbody td.year {
+            text-align: center;
+        }
+
+        .edu-table tbody td.marks {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .edu-table tbody td.rem {
+            text-align: center;
+        }
+
+        .we-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: nowrap;
+            margin-top: 0;
+            margin-bottom: calc(4px * var(--content-scale));
+            line-height: 1.3;
+        }
+
+        .we-left {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: nowrap;
+            flex-shrink: 1;
+            min-width: 0;
+        }
+
+        .we-job {
+            font-weight: bold;
+            font-size: calc(14.5px * var(--content-scale));
+            white-space: nowrap;
+        }
+
+        .we-firm {
+            font-weight: bold;
+            font-size: calc(14.5px * var(--content-scale));
+            color: var(--text-navy);
+            white-space: nowrap;
+        }
+
+        .we-firm:not(:empty)::before {
+            content: " \00A0|\00A0 ";
+            color: var(--text-black);
+        }
+
+        .we-date {
+            font-weight: bold;
+            font-size: calc(14.5px * var(--content-scale));
+            white-space: nowrap;
+            margin-left: calc(10px * var(--content-scale));
+            flex-shrink: 0;
+        }
+
+        .we-category {
+            background-color: var(--work-sub-bg);
+            font-weight: bold;
+            border: calc(0.5px * var(--content-scale)) solid #000000;
+            padding: calc(3px * var(--content-scale)) calc(6px * var(--content-scale));
+            margin-top: calc(3px * var(--content-scale));
+            margin-bottom: calc(2px * var(--content-scale));
+            font-size: calc(14.5px * var(--content-scale));
+        }
+
+        .we-category:empty {
+            display: none;
+        }
+
+        .we-italic {
+            font-style: italic;
+            font-size: calc(13px * var(--content-scale));
+            line-height: 1.3;
+            text-align: justify;
+            margin-top: calc(2px * var(--content-scale));
+            margin-bottom: calc(3px * var(--content-scale));
+        }
+
+        .we-italic:empty {
+            display: none;
+        }
+
+        #experience-list ul {
+            list-style-type: none;
+            margin-left: 0;
+            padding-left: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        #experience-list li {
+            padding: calc(2.5px * var(--content-scale)) calc(6px * var(--content-scale));
+            line-height: 1.22;
+            text-align: justify;
+            font-size: calc(14.5px * var(--content-scale));
+            margin-bottom: 0;
+        }
+
+        #experience-list li:last-child {
+            margin-bottom: calc(4px * var(--content-scale));
+        }
+
+        .project-title {
+            font-weight: bold;
+            font-size: calc(14.5px * var(--content-scale));
+            margin-top: calc(4px * var(--content-scale));
+            margin-bottom: calc(2px * var(--content-scale));
+            display: block;
+        }
+
+        .project-desc {
+            font-style: italic;
+            font-size: calc(13px * var(--content-scale));
+            margin-bottom: calc(2px * var(--content-scale));
+        }
+
+        .project-desc:empty {
+            display: none;
+        }
+
+        #projects-list ul {
+            list-style-type: none;
+            margin-left: 0;
+            padding-left: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        #projects-list li {
+            padding: calc(2px * var(--content-scale)) calc(6px * var(--content-scale));
+            line-height: 1.22;
+            text-align: justify;
+            font-size: calc(14.5px * var(--content-scale));
+        }
+
+        ul {
+            list-style-type: disc;
+            margin-left: calc(20px * var(--content-scale));
+            margin-bottom: calc(3px * var(--content-scale));
+            margin-top: calc(2px * var(--content-scale));
+        }
+
+        li {
+            margin-bottom: calc(1.5px * var(--content-scale));
+            text-align: justify;
+            line-height: 1.25;
+            font-size: calc(14.5px * var(--content-scale));
+        }
+
+        li:last-child {
+            margin-bottom: 0;
+        }
+
+        .sortable-section[data-section-id="skills"] {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Injected custom sections sit in normal flow as the last block(s); never let
+           an earlier section grow and push them past the page border. */
+        .resume-container>.sortable-section {
+            flex: 0 0 auto;
+        }
+
+        .skills-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            font-size: calc(14.5px * var(--content-scale));
+        }
+
+        .skills-table td {
+            border: none;
+            padding: calc(2.5px * var(--content-scale)) calc(4px * var(--content-scale));
+            vertical-align: top;
+            line-height: 1.3;
+        }
+
+        .skills-table td.lbl {
+            width: 14.5%;
+            font-weight: bold;
+            white-space: nowrap;
+            padding-right: calc(6px * var(--content-scale));
+        }
+
+        .skills-table td.val {
+            width: 85.5%;
+        }
+
+        .skills-table .val [data-field="skills"],
+        .skills-table .val [data-field="skills"] * {
+            font-size: calc(14.5px * var(--content-scale));
+            line-height: 1.3;
+        }
+
+        .skills-table .val ul {
+            list-style-type: none;
+            margin-left: 0;
+            padding-left: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .skills-table .val li {
+            padding-left: calc(8px * var(--content-scale));
+            text-indent: calc(-8px * var(--content-scale));
+            margin-bottom: calc(1px * var(--content-scale));
+            text-align: left;
+            font-size: calc(14.5px * var(--content-scale));
+            line-height: 1.3;
+        }
+
+        .skills-table .val li::before {
+            content: "\2022\00A0\00A0";
+        }
+
+        .skills-table .val li p,
+        .skills-table .val li div {
+            display: inline !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        /* Certifications & custom-section bullet lists — val-bullet style matching temp5 */
+        .sortable-section[data-section-id="certifications"] ul,
+        ul.bullet-list {
+            list-style-type: none;
+            margin-left: 0;
+            padding-left: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+
+        .sortable-section[data-section-id="certifications"] li,
+        ul.bullet-list li {
+            display: flex;
+            align-items: baseline;
+            padding-left: 0;
+            text-indent: 0;
+            margin-bottom: calc(2px * var(--content-scale));
+            line-height: 1.3;
+            font-size: calc(14.5px * var(--content-scale));
+            text-align: left;
+            /* `anywhere` (not break-word) lets the flex text item shrink so long
+               unbroken tokens wrap instead of overflowing the page border. */
+            overflow-wrap: anywhere;
+        }
+
+        .sortable-section[data-section-id="certifications"] li>*,
+        ul.bullet-list li>* {
+            min-width: 0;
+        }
+
+        .sortable-section[data-section-id="certifications"] li::before,
+        ul.bullet-list li::before {
+            content: "\2022\00A0\00A0";
+            flex-shrink: 0;
+        }
+
+        .sortable-section[data-section-id="certifications"] li b,
+        .sortable-section[data-section-id="certifications"] li strong,
+        ul.bullet-list li b,
+        ul.bullet-list li strong {
+            font-weight: bold;
+        }
+
+        /* Ensure injected custom sections always get the themed banner */
+        .custom-section-injected .section-header,
+        [data-custom-section-root] .section-header {
+            background-color: var(--banner-color) !important;
+            color: #ffffff !important;
+            font-weight: bold !important;
+            display: block !important;
+            margin-top: calc(12px * var(--content-scale));
+        }
+
+        .skills-table tr:has(td > ul:empty) {
+            display: none;
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                background: #ffffff !important;
+            }
+
+            #zoom-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+                transform: none !important;
+            }
+
+            .resume-container {
+                width: 1000px !important;
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                outline: none !important;
+                zoom: 0.7937;
+                transform-origin: top center;
+                position: relative !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="zoom-wrapper">
+        <div class="resume-container" id="cv-page">
+
+            <div class="header-box">
+                <div class="header-name" data-field="name"></div>
+                <div class="header-tagline" data-field="tagline"></div>
+                <div class="header-contact contact-block" data-field="contact"></div>
+            </div>
+
+            <div class="sortable-section" data-section-id="summary">
+                <div class="section-header">Career Objective</div>
+                <div class="summary-text" data-field="summary"></div>
+            </div>
+
+            <div class="sortable-section" data-section-id="education">
+                <div class="section-header">Educational &amp; Professional Qualifications</div>
+                <table class="edu-table">
+                    <colgroup>
+                        <col class="c0">
+                        <col class="c1">
+                        <col class="c4">
+                        <col class="c2">
+                        <col class="c3">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>Examination</th>
+                            <th>Board / Institute</th>
+                            <th>Year</th>
+                            <th>Marks</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="education-list">
+                        <tr class="template" style="display:none;">
+                            <td class="exam" data-field="degree"></td>
+                            <td class="board" data-field="institution"></td>
+                            <td class="year" data-field="year"></td>
+                            <td class="marks" data-field="marks"></td>
+                            <td class="rem" data-field="remarks"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="sortable-section" data-section-id="experience">
+                <div class="section-header we-section-banner">Work Experience</div>
+                <div id="experience-list">
+                    <div class="template" style="display:none;">
+                        <div class="we-header-row work-exp-row">
+                            <div class="we-left">
+                                <span class="we-job" data-field="role"></span><span class="we-firm"
+                                    data-field="company"></span>
+                            </div>
+                            <span class="we-date" data-field="dates"></span>
+                        </div>
+                        <div class="we-italic" data-field="intro"></div>
+                        <div class="we-category" data-field="category"></div>
+                        <ul data-list="bullets"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sortable-section" data-section-id="projects">
+                <div class="section-header">Projects</div>
+                <div id="projects-list">
+                    <div class="template" style="display:none;">
+                        <span class="project-title" data-field="title"></span>
+                        <div class="project-desc" data-field="description"></div>
+                        <ul data-list="bullets"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sortable-section" data-section-id="certifications">
+                <div class="section-header">Certifications &amp; Trainings</div>
+                <ul data-list="certifications"></ul>
+            </div>
+
+            <div class="sortable-section" data-section-id="skills">
+                <div class="section-header">Skills, Achievements &amp; Additional Information</div>
+                <table class="skills-table" data-preserve-label-columns>
+                    <colgroup>
+                        <col style="width:14.5%">
+                        <col style="width:85.5%">
+                    </colgroup>
+                    <tbody>
+                        <tr>
+                            <td class="lbl" style="vertical-align:top;">Technical Skills</td>
+                            <td class="val">
+                                <div data-field="skills"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="lbl" style="vertical-align:top;">Interests and Hobbies</td>
+                            <td class="val">
+                                <ul data-list="interests"></ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="lbl" style="vertical-align:top;">Achievements</td>
+                            <td class="val">
+                                <ul data-list="achievements"></ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="lbl" style="vertical-align:top;">Leadership</td>
+                            <td class="val">
+                                <ul data-list="leadership"></ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+        </div>
+
+        <!-- Hidden reference element for custom-section cloning — never shown to user -->
+        <div class="sortable-section" data-section-id="achievements" style="display:none;" aria-hidden="true">
+            <div class="section-header"></div>
+            <ul data-list="__csr__"></ul>
+        </div>
+    </div>
+
+    <script src="cv-common.js"></script>
+    <script>
+        /* ── Helpers ─────────────────────────────────────────────────────────── */
+        function esc(s) {
+            return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        /* ── Capture raw data so template can repair what cv-common.js might miss */
+        var _lastCerts = null;
+        var _lastCustomSections = null;
+        var _lastPersonal = null;
+        window.addEventListener('message', function (ev) {
+            try {
+                var d = (typeof ev.data === 'string') ? JSON.parse(ev.data) : ev.data;
+                if (!d) return;
+                // The app posts { type:'update-cv', payload:{...} } — unwrap it.
+                if (d.type === 'update-cv' && d.payload) d = d.payload;
+                if (Array.isArray(d.certifications)) _lastCerts = d.certifications;
+                if (Array.isArray(d.customSections)) _lastCustomSections = d.customSections;
+                if (d.personal) _lastPersonal = d.personal;
+            } catch (e) { }
+        });
+
+        /* ── Render the contact line with bold text labels (Phone:/Email:/LinkedIn:)
+         *    exactly like the reference, replacing cv-common.js's icon+link version. */
+        function renderContactNavy() {
+            var el = document.querySelector('#cv-page [data-field="contact"]');
+            if (!el || !_lastPersonal) return;
+            var p = _lastPersonal;
+            var navy = 'var(--text-navy)', link = 'var(--text-link)';
+            var out = [];
+            if ((p.phone || '').trim())
+                out.push('<b>Phone<span style="color:' + navy + '">:</span></b> <span style="color:' + navy + '">' + esc(p.phone) + '</span>');
+            if ((p.email || '').trim())
+                out.push('<b>Email:</b> ' + esc(p.email));
+            if ((p.linkedin || '').trim())
+                out.push('<b>LinkedIn:</b> <span style="color:' + link + '">' + esc(p.linkedin) + '</span>');
+            if ((p.location || '').trim())
+                out.push(esc(p.location));
+            if (!out.length) return;
+            el.innerHTML = out.join('<b>  |  </b>');
+            el.style.display = '';
+        }
+
+        /* ── Re-render certifications with bold name ─────────────────────────── */
+        function renderCertsBold() {
+            var ul = document.querySelector('[data-list="certifications"]');
+            if (!ul) return;
+            var certs = _lastCerts;
+            if (!certs || !certs.length) return;
+            ul.innerHTML = certs.map(function (c) {
+                if (!c) return '';
+                /* plain-string format */
+                if (typeof c === 'string') {
+                    var ci = c.indexOf(':');
+                    if (ci > 0 && ci <= 40)
+                        return '<li><b>' + esc(c.slice(0, ci + 1)) + '</b>' + esc(c.slice(ci + 1)) + '</li>';
+                    return '<li>' + esc(c) + '</li>';
+                }
+                /* object format { name, issuer } — **Name:** Issuer */
+                var name = (c.name || '').trim();
+                var issuer = (c.issuer || '').trim();
+                if (!name && !issuer) return '';
+                var ci = name.indexOf(':');
+                if (ci > 0 && ci <= 40) {
+                    var boldPart = name.slice(0, ci + 1);
+                    var rest = name.slice(ci + 1).trim();
+                    if (issuer) rest = rest ? rest + ' (' + issuer + ')' : issuer;
+                    return '<li><b>' + esc(boldPart) + '</b>' + (rest ? ' ' + esc(rest) : '') + '</li>';
+                }
+                return '<li><b>' + esc(name) + ':</b>' + (issuer ? ' ' + esc(issuer) : '') + '</li>';
+            }).filter(Boolean).join('');
+        }
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            const targetWidth = window.innerWidth - 20;
+            const refWidth = 1000;
+            const scale = targetWidth < refWidth ? targetWidth / refWidth : 1;
+            page.style.transform = 'scale(' + scale + ')';
+            const scaledH = page.offsetHeight * scale;
+            page.style.marginBottom = '-' + (page.offsetHeight - scaledH) + 'px';
+        }
+        function shrinkContentToFit() {
+            renderContactNavy();
+            renderCertsBold();
+            // Re-apply fixed layout to skills-table — stabilizeSectionLayouts() overrides it with auto
+            var st = document.querySelector('.skills-table');
+            if (st) st.style.setProperty('table-layout', 'fixed', 'important');
+            // Follow the chosen color theme. cv-common.js's applyTemplateAccent() sets
+            // --accent-color (and a light --sub-header-bg) when a theme is picked; we map
+            // those onto this template's banner + light-box variables, falling back to the
+            // default navy palette when no theme is active. Every banner is then painted
+            // consistently (including injected custom sections).
+            var _root = document.documentElement;
+            var _cs = getComputedStyle(_root);
+            var _accent = (_cs.getPropertyValue('--accent-color') || '').trim();
+            if (_accent) {
+                var _lightBox = (_cs.getPropertyValue('--sub-header-bg') || '').trim() || _accent;
+                _root.style.setProperty('--banner-color', _accent);
+                _root.style.setProperty('--work-sub-bg', _lightBox);
+                _root.style.setProperty('--edu-header-bg', _lightBox);
+            } else {
+                _root.style.setProperty('--banner-color', '#1F4E79');
+                _root.style.setProperty('--work-sub-bg', '#DDEBF7');
+                _root.style.setProperty('--edu-header-bg', '#DEEAF6');
+            }
+            var _banner = _accent || '#1F4E79';
+            document.querySelectorAll('#cv-page .section-header, #cv-page .section-banner, #cv-page .section-title, #cv-page .section-header-2').forEach(function (h) {
+                h.style.setProperty('background-color', _banner, 'important');
+                h.style.setProperty('color', '#ffffff', 'important');
+                h.style.setProperty('border-color', _banner, 'important');
+            });
+            // Fix custom section headers — apply the theme banner colour AND correct title text
+            document.querySelectorAll('.custom-section-injected, [data-custom-section-root]').forEach(function (wrapper) {
+                var header = wrapper.querySelector('.section-header');
+                if (!header) return;
+                header.style.setProperty('background-color', _banner, 'important');
+                header.style.setProperty('color', '#ffffff', 'important');
+                header.style.setProperty('font-weight', 'bold', 'important');
+                header.style.setProperty('display', 'block', 'important');
+                // Re-apply the correct title from the raw payload
+                var secId = wrapper.getAttribute('data-custom-section-root') || wrapper.getAttribute('data-section-id') || '';
+                if (!secId || !_lastCustomSections) return;
+                var sec = null;
+                for (var i = 0; i < _lastCustomSections.length; i++) {
+                    if (_lastCustomSections[i] && _lastCustomSections[i].id === secId) { sec = _lastCustomSections[i]; break; }
+                }
+                if (!sec) return;
+                var expectedTitle = ((sec.title || '').trim() || 'Custom Section').toUpperCase();
+                if (header.textContent.trim() !== expectedTitle) header.textContent = expectedTitle;
+            });
+            const page = document.getElementById('cv-page');
+            const maxH = 1414;
+            page.style.minHeight = 'none';
+            let s = 1.0;
+            document.documentElement.style.setProperty('--content-scale', s);
+            // Detect overflow using the last visible child's bottom edge, leaving a
+            // margin for the container's bottom padding (35px) so content always
+            // stays inside the drawn border (inset 24px). Custom sections injected
+            // by cv-common.js are appended last, so this measures them too.
+            function pageOverflows() {
+                var kids = Array.from(page.children).filter(function (c) { return c.offsetHeight > 0; });
+                if (!kids.length) return page.scrollHeight > maxH;
+                var last = kids[kids.length - 1];
+                return (last.offsetTop + last.offsetHeight) > (maxH - 40);
+            }
+            for (var i = 0; i < 100 && pageOverflows(); i++) {
+                s = Math.max(s - 0.005, 0.50);
+                document.documentElement.style.setProperty('--content-scale', s);
+            }
+            page.style.minHeight = maxH + 'px';
+        }
+        let _transform = '', _marginBottom = '';
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            _transform = page.style.transform;
+            _marginBottom = page.style.marginBottom;
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+            shrinkContentToFit();
+        }
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            page.style.transform = _transform || '';
+            page.style.marginBottom = _marginBottom || '';
+            scaleToFit();
+        }
+        window.addEventListener('load', function () {
+            shrinkContentToFit();
+            scaleToFit();
+            const mq = window.matchMedia('print');
+            if (mq.addEventListener) mq.addEventListener('change', e => e.matches ? enablePrintMode() : disablePrintMode());
+            else if (mq.addListener) mq.addListener(e => e.matches ? enablePrintMode() : disablePrintMode());
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        });
+        let _rt;
+        window.addEventListener('resize', () => { clearTimeout(_rt); _rt = setTimeout(scaleToFit, 100); });
+    </script>
+</body>
+
+</html>

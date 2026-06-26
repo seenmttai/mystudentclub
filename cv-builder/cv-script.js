@@ -1,4 +1,4 @@
-        // Promise.withResolvers polyfill for older browsers/devices
+﻿        // Promise.withResolvers polyfill for older browsers/devices
         if (typeof Promise.withResolvers === 'undefined') {
             Promise.withResolvers = function() {
                 let resolve, reject;
@@ -62,7 +62,8 @@
             themeAccent: "",
             customSections: [],
             sectionOrder: [...BASE_SECTION_ORDER],
-            tableSettings: getDefaultTableSettings()
+            tableSettings: getDefaultTableSettings(),
+            sectionLabels: {}
         };
         
         const DEMO_PREVIEW_DATA = {
@@ -84,14 +85,41 @@
             ],
             experience: [
                 {
-                    role: "Article Trainee",
-                    company: "Firm Name",
-                    dates: "Aug 2024 - Present",
-                    category: "GST & Compliance",
+                    role: "Article Assistant",
+                    company: "Firm Name | Mumbai",
+                    dates: "Dec 2025 - Present",
+                    intro: "Top-tier CA firm (est. 1928) with 14 partners serving 3000+ clients across industries.",
+                    category: "PSU Audit",
                     bullets: [
-                        "Handled preparation and filing of GSTR-1 and GSTR-3B for multi-industry clients with timely compliance.",
-                        "Performed monthly ITC reconciliations and maintained inward/outward registers for GSTR-9 and GSTR-9C readiness.",
-                        "Supported GST departmental audits with documentation, reconciliations, and notice tracking."
+                        "Core audit team member for interim & final statutory audits of Maharashtra's largest state-owned power generation company with ₹40,000 Cr+ turnover.",
+                        "Independently audited Other Current Assets & Receivables using SAP, identifying ₹2,000+ Cr disputed receivables.",
+                        "Conducted field visits across multiple TPS and independently coordinated with officials to manage audit access in restricted zones."
+                    ]
+                },
+                {
+                    role: "",
+                    company: "Firm Name | Mumbai",
+                    dates: "",
+                    intro: "",
+                    category: "RBI Audit",
+                    titleMergedWithPrevious: true,
+                    bullets: [
+                        "Part of audit team for Statutory Audit of RBI, Bhopal Regional Office.",
+                        "Led digital archiving of 3,000+ audit documents in compliance with SA 230.",
+                        "Assisted in preparation of SRM (Summary Review Memorandum) and final audit presentations."
+                    ]
+                },
+                {
+                    role: "",
+                    company: "Firm Name | Mumbai",
+                    dates: "",
+                    intro: "",
+                    category: "Key Contributions",
+                    titleMergedWithPrevious: true,
+                    bullets: [
+                        "Led end-to-end audits of Purchases, Inventory, Trade Payables, Payroll, and Other Expenses across Manufacturing, Chemical, Pharma, and Service sectors.",
+                        "Conducted stock audits using floor-sheet and sheet-floor verification, identifying ₹60+ lakh dead stock.",
+                        "Reported delayed statutory payments (TDS, PF, PT, ESIC, LWF) of ₹2 lakh+ under CARO 2020 Para 3(vii)(a)."
                     ]
                 }
             ],
@@ -842,6 +870,7 @@
                     role: normalizeImportedString(item?.role || ''),
                     company: normalizeImportedString(item?.company || ''),
                     dates: normalizeImportedString(item?.dates || ''),
+                    intro: normalizeImportedString(item?.intro || ''),
                     category: normalizeCategoryHTML(htmlToMultilineText(item?.category || '')),
                     bullets: applyBoldToBulletList(item?.bullets || [], 'experience'),
                     mergedWithPrevious: !!item?.mergedWithPrevious && index > 0,
@@ -1130,6 +1159,7 @@
                     role: normalizeImportedString(entry.role || ''),
                     company: normalizeImportedString(entry.company || ''),
                     dates: normalizeImportedString(entry.dates || ''),
+                    intro: normalizeImportedString(entry.intro || ''),
                     category: normalizeCategoryHTML(htmlToMultilineText(entry.category || '')),
                     mergedWithPrevious: !!entry.mergedWithPrevious && index > 0,
                     titleMergedWithPrevious: !!entry.titleMergedWithPrevious && index > 0 && !entry.mergedWithPrevious,
@@ -1163,6 +1193,7 @@
                 };
             });
             ensureTableSettingsShape();
+            ensureSectionLabelsShape();
         }
 
         function ensureTableSettingsShape() {
@@ -1197,6 +1228,114 @@
         function getEducationTableSettings() {
             ensureCvDataShape();
             return cvData.tableSettings.education.columns;
+        }
+
+        // --- Section Label Defaults ---
+        const SECTION_LABEL_DEFAULTS = {
+            certifications: 'Certifications',
+            interests: 'Interests',
+            skills: 'Skills',
+            achievements: 'Highlights',
+            leadership: 'Responsibility'
+        };
+
+        function ensureSectionLabelsShape() {
+            if (!cvData.sectionLabels || typeof cvData.sectionLabels !== 'object') {
+                cvData.sectionLabels = {};
+            }
+            Object.keys(SECTION_LABEL_DEFAULTS).forEach(key => {
+                if (!cvData.sectionLabels[key] || typeof cvData.sectionLabels[key] !== 'object') {
+                    cvData.sectionLabels[key] = { text: SECTION_LABEL_DEFAULTS[key], visible: true };
+                }
+                if (typeof cvData.sectionLabels[key].text !== 'string') {
+                    cvData.sectionLabels[key].text = SECTION_LABEL_DEFAULTS[key];
+                }
+                if (typeof cvData.sectionLabels[key].visible !== 'boolean') {
+                    cvData.sectionLabels[key].visible = true;
+                }
+            });
+        }
+
+        function updateSectionLabel(sectionId, field, value) {
+            ensureSectionLabelsShape();
+            // Auto-initialize label entry for custom sections (not pre-seeded by ensureSectionLabelsShape)
+            if (!cvData.sectionLabels[sectionId]) {
+                const customSection = (cvData.customSections || []).find(s => s.id === sectionId);
+                if (customSection) {
+                    cvData.sectionLabels[sectionId] = { text: customSection.title || '', visible: true };
+                } else {
+                    return;
+                }
+            }
+            if (field === 'visible') {
+                cvData.sectionLabels[sectionId].visible = !!value;
+            } else if (field === 'text') {
+                cvData.sectionLabels[sectionId].text = String(value || '');
+            }
+            postToFrame();
+            // Sync the panel UI for this section
+            const panelId = `section-label-panel-${sectionId}`;
+            const panel = document.getElementById(panelId);
+            if (panel && panel.classList.contains('open')) {
+                // Refresh the input values without closing
+                const textInput = panel.querySelector('.section-label-text-input');
+                const checkbox = panel.querySelector('.section-label-visible-check');
+                const config = cvData.sectionLabels[sectionId];
+                if (textInput && field !== 'text') textInput.value = config.text;
+                if (checkbox && field !== 'visible') checkbox.checked = config.visible;
+            }
+        }
+
+        function toggleSectionLabelPanel(sectionId, event) {
+            if (event) { event.preventDefault(); event.stopPropagation(); }
+            const panelId = `section-label-panel-${sectionId}`;
+            const panel = document.getElementById(panelId);
+            if (!panel) return;
+            const shouldOpen = !panel.classList.contains('open');
+            panel.classList.toggle('open', shouldOpen);
+            panel.setAttribute('aria-hidden', shouldOpen ? 'false' : 'true');
+            if (shouldOpen) renderSectionLabelPanel(sectionId);
+        }
+
+        function renderSectionLabelPanel(sectionId) {
+            ensureSectionLabelsShape();
+            const panelId = `section-label-panel-${sectionId}`;
+            const panel = document.getElementById(panelId);
+            if (!panel) return;
+            const customSectionDefault = (cvData.customSections || []).find(s => s.id === sectionId);
+            const config = cvData.sectionLabels[sectionId] || { text: SECTION_LABEL_DEFAULTS[sectionId] || (customSectionDefault ? customSectionDefault.title || '' : ''), visible: true };
+            panel.innerHTML = `
+                <div class="table-format-panel-head">
+                    <div>
+                        <div class="table-format-title">Section Label</div>
+                        <div class="table-format-subtitle">Rename or hide the grey left-label column.</div>
+                    </div>
+                    <button class="btn-mini" type="button" onclick="resetSectionLabel('${sectionId}')">Reset</button>
+                </div>
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <input type="text" class="form-control section-label-text-input" style="flex:1; min-width:120px;"
+                        value="${(config.text || '').replace(/"/g, '&quot;')}"
+                        placeholder="e.g. Certifications"
+                        oninput="updateSectionLabel('${sectionId}', 'text', this.value)">
+                    <label style="display:flex; align-items:center; gap:6px; font-size:13px; font-weight:600; white-space:nowrap; cursor:pointer;">
+                        <input type="checkbox" class="section-label-visible-check" ${config.visible ? 'checked' : ''}
+                            onchange="updateSectionLabel('${sectionId}', 'visible', this.checked)">
+                        Show label
+                    </label>
+                </div>
+            `;
+        }
+
+        function resetSectionLabel(sectionId) {
+            ensureSectionLabelsShape();
+            if (cvData.sectionLabels[sectionId]) {
+                // For custom sections, reset text to the section's own title
+                const customSection = (cvData.customSections || []).find(s => s.id === sectionId);
+                cvData.sectionLabels[sectionId].text = SECTION_LABEL_DEFAULTS[sectionId] || (customSection ? customSection.title || '' : '');
+                cvData.sectionLabels[sectionId].visible = true;
+            }
+            renderSectionLabelPanel(sectionId);
+            postToFrame();
         }
 
         function getSelectedTemplateFile() {
@@ -1378,6 +1517,12 @@
             document.getElementById('inp-email').value = cvData.personal.email || '';
             document.getElementById('inp-linkedin').value = cvData.personal.linkedin || '';
             document.getElementById('inp-location').value = cvData.personal.location || '';
+            const h1El = document.getElementById('inp-highlight1');
+            const h2El = document.getElementById('inp-highlight2');
+            const h3El = document.getElementById('inp-highlight3');
+            if (h1El) h1El.value = cvData.personal.highlight1 || '';
+            if (h2El) h2El.value = cvData.personal.highlight2 || '';
+            if (h3El) h3El.value = cvData.personal.highlight3 || '';
             setSummaryEditorValue(cvData.summary || '');
             setSkillsEditorValue(cvData.skills || '');
 
@@ -1397,6 +1542,7 @@
             renderSectionOrderEditor();
             renderEducationFormatControls();
             initSectionInlineRichEditors();
+            updateTemplateSpecificPanels();
         }
 
         function renderEducationFormatControls() {
@@ -1612,6 +1758,11 @@
                         <label>Duration</label>
                         <input class="form-control" value="${exp.dates || ''}" oninput="updateExp(${index}, 'dates', this.value)" placeholder="e.g. Jan 2023 - Present">
                     </div>
+                    ${!isMergedChild && !isTitleMergedChild ? `
+                    <div class="form-group">
+                        <label>Intro / Description (optional)</label>
+                        <textarea class="form-control" style="min-height:60px" oninput="updateExp(${index}, 'intro', this.value)" placeholder="Short italic intro shown once under the header&#10;e.g. Top-tier CA firm (est. 1928) serving 3000+ clients">${exp.intro || ''}</textarea>
+                    </div>` : ''}
                     <div class="form-group" data-section="category">
                         <label>Department / Category (optional)</label>
                         <textarea class="form-control" style="min-height:78px" oninput="updateExp(${index}, 'category', this.value)" placeholder="Add one department/category per line&#10;e.g. Accounting&#10;Auditing & Assurance">${htmlToMultilineText(exp.category || '')}</textarea>
@@ -1631,7 +1782,7 @@
                         </div>
                         <textarea id="exp-bullets-${index}" class="form-control" data-rich-exp-index="${index}" oninput="updateExp(${index}, 'bullets', this.value)" placeholder="Add bullet points with formatting">${bulletsToRichHTML(exp.bullets || [])}</textarea>
                     </div>
-                    ${!isMergedChild && !isTitleMergedChild ? `
+                    ${!isMergedChild ? `
                     <button type="button" class="btn-dashed" style="margin-top:10px; font-size:11px; color:#0369a1; border-color:#bae6fd;" onclick="addSubsectionAfter(${index})" title="Add a subsection under this role (reuses the same title)">
                         + Add Subsection
                     </button>` : ''}
@@ -1705,6 +1856,9 @@
             cvData.personal.email = document.getElementById('inp-email').value;
             cvData.personal.linkedin = document.getElementById('inp-linkedin').value;
             cvData.personal.location = document.getElementById('inp-location').value;
+            cvData.personal.highlight1 = document.getElementById('inp-highlight1')?.value || '';
+            cvData.personal.highlight2 = document.getElementById('inp-highlight2')?.value || '';
+            cvData.personal.highlight3 = document.getElementById('inp-highlight3')?.value || '';
             cvData.personal.contact = '';
             if (summaryQuill) {
                 syncSummaryFromEditor();
@@ -1797,7 +1951,7 @@
         }
 
         function addExperience() {
-            cvData.experience.push({ role: "", company: "", dates: "", category: "", bullets: [], mergedWithPrevious: false, titleMergedWithPrevious: false });
+            cvData.experience.push({ role: "", company: "", dates: "", intro: "", category: "", bullets: [], mergedWithPrevious: false, titleMergedWithPrevious: false });
             normalizeExperienceMerges();
             renderExpInputs();
             postToFrame();
@@ -1842,7 +1996,7 @@
             postToFrame();
         }
         function addSubsectionAfter(i) {
-            const newEntry = { role: "", company: cvData.experience[i]?.company || "", dates: "", category: "", bullets: [], mergedWithPrevious: false, titleMergedWithPrevious: true };
+            const newEntry = { role: "", company: cvData.experience[i]?.company || "", dates: "", intro: "", category: "", bullets: [], mergedWithPrevious: false, titleMergedWithPrevious: true };
             cvData.experience.splice(i + 1, 0, newEntry);
             normalizeExperienceMerges();
             renderExpInputs();
@@ -1993,8 +2147,13 @@
                 details.open = true;
                 details.setAttribute('data-section', section.id || '');
                 details.innerHTML = `
-                    <summary>${section.title || 'Custom Section'}</summary>
+                    <summary>
+                        <span>${section.title || 'Custom Section'}</span>
+                        <button class="chip" type="button" onclick="toggleSectionLabelPanel('${section.id}', event)"
+                            style="font-size:10px; padding:4px 8px;">Label</button>
+                    </summary>
                     <div class="section-body">
+                        <div id="section-label-panel-${section.id}" class="table-format-panel-wrap" aria-hidden="true"></div>
                         <div class="form-group">
                             <label>Section Title</label>
                             <input type="text" class="form-control" value="${section.title || ''}"
@@ -2301,7 +2460,8 @@
             { file: 'monochrome-ledger.html', name: 'Monochrome Ledger', accent: '#111111', style: 'mono' },
             { file: 'slate-split.html', name: 'Slate Split', accent: '#28535e', style: 'split' },
             { file: 'blue-horizon-split.html', name: 'Blue Horizon Split', accent: '#1f385c', style: 'splitblue' },
-            { file: 'blue-banner-professional.html', name: 'Blue Banner Professional', accent: '#155f82', style: 'bluebanner' }
+            { file: 'blue-banner-professional.html', name: 'Blue Banner Professional', accent: '#155f82', style: 'bluebanner' },
+            { file: 'navy-professional.html', name: 'Navy Professional', accent: '#1F4E79', style: 'navypro' }
         ];
         const TEMPLATE_COLOR_PRESETS = ['#2b2b2b', '#0f6cbd', '#155e95', '#1f8f63', '#c0392b', '#7b4db3'];
 
@@ -2553,10 +2713,17 @@
             updateUndoRedoControls();
         }
 
+        function updateTemplateSpecificPanels() {
+            const file = getSelectedTemplateFile();
+            const panel = document.getElementById('highlights-panel');
+            if (panel) panel.style.display = file === 'monochrome-ledger.html' ? '' : 'none';
+        }
+
         function changeTemplate(options = {}) {
             const select = document.getElementById('template-select');
             const frame = document.getElementById('cv-frame');
             const skipHistory = !!options.skipHistory;
+            updateTemplateSpecificPanels();
 
             document.querySelector('.loading-overlay').classList.add('active');
             frame.src = select.value;

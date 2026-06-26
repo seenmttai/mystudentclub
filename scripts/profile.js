@@ -1,4 +1,4 @@
-const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+﻿const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/scripts/vendor/pdf.worker.min.js';
@@ -3125,7 +3125,7 @@ function refreshSavedDisplays(d) {
         'industrial': 'MSC Industrial Training Program',
         'articleship': 'Articleship',
         'fresher_fresher': 'CA Fresher (Fresher)',
-        'fresher_experienced': 'CA Fresher (Experienced)',
+        'fresher_experienced': 'Experienced CA',
         'semi_fresher': 'Semi Qualified (Fresher)',
         'semi_experienced': 'Semi Qualified (Experienced)'
     };
