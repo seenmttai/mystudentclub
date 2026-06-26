@@ -9,9 +9,9 @@
            CORE VARIABLES & RESET
            --------------------------------------------------------- */
         :root {
-            --header-bg: #404040;
-            --section-bg: #999999;
-            --table-header-bg: #D9D9D9;
+            --header-bg: var(--header-bg-dark, #404040);
+            --section-bg: var(--accent-color, #999999);
+            --table-header-bg: var(--sub-header-bg, #D9D9D9);
             --cell-bg-grey: #E6E6E6;
             --border-color: #000000;
             --text-black: #000000;
@@ -176,7 +176,7 @@
         
         .exp-col-role {
             width: 18%;
-            background-color: #D9D9D9;
+            background-color: var(--table-header-bg);
             vertical-align: middle;
             text-align: center;
             font-weight: bold;
@@ -204,7 +204,7 @@
         /* SKILLS TABLE */
         .skills-col-label {
             width: 18%;
-            background-color: #D9D9D9;
+            background-color: var(--table-header-bg);
             font-weight: bold;
             text-align: center;
             vertical-align: middle;
