@@ -3,7 +3,7 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/scripts/vendor/pdf.worker.min.js';
 const WORKER_URL = 'https://profile.mystudentclub.com';
-const PHOTO_WORKER_URL = 'https://photo.mystudentclub.com';
+const PHOTO_WORKER_URL = 'https://hire.mystudentclub.com';
 let userPhotoBlobUrl = null;
 
 // DOM refs
@@ -2101,7 +2101,7 @@ async function fetchUserPhoto(userId) {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (!session || !session.access_token) return;
 
-        const response = await fetch(`${PHOTO_WORKER_URL}/image?uuid=${userId}`, {
+        const response = await fetch(`${PHOTO_WORKER_URL}/api/candidate-photo-r2?uuid=${userId}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${session.access_token}`
@@ -4348,7 +4348,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const formData = new FormData();
                 formData.append('image', file);
 
-                const response = await fetch(`${PHOTO_WORKER_URL}/upload`, {
+                const response = await fetch(`${PHOTO_WORKER_URL}/api/upload-photo`, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${session.access_token}`
