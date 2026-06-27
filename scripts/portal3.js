@@ -3397,8 +3397,8 @@ function calculateProfileCompletion() {
 
     if (profile) {
         if (profile.full_name || profile.name) score += 10;
-        if (profile.mobile || profile.phone || profile.phone_number) score += 10;
-        if (profile.city || profile.location) score += 10;
+        if (profile.contact_number || profile.mobile || profile.phone || profile.phone_number) score += 10;
+        if (profile.current_city || profile.city || profile.current_location || profile.location) score += 10;
     }
 
     if (profile && (profile.looking_for || profile.job_preference)) {
