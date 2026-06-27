@@ -500,41 +500,50 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const getDeviceFingerprint = () => {
+        const STORAGE_KEY = 'msc_lms_device_fp';
         try {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) return stored;
+
             const canvas = document.createElement('canvas');
             const ctx = canvas.getContext('2d');
+            let fp;
             if (!ctx) {
-                return btoa(navigator.userAgent + navigator.language + screen.width + "x" + screen.height);
+                fp = btoa(navigator.userAgent + navigator.language + screen.width + "x" + screen.height);
+            } else {
+                canvas.width = 200;
+                canvas.height = 50;
+                ctx.textBaseline = "top";
+                ctx.font = "14px 'Arial'";
+                ctx.textBaseline = "alphabetic";
+                ctx.fillStyle = "#f60";
+                ctx.fillRect(125, 1, 62, 20);
+                ctx.fillStyle = "#069";
+                ctx.fillText("MSC LMS, device check! 😃", 2, 15);
+                ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
+                ctx.fillText("MSC LMS, device check! 😃", 4, 17);
+                const txt = canvas.toDataURL();
+
+                let hash = 0;
+                for (let i = 0; i < txt.length; i++) {
+                    const char = txt.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + char;
+                    hash = hash & hash;
+                }
+
+                const screenStr = `${screen.width}x${screen.height}x${screen.colorDepth}_${navigator.userAgent}_${navigator.language}`;
+                let screenHash = 0;
+                for (let i = 0; i < screenStr.length; i++) {
+                    const char = screenStr.charCodeAt(i);
+                    screenHash = ((screenHash << 5) - screenHash) + char;
+                    screenHash = screenHash & screenHash;
+                }
+
+                fp = `FP_${Math.abs(hash)}_${Math.abs(screenHash)}`;
             }
-            canvas.width = 200;
-            canvas.height = 50;
-            ctx.textBaseline = "top";
-            ctx.font = "14px 'Arial'";
-            ctx.textBaseline = "alphabetic";
-            ctx.fillStyle = "#f60";
-            ctx.fillRect(125, 1, 62, 20);
-            ctx.fillStyle = "#069";
-            ctx.fillText("MSC LMS, device check! 😃", 2, 15);
-            ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
-            ctx.fillText("MSC LMS, device check! 😃", 4, 17);
-            const txt = canvas.toDataURL();
-            
-            let hash = 0;
-            for (let i = 0; i < txt.length; i++) {
-                const char = txt.charCodeAt(i);
-                hash = ((hash << 5) - hash) + char;
-                hash = hash & hash;
-            }
-            
-            const screenStr = `${screen.width}x${screen.height}x${screen.colorDepth}_${navigator.userAgent}_${navigator.language}`;
-            let screenHash = 0;
-            for (let i = 0; i < screenStr.length; i++) {
-                const char = screenStr.charCodeAt(i);
-                screenHash = ((screenHash << 5) - screenHash) + char;
-                screenHash = screenHash & screenHash;
-            }
-            
-            return `FP_${Math.abs(hash)}_${Math.abs(screenHash)}`;
+
+            localStorage.setItem(STORAGE_KEY, fp);
+            return fp;
         } catch (e) {
             return 'FP_FALLBACK_' + btoa(navigator.userAgent + navigator.language + screen.width + "x" + screen.height).slice(0, 32);
         }

@@ -1,8 +1,10 @@
-﻿const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 pdfjsLib.GlobalWorkerOptions.workerSrc = '/scripts/vendor/pdf.worker.min.js';
 const WORKER_URL = 'https://profile.mystudentclub.com';
+const PHOTO_WORKER_URL = 'https://photo.mystudentclub.com';
+let userPhotoBlobUrl = null;
 
 // DOM refs
 const profileForm = document.getElementById('profile-form');
@@ -2093,6 +2095,34 @@ const WZ = (() => {
     return { init };
 })();
 
+// Fetch user's profile photo securely from the worker
+async function fetchUserPhoto(userId) {
+    try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (!session || !session.access_token) return;
+
+        const response = await fetch(`${PHOTO_WORKER_URL}/image?uuid=${userId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${session.access_token}`
+            }
+        });
+
+        if (response.ok) {
+            const blob = await response.blob();
+            if (userPhotoBlobUrl) {
+                URL.revokeObjectURL(userPhotoBlobUrl);
+            }
+            userPhotoBlobUrl = URL.createObjectURL(blob);
+        } else {
+            userPhotoBlobUrl = null;
+        }
+    } catch (e) {
+        console.error('Failed to fetch user photo:', e);
+        userPhotoBlobUrl = null;
+    }
+}
+
 // =================== PROFILE LOAD ===================
 async function loadProfile() {
     if (!currentUser) return null;
@@ -2100,6 +2130,8 @@ async function loadProfile() {
     let profileObj = null;
 
     try {
+        await fetchUserPhoto(currentUser.id);
+
         const { data, error } = await supabaseClient
             .from('profiles')
             .select('profile, ocr_cv, updated_at, looking_for')
@@ -2799,8 +2831,12 @@ function refreshHeader() {
     // Name + avatar
     const nameVal = (d.name || '').trim();
     document.getElementById('displayName').textContent = nameVal || 'Your Name';
-    document.getElementById('avatarImg').src =
-        `https://ui-avatars.com/api/?name=${encodeURIComponent(nameVal || 'U')}&background=e8e8e8&color=555&size=96&bold=true`;
+    const avatarEl = document.getElementById('avatarImg');
+    if (userPhotoBlobUrl) {
+        avatarEl.src = userPhotoBlobUrl;
+    } else {
+        avatarEl.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(nameVal || 'U')}&background=e8e8e8&color=555&size=96&bold=true`;
+    }
 
     // Header details
     document.getElementById('hdLocation').textContent = d.current_city || d.current_location || 'Add location';
@@ -4274,6 +4310,67 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const statusText = document.getElementById('consentStatusText');
                 if (statusText) statusText.textContent = 'Consent withdrawn';
                 showToast('CV sharing consent withdrawn. Your CV will no longer be shared with employers.', 'warning', 8000);
+            }
+        });
+    }
+
+    // ----- Photo Upload handler -----
+    const photoUploadInput = document.getElementById('photoUploadInput');
+    if (photoUploadInput) {
+        photoUploadInput.addEventListener('change', async (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+
+            // Validate size (2MB)
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('Image file size exceeds the 2MB limit. Please upload a smaller file.', 'error');
+                photoUploadInput.value = '';
+                return;
+            }
+
+            // Validate type
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                showToast('Unsupported file format. Please upload JPEG, PNG, or WebP.', 'error');
+                photoUploadInput.value = '';
+                return;
+            }
+
+            showLoading(true, 'Uploading profile photo...');
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (!session || !session.access_token) {
+                    showToast('Session expired. Please log in again.', 'error');
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append('image', file);
+
+                const response = await fetch(`${PHOTO_WORKER_URL}/upload`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${session.access_token}`
+                    },
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (response.ok && result.ok) {
+                    showToast('Profile photo updated successfully!', 'success');
+                    // Reload the image
+                    await fetchUserPhoto(user.id);
+                    refreshHeader();
+                } else {
+                    showToast(result.error || 'Failed to upload photo.', 'error');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Network error while uploading photo.', 'error');
+            } finally {
+                showLoading(false);
+                photoUploadInput.value = '';
             }
         });
     }

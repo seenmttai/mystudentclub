@@ -132,6 +132,35 @@ body {
     object-fit: cover;
 }
 
+/* Avatar Upload Hover Overlay */
+.p2-avatar-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.35rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease, background-color 0.2s;
+    border-radius: 50%;
+    z-index: 10;
+}
+
+.p2-avatar-inner:hover .p2-avatar-overlay {
+    opacity: 1;
+}
+
+.p2-avatar-overlay:hover {
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.p2-avatar-overlay i {
+    pointer-events: none;
+}
+
 .p2-pct-badge {
     position: absolute;
     bottom: -4px;
