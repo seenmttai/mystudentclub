@@ -161,6 +161,32 @@ body {
     pointer-events: none;
 }
 
+/* Floating Action Camera Badge */
+.p2-avatar-upload-badge {
+    position: absolute;
+    bottom: 8px;
+    right: -2px;
+    width: 28px;
+    height: 28px;
+    background: #4f46e5;
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 15;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    border: 2px solid #ffffff;
+}
+
+.p2-avatar-upload-badge:hover {
+    background: #4338ca;
+    transform: scale(1.1);
+}
+
 .p2-pct-badge {
     position: absolute;
     bottom: -4px;
