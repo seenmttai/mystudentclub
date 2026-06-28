@@ -550,63 +550,63 @@ function showModal(job) {
     }
 
     // Build the bottom action link row with View Original Post if available
-    let linksHtml = '';
+    let secondaryActionsHtml = '';
     const connectButtonHtml = `
-        <a href="${connectLink}" id="modalConnectPeersBtn" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(33% - 0.5rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+        <a href="${connectLink}" id="modalConnectPeersBtn" target="_blank" class="btn btn-secondary btn-modal-secondary">
             <i class="fab fa-linkedin"></i>
             Connect to Peers
         </a>`;
     const shareButtonHtml = `
-        <button id="modalShareBtnInline" class="btn btn-secondary" style="flex: 1; min-width: calc(33% - 0.5rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+        <button id="modalShareBtnInline" class="btn btn-secondary btn-modal-secondary">
             <i class="fas fa-share-alt"></i>
             Share this job
         </button>`;
     
     if (job.posts_link) {
         const originalPostHtml = `
-            <a href="${job.posts_link}" id="modalOriginalPostBtn" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(33% - 0.5rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-color: #0a66c2; color: #0a66c2;">
+            <a href="${job.posts_link}" id="modalOriginalPostBtn" target="_blank" class="btn btn-secondary btn-modal-secondary" style="border-color: #0a66c2; color: #0a66c2;">
                 <i class="fab fa-linkedin"></i>
                 Original Post
             </a>`;
-        linksHtml = `
-            <div style="display: flex; gap: 0.5rem; margin-top: 0.75rem; flex-wrap: wrap;">
+        secondaryActionsHtml = `
+            <div class="modal-secondary-actions">
                 ${connectButtonHtml}
                 ${originalPostHtml}
                 ${shareButtonHtml}
             </div>`;
     } else {
-        linksHtml = `
-            <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap;">
+        secondaryActionsHtml = `
+            <div class="modal-secondary-actions">
                 ${connectButtonHtml}
                 ${shareButtonHtml}
             </div>`;
     }
 
-    let actionsHtml = '';
+    let primaryActionsHtml = '';
     if (isMailto) {
         const simpleApplyText = 'Simple Apply';
         const aiApplyText = 'AI Powered Apply';
-        actionsHtml = `
-            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
-                <button id="modalSimpleApplyBtn" class="btn btn-secondary ${buttonClass}" style="flex: 1; min-width: 100%; padding: 0.5rem 1rem; min-height: 3rem;">
+        primaryActionsHtml = `
+            <div class="modal-primary-actions">
+                <button id="modalSimpleApplyBtn" class="btn btn-secondary btn-modal-primary ${buttonClass}">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     <span>${simpleApplyText}</span>
                 </button>
-                <button id="modalAiApplyBtn" class="btn btn-primary ${buttonClass}" style="flex: 1; min-width: 100%; padding: 0.5rem 1rem; min-height: 3rem;">
+                <button id="modalAiApplyBtn" class="btn btn-primary btn-modal-primary ${buttonClass}">
                     <svg fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                     <span class="btn-text">${aiApplyText}</span>
                     <i class="fas fa-spinner fa-spin"></i>
                 </button>
             </div>`;
-        actionsHtml += linksHtml;
     } else {
         const applyText = 'Apply Now';
-        actionsHtml = `
-            <a href="${applyLink}" id="modalExternalApplyBtn" class="btn btn-primary ${buttonClass}" target="_blank" style="padding: 0.5rem 1rem; min-height: 3rem; display: flex; align-items: center; justify-content: center;">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                ${applyText}
-            </a>`;
-        actionsHtml += linksHtml;
+        primaryActionsHtml = `
+            <div class="modal-primary-actions">
+                <a href="${applyLink}" id="modalExternalApplyBtn" class="btn btn-primary btn-modal-primary ${buttonClass}" target="_blank">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    ${applyText}
+                </a>
+            </div>`;
     }
 
     // Compensation display range parsing for modal
@@ -656,7 +656,8 @@ function showModal(job) {
             ${job['Firm Type'] ? `<span class="job-tag"><i class="fas fa-briefcase" style="margin-right: 4px;"></i>${job['Firm Type']}</span>` : ''}
             ${job['Industry Type'] ? `<span class="job-tag"><i class="fas fa-industry" style="margin-right: 4px;"></i>${job['Industry Type']}</span>` : ''}
         </div>
-        <div class="modal-actions" style="display: flex; flex-direction: column; gap: 0;">${actionsHtml}</div>
+        ${primaryActionsHtml}
+        ${secondaryActionsHtml}
         ${tagsSectionsHtml}
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>Apply here!</h3>
