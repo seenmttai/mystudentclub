@@ -674,6 +674,7 @@ const WZ = (() => {
     // ------ Init ------
     function init(profileData, lookingFor) {
         st.profileData = profileData || {};
+        localStorage.removeItem('wz_skipped_fields');
         const isNewUser = !profileData || !profileData.name;
         const hasType = !!lookingFor;
         if (!isNewUser && hasType) {
@@ -1425,11 +1426,9 @@ const WZ = (() => {
             const inp = el.querySelector('#wz-missing-input');
             val = inp ? inp.value.trim() : '';
         }
-        if (val) {
-            st.answers['missing_' + field.id] = val;
-            const mainInput = document.getElementById(field.inputName) || profileForm.elements[field.inputName];
-            if (mainInput) mainInput.value = val;
-        }
+        st.answers['missing_' + field.id] = val;
+        const mainInput = document.getElementById(field.inputName) || profileForm.elements[field.inputName];
+        if (mainInput) mainInput.value = val;
     }
 
     function advanceMissing(_collected) {
