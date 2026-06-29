@@ -394,7 +394,7 @@ function getWzMissingFields(portalType) {
         f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'e.g. Write 1 if First Attempt'),
         f('articleship_firm_type', 'Articleship Firm Type', '🏢', 'radio', true, '', null, ['Big 4', 'Big 6', 'Big 10', 'Mid Size Firm', 'Small Size Firm']),
         f('articleship_domain', 'Articleship Domain(s)', '📂', 'chips', true, '', 'Select all that apply', ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other']),
-        f('articleship_client_industries','Client Industries','🏭', 'text', true, 'e.g., Banking, FMCG, Manufacturing, IT, Pharma', "If you've worked with clients across multiple industries during your articleship, list them separated by commas (e.g., Banking, Manufacturing, FMCG). This helps recruiters understand your industry exposure."),
+        f('articleship_client_industries', 'Articleship Industry Exposure', '🏭', 'chips', true, '', 'Select all industries you gained exposure to during articleship', ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']),
         f('additional_qualifications', 'Additional Qualifications', '🎓', 'chips', true, '', 'Select all that apply', ['CFA', 'CS', 'CMA', 'ACCA', 'CPA', 'FRM', 'MBA', 'LLB', 'DISA', 'CISA', 'Financial Modelling', 'Other']),
     ];
 
@@ -407,7 +407,7 @@ function getWzMissingFields(portalType) {
         f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'e.g. Write 1 if First Attempt'),
         f('articleship_firm_type', 'Articleship Firm Type', '🏢', 'radio', true, '', null, ['Big 4', 'Big 6', 'Big 10', 'Mid Size Firm', 'Small Size Firm']),
         f('articleship_domain', 'Articleship Domain(s)', '📂', 'chips', true, '', 'Select all that apply', ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other']),
-        f('articleship_client_industries','Client Industries','🏭', 'text', true, 'e.g., Banking, FMCG, Manufacturing, IT, Pharma', "If you've worked with clients across multiple industries during your articleship, list them separated by commas (e.g., Banking, Manufacturing, FMCG). This helps recruiters understand your industry exposure."),
+        f('articleship_client_industries', 'Articleship Industry Exposure', '🏭', 'chips', true, '', 'Select all industries you gained exposure to during articleship', ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']),
         f('additional_qualifications', 'Additional Qualifications', '🎓', 'chips', true, '', 'Select all that apply', ['CFA', 'CS', 'CMA', 'ACCA', 'CPA', 'FRM', 'MBA', 'LLB', 'DISA', 'CISA', 'Financial Modelling', 'Other']),
     ];
 
@@ -416,6 +416,10 @@ function getWzMissingFields(portalType) {
         f('emp_job_title',     'Current Job Title', '💼', 'text', true),
         f('emp_current_salary','Current CTC',       '💰', 'text', true),
     ];
+
+    const numPartnersField = f('articleship_num_partners', 'Number of Partners in Articleship Firm', '🤝', 'radio', true, '', null, ['1 (Sole Proprietor)', '2–5', '6–10', '11–20', '21–50', '51+']);
+    const itIndustryField = f('it_company_industry', 'Industrial Training Company Industry', '🏢', 'radio', true, '', 'If you completed Industrial Training, select the industry of your company', ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']);
+    const currentIndustryField = f('current_industry', 'Current Industry', '🏭', 'radio', true, '', null, ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']);
 
     if (portalType === 'industrial') return [
         ...common, ...caInterFields,
@@ -427,11 +431,11 @@ function getWzMissingFields(portalType) {
             'e.g., Immediate Joiner, 1 Month, 2 Months, 3 Months',
             'What is your current notice period?'),
     ];
-    if (portalType === 'articleship') return [...common, ...caInterFields];
-    if (portalType === 'semi_fresher')    return [...common, ...caInterFields];
-    if (portalType === 'semi_experienced')return [...common, ...caInterFields, ...empFields];
-    if (portalType === 'fresher_experienced') return [...common, ...caFinalFields, ...empFields];
-    return [...common, ...caFinalFields]; // fresher_fresher
+    if (portalType === 'articleship') return [...common, ...caInterFields, numPartnersField];
+    if (portalType === 'semi_fresher')    return [...common, ...caInterFields, currentIndustryField];
+    if (portalType === 'semi_experienced')return [...common, ...caInterFields, ...empFields, currentIndustryField];
+    if (portalType === 'fresher_experienced') return [...common, ...caFinalFields, ...empFields, currentIndustryField];
+    return [...common, ...caFinalFields, numPartnersField, itIndustryField]; // fresher_fresher
 }
 
 
@@ -1867,6 +1871,9 @@ const WZ = (() => {
             if (st.answers['preferred_firm_type']) profileData.preferred_firm_type = Array.isArray(st.answers['preferred_firm_type']) ? st.answers['preferred_firm_type'].join(', ') : st.answers['preferred_firm_type'];
             if (st.answers['notice_period']) profileData.notice_period = st.answers['notice_period'];
             if (st.answers['employment_status']) profileData.current_employment_status = st.answers['employment_status'];
+            if (st.answers['missing_articleship_num_partners']) profileData.articleship_num_partners = st.answers['missing_articleship_num_partners'];
+            if (st.answers['missing_it_company_industry']) profileData.it_company_industry = st.answers['missing_it_company_industry'];
+            if (st.answers['missing_current_industry']) profileData.current_industry = st.answers['missing_current_industry'];
 
             // Set job_preference to match programType
             if (st.programType) profileData.job_preference = st.programType;
@@ -1984,6 +1991,18 @@ const WZ = (() => {
             const el = document.getElementById('additional_qualifications');
             if (el) { el.value = st.answers['missing_additional_qualifications']; restoreChipMultiSelect('addl_qual_chips', 'additional_qualifications'); }
         }
+        if (st.answers['missing_articleship_num_partners']) {
+            const el = document.getElementById('articleship_num_partners');
+            if (el) el.value = st.answers['missing_articleship_num_partners'];
+        }
+        if (st.answers['missing_it_company_industry']) {
+            const el = document.getElementById('it_company_industry');
+            if (el) el.value = st.answers['missing_it_company_industry'];
+        }
+        if (st.answers['missing_current_industry']) {
+            const el = document.getElementById('current_industry');
+            if (el) el.value = st.answers['missing_current_industry'];
+        }
 
         if (st.programType) {
             const jp = document.getElementById('job_preference');
@@ -2047,6 +2066,9 @@ const WZ = (() => {
         if (st.answers['preferred_firm_type']) profileData.preferred_firm_type = formatArrayAnswer(st.answers['preferred_firm_type']);
         if (st.answers['notice_period'])       profileData.notice_period = st.answers['notice_period'];
         if (st.answers['employment_status'])   profileData.current_employment_status = st.answers['employment_status'];
+        if (st.answers['missing_articleship_num_partners']) profileData.articleship_num_partners = st.answers['missing_articleship_num_partners'];
+        if (st.answers['missing_it_company_industry']) profileData.it_company_industry = st.answers['missing_it_company_industry'];
+        if (st.answers['missing_current_industry']) profileData.current_industry = st.answers['missing_current_industry'];
         if (st.programType)                    profileData.job_preference = st.programType;
 
         const lookingForVal = st.programType ? typeToLookingFor(st.programType) : undefined;
