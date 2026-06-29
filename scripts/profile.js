@@ -2559,9 +2559,51 @@ async function extractProfileData(images, text, pdfBase64 = null) {
 }
 
 function parseGeminiJson(text) {
+    if (!text) return null;
     try {
-        return JSON.parse(text.replace(/```json/g, '').replace(/```/g, '').trim());
+        let cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim();
+        const startIdx = cleaned.indexOf('{');
+        if (startIdx === -1) return null;
+        
+        let depth = 0;
+        let inString = false;
+        let escapeNext = false;
+        let endIdx = -1;
+        
+        for (let i = startIdx; i < cleaned.length; i++) {
+            const char = cleaned[i];
+            if (escapeNext) {
+                escapeNext = false;
+                continue;
+            }
+            if (char === '\\') {
+                escapeNext = true;
+                continue;
+            }
+            if (char === '"') {
+                inString = !inString;
+                continue;
+            }
+            if (!inString) {
+                if (char === '{') {
+                    depth++;
+                } else if (char === '}') {
+                    depth--;
+                    if (depth === 0) {
+                        endIdx = i;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if (endIdx !== -1) {
+            cleaned = cleaned.substring(startIdx, endIdx + 1);
+        }
+        
+        return JSON.parse(cleaned);
     } catch (e) {
+        console.warn("Failed to parse Gemini JSON:", e);
         return null;
     }
 }
