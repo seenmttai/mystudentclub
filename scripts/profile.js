@@ -419,6 +419,7 @@ function getWzMissingFields(portalType) {
 
     if (portalType === 'industrial') return [
         ...common, ...caInterFields,
+        f('articleship_responsibilities', 'Key Responsibilities', '📝', 'textarea', true, 'Describe your key responsibilities and work done during articleship...', 'Describe your key responsibilities and work done during articleship'),
         f('key_skills', 'Your Skills', '🛠️', 'text', true,
             'e.g., Advanced Excel, Financial Modelling, SAP, Power BI, GST, Direct Tax, Financial Reporting, Internal Audit, Valuation, MIS Reporting',
             'List your technical and professional skills separated by commas. Include software, finance, accounting, tax, audit, and analytical skills that highlight your strengths.'),
@@ -997,27 +998,25 @@ const WZ = (() => {
 
     function buildReview() {
         const groups = buildReviewGroups();
-        const hasAny = groups.some(g => g.fields.some(f => f.value));
-        if (!hasAny) return `<div class="wz-inner"><h2 class="wz-q-title">Almost there!</h2><p class="wz-q-hint">Click Continue to preview your profile.</p></div>`;
         return `<div class="wz-inner" style="max-width:620px;">
-            <div class="wz-q-icon">✅</div>
-            <h2 class="wz-q-title">Review auto-filled details</h2>
-            <p class="wz-q-hint">Your resume was processed. Verify and edit anything that looks wrong.</p>
-            ${groups.filter(g => g.fields.some(f => f.value)).map(g => `
-            <div style="margin-bottom:1.25rem;">
-                <div style="font-size:0.78rem;font-weight:700;color:#999;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">${escHtml(g.label)}</div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                    ${g.fields.filter(f => f.value).map(f => `
-                    <div class="${f.wide ? 'wz-review-field wz-review-field-wide' : 'wz-review-field'}" style="${f.wide ? 'grid-column:1/-1;' : ''}">
-                        <label class="wz-review-field-label">${escHtml(f.label)}</label>
-                        ${f.textarea
-                            ? `<textarea class="wz-input wz-textarea" name="rv_${escHtml(f.key)}" rows="3">${escHtml(f.value)}</textarea>`
-                            : `<input class="wz-input" name="rv_${escHtml(f.key)}" type="text" value="${escHtml(f.value)}">`
-                        }
-                    </div>`).join('')}
-                </div>
-            </div>`).join('')}
-        </div>`;
+             <div class="wz-q-icon">✅</div>
+             <h2 class="wz-q-title">Review auto-filled details</h2>
+             <p class="wz-q-hint">Your resume was processed. Verify and edit anything that looks wrong.</p>
+             ${groups.map(g => `
+             <div style="margin-bottom:1.25rem;">
+                 <div style="font-size:0.78rem;font-weight:700;color:#999;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px;">${escHtml(g.label)}</div>
+                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                     ${g.fields.map(f => `
+                     <div class="${f.wide ? 'wz-review-field wz-review-field-wide' : 'wz-review-field'}" style="${f.wide ? 'grid-column:1/-1;' : ''}">
+                         <label class="wz-review-field-label">${escHtml(f.label)}</label>
+                         ${f.textarea
+                             ? `<textarea class="wz-input wz-textarea" name="rv_${escHtml(f.key)}" rows="3">${escHtml(f.value || '')}</textarea>`
+                             : `<input class="wz-input" name="rv_${escHtml(f.key)}" type="text" value="${escHtml(f.value || '')}">`
+                         }
+                     </div>`).join('')}
+                 </div>
+             </div>`).join('')}
+         </div>`;
     }
 
     function buildPreview() {
@@ -1395,9 +1394,18 @@ const WZ = (() => {
         st.missingQueue = fields.filter(f => {
             if (skipped.includes(f.id)) return false;           // user previously skipped — never re-ask
             if (st.answers['missing_' + f.id]) return false;   // user already answered in wizard
-            if (getFormValue(f.inputName)) return false;        // form already has a DB/profile value
+            
+            const formVal = getFormValue(f.inputName);
+            if (formVal) {
+                // If the field has a value, we only skip it if it came from the DB/profile (pre-existing).
+                // If it was populated by AI in this session (indicated by st.aiData containing the key),
+                // we want the user to review/override it in the step-by-step wizard.
+                const alias = AI_KEY_ALIASES[f.id] || f.inputName || f.id;
+                const wasFilledByAi = st.aiData && st.aiData[alias] !== undefined && st.aiData[alias] !== null && st.aiData[alias] !== '';
+                if (wasFilledByAi) return true;
+                return false; // Already has a DB/profile value and wasn't filled by AI in this session -> skip
+            }
             return true;
-            // Note: AI data is shown as a pre-fill inside the input, not used to skip fields
         });
         st.missingIdx = 0;
     }
@@ -1525,7 +1533,6 @@ const WZ = (() => {
                         { key: 'articleship_start_year',    label: 'Start Year',             value: fv('articleship_start_year') },
                         { key: 'articleship_domain',        label: 'Domain',                 value: fv('articleship_domain') },
                         { key: 'industrial_training_company', label: 'Industrial Training Company', value: fv('industrial_training_company'), wide: true },
-                        { key: 'articleship_responsibilities', label: 'Key Responsibilities', value: fv('articleship_responsibilities'), wide: true, textarea: true },
                         { key: 'it_responsibilities',       label: 'IT Key Responsibilities', value: fv('it_responsibilities'), wide: true, textarea: true },
                     ]
                 },
@@ -1563,7 +1570,6 @@ const WZ = (() => {
                         { key: 'articleship_start_month',     label: 'Start Month',            value: fv('articleship_start_month') },
                         { key: 'articleship_start_year',      label: 'Start Year',             value: fv('articleship_start_year') },
                         { key: 'articleship_domain',          label: 'Domain',                 value: fv('articleship_domain') },
-                        { key: 'articleship_responsibilities', label: 'Key Responsibilities',   value: fv('articleship_responsibilities'), wide: true, textarea: true },
                     ]
                 },
                 {
@@ -1613,7 +1619,6 @@ const WZ = (() => {
                     { key: 'articleship_start_year',      label: 'Start Year',             value: fv('articleship_start_year') },
                     { key: 'articleship_domain',          label: 'Domain',                 value: fv('articleship_domain') },
                     { key: 'industrial_training_company', label: 'Industrial Training Company', value: fv('industrial_training_company'), wide: true },
-                    { key: 'articleship_responsibilities', label: 'Key Responsibilities',  value: fv('articleship_responsibilities'), wide: true, textarea: true },
                 ]
             },
             {

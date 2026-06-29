@@ -9,7 +9,7 @@ Extract CA Inter (cleared), CA Foundation (cleared), and CA Final APPEARANCE (up
 Do NOT extract ca_final_clear_month or ca_final_clear_year — they haven't cleared CA Final.
 Extract articleship details (firm, type, domain) and industrial_training_company if present.
 Do NOT extract emp_company_name/emp_job_title/emp_job_profile — these candidates have no post-qualification employment.`,
-        skipFields: ['ca_final_clear_month','ca_final_clear_year','ca_final_air','emp_company_name','emp_job_title','emp_job_profile','emp_join_year','emp_join_month'],
+        skipFields: ['ca_final_clear_month', 'ca_final_clear_year', 'ca_final_air', 'emp_company_name', 'emp_job_title', 'emp_job_profile', 'emp_join_year', 'emp_join_month'],
     },
     articleship: {
         label: 'CA Articleship candidate',
@@ -18,7 +18,7 @@ Extract CA Inter (cleared), CA Foundation (cleared), and CA Final APPEARANCE (up
 Do NOT extract ca_final_clear_month or ca_final_clear_year.
 Extract articleship details if they have any prior stint.
 Do NOT extract emp_company_name/emp_job_title — no post-qualification employment.`,
-        skipFields: ['ca_final_clear_month','ca_final_clear_year','ca_final_air','emp_company_name','emp_job_title','emp_job_profile','emp_join_year','emp_join_month'],
+        skipFields: ['ca_final_clear_month', 'ca_final_clear_year', 'ca_final_air', 'emp_company_name', 'emp_job_title', 'emp_job_profile', 'emp_join_year', 'emp_join_month'],
     },
     fresher_fresher: {
         label: 'CA Fresher (no post-qualification work experience)',
@@ -27,7 +27,7 @@ Extract full CA Final details (course, attempts, clear month/year, AIR).
 Extract CA Inter and CA Foundation details.
 Extract articleship details and industrial_training_company if present.
 Do NOT extract emp_company_name/emp_job_title/emp_job_profile — this is a fresher with no employment.`,
-        skipFields: ['emp_company_name','emp_job_title','emp_job_profile','emp_join_year','emp_join_month','ca_final_app_month','ca_final_app_year'],
+        skipFields: ['emp_company_name', 'emp_job_title', 'emp_job_profile', 'emp_join_year', 'emp_join_month', 'ca_final_app_month', 'ca_final_app_year'],
     },
     fresher_experienced: {
         label: 'CA Fresher (with post-qualification work experience)',
@@ -36,7 +36,7 @@ Extract full CA Final details (course, attempts, clear month/year, AIR).
 Extract CA Inter and CA Foundation details.
 Extract articleship details, industrial_training_company if present.
 Also extract current/most recent employer details into emp_company_name, emp_job_title, emp_job_profile, emp_join_year, emp_join_month.`,
-        skipFields: ['ca_final_app_month','ca_final_app_year'],
+        skipFields: ['ca_final_app_month', 'ca_final_app_year'],
     },
     semi_fresher: {
         label: 'Semi-Qualified CA (no or limited work experience)',
@@ -191,10 +191,10 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
 ### Articleship:
 49. **articleship_firm_type**: "Big 4", "Big 6", "Big 10", "Mid Size Firm", "Small Size Firm", or "None".
 50. **articleship_firm_name**: Name of the articleship CA firm.
-51. **articleship_start_month**: Month articleship started (abbreviated: "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec").
-52. **articleship_start_year**: Year articleship started (4-digit integer).
-53. **articleship_end_month**: Month articleship ended or expected to end (abbreviated: "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec").
-54. **articleship_end_year**: Year articleship ended or expected to end (4-digit integer).
+51. **articleship_start_month**: Month articleship started.
+52. **articleship_start_year**: Year articleship started.
+53. **articleship_end_month**: Month articleship ended or expected to end.
+54. **articleship_end_year**: Year articleship ended or expected to end.
 55. **articleship_domain**: Comma-separated list of ALL domains the candidate worked in, from: "Statutory Audit", "Internal Audit & Risk", "SOX / IFC Controls", "Forensics & Compliance", "Direct Tax", "Indirect Tax (GST)", "International Taxation", "Transfer Pricing", "Accounting & Reporting", "FP&A", "Controllership", "Treasury", "Costing & Plant Finance", "Supply Chain Finance", "Commercial Finance", "Business Finance", "Consulting", "Due Diligence", "Valuation", "Deals & Transaction Advisory", "M&A Advisory", "Project Finance", "Banking & Credit", "Investment Banking", "Equity Research", "ESG", "Financial Reporting (IND AS / IFRS)", "Data Analytics", "Overall Exposure", "Other". Include every domain mentioned.
 56. **articleship_client_industries**: Comma-separated list of client industries from: "Banking", "Financial Services", "FMCG", "Manufacturing", "Pharma", "IT", "E-Commerce", "Automobile", "Infrastructure", "Real Estate", "Consulting", "Retail", "Energy", "Telecom", "Logistics", "Others".
 57. **articleship_responsibilities**: Paragraph summarising key responsibilities during articleship.
@@ -202,10 +202,10 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
 ### Industrial Training:
 58. **industrial_training_company**: Company name if industrial training is mentioned.
 59. **it_industry**: Industry of the industrial training company.
-60. **it_start_month**: Month IT started (abbreviated: "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec").
-61. **it_start_year**: Year IT started (4-digit integer).
-62. **it_end_month**: Month IT ended (abbreviated: "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec").
-63. **it_end_year**: Year IT ended (4-digit integer).
+60. **it_start_month**: Month IT started.
+61. **it_start_year**: Year IT started.
+62. **it_end_month**: Month IT ended.
+63. **it_end_year**: Year IT ended.
 64. **it_responsibilities**: Key responsibilities during industrial training.
 
 ### Employment (post-qualification jobs only — see portal context):
@@ -257,33 +257,53 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
 - Return empty string "" for fields not found — do not omit keys.
 `;
 
+    // Updated model as per the interactions API
     const primaryModel = "gemini-3.1-flash-lite";
 
     try {
+        // Map images to the new Interactions API format
         const imageParts = (images || []).map((imageData) => ({
-            inline_data: { mime_type: "image/jpeg", data: imageData },
+            type: "image",
+            mime_type: "image/jpeg",
+            data: imageData
         }));
 
+        // Build the combined input array (text + images)
+        let inputArray = [];
+        if (pdfText) {
+            inputArray.push({ type: "text", text: `**Extracted Text from PDF:**\n${pdfText}` });
+        }
+
+        inputArray = inputArray.concat(imageParts);
+
+        // Ensure at least some input exists to prevent API error
+        if (inputArray.length === 0) {
+            inputArray.push({ type: "text", text: "Please extract data according to instructions." });
+        }
+
+        // New payload structure matching the Interactions API
         const requestPayload = {
-            contents: [{
-                parts: [
-                    ...imageParts,
-                    { text: systemPrompt },
-                    { text: pdfText ? `\n\n**Extracted Text from PDF:**\n${pdfText}` : '' }
-                ]
-            }],
-            generationConfig: {
-                temperature: 0.1,
-                maxOutputTokens: 2500,
-                responseMimeType: "application/json",
+            model: primaryModel,
+            system_instruction: systemPrompt,
+            input: inputArray,
+            generation_config: {
+                temperature: 0.1
+            },
+            response_format: {
+                type: "text",
+                mime_type: "application/json"
             }
         };
 
+        // Note the new Endpoint and x-goog-api-key header
         const response = await fetch(
-            `https://generativelanguage.googleapis.com/v1beta/models/${primaryModel}:generateContent?key=${env.GEMINI_API_KEY}`,
+            "https://generativelanguage.googleapis.com/v1beta/interactions",
             {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-goog-api-key": env.GEMINI_API_KEY
+                },
                 body: JSON.stringify(requestPayload),
             }
         );
@@ -296,11 +316,33 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
         const data = await response.json();
         let responseText = null;
 
-        if (data.candidates?.[0]?.content?.parts) {
-            responseText = data.candidates[0].content.parts[0].text;
+        // Extract response from the new Interaction Steps structure
+        if (data.steps && Array.isArray(data.steps)) {
+            // Read backwards to get the final model response
+            for (let i = data.steps.length - 1; i >= 0; i--) {
+                const step = data.steps[i];
+                if (step.text) {
+                    responseText = step.text;
+                    break;
+                }
+                if (step.content && Array.isArray(step.content)) {
+                    for (let j = step.content.length - 1; j >= 0; j--) {
+                        if (step.content[j].text) {
+                            responseText = step.content[j].text;
+                            break;
+                        }
+                    }
+                    if (responseText) break;
+                }
+            }
+        } else if (data.output_text) {
+            responseText = data.output_text;
         }
 
-        if (!responseText) throw new Error("No content returned from Gemini.");
+        // Failsafe stringification if structure behaves unexpectedly
+        if (!responseText) {
+            responseText = JSON.stringify(data);
+        }
 
         return { ok: true, response: responseText, status: 200 };
 
