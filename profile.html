@@ -864,7 +864,7 @@
 
                     <!-- ===== EMPLOYMENT ===== -->
                     <!-- ===== ARTICLESHIP & TRAINING ===== -->
-                    <section class="p2-card" id="sec-articleship">
+                    <section class="p2-card" id="sec-articleship" data-portal="industrial,fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
                         <div class="p2-card-header">
                             <h2>Articleship &amp; Industrial Training <span class="p2-boost" id="empBoost">Add 10%</span></h2>
                         </div>
@@ -1052,12 +1052,13 @@
                     </section>
 
                     <!-- ===== WORK EXPERIENCE ===== -->
-                    <section class="p2-card" id="sec-employment" data-portal="fresher_experienced,semi_experienced">
+                    <section class="p2-card" id="sec-employment" data-portal="fresher_experienced,semi_experienced,articleship">
                         <div class="p2-card-header">
                             <h2>Work Experience</h2>
-                            <a href="javascript:void(0)" class="p2-card-action" id="empEditToggle" data-toggle="sec-experience-form">Add employment</a>
+                            <a href="javascript:void(0)" class="p2-card-action" id="empEditToggle" data-toggle="sec-experience-form">Add experience</a>
                         </div>
-                        <p class="p2-card-sub">Your employment details will help recruiters understand your experience</p>
+                        <p class="p2-card-sub" data-portal="fresher_experienced,semi_experienced">Your employment details will help recruiters understand your experience</p>
+                        <p class="p2-card-sub" data-portal="articleship">Add any prior internship, part-time role, or work experience before your articleship</p>
 
                         <div class="p2-saved-display">
                             <div class="p2-saved-entry" id="emp-org-display" style="display:none;">
@@ -1072,13 +1073,15 @@
                         </div>
 
                         <div class="p2-add-links">
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-experience-form" id="addOrgLink"><i class="fas fa-plus-circle"></i> Add current organization</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-experience-form" id="addOrgLink" data-portal="fresher_experienced,semi_experienced"><i class="fas fa-plus-circle"></i> Add current organization</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-experience-form" id="addOrgLinkArticleship" data-portal="articleship"><i class="fas fa-plus-circle"></i> Add work experience</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-prev-experience-form" id="addPrevOrgLink"><i class="fas fa-plus-circle"></i> Add previous organization</a>
                         </div>
 
                         <!-- Current Employment Form -->
                         <div class="p2-card-form collapsed" id="sec-experience-form">
-                            <div class="p2-inline-form-title">Employment</div>
+                            <div class="p2-inline-form-title" data-portal="fresher_experienced,semi_experienced">Employment</div>
+                            <div class="p2-inline-form-title" data-portal="articleship">Work Experience</div>
                             <div class="p2-card-sub" style="margin-bottom: 1rem; color: #555; font-size:0.85rem;">Details like job title, company name, etc, help employers understand your work</div>
 
                             <div class="p2-form-grid">
@@ -1183,7 +1186,7 @@
                                     </div>
                                     <input type="hidden" id="emp_domain" name="emp_domain">
                                 </div>
-                                <div class="p2-form-row p2-full-width">
+                                <div class="p2-form-row p2-full-width" data-portal="fresher_experienced,semi_experienced">
                                     <label for="emp_current_salary">Current CTC (INR)</label>
                                     <input type="text" id="emp_current_salary" name="emp_current_salary" placeholder="e.g., 12,00,000">
                                 </div>
