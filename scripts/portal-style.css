@@ -1052,6 +1052,19 @@ body {
   background: var(--chip);
   border-radius: 8px;
   padding: 4px 9px;
+  border: 1px solid var(--line);
+  display: inline-flex;
+  align-items: center;
+}
+.jc-chip-domain {
+  color: #2563eb;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+[data-theme="dark"] .jc-chip-domain {
+  color: #93c5fd;
+  background: rgba(37, 99, 235, 0.15);
+  border: 1px solid rgba(147, 197, 253, 0.3);
 }
 .jc-chip-type {
   color: var(--brand);
@@ -1085,6 +1098,11 @@ body {
 .jc-salary-period {
   font-size: 11px;
   font-weight: 500;
+  color: var(--sub);
+}
+.jc-salary-none {
+  font-size: 13px;
+  font-weight: 600;
   color: var(--sub);
 }
 .jc-meta {
@@ -1508,14 +1526,10 @@ body {
   color: var(--sub);
   margin-top: 2px;
 }
-.jd-hero-category {
-  display: inline-block;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--brand);
-  background: rgba(37, 99, 235, 0.1);
-  border-radius: 8px;
-  padding: 3px 10px;
+.jd-meta-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
   margin-bottom: 12px;
 }
 .jd-stats-grid {
@@ -1542,6 +1556,14 @@ body {
   font-size: 14px;
   font-weight: 700;
   color: var(--text);
+}
+.jd-stat-role {
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.15);
+}
+.jd-stat-role-value {
+  color: var(--brand);
+  font-size: 13px;
 }
 .jd-apply-section {
   display: flex;
