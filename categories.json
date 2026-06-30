@@ -28,20 +28,20 @@
     "Other"
   ],
   "Fresher Jobs": [
-    { "group": "Finance", "items": ["FP&A", "Business Finance", "Controllership", "Financial Reporting", "Accounting & Reporting", "MIS Reporting", "Finance & Accounts", "Treasury", "Supply Chain Finance", "Costing & Plant Finance", "Banking & Credit", "Finance"] },
-    { "group": "Audit, Risk & Compliance", "items": ["Statutory Audit", "Internal Audit", "Concurrent Audit", "Risk Advisory", "SOX / IFC Controls", "Forensics", "Compliance"] },
+    { "group": "Finance", "items": ["FP&A", "Business Finance", "Controllership", "Financial Reporting", "Accounting & Reporting", "MIS Reporting", "Supply Chain Finance", "Treasury", "Costing & Plant Finance", "Banking & Credit"] },
+    { "group": "Audit, Risk & Compliance", "items": ["Statutory Audit", "Internal Audit", "Risk Advisory", "SOX / IFC Controls", "Forensics & Compliance"] },
     { "group": "Tax", "items": ["Direct Tax", "Indirect Tax (GST)", "Transfer Pricing", "International Taxation", "M&A Tax"] },
     { "group": "Deals & Capital Markets", "items": ["Deals & Transaction Advisory", "Due Diligence", "Valuation", "Investment Banking", "Equity Research", "Mergers & Acquisitions (M&A)"] },
-    { "group": "Consulting", "items": ["Management Consulting", "Strategy"] },
+    { "group": "Consulting", "items": ["Consulting", "Strategy"] },
     { "group": "Emerging", "items": ["Data Analytics / Power BI", "ESG & Sustainability"] },
     { "group": "Other", "items": ["Other"] }
   ],
   "Semi Qualified Jobs": [
-    { "group": "Finance", "items": ["FP&A", "Business Finance", "Controllership", "Financial Reporting", "Accounting & Reporting", "MIS Reporting", "Finance & Accounts", "Treasury", "Supply Chain Finance", "Costing & Plant Finance", "Banking & Credit", "Finance"] },
-    { "group": "Audit, Risk & Compliance", "items": ["Statutory Audit", "Internal Audit", "Concurrent Audit", "Risk Advisory", "SOX / IFC Controls", "Forensics", "Compliance"] },
+    { "group": "Finance", "items": ["FP&A", "Business Finance", "Controllership", "Financial Reporting", "Accounting & Reporting", "MIS Reporting", "Supply Chain Finance", "Treasury", "Costing & Plant Finance", "Banking & Credit"] },
+    { "group": "Audit, Risk & Compliance", "items": ["Statutory Audit", "Internal Audit", "Risk Advisory", "SOX / IFC Controls", "Forensics & Compliance"] },
     { "group": "Tax", "items": ["Direct Tax", "Indirect Tax (GST)", "Transfer Pricing", "International Taxation", "M&A Tax"] },
     { "group": "Deals & Capital Markets", "items": ["Deals & Transaction Advisory", "Due Diligence", "Valuation", "Investment Banking", "Equity Research", "Mergers & Acquisitions (M&A)"] },
-    { "group": "Consulting", "items": ["Management Consulting", "Strategy"] },
+    { "group": "Consulting", "items": ["Consulting", "Strategy"] },
     { "group": "Emerging", "items": ["Data Analytics / Power BI", "ESG & Sustainability"] },
     { "group": "Other", "items": ["Other"] }
   ],

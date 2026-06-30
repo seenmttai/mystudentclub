@@ -968,7 +968,7 @@
                                     <input type="hidden" id="articleship_domain" name="articleship_domain">
                                 </div>
                                 <div class="p2-form-row p2-full-width">
-                                    <label>Client Industries Exposure</label>
+                                    <label>Client Industries</label>
                                     <div class="p2-chip-group" id="art_client_industries_chips" style="flex-wrap:wrap; gap:0.4rem;">
                                         <label class="p2-chip"><input type="checkbox" value="Banking" style="display:none;"> Banking</label>
                                         <label class="p2-chip"><input type="checkbox" value="Financial Services" style="display:none;"> Financial Services</label>
@@ -1405,15 +1405,25 @@
                                     <div class="p2-char-count"><span id="project-details-left">1000</span> character(s) left</div>
                                 </div>
                                 <div class="p2-form-row p2-full-width">
-                                    <label for="project_attachment">Project attachment (PDF, Excel or any file)</label>
-                                    <input type="file" id="project_attachment" accept=".pdf,.xls,.xlsx,.csv,.doc,.docx,.ppt,.pptx,.txt,.zip,.rar,image/*">
-                                    <input type="hidden" id="project_attachment_name" name="project_attachment_name">
-                                    <div id="project-file-display" style="display:none; margin-top:0.5rem;">
-                                        <div class="p2-file-tag">
-                                            <i class="fas fa-paperclip"></i>
-                                            <span id="project-filename"></span>
-                                            <button type="button" class="p2-remove-file" id="project-file-remove"><i class="fas fa-times"></i></button>
+                                    <label>Project attachment</label>
+                                    <div class="p2-attach-toggle">
+                                        <button type="button" class="p2-attach-opt active" id="proj-attach-file-btn"><i class="fas fa-upload" style="font-size:0.75rem;margin-right:4px;"></i>Upload File</button>
+                                        <button type="button" class="p2-attach-opt" id="proj-attach-link-btn"><i class="fas fa-link" style="font-size:0.75rem;margin-right:4px;"></i>Drive Link</button>
+                                    </div>
+                                    <div id="proj-attach-file-section">
+                                        <input type="file" id="project_attachment" accept=".pdf,.xls,.xlsx,.csv,.doc,.docx,.ppt,.pptx,.txt,.zip,.rar,image/*">
+                                        <input type="hidden" id="project_attachment_name" name="project_attachment_name">
+                                        <div id="project-file-display" style="display:none; margin-top:0.5rem;">
+                                            <div class="p2-file-tag">
+                                                <i class="fas fa-paperclip"></i>
+                                                <span id="project-filename"></span>
+                                                <button type="button" class="p2-remove-file" id="project-file-remove"><i class="fas fa-times"></i></button>
+                                            </div>
                                         </div>
+                                    </div>
+                                    <div id="proj-attach-link-section" style="display:none; margin-top:0.5rem;">
+                                        <input type="url" id="project_drive_link" name="project_drive_link" placeholder="Paste Google Drive or OneDrive link...">
+                                        <p class="p2-attach-link-hint">Make sure the link is set to "Anyone with the link can view"</p>
                                     </div>
                                 </div>
                             </div>

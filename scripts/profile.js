@@ -147,7 +147,7 @@ const ENTRY_CLEAR_MAP = {
     'emp-org-display': ['is_current_employment', 'employment_type', 'emp_exp_years', 'emp_exp_months', 'emp_company_name', 'emp_job_title', 'emp_join_year', 'emp_join_month', 'emp_salary_currency', 'emp_current_salary', 'emp_salary_breakdown', 'emp_skills_hidden', 'emp_job_profile', 'emp_notice_period'],
     'emp-art-display': ['articleship_firm_type', 'articleship_firm_name', 'articleship_domain', 'articleship_domain_other'],
     'emp-it-display': ['industrial_training_company'],
-    'project-entry-display': ['project_title', 'project_tag', 'project_client', 'project_status', 'project_worked_from_year', 'project_worked_from_month', 'project_details', 'project_attachment_name'],
+    'project-entry-display': ['project_title', 'project_tag', 'project_client', 'project_status', 'project_worked_from_year', 'project_worked_from_month', 'project_details', 'project_attachment_name', 'project_drive_link'],
     'key-skills-entry-display': ['key_skills']
 };
 
@@ -305,8 +305,16 @@ const WZ_QUESTION_CONFIGS = {
         id: 'preferred_domains', icon: '🎯',
         question: 'Which domains are you interested in?',
         hint: 'Select all that apply',
-        type: 'chips',
-        options: ['FP&A', 'Business Finance', 'Treasury', 'Controllership', 'Financial Reporting', 'Internal Audit', 'Risk Management', 'Direct Tax', 'GST', 'Transfer Pricing', 'Valuation', 'Due Diligence', 'Investment Banking', 'Equity Research', 'Consulting', 'Data Analytics / Power BI', 'ESG & Sustainability', 'Other'],
+        type: 'chips_grouped',
+        options: [
+            { group: 'Finance', items: ['FP&A', 'Business Finance', 'Controllership', 'Financial Reporting', 'Accounting & Reporting', 'MIS Reporting', 'Supply Chain Finance', 'Treasury', 'Costing & Plant Finance', 'Banking & Credit'] },
+            { group: 'Audit, Risk & Compliance', items: ['Statutory Audit', 'Internal Audit', 'Risk Advisory', 'SOX / IFC Controls', 'Forensics & Compliance'] },
+            { group: 'Tax', items: ['Direct Tax', 'Indirect Tax (GST)', 'Transfer Pricing', 'International Taxation', 'M&A Tax'] },
+            { group: 'Deals & Capital Markets', items: ['Deals & Transaction Advisory', 'Due Diligence', 'Valuation', 'Investment Banking', 'Equity Research', 'Mergers & Acquisitions (M&A)'] },
+            { group: 'Consulting', items: ['Consulting', 'Strategy'] },
+            { group: 'Emerging', items: ['Data Analytics / Power BI', 'ESG & Sustainability'] },
+            { group: 'Other', items: ['Other'] }
+        ],
         profileKey: 'preferred_domains', optional: true
     },
     preferred_domains_industrial: {
@@ -330,7 +338,7 @@ const WZ_QUESTION_CONFIGS = {
         question: 'Which industries would you like to work in?',
         hint: 'Select all that apply',
         type: 'chips',
-        options: ['Banking', 'Financial Services', 'FMCG', 'Manufacturing', 'Pharma', 'IT', 'E-Commerce', 'Automobile', 'Infrastructure', 'Real Estate', 'Consulting', 'Retail', 'Energy', 'Telecom', 'Logistics', 'Others'],
+        options: ['CA Firms', 'Banking', 'Financial Services', 'Consulting', 'IT & ITES', 'FMCG / FMCD', 'Manufacturing', 'Automobile', 'Pharma & Healthcare', 'E-Commerce', 'Retail', 'Infrastructure & Real Estate', 'Energy, Oil & Gas', 'Telecom', 'Logistics & Supply Chain', 'FinTech', 'GCC / Shared Services', 'Startups', 'Media & Entertainment', 'Education (EdTech)', 'Hospitality & Travel', 'Chemicals', 'Metals & Mining', 'Power & Utilities', 'Government / PSU', 'NGO / Non-Profit', 'Other'],
         profileKey: 'preferred_industries', optional: true
     },
     preferred_industries_industrial: {
@@ -363,6 +371,21 @@ const WZ_QUESTION_CONFIGS = {
             { label: 'Currently Unemployed / Actively looking', value: 'Unemployed' }
         ],
         profileKey: 'current_employment_status', optional: false
+    },
+    yoe_experienced: {
+        id: 'yoe_experienced', icon: '📅',
+        question: 'How many years of post-qualification experience do you have?',
+        hint: null, type: 'radio',
+        options: [
+            { label: '1 Year', value: '1 Year' },
+            { label: '2 Years', value: '2 Years' },
+            { label: '3 Years', value: '3 Years' },
+            { label: '4 Years', value: '4 Years' },
+            { label: '5 Years', value: '5 Years' },
+            { label: '6–10 Years', value: '6 Years' },
+            { label: '10+ Years', value: '10 Years' }
+        ],
+        profileKey: 'emp_exp_years', optional: false
     }
 };
 
@@ -370,7 +393,7 @@ const WZ_ROLE_QUESTIONS = {
     'industrial':          ['preferred_locations', 'joining_date', 'expected_stipend', 'preferred_domains_industrial', 'preferred_industries_industrial'],
     'articleship':         ['preferred_locations', 'relocation', 'joining_date', 'expected_stipend', 'preferred_domains', 'preferred_firm_type', 'preferred_industries'],
     'fresher_fresher':     ['preferred_locations', 'relocation', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries'],
-    'fresher_experienced': ['preferred_locations', 'relocation', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'notice_period'],
+    'fresher_experienced': ['yoe_experienced', 'preferred_locations', 'relocation', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'notice_period'],
     'semi_fresher':        ['preferred_locations', 'relocation', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
     'semi_experienced':    ['preferred_locations', 'relocation', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
 };
@@ -391,23 +414,23 @@ function getWzMissingFields(portalType) {
     const caInterFields = [
         f('ca_inter_clear_year',          'CA Inter Cleared Year',              '📚', 'text',   true),
         f('ca_inter_score',               'CA Inter Score %',                   '📊', 'text',   true),
-        f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'e.g. Write 1 if First Attempt'),
+        f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'If First Attempt, 1'),
         f('articleship_firm_type', 'Articleship Firm Type', '🏢', 'radio', true, '', null, ['Big 4', 'Big 6', 'Big 10', 'Mid Size Firm', 'Small Size Firm']),
         f('articleship_domain', 'Articleship Domain(s)', '📂', 'chips', true, '', 'Select all that apply', ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other']),
-        f('articleship_client_industries', 'Articleship Industry Exposure', '🏭', 'chips', true, '', 'Select all industries you gained exposure to during articleship', ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']),
+        f('articleship_client_industries', 'Client Industries', '🏭', 'text', true, 'e.g., Banking, FMCG, Manufacturing, IT, Pharma', 'If you\'ve worked with clients across multiple industries during your articleship, list them separated by commas (e.g., Banking, Manufacturing, FMCG). This helps recruiters understand your industry exposure.'),
         f('additional_qualifications', 'Additional Qualifications', '🎓', 'chips', true, '', 'Select all that apply', ['CFA', 'CS', 'CMA', 'ACCA', 'CPA', 'FRM', 'MBA', 'LLB', 'DISA', 'CISA', 'Financial Modelling', 'Other']),
     ];
 
     const caFinalFields = [
         f('ca_final_clear_year',          'CA Final Cleared Year',              '🏆', 'text',   true),
         f('ca_final_score',               'CA Final Score %',                   '📊', 'text',   true),
-        f('ca_final_attempts',            'CA Final Attempts',                  '🔄', 'number', true),
+        f('ca_final_attempts',            'CA Final Attempts',                  '🔄', 'number', true, 'If First Attempt, 1'),
         f('ca_inter_clear_year',          'CA Inter Cleared Year',              '📚', 'text',   true),
         f('ca_inter_score',               'CA Inter Score %',                   '📊', 'text',   true),
-        f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'e.g. Write 1 if First Attempt'),
+        f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'If First Attempt, 1'),
         f('articleship_firm_type', 'Articleship Firm Type', '🏢', 'radio', true, '', null, ['Big 4', 'Big 6', 'Big 10', 'Mid Size Firm', 'Small Size Firm']),
         f('articleship_domain', 'Articleship Domain(s)', '📂', 'chips', true, '', 'Select all that apply', ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other']),
-        f('articleship_client_industries', 'Articleship Industry Exposure', '🏭', 'chips', true, '', 'Select all industries you gained exposure to during articleship', ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']),
+        f('articleship_client_industries', 'Client Industries', '🏭', 'text', true, 'e.g., Banking, FMCG, Manufacturing, IT, Pharma', 'If you\'ve worked with clients across multiple industries during your articleship, list them separated by commas (e.g., Banking, Manufacturing, FMCG). This helps recruiters understand your industry exposure.'),
         f('additional_qualifications', 'Additional Qualifications', '🎓', 'chips', true, '', 'Select all that apply', ['CFA', 'CS', 'CMA', 'ACCA', 'CPA', 'FRM', 'MBA', 'LLB', 'DISA', 'CISA', 'Financial Modelling', 'Other']),
     ];
 
@@ -901,15 +924,15 @@ const WZ = (() => {
                 <div class="wz-radio-card" data-sub="fresher_fresher">
                     <div class="wz-radio-dot"></div>
                     <div>
-                        <div class="wz-radio-label">Fresher (0–2 years)</div>
-                        <div class="wz-radio-sub">No significant post-qualification experience</div>
+                        <div class="wz-radio-label">Fresher</div>
+                        <div class="wz-radio-sub">No post-qualification work experience</div>
                     </div>
                 </div>
                 <div class="wz-radio-card" data-sub="fresher_experienced">
                     <div class="wz-radio-dot"></div>
                     <div>
-                        <div class="wz-radio-label">Experienced (2+ years)</div>
-                        <div class="wz-radio-sub">Post-qualification work experience</div>
+                        <div class="wz-radio-label">Experienced</div>
+                        <div class="wz-radio-sub">Have post-qualification work experience</div>
                     </div>
                 </div>
             </div>
@@ -930,6 +953,16 @@ const WZ = (() => {
                         <div class="wz-radio-dot"></div>
                         <div><div class="wz-radio-label">${escHtml(lbl)}</div></div>
                     </div>`;
+                }).join('') + `</div>`;
+        } else if (cfg.type === 'chips_grouped') {
+            const savedArr = Array.isArray(saved) ? saved : [];
+            inputHtml = `<div class="wz-chip-grid" id="wz-q-chips">` +
+                cfg.options.map(group => {
+                    const chips = group.items.map(o => {
+                        const sel = savedArr.includes(o) ? ' wz-selected' : '';
+                        return `<span class="wz-chip${sel}" data-val="${escHtml(o)}">${escHtml(o)}</span>`;
+                    }).join('');
+                    return `<span class="wz-chip-group-label">${escHtml(group.group)}</span>${chips}`;
                 }).join('') + `</div>`;
         } else if (cfg.type === 'chips' || cfg.type === 'chips_custom') {
             const savedArr = Array.isArray(saved) ? saved : [];
@@ -1186,7 +1219,7 @@ const WZ = (() => {
                     card.classList.add('wz-selected');
                 });
             });
-        } else if (cfg.type === 'chips' || cfg.type === 'chips_custom') {
+        } else if (cfg.type === 'chips' || cfg.type === 'chips_custom' || cfg.type === 'chips_grouped') {
             el.querySelectorAll('.wz-chip').forEach(chip => {
                 chip.addEventListener('click', () => chip.classList.toggle('wz-selected'));
             });
@@ -1349,7 +1382,7 @@ const WZ = (() => {
         if (cfg.type === 'radio') {
             const sel = el.querySelector('.wz-radio-card.wz-selected');
             val = sel ? sel.getAttribute('data-val') : null;
-        } else if (cfg.type === 'chips' || cfg.type === 'chips_custom') {
+        } else if (cfg.type === 'chips' || cfg.type === 'chips_custom' || cfg.type === 'chips_grouped') {
             val = Array.from(el.querySelectorAll('.wz-chip.wz-selected')).map(c => c.getAttribute('data-val'));
             if (!val.length) val = null;
         } else if (cfg.type === 'date') {
@@ -1870,6 +1903,7 @@ const WZ = (() => {
             if (st.answers['preferred_firm_type']) profileData.preferred_firm_type = Array.isArray(st.answers['preferred_firm_type']) ? st.answers['preferred_firm_type'].join(', ') : st.answers['preferred_firm_type'];
             if (st.answers['notice_period']) profileData.notice_period = st.answers['notice_period'];
             if (st.answers['employment_status']) profileData.current_employment_status = st.answers['employment_status'];
+            if (st.answers['yoe_experienced']) profileData.emp_exp_years = st.answers['yoe_experienced'];
             if (st.answers['missing_articleship_num_partners']) profileData.articleship_num_partners = st.answers['missing_articleship_num_partners'];
             if (st.answers['missing_it_company_industry']) profileData.it_company_industry = st.answers['missing_it_company_industry'];
             if (st.answers['missing_current_industry']) profileData.current_industry = st.answers['missing_current_industry'];
@@ -1943,6 +1977,10 @@ const WZ = (() => {
         if (st.answers['notice_period']) {
             const el = document.getElementById('notice_period') || profileForm.elements['notice_period'];
             if (el) el.value = st.answers['notice_period'];
+        }
+        if (st.answers['yoe_experienced']) {
+            const el = document.getElementById('emp_exp_years') || profileForm.elements['emp_exp_years'];
+            if (el) el.value = st.answers['yoe_experienced'];
         }
         if (st.answers['expected_stipend']) {
             const el = document.getElementById('expected_stipend_min') || profileForm.elements['expected_stipend_min'];
@@ -2267,8 +2305,12 @@ function populateForm(profileData) {
 
     if (profileData.project_attachment_name) {
         showProjectFileDisplay(profileData.project_attachment_name);
+        setProjectAttachTab('file');
+    } else if (profileData.project_drive_link) {
+        setProjectAttachTab('link');
     } else {
         hideProjectFileDisplay();
+        setProjectAttachTab('file');
     }
 
     if (profileData.emp_skills_hidden) {
@@ -2333,6 +2375,25 @@ function hideProjectFileDisplay() {
     if (display) display.style.display = 'none';
 }
 
+function setProjectAttachTab(tab) {
+    const fileBtn = document.getElementById('proj-attach-file-btn');
+    const linkBtn = document.getElementById('proj-attach-link-btn');
+    const fileSection = document.getElementById('proj-attach-file-section');
+    const linkSection = document.getElementById('proj-attach-link-section');
+    if (!fileBtn || !linkBtn || !fileSection || !linkSection) return;
+    if (tab === 'link') {
+        fileBtn.classList.remove('active');
+        linkBtn.classList.add('active');
+        fileSection.style.display = 'none';
+        linkSection.style.display = '';
+    } else {
+        linkBtn.classList.remove('active');
+        fileBtn.classList.add('active');
+        fileSection.style.display = '';
+        linkSection.style.display = 'none';
+    }
+}
+
 function clearFormValueByName(name) {
     const nodes = profileForm.querySelectorAll(`[name="${name}"]`);
     if (!nodes.length) return;
@@ -2386,6 +2447,9 @@ function clearEntryData(entryId) {
 
     if (entryId === 'project-entry-display') {
         hideProjectFileDisplay();
+        const driveInput = document.getElementById('project_drive_link');
+        if (driveInput) driveInput.value = '';
+        setProjectAttachTab('file');
     }
 
     if (entryId === 'summary-entry-display') {
@@ -3488,8 +3552,24 @@ function refreshSavedDisplays(d) {
         const projectDescDisplay = document.getElementById('project-desc-display');
         if (projectDescDisplay) projectDescDisplay.textContent = (d.project_details || '').trim();
         const attachmentName = (d.project_attachment_name || '').trim();
+        const driveLink = (d.project_drive_link || '').trim();
         const projectAttachmentDisplay = document.getElementById('project-attachment-display');
-        if (projectAttachmentDisplay) projectAttachmentDisplay.textContent = attachmentName ? `Attachment: ${attachmentName}` : '';
+        if (projectAttachmentDisplay) {
+            if (attachmentName) {
+                projectAttachmentDisplay.textContent = `Attachment: ${attachmentName}`;
+            } else if (driveLink) {
+                projectAttachmentDisplay.innerHTML = '';
+                const a = document.createElement('a');
+                a.href = driveLink;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.style.cssText = 'color:var(--p2-blue);font-size:0.85rem;';
+                a.innerHTML = '<i class="fas fa-link" style="margin-right:4px;"></i>View Drive Link';
+                projectAttachmentDisplay.appendChild(a);
+            } else {
+                projectAttachmentDisplay.textContent = '';
+            }
+        }
 
         if (addProjectLink) addProjectLink.style.display = 'none';
         if (projectEditToggle) projectEditToggle.textContent = 'Edit project';
@@ -4018,6 +4098,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         clearEntryData(removeBtn.getAttribute('data-entry-id'));
     });
 
+    // Project attachment tab toggle
+    const projAttachFileBtn = document.getElementById('proj-attach-file-btn');
+    const projAttachLinkBtn = document.getElementById('proj-attach-link-btn');
+    if (projAttachFileBtn) {
+        projAttachFileBtn.addEventListener('click', () => {
+            const driveInput = document.getElementById('project_drive_link');
+            if (driveInput) driveInput.value = '';
+            setProjectAttachTab('file');
+            refreshHeader();
+        });
+    }
+    if (projAttachLinkBtn) {
+        projAttachLinkBtn.addEventListener('click', () => {
+            hideProjectFileDisplay();
+            setProjectAttachTab('link');
+            refreshHeader();
+        });
+    }
+
     // Project attachment selection
     const projectAttachmentInput = document.getElementById('project_attachment');
     const projectFileRemoveBtn = document.getElementById('project-file-remove');
@@ -4034,6 +4133,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             hideProjectFileDisplay();
             refreshHeader();
         });
+    }
+
+    // Drive link change → refresh display
+    const projectDriveLinkInput = document.getElementById('project_drive_link');
+    if (projectDriveLinkInput) {
+        projectDriveLinkInput.addEventListener('input', refreshHeader);
     }
 
     // Project details character counter

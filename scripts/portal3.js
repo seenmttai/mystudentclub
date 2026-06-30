@@ -3199,12 +3199,14 @@ function initOnboardingSegmentForm() {
         if (!monthEl || !yearEl || !clearedEl || !hiddenEl) return;
 
         function update() {
+            const hasDate = monthEl.value && yearEl.value;
             if (clearedEl.checked) {
-                hiddenEl.value = clearedId === 'ca_inter_cleared' ? 'Cleared Both Groups' : 'Cleared';
                 rowEl.classList.add('cleared-active');
+                const clearedLabel = clearedId === 'ca_inter_cleared' ? 'Cleared Both Groups' : 'Cleared';
+                hiddenEl.value = hasDate ? `${monthEl.value} ${yearEl.value} (${clearedLabel})` : clearedLabel;
             } else {
                 rowEl.classList.remove('cleared-active');
-                hiddenEl.value = (monthEl.value && yearEl.value) ? `${monthEl.value} ${yearEl.value}` : '';
+                hiddenEl.value = hasDate ? `${monthEl.value} ${yearEl.value}` : '';
             }
         }
 
