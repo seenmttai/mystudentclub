@@ -1522,7 +1522,6 @@ async function prefetchEnrollmentStatus(userId) {
 function isEnrolledSync(tableName) {
     if (!enrollmentStatusCache) return false;
     if (tableName === 'Industrial Training Job Portal') return enrollmentStatusCache.industrialTraining;
-    if (tableName === 'Fresher Jobs') return enrollmentStatusCache.freshers;
     return enrollmentStatusCache.any;
 }
 
