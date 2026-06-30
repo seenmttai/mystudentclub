@@ -2229,9 +2229,6 @@ function populateForm(profileData) {
         const field = profileForm.elements[key];
         if (field) field.value = profileData[key];
     }
-    // Ensure profile visibility always defaults to visible
-    const visField = profileForm.elements['profile_visibility'];
-    if (visField && !visField.value) visField.value = 'Visible to Recruiters';
 
     const emailField = document.getElementById('email');
     if (emailField && !emailField.value && currentUser?.email) {
