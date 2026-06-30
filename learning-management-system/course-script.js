@@ -516,7 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await checkEnrollment();
             await loadDynamicBanner();
         } else {
-            window.location.href = 'https://mystudentclub.com/login';
+            window.location.href = '/login';
         }
     };
 
@@ -1568,13 +1568,13 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.hamburgerMenu.addEventListener('click', () => DOMElements.navLinks.classList.toggle('active'));
         window._lmsLogout = async () => {
             await supabase.auth.signOut();
-            window.location.href = 'https://mystudentclub.com/login';
+            window.location.href = '/login';
         };
         DOMElements.logoutButton.addEventListener('click', window._lmsLogout);
 
 
         DOMElements.enrollRedirectBtn.addEventListener('click', () => {
-            window.location.href = 'https://mystudentclub.com/login';
+            window.location.href = '/login';
         });
 
         if (DOMElements.downloadCertificateBtn) {
@@ -1704,7 +1704,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 DOMElements.profileDropdownEmail.textContent = session.user.email;
                 if (!state.isEnrolled) await checkEnrollment();
             } else {
-                window.location.href = 'https://mystudentclub.com/login';
+                window.location.href = '/login';
             }
         });
     };

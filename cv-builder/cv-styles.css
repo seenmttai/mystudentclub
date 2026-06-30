@@ -1,25 +1,181 @@
+        /* Airy Flow design tokens (light) */
         :root {
-            --primary: #3b82f6;
-            --primary-hover: #2563eb;
-            --primary-light: #eff6ff;
-            --secondary: #64748b;
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --primary-light: #eef4ff;
+            --secondary: #647592;
             --success: #10b981;
             --danger: #ef4444;
-            --bg-app: #f8fafc;
+            --bg-app: #f4f7fe;
             --bg-panel: #ffffff;
-            --bg-hover: #f1f5f9;
-            --border-color: #e2e8f0;
-            --border-dark: #cbd5e1;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --text-light: #94a3b8;
+            --bg-hover: #f1f5fc;
+            --border-color: #e9eef7;
+            --border-dark: #d8e0ee;
+            --text-main: #0f1b2d;
+            --text-muted: #647592;
+            --text-sub: #647592;
+            --text-light: #93a1b8;
             --radius-md: 14px;
             --radius-sm: 8px;
-            --radius-lg: 16px;
-            --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
-            --shadow-sm: 0 2px 4px 0 rgba(0, 0, 0, 0.05);
-            --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
-            --shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.1);
+            --radius-lg: 20px;
+            --shadow-xs: 0 2px 8px rgba(15, 27, 45, 0.04);
+            --shadow-sm: 0 2px 8px rgba(15, 27, 45, 0.05);
+            --shadow-md: 0 6px 18px rgba(15, 27, 45, 0.07);
+            --shadow-lg: 0 12px 32px rgba(15, 27, 45, 0.12);
+        }
+
+        /* Airy Flow dark mode — editor chrome only (CV preview stays paper-white) */
+        [data-theme="dark"] {
+            --primary: #4f8aff;
+            --primary-hover: #6f9fff;
+            --primary-light: rgba(79, 138, 255, 0.14);
+            --secondary: #8896ae;
+            --bg-app: #0f1117;
+            --bg-panel: #1a1d27;
+            --bg-hover: #1e2130;
+            --border-color: #252836;
+            --border-dark: #323647;
+            --text-main: #edf2ff;
+            --text-muted: #8896ae;
+            --text-sub: #8896ae;
+            --text-light: #6b7790;
+            --shadow-xs: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+            --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.45);
+            --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.55);
+        }
+
+        /* Dark overrides for rules with hardcoded light colors */
+        [data-theme="dark"] .editor {
+            background: linear-gradient(180deg, var(--bg-panel) 0%, var(--bg-app) 100%);
+        }
+        [data-theme="dark"] .editor-header {
+            background: var(--bg-panel);
+        }
+        [data-theme="dark"] .preview {
+            background: radial-gradient(circle at top, #14171f 0, #0f1117 60%, #0b0d12 100%);
+        }
+        [data-theme="dark"] .preview-wrapper {
+            background: var(--bg-panel);
+            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.6);
+        }
+        /* Card / surface backgrounds */
+        [data-theme="dark"] .list-item,
+        [data-theme="dark"] .undo-redo-btn,
+        [data-theme="dark"] .template-sidebar,
+        [data-theme="dark"] .template-card,
+        [data-theme="dark"] .template-theme-reset,
+        [data-theme="dark"] #theme-accent-picker,
+        [data-theme="dark"] .template-theme-chip,
+        [data-theme="dark"] .table-format-number,
+        [data-theme="dark"] .reorder-drawer,
+        [data-theme="dark"] .reorder-item,
+        [data-theme="dark"] .reorder-drawer-actions,
+        [data-theme="dark"] .summary-link-popover,
+        [data-theme="dark"] .ai-prompt-card,
+        [data-theme="dark"] .ai-preview-card,
+        [data-theme="dark"] .drop-area,
+        [data-theme="dark"] .preview-thumb,
+        [data-theme="dark"] .score-notes,
+        [data-theme="dark"] .review-card,
+        [data-theme="dark"] .history-item,
+        [data-theme="dark"] .reviewer-header-bar,
+        [data-theme="dark"] .mobile-history-btn {
+            background: var(--bg-panel);
+            border-color: var(--border-color);
+        }
+        /* Recessed / secondary surfaces */
+        [data-theme="dark"] .summary-rich-toolbar.ql-toolbar.ql-snow,
+        [data-theme="dark"] .inline-rich-toolbar.ql-toolbar.ql-snow,
+        [data-theme="dark"] .summary-link-btn,
+        [data-theme="dark"] .btn-mini,
+        [data-theme="dark"] .action-btn,
+        [data-theme="dark"] .undo-redo-btn:hover,
+        [data-theme="dark"] .undo-redo-btn:disabled,
+        [data-theme="dark"] .template-sidebar-header,
+        [data-theme="dark"] .template-card-preview,
+        [data-theme="dark"] .table-format-panel-wrap,
+        [data-theme="dark"] .reorder-drawer-header,
+        [data-theme="dark"] .reorder-mini-btn,
+        [data-theme="dark"] .ai-prompt-close,
+        [data-theme="dark"] .ai-prompt-chip,
+        [data-theme="dark"] .ai-preview-pane,
+        [data-theme="dark"] .review-card .section-header,
+        [data-theme="dark"] .history-card,
+        [data-theme="dark"] .mobile-history-btn:disabled {
+            background: var(--bg-hover);
+            border-color: var(--border-color);
+        }
+        [data-theme="dark"] .review-card .section-header:hover {
+            background: var(--border-color);
+        }
+        /* Quill editor surfaces */
+        [data-theme="dark"] .summary-rich-container.ql-container.ql-snow {
+            background: var(--bg-panel);
+        }
+        /* Primary text overrides */
+        [data-theme="dark"] .template-sidebar-header h3,
+        [data-theme="dark"] .template-card-name,
+        [data-theme="dark"] .template-theme-title,
+        [data-theme="dark"] .ai-prompt-header h3,
+        [data-theme="dark"] .ai-prompt-close,
+        [data-theme="dark"] .ai-preview-header h3,
+        [data-theme="dark"] .ai-preview-content,
+        [data-theme="dark"] .action-btn:hover {
+            color: var(--text-main);
+        }
+        /* Muted text overrides */
+        [data-theme="dark"] .template-sidebar-close,
+        [data-theme="dark"] .template-theme-subtitle,
+        [data-theme="dark"] .template-theme-reset,
+        [data-theme="dark"] .template-theme-custom label,
+        [data-theme="dark"] .template-theme-chip,
+        [data-theme="dark"] .ai-prompt-sub,
+        [data-theme="dark"] .ai-preview-label,
+        [data-theme="dark"] .action-btn {
+            color: var(--text-muted);
+        }
+        [data-theme="dark"] .template-sidebar-close:hover {
+            color: var(--text-main);
+        }
+        [data-theme="dark"] .feedback-bullet::before {
+            color: var(--text-main);
+        }
+        /* Decorative gradients → flat tokens */
+        [data-theme="dark"] .template-theme-panel {
+            background: var(--bg-panel);
+        }
+        [data-theme="dark"] .template-card-name {
+            background: linear-gradient(transparent, rgba(20, 23, 31, 0.95));
+        }
+        [data-theme="dark"] .table-format-panel-wrap {
+            background: var(--bg-hover);
+        }
+        /* Light scrim overlays → dark scrims */
+        [data-theme="dark"] .loading-overlay {
+            background: rgba(15, 17, 23, 0.7);
+        }
+        [data-theme="dark"] .reviewer-overlay {
+            background: rgba(15, 17, 23, 0.98);
+        }
+        /* Toast: avoid light-on-light in dark mode */
+        [data-theme="dark"] #toast {
+            background: var(--bg-panel);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+        /* Floating template pill */
+        [data-theme="dark"] .template-floater {
+            background: rgba(26, 29, 39, 0.92);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+        [data-theme="dark"] .mobile-history-controls {
+            background: rgba(26, 29, 39, 0.96);
+            border-color: var(--border-color);
+        }
+        [data-theme="dark"] .history-delete:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
         }
 
         /* Custom Tour Popover Styles */
@@ -135,7 +291,7 @@
             margin: 0;
             display: flex;
             height: 100vh;
-            font-family: 'Inter', -apple-system, sans-serif;
+            font-family: 'Poppins', -apple-system, sans-serif;
             background: var(--bg-app);
             color: var(--text-main);
             overflow: hidden;
@@ -157,16 +313,57 @@
 
         .editor-header {
             padding: 20px 24px 16px;
-            background: radial-gradient(circle at top left, #f9fafb 0, #ffffff 55%, #eef2ff 120%);
+            background: var(--bg-panel);
             border-bottom: 1px solid var(--border-color);
             z-index: 10;
         }
 
+        /* Airy Flow app-header (logo left, icon actions right) */
         .brand-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 10px;
             margin-bottom: 16px;
+        }
+
+        /* Airy Flow icon button (matches portal .hdr-icon-btn) */
+        .hdr-icon-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            color: var(--text-main);
+            transition: background 0.15s ease;
+            cursor: pointer;
+            flex-shrink: 0;
+            padding: 0;
+        }
+
+        .hdr-icon-btn:hover {
+            background: var(--bg-hover);
+        }
+
+        .hdr-icon-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .hdr-actions {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        /* AI Enhance keeps its signature gradient but matches header height */
+        .hdr-actions .btn-magic {
+            height: 40px;
+            border-radius: 12px;
+            padding: 0 14px;
         }
 
         .app-logo {
@@ -342,6 +539,20 @@
         .btn-magic:hover {
             box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
             transform: translateY(-1px);
+        }
+
+        /* Theme toggle: sun in light mode, moon in dark mode (matches portal) */
+        #themeToggleBtn .icon-moon {
+            display: none;
+        }
+        #themeToggleBtn .icon-sun {
+            display: block;
+        }
+        [data-theme="dark"] #themeToggleBtn .icon-moon {
+            display: block;
+        }
+        [data-theme="dark"] #themeToggleBtn .icon-sun {
+            display: none;
         }
 
         /* Progress Bar */
