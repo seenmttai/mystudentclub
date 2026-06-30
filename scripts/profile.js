@@ -856,8 +856,8 @@ const WZ = (() => {
             <button type="button" class="wz-cv-skip" id="wz-cv-skip-upload">Continue Without Resume</button>`}
             <div class="wz-consent-card">
                 <label class="wz-consent-label" for="wz-consent-chk">
-                    <input type="checkbox" id="wz-consent-chk" ${document.getElementById('cvSharingConsent')?.checked ? 'checked' : ''}>
-                    <span>I consent to My Student Club sharing my CV and profile details with registered companies and recruiters for job-matching purposes.</span>
+                    <input type="checkbox" id="wz-consent-chk">
+                    <span>I consent to My Student Club sharing my CV and complete profile details with potential companies and recruiters for job-matching purposes.</span>
                 </label>
                 <div class="wz-consent-footer">
                     <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer" class="wz-consent-link"><i class="fas fa-external-link-alt"></i> Privacy Policy</a>
@@ -1252,8 +1252,7 @@ const WZ = (() => {
     function handleNext() {
         const phase = st.phase;
         if (phase === 'cv') {
-            const consentGiven = document.getElementById('wz-consent-chk')?.checked
-                || document.getElementById('cvSharingConsent')?.checked;
+            const consentGiven = document.getElementById('wz-consent-chk')?.checked;
             if (!consentGiven) {
                 showToast('Please accept the data sharing consent to continue.', 'warning', 5000);
                 return;
@@ -2645,7 +2644,7 @@ function clearCloudSyncFlag() {
 }
 
 // =================== DPDP CONSENT MANAGEMENT ===================
-const CONSENT_TEXT = 'I consent to My Student Club sharing my CV and profile details with registered companies and recruiters for job-matching purposes.';
+const CONSENT_TEXT = 'I consent to My Student Club sharing my CV and complete profile details with potential companies and recruiters for job-matching purposes.';
 
 async function loadConsentStatus() {
     if (!currentUser) return;

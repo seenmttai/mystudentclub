@@ -2712,7 +2712,7 @@ document.getElementById('resumePromptModal')?.addEventListener('click', (e) => {
 });
 
 // =================== DPDP CONSENT CHECK ===================
-const DPDP_CONSENT_TEXT = 'I consent to My Student Club sharing my CV and profile details with registered companies and recruiters for job-matching purposes.';
+const DPDP_CONSENT_TEXT = 'I consent to My Student Club sharing my CV and complete profile details with potential companies and recruiters for job-matching purposes.';
 
 async function checkAndPromptConsent() {
     if (!currentSession) return;
