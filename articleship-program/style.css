@@ -239,7 +239,7 @@ h1 {
   -webkit-transform: translateZ(0);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  contain: layout style paint;
+  will-change: transform;
 }
 
 .fixed-cta .timer-container {
