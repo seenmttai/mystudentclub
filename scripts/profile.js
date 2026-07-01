@@ -429,7 +429,7 @@ const WZ_QUESTION_CONFIGS = {
 
 const WZ_ROLE_QUESTIONS = {
     'industrial':          ['preferred_locations', 'joining_date', 'expected_stipend', 'preferred_domains_industrial', 'preferred_industries_industrial'],
-    'articleship':         ['preferred_locations', 'joining_date', 'expected_stipend', 'preferred_domains_articleship', 'preferred_firm_type', 'preferred_industries_articleship'],
+    'articleship':         ['preferred_locations', 'joining_date', 'expected_stipend', 'preferred_firm_type', 'preferred_industries_articleship'],
     'fresher_fresher':     ['preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries'],
     'fresher_experienced': ['yoe_experienced', 'preferred_locations', 'joining_date', 'current_ctc', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
     'semi_fresher':        ['preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
@@ -499,7 +499,7 @@ function getWzMissingFields(portalType) {
     ];
     if (portalType === 'articleship') {
         const caInterFieldsArticleship = caInterFields.filter(f => !['articleship_firm_name', 'articleship_domain', 'articleship_client_industries'].includes(f.id));
-        return [...common, ...caInterFieldsArticleship, numPartnersField];
+        return [...common, ...caInterFieldsArticleship];
     }
     if (portalType === 'semi_fresher')    return [...common, ...caInterFields, currentIndustryField];
     if (portalType === 'semi_experienced')return [...common, ...caInterFields, ...empFields, currentSalaryField, currentIndustryField];
@@ -783,7 +783,7 @@ const WZ = (() => {
             dom.nextBtn.click();
         });
 
-        goTo('cv', 'forward');
+        goTo('photo', 'forward');
     }
 
     function showMain() {
@@ -830,18 +830,19 @@ const WZ = (() => {
 
     // ------ Progress ------
     function updateProgress() {
-        // Fixed early phases: cv=1, type=2, subtype=3
+        // Fixed early phases: photo=1, cv=2, type=3, subtype=4
         // Then each pref question, then each missing question, then review, preview, publish
-        const FIXED_START = 3; // cv, type, subtype
+        const FIXED_START = 4; // photo, cv, type, subtype
         const FIXED_END = 3;   // review, preview, publish
         const nPrefs = st.prefQueue.length || 0;
         const nMissing = st.missingQueue.length || 0;
         const total = FIXED_START + nPrefs + nMissing + FIXED_END;
 
         let current;
-        if (st.phase === 'cv')       current = 1;
-        else if (st.phase === 'type')    current = 2;
-        else if (st.phase === 'subtype') current = 3;
+        if (st.phase === 'photo')        current = 1;
+        else if (st.phase === 'cv')      current = 2;
+        else if (st.phase === 'type')    current = 3;
+        else if (st.phase === 'subtype') current = 4;
         else if (st.phase === 'prefs')   current = FIXED_START + st.prefIdx + 1;
         else if (st.phase === 'missing') current = FIXED_START + nPrefs + st.missingIdx + 1;
         else if (st.phase === 'review')  current = FIXED_START + nPrefs + nMissing + 1;
@@ -890,7 +891,7 @@ const WZ = (() => {
         });
 
         // Back button visibility
-        dom.backBtn.style.visibility = (st.history.length > 0 || phase !== 'cv') ? 'visible' : 'hidden';
+        dom.backBtn.style.visibility = (st.history.length > 0 || phase !== 'photo') ? 'visible' : 'hidden';
         dom.skipBtn.style.display = 'none';
         dom.nextBtn.style.display = '';
         dom.nextBtn.textContent = (phase === 'publish') ? 'View Full Profile →' : 'Continue →';
@@ -899,6 +900,7 @@ const WZ = (() => {
     // ------ Screen HTML builders ------
     function buildScreen(phase) {
         switch (phase) {
+            case 'photo':    return buildPhoto();
             case 'cv':       return buildCV();
             case 'type':     return buildType();
             case 'subtype':  return buildSubtype();
@@ -908,6 +910,95 @@ const WZ = (() => {
             case 'preview':  return buildPreview();
             case 'publish':  return buildPublish();
             default: return '';
+        }
+    }
+
+    function buildPhoto() {
+        const hasPhoto = !!userPhotoBlobUrl;
+        const name = (st.profileData && st.profileData.name) || '';
+        const initials = name
+            ? name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join('')
+            : '?';
+        return `<div class="wz-inner wz-photo-step">
+            <div class="wz-q-icon">📸</div>
+            <h2 class="wz-q-title">Add a profile photo</h2>
+            <p class="wz-q-hint">A professional photo helps recruiters recognise you. You can always change it later.</p>
+            <div class="wz-photo-wrap">
+                <div class="wz-photo-circle" id="wz-photo-circle">
+                    ${hasPhoto
+                        ? `<img src="${userPhotoBlobUrl}" id="wz-photo-preview" alt="Profile photo">`
+                        : `<span class="wz-photo-initials">${escHtml(initials)}</span>`}
+                </div>
+                <label class="wz-photo-upload-btn" for="wz-photo-input">
+                    <i class="fas fa-camera"></i> ${hasPhoto ? 'Change Photo' : 'Upload Photo'}
+                </label>
+                <input type="file" id="wz-photo-input" accept="image/jpeg,image/png,image/webp" style="display:none;">
+                <p class="wz-photo-hint">JPEG, PNG or WebP &mdash; max 2 MB</p>
+            </div>
+            <span class="wz-not-sure-link" id="wz-photo-skip">Skip for now</span>
+        </div>`;
+    }
+
+    function mountPhoto(el) {
+        const input = el.querySelector('#wz-photo-input');
+        const skipBtn = el.querySelector('#wz-photo-skip');
+
+        if (input) {
+            input.addEventListener('change', async (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+
+                if (file.size > 2 * 1024 * 1024) {
+                    showToast('Image file size exceeds the 2MB limit. Please upload a smaller file.', 'error');
+                    input.value = '';
+                    return;
+                }
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                if (!allowedTypes.includes(file.type)) {
+                    showToast('Unsupported file format. Please upload JPEG, PNG, or WebP.', 'error');
+                    input.value = '';
+                    return;
+                }
+
+                showLoading(true, 'Uploading profile photo...');
+                try {
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (!session || !session.access_token) {
+                        showToast('Session expired. Please log in again.', 'error');
+                        showLoading(false);
+                        return;
+                    }
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    const response = await fetch(`${PHOTO_WORKER_URL}/api/upload-photo`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${session.access_token}` },
+                        body: formData
+                    });
+                    const result = await response.json();
+                    if (response.ok && result.ok) {
+                        if (userPhotoBlobUrl) URL.revokeObjectURL(userPhotoBlobUrl);
+                        userPhotoBlobUrl = URL.createObjectURL(file);
+                        const circle = document.getElementById('wz-photo-circle');
+                        if (circle) circle.innerHTML = `<img src="${userPhotoBlobUrl}" id="wz-photo-preview" alt="Profile photo">`;
+                        const btn = el.querySelector('.wz-photo-upload-btn');
+                        if (btn) btn.innerHTML = '<i class="fas fa-camera"></i> Change Photo';
+                        showToast('Photo uploaded!', 'success', 3000);
+                    } else {
+                        showToast(result.error || 'Failed to upload photo.', 'error');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showToast('Network error while uploading photo.', 'error');
+                } finally {
+                    showLoading(false);
+                    input.value = '';
+                }
+            });
+        }
+
+        if (skipBtn) {
+            skipBtn.addEventListener('click', () => handleNext());
         }
     }
 
@@ -1217,6 +1308,7 @@ const WZ = (() => {
     function mountScreen(phase) {
         const activeEl = document.getElementById('wz-screen-' + st.currentSlot);
         switch (phase) {
+            case 'photo':    mountPhoto(activeEl); break;
             case 'cv':       mountCV(activeEl); break;
             case 'type':     mountType(activeEl); break;
             case 'subtype':  mountSubtype(activeEl); break;
@@ -1367,7 +1459,10 @@ const WZ = (() => {
     // ------ Navigation logic ------
     function handleNext() {
         const phase = st.phase;
-        if (phase === 'cv') {
+        if (phase === 'photo') {
+            st.history.push({ phase: 'photo' });
+            goTo('cv', 'forward');
+        } else if (phase === 'cv') {
             const consentGiven = document.getElementById('wz-consent-chk')?.checked;
             if (!consentGiven) {
                 showToast('Please accept the data sharing consent to continue.', 'warning', 5000);
@@ -1653,8 +1748,6 @@ const WZ = (() => {
                         { key: 'articleship_start_month',   label: 'Start Month',            value: fv('articleship_start_month') },
                         { key: 'articleship_start_year',    label: 'Start Year',             value: fv('articleship_start_year') },
                         { key: 'articleship_domain',        label: 'Domain',                 value: fv('articleship_domain') },
-                        { key: 'industrial_training_company', label: 'Industrial Training Company', value: fv('industrial_training_company'), wide: true },
-                        { key: 'it_responsibilities',       label: 'IT Key Responsibilities', value: fv('it_responsibilities'), wide: true, textarea: true },
                     ]
                 },
                 {
@@ -1739,7 +1832,6 @@ const WZ = (() => {
                     { key: 'articleship_start_month',     label: 'Start Month',            value: fv('articleship_start_month') },
                     { key: 'articleship_start_year',      label: 'Start Year',             value: fv('articleship_start_year') },
                     { key: 'articleship_domain',          label: 'Domain',                 value: fv('articleship_domain') },
-                    { key: 'industrial_training_company', label: 'Industrial Training Company', value: fv('industrial_training_company'), wide: true },
                 ]
             },
             {

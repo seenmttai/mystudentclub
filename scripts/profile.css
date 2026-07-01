@@ -2057,6 +2057,58 @@ body.p2-modal-open {
 }
 .wz-cv-skip:hover { border-color: var(--p2-blue); color: var(--p2-blue); }
 
+/* ---- Photo step ---- */
+.wz-photo-step { text-align: center; }
+.wz-photo-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 1.25rem;
+}
+.wz-photo-circle {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: var(--p2-blue-light, #EFF6FF);
+    border: 3px solid var(--p2-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+.wz-photo-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.wz-photo-initials {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--p2-blue, #2563EB);
+    line-height: 1;
+}
+.wz-photo-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    background: var(--p2-blue, #2563EB);
+    color: #fff;
+    border-radius: var(--p2-radius-sm);
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s;
+}
+.wz-photo-upload-btn:hover { background: #1D4ED8; }
+.wz-photo-hint {
+    font-size: 0.78rem;
+    color: var(--p2-text-muted);
+    margin: 0;
+}
+
 .wz-cv-file-tag {
     display: flex;
     align-items: center;
