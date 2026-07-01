@@ -147,7 +147,7 @@ const ENTRY_CLEAR_MAP = {
     'emp-org-display': ['is_current_employment', 'employment_type', 'emp_exp_years', 'emp_exp_months', 'emp_company_name', 'emp_job_title', 'emp_join_year', 'emp_join_month', 'emp_salary_currency', 'emp_current_salary', 'emp_salary_breakdown', 'emp_skills_hidden', 'emp_job_profile', 'emp_notice_period'],
     'emp-art-display': ['articleship_firm_type', 'articleship_firm_name', 'articleship_domain', 'articleship_domain_other'],
     'emp-it-display': ['industrial_training_company'],
-    'project-entry-display': ['project_title', 'project_tag', 'project_client', 'project_status', 'project_worked_from_year', 'project_worked_from_month', 'project_details', 'project_attachment_name'],
+    'project-entry-display': ['project_title', 'project_tag', 'project_client', 'project_status', 'project_worked_from_year', 'project_worked_from_month', 'project_details', 'project_domain', 'project_skills', 'project_attachment_name', 'project_drive_link'],
     'key-skills-entry-display': ['key_skills']
 };
 
@@ -295,18 +295,32 @@ const WZ_QUESTION_CONFIGS = {
         hint: 'Annual package in INR',
         type: 'salary', profileKey: 'expected_salary', optional: true
     },
+    current_ctc: {
+        id: 'current_ctc', icon: '💵',
+        question: 'What is your current CTC?',
+        hint: 'Annual package in INR',
+        type: 'salary', profileKey: 'emp_current_salary', aiKey: 'emp_current_salary', optional: true
+    },
     expected_stipend: {
         id: 'expected_stipend', icon: '💰',
         question: 'What monthly stipend are you expecting?',
         hint: 'In ₹ — leave blank if not sure',
-        type: 'salary', profileKey: 'expected_salary', optional: true
+        type: 'salary', profileKey: 'expected_salary', placeholder: 'e.g., 2,30,000', optional: true
     },
     preferred_domains: {
         id: 'preferred_domains', icon: '🎯',
         question: 'Which domains are you interested in?',
         hint: 'Select all that apply',
-        type: 'chips',
-        options: ['FP&A', 'Business Finance', 'Treasury', 'Controllership', 'Financial Reporting', 'Internal Audit', 'Risk Management', 'Direct Tax', 'GST', 'Transfer Pricing', 'Valuation', 'Due Diligence', 'Investment Banking', 'Equity Research', 'Consulting', 'Data Analytics / Power BI', 'ESG & Sustainability', 'Other'],
+        type: 'chips_grouped',
+        options: [
+            { group: 'Finance', items: ['FP&A', 'Business Finance', 'Controllership', 'Financial Reporting', 'Accounting & Reporting', 'MIS Reporting', 'Finance & Accounts', 'Treasury', 'Supply Chain Finance', 'Costing & Plant Finance', 'Banking & Credit', 'Finance'] },
+            { group: 'Audit, Risk & Compliance', items: ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'Risk Advisory', 'SOX / IFC Controls', 'Forensics', 'Compliance'] },
+            { group: 'Tax', items: ['Direct Tax', 'Indirect Tax (GST)', 'Transfer Pricing', 'International Taxation', 'M&A Tax'] },
+            { group: 'Deals & Capital Markets', items: ['Deals & Transaction Advisory', 'Due Diligence', 'Valuation', 'Investment Banking', 'Equity Research', 'Mergers & Acquisitions (M&A)'] },
+            { group: 'Consulting', items: ['Management Consulting', 'Strategy'] },
+            { group: 'Emerging', items: ['Data Analytics / Power BI', 'ESG & Sustainability'] },
+            { group: 'Other', items: ['Other'] }
+        ],
         profileKey: 'preferred_domains', optional: true
     },
     preferred_domains_industrial: {
@@ -314,7 +328,15 @@ const WZ_QUESTION_CONFIGS = {
         question: 'Which domains are you interested in?',
         hint: 'Select all that apply',
         type: 'chips',
-        options: ['FP&A', 'Business Finance', 'Supply Chain Finance', 'Treasury', 'Controllership', 'Financial Reporting', 'Banking & Credit', 'Internal Audit', 'Forensics', 'Direct Tax', 'GST', 'Transfer Pricing', 'Valuation', 'Due Diligence', 'Investment Banking', 'Equity Research', 'Consulting', 'Strategy', 'Deal Advisory', 'Mergers & Acquisition', 'Costing', 'MIS Reporting', 'Other'],
+        options: ['FP&A', 'Business Finance', 'Supply Chain Finance', 'Treasury', 'Controllership', 'Financial Reporting', 'Accounting & Reporting', 'MIS Reporting', 'Finance & Accounts', 'Banking & Credit', 'Costing & Plant Finance', 'Finance', 'Internal Audit', 'Direct Tax', 'Indirect Tax (GST)', 'Transfer Pricing', 'Valuation', 'Due Diligence', 'Deals & Transaction Advisory', 'Investment Banking', 'Equity Research', 'Mergers & Acquisitions (M&A)', 'Strategy', 'Management Consulting', 'Forensics', 'Other'],
+        profileKey: 'preferred_domains', optional: true
+    },
+    preferred_domains_articleship: {
+        id: 'preferred_domains', icon: '🎯',
+        question: 'Which domains did you work in during articleship?',
+        hint: 'Select all that apply',
+        type: 'chips',
+        options: ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Bookkeeping', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other'],
         profileKey: 'preferred_domains', optional: true
     },
     preferred_firm_type: {
@@ -330,7 +352,7 @@ const WZ_QUESTION_CONFIGS = {
         question: 'Which industries would you like to work in?',
         hint: 'Select all that apply',
         type: 'chips',
-        options: ['Banking', 'Financial Services', 'FMCG', 'Manufacturing', 'Pharma', 'IT', 'E-Commerce', 'Automobile', 'Infrastructure', 'Real Estate', 'Consulting', 'Retail', 'Energy', 'Telecom', 'Logistics', 'Others'],
+        options: ['CA Firms', 'Banking', 'Financial Services', 'FinTech', 'Consulting', 'E-Commerce', 'FMCG', 'Government / PSU', 'Education (EdTech)', 'Manufacturing', 'IT & Technology', 'Insurance', 'Healthcare & Pharmaceuticals', 'Automobile', 'Infrastructure & Real Estate', 'Energy, Oil & Gas', 'Power & Utilities', 'Logistics & Supply Chain', 'Retail', 'Telecom', 'Chemicals', 'Metals & Mining', 'Media & Entertainment', 'Hospitality & Travel', 'NGO / Non-Profit', 'Other'],
         profileKey: 'preferred_industries', optional: true
     },
     preferred_industries_industrial: {
@@ -338,7 +360,15 @@ const WZ_QUESTION_CONFIGS = {
         question: 'Which industries would you like to work in?',
         hint: 'Select all that apply',
         type: 'chips',
-        options: ['Banking', 'Financial Services', 'Insurance', 'Consulting', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Media & Entertainment', 'Other'],
+        options: ['Banking', 'Financial Services', 'FinTech', 'Consulting', 'E-Commerce', 'FMCG', 'Manufacturing', 'Education (EdTech)', 'IT & Technology', 'Insurance', 'Healthcare & Pharmaceuticals', 'Automobile', 'Infrastructure & Real Estate', 'Energy, Oil & Gas', 'Logistics & Supply Chain', 'Retail', 'Telecom', 'Media & Entertainment', 'Other'],
+        profileKey: 'preferred_industries', optional: true
+    },
+    preferred_industries_articleship: {
+        id: 'preferred_industries', icon: '🏭',
+        question: 'Which client industries or business types would you like to work with during your articleship?',
+        hint: 'Select all that apply',
+        type: 'chips',
+        options: ['Listed Companies', 'MNCs', 'Startups', 'SMEs', 'Banking', 'Financial Services', 'FMCG', 'Manufacturing', 'IT & Technology', 'E-Commerce', 'Consulting', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Real Estate', 'Retail', 'Energy & Utilities', 'Telecom', 'Logistics', 'Government & PSU', 'Others'],
         profileKey: 'preferred_industries', optional: true
     },
     notice_period: {
@@ -363,16 +393,47 @@ const WZ_QUESTION_CONFIGS = {
             { label: 'Currently Unemployed / Actively looking', value: 'Unemployed' }
         ],
         profileKey: 'current_employment_status', optional: false
+    },
+    yoe_experienced: {
+        id: 'yoe_experienced', icon: '📅',
+        question: 'How many years of post-qualification experience do you have?',
+        hint: null, type: 'radio',
+        options: [
+            { label: '1 Year', value: '1 Year' },
+            { label: '2 Years', value: '2 Years' },
+            { label: '3 Years', value: '3 Years' },
+            { label: '4 Years', value: '4 Years' },
+            { label: '5 Years', value: '5 Years' },
+            { label: '6–10 Years', value: '6 Years' },
+            { label: '10+ Years', value: '10 Years' }
+        ],
+        profileKey: 'emp_exp_years', optional: false
+    },
+    yoe_semi: {
+        id: 'yoe_semi', icon: '📅',
+        question: 'How many years of work experience do you have?',
+        hint: null, type: 'radio',
+        options: [
+            { label: 'Less than 1 year', value: '0' },
+            { label: '1 Year', value: '1' },
+            { label: '2 Years', value: '2' },
+            { label: '3 Years', value: '3' },
+            { label: '4 Years', value: '4' },
+            { label: '5 Years', value: '5' },
+            { label: '6–10 Years', value: '6' },
+            { label: '10+ Years', value: '10' }
+        ],
+        profileKey: 'emp_exp_years', optional: false
     }
 };
 
 const WZ_ROLE_QUESTIONS = {
     'industrial':          ['preferred_locations', 'joining_date', 'expected_stipend', 'preferred_domains_industrial', 'preferred_industries_industrial'],
-    'articleship':         ['preferred_locations', 'relocation', 'joining_date', 'expected_stipend', 'preferred_domains', 'preferred_firm_type', 'preferred_industries'],
-    'fresher_fresher':     ['preferred_locations', 'relocation', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries'],
-    'fresher_experienced': ['preferred_locations', 'relocation', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'notice_period'],
-    'semi_fresher':        ['preferred_locations', 'relocation', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
-    'semi_experienced':    ['preferred_locations', 'relocation', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
+    'articleship':         ['preferred_locations', 'joining_date', 'expected_stipend', 'preferred_firm_type', 'preferred_industries_articleship'],
+    'fresher_fresher':     ['preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries'],
+    'fresher_experienced': ['yoe_experienced', 'preferred_locations', 'joining_date', 'current_ctc', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
+    'semi_fresher':        ['preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
+    'semi_experienced':    ['yoe_semi', 'preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
 };
 
 // Master list of fields to check after AI extraction — portal-specific
@@ -389,37 +450,43 @@ function getWzMissingFields(portalType) {
     ];
 
     const caInterFields = [
+        f('ca_inter_course', 'CA Inter Course', '📚', 'radio', true, '', null, ['CA Inter (Both Groups)', 'CA Inter G1', 'CA Inter G2']),
         f('ca_inter_clear_year',          'CA Inter Cleared Year',              '📚', 'text',   true),
         f('ca_inter_score',               'CA Inter Score %',                   '📊', 'text',   true),
-        f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'e.g. Write 1 if First Attempt'),
+        f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'If First Attempt, 1'),
         f('articleship_firm_type', 'Articleship Firm Type', '🏢', 'radio', true, '', null, ['Big 4', 'Big 6', 'Big 10', 'Mid Size Firm', 'Small Size Firm']),
-        f('articleship_domain', 'Articleship Domain(s)', '📂', 'chips', true, '', 'Select all that apply', ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other']),
-        f('articleship_client_industries', 'Articleship Industry Exposure', '🏭', 'chips', true, '', 'Select all industries you gained exposure to during articleship', ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']),
+        f('articleship_firm_name', 'Articleship Firm Name', '🏢', 'text', true, 'e.g., Deloitte, KPMG, ABC & Associates'),
+        f('articleship_domain', 'Articleship Domain(s)', '📂', 'chips', true, '', 'Select all that apply', ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Bookkeeping', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other']),
+        f('articleship_client_industries', 'Client Industries', '🏭', 'text', true, 'e.g., Banking, FMCG, Manufacturing, IT, Pharma', 'If you\'ve worked with clients across multiple industries during your articleship, list them separated by commas (e.g., Banking, Manufacturing, FMCG). This helps recruiters understand your industry exposure.'),
         f('additional_qualifications', 'Additional Qualifications', '🎓', 'chips', true, '', 'Select all that apply', ['CFA', 'CS', 'CMA', 'ACCA', 'CPA', 'FRM', 'MBA', 'LLB', 'DISA', 'CISA', 'Financial Modelling', 'Other']),
     ];
 
     const caFinalFields = [
+        f('ca_final_course', 'CA Final Course', '🏆', 'radio', true, '', null, ['CA Final (Both Groups)', 'CA Final G1', 'CA Final G2']),
         f('ca_final_clear_year',          'CA Final Cleared Year',              '🏆', 'text',   true),
         f('ca_final_score',               'CA Final Score %',                   '📊', 'text',   true),
-        f('ca_final_attempts',            'CA Final Attempts',                  '🔄', 'number', true),
+        f('ca_final_attempts',            'CA Final Attempts',                  '🔄', 'number', true, 'If First Attempt, 1'),
+        f('ca_inter_course', 'CA Inter Course', '📚', 'radio', true, '', null, ['CA Inter (Both Groups)', 'CA Inter G1', 'CA Inter G2']),
         f('ca_inter_clear_year',          'CA Inter Cleared Year',              '📚', 'text',   true),
         f('ca_inter_score',               'CA Inter Score %',                   '📊', 'text',   true),
-        f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'e.g. Write 1 if First Attempt'),
+        f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'If First Attempt, 1'),
         f('articleship_firm_type', 'Articleship Firm Type', '🏢', 'radio', true, '', null, ['Big 4', 'Big 6', 'Big 10', 'Mid Size Firm', 'Small Size Firm']),
-        f('articleship_domain', 'Articleship Domain(s)', '📂', 'chips', true, '', 'Select all that apply', ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other']),
-        f('articleship_client_industries', 'Articleship Industry Exposure', '🏭', 'chips', true, '', 'Select all industries you gained exposure to during articleship', ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']),
+        f('articleship_firm_name', 'Articleship Firm Name', '🏢', 'text', true, 'e.g., Deloitte, KPMG, ABC & Associates'),
+        f('articleship_domain', 'Articleship Domain(s)', '📂', 'chips', true, '', 'Select all that apply', ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Bookkeeping', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other']),
+        f('articleship_client_industries', 'Client Industries', '🏭', 'text', true, 'e.g., Banking, FMCG, Manufacturing, IT, Pharma', 'If you\'ve worked with clients across multiple industries during your articleship, list them separated by commas (e.g., Banking, Manufacturing, FMCG). This helps recruiters understand your industry exposure.'),
         f('additional_qualifications', 'Additional Qualifications', '🎓', 'chips', true, '', 'Select all that apply', ['CFA', 'CS', 'CMA', 'ACCA', 'CPA', 'FRM', 'MBA', 'LLB', 'DISA', 'CISA', 'Financial Modelling', 'Other']),
     ];
 
     const empFields = [
         f('emp_company_name',  'Current Company',   '🏢', 'text', true),
         f('emp_job_title',     'Current Job Title', '💼', 'text', true),
-        f('emp_current_salary','Current CTC',       '💰', 'text', true),
     ];
+    const currentSalaryField = f('emp_current_salary', 'Current CTC', '💰', 'text', true);
 
     const numPartnersField = f('articleship_num_partners', 'Number of Partners in Articleship Firm', '🤝', 'radio', true, '', null, ['1 (Sole Proprietor)', '2–5', '6–10', '11–20', '21–50', '51+']);
-    const itIndustryField = f('it_company_industry', 'Industrial Training Company Industry', '🏢', 'radio', true, '', 'If you completed Industrial Training, select the industry of your company', ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']);
+    const itIndustryField = f('it_industry', 'Industrial Training Company Industry', '🏢', 'radio', true, '', 'If you completed Industrial Training, select the industry of your company', ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']);
     const currentIndustryField = f('current_industry', 'Current Industry', '🏭', 'radio', true, '', null, ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']);
+    const noticePeriodField = f('notice_period', 'Notice Period', '📋', 'radio', true, '', 'What is your current notice period?', ['Immediate Joiner', '15 Days or less', '1 Month', '2 Months', '3 Months']);
 
     if (portalType === 'industrial') return [
         ...common, ...caInterFields,
@@ -431,11 +498,14 @@ function getWzMissingFields(portalType) {
             'e.g., Immediate Joiner, 1 Month, 2 Months, 3 Months',
             'What is your current notice period?'),
     ];
-    if (portalType === 'articleship') return [...common, ...caInterFields, numPartnersField];
+    if (portalType === 'articleship') {
+        const caInterFieldsArticleship = caInterFields.filter(f => !['articleship_firm_name', 'articleship_domain', 'articleship_client_industries'].includes(f.id));
+        return [...common, ...caInterFieldsArticleship];
+    }
     if (portalType === 'semi_fresher')    return [...common, ...caInterFields, currentIndustryField];
-    if (portalType === 'semi_experienced')return [...common, ...caInterFields, ...empFields, currentIndustryField];
+    if (portalType === 'semi_experienced')return [...common, ...caInterFields, ...empFields, currentSalaryField, currentIndustryField];
     if (portalType === 'fresher_experienced') return [...common, ...caFinalFields, ...empFields, currentIndustryField];
-    return [...common, ...caFinalFields, numPartnersField, itIndustryField]; // fresher_fresher
+    return [...common, ...caFinalFields, numPartnersField, itIndustryField, noticePeriodField]; // fresher_fresher
 }
 
 
@@ -705,6 +775,15 @@ const WZ = (() => {
         dom.backBtn.addEventListener('click', () => handleBack());
         dom.skipBtn.addEventListener('click', () => handleSkip());
 
+        dom.body.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter') return;
+            const el = document.activeElement;
+            if (el && el.tagName === 'TEXTAREA') return;
+            if (el && el.id === 'wz-custom-chip-input') return;
+            e.preventDefault();
+            dom.nextBtn.click();
+        });
+
         goTo('cv', 'forward');
     }
 
@@ -714,6 +793,7 @@ const WZ = (() => {
         const wz = document.getElementById('profile-wizard');
         if (wz) wz.style.display = 'none';
         applyPortalSections(st.programType);
+        setTimeout(() => refreshHeader(), 0);
     }
 
     // Resolve fresher/semi subtype from YOE in profileData; null means "ask wizard"
@@ -752,18 +832,19 @@ const WZ = (() => {
 
     // ------ Progress ------
     function updateProgress() {
-        // Fixed early phases: cv=1, type=2, subtype=3
+        // Fixed early phases: photo=1, cv=2, type=3, subtype=4
         // Then each pref question, then each missing question, then review, preview, publish
-        const FIXED_START = 3; // cv, type, subtype
+        const FIXED_START = 4; // photo, cv, type, subtype
         const FIXED_END = 3;   // review, preview, publish
         const nPrefs = st.prefQueue.length || 0;
         const nMissing = st.missingQueue.length || 0;
         const total = FIXED_START + nPrefs + nMissing + FIXED_END;
 
         let current;
-        if (st.phase === 'cv')       current = 1;
-        else if (st.phase === 'type')    current = 2;
-        else if (st.phase === 'subtype') current = 3;
+        if (st.phase === 'cv')           current = 1;
+        else if (st.phase === 'photo')   current = 2;
+        else if (st.phase === 'type')    current = 3;
+        else if (st.phase === 'subtype') current = 4;
         else if (st.phase === 'prefs')   current = FIXED_START + st.prefIdx + 1;
         else if (st.phase === 'missing') current = FIXED_START + nPrefs + st.missingIdx + 1;
         else if (st.phase === 'review')  current = FIXED_START + nPrefs + nMissing + 1;
@@ -821,6 +902,7 @@ const WZ = (() => {
     // ------ Screen HTML builders ------
     function buildScreen(phase) {
         switch (phase) {
+            case 'photo':    return buildPhoto();
             case 'cv':       return buildCV();
             case 'type':     return buildType();
             case 'subtype':  return buildSubtype();
@@ -830,6 +912,95 @@ const WZ = (() => {
             case 'preview':  return buildPreview();
             case 'publish':  return buildPublish();
             default: return '';
+        }
+    }
+
+    function buildPhoto() {
+        const hasPhoto = !!userPhotoBlobUrl;
+        const name = (st.profileData && st.profileData.name) || '';
+        const initials = name
+            ? name.trim().split(/\s+/).slice(0, 2).map(w => w[0].toUpperCase()).join('')
+            : '?';
+        return `<div class="wz-inner wz-photo-step">
+            <div class="wz-q-icon">📸</div>
+            <h2 class="wz-q-title">Add a profile photo</h2>
+            <p class="wz-q-hint">A professional photo helps recruiters recognise you. You can always change it later.</p>
+            <div class="wz-photo-wrap">
+                <div class="wz-photo-circle" id="wz-photo-circle">
+                    ${hasPhoto
+                        ? `<img src="${userPhotoBlobUrl}" id="wz-photo-preview" alt="Profile photo">`
+                        : `<span class="wz-photo-initials">${escHtml(initials)}</span>`}
+                </div>
+                <label class="wz-photo-upload-btn" for="wz-photo-input">
+                    <i class="fas fa-camera"></i> ${hasPhoto ? 'Change Photo' : 'Upload Photo'}
+                </label>
+                <input type="file" id="wz-photo-input" accept="image/jpeg,image/png,image/webp" style="display:none;">
+                <p class="wz-photo-hint">JPEG, PNG or WebP &mdash; max 2 MB</p>
+            </div>
+            <span class="wz-not-sure-link" id="wz-photo-skip">Skip for now</span>
+        </div>`;
+    }
+
+    function mountPhoto(el) {
+        const input = el.querySelector('#wz-photo-input');
+        const skipBtn = el.querySelector('#wz-photo-skip');
+
+        if (input) {
+            input.addEventListener('change', async (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+
+                if (file.size > 2 * 1024 * 1024) {
+                    showToast('Image file size exceeds the 2MB limit. Please upload a smaller file.', 'error');
+                    input.value = '';
+                    return;
+                }
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                if (!allowedTypes.includes(file.type)) {
+                    showToast('Unsupported file format. Please upload JPEG, PNG, or WebP.', 'error');
+                    input.value = '';
+                    return;
+                }
+
+                showLoading(true, 'Uploading profile photo...');
+                try {
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    if (!session || !session.access_token) {
+                        showToast('Session expired. Please log in again.', 'error');
+                        showLoading(false);
+                        return;
+                    }
+                    const formData = new FormData();
+                    formData.append('image', file);
+                    const response = await fetch(`${PHOTO_WORKER_URL}/api/upload-photo`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${session.access_token}` },
+                        body: formData
+                    });
+                    const result = await response.json();
+                    if (response.ok && result.ok) {
+                        if (userPhotoBlobUrl) URL.revokeObjectURL(userPhotoBlobUrl);
+                        userPhotoBlobUrl = URL.createObjectURL(file);
+                        const circle = document.getElementById('wz-photo-circle');
+                        if (circle) circle.innerHTML = `<img src="${userPhotoBlobUrl}" id="wz-photo-preview" alt="Profile photo">`;
+                        const btn = el.querySelector('.wz-photo-upload-btn');
+                        if (btn) btn.innerHTML = '<i class="fas fa-camera"></i> Change Photo';
+                        showToast('Photo uploaded!', 'success', 3000);
+                    } else {
+                        showToast(result.error || 'Failed to upload photo.', 'error');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    showToast('Network error while uploading photo.', 'error');
+                } finally {
+                    showLoading(false);
+                    input.value = '';
+                }
+            });
+        }
+
+        if (skipBtn) {
+            skipBtn.addEventListener('click', () => handleNext());
         }
     }
 
@@ -856,8 +1027,8 @@ const WZ = (() => {
             <button type="button" class="wz-cv-skip" id="wz-cv-skip-upload">Continue Without Resume</button>`}
             <div class="wz-consent-card">
                 <label class="wz-consent-label" for="wz-consent-chk">
-                    <input type="checkbox" id="wz-consent-chk" ${document.getElementById('cvSharingConsent')?.checked ? 'checked' : ''}>
-                    <span>I consent to My Student Club sharing my CV and profile details with registered companies and recruiters for job-matching purposes.</span>
+                    <input type="checkbox" id="wz-consent-chk">
+                    <span>I consent to My Student Club sharing my CV and complete profile details with potential companies and recruiters for job-matching purposes.</span>
                 </label>
                 <div class="wz-consent-footer">
                     <a href="/privacy-policy.html" target="_blank" rel="noopener noreferrer" class="wz-consent-link"><i class="fas fa-external-link-alt"></i> Privacy Policy</a>
@@ -893,6 +1064,29 @@ const WZ = (() => {
     }
 
     function buildSubtype() {
+        if (st._pendingType === 'semi') {
+            return `<div class="wz-inner">
+                <div class="wz-q-icon">📊</div>
+                <h2 class="wz-q-title">What is your work experience level?</h2>
+                <p class="wz-q-hint">This helps us match you with the right opportunities.</p>
+                <div class="wz-radio-grid" id="wz-subtype-grid">
+                    <div class="wz-radio-card" data-sub="semi_fresher">
+                        <div class="wz-radio-dot"></div>
+                        <div>
+                            <div class="wz-radio-label">Fresher</div>
+                            <div class="wz-radio-sub">No prior work experience</div>
+                        </div>
+                    </div>
+                    <div class="wz-radio-card" data-sub="semi_experienced">
+                        <div class="wz-radio-dot"></div>
+                        <div>
+                            <div class="wz-radio-label">Experienced</div>
+                            <div class="wz-radio-sub">Have prior work experience</div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        }
         return `<div class="wz-inner">
             <div class="wz-q-icon">💼</div>
             <h2 class="wz-q-title">Are you a fresher or experienced?</h2>
@@ -901,15 +1095,15 @@ const WZ = (() => {
                 <div class="wz-radio-card" data-sub="fresher_fresher">
                     <div class="wz-radio-dot"></div>
                     <div>
-                        <div class="wz-radio-label">Fresher (0–2 years)</div>
-                        <div class="wz-radio-sub">No significant post-qualification experience</div>
+                        <div class="wz-radio-label">Fresher</div>
+                        <div class="wz-radio-sub">No post-qualification work experience</div>
                     </div>
                 </div>
                 <div class="wz-radio-card" data-sub="fresher_experienced">
                     <div class="wz-radio-dot"></div>
                     <div>
-                        <div class="wz-radio-label">Experienced (2+ years)</div>
-                        <div class="wz-radio-sub">Post-qualification work experience</div>
+                        <div class="wz-radio-label">Experienced</div>
+                        <div class="wz-radio-sub">Have post-qualification work experience</div>
                     </div>
                 </div>
             </div>
@@ -920,6 +1114,7 @@ const WZ = (() => {
         if (!cfg) return '<div class="wz-inner"><p>Loading...</p></div>';
         let inputHtml = '';
         const saved = st.answers[cfg.id];
+        const aiPrefill = (!saved && cfg.aiKey && st.aiData) ? String(st.aiData[cfg.aiKey] || '').trim() : '';
         if (cfg.type === 'radio') {
             inputHtml = `<div class="wz-radio-grid" id="wz-q-radio">` +
                 cfg.options.map(opt => {
@@ -930,6 +1125,16 @@ const WZ = (() => {
                         <div class="wz-radio-dot"></div>
                         <div><div class="wz-radio-label">${escHtml(lbl)}</div></div>
                     </div>`;
+                }).join('') + `</div>`;
+        } else if (cfg.type === 'chips_grouped') {
+            const savedArr = Array.isArray(saved) ? saved : [];
+            inputHtml = `<div class="wz-chip-grid" id="wz-q-chips">` +
+                cfg.options.map(group => {
+                    const chips = group.items.map(o => {
+                        const sel = savedArr.includes(o) ? ' wz-selected' : '';
+                        return `<span class="wz-chip${sel}" data-val="${escHtml(o)}">${escHtml(o)}</span>`;
+                    }).join('');
+                    return `<span class="wz-chip-group-label">${escHtml(group.group)}</span>${chips}`;
                 }).join('') + `</div>`;
         } else if (cfg.type === 'chips' || cfg.type === 'chips_custom') {
             const savedArr = Array.isArray(saved) ? saved : [];
@@ -947,12 +1152,16 @@ const WZ = (() => {
             inputHtml = `<div class="wz-input-wrap"><input class="wz-input" type="date" id="wz-q-date" value="${escHtml(saved || '')}"></div>`;
         } else if (cfg.type === 'salary') {
             inputHtml = `<div class="wz-input-wrap">
-                <input class="wz-input" type="text" id="wz-q-salary" placeholder="e.g., 6,00,000" value="${escHtml(saved || '')}">
+                <input class="wz-input" type="text" id="wz-q-salary" placeholder="${escHtml(cfg.placeholder || 'e.g., 50,000')}" value="${escHtml(saved || aiPrefill || '')}">
                 <span class="wz-not-sure-link" id="wz-not-sure">Not sure / Skip</span>
             </div>`;
         }
         const skipBtn = (cfg.optional && cfg.type !== 'salary') ? `<span class="wz-not-sure-link" style="display:inline-block;margin-top:14px;" id="wz-q-skip">Skip this question</span>` : '';
+        const aiTag = cfg.aiKey && st.aiStatus === 'loading'
+            ? `<div class="wz-ai-banner"><div class="wz-ai-dot"></div>Resume is being auto-filled in the background…</div>`
+            : (aiPrefill ? `<div class="wz-ai-banner" style="background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.25);"><span style="font-size:0.85em;">✨ Auto-filled from your CV — edit if needed</span></div>` : '');
         return `<div class="wz-inner">
+            ${aiTag}
             <div class="wz-q-icon">${cfg.icon}</div>
             <h2 class="wz-q-title">${escHtml(cfg.question)}</h2>
             ${cfg.hint ? `<p class="wz-q-hint">${escHtml(cfg.hint)}</p>` : '<p></p>'}
@@ -1101,6 +1310,7 @@ const WZ = (() => {
     function mountScreen(phase) {
         const activeEl = document.getElementById('wz-screen-' + st.currentSlot);
         switch (phase) {
+            case 'photo':    mountPhoto(activeEl); break;
             case 'cv':       mountCV(activeEl); break;
             case 'type':     mountType(activeEl); break;
             case 'subtype':  mountSubtype(activeEl); break;
@@ -1150,7 +1360,8 @@ const WZ = (() => {
                     saveConsentRecord(true).catch(() => {});
                     updatePrivacyCard(true);
                 }
-                proceedAfterCV();
+                st.history.push({ phase: 'cv' });
+                goTo('photo', 'forward');
             });
         }
     }
@@ -1186,7 +1397,7 @@ const WZ = (() => {
                     card.classList.add('wz-selected');
                 });
             });
-        } else if (cfg.type === 'chips' || cfg.type === 'chips_custom') {
+        } else if (cfg.type === 'chips' || cfg.type === 'chips_custom' || cfg.type === 'chips_grouped') {
             el.querySelectorAll('.wz-chip').forEach(chip => {
                 chip.addEventListener('click', () => chip.classList.toggle('wz-selected'));
             });
@@ -1252,8 +1463,7 @@ const WZ = (() => {
     function handleNext() {
         const phase = st.phase;
         if (phase === 'cv') {
-            const consentGiven = document.getElementById('wz-consent-chk')?.checked
-                || document.getElementById('cvSharingConsent')?.checked;
+            const consentGiven = document.getElementById('wz-consent-chk')?.checked;
             if (!consentGiven) {
                 showToast('Please accept the data sharing consent to continue.', 'warning', 5000);
                 return;
@@ -1262,6 +1472,9 @@ const WZ = (() => {
             saveConsentRecord(true).catch(console.error); // fire independently — don't wait on storer
             updatePrivacyCard(true); // refresh UI immediately — loadConsentStatus ran before wizard
             fireStorerAndProfill();
+            st.history.push({ phase: 'cv' });
+            goTo('photo', 'forward');
+        } else if (phase === 'photo') {
             proceedAfterCV();
         } else if (phase === 'type') {
             if (!st._pendingType) { showToast('Please select what you are looking for.', 'warning'); return; }
@@ -1269,8 +1482,11 @@ const WZ = (() => {
             if (t === 'fresher') {
                 st.history.push({ phase: 'type' });
                 goTo('subtype', 'forward');
+            } else if (t === 'semi') {
+                st.history.push({ phase: 'type' });
+                goTo('subtype', 'forward');
             } else {
-                st.programType = t === 'semi' ? 'semi_fresher' : t;
+                st.programType = t;
                 buildPrefQueue();
                 st.history.push({ phase: 'type' });
                 goTo('prefs', 'forward');
@@ -1315,7 +1531,7 @@ const WZ = (() => {
 
     function proceedAfterCV() {
         if (!st.programType) {
-            st.history.push({ phase: 'cv' });
+            st.history.push({ phase: 'photo' });
             goTo('type', 'forward');
             return;
         }
@@ -1326,13 +1542,13 @@ const WZ = (() => {
             if (isNaN(yoe) || yoeRaw == null) {
                 // YOE unknown — show subtype screen so user can choose
                 st._pendingType = st.programType === 'fresher_fresher' ? 'fresher' : 'semi';
-                st.history.push({ phase: 'cv' });
+                st.history.push({ phase: 'photo' });
                 goTo('subtype', 'forward');
                 return;
             }
         }
         buildPrefQueue();
-        st.history.push({ phase: 'cv' });
+        st.history.push({ phase: 'photo' });
         goTo('prefs', 'forward');
     }
 
@@ -1350,7 +1566,7 @@ const WZ = (() => {
         if (cfg.type === 'radio') {
             const sel = el.querySelector('.wz-radio-card.wz-selected');
             val = sel ? sel.getAttribute('data-val') : null;
-        } else if (cfg.type === 'chips' || cfg.type === 'chips_custom') {
+        } else if (cfg.type === 'chips' || cfg.type === 'chips_custom' || cfg.type === 'chips_grouped') {
             val = Array.from(el.querySelectorAll('.wz-chip.wz-selected')).map(c => c.getAttribute('data-val'));
             if (!val.length) val = null;
         } else if (cfg.type === 'date') {
@@ -1535,8 +1751,6 @@ const WZ = (() => {
                         { key: 'articleship_start_month',   label: 'Start Month',            value: fv('articleship_start_month') },
                         { key: 'articleship_start_year',    label: 'Start Year',             value: fv('articleship_start_year') },
                         { key: 'articleship_domain',        label: 'Domain',                 value: fv('articleship_domain') },
-                        { key: 'industrial_training_company', label: 'Industrial Training Company', value: fv('industrial_training_company'), wide: true },
-                        { key: 'it_responsibilities',       label: 'IT Key Responsibilities', value: fv('it_responsibilities'), wide: true, textarea: true },
                     ]
                 },
                 {
@@ -1621,7 +1835,6 @@ const WZ = (() => {
                     { key: 'articleship_start_month',     label: 'Start Month',            value: fv('articleship_start_month') },
                     { key: 'articleship_start_year',      label: 'Start Year',             value: fv('articleship_start_year') },
                     { key: 'articleship_domain',          label: 'Domain',                 value: fv('articleship_domain') },
-                    { key: 'industrial_training_company', label: 'Industrial Training Company', value: fv('industrial_training_company'), wide: true },
                 ]
             },
             {
@@ -1751,8 +1964,12 @@ const WZ = (() => {
             restoreChipMultiSelect('art_client_industries_chips', 'articleship_client_industries');
             restoreChipMultiSelect('art_domain_chips', 'articleship_domain');
             restoreChipMultiSelect('addl_qual_chips', 'additional_qualifications');
+            renderQualDetails(true);
             restoreChipMultiSelect('preferred_domains_chips', 'preferred_domains');
+            restoreChipMultiSelect('preferred_domains_industrial_chips', 'preferred_domains');
             restoreChipMultiSelect('preferred_industries_chips', 'preferred_industries');
+            restoreChipMultiSelect('preferred_industries_industrial_chips', 'preferred_industries');
+            restoreChipMultiSelect('preferred_industries_articleship_chips', 'preferred_industries');
             restoreChipMultiSelect('preferred_firm_type_chips', 'preferred_firm_type');
             restoreChipMultiSelect('preferred_company_type_chips', 'preferred_company_type');
             restoreChipMultiSelect('emp_domain_chips', 'emp_domain');
@@ -1780,6 +1997,28 @@ const WZ = (() => {
                             } else if (inner) {
                                 const existing = inner.querySelector('.wz-ai-banner');
                                 if (existing) existing.innerHTML = '<span style="font-size:0.85em;">✨ Auto-filled from your CV — edit if needed</span>';
+                            }
+                        }
+                    }
+                }
+            }
+            // Same live-patch for a prefs-phase question with an AI-backed key (e.g. current_ctc)
+            if (st.phase === 'prefs') {
+                const cfg = WZ_QUESTION_CONFIGS[st.prefQueue[st.prefIdx]];
+                if (cfg && cfg.aiKey) {
+                    const aiVal = String(st.aiData[cfg.aiKey] || '').trim();
+                    if (aiVal) {
+                        const activeEl = document.getElementById('wz-screen-' + st.currentSlot);
+                        const inp = activeEl?.querySelector('#wz-q-salary');
+                        if (inp && !inp.value.trim()) {
+                            inp.value = aiVal;
+                            const inner = activeEl?.querySelector('.wz-inner');
+                            if (inner && !inner.querySelector('.wz-ai-banner')) {
+                                const banner = document.createElement('div');
+                                banner.className = 'wz-ai-banner';
+                                banner.style.cssText = 'background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.25);';
+                                banner.innerHTML = '<span style="font-size:0.85em;">✨ Auto-filled from your CV — edit if needed</span>';
+                                inner.prepend(banner);
                             }
                         }
                     }
@@ -1852,7 +2091,10 @@ const WZ = (() => {
 
             // Visually restore chip UI so career section shows correct selections immediately
             restoreChipMultiSelect('preferred_domains_chips', 'preferred_domains');
+            restoreChipMultiSelect('preferred_domains_industrial_chips', 'preferred_domains');
             restoreChipMultiSelect('preferred_industries_chips', 'preferred_industries');
+            restoreChipMultiSelect('preferred_industries_industrial_chips', 'preferred_industries');
+            restoreChipMultiSelect('preferred_industries_articleship_chips', 'preferred_industries');
             restoreChipMultiSelect('preferred_firm_type_chips', 'preferred_firm_type');
             restoreChipMultiSelect('preferred_company_type_chips', 'preferred_company_type');
 
@@ -1866,13 +2108,16 @@ const WZ = (() => {
             if (st.answers['joining_date']) profileData.earliest_joining_date = st.answers['joining_date'];
             if (st.answers['expected_ctc'])     profileData.expected_salary    = st.answers['expected_ctc'];
             if (st.answers['expected_stipend']) profileData.expected_stipend_min = st.answers['expected_stipend'];
+            if (st.answers['current_ctc'])      profileData.emp_current_salary  = st.answers['current_ctc'];
             if (st.answers['preferred_domains']) profileData.preferred_domains = Array.isArray(st.answers['preferred_domains']) ? st.answers['preferred_domains'].join(', ') : st.answers['preferred_domains'];
             if (st.answers['preferred_industries']) profileData.preferred_industries = Array.isArray(st.answers['preferred_industries']) ? st.answers['preferred_industries'].join(', ') : st.answers['preferred_industries'];
             if (st.answers['preferred_firm_type']) profileData.preferred_firm_type = Array.isArray(st.answers['preferred_firm_type']) ? st.answers['preferred_firm_type'].join(', ') : st.answers['preferred_firm_type'];
             if (st.answers['notice_period']) profileData.notice_period = st.answers['notice_period'];
             if (st.answers['employment_status']) profileData.current_employment_status = st.answers['employment_status'];
+            if (st.answers['yoe_experienced']) profileData.emp_exp_years = st.answers['yoe_experienced'];
+            if (st.answers['yoe_semi'])        profileData.emp_exp_years = st.answers['yoe_semi'];
             if (st.answers['missing_articleship_num_partners']) profileData.articleship_num_partners = st.answers['missing_articleship_num_partners'];
-            if (st.answers['missing_it_company_industry']) profileData.it_company_industry = st.answers['missing_it_company_industry'];
+            if (st.answers['missing_it_industry']) profileData.it_industry = st.answers['missing_it_industry'];
             if (st.answers['missing_current_industry']) profileData.current_industry = st.answers['missing_current_industry'];
 
             // Set job_preference to match programType
@@ -1890,7 +2135,6 @@ const WZ = (() => {
             if (error) throw error;
             currentLookingFor = lookingForVal;
             localStorage.setItem('userProfileData', JSON.stringify(profileData));
-            refreshHeader();
         } catch (e) {
             console.error(e);
             showToast('Could not save profile. Please try again.', 'error');
@@ -1898,6 +2142,7 @@ const WZ = (() => {
             showLoading(false);
         }
         showMain();
+        refreshHeader();
 
         // loadProfile() ran before the wizard, so the resume display was never set.
         // Refresh it now that the wizard has finished and the file is in localStorage.
@@ -1945,6 +2190,10 @@ const WZ = (() => {
             const el = document.getElementById('notice_period') || profileForm.elements['notice_period'];
             if (el) el.value = st.answers['notice_period'];
         }
+        if (st.answers['yoe_experienced'] || st.answers['yoe_semi']) {
+            const el = document.getElementById('emp_exp_years') || profileForm.elements['emp_exp_years'];
+            if (el) el.value = st.answers['yoe_experienced'] || st.answers['yoe_semi'];
+        }
         if (st.answers['expected_stipend']) {
             const el = document.getElementById('expected_stipend_min') || profileForm.elements['expected_stipend_min'];
             if (el) el.value = st.answers['expected_stipend'];
@@ -1952,6 +2201,10 @@ const WZ = (() => {
         if (st.answers['expected_ctc']) {
             const el = document.getElementById('expected_salary') || profileForm.elements['expected_salary'];
             if (el) el.value = st.answers['expected_ctc'];
+        }
+        if (st.answers['current_ctc']) {
+            const el = document.getElementById('emp_current_salary') || profileForm.elements['emp_current_salary'];
+            if (el) el.value = st.answers['current_ctc'];
         }
         if (st.answers['preferred_locations']) {
             const el = document.getElementById('preferred_locations') || profileForm.elements['preferred_locations'];
@@ -1995,9 +2248,9 @@ const WZ = (() => {
             const el = document.getElementById('articleship_num_partners');
             if (el) el.value = st.answers['missing_articleship_num_partners'];
         }
-        if (st.answers['missing_it_company_industry']) {
-            const el = document.getElementById('it_company_industry');
-            if (el) el.value = st.answers['missing_it_company_industry'];
+        if (st.answers['missing_it_industry']) {
+            const el = document.getElementById('it_industry');
+            if (el) el.value = st.answers['missing_it_industry'];
         }
         if (st.answers['missing_current_industry']) {
             const el = document.getElementById('current_industry');
@@ -2061,13 +2314,15 @@ const WZ = (() => {
         if (st.answers['relocation'])          profileData.relocation_preference = st.answers['relocation'];
         if (st.answers['joining_date'])        profileData.earliest_joining_date = st.answers['joining_date'];
         if (st.answers['expected_ctc'] || st.answers['expected_stipend']) profileData.expected_salary = st.answers['expected_ctc'] || st.answers['expected_stipend'];
+        if (st.answers['current_ctc'])         profileData.emp_current_salary = st.answers['current_ctc'];
         if (st.answers['preferred_domains'])   profileData.preferred_domains = formatArrayAnswer(st.answers['preferred_domains']);
         if (st.answers['preferred_industries'])profileData.preferred_industries = formatArrayAnswer(st.answers['preferred_industries']);
         if (st.answers['preferred_firm_type']) profileData.preferred_firm_type = formatArrayAnswer(st.answers['preferred_firm_type']);
         if (st.answers['notice_period'])       profileData.notice_period = st.answers['notice_period'];
         if (st.answers['employment_status'])   profileData.current_employment_status = st.answers['employment_status'];
+        if (st.answers['yoe_semi'])            profileData.emp_exp_years = st.answers['yoe_semi'];
         if (st.answers['missing_articleship_num_partners']) profileData.articleship_num_partners = st.answers['missing_articleship_num_partners'];
-        if (st.answers['missing_it_company_industry']) profileData.it_company_industry = st.answers['missing_it_company_industry'];
+        if (st.answers['missing_it_industry']) profileData.it_industry = st.answers['missing_it_industry'];
         if (st.answers['missing_current_industry']) profileData.current_industry = st.answers['missing_current_industry'];
         if (st.programType)                    profileData.job_preference = st.programType;
 
@@ -2229,9 +2484,6 @@ function populateForm(profileData) {
         const field = profileForm.elements[key];
         if (field) field.value = profileData[key];
     }
-    // Ensure profile visibility always defaults to visible
-    const visField = profileForm.elements['profile_visibility'];
-    if (visField && !visField.value) visField.value = 'Visible to Recruiters';
 
     const emailField = document.getElementById('email');
     if (emailField && !emailField.value && currentUser?.email) {
@@ -2271,8 +2523,12 @@ function populateForm(profileData) {
 
     if (profileData.project_attachment_name) {
         showProjectFileDisplay(profileData.project_attachment_name);
+        setProjectAttachTab('file');
+    } else if (profileData.project_drive_link) {
+        setProjectAttachTab('link');
     } else {
         hideProjectFileDisplay();
+        setProjectAttachTab('file');
     }
 
     if (profileData.emp_skills_hidden) {
@@ -2337,6 +2593,25 @@ function hideProjectFileDisplay() {
     if (display) display.style.display = 'none';
 }
 
+function setProjectAttachTab(tab) {
+    const fileBtn = document.getElementById('proj-attach-file-btn');
+    const linkBtn = document.getElementById('proj-attach-link-btn');
+    const fileSection = document.getElementById('proj-attach-file-section');
+    const linkSection = document.getElementById('proj-attach-link-section');
+    if (!fileBtn || !linkBtn || !fileSection || !linkSection) return;
+    if (tab === 'link') {
+        fileBtn.classList.remove('active');
+        linkBtn.classList.add('active');
+        fileSection.style.display = 'none';
+        linkSection.style.display = '';
+    } else {
+        linkBtn.classList.remove('active');
+        fileBtn.classList.add('active');
+        fileSection.style.display = '';
+        linkSection.style.display = 'none';
+    }
+}
+
 function clearFormValueByName(name) {
     const nodes = profileForm.querySelectorAll(`[name="${name}"]`);
     if (!nodes.length) return;
@@ -2390,6 +2665,9 @@ function clearEntryData(entryId) {
 
     if (entryId === 'project-entry-display') {
         hideProjectFileDisplay();
+        const driveInput = document.getElementById('project_drive_link');
+        if (driveInput) driveInput.value = '';
+        setProjectAttachTab('file');
     }
 
     if (entryId === 'summary-entry-display') {
@@ -2648,7 +2926,7 @@ function clearCloudSyncFlag() {
 }
 
 // =================== DPDP CONSENT MANAGEMENT ===================
-const CONSENT_TEXT = 'I consent to My Student Club sharing my CV and profile details with registered companies and recruiters for job-matching purposes.';
+const CONSENT_TEXT = 'I consent to My Student Club sharing my CV and complete profile details with potential companies and recruiters for job-matching purposes.';
 
 async function loadConsentStatus() {
     if (!currentUser) return;
@@ -2998,7 +3276,7 @@ function refreshHeader() {
     ];
 
     if (needsCTC) {
-        items.push({ label: 'Add current CTC', icon: 'fa-wallet', filled: !!(d.current_ctc || '').trim(), boost: 3, section: 'sec-availability', form: 'sec-availability-form' });
+        items.push({ label: 'Add current CTC', icon: 'fa-wallet', filled: !!(d.emp_current_salary || '').trim(), boost: 3, section: 'sec-availability', form: 'sec-availability-form' });
     }
 
     const totalBoost = items.reduce((s, i) => s + i.boost, 0);
@@ -3117,7 +3395,7 @@ function refreshSavedDisplays(d) {
     };
     setAvailValue('disp-emp-status', d.current_employment_status);
     setAvailValue('disp-notice', d.notice_period);
-    setAvailValue('disp-curr-ctc', d.current_ctc);
+    setAvailValue('disp-curr-ctc', d.emp_current_salary);
 
     let joiningDateText = '';
     if ((d.earliest_joining_date || '').trim()) {
@@ -3446,7 +3724,7 @@ function refreshSavedDisplays(d) {
     if (itCompany) {
         itDisplay.style.display = 'block';
         document.getElementById('emp-it-title').textContent = itCompany;
-        document.getElementById('emp-it-meta').textContent = 'MSC Industrial Training Program';
+        document.getElementById('emp-it-meta').textContent = 'Industrial Training';
         if (addITLink) addITLink.style.display = 'none';
     } else {
         itDisplay.style.display = 'none';
@@ -3492,8 +3770,24 @@ function refreshSavedDisplays(d) {
         const projectDescDisplay = document.getElementById('project-desc-display');
         if (projectDescDisplay) projectDescDisplay.textContent = (d.project_details || '').trim();
         const attachmentName = (d.project_attachment_name || '').trim();
+        const driveLink = (d.project_drive_link || '').trim();
         const projectAttachmentDisplay = document.getElementById('project-attachment-display');
-        if (projectAttachmentDisplay) projectAttachmentDisplay.textContent = attachmentName ? `Attachment: ${attachmentName}` : '';
+        if (projectAttachmentDisplay) {
+            if (attachmentName) {
+                projectAttachmentDisplay.textContent = `Attachment: ${attachmentName}`;
+            } else if (driveLink) {
+                projectAttachmentDisplay.innerHTML = '';
+                const a = document.createElement('a');
+                a.href = driveLink;
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.style.cssText = 'color:var(--p2-blue);font-size:0.85rem;';
+                a.innerHTML = '<i class="fas fa-link" style="margin-right:4px;"></i>View Drive Link';
+                projectAttachmentDisplay.appendChild(a);
+            } else {
+                projectAttachmentDisplay.textContent = '';
+            }
+        }
 
         if (addProjectLink) addProjectLink.style.display = 'none';
         if (projectEditToggle) projectEditToggle.textContent = 'Edit project';
@@ -3929,7 +4223,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     initChipMultiSelect('art_client_industries_chips', 'articleship_client_industries');
     initChipMultiSelect('art_domain_chips', 'articleship_domain');
     initChipMultiSelect('preferred_domains_chips', 'preferred_domains');
+    initChipMultiSelect('preferred_domains_industrial_chips', 'preferred_domains');
     initChipMultiSelect('preferred_industries_chips', 'preferred_industries');
+    initChipMultiSelect('preferred_industries_industrial_chips', 'preferred_industries');
+    initChipMultiSelect('preferred_industries_articleship_chips', 'preferred_industries');
     initChipMultiSelect('preferred_firm_type_chips', 'preferred_firm_type');
     initChipMultiSelect('preferred_company_type_chips', 'preferred_company_type');
     initChipMultiSelect('emp_domain_chips', 'emp_domain');
@@ -3948,6 +4245,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             restoreChipMultiSelect('art_domain_chips', 'articleship_domain');
             restoreChipMultiSelect('preferred_domains_chips', 'preferred_domains');
             restoreChipMultiSelect('preferred_industries_chips', 'preferred_industries');
+            restoreChipMultiSelect('preferred_industries_industrial_chips', 'preferred_industries');
+            restoreChipMultiSelect('preferred_industries_articleship_chips', 'preferred_industries');
             restoreChipMultiSelect('preferred_firm_type_chips', 'preferred_firm_type');
             restoreChipMultiSelect('preferred_company_type_chips', 'preferred_company_type');
             restoreChipMultiSelect('emp_domain_chips', 'emp_domain');
@@ -4022,6 +4321,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         clearEntryData(removeBtn.getAttribute('data-entry-id'));
     });
 
+    // Project attachment tab toggle
+    const projAttachFileBtn = document.getElementById('proj-attach-file-btn');
+    const projAttachLinkBtn = document.getElementById('proj-attach-link-btn');
+    if (projAttachFileBtn) {
+        projAttachFileBtn.addEventListener('click', () => {
+            const driveInput = document.getElementById('project_drive_link');
+            if (driveInput) driveInput.value = '';
+            setProjectAttachTab('file');
+            refreshHeader();
+        });
+    }
+    if (projAttachLinkBtn) {
+        projAttachLinkBtn.addEventListener('click', () => {
+            hideProjectFileDisplay();
+            setProjectAttachTab('link');
+            refreshHeader();
+        });
+    }
+
     // Project attachment selection
     const projectAttachmentInput = document.getElementById('project_attachment');
     const projectFileRemoveBtn = document.getElementById('project-file-remove');
@@ -4038,6 +4356,12 @@ document.addEventListener('DOMContentLoaded', async () => {
             hideProjectFileDisplay();
             refreshHeader();
         });
+    }
+
+    // Drive link change → refresh display
+    const projectDriveLinkInput = document.getElementById('project_drive_link');
+    if (projectDriveLinkInput) {
+        projectDriveLinkInput.addEventListener('input', refreshHeader);
     }
 
     // Project details character counter
@@ -4427,8 +4751,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const result = await response.json();
                 if (response.ok && result.ok) {
                     showToast('Profile photo updated successfully!', 'success');
-                    // Reload the image
-                    await fetchUserPhoto(user.id);
+                    if (userPhotoBlobUrl) URL.revokeObjectURL(userPhotoBlobUrl);
+                    userPhotoBlobUrl = URL.createObjectURL(file);
                     refreshHeader();
                 } else {
                     showToast(result.error || 'Failed to upload photo.', 'error');

@@ -1882,6 +1882,8 @@ body {
     border-radius: var(--radius-lg) !important;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, black 75%, transparent 100%);
+    mask-image: linear-gradient(to right, black 75%, transparent 100%);
   }
 
   .portal-nav-bar::-webkit-scrollbar {

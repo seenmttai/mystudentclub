@@ -2551,6 +2551,18 @@ async function initializePage() {
                     showOnboardingSegmentModal();
                 }, 800); // Small pleasant delay after load
             }
+        } else {
+            // User has a default portal set — redirect if arriving from an external link/bookmark
+            const lookingForToPreference = {
+                'CA Industrial Training Default': 'industrial',
+                'CA Articleship': 'articleship',
+                'CA Fresher': 'fresher_fresher',
+                'Semi Qualified CA': 'semi_fresher'
+            };
+            const pref = getJobPreference() || lookingForToPreference[profile.looking_for];
+            if (pref) {
+                redirectToPreferredPortal(pref);
+            }
         }
     } else {
         // Track visits for unlogged users
@@ -2633,6 +2645,27 @@ async function fetchSharedJob(jobId) {
 
 document.addEventListener('DOMContentLoaded', initializePage);
 
+// Update portal nav scroll fade indicator (mobile only)
+document.addEventListener('DOMContentLoaded', () => {
+    const nav = document.querySelector('.portal-nav-bar');
+    if (!nav) return;
+    const updateMask = () => {
+        if (window.innerWidth > 768) {
+            nav.style.webkitMaskImage = '';
+            nav.style.maskImage = '';
+            return;
+        }
+        const atEnd = nav.scrollLeft + nav.clientWidth >= nav.scrollWidth - 4;
+        nav.style.webkitMaskImage = atEnd
+            ? 'none'
+            : 'linear-gradient(to right, black 75%, transparent 100%)';
+        nav.style.maskImage = nav.style.webkitMaskImage;
+    };
+    nav.addEventListener('scroll', updateMask, { passive: true });
+    window.addEventListener('resize', updateMask, { passive: true });
+    updateMask();
+});
+
 // Check for new user signup and show resume prompt
 document.addEventListener('DOMContentLoaded', async () => {
     const isNewUser = localStorage.getItem('newUserSignup');
@@ -2712,7 +2745,7 @@ document.getElementById('resumePromptModal')?.addEventListener('click', (e) => {
 });
 
 // =================== DPDP CONSENT CHECK ===================
-const DPDP_CONSENT_TEXT = 'I consent to My Student Club sharing my CV and profile details with registered companies and recruiters for job-matching purposes.';
+const DPDP_CONSENT_TEXT = 'I consent to My Student Club sharing my CV and complete profile details with potential companies and recruiters for job-matching purposes.';
 
 async function checkAndPromptConsent() {
     if (!currentSession) return;
@@ -3199,12 +3232,14 @@ function initOnboardingSegmentForm() {
         if (!monthEl || !yearEl || !clearedEl || !hiddenEl) return;
 
         function update() {
+            const hasDate = monthEl.value && yearEl.value;
             if (clearedEl.checked) {
-                hiddenEl.value = clearedId === 'ca_inter_cleared' ? 'Cleared Both Groups' : 'Cleared';
                 rowEl.classList.add('cleared-active');
+                const clearedLabel = clearedId === 'ca_inter_cleared' ? 'Cleared Both Groups' : 'Cleared';
+                hiddenEl.value = hasDate ? `${monthEl.value} ${yearEl.value} (${clearedLabel})` : clearedLabel;
             } else {
                 rowEl.classList.remove('cleared-active');
-                hiddenEl.value = (monthEl.value && yearEl.value) ? `${monthEl.value} ${yearEl.value}` : '';
+                hiddenEl.value = hasDate ? `${monthEl.value} ${yearEl.value}` : '';
             }
         }
 

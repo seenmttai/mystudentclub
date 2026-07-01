@@ -864,7 +864,7 @@
 
                     <!-- ===== EMPLOYMENT ===== -->
                     <!-- ===== ARTICLESHIP & TRAINING ===== -->
-                    <section class="p2-card" id="sec-articleship">
+                    <section class="p2-card" id="sec-articleship" data-portal="industrial,fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
                         <div class="p2-card-header">
                             <h2>Articleship &amp; Industrial Training <span class="p2-boost" id="empBoost">Add 10%</span></h2>
                         </div>
@@ -960,6 +960,7 @@
                                         <label class="p2-chip"><input type="checkbox" value="Due Diligence" style="display:none;"> Due Diligence</label>
                                         <label class="p2-chip"><input type="checkbox" value="Valuation" style="display:none;"> Valuation</label>
                                         <label class="p2-chip"><input type="checkbox" value="Deals &amp; Transaction Advisory" style="display:none;"> Deals &amp; Transaction Advisory</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Accounting &amp; Bookkeeping" style="display:none;"> Accounting &amp; Bookkeeping</label>
                                         <label class="p2-chip"><input type="checkbox" value="Accounting &amp; Reporting" style="display:none;"> Accounting &amp; Reporting</label>
                                         <label class="p2-chip"><input type="checkbox" value="Financial Reporting (Ind AS / IFRS)" style="display:none;"> Financial Reporting (Ind AS / IFRS)</label>
                                         <label class="p2-chip"><input type="checkbox" value="Compliance" style="display:none;"> Compliance</label>
@@ -968,7 +969,7 @@
                                     <input type="hidden" id="articleship_domain" name="articleship_domain">
                                 </div>
                                 <div class="p2-form-row p2-full-width">
-                                    <label>Client Industries Exposure</label>
+                                    <label>Client Industries</label>
                                     <div class="p2-chip-group" id="art_client_industries_chips" style="flex-wrap:wrap; gap:0.4rem;">
                                         <label class="p2-chip"><input type="checkbox" value="Banking" style="display:none;"> Banking</label>
                                         <label class="p2-chip"><input type="checkbox" value="Financial Services" style="display:none;"> Financial Services</label>
@@ -1052,12 +1053,13 @@
                     </section>
 
                     <!-- ===== WORK EXPERIENCE ===== -->
-                    <section class="p2-card" id="sec-employment" data-portal="fresher_experienced,semi_experienced">
+                    <section class="p2-card" id="sec-employment" data-portal="fresher_experienced,semi_experienced,articleship">
                         <div class="p2-card-header">
                             <h2>Work Experience</h2>
-                            <a href="javascript:void(0)" class="p2-card-action" id="empEditToggle" data-toggle="sec-experience-form">Add employment</a>
+                            <a href="javascript:void(0)" class="p2-card-action" id="empEditToggle" data-toggle="sec-experience-form">Add experience</a>
                         </div>
-                        <p class="p2-card-sub">Your employment details will help recruiters understand your experience</p>
+                        <p class="p2-card-sub" data-portal="fresher_experienced,semi_experienced">Your employment details will help recruiters understand your experience</p>
+                        <p class="p2-card-sub" data-portal="articleship">Add any prior internship, part-time role, or work experience before your articleship</p>
 
                         <div class="p2-saved-display">
                             <div class="p2-saved-entry" id="emp-org-display" style="display:none;">
@@ -1072,13 +1074,15 @@
                         </div>
 
                         <div class="p2-add-links">
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-experience-form" id="addOrgLink"><i class="fas fa-plus-circle"></i> Add current organization</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-experience-form" id="addOrgLink" data-portal="fresher_experienced,semi_experienced"><i class="fas fa-plus-circle"></i> Add current organization</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-experience-form" id="addOrgLinkArticleship" data-portal="articleship"><i class="fas fa-plus-circle"></i> Add work experience</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-prev-experience-form" id="addPrevOrgLink"><i class="fas fa-plus-circle"></i> Add previous organization</a>
                         </div>
 
                         <!-- Current Employment Form -->
                         <div class="p2-card-form collapsed" id="sec-experience-form">
-                            <div class="p2-inline-form-title">Employment</div>
+                            <div class="p2-inline-form-title" data-portal="fresher_experienced,semi_experienced">Employment</div>
+                            <div class="p2-inline-form-title" data-portal="articleship">Work Experience</div>
                             <div class="p2-card-sub" style="margin-bottom: 1rem; color: #555; font-size:0.85rem;">Details like job title, company name, etc, help employers understand your work</div>
 
                             <div class="p2-form-grid">
@@ -1183,7 +1187,7 @@
                                     </div>
                                     <input type="hidden" id="emp_domain" name="emp_domain">
                                 </div>
-                                <div class="p2-form-row p2-full-width">
+                                <div class="p2-form-row p2-full-width" data-portal="fresher_experienced,semi_experienced">
                                     <label for="emp_current_salary">Current CTC (INR)</label>
                                     <input type="text" id="emp_current_salary" name="emp_current_salary" placeholder="e.g., 12,00,000">
                                 </div>
@@ -1405,15 +1409,25 @@
                                     <div class="p2-char-count"><span id="project-details-left">1000</span> character(s) left</div>
                                 </div>
                                 <div class="p2-form-row p2-full-width">
-                                    <label for="project_attachment">Project attachment (PDF, Excel or any file)</label>
-                                    <input type="file" id="project_attachment" accept=".pdf,.xls,.xlsx,.csv,.doc,.docx,.ppt,.pptx,.txt,.zip,.rar,image/*">
-                                    <input type="hidden" id="project_attachment_name" name="project_attachment_name">
-                                    <div id="project-file-display" style="display:none; margin-top:0.5rem;">
-                                        <div class="p2-file-tag">
-                                            <i class="fas fa-paperclip"></i>
-                                            <span id="project-filename"></span>
-                                            <button type="button" class="p2-remove-file" id="project-file-remove"><i class="fas fa-times"></i></button>
+                                    <label>Project attachment</label>
+                                    <div class="p2-attach-toggle">
+                                        <button type="button" class="p2-attach-opt active" id="proj-attach-file-btn"><i class="fas fa-upload" style="font-size:0.75rem;margin-right:4px;"></i>Upload File</button>
+                                        <button type="button" class="p2-attach-opt" id="proj-attach-link-btn"><i class="fas fa-link" style="font-size:0.75rem;margin-right:4px;"></i>Drive Link</button>
+                                    </div>
+                                    <div id="proj-attach-file-section">
+                                        <input type="file" id="project_attachment" accept=".pdf,.xls,.xlsx,.csv,.doc,.docx,.ppt,.pptx,.txt,.zip,.rar,image/*">
+                                        <input type="hidden" id="project_attachment_name" name="project_attachment_name">
+                                        <div id="project-file-display" style="display:none; margin-top:0.5rem;">
+                                            <div class="p2-file-tag">
+                                                <i class="fas fa-paperclip"></i>
+                                                <span id="project-filename"></span>
+                                                <button type="button" class="p2-remove-file" id="project-file-remove"><i class="fas fa-times"></i></button>
+                                            </div>
                                         </div>
+                                    </div>
+                                    <div id="proj-attach-link-section" style="display:none; margin-top:0.5rem;">
+                                        <input type="url" id="project_drive_link" name="project_drive_link" placeholder="Paste Google Drive or OneDrive link...">
+                                        <p class="p2-attach-link-hint">Make sure the link is set to "Anyone with the link can view"</p>
                                     </div>
                                 </div>
                             </div>
@@ -1472,57 +1486,160 @@
                                         <option value="PAN India">PAN India — anywhere in India</option>
                                     </select>
                                 </div>
-                                <div class="p2-form-row p2-full-width">
+                                <div class="p2-form-row p2-full-width" data-portal="fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
                                     <label>Preferred Domains (select all that apply)</label>
                                     <div class="p2-chip-group" id="preferred_domains_chips" style="flex-wrap:wrap; gap:0.4rem;">
-                                        <label class="p2-chip"><input type="checkbox" value="FP&A" style="display:none;"> FP&amp;A</label>
+                                        <label class="p2-chip"><input type="checkbox" value="FP&amp;A" style="display:none;"> FP&amp;A</label>
                                         <label class="p2-chip"><input type="checkbox" value="Business Finance" style="display:none;"> Business Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Controllership" style="display:none;"> Controllership</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Financial Reporting" style="display:none;"> Financial Reporting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Accounting &amp; Reporting" style="display:none;"> Accounting &amp; Reporting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="MIS Reporting" style="display:none;"> MIS Reporting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Finance &amp; Accounts" style="display:none;"> Finance &amp; Accounts</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Treasury" style="display:none;"> Treasury</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Supply Chain Finance" style="display:none;"> Supply Chain Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Costing &amp; Plant Finance" style="display:none;"> Costing &amp; Plant Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Banking &amp; Credit" style="display:none;"> Banking &amp; Credit</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Finance" style="display:none;"> Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Statutory Audit" style="display:none;"> Statutory Audit</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Internal Audit" style="display:none;"> Internal Audit</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Concurrent Audit" style="display:none;"> Concurrent Audit</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Risk Advisory" style="display:none;"> Risk Advisory</label>
+                                        <label class="p2-chip"><input type="checkbox" value="SOX / IFC Controls" style="display:none;"> SOX / IFC Controls</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Forensics" style="display:none;"> Forensics</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Compliance" style="display:none;"> Compliance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Direct Tax" style="display:none;"> Direct Tax</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Indirect Tax (GST)" style="display:none;"> Indirect Tax (GST)</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Transfer Pricing" style="display:none;"> Transfer Pricing</label>
+                                        <label class="p2-chip"><input type="checkbox" value="International Taxation" style="display:none;"> International Taxation</label>
+                                        <label class="p2-chip"><input type="checkbox" value="M&amp;A Tax" style="display:none;"> M&amp;A Tax</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Deals &amp; Transaction Advisory" style="display:none;"> Deals &amp; Transaction Advisory</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Due Diligence" style="display:none;"> Due Diligence</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Valuation" style="display:none;"> Valuation</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Investment Banking" style="display:none;"> Investment Banking</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Equity Research" style="display:none;"> Equity Research</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Mergers &amp; Acquisitions (M&amp;A)" style="display:none;"> Mergers &amp; Acquisitions (M&amp;A)</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Management Consulting" style="display:none;"> Management Consulting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Strategy" style="display:none;"> Strategy</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Data Analytics / Power BI" style="display:none;"> Data Analytics / Power BI</label>
+                                        <label class="p2-chip"><input type="checkbox" value="ESG &amp; Sustainability" style="display:none;"> ESG &amp; Sustainability</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Other" style="display:none;"> Other</label>
+                                    </div>
+                                </div>
+                                <div class="p2-form-row p2-full-width" data-portal="industrial">
+                                    <label>Preferred Domains (select all that apply)</label>
+                                    <div class="p2-chip-group" id="preferred_domains_industrial_chips" style="flex-wrap:wrap; gap:0.4rem;">
+                                        <label class="p2-chip"><input type="checkbox" value="FP&amp;A" style="display:none;"> FP&amp;A</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Business Finance" style="display:none;"> Business Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Supply Chain Finance" style="display:none;"> Supply Chain Finance</label>
                                         <label class="p2-chip"><input type="checkbox" value="Treasury" style="display:none;"> Treasury</label>
                                         <label class="p2-chip"><input type="checkbox" value="Controllership" style="display:none;"> Controllership</label>
                                         <label class="p2-chip"><input type="checkbox" value="Financial Reporting" style="display:none;"> Financial Reporting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Accounting &amp; Reporting" style="display:none;"> Accounting &amp; Reporting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="MIS Reporting" style="display:none;"> MIS Reporting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Finance &amp; Accounts" style="display:none;"> Finance &amp; Accounts</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Banking &amp; Credit" style="display:none;"> Banking &amp; Credit</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Costing &amp; Plant Finance" style="display:none;"> Costing &amp; Plant Finance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Finance" style="display:none;"> Finance</label>
                                         <label class="p2-chip"><input type="checkbox" value="Internal Audit" style="display:none;"> Internal Audit</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Risk Management" style="display:none;"> Risk Management</label>
                                         <label class="p2-chip"><input type="checkbox" value="Direct Tax" style="display:none;"> Direct Tax</label>
-                                        <label class="p2-chip"><input type="checkbox" value="GST" style="display:none;"> GST</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Indirect Tax (GST)" style="display:none;"> Indirect Tax (GST)</label>
                                         <label class="p2-chip"><input type="checkbox" value="Transfer Pricing" style="display:none;"> Transfer Pricing</label>
                                         <label class="p2-chip"><input type="checkbox" value="Valuation" style="display:none;"> Valuation</label>
                                         <label class="p2-chip"><input type="checkbox" value="Due Diligence" style="display:none;"> Due Diligence</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Deals &amp; Transaction Advisory" style="display:none;"> Deals &amp; Transaction Advisory</label>
                                         <label class="p2-chip"><input type="checkbox" value="Investment Banking" style="display:none;"> Investment Banking</label>
                                         <label class="p2-chip"><input type="checkbox" value="Equity Research" style="display:none;"> Equity Research</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Consulting" style="display:none;"> Consulting</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Data Analytics / Power BI" style="display:none;"> Data Analytics / Power BI</label>
-                                        <label class="p2-chip"><input type="checkbox" value="ESG &amp; Sustainability" style="display:none;"> ESG &amp; Sustainability</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Supply Chain Finance" style="display:none;"> Supply Chain Finance</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Costing" style="display:none;"> Costing</label>
-                                        <label class="p2-chip"><input type="checkbox" value="MIS Reporting" style="display:none;"> MIS Reporting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Mergers &amp; Acquisitions (M&amp;A)" style="display:none;"> Mergers &amp; Acquisitions (M&amp;A)</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Strategy" style="display:none;"> Strategy</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Management Consulting" style="display:none;"> Management Consulting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Forensics" style="display:none;"> Forensics</label>
                                         <label class="p2-chip"><input type="checkbox" value="Other" style="display:none;"> Other</label>
                                     </div>
-                                    <input type="hidden" id="preferred_domains" name="preferred_domains">
                                 </div>
-                                <div class="p2-form-row p2-full-width">
+                                <input type="hidden" id="preferred_domains" name="preferred_domains">
+                                <div class="p2-form-row p2-full-width" data-portal="fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
                                     <label>Preferred Industries (select all that apply)</label>
                                     <div class="p2-chip-group" id="preferred_industries_chips" style="flex-wrap:wrap; gap:0.4rem;">
+                                        <label class="p2-chip"><input type="checkbox" value="CA Firms" style="display:none;"> CA Firms</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Banking" style="display:none;"> Banking</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Financial Services" style="display:none;"> Financial Services</label>
+                                        <label class="p2-chip"><input type="checkbox" value="FinTech" style="display:none;"> FinTech</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Consulting" style="display:none;"> Consulting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="E-Commerce" style="display:none;"> E-Commerce</label>
+                                        <label class="p2-chip"><input type="checkbox" value="FMCG" style="display:none;"> FMCG</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Government / PSU" style="display:none;"> Government / PSU</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Education (EdTech)" style="display:none;"> Education (EdTech)</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Manufacturing" style="display:none;"> Manufacturing</label>
+                                        <label class="p2-chip"><input type="checkbox" value="IT &amp; Technology" style="display:none;"> IT &amp; Technology</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Insurance" style="display:none;"> Insurance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Healthcare &amp; Pharmaceuticals" style="display:none;"> Healthcare &amp; Pharmaceuticals</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Automobile" style="display:none;"> Automobile</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Infrastructure &amp; Real Estate" style="display:none;"> Infrastructure &amp; Real Estate</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Energy, Oil &amp; Gas" style="display:none;"> Energy, Oil &amp; Gas</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Power &amp; Utilities" style="display:none;"> Power &amp; Utilities</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Logistics &amp; Supply Chain" style="display:none;"> Logistics &amp; Supply Chain</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Retail" style="display:none;"> Retail</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Telecom" style="display:none;"> Telecom</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Chemicals" style="display:none;"> Chemicals</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Metals &amp; Mining" style="display:none;"> Metals &amp; Mining</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Media &amp; Entertainment" style="display:none;"> Media &amp; Entertainment</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Hospitality &amp; Travel" style="display:none;"> Hospitality &amp; Travel</label>
+                                        <label class="p2-chip"><input type="checkbox" value="NGO / Non-Profit" style="display:none;"> NGO / Non-Profit</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Other" style="display:none;"> Other</label>
+                                    </div>
+                                </div>
+                                <div class="p2-form-row p2-full-width" data-portal="industrial">
+                                    <label>Preferred Industries (select all that apply)</label>
+                                    <div class="p2-chip-group" id="preferred_industries_industrial_chips" style="flex-wrap:wrap; gap:0.4rem;">
+                                        <label class="p2-chip"><input type="checkbox" value="Banking" style="display:none;"> Banking</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Financial Services" style="display:none;"> Financial Services</label>
+                                        <label class="p2-chip"><input type="checkbox" value="FinTech" style="display:none;"> FinTech</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Consulting" style="display:none;"> Consulting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="E-Commerce" style="display:none;"> E-Commerce</label>
+                                        <label class="p2-chip"><input type="checkbox" value="FMCG" style="display:none;"> FMCG</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Manufacturing" style="display:none;"> Manufacturing</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Education (EdTech)" style="display:none;"> Education (EdTech)</label>
+                                        <label class="p2-chip"><input type="checkbox" value="IT &amp; Technology" style="display:none;"> IT &amp; Technology</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Insurance" style="display:none;"> Insurance</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Healthcare &amp; Pharmaceuticals" style="display:none;"> Healthcare &amp; Pharmaceuticals</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Automobile" style="display:none;"> Automobile</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Infrastructure &amp; Real Estate" style="display:none;"> Infrastructure &amp; Real Estate</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Energy, Oil &amp; Gas" style="display:none;"> Energy, Oil &amp; Gas</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Logistics &amp; Supply Chain" style="display:none;"> Logistics &amp; Supply Chain</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Retail" style="display:none;"> Retail</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Telecom" style="display:none;"> Telecom</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Media &amp; Entertainment" style="display:none;"> Media &amp; Entertainment</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Other" style="display:none;"> Other</label>
+                                    </div>
+                                </div>
+                                <div class="p2-form-row p2-full-width" data-portal="articleship">
+                                    <label>Preferred Industries (select all that apply)</label>
+                                    <div class="p2-chip-group" id="preferred_industries_articleship_chips" style="flex-wrap:wrap; gap:0.4rem;">
+                                        <label class="p2-chip"><input type="checkbox" value="Listed Companies" style="display:none;"> Listed Companies</label>
+                                        <label class="p2-chip"><input type="checkbox" value="MNCs" style="display:none;"> MNCs</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Startups" style="display:none;"> Startups</label>
+                                        <label class="p2-chip"><input type="checkbox" value="SMEs" style="display:none;"> SMEs</label>
                                         <label class="p2-chip"><input type="checkbox" value="Banking" style="display:none;"> Banking</label>
                                         <label class="p2-chip"><input type="checkbox" value="Financial Services" style="display:none;"> Financial Services</label>
                                         <label class="p2-chip"><input type="checkbox" value="FMCG" style="display:none;"> FMCG</label>
                                         <label class="p2-chip"><input type="checkbox" value="Manufacturing" style="display:none;"> Manufacturing</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Pharma" style="display:none;"> Pharma</label>
-                                        <label class="p2-chip"><input type="checkbox" value="IT" style="display:none;"> IT</label>
+                                        <label class="p2-chip"><input type="checkbox" value="IT &amp; Technology" style="display:none;"> IT &amp; Technology</label>
                                         <label class="p2-chip"><input type="checkbox" value="E-Commerce" style="display:none;"> E-Commerce</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Consulting" style="display:none;"> Consulting</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Pharma &amp; Healthcare" style="display:none;"> Pharma &amp; Healthcare</label>
                                         <label class="p2-chip"><input type="checkbox" value="Automobile" style="display:none;"> Automobile</label>
                                         <label class="p2-chip"><input type="checkbox" value="Infrastructure" style="display:none;"> Infrastructure</label>
                                         <label class="p2-chip"><input type="checkbox" value="Real Estate" style="display:none;"> Real Estate</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Consulting" style="display:none;"> Consulting</label>
                                         <label class="p2-chip"><input type="checkbox" value="Retail" style="display:none;"> Retail</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Energy" style="display:none;"> Energy</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Energy &amp; Utilities" style="display:none;"> Energy &amp; Utilities</label>
                                         <label class="p2-chip"><input type="checkbox" value="Telecom" style="display:none;"> Telecom</label>
                                         <label class="p2-chip"><input type="checkbox" value="Logistics" style="display:none;"> Logistics</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Insurance" style="display:none;"> Insurance</label>
-                                        <label class="p2-chip"><input type="checkbox" value="Media &amp; Entertainment" style="display:none;"> Media &amp; Entertainment</label>
+                                        <label class="p2-chip"><input type="checkbox" value="Government &amp; PSU" style="display:none;"> Government &amp; PSU</label>
                                         <label class="p2-chip"><input type="checkbox" value="Others" style="display:none;"> Others</label>
                                     </div>
-                                    <input type="hidden" id="preferred_industries" name="preferred_industries">
                                 </div>
+                                <input type="hidden" id="preferred_industries" name="preferred_industries">
                                 <div class="p2-form-row p2-full-width" data-portal="articleship,industrial">
                                     <label>Preferred Firm Type (select all that apply)</label>
                                     <div class="p2-chip-group" id="preferred_firm_type_chips" style="flex-wrap:wrap; gap:0.4rem;">
@@ -1744,7 +1861,7 @@
                                 </div>
                                 <div class="p2-form-row p2-full-width">
                                     <label for="achievement_leadership">Leadership Positions</label>
-                                    <input type="text" id="achievement_leadership" name="achievement_leadership" placeholder=”e.g., President - College Finance Club”>
+                                    <input type="text" id="achievement_leadership" name="achievement_leadership" placeholder="e.g., President - College Finance Club">
                                 </div>
                                 <div class="p2-form-row p2-full-width" data-portal="fresher_fresher,articleship,industrial">
                                     <label for="achievement_positions">Positions of Responsibility</label>
@@ -1766,21 +1883,6 @@
                         </div>
                     </section>
 
-                    <!-- ===== PROFILE VISIBILITY ===== -->
-                    <section class="p2-card" id="sec-visibility">
-                        <div class="p2-card-header">
-                            <h2>Profile Visibility</h2>
-                        </div>
-                        <p class="p2-card-sub">Control whether recruiters can find and view your profile</p>
-                        <div class="p2-form-grid" style="padding:0 1.25rem 1.25rem;">
-                            <div class="p2-form-row p2-full-width">
-                                <div class="p2-radio-group">
-                                    <label><input type="radio" name="profile_visibility" value="Visible to Recruiters" checked> Visible to Recruiters</label>
-                                    <label><input type="radio" name="profile_visibility" value="Hidden"> Hidden</label>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
 
                     <!-- ===== SAVE BUTTON ===== -->
                     <div class="p2-save-bar">
