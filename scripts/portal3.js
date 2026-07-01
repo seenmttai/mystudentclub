@@ -2633,11 +2633,16 @@ async function fetchSharedJob(jobId) {
 
 document.addEventListener('DOMContentLoaded', initializePage);
 
-// Update portal nav scroll fade indicator
+// Update portal nav scroll fade indicator (mobile only)
 document.addEventListener('DOMContentLoaded', () => {
     const nav = document.querySelector('.portal-nav-bar');
     if (!nav) return;
     const updateMask = () => {
+        if (window.innerWidth > 768) {
+            nav.style.webkitMaskImage = '';
+            nav.style.maskImage = '';
+            return;
+        }
         const atEnd = nav.scrollLeft + nav.clientWidth >= nav.scrollWidth - 4;
         nav.style.webkitMaskImage = atEnd
             ? 'none'
@@ -2645,6 +2650,7 @@ document.addEventListener('DOMContentLoaded', () => {
         nav.style.maskImage = nav.style.webkitMaskImage;
     };
     nav.addEventListener('scroll', updateMask, { passive: true });
+    window.addEventListener('resize', updateMask, { passive: true });
     updateMask();
 });
 

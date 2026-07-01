@@ -784,7 +784,7 @@ const WZ = (() => {
             dom.nextBtn.click();
         });
 
-        goTo('photo', 'forward');
+        goTo('cv', 'forward');
     }
 
     function showMain() {
@@ -841,8 +841,8 @@ const WZ = (() => {
         const total = FIXED_START + nPrefs + nMissing + FIXED_END;
 
         let current;
-        if (st.phase === 'photo')        current = 1;
-        else if (st.phase === 'cv')      current = 2;
+        if (st.phase === 'cv')           current = 1;
+        else if (st.phase === 'photo')   current = 2;
         else if (st.phase === 'type')    current = 3;
         else if (st.phase === 'subtype') current = 4;
         else if (st.phase === 'prefs')   current = FIXED_START + st.prefIdx + 1;
@@ -893,7 +893,7 @@ const WZ = (() => {
         });
 
         // Back button visibility
-        dom.backBtn.style.visibility = (st.history.length > 0 || phase !== 'photo') ? 'visible' : 'hidden';
+        dom.backBtn.style.visibility = (st.history.length > 0 || phase !== 'cv') ? 'visible' : 'hidden';
         dom.skipBtn.style.display = 'none';
         dom.nextBtn.style.display = '';
         dom.nextBtn.textContent = (phase === 'publish') ? 'View Full Profile →' : 'Continue →';
@@ -1360,7 +1360,8 @@ const WZ = (() => {
                     saveConsentRecord(true).catch(() => {});
                     updatePrivacyCard(true);
                 }
-                proceedAfterCV();
+                st.history.push({ phase: 'cv' });
+                goTo('photo', 'forward');
             });
         }
     }
@@ -1461,10 +1462,7 @@ const WZ = (() => {
     // ------ Navigation logic ------
     function handleNext() {
         const phase = st.phase;
-        if (phase === 'photo') {
-            st.history.push({ phase: 'photo' });
-            goTo('cv', 'forward');
-        } else if (phase === 'cv') {
+        if (phase === 'cv') {
             const consentGiven = document.getElementById('wz-consent-chk')?.checked;
             if (!consentGiven) {
                 showToast('Please accept the data sharing consent to continue.', 'warning', 5000);
@@ -1474,6 +1472,9 @@ const WZ = (() => {
             saveConsentRecord(true).catch(console.error); // fire independently — don't wait on storer
             updatePrivacyCard(true); // refresh UI immediately — loadConsentStatus ran before wizard
             fireStorerAndProfill();
+            st.history.push({ phase: 'cv' });
+            goTo('photo', 'forward');
+        } else if (phase === 'photo') {
             proceedAfterCV();
         } else if (phase === 'type') {
             if (!st._pendingType) { showToast('Please select what you are looking for.', 'warning'); return; }
@@ -1530,7 +1531,7 @@ const WZ = (() => {
 
     function proceedAfterCV() {
         if (!st.programType) {
-            st.history.push({ phase: 'cv' });
+            st.history.push({ phase: 'photo' });
             goTo('type', 'forward');
             return;
         }
@@ -1541,13 +1542,13 @@ const WZ = (() => {
             if (isNaN(yoe) || yoeRaw == null) {
                 // YOE unknown — show subtype screen so user can choose
                 st._pendingType = st.programType === 'fresher_fresher' ? 'fresher' : 'semi';
-                st.history.push({ phase: 'cv' });
+                st.history.push({ phase: 'photo' });
                 goTo('subtype', 'forward');
                 return;
             }
         }
         buildPrefQueue();
-        st.history.push({ phase: 'cv' });
+        st.history.push({ phase: 'photo' });
         goTo('prefs', 'forward');
     }
 
