@@ -313,11 +313,11 @@ const WZ_QUESTION_CONFIGS = {
         hint: 'Select all that apply',
         type: 'chips_grouped',
         options: [
-            { group: 'Finance', items: ['FP&A', 'Business Finance', 'Controllership', 'Financial Reporting', 'Accounting & Reporting', 'MIS Reporting', 'Supply Chain Finance', 'Treasury', 'Costing & Plant Finance', 'Banking & Credit'] },
-            { group: 'Audit, Risk & Compliance', items: ['Statutory Audit', 'Internal Audit', 'Risk Advisory', 'SOX / IFC Controls', 'Forensics & Compliance'] },
+            { group: 'Finance', items: ['FP&A', 'Business Finance', 'Controllership', 'Financial Reporting', 'Accounting & Reporting', 'MIS Reporting', 'Finance & Accounts', 'Treasury', 'Supply Chain Finance', 'Costing & Plant Finance', 'Banking & Credit', 'Finance'] },
+            { group: 'Audit, Risk & Compliance', items: ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'Risk Advisory', 'SOX / IFC Controls', 'Forensics', 'Compliance'] },
             { group: 'Tax', items: ['Direct Tax', 'Indirect Tax (GST)', 'Transfer Pricing', 'International Taxation', 'M&A Tax'] },
             { group: 'Deals & Capital Markets', items: ['Deals & Transaction Advisory', 'Due Diligence', 'Valuation', 'Investment Banking', 'Equity Research', 'Mergers & Acquisitions (M&A)'] },
-            { group: 'Consulting', items: ['Consulting', 'Strategy'] },
+            { group: 'Consulting', items: ['Management Consulting', 'Strategy'] },
             { group: 'Emerging', items: ['Data Analytics / Power BI', 'ESG & Sustainability'] },
             { group: 'Other', items: ['Other'] }
         ],
@@ -328,7 +328,7 @@ const WZ_QUESTION_CONFIGS = {
         question: 'Which domains are you interested in?',
         hint: 'Select all that apply',
         type: 'chips',
-        options: ['FP&A', 'Business Finance', 'Supply Chain Finance', 'Treasury', 'Controllership', 'Financial Reporting', 'Banking & Credit', 'Internal Audit', 'Forensics', 'Direct Tax', 'GST', 'Transfer Pricing', 'Valuation', 'Due Diligence', 'Investment Banking', 'Equity Research', 'Consulting', 'Strategy', 'Deal Advisory', 'Mergers & Acquisition', 'Costing', 'MIS Reporting', 'Other'],
+        options: ['FP&A', 'Business Finance', 'Supply Chain Finance', 'Treasury', 'Controllership', 'Financial Reporting', 'Accounting & Reporting', 'MIS Reporting', 'Finance & Accounts', 'Banking & Credit', 'Costing & Plant Finance', 'Finance', 'Internal Audit', 'Direct Tax', 'Indirect Tax (GST)', 'Transfer Pricing', 'Valuation', 'Due Diligence', 'Deals & Transaction Advisory', 'Investment Banking', 'Equity Research', 'Mergers & Acquisitions (M&A)', 'Strategy', 'Management Consulting', 'Forensics', 'Other'],
         profileKey: 'preferred_domains', optional: true
     },
     preferred_domains_articleship: {
@@ -336,7 +336,7 @@ const WZ_QUESTION_CONFIGS = {
         question: 'Which domains did you work in during articleship?',
         hint: 'Select all that apply',
         type: 'chips',
-        options: ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other'],
+        options: ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Bookkeeping', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other'],
         profileKey: 'preferred_domains', optional: true
     },
     preferred_firm_type: {
@@ -352,7 +352,7 @@ const WZ_QUESTION_CONFIGS = {
         question: 'Which industries would you like to work in?',
         hint: 'Select all that apply',
         type: 'chips',
-        options: ['CA Firms', 'Banking', 'Financial Services', 'Consulting', 'IT & ITES', 'FMCG / FMCD', 'Manufacturing', 'Automobile', 'Pharma & Healthcare', 'E-Commerce', 'Retail', 'Infrastructure & Real Estate', 'Energy, Oil & Gas', 'Telecom', 'Logistics & Supply Chain', 'FinTech', 'GCC / Shared Services', 'Startups', 'Media & Entertainment', 'Education (EdTech)', 'Hospitality & Travel', 'Chemicals', 'Metals & Mining', 'Power & Utilities', 'Government / PSU', 'NGO / Non-Profit', 'Other'],
+        options: ['CA Firms', 'Banking', 'Financial Services', 'FinTech', 'Consulting', 'E-Commerce', 'FMCG', 'Government / PSU', 'Education (EdTech)', 'Manufacturing', 'IT & Technology', 'Insurance', 'Healthcare & Pharmaceuticals', 'Automobile', 'Infrastructure & Real Estate', 'Energy, Oil & Gas', 'Power & Utilities', 'Logistics & Supply Chain', 'Retail', 'Telecom', 'Chemicals', 'Metals & Mining', 'Media & Entertainment', 'Hospitality & Travel', 'NGO / Non-Profit', 'Other'],
         profileKey: 'preferred_industries', optional: true
     },
     preferred_industries_industrial: {
@@ -360,7 +360,7 @@ const WZ_QUESTION_CONFIGS = {
         question: 'Which industries would you like to work in?',
         hint: 'Select all that apply',
         type: 'chips',
-        options: ['Banking', 'Financial Services', 'Insurance', 'Consulting', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Media & Entertainment', 'Other'],
+        options: ['Banking', 'Financial Services', 'FinTech', 'Consulting', 'E-Commerce', 'FMCG', 'Manufacturing', 'Education (EdTech)', 'IT & Technology', 'Insurance', 'Healthcare & Pharmaceuticals', 'Automobile', 'Infrastructure & Real Estate', 'Energy, Oil & Gas', 'Logistics & Supply Chain', 'Retail', 'Telecom', 'Media & Entertainment', 'Other'],
         profileKey: 'preferred_industries', optional: true
     },
     preferred_industries_articleship: {
@@ -456,7 +456,7 @@ function getWzMissingFields(portalType) {
         f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'If First Attempt, 1'),
         f('articleship_firm_type', 'Articleship Firm Type', '🏢', 'radio', true, '', null, ['Big 4', 'Big 6', 'Big 10', 'Mid Size Firm', 'Small Size Firm']),
         f('articleship_firm_name', 'Articleship Firm Name', '🏢', 'text', true, 'e.g., Deloitte, KPMG, ABC & Associates'),
-        f('articleship_domain', 'Articleship Domain(s)', '📂', 'chips', true, '', 'Select all that apply', ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other']),
+        f('articleship_domain', 'Articleship Domain(s)', '📂', 'chips', true, '', 'Select all that apply', ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Bookkeeping', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other']),
         f('articleship_client_industries', 'Client Industries', '🏭', 'text', true, 'e.g., Banking, FMCG, Manufacturing, IT, Pharma', 'If you\'ve worked with clients across multiple industries during your articleship, list them separated by commas (e.g., Banking, Manufacturing, FMCG). This helps recruiters understand your industry exposure.'),
         f('additional_qualifications', 'Additional Qualifications', '🎓', 'chips', true, '', 'Select all that apply', ['CFA', 'CS', 'CMA', 'ACCA', 'CPA', 'FRM', 'MBA', 'LLB', 'DISA', 'CISA', 'Financial Modelling', 'Other']),
     ];
@@ -472,7 +472,7 @@ function getWzMissingFields(portalType) {
         f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'If First Attempt, 1'),
         f('articleship_firm_type', 'Articleship Firm Type', '🏢', 'radio', true, '', null, ['Big 4', 'Big 6', 'Big 10', 'Mid Size Firm', 'Small Size Firm']),
         f('articleship_firm_name', 'Articleship Firm Name', '🏢', 'text', true, 'e.g., Deloitte, KPMG, ABC & Associates'),
-        f('articleship_domain', 'Articleship Domain(s)', '📂', 'chips', true, '', 'Select all that apply', ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other']),
+        f('articleship_domain', 'Articleship Domain(s)', '📂', 'chips', true, '', 'Select all that apply', ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Bookkeeping', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other']),
         f('articleship_client_industries', 'Client Industries', '🏭', 'text', true, 'e.g., Banking, FMCG, Manufacturing, IT, Pharma', 'If you\'ve worked with clients across multiple industries during your articleship, list them separated by commas (e.g., Banking, Manufacturing, FMCG). This helps recruiters understand your industry exposure.'),
         f('additional_qualifications', 'Additional Qualifications', '🎓', 'chips', true, '', 'Select all that apply', ['CFA', 'CS', 'CMA', 'ACCA', 'CPA', 'FRM', 'MBA', 'LLB', 'DISA', 'CISA', 'Financial Modelling', 'Other']),
     ];
@@ -486,6 +486,7 @@ function getWzMissingFields(portalType) {
     const numPartnersField = f('articleship_num_partners', 'Number of Partners in Articleship Firm', '🤝', 'radio', true, '', null, ['1 (Sole Proprietor)', '2–5', '6–10', '11–20', '21–50', '51+']);
     const itIndustryField = f('it_industry', 'Industrial Training Company Industry', '🏢', 'radio', true, '', 'If you completed Industrial Training, select the industry of your company', ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']);
     const currentIndustryField = f('current_industry', 'Current Industry', '🏭', 'radio', true, '', null, ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']);
+    const noticePeriodField = f('notice_period', 'Notice Period', '📋', 'radio', true, '', 'What is your current notice period?', ['Immediate Joiner', '15 Days or less', '1 Month', '2 Months', '3 Months']);
 
     if (portalType === 'industrial') return [
         ...common, ...caInterFields,
@@ -504,7 +505,7 @@ function getWzMissingFields(portalType) {
     if (portalType === 'semi_fresher')    return [...common, ...caInterFields, currentIndustryField];
     if (portalType === 'semi_experienced')return [...common, ...caInterFields, ...empFields, currentSalaryField, currentIndustryField];
     if (portalType === 'fresher_experienced') return [...common, ...caFinalFields, ...empFields, currentIndustryField];
-    return [...common, ...caFinalFields, numPartnersField, itIndustryField]; // fresher_fresher
+    return [...common, ...caFinalFields, numPartnersField, itIndustryField, noticePeriodField]; // fresher_fresher
 }
 
 
@@ -1963,7 +1964,10 @@ const WZ = (() => {
             restoreChipMultiSelect('addl_qual_chips', 'additional_qualifications');
             renderQualDetails(true);
             restoreChipMultiSelect('preferred_domains_chips', 'preferred_domains');
+            restoreChipMultiSelect('preferred_domains_industrial_chips', 'preferred_domains');
             restoreChipMultiSelect('preferred_industries_chips', 'preferred_industries');
+            restoreChipMultiSelect('preferred_industries_industrial_chips', 'preferred_industries');
+            restoreChipMultiSelect('preferred_industries_articleship_chips', 'preferred_industries');
             restoreChipMultiSelect('preferred_firm_type_chips', 'preferred_firm_type');
             restoreChipMultiSelect('preferred_company_type_chips', 'preferred_company_type');
             restoreChipMultiSelect('emp_domain_chips', 'emp_domain');
@@ -2085,7 +2089,10 @@ const WZ = (() => {
 
             // Visually restore chip UI so career section shows correct selections immediately
             restoreChipMultiSelect('preferred_domains_chips', 'preferred_domains');
+            restoreChipMultiSelect('preferred_domains_industrial_chips', 'preferred_domains');
             restoreChipMultiSelect('preferred_industries_chips', 'preferred_industries');
+            restoreChipMultiSelect('preferred_industries_industrial_chips', 'preferred_industries');
+            restoreChipMultiSelect('preferred_industries_articleship_chips', 'preferred_industries');
             restoreChipMultiSelect('preferred_firm_type_chips', 'preferred_firm_type');
             restoreChipMultiSelect('preferred_company_type_chips', 'preferred_company_type');
 
@@ -3715,7 +3722,7 @@ function refreshSavedDisplays(d) {
     if (itCompany) {
         itDisplay.style.display = 'block';
         document.getElementById('emp-it-title').textContent = itCompany;
-        document.getElementById('emp-it-meta').textContent = 'MSC Industrial Training Program';
+        document.getElementById('emp-it-meta').textContent = 'Industrial Training';
         if (addITLink) addITLink.style.display = 'none';
     } else {
         itDisplay.style.display = 'none';
@@ -4214,7 +4221,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     initChipMultiSelect('art_client_industries_chips', 'articleship_client_industries');
     initChipMultiSelect('art_domain_chips', 'articleship_domain');
     initChipMultiSelect('preferred_domains_chips', 'preferred_domains');
+    initChipMultiSelect('preferred_domains_industrial_chips', 'preferred_domains');
     initChipMultiSelect('preferred_industries_chips', 'preferred_industries');
+    initChipMultiSelect('preferred_industries_industrial_chips', 'preferred_industries');
+    initChipMultiSelect('preferred_industries_articleship_chips', 'preferred_industries');
     initChipMultiSelect('preferred_firm_type_chips', 'preferred_firm_type');
     initChipMultiSelect('preferred_company_type_chips', 'preferred_company_type');
     initChipMultiSelect('emp_domain_chips', 'emp_domain');
@@ -4233,6 +4243,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             restoreChipMultiSelect('art_domain_chips', 'articleship_domain');
             restoreChipMultiSelect('preferred_domains_chips', 'preferred_domains');
             restoreChipMultiSelect('preferred_industries_chips', 'preferred_industries');
+            restoreChipMultiSelect('preferred_industries_industrial_chips', 'preferred_industries');
+            restoreChipMultiSelect('preferred_industries_articleship_chips', 'preferred_industries');
             restoreChipMultiSelect('preferred_firm_type_chips', 'preferred_firm_type');
             restoreChipMultiSelect('preferred_company_type_chips', 'preferred_company_type');
             restoreChipMultiSelect('emp_domain_chips', 'emp_domain');
