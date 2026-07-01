@@ -1142,9 +1142,9 @@ function renderSimpleList(items, selector) {
     const hasItems = normalizedItems.length > 0;
     toggleSectionElement(container, hasItems);
 
-    if (hasItems) {
-        container.innerHTML = normalizedItems.map(item => `<li>${item}</li>`).join('');
-    }
+    container.innerHTML = hasItems
+        ? normalizedItems.map(item => `<li>${item}</li>`).join('')
+        : '';
 }
 
 // Helper: Toggle visibility of a section based on content presence
