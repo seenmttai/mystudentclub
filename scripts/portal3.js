@@ -2551,6 +2551,18 @@ async function initializePage() {
                     showOnboardingSegmentModal();
                 }, 800); // Small pleasant delay after load
             }
+        } else {
+            // User has a default portal set — redirect if arriving from an external link/bookmark
+            const lookingForToPreference = {
+                'CA Industrial Training Default': 'industrial',
+                'CA Articleship': 'articleship',
+                'CA Fresher': 'fresher_fresher',
+                'Semi Qualified CA': 'semi_fresher'
+            };
+            const pref = getJobPreference() || lookingForToPreference[profile.looking_for];
+            if (pref) {
+                redirectToPreferredPortal(pref);
+            }
         }
     } else {
         // Track visits for unlogged users
