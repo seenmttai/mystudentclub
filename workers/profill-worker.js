@@ -25,8 +25,9 @@ Do NOT extract emp_company_name/emp_job_title/emp_current_salary — no post-qua
         focus: `CA Final is cleared. Candidate has NO post-qualification work experience.
 Extract full CA Final details (course, attempts, clear month/year, AIR).
 Extract CA Inter and CA Foundation details.
-Extract articleship details and industrial_training_company if present.
-Do NOT extract emp_company_name/emp_job_title/emp_job_profile/emp_current_salary — this is a fresher with no employment.`,
+Extract articleship details.
+If any OTHER work experience is present (internship, corporate project, industrial training, part-time job — anything that is NOT the articleship firm), capture the company name in industrial_training_company and use it_* fields for details.
+Do NOT extract emp_company_name/emp_job_title/emp_job_profile/emp_current_salary — this is a fresher with no post-qualification employment.`,
         skipFields: ['emp_company_name', 'emp_job_title', 'emp_job_profile', 'emp_join_year', 'emp_join_month', 'emp_current_salary', 'ca_final_app_month', 'ca_final_app_year'],
     },
     fresher_experienced: {
@@ -211,14 +212,14 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
 65. **articleship_client_industries**: Comma-separated list of client industries from: "Banking", "Financial Services", "FMCG", "Manufacturing", "Pharma", "IT", "E-Commerce", "Automobile", "Infrastructure", "Real Estate", "Consulting", "Retail", "Energy", "Telecom", "Logistics", "Others".
 66. **articleship_responsibilities**: Paragraph summarising key responsibilities during articleship.
 
-### Industrial Training:
-67. **industrial_training_company**: Company name if industrial training is mentioned.
-68. **it_industry**: Industry of the industrial training company.
-69. **it_start_month**: Month IT started.
-70. **it_start_year**: Year IT started.
-71. **it_end_month**: Month IT ended.
-72. **it_end_year**: Year IT ended.
-73. **it_responsibilities**: Key responsibilities during industrial training.
+### Industrial Training / Other Work Experience:
+67. **industrial_training_company**: Company name of industrial training or any other work experience (internship, corporate project, part-time job) that is NOT the articleship firm and NOT post-qualification employment. For fresher portals (fresher_fresher, fresher_experienced), use this field to capture any such experience found on the resume.
+68. **it_industry**: Industry of the company.
+69. **it_start_month**: Month started.
+70. **it_start_year**: Year started.
+71. **it_end_month**: Month ended.
+72. **it_end_year**: Year ended.
+73. **it_responsibilities**: Key responsibilities during this experience.
 
 ### Employment (post-qualification jobs only — see portal context):
 74. **is_current_employment**: "Yes" or "No".
@@ -273,7 +274,7 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
 114. **project_skills**: Comma-separated list of tools/skills used in the project (e.g. "Excel, SAP, Power BI"). Return empty string if no project found.
 
 ### Critical Rules:
-- **Strict duplication prevention**: Articleship → articleship fields only. Industrial training → industrial_training_company only. Regular employment → emp_* fields only.
+- **Strict duplication prevention**: Articleship firm → articleship fields only. Any other non-articleship work experience (industrial training, internship, corporate project, part-time) → industrial_training_company + it_* fields only. Post-qualification regular employment → emp_* fields only. Never put the same company in multiple sections.
 - **additional_qualifications**: Only use values from the exact predefined list. Do NOT invent values. CFA Level 1/2/3 → "CFA". MBA from any institute → "MBA". Financial Modelling course → "Financial Modelling".
 - **emp_exp_years / emp_exp_months**: Must match the exact string format ("N Years" / "N Months" / "1 Year" / "1 Month"). Never return a plain number.
 - **notice_period**: Must be one of the five exact values or empty string — never invent a value.

@@ -793,6 +793,7 @@ const WZ = (() => {
         const wz = document.getElementById('profile-wizard');
         if (wz) wz.style.display = 'none';
         applyPortalSections(st.programType);
+        setTimeout(() => refreshHeader(), 0);
     }
 
     // Resolve fresher/semi subtype from YOE in profileData; null means "ask wizard"
@@ -2133,7 +2134,6 @@ const WZ = (() => {
             if (error) throw error;
             currentLookingFor = lookingForVal;
             localStorage.setItem('userProfileData', JSON.stringify(profileData));
-            refreshHeader();
         } catch (e) {
             console.error(e);
             showToast('Could not save profile. Please try again.', 'error');
@@ -2141,6 +2141,7 @@ const WZ = (() => {
             showLoading(false);
         }
         showMain();
+        refreshHeader();
 
         // loadProfile() ran before the wizard, so the resume display was never set.
         // Refresh it now that the wizard has finished and the file is in localStorage.
