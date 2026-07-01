@@ -4750,8 +4750,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const result = await response.json();
                 if (response.ok && result.ok) {
                     showToast('Profile photo updated successfully!', 'success');
-                    // Reload the image
-                    await fetchUserPhoto(user.id);
+                    if (userPhotoBlobUrl) URL.revokeObjectURL(userPhotoBlobUrl);
+                    userPhotoBlobUrl = URL.createObjectURL(file);
                     refreshHeader();
                 } else {
                     showToast(result.error || 'Failed to upload photo.', 'error');
