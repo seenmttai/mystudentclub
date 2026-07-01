@@ -2633,6 +2633,21 @@ async function fetchSharedJob(jobId) {
 
 document.addEventListener('DOMContentLoaded', initializePage);
 
+// Update portal nav scroll fade indicator
+document.addEventListener('DOMContentLoaded', () => {
+    const nav = document.querySelector('.portal-nav-bar');
+    if (!nav) return;
+    const updateMask = () => {
+        const atEnd = nav.scrollLeft + nav.clientWidth >= nav.scrollWidth - 4;
+        nav.style.webkitMaskImage = atEnd
+            ? 'none'
+            : 'linear-gradient(to right, black 75%, transparent 100%)';
+        nav.style.maskImage = nav.style.webkitMaskImage;
+    };
+    nav.addEventListener('scroll', updateMask, { passive: true });
+    updateMask();
+});
+
 // Check for new user signup and show resume prompt
 document.addEventListener('DOMContentLoaded', async () => {
     const isNewUser = localStorage.getItem('newUserSignup');
