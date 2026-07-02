@@ -3415,7 +3415,7 @@ function initOnboardingSegmentForm() {
 function calculateProfileCompletion() {
     const cachedProfile = localStorage.getItem('userProfileData');
     const hasResume = localStorage.getItem('userCVText') || localStorage.getItem('userCVPdf');
-    
+
     let profile = null;
     if (cachedProfile) {
         try { profile = JSON.parse(cachedProfile); } catch (e) {}
@@ -3425,23 +3425,42 @@ function calculateProfileCompletion() {
     if (!profile && !hasResume) return 10;
 
     let score = 0;
-    
-    if (hasResume) {
-        score += 40;
-    }
+
+    if (hasResume) score += 14;
 
     if (profile) {
-        if (profile.full_name || profile.name) score += 10;
-        if (profile.contact_number || profile.mobile || profile.phone || profile.phone_number) score += 10;
-        if (profile.current_city || profile.city || profile.current_location || profile.location) score += 10;
-    }
-
-    if (profile && (profile.looking_for || profile.job_preference)) {
-        score += 15;
-    }
-
-    if (profile && (profile.key_skills || profile.skills || profile.emp_skills_hidden)) {
-        score += 15;
+        if ((profile.full_name || profile.name || '').trim()) score += 14;
+        if ((profile.contact_number || profile.mobile || profile.phone || profile.phone_number || '').toString().trim()) score += 10;
+        if ((profile.current_city || profile.city || profile.current_location || profile.location || '').trim()) score += 3;
+        if ((profile.profile_summary || profile.headline || '').trim()) score += 10;
+        if (
+            (profile.ca_final_course || '').trim() ||
+            (profile.ca_inter_course || '').trim() ||
+            (profile.ca_found_course || '').trim() ||
+            (profile.grad_degree || '').trim() ||
+            (profile.class12_board || '').trim() ||
+            (profile.class10_board || '').trim() ||
+            (profile.other_edu_course || '').trim() ||
+            (profile.other_edu_level || '').trim()
+        ) score += 12;
+        if (
+            (profile.total_experience || '').trim() ||
+            (profile.emp_company_name || '').trim() ||
+            (profile.emp_job_title || '').trim() ||
+            (profile.emp_exp_years || '').toString().trim() ||
+            (profile.articleship_firm_name || '').trim() ||
+            ((profile.articleship_firm_type || '').trim() && profile.articleship_firm_type !== 'None') ||
+            (profile.industrial_training_company || '').trim()
+        ) score += 12;
+        if ((profile.notice_period || '').trim()) score += 7;
+        if (
+            (profile.emp_company_name || '').trim() ||
+            (profile.articleship_firm_name || '').trim() ||
+            (profile.industrial_training_company || '').trim()
+        ) score += 7;
+        if ((profile.looking_for || profile.job_preference || '').trim()) score += 7;
+        if ((profile.key_skills || profile.skills || profile.emp_skills_hidden || '').trim()) score += 2;
+        if ((profile.cert_name || '').trim()) score += 2;
     }
 
     return Math.min(100, score);
