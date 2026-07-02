@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Resume</title>
+    <!-- Import Google Font Tinos for beautiful cross-platform serif printing -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* ── Colours: exact values from Resume_Template_27.docx ── */
+            --accent-color: var(--header-bg, #1F487C);   /* main section banners (themeable) */
+            --blue-deep:    var(--header-deep, #203C5F);  /* WORK EXPERIENCE banner (darker; DOCX-exact) */
+            --sub-header-bg: var(--sub-bg, #DBE1EC);      /* work-experience label / sub-row cells */
+            --grey-bg:      #BEBEBE;                       /* qualification table-header cells */
+            --border-color: #000000;                      /* every table/cell border */
+            --text-color:   #000000;                      /* body text */
+            --banner-text:  #FFFFFF;                       /* white text on banners */
+            --link-color:   #0000FF;                       /* email + LinkedIn hyperlinks */
+            --page-bg:      #FFFFFF;                        /* sheet background */
+            --viewer-bg:    #525659;                        /* PDF-viewer chrome (not from DOCX) */
+            --font-main: 'Tinos', 'Times New Roman', 'Liberation Serif', Times, serif;
+            --content-scale: 1.0;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding: 24px 12px;
+        }
+
+        .resume-container {
+            position: relative;
+            width: 1000px;
+            min-height: 1414.29px;
+            background: var(--page-bg);
+            color: var(--text-color);
+            padding: calc(30px * var(--content-scale)) calc(30px * var(--content-scale)) calc(40px * var(--content-scale));
+            box-shadow: 0 4px 24px rgba(0,0,0,.5);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transform-origin: top center;
+            font-size: calc(15.44px * var(--content-scale));
+            line-height: 1.22;
+        }
+
+        .hdr {
+            padding: 0 calc(12px * var(--content-scale)) calc(6px * var(--content-scale)) calc(12px * var(--content-scale));
+        }
+
+        .hdr p {
+            line-height: 1.22;
+            margin: 0;
+        }
+
+        .hdr a {
+            color: inherit;
+        }
+
+        /* ── SECTION TABLES & BORDERS ── */
+        /* Remove top border on first row of each section table to avoid double borders */
+        .sortable-section table tr:first-child > td {
+            border-top: 0 !important;
+        }
+
+        .sortable-section table {
+            border-collapse: collapse;
+            table-layout: fixed;
+            width: 100%;
+            margin: 0;
+            border: 0;
+            margin-top: -1.4px; /* Collapse borders between adjacent sections */
+        }
+
+        .sortable-section:first-of-type table {
+            margin-top: 0;
+        }
+
+        .sortable-section td,
+        .sortable-section th {
+            border: 1.4px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .sortable-section p {
+            line-height: 1.22;
+            margin: 0;
+        }
+
+        /* ── SECTION HEADER BAR ── */
+        .section-header {
+            background-color: var(--accent-color, #1F487C) !important;
+            vertical-align: middle;
+            padding: calc(3px * var(--content-scale)) calc(6px * var(--content-scale));
+        }
+
+        .section-header p {
+            font-size: calc(17.16px * var(--content-scale));
+            line-height: 1.22;
+            padding-left: calc(4.82px * var(--content-scale));
+        }
+
+        .section-header p span,
+        .section-header p {
+            font-weight: 700 !important;
+            color: var(--banner-text) !important;
+        }
+
+        /* ── SUB-HEADER BAR (Job role/dates/etc.) ── */
+        .sub-section-header {
+            background-color: var(--sub-header-bg, #DBE1EC) !important;
+            vertical-align: middle;
+            padding: calc(2px * var(--content-scale)) calc(3px * var(--content-scale));
+        }
+
+        .sub-section-header p {
+            font-size: calc(15.44px * var(--content-scale));
+            line-height: 1.22;
+        }
+
+        /* ── QUALIFICATIONS HEADER SHADING ── */
+        .qual-header {
+            background-color: var(--grey-bg) !important;
+            vertical-align: middle;
+            padding: calc(2px * var(--content-scale)) calc(3px * var(--content-scale));
+            text-align: center;
+        }
+
+        .qual-header p {
+            font-size: calc(15.44px * var(--content-scale));
+            line-height: 1.22;
+        }
+
+        /* ── BULLET LISTS STYLING ── */
+        .bullet-list,
+        [data-field="skills"] ul,
+        [data-field="skills"] .cv-skills-list {
+            list-style-type: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .bullet-list li,
+        [data-field="skills"] ul li,
+        [data-field="skills"] .cv-skills-list li {
+            font-size: calc(15.44px * var(--content-scale));
+            line-height: 1.22;
+            padding-left: calc(30.88px * var(--content-scale));
+            margin-bottom: calc(2.5px * var(--content-scale));
+            position: relative;
+            text-align: left;
+        }
+
+        .bullet-list li::before,
+        [data-field="skills"] ul li::before,
+        [data-field="skills"] .cv-skills-list li::before {
+            content: "•";
+            display: inline-block;
+            position: absolute;
+            left: calc(13.72px * var(--content-scale));
+            width: calc(17.16px * var(--content-scale));
+            font-size: calc(15.44px * var(--content-scale));
+        }
+
+        /* Skills section: add left padding to the cell content */
+        [data-field="skills"] {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        /* Experience Bullet Lists: wider left padding to match template */
+        #experience-list ul[data-list="bullets"] {
+            list-style-type: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        #experience-list ul[data-list="bullets"] li {
+            font-size: calc(15.44px * var(--content-scale));
+            line-height: 1.22;
+            padding-left: calc(40.03px * var(--content-scale));
+            margin-bottom: calc(2.5px * var(--content-scale));
+            position: relative;
+            text-align: left;
+        }
+
+        #experience-list ul[data-list="bullets"] li::before {
+            content: "•";
+            display: inline-block;
+            position: absolute;
+            left: calc(11.19px * var(--content-scale));
+            width: calc(28.84px * var(--content-scale));
+            font-size: calc(15.44px * var(--content-scale));
+        }
+
+        /* Hide headers/sections if empty template matches */
+        .template {
+            display: none !important;
+        }
+
+        /* Responsive styling for screen display in CV Builder editor */
+        @media (max-width: 1040px) {
+            #zoom-wrapper {
+                padding: 12px 0;
+            }
+            .resume-container {
+                transform: scale(calc(100vw / 1024));
+                transform-origin: top center;
+                margin-bottom: calc(-1 * (1 - 100vw / 1024) * 1414.29px);
+            }
+        }
+
+        /* ── PRINT SETUP (Fits exactly to A4 sheet) ── */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+            html, body {
+                background: var(--page-bg);
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+            }
+            #zoom-wrapper {
+                padding: 0;
+                display: block;
+                min-height: 0;
+                width: 100% !important;
+                height: auto !important;
+            }
+            .resume-container {
+                box-shadow: none;
+                transform: none;
+                zoom: 0.77; /* Standard zoom ratio to print exactly to A4 page */
+                margin: 0 auto;
+                position: static !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="zoom-wrapper">
+        <div class="resume-container" id="cv-page">
+
+            <!-- HEADER (Outside the sortable tables) -->
+            <header class="hdr">
+                <p style="font-weight:800;letter-spacing:.3px;font-size:calc(29.17px * var(--content-scale));text-align:center;padding-left:calc(1.31px * var(--content-scale))">
+                    <span style="font-size:1em;" data-field="name">Padam Bhansali</span>
+                </p>
+                <p style="font-size:calc(20.59px * var(--content-scale));text-align:center;padding-left:calc(11.85px * var(--content-scale));padding-right:calc(6.78px * var(--content-scale))">
+                    <span style="text-decoration:underline;font-size:1em;" data-field="location">Delhi</span>
+                </p>
+                <p style="font-size:calc(20.59px * var(--content-scale));text-align:center;padding-left:calc(11.85px * var(--content-scale));padding-right:calc(6.78px * var(--content-scale));margin-bottom:calc(12px * var(--content-scale))" data-field="tagline">&#8203;</p>
+                <div style="display:flex;justify-content:space-between;align-items:center;font-size:calc(15.44px * var(--content-scale));line-height:1.15;margin-top:calc(2px * var(--content-scale));" class="contact-block" data-field="contact">
+                    <!-- Standard contact content is injected here by cv-common.js and customized by post-processing -->
+                </div>
+                <p style="font-size:calc(17.16px * var(--content-scale))">&#8203;</p>
+            </header>
+
+            <!-- PROFILE SUMMARY -->
+            <div class="sortable-section" data-section-id="summary">
+                <table style="border-collapse:collapse;table-layout:fixed;width:940px;margin:0;border:0;">
+                    <colgroup>
+                        <col style="width:124.17px"><col style="width:51.16px"><col style="width:92.9px"><col style="width:365.4px"><col style="width:101.91px"><col style="width:204.46px">
+                    </colgroup>
+                    <tr style="height:18px;">
+                        <td colspan="6" class="section-header" style="width:940px;vertical-align:middle;padding:3px 6px;border:1.4px solid var(--border-color);overflow:hidden;">
+                            <p style="font-size:calc(17.16px * var(--content-scale));line-height:16px;padding-left:5px;">
+                                <span style="font-weight:700;font-size:17.16px;color:var(--banner-text)">PROFILE</span>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="width:940px;vertical-align:middle;padding:12px 12px;border:1.4px solid var(--border-color);overflow:hidden">
+                            <div class="tagline-summary" data-field="summary" style="font-size:calc(17.16px * var(--content-scale));line-height:1.3;padding-left:5px;padding-right:5px;text-align:justify;">
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- WORK EXPERIENCE -->
+            <div class="sortable-section" data-section-id="experience">
+                <table style="border-collapse:collapse;table-layout:fixed;width:940px;margin:0;border:0;">
+                    <colgroup>
+                        <col style="width:124.17px"><col style="width:51.16px"><col style="width:92.9px"><col style="width:365.4px"><col style="width:101.91px"><col style="width:204.46px">
+                    </colgroup>
+                    <tr style="height:23.25px">
+                        <td colspan="6" style="width:940px;vertical-align:middle;padding:3px 6px;border:1.4px solid var(--border-color);overflow:hidden;background:var(--blue-deep, #203C5F)">
+                            <p style="font-size:calc(17.16px * var(--content-scale));line-height:15.96px;padding-left:0.74px">
+                                <span style="font-weight:700;font-size:17.16px;color:var(--banner-text)">WORK EXPERIENCE</span>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+                <div id="experience-list">
+                    <!-- Template cloned by cv-common.js -->
+                    <div class="template" style="display:none;">
+                        <table style="border-collapse:collapse;table-layout:fixed;width:940px;margin:0;border:0;">
+                            <colgroup>
+                                <col style="width:124.17px"><col style="width:51.16px"><col style="width:92.9px"><col style="width:365.4px"><col style="width:101.91px"><col style="width:204.46px">
+                            </colgroup>
+                            <tr style="height:21.05px" class="experience-header-row">
+                                <td colspan="6" class="sub-section-header" style="width:940px;vertical-align:middle;padding:2px 3px;border:1.4px solid var(--border-color);overflow:hidden">
+                                    <p style="font-size:calc(15.44px * var(--content-scale));line-height:14.14px;position:relative;height:15.2px;white-space:nowrap">
+                                        <span style="position:absolute;left:2.12px;top:0">
+                                            <span style="font-weight:700;font-size:15.44px" data-field="role"></span>
+                                            <span class="exp-company-inline" data-field="company" style="font-weight:700;font-size:15.44px"></span>
+                                        </span>
+                                        <span style="position:absolute;left:746.16px;top:0">
+                                            <span style="font-weight:700;font-style:italic;font-size:15.44px" data-field="dates"></span>
+                                        </span>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr class="exp-details-row">
+                                <td class="category-cell sub-section-header" style="width:124.17px;vertical-align:middle;padding:2px 3px;border:1.4px solid var(--border-color);overflow:hidden;text-align:center;font-weight:700" data-field="category"></td>
+                                <td class="bullets-cell" colspan="5" style="width:815.83px;vertical-align:top;padding:2px 0;border:1.4px solid var(--border-color);overflow:hidden">
+                                    <div style="font-style:italic;font-size:0.95em;padding-left:12px;margin-bottom:4px;" data-field="intro"></div>
+                                    <ul data-list="bullets" style="list-style-type:none;margin:0;padding:0;"></ul>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EDUCATION (Combined section dynamically split inside UI) -->
+            <div class="sortable-section" data-section-id="education">
+                
+                <!-- QUALIFICATIONS (merged) -->
+                <div id="qualifications-section">
+                    <table style="border-collapse:collapse;table-layout:fixed;width:940.0px;margin:0;border:0">
+                        <colgroup>
+                            <col style="width:124.17px"><col style="width:51.16px"><col style="width:92.9px"><col style="width:365.4px"><col style="width:101.91px"><col style="width:204.46px">
+                        </colgroup>
+                        <tr style="height:17.62px">
+                            <td colspan="6" class="section-header" style="width:940.0px;vertical-align:middle;padding:3px 6px;border:1.4px solid var(--border-color);overflow:hidden">
+                                <p style="font-size:calc(17.16px * var(--content-scale));line-height:16px;padding-left:5px">
+                                    <span style="font-weight:700;font-size:17.16px;color:var(--banner-text)">QUALIFICATIONS:</span>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr style="height:15.65px">
+                            <td colspan="2" class="qual-header" style="width:175.33px;vertical-align:middle;padding:2px 3px;border:1.4px solid var(--border-color);overflow:hidden;text-align:center;">
+                                <p style="font-size:calc(15.44px * var(--content-scale));line-height:14px;"><span style="font-weight:700;font-size:15.44px">COURSE</span></p>
+                            </td>
+                            <td class="qual-header" style="width:92.9px;vertical-align:middle;padding:2px 3px;border:1.4px solid var(--border-color);overflow:hidden;text-align:center;">
+                                <p style="font-size:calc(15.44px * var(--content-scale));line-height:14px;"><span style="font-weight:700;font-size:15.44px">YEAR</span></p>
+                            </td>
+                            <td class="qual-header" style="width:365.4px;vertical-align:middle;padding:2px 3px;border:1.4px solid var(--border-color);overflow:hidden;text-align:center;">
+                                <p style="font-size:calc(15.44px * var(--content-scale));line-height:14px;"><span style="font-weight:700;font-size:15.44px">INSTITUTION</span></p>
+                            </td>
+                            <td class="qual-header" style="width:101.91px;vertical-align:middle;padding:2px 3px;border:1.4px solid var(--border-color);overflow:hidden;text-align:center;">
+                                <p style="font-size:calc(15.44px * var(--content-scale));line-height:14px;"><span style="font-weight:700;font-size:15.44px">MARKS (%/CGPA)</span></p>
+                            </td>
+                            <td class="qual-header" style="width:204.46px;vertical-align:middle;padding:2px 3px;border:1.4px solid var(--border-color);overflow:hidden;text-align:center;">
+                                <p style="font-size:calc(15.44px * var(--content-scale));line-height:14px;"><span style="font-weight:700;font-size:15.44px">REMARKS</span></p>
+                            </td>
+                        </tr>
+                        <tbody id="qualifications-list"></tbody>
+                    </table>
+                </div>
+
+                <!-- Hidden table target for cv-common.js dynamic list update -->
+                <table style="display:none;">
+                    <tbody id="education-list">
+                        <tr class="template">
+                            <td colspan="2" style="width:175.33px;vertical-align:middle;padding:2px 3px;border:1.4px solid var(--border-color);overflow:hidden" data-field="degree"></td>
+                            <td style="width:92.9px;vertical-align:middle;padding:2px 3px;border:1.4px solid var(--border-color);overflow:hidden;text-align:center" data-field="year"></td>
+                            <td style="width:365.4px;vertical-align:middle;padding:2px 3px;border:1.4px solid var(--border-color);overflow:hidden" data-field="institution"></td>
+                            <td style="width:101.91px;vertical-align:middle;padding:2px 3px;border:1.4px solid var(--border-color);overflow:hidden;text-align:center" data-field="marks"></td>
+                            <td style="width:204.46px;vertical-align:middle;padding:2px 3px;border:1.4px solid var(--border-color);overflow:hidden" data-field="remarks"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TECHNICAL SKILLS -->
+            <div class="sortable-section" data-section-id="skills">
+                <table style="border-collapse:collapse;table-layout:fixed;width:940.0px;margin:0;border:0">
+                    <colgroup>
+                        <col style="width:124.17px"><col style="width:51.16px"><col style="width:92.9px"><col style="width:365.4px"><col style="width:101.91px"><col style="width:204.46px">
+                    </colgroup>
+                    <tr style="height:17.47px">
+                        <td colspan="6" class="section-header" style="width:940.0px;vertical-align:middle;padding:3px 6px;border:1.4px solid var(--border-color);overflow:hidden">
+                            <p style="font-size:calc(17.16px * var(--content-scale));line-height:15.96px;padding-left:4.82px">
+                                <span style="font-weight:700;font-size:17.16px;color:var(--banner-text)">TECHNICAL SKILLS &amp; CERTIFICATES:</span>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="width:940.0px;vertical-align:top;padding:2px 0;border:1.4px solid var(--border-color);overflow:hidden">
+                            <div data-field="skills"></div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- OTHER SKILLS AND ATTRIBUTES -->
+            <div class="sortable-section" data-section-id="certifications">
+                <table style="border-collapse:collapse;table-layout:fixed;width:940px;margin:0;border:0;">
+                    <colgroup>
+                        <col style="width:124.17px"><col style="width:51.16px"><col style="width:92.9px"><col style="width:365.4px"><col style="width:101.91px"><col style="width:204.46px">
+                    </colgroup>
+                    <tr style="height:18px;">
+                        <td colspan="6" class="section-header" style="width:940px;vertical-align:middle;padding:3px 6px;border:1.4px solid var(--border-color);overflow:hidden;">
+                            <p style="font-size:calc(17.16px * var(--content-scale));line-height:16px;padding-left:5px;">
+                                <span style="font-weight:700;font-size:17.16px;color:var(--banner-text)">OTHER SKILLS AND ATTTRIBUTES:</span>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="width:940px;vertical-align:top;padding:4px 0;border:1.4px solid var(--border-color);overflow:hidden;">
+                            <ul data-list="certifications" class="bullet-list"></ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- EXTRA CURRICULARS -->
+            <div class="sortable-section" data-section-id="leadership">
+                <table style="border-collapse:collapse;table-layout:fixed;width:940px;margin:0;border:0;">
+                    <colgroup>
+                        <col style="width:124.17px"><col style="width:51.16px"><col style="width:92.9px"><col style="width:365.4px"><col style="width:101.91px"><col style="width:204.46px">
+                    </colgroup>
+                    <tr style="height:18px;">
+                        <td colspan="6" class="section-header" style="width:940px;vertical-align:middle;padding:3px 6px;border:1.4px solid var(--border-color);overflow:hidden;">
+                            <p style="font-size:calc(17.16px * var(--content-scale));line-height:16px;padding-left:5px;">
+                                <span style="font-weight:700;font-size:17.16px;color:var(--banner-text)">EXTRA CURRICULARS:</span>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="width:940px;vertical-align:top;padding:4px 0;border:1.4px solid var(--border-color);overflow:hidden;">
+                            <ul data-list="leadership" class="bullet-list"></ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- PROJECTS (Fallback hidden order) -->
+            <div class="sortable-section" data-section-id="projects" style="display:none;">
+                <table style="border-collapse:collapse;table-layout:fixed;width:940px;margin:0;border:0;">
+                    <colgroup>
+                        <col style="width:124.17px"><col style="width:51.16px"><col style="width:92.9px"><col style="width:365.4px"><col style="width:101.91px"><col style="width:204.46px">
+                    </colgroup>
+                    <tr style="height:18px;">
+                        <td colspan="6" class="section-header" style="width:940px;vertical-align:middle;padding:3px 6px;border:1.4px solid var(--border-color);overflow:hidden;">
+                            <p style="font-size:calc(17.16px * var(--content-scale));line-height:16px;padding-left:5px;">
+                                <span style="font-weight:700;font-size:17.16px;color:var(--banner-text);">PROJECTS</span>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+                <div id="projects-list">
+                    <div class="template" style="display:none;">
+                        <table style="border-collapse:collapse;table-layout:fixed;width:940px;margin:0;border:0;">
+                            <colgroup>
+                                <col style="width:124.17px"><col style="width:51.16px"><col style="width:92.9px"><col style="width:365.4px"><col style="width:101.91px"><col style="width:204.46px">
+                            </colgroup>
+                            <tr style="height:21px;">
+                                <td colspan="6" class="sub-section-header" style="width:940px;vertical-align:middle;padding:2px 3px;border:1.4px solid var(--border-color);overflow:hidden;">
+                                    <p style="font-size:calc(15.44px * var(--content-scale));line-height:14.14px;"><span style="font-weight:700;font-size:15.44px" data-field="title"></span></p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="6" style="width:940px;vertical-align:top;padding:4px 0;border:1.4px solid var(--border-color);overflow:hidden;">
+                                    <p style="font-size:calc(15.44px * var(--content-scale));line-height:1.2;padding-left:15px;padding-right:15px;margin-bottom:4px;font-style:italic;" data-field="description"></p>
+                                    <ul data-list="bullets" class="bullet-list"></ul>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACHIEVEMENTS (Fallback hidden order) -->
+            <div class="sortable-section" data-section-id="achievements" style="display:none;">
+                <table style="border-collapse:collapse;table-layout:fixed;width:940px;margin:0;border:0;">
+                    <colgroup>
+                        <col style="width:124.17px"><col style="width:51.16px"><col style="width:92.9px"><col style="width:365.4px"><col style="width:101.91px"><col style="width:204.46px">
+                    </colgroup>
+                    <tr style="height:18px;">
+                        <td colspan="6" class="section-header" style="width:940px;vertical-align:middle;padding:3px 6px;border:1.4px solid var(--border-color);overflow:hidden;">
+                            <p style="font-size:calc(17.16px * var(--content-scale));line-height:16px;padding-left:5px;">
+                                <span style="font-weight:700;font-size:17.16px;color:var(--banner-text)">ACHIEVEMENTS &amp; AWARDS</span>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="width:940px;vertical-align:top;padding:4px 0;border:1.4px solid var(--border-color);overflow:hidden;">
+                            <ul data-list="achievements" class="bullet-list"></ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- INTERESTS & HOBBIES (Fallback hidden order) -->
+            <div class="sortable-section" data-section-id="interests" style="display:none;">
+                <table style="border-collapse:collapse;table-layout:fixed;width:940px;margin:0;border:0;">
+                    <colgroup>
+                        <col style="width:124.17px"><col style="width:51.16px"><col style="width:92.9px"><col style="width:365.4px"><col style="width:101.91px"><col style="width:204.46px">
+                    </colgroup>
+                    <tr style="height:18px;">
+                        <td colspan="6" class="section-header" style="width:940px;vertical-align:middle;padding:3px 6px;border:1.4px solid var(--border-color);overflow:hidden;">
+                            <p style="font-size:calc(17.16px * var(--content-scale));line-height:16px;padding-left:5px;">
+                                <span style="font-weight:700;font-size:17.16px;color:var(--banner-text)">INTERESTS &amp; HOBBIES</span>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="width:940px;vertical-align:top;padding:4px 0;border:1.4px solid var(--border-color);overflow:hidden;">
+                            <ul data-list="interests" class="bullet-list"></ul>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Integrate common builder script -->
+    <script src="cv-common.js"></script>
+    <script>
+        // Override cv-common.js renderCV to execute dynamic post-processing
+        const originalRenderCV = window.renderCV;
+        window.renderCV = function(data) {
+            // 1. Prepare data copy
+            const dataCopy = JSON.parse(JSON.stringify(data));
+            
+            // 2. Merge achievements into certifications (Other Skills and Attributes)
+            if (dataCopy.achievements && Array.isArray(dataCopy.achievements)) {
+                if (!dataCopy.certifications) dataCopy.certifications = [];
+                dataCopy.achievements.forEach(ach => {
+                    const text = typeof ach === 'string' ? ach : ((ach.name || '') + (ach.issuer && ach.issuer.trim() ? ' - ' + ach.issuer : ''));
+                    if (text && !dataCopy.certifications.includes(text)) {
+                        dataCopy.certifications.push(text);
+                    }
+                });
+            }
+            
+            // 3. Merge interests into leadership (Extra Curriculars)
+            if (dataCopy.interests && Array.isArray(dataCopy.interests)) {
+                if (!dataCopy.leadership) dataCopy.leadership = [];
+                dataCopy.interests.forEach(int => {
+                    const text = typeof int === 'string' ? int : (int.name || '');
+                    if (text && !dataCopy.leadership.includes(text)) {
+                        dataCopy.leadership.push(text);
+                    }
+                });
+            }
+            
+            // 4. Force template-specific section order:
+            //    Profile → Work Experience → Education → Projects → Technical Skills & Certificates → Other Skills and Attributes → Extra Curriculars
+            dataCopy.sectionOrder = ['summary', 'experience', 'education', 'projects', 'skills', 'certifications', 'leadership', 'achievements', 'interests'];
+            
+            // 5. Run common rendering with merged data
+            originalRenderCV(dataCopy);
+            
+            // 5. Split education lists dynamically (Professional vs Academic)
+            splitEducationSections();
+            
+            // 6. Fix experience blocks layouts and colspans
+            adjustWorkExperienceColspans();
+
+            // 7. Format experience headers and prevent company name duplicates
+            adjustWorkExperienceHeaders();
+
+            // 8. Overwrite standard contact icons with high-fidelity PNG / Wingdings icons
+            adjustHeaderContacts();
+
+            // 9. Force-hide sections not in the original template (Achievements, Interests)
+            //    Projects are now shown; achievements merge into certifications, interests merge into leadership.
+            const forbiddenSections = ['achievements', 'interests'];
+            forbiddenSections.forEach(id => {
+                const el = document.querySelector(`.sortable-section[data-section-id="${id}"]`);
+                if (el) {
+                    el.style.setProperty('display', 'none', 'important');
+                }
+            });
+
+            // 10. Fix skills rendering - convert cv-skills-list to proper original template bullet style
+            adjustSkillsRendering();
+
+            // 11. Fix location/tagline display
+            adjustHeaderLocation(dataCopy);
+
+            // 12. Re-shrink after all post-processing to prevent overflow.
+            //     Use double-rAF so this runs AFTER cv-common.js's own rAF shrink pass.
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    shrinkContentToFit();
+                    scaleToFit();
+                });
+            });
+        };
+
+        function adjustSkillsRendering() {
+            const skillsEl = document.querySelector('[data-field="skills"]');
+            if (!skillsEl) return;
+
+            const ul = skillsEl.querySelector('ul, ol, .cv-skills-list');
+            if (ul) {
+                // Force reset all list styling via inline styles (beats cv-common.js injected <style>)
+                ul.setAttribute('style', 'list-style-type:none !important;padding:0 !important;margin:0 !important;');
+
+                ul.querySelectorAll('li').forEach(li => {
+                    // Skip if bullet already injected
+                    if (li.querySelector('.skills-bullet-span')) return;
+
+                    const text = li.innerHTML || '';
+                    // Clear li and rebuild with exact original template structure:
+                    // <span display:inline-block; width:17.16px; margin-left:-17.16px>•</span>text
+                    li.innerHTML = '';
+                    li.setAttribute('style',
+                        'font-size:calc(15.44px * var(--content-scale));' +
+                        'padding-left:30.88px;' +
+                        'margin-bottom:2.5px;' +
+                        'position:relative;' +
+                        'line-height:1.22;' +
+                        'list-style-type:none;' +
+                        'overflow-wrap:anywhere;' +
+                        'word-break:break-word;'
+                    );
+
+                    // Bullet span — exactly matching the original template inline style
+                    const bulletSpan = document.createElement('span');
+                    bulletSpan.className = 'skills-bullet-span';
+                    bulletSpan.setAttribute('style',
+                        'display:inline-block;' +
+                        'width:17.16px;' +
+                        'margin-left:-17.16px;' +
+                        'font-size:calc(15.44px * var(--content-scale));'
+                    );
+                    bulletSpan.textContent = '•';
+
+                    const contentSpan = document.createElement('span');
+                    contentSpan.innerHTML = text;
+
+                    li.appendChild(bulletSpan);
+                    li.appendChild(contentSpan);
+                });
+            } else {
+                // No list (ul/ol) exists. It might be plain text or paragraph elements from rich editors.
+                const paragraphs = Array.from(skillsEl.querySelectorAll('p, div, .cv-skills-inline')).filter(el => el.textContent.trim().length > 0);
+                if (paragraphs.length > 0) {
+                    paragraphs.forEach(p => {
+                        if (p.querySelector('.skills-bullet-span')) return;
+                        const text = p.innerHTML;
+                        p.innerHTML = '';
+                        p.setAttribute('style',
+                            'font-size:calc(15.44px * var(--content-scale));' +
+                            'padding-left:30.88px;' +
+                            'margin-bottom:2.5px;' +
+                            'position:relative;' +
+                            'line-height:1.22;' +
+                            'display:block;' +
+                            'overflow-wrap:anywhere;' +
+                            'word-break:break-word;'
+                        );
+                        const bulletSpan = document.createElement('span');
+                        bulletSpan.className = 'skills-bullet-span';
+                        bulletSpan.setAttribute('style',
+                            'display:inline-block;' +
+                            'width:17.16px;' +
+                            'margin-left:-17.16px;' +
+                            'font-size:calc(15.44px * var(--content-scale));'
+                        );
+                        bulletSpan.textContent = '•';
+
+                        const contentSpan = document.createElement('span');
+                        contentSpan.innerHTML = text;
+
+                        p.appendChild(bulletSpan);
+                        p.appendChild(contentSpan);
+                    });
+                } else if (skillsEl.textContent.trim().length > 0) {
+                    // Just raw text inside the skills container
+                    const text = skillsEl.innerHTML;
+                    skillsEl.innerHTML = '';
+                    const p = document.createElement('p');
+                    p.setAttribute('style',
+                        'font-size:calc(15.44px * var(--content-scale));' +
+                        'padding-left:30.88px;' +
+                        'margin-bottom:2.5px;' +
+                        'position:relative;' +
+                        'line-height:1.22;' +
+                        'display:block;' +
+                        'overflow-wrap:anywhere;' +
+                        'word-break:break-word;'
+                    );
+                    const bulletSpan = document.createElement('span');
+                    bulletSpan.className = 'skills-bullet-span';
+                    bulletSpan.setAttribute('style',
+                        'display:inline-block;' +
+                        'width:17.16px;' +
+                        'margin-left:-17.16px;' +
+                        'font-size:calc(15.44px * var(--content-scale));'
+                    );
+                    bulletSpan.textContent = '•';
+
+                    const contentSpan = document.createElement('span');
+                    contentSpan.innerHTML = text;
+
+                    p.appendChild(bulletSpan);
+                    p.appendChild(contentSpan);
+                    skillsEl.appendChild(p);
+                }
+            }
+        }
+
+        function adjustHeaderLocation(data) {
+            // Show location on its own line with underline (matching original template)
+            // The original has: <p>Delhi (underlined)</p> then <p>&#8203;</p> then contact row
+            const locationEl = document.querySelector('[data-field="location"]');
+            const taglineEl = document.querySelector('[data-field="tagline"]');
+
+            if (locationEl) {
+                const loc = (data && data.location) || '';
+                locationEl.textContent = loc || '';
+                // Show/hide location paragraph
+                const locationPara = locationEl.closest('p');
+                if (locationPara) {
+                    locationPara.style.display = loc ? '' : 'none';
+                }
+            }
+
+            if (taglineEl) {
+                // Keep the &#8203; spacer as in the original template
+                if (!taglineEl.textContent.trim()) {
+                    taglineEl.innerHTML = '&#8203;';
+                }
+                // Only show if there's a tagline or act as spacer
+                const taglinePara = taglineEl.closest ? taglineEl : taglineEl;
+                taglinePara.style.fontSize = 'calc(17.16px * var(--content-scale))';
+            }
+        }
+
+        function adjustWorkExperienceHeaders() {
+            const blocks = document.querySelectorAll('#experience-list > div, #experience-list > tr, #experience-list > table');
+            let prevRole = null;
+            let prevCompany = null;
+            let prevDates = null;
+
+            blocks.forEach((block, index) => {
+                const roleEl = block.querySelector('[data-field="role"]');
+                const companyEl = block.querySelector('[data-field="company"]');
+                const datesEl = block.querySelector('[data-field="dates"]');
+                const headerRow = block.querySelector('.experience-header-row');
+
+                if (!roleEl || !companyEl || !datesEl) return;
+
+                let roleText = (roleEl.textContent || '').trim();
+                let companyText = (companyEl.textContent || '').trim();
+                let datesText = (datesEl.textContent || '').trim();
+
+                // 1. Conditionally add/remove inline separator between role & company
+                let sep = block.querySelector('.company-sep-inline');
+                if (!sep) {
+                    sep = document.createElement('span');
+                    sep.className = 'company-sep-inline';
+                    sep.textContent = ' – ';
+                    sep.style.fontWeight = '700';
+                    sep.style.fontSize = '15.44px';
+                    roleEl.parentNode.insertBefore(sep, companyEl);
+                }
+
+                // Auto-clean duplicates where company is already inside role field (e.g. "Firm Name")
+                const cleanRole = roleText.toLowerCase().replace(/[\s\-\–\—]/g, '');
+                const cleanCompany = companyText.toLowerCase().replace(/[\s\-\–\—]/g, '');
+                let comparisonCompany = companyText;
+
+                if (cleanRole && cleanCompany && cleanRole.includes(cleanCompany)) {
+                    sep.style.display = 'none';
+                    companyEl.style.display = 'none';
+                    comparisonCompany = ''; // normalize for correct consecutive comparison
+                } else if (roleText && companyText) {
+                    sep.style.display = '';
+                    companyEl.style.display = '';
+                } else {
+                    sep.style.display = 'none';
+                }
+
+                // 2. Auto-merge: hide header row if this stint matches the previous stint
+                if (index > 0 && roleText === prevRole && comparisonCompany === prevCompany && datesText === prevDates) {
+                    if (headerRow) {
+                        headerRow.style.display = 'none';
+                    }
+                } else {
+                    if (headerRow) {
+                        headerRow.style.display = '';
+                    }
+                    // Update previous values only when a new header starts
+                    prevRole = roleText;
+                    prevCompany = comparisonCompany;
+                    prevDates = datesText;
+                }
+            });
+        }
+
+        function splitEducationSections() {
+            const hiddenList = document.getElementById('education-list');
+            const qualList = document.getElementById('qualifications-list');
+            
+            if (!hiddenList || !qualList) return;
+            
+            qualList.innerHTML = '';
+            
+            const rows = Array.from(hiddenList.children).filter(row => !row.classList.contains('template'));
+            
+            rows.forEach(row => {
+                const clone = row.cloneNode(true);
+                qualList.appendChild(clone);
+            });
+
+            const qualSection = document.getElementById('qualifications-section');
+            if (qualSection) {
+                qualSection.style.display = rows.length > 0 ? '' : 'none';
+            }
+        }
+
+        function adjustWorkExperienceColspans() {
+            const blocks = document.querySelectorAll('#experience-list > div, #experience-list > tr, #experience-list > table');
+            blocks.forEach(block => {
+                const categoryEl = block.querySelector('[data-field="category"]');
+                if (!categoryEl) return;
+                
+                // Hide header row completely if roleEl is display none (merged stints)
+                const roleEl = block.querySelector('[data-field="role"]');
+                const isMerged = roleEl && roleEl.style.display === 'none';
+                const headerRow = block.querySelector('.experience-header-row');
+                if (headerRow) {
+                    headerRow.style.display = isMerged ? 'none' : '';
+                }
+
+                const bulletsCell = categoryEl.nextElementSibling;
+                if (bulletsCell && bulletsCell.tagName === 'TD') {
+                    const isCategoryHidden = categoryEl.style.display === 'none';
+                    if (isCategoryHidden) {
+                        bulletsCell.setAttribute('colspan', '6');
+                        bulletsCell.style.setProperty('width', '100%', 'important');
+                    } else {
+                        bulletsCell.setAttribute('colspan', '5');
+                        bulletsCell.style.removeProperty('width');
+                    }
+                }
+            });
+        }
+
+        function adjustHeaderContacts() {
+            const contactContainer = document.querySelector('[data-field="contact"]');
+            if (!contactContainer) return;
+
+            const emailLink = contactContainer.querySelector('a[href^="mailto:"]');
+            const phoneLink = contactContainer.querySelector('a[href^="tel:"]');
+            const linkedinLink = contactContainer.querySelector('a[href*="linkedin.com"]');
+
+            if (emailLink) {
+                emailLink.style.setProperty('color', 'var(--link-color)', 'important');
+                emailLink.style.setProperty('text-decoration', 'underline', 'important');
+                emailLink.style.setProperty('border-bottom', 'none', 'important');
+                
+                const iconContainer = emailLink.previousElementSibling;
+                if (iconContainer) {
+                    iconContainer.innerHTML = `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABlklEQVQ4jaWTLa/iUBCGn/LRpoSsQKIrCKECWVlNPQhUZcNfYX9CBTVgCKK/gaQKUYFHIE9DAzTha9bsLXt32ZsN+yaTHHGemXnnzAGYAvJmTLWfh7dVA6jX67RaLTRNo1KpfAk8Hg9EBKUU1+sVAHEcR4qiEKWU5Hkup9PpZeR5LkopKYpCHMcRQMoONE1jt9vh+z63241qtfqp8v1+p1arEYYhnU6Her3+tGCaJqvVCqUUk8kE3/dfth+GIev1mu12i2maAFSAsloQBOi6ThRFf8BRFKHrOkEQ8CtTARARDMMAYDweY9s2y+WyhJfLJbZtMx6PATAMAxF5JvhIAuB5HlmWkec5cRwTxzF5npNlGZ7nfbpbzgDgcDgwGAyYTqeMRiM2m00JxHFMv99nPp8jIhwOh0/2xHVdSdNUkiQRy7L+unmWZUmSJJKmqbiu+3xGEaHX63E8HpnNZuWEf1dRFHS7XZrNZmlDA6TdbjMcDtF1nUaj8RL+0Pl85nK5sFgs2O/3/Pdf+Hrx/0FV4BvgvMl//wGv8uMqtIwHKAAAAABJRU5ErkJggg==" style="width:11px;height:11px;vertical-align:middle;margin:0 3px 2px 0">`;
+                    iconContainer.style.setProperty('width', 'auto', 'important');
+                    iconContainer.style.setProperty('height', 'auto', 'important');
+                }
+            }
+
+            if (phoneLink) {
+                // Remove link tag properties for telephone block in standard view
+                phoneLink.style.setProperty('color', 'var(--text-color)', 'important');
+                phoneLink.style.setProperty('text-decoration', 'none', 'important');
+                phoneLink.style.setProperty('border-bottom', 'none', 'important');
+                // Remove pointer events so it's not clickable as a blue link
+                phoneLink.removeAttribute('href');
+                
+                const iconContainer = phoneLink.previousElementSibling;
+                if (iconContainer) {
+                    iconContainer.innerHTML = `<span style="font-family:'Wingdings';font-size:15.44px;margin-right:3px">)</span>`;
+                    iconContainer.style.setProperty('width', 'auto', 'important');
+                    iconContainer.style.setProperty('height', 'auto', 'important');
+                }
+            }
+
+            if (linkedinLink) {
+                linkedinLink.style.setProperty('color', 'var(--link-color)', 'important');
+                linkedinLink.style.setProperty('text-decoration', 'underline', 'important');
+                linkedinLink.style.setProperty('border-bottom', 'none', 'important');
+                
+                const iconContainer = linkedinLink.previousElementSibling;
+                if (iconContainer) {
+                    iconContainer.innerHTML = `<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAA7EAAAOxAGVKw4bAAABR0lEQVQ4jZ2TPUoEQRCFv+cvK+gNxEzQzMwfEBVWRTYwM/MYpgp6HHPBC4iZR9hUxERlxtXgGUz12jPIjsyDpqqrXr1uqrtkm66QJAGybUl9YHsSH0inPdi+ByBucASMgvCf9QUc22YqFA+AufCfgLeW289GzVigSMW2N4Az4LNFpASYaQSXJZ0Du3FKK5oCS8AqsA5MAzfAGjAEPoBNqn5Bamg08TICr7G/qFImX8Ai8BLcq7yJCQrbA5L0E5IOJY0knTnXnDsVqMDuCLgEVoHtCP/mvIiCAYGKYVPDvW8ByE/v4tNKY8O5Z5YbC6/y2Uvqf+V1D/gV6AJJ+gGGo45fW201sAAAAABJRU5ErkJggg==" style="width:9.6px;height:9.6px;vertical-align:middle;margin:0 3px 2px 3px">`;
+                    iconContainer.style.setProperty('width', 'auto', 'important');
+                    iconContainer.style.setProperty('height', 'auto', 'important');
+                    iconContainer.className = '';
+                }
+            }
+
+            // Hide contact separators
+            contactContainer.querySelectorAll('.contact-sep').forEach(sep => {
+                sep.style.setProperty('display', 'none', 'important');
+            });
+            contactContainer.style.setProperty('display', 'flex', 'important');
+            contactContainer.style.setProperty('justify-content', 'space-between', 'important');
+            contactContainer.style.setProperty('align-items', 'center', 'important');
+        }
+
+        // Standard scaling/print support logic
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            const targetWidth = window.innerWidth - 20;
+            const scale = targetWidth < 1000 ? targetWidth / 1000 : 1.0;
+            page.style.transform = `scale(${scale})`;
+            const spaceToRemove = 1414.29 - (1414.29 * scale);
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            let contentScale = 1.0;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+            page.style.height = 'auto';
+            let i = 0;
+            while (page.scrollHeight > 1414.29 && i < 60) {
+                contentScale -= 0.01;
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                i++;
+            }
+            page.style.height = '';
+        }
+
+        let _screenTransform = '';
+        let _screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            _screenTransform = page.style.transform;
+            _screenMarginBottom = page.style.marginBottom;
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+            shrinkContentToFit();
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            page.style.transform = _screenTransform || '';
+            page.style.marginBottom = _screenMarginBottom || '';
+            scaleToFit();
+        }
+
+        window.addEventListener('load', function () {
+            shrinkContentToFit();
+            scaleToFit();
+            const mq = window.matchMedia('print');
+            if (mq.addEventListener) {
+                mq.addEventListener('change', e => e.matches ? enablePrintMode() : disablePrintMode());
+            } else if (mq.addListener) {
+                mq.addListener(e => e.matches ? enablePrintMode() : disablePrintMode());
+            }
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        });
+
+        let _resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(_resizeTimer);
+            _resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+</html>
