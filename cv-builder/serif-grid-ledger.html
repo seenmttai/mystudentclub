@@ -120,6 +120,12 @@
         /* ── SECTION HEADER BAR ── */
         .section-header {
             background-color: var(--accent-color, #1F487C) !important;
+            /* White/bold applied to the cell itself so custom-section titles (which cv-common
+               writes as plain textContent on .section-header, dropping the inner <p><span>) are
+               styled like the built-in banners instead of falling back to black body text. */
+            color: var(--banner-text) !important;
+            font-weight: 700;
+            font-size: calc(17.16px * var(--content-scale));
             vertical-align: middle;
             padding: calc(3px * var(--content-scale)) calc(6px * var(--content-scale));
         }
@@ -334,16 +340,14 @@
                                 <col style="width:124.17px"><col style="width:51.16px"><col style="width:92.9px"><col style="width:365.4px"><col style="width:101.91px"><col style="width:204.46px">
                             </colgroup>
                             <tr style="height:21.05px" class="experience-header-row">
-                                <td colspan="6" class="sub-section-header" style="width:940px;vertical-align:middle;padding:2px 3px;border:1.4px solid var(--border-color);overflow:hidden">
-                                    <p style="font-size:calc(15.44px * var(--content-scale));line-height:14.14px;position:relative;height:15.2px;white-space:nowrap">
-                                        <span style="position:absolute;left:2.12px;top:0">
+                                <td colspan="6" class="sub-section-header" style="width:940px;vertical-align:middle;padding:2px 10px;border:1.4px solid var(--border-color);overflow:hidden">
+                                    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;white-space:nowrap;font-size:calc(15.44px * var(--content-scale));line-height:14.14px">
+                                        <span>
                                             <span style="font-weight:700;font-size:15.44px" data-field="role"></span>
                                             <span class="exp-company-inline" data-field="company" style="font-weight:700;font-size:15.44px"></span>
                                         </span>
-                                        <span style="position:absolute;left:746.16px;top:0">
-                                            <span style="font-weight:700;font-style:italic;font-size:15.44px" data-field="dates"></span>
-                                        </span>
-                                    </p>
+                                        <span style="font-weight:700;font-style:italic;font-size:15.44px" data-field="dates"></span>
+                                    </div>
                                 </td>
                             </tr>
                             <tr class="exp-details-row">
@@ -418,7 +422,7 @@
                     <tr style="height:17.47px">
                         <td colspan="6" class="section-header" style="width:940.0px;vertical-align:middle;padding:3px 6px;border:1.4px solid var(--border-color);overflow:hidden">
                             <p style="font-size:calc(17.16px * var(--content-scale));line-height:15.96px;padding-left:4.82px">
-                                <span style="font-weight:700;font-size:17.16px;color:var(--banner-text)">TECHNICAL SKILLS &amp; CERTIFICATES:</span>
+                                <span style="font-weight:700;font-size:17.16px;color:var(--banner-text)">TECHNICAL SKILLS:</span>
                             </p>
                         </td>
                     </tr>
@@ -439,7 +443,7 @@
                     <tr style="height:18px;">
                         <td colspan="6" class="section-header" style="width:940px;vertical-align:middle;padding:3px 6px;border:1.4px solid var(--border-color);overflow:hidden;">
                             <p style="font-size:calc(17.16px * var(--content-scale));line-height:16px;padding-left:5px;">
-                                <span style="font-weight:700;font-size:17.16px;color:var(--banner-text)">OTHER SKILLS AND ATTTRIBUTES:</span>
+                                <span style="font-weight:700;font-size:17.16px;color:var(--banner-text)">OTHER SKILLS AND CERTIFICATES:</span>
                             </p>
                         </td>
                     </tr>
@@ -559,10 +563,10 @@
         // Override cv-common.js renderCV to execute dynamic post-processing
         const originalRenderCV = window.renderCV;
         window.renderCV = function(data) {
-            // 1. Prepare data copy
+          
             const dataCopy = JSON.parse(JSON.stringify(data));
             
-            // 2. Merge achievements into certifications (Other Skills and Attributes)
+           
             if (dataCopy.achievements && Array.isArray(dataCopy.achievements)) {
                 if (!dataCopy.certifications) dataCopy.certifications = [];
                 dataCopy.achievements.forEach(ach => {
@@ -573,7 +577,7 @@
                 });
             }
             
-            // 3. Merge interests into leadership (Extra Curriculars)
+
             if (dataCopy.interests && Array.isArray(dataCopy.interests)) {
                 if (!dataCopy.leadership) dataCopy.leadership = [];
                 dataCopy.interests.forEach(int => {
@@ -584,27 +588,27 @@
                 });
             }
             
-            // 4. Force template-specific section order:
-            //    Profile → Work Experience → Education → Projects → Technical Skills & Certificates → Other Skills and Attributes → Extra Curriculars
-            dataCopy.sectionOrder = ['summary', 'experience', 'education', 'projects', 'skills', 'certifications', 'leadership', 'achievements', 'interests'];
+                   
+            if (!Array.isArray(dataCopy.sectionOrder) || dataCopy.sectionOrder.length === 0) {
+                dataCopy.sectionOrder = ['summary', 'experience', 'education', 'projects', 'skills', 'certifications', 'leadership', 'achievements', 'interests'];
+            }
             
-            // 5. Run common rendering with merged data
+          
             originalRenderCV(dataCopy);
             
-            // 5. Split education lists dynamically (Professional vs Academic)
+        
             splitEducationSections();
             
-            // 6. Fix experience blocks layouts and colspans
+           
             adjustWorkExperienceColspans();
 
-            // 7. Format experience headers and prevent company name duplicates
+            
             adjustWorkExperienceHeaders();
 
-            // 8. Overwrite standard contact icons with high-fidelity PNG / Wingdings icons
+            
             adjustHeaderContacts();
 
-            // 9. Force-hide sections not in the original template (Achievements, Interests)
-            //    Projects are now shown; achievements merge into certifications, interests merge into leadership.
+          
             const forbiddenSections = ['achievements', 'interests'];
             forbiddenSections.forEach(id => {
                 const el = document.querySelector(`.sortable-section[data-section-id="${id}"]`);
@@ -613,14 +617,12 @@
                 }
             });
 
-            // 10. Fix skills rendering - convert cv-skills-list to proper original template bullet style
+           
             adjustSkillsRendering();
 
-            // 11. Fix location/tagline display
+           
             adjustHeaderLocation(dataCopy);
 
-            // 12. Re-shrink after all post-processing to prevent overflow.
-            //     Use double-rAF so this runs AFTER cv-common.js's own rAF shrink pass.
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     shrinkContentToFit();
