@@ -424,16 +424,27 @@ const WZ_QUESTION_CONFIGS = {
             { label: '10+ Years', value: '10' }
         ],
         profileKey: 'emp_exp_years', optional: false
+    },
+    gender: {
+        id: 'gender', icon: '🧑',
+        question: 'What is your gender?',
+        hint: null, type: 'radio',
+        options: [
+            { label: 'Male', value: 'Male' },
+            { label: 'Female', value: 'Female' },
+            { label: 'Other', value: 'Other' }
+        ],
+        profileKey: 'gender', optional: true
     }
 };
 
 const WZ_ROLE_QUESTIONS = {
-    'industrial':          ['preferred_locations', 'joining_date', 'expected_stipend', 'preferred_domains_industrial', 'preferred_industries_industrial'],
-    'articleship':         ['preferred_locations', 'joining_date', 'expected_stipend', 'preferred_firm_type', 'preferred_industries_articleship'],
-    'fresher_fresher':     ['preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries'],
-    'fresher_experienced': ['yoe_experienced', 'preferred_locations', 'joining_date', 'current_ctc', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
-    'semi_fresher':        ['preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
-    'semi_experienced':    ['yoe_semi', 'preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
+    'industrial':          ['gender', 'preferred_locations', 'joining_date', 'expected_stipend', 'preferred_domains_industrial', 'preferred_industries_industrial'],
+    'articleship':         ['gender', 'preferred_locations', 'joining_date', 'expected_stipend', 'preferred_firm_type', 'preferred_industries_articleship'],
+    'fresher_fresher':     ['gender', 'preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries'],
+    'fresher_experienced': ['gender', 'yoe_experienced', 'preferred_locations', 'joining_date', 'current_ctc', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
+    'semi_fresher':        ['gender', 'preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
+    'semi_experienced':    ['gender', 'yoe_semi', 'preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
 };
 
 // Master list of fields to check after AI extraction — portal-specific
@@ -2116,6 +2127,7 @@ const WZ = (() => {
             if (st.answers['employment_status']) profileData.current_employment_status = st.answers['employment_status'];
             if (st.answers['yoe_experienced']) profileData.emp_exp_years = st.answers['yoe_experienced'];
             if (st.answers['yoe_semi'])        profileData.emp_exp_years = st.answers['yoe_semi'];
+            if (st.answers['gender'])          profileData.gender = st.answers['gender'];
             if (st.answers['missing_articleship_num_partners']) profileData.articleship_num_partners = st.answers['missing_articleship_num_partners'];
             if (st.answers['missing_it_industry']) profileData.it_industry = st.answers['missing_it_industry'];
             if (st.answers['missing_current_industry']) profileData.current_industry = st.answers['missing_current_industry'];

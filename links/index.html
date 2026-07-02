@@ -26,55 +26,141 @@
       <p>Helping Chartered Accountants & Students grow through community and resources.</p>
     </header>
 
+    <div class="tabs-wrapper">
+      <div class="tabs-container">
+        <button class="tab-btn active" id="tab-industrial" onclick="switchTab(this, 'industrial')">Industrial Training</button>
+        <button class="tab-btn" id="tab-ca" onclick="switchTab(this, 'ca')">CA Fresher</button>
+        <button class="tab-btn" id="tab-articleship" onclick="switchTab(this, 'articleship')">Articleship</button>
+        <button class="tab-btn" id="tab-semi-qualified" onclick="switchTab(this, 'semi-qualified')">Semi Qualified CA</button>
+      </div>
+    </div>
+
     <main class="links-container">
-      <a href="https://chat.whatsapp.com/DsFD7rCA7Wn6s7kyemDCr2" target="_blank" rel="noopener noreferrer"
-        class="link-card whatsapp">
-        <i class="fab fa-whatsapp"></i>
-        <span>May'26 Chartered Group Link</span>
-      </a>
+      <!-- Industrial Training Section -->
+      <div id="industrial" class="tab-content active">
+        <a href="https://www.mystudentclub.com/ca-industrial-training-program" target="_blank" rel="noopener noreferrer" class="link-card program" id="link-industrial-program">
+          <i class="fas fa-graduation-cap"></i>
+          <span>MSC Industrial Training Program Details</span>
+        </a>
+        <a href="https://chat.whatsapp.com/EraSLyThpGLEoquF8Inmkr?mode=gi_t" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-industrial-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+          <span>Whatsapp Community</span>
+        </a>
+        <a href="https://www.mystudentclub.com/ca-industrial-training-resources" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-industrial-resources">
+          <i class="fas fa-book-open"></i>
+          <span>Free Resources</span>
+        </a>
+        <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-industrial-linkedin-personal">
+          <i class="fab fa-linkedin"></i>
+          <span>Personal LinkedIn</span>
+        </a>
+        <a href="https://www.linkedin.com/company/mystudentclub/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-industrial-linkedin-company">
+          <i class="fab fa-linkedin"></i>
+          <span>MSC LinkedIn Page</span>
+        </a>
+        <a href="https://www.youtube.com/@capadambhansali" target="_blank" rel="noopener noreferrer" class="link-card youtube" id="link-industrial-youtube">
+          <i class="fab fa-youtube"></i>
+          <span>Free Guidance Session</span>
+        </a>
+      </div>
 
-      <a href="https://chat.whatsapp.com/IYvV6cZ2NmIFed3rNUiOsV?mode=gi_t" target="_blank" rel="noopener noreferrer"
-        class="link-card whatsapp">
-        <i class="fab fa-whatsapp"></i>
-        <span>MSCIT Whatsapp Community</span>
-      </a>
+      <!-- CA Section -->
+      <div id="ca" class="tab-content">
+        <a href="https://www.mystudentclub.com/msc-ca-fresher-program/" target="_blank" rel="noopener noreferrer" class="link-card program" id="link-ca-program">
+          <i class="fas fa-graduation-cap"></i>
+          <span>Program Details</span>
+        </a>
+        <a href="https://chat.whatsapp.com/DsFD7rCA7Wn6s7kyemDCr2?mode=gi_t" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-ca-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+          <span>Whatsapp Community</span>
+        </a>
+        <a href="https://www.mystudentclub.com/ca-fresher-training-resources" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-ca-resources">
+          <i class="fas fa-book-open"></i>
+          <span>Free Resources</span>
+        </a>
+        <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-ca-linkedin-personal">
+          <i class="fab fa-linkedin"></i>
+          <span>Personal LinkedIn</span>
+        </a>
+        <a href="https://www.linkedin.com/company/mystudentclub/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-ca-linkedin-company">
+          <i class="fab fa-linkedin"></i>
+          <span>MSC LinkedIn Page</span>
+        </a>
+        <a href="https://www.youtube.com/@capadambhansali" target="_blank" rel="noopener noreferrer" class="link-card youtube" id="link-ca-youtube">
+          <i class="fab fa-youtube"></i>
+          <span>Free Guidance Session</span>
+        </a>
+      </div>
 
-      <a href="https://t.me/my_student_club_ca" target="_blank" rel="noopener noreferrer" class="link-card telegram">
-        <i class="fab fa-telegram"></i>
-        <span>MSCIT Telegram Channel</span>
-      </a>
+      <!-- Articleship Section -->
+      <div id="articleship" class="tab-content">
+        <a href="https://www.mystudentclub.com/articleship-program/" target="_blank" rel="noopener noreferrer" class="link-card program" id="link-articleship-program">
+          <i class="fas fa-graduation-cap"></i>
+          <span>Program Details</span>
+        </a>
+        <a href="https://chat.whatsapp.com/FMQvEUsMZw2EN2t2h2LnRZ?mode=gi_t" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-articleship-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+          <span>Whatsapp Community</span>
+        </a>
+        <a href="https://www.mystudentclub.com/ca-articleship-resources" target="_blank" rel="noopener noreferrer" class="link-card resources" id="link-articleship-resources">
+          <i class="fas fa-book-open"></i>
+          <span>Free Resources</span>
+        </a>
+        <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-articleship-linkedin-personal">
+          <i class="fab fa-linkedin"></i>
+          <span>Personal LinkedIn</span>
+        </a>
+        <a href="https://www.linkedin.com/company/mystudentclub/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-articleship-linkedin-company">
+          <i class="fab fa-linkedin"></i>
+          <span>MSC LinkedIn Page</span>
+        </a>
+        <a href="https://www.youtube.com/@capadambhansali" target="_blank" rel="noopener noreferrer" class="link-card youtube" id="link-articleship-youtube">
+          <i class="fab fa-youtube"></i>
+          <span>Free Guidance Session</span>
+        </a>
+      </div>
 
-      <a href="https://t.me/+1dgmnWTw1z4xMWI1" target="_blank" rel="noopener noreferrer" class="link-card telegram">
-        <i class="fab fa-telegram-plane"></i>
-        <span>MSCIT Telegram Discussion</span>
-      </a>
-
-      <a href="https://www.youtube.com/@capadambhansali" target="_blank" rel="noopener noreferrer"
-        class="link-card youtube">
-        <i class="fab fa-youtube"></i>
-        <span>Official Youtube Channel</span>
-      </a>
-
-      <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer"
-        class="link-card linkedin">
-        <i class="fab fa-linkedin"></i>
-        <span>Connect on LinkedIn</span>
-      </a>
-
-      <a href="/" class="link-card">
-        <i class="fas fa-globe"></i>
-        <span>Visit Our Website</span>
-      </a>
+      <!-- Semi Qualified Section -->
+      <div id="semi-qualified" class="tab-content">
+        <a href="https://chat.whatsapp.com/FQSSe5uCeIlITf5brb2J6M?mode=gi_t" target="_blank" rel="noopener noreferrer" class="link-card whatsapp" id="link-semiqualified-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+          <span>Whatsapp Community</span>
+        </a>
+        <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-semiqualified-linkedin-personal">
+          <i class="fab fa-linkedin"></i>
+          <span>Personal LinkedIn</span>
+        </a>
+        <a href="https://www.linkedin.com/company/mystudentclub/" target="_blank" rel="noopener noreferrer" class="link-card linkedin" id="link-semiqualified-linkedin-company">
+          <i class="fab fa-linkedin"></i>
+          <span>MSC LinkedIn Page</span>
+        </a>
+        <a href="https://www.youtube.com/@capadambhansali" target="_blank" rel="noopener noreferrer" class="link-card youtube" id="link-semiqualified-youtube">
+          <i class="fab fa-youtube"></i>
+          <span>Free Guidance Session</span>
+        </a>
+      </div>
     </main>
 
     <footer class="social-footer">
-      <a href="https://www.youtube.com/@capadambhansali" target="_blank" class="social-icon"><i
-          class="fab fa-youtube"></i></a>
-      <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" class="social-icon"><i
-          class="fab fa-linkedin"></i></a>
-      <a href="mailto:contact@mystudentclub.com" class="social-icon"><i class="fas fa-envelope"></i></a>
+      <a href="https://www.youtube.com/@capadambhansali" target="_blank" class="social-icon" id="footer-youtube"><i class="fab fa-youtube"></i></a>
+      <a href="https://www.linkedin.com/in/ca-padam-bhansali/" target="_blank" class="social-icon" id="footer-linkedin"><i class="fab fa-linkedin"></i></a>
+      <a href="mailto:contact@mystudentclub.com" class="social-icon" id="footer-email"><i class="fas fa-envelope"></i></a>
     </footer>
   </div>
+
+  <script>
+    function switchTab(element, tabId) {
+      // Deactivate all tab buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      // Activate clicked button
+      element.classList.add('active');
+      
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      // Show target tab content
+      document.getElementById(tabId).classList.add('active');
+    }
+  </script>
 </body>
 
 </html>
