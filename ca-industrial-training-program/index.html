@@ -512,6 +512,16 @@
   </button>
 </div>
 
+<!-- Postponed Announcement Modal -->
+<div id="postponedModal" class="postponed-modal">
+  <div class="postponed-modal-content">
+    <span id="postponedCloseBtn" class="postponed-close">&times;</span>
+    <h2>Announcement</h2>
+    <p>Sorry for the inconvenience.</p>
+    <p>Registrations for the batch commencing on <strong>10th July</strong> have been delayed. The registration process will now begin on <strong>5th July</strong>.</p>
+    <button id="postponedOkBtn" class="postponed-btn">Okay</button>
+  </div>
+</div>
 
 <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
 <script src="app.js" type="module"></script>
@@ -729,6 +739,32 @@
     }
 
     initNotifyMe();
+
+    // Show postponed modal on page load (occurs every visit/reload)
+    const postponedModal = document.getElementById('postponedModal');
+    const postponedCloseBtn = document.getElementById('postponedCloseBtn');
+    const postponedOkBtn = document.getElementById('postponedOkBtn');
+
+    if (postponedModal) {
+      postponedModal.style.display = 'flex';
+
+      const closePostponed = () => {
+        postponedModal.style.display = 'none';
+      };
+
+      if (postponedCloseBtn) {
+        postponedCloseBtn.addEventListener('click', closePostponed);
+      }
+      if (postponedOkBtn) {
+        postponedOkBtn.addEventListener('click', closePostponed);
+      }
+
+      postponedModal.addEventListener('click', (e) => {
+        if (e.target === postponedModal) {
+          closePostponed();
+        }
+      });
+    }
   });
 </script>
 <!-- Google Analytics -->
