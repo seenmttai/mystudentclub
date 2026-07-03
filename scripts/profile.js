@@ -1763,31 +1763,45 @@ const WZ = (() => {
         };
 
         if (type === 'industrial' || type === 'articleship') {
+            const caJourneyGroup = {
+                label: 'CA Journey',
+                fields: [
+                    { key: 'ca_inter_course',      label: 'CA Inter',          value: fv('ca_inter_course') },
+                    { key: 'ca_inter_clear_month', label: 'CA Inter Cleared',  value: fv2('ca_inter_clear_month','ca_inter_clear_year') },
+                    { key: 'ca_inter_air',         label: 'CA Inter AIR',      value: fv('ca_inter_air') },
+                    { key: 'ca_found_course',      label: 'CA Foundation',     value: fv('ca_found_course') },
+                    { key: 'ca_found_clear_month', label: 'Foundation Cleared',value: fv2('ca_found_clear_month','ca_found_clear_year') },
+                    { key: 'ca_final_app_month',   label: 'CA Final Appearing',value: fv2('ca_final_app_month','ca_final_app_year') },
+                ]
+            };
+            const articleshipGroup = {
+                label: 'Articleship',
+                fields: [
+                    { key: 'articleship_firm_type',          label: 'Firm Type',              value: fv('articleship_firm_type') },
+                    { key: 'articleship_firm_name',          label: 'Firm Name',              value: fv('articleship_firm_name') },
+                    { key: 'articleship_start_month',        label: 'Start Month',            value: fv('articleship_start_month') },
+                    { key: 'articleship_start_year',         label: 'Start Year',             value: fv('articleship_start_year') },
+                    { key: 'articleship_domain',             label: 'Domain',                 value: fv('articleship_domain') },
+                    { key: 'articleship_responsibilities',   label: 'Key Responsibilities',   value: fv('articleship_responsibilities'), wide: true, textarea: true },
+                ]
+            };
+            const certGroup = {
+                label: 'Certification',
+                fields: [
+                    { key: 'cert_name',   label: 'Certification Name',   value: fv('cert_name'), wide: true },
+                    { key: 'cert_issuer', label: 'Issuing Organization',  value: fv('cert_issuer') },
+                    { key: 'cert_month',  label: 'Month',                 value: fv('cert_month') },
+                    { key: 'cert_year',   label: 'Year',                  value: fv('cert_year') },
+                ]
+            };
+            if (type === 'articleship') {
+                return [personalGroup, caJourneyGroup, educationGroup, articleshipGroup, certGroup, achievementsGroup];
+            }
             return [
                 personalGroup,
-                {
-                    label: 'CA Journey',
-                    fields: [
-                        { key: 'ca_inter_course',      label: 'CA Inter',          value: fv('ca_inter_course') },
-                        { key: 'ca_inter_clear_month', label: 'CA Inter Cleared',  value: fv2('ca_inter_clear_month','ca_inter_clear_year') },
-                        { key: 'ca_inter_air',         label: 'CA Inter AIR',      value: fv('ca_inter_air') },
-                        { key: 'ca_found_course',      label: 'CA Foundation',     value: fv('ca_found_course') },
-                        { key: 'ca_found_clear_month', label: 'Foundation Cleared',value: fv2('ca_found_clear_month','ca_found_clear_year') },
-                        { key: 'ca_final_app_month',   label: 'CA Final Appearing',value: fv2('ca_final_app_month','ca_final_app_year') },
-                    ]
-                },
+                caJourneyGroup,
                 educationGroup,
-                {
-                    label: 'Articleship',
-                    fields: [
-                        { key: 'articleship_firm_type',          label: 'Firm Type',              value: fv('articleship_firm_type') },
-                        { key: 'articleship_firm_name',          label: 'Firm Name',              value: fv('articleship_firm_name') },
-                        { key: 'articleship_start_month',        label: 'Start Month',            value: fv('articleship_start_month') },
-                        { key: 'articleship_start_year',         label: 'Start Year',             value: fv('articleship_start_year') },
-                        { key: 'articleship_domain',             label: 'Domain',                 value: fv('articleship_domain') },
-                        { key: 'articleship_responsibilities',   label: 'Key Responsibilities',   value: fv('articleship_responsibilities'), wide: true, textarea: true },
-                    ]
-                },
+                articleshipGroup,
                 {
                     label: 'Other Work Experience',
                     fields: [
@@ -1799,15 +1813,7 @@ const WZ = (() => {
                         { key: 'it_responsibilities',         label: 'Key Responsibilities',   value: fv('it_responsibilities'), wide: true, textarea: true },
                     ]
                 },
-                {
-                    label: 'Certification',
-                    fields: [
-                        { key: 'cert_name',   label: 'Certification Name',   value: fv('cert_name'), wide: true },
-                        { key: 'cert_issuer', label: 'Issuing Organization',  value: fv('cert_issuer') },
-                        { key: 'cert_month',  label: 'Month',                 value: fv('cert_month') },
-                        { key: 'cert_year',   label: 'Year',                  value: fv('cert_year') },
-                    ]
-                },
+                certGroup,
                 achievementsGroup,
             ];
         }
