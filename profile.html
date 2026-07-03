@@ -388,7 +388,7 @@
 
                         <!-- Add-more links (Naukri style) -->
                         <div class="p2-add-links" id="edu-add-links">
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-final-form" id="addFinalLink" data-portal="fresher_fresher,fresher_experienced,semi_fresher,semi_experienced"><i class="fas fa-plus-circle"></i> Add CA Final details</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-final-form" id="addFinalLink"><i class="fas fa-plus-circle"></i> Add CA Final details</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-inter-form" id="addInterLink"><i class="fas fa-plus-circle"></i> Add CA Inter details</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-ca-foundation-form" id="addFoundLink"><i class="fas fa-plus-circle"></i> Add CA Foundation details</a>
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-grad-form" id="addGradLink"><i class="fas fa-plus-circle"></i> Add B.Com / Graduation (Optional)</a>
@@ -877,16 +877,18 @@
                                     <div>
                                         <div class="p2-saved-title" id="emp-art-title">Articleship</div>
                                         <div class="p2-saved-meta" id="emp-art-meta"></div>
+                                        <div class="p2-saved-desc" id="emp-art-responsibilities" style="display:none;margin-top:0.35rem;font-size:0.82rem;color:#555;white-space:pre-wrap;"></div>
                                     </div>
                                     <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-art-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
                             </div>
-                            <!-- Industrial Training -->
-                            <div class="p2-saved-entry" id="emp-it-display" style="display:none;" data-portal="industrial,fresher_fresher,fresher_experienced">
+                            <!-- Industrial Training / Other Work Experience -->
+                            <div class="p2-saved-entry" id="emp-it-display" style="display:none;" data-portal="industrial,fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
                                 <div class="p2-saved-entry-header">
                                     <div>
                                         <div class="p2-saved-title" id="emp-it-title">Industrial Training</div>
                                         <div class="p2-saved-meta" id="emp-it-meta"></div>
+                                        <div class="p2-saved-desc" id="emp-it-responsibilities" style="display:none;margin-top:0.35rem;font-size:0.82rem;color:#555;white-space:pre-wrap;"></div>
                                     </div>
                                     <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-it-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
@@ -895,7 +897,7 @@
 
                         <div class="p2-add-links" id="emp-add-links">
                             <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-art-form" id="addArtLink"><i class="fas fa-plus-circle"></i> Add articleship details</a>
-                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-it-form" id="addITLink" data-portal="industrial,fresher_fresher,fresher_experienced"><i class="fas fa-plus-circle"></i> Add Other Work Experience (If Any)</a>
+                            <a href="javascript:void(0)" class="p2-add-link" data-toggle="sec-it-form" id="addITLink" data-portal="industrial,fresher_fresher,fresher_experienced,semi_fresher,semi_experienced"><i class="fas fa-plus-circle"></i> Add Other Work Experience (If Any)</a>
                         </div>
 
                         <!-- Articleship Form -->
@@ -1002,7 +1004,7 @@
                         </div>
 
                         <!-- Other Work Experience Form -->
-                        <div class="p2-card-form collapsed" id="sec-it-form" data-portal="industrial,fresher_fresher,fresher_experienced">
+                        <div class="p2-card-form collapsed" id="sec-it-form" data-portal="industrial,fresher_fresher,fresher_experienced,semi_fresher,semi_experienced">
                             <div class="p2-inline-form-title">Other Work Experience</div>
                             <div class="p2-form-grid">
                                 <div class="p2-form-row p2-full-width">
@@ -1067,6 +1069,7 @@
                                     <div>
                                         <div class="p2-saved-title" id="emp-org-title">Organization</div>
                                         <div class="p2-saved-meta" id="emp-org-meta"></div>
+                                        <div class="p2-saved-desc" id="emp-org-profile" style="display:none;margin-top:0.35rem;font-size:0.82rem;color:#555;white-space:pre-wrap;"></div>
                                     </div>
                                     <a href="javascript:void(0)" class="p2-entry-edit" data-toggle="sec-experience-form"><i class="fas fa-pencil-alt"></i></a>
                                 </div>
@@ -1302,6 +1305,12 @@
                                             <option value="">Month</option>
                                             <option>Jan</option><option>Feb</option><option>Mar</option><option>Apr</option><option>May</option><option>Jun</option><option>Jul</option><option>Aug</option><option>Sep</option><option>Oct</option><option>Nov</option><option>Dec</option>
                                         </select>
+                                    </div>
+                                </div>
+                                <div class="p2-form-row p2-full-width">
+                                    <label for="prev_emp_job_profile">Job Profile</label>
+                                    <div class="p2-textarea-wrap" style="border:1px solid var(--p2-border); border-radius:8px; overflow:hidden;">
+                                        <textarea id="prev_emp_job_profile" name="prev_emp_job_profile" rows="5" placeholder="e.g. Assisted in identifying and implementing cost-saving strategies..." style="border:none; border-radius:0; box-shadow:none; width:100%; border-bottom:1px solid transparent;"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -1938,7 +1947,7 @@
         </div>
     </div>
 
-    <script type="module" src="scripts/profile.js"></script>
+    <script type="module" src="scripts/profile.js?v=20260703"></script>
 </body>
 
 </html>

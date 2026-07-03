@@ -145,8 +145,8 @@ const ENTRY_CLEAR_MAP = {
     'edu-10-display': ['class10_board', 'class10_school', 'class10_year', 'class10_percentage'],
     'edu-other-display': ['other_edu_level', 'other_edu_course', 'other_edu_institute', 'other_edu_year', 'other_edu_score'],
     'emp-org-display': ['is_current_employment', 'employment_type', 'emp_exp_years', 'emp_exp_months', 'emp_company_name', 'emp_job_title', 'emp_join_year', 'emp_join_month', 'emp_salary_currency', 'emp_current_salary', 'emp_salary_breakdown', 'emp_skills_hidden', 'emp_job_profile', 'emp_notice_period'],
-    'emp-art-display': ['articleship_firm_type', 'articleship_firm_name', 'articleship_domain', 'articleship_domain_other'],
-    'emp-it-display': ['industrial_training_company'],
+    'emp-art-display': ['articleship_firm_type', 'articleship_firm_name', 'articleship_domain', 'articleship_domain_other', 'articleship_start_year', 'articleship_start_month', 'articleship_end_year', 'articleship_end_month', 'articleship_client_industries', 'articleship_responsibilities'],
+    'emp-it-display': ['industrial_training_company', 'it_industry', 'it_start_year', 'it_start_month', 'it_end_year', 'it_end_month', 'it_responsibilities'],
     'project-entry-display': ['project_title', 'project_tag', 'project_client', 'project_status', 'project_worked_from_year', 'project_worked_from_month', 'project_details', 'project_domain', 'project_skills', 'project_attachment_name', 'project_drive_link'],
     'key-skills-entry-display': ['key_skills']
 };
@@ -293,7 +293,19 @@ const WZ_QUESTION_CONFIGS = {
         id: 'expected_ctc', icon: '💰',
         question: 'What is your expected CTC?',
         hint: 'Annual package in INR',
-        type: 'salary', profileKey: 'expected_salary', optional: true
+        type: 'salary', profileKey: 'expected_salary', placeholder: 'e.g., 10,00,000', optional: true
+    },
+    expected_ctc_experienced: {
+        id: 'expected_ctc', icon: '💰',
+        question: 'What is your expected CTC?',
+        hint: 'Annual package in INR',
+        type: 'salary', profileKey: 'expected_salary', placeholder: 'e.g., 40,00,000', optional: true
+    },
+    expected_ctc_semi: {
+        id: 'expected_ctc', icon: '💰',
+        question: 'What is your expected CTC?',
+        hint: 'Annual package in INR',
+        type: 'salary', profileKey: 'expected_salary', placeholder: 'e.g., 8,00,000', optional: true
     },
     current_ctc: {
         id: 'current_ctc', icon: '💵',
@@ -306,6 +318,18 @@ const WZ_QUESTION_CONFIGS = {
         question: 'What monthly stipend are you expecting?',
         hint: 'In ₹ — leave blank if not sure',
         type: 'salary', profileKey: 'expected_salary', placeholder: 'e.g., 2,30,000', optional: true
+    },
+    expected_stipend_industrial: {
+        id: 'expected_stipend', icon: '💰',
+        question: 'What monthly stipend are you expecting?',
+        hint: 'In ₹ — leave blank if not sure',
+        type: 'salary', profileKey: 'expected_salary', placeholder: 'e.g., 25,000', optional: true
+    },
+    expected_stipend_articleship: {
+        id: 'expected_stipend', icon: '💰',
+        question: 'What monthly stipend are you expecting?',
+        hint: 'In ₹ — leave blank if not sure',
+        type: 'salary', profileKey: 'expected_salary', placeholder: 'e.g., 10,000', optional: true
     },
     preferred_domains: {
         id: 'preferred_domains', icon: '🎯',
@@ -329,14 +353,6 @@ const WZ_QUESTION_CONFIGS = {
         hint: 'Select all that apply',
         type: 'chips',
         options: ['FP&A', 'Business Finance', 'Supply Chain Finance', 'Treasury', 'Controllership', 'Financial Reporting', 'Accounting & Reporting', 'MIS Reporting', 'Finance & Accounts', 'Banking & Credit', 'Costing & Plant Finance', 'Finance', 'Internal Audit', 'Direct Tax', 'Indirect Tax (GST)', 'Transfer Pricing', 'Valuation', 'Due Diligence', 'Deals & Transaction Advisory', 'Investment Banking', 'Equity Research', 'Mergers & Acquisitions (M&A)', 'Strategy', 'Management Consulting', 'Forensics', 'Other'],
-        profileKey: 'preferred_domains', optional: true
-    },
-    preferred_domains_articleship: {
-        id: 'preferred_domains', icon: '🎯',
-        question: 'Which domains did you work in during articleship?',
-        hint: 'Select all that apply',
-        type: 'chips',
-        options: ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Bookkeeping', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other'],
         profileKey: 'preferred_domains', optional: true
     },
     preferred_firm_type: {
@@ -439,12 +455,12 @@ const WZ_QUESTION_CONFIGS = {
 };
 
 const WZ_ROLE_QUESTIONS = {
-    'industrial':          ['gender', 'preferred_locations', 'joining_date', 'expected_stipend', 'preferred_domains_industrial', 'preferred_industries_industrial'],
-    'articleship':         ['gender', 'preferred_locations', 'joining_date', 'expected_stipend', 'preferred_firm_type', 'preferred_industries_articleship'],
+    'industrial':          ['gender', 'preferred_locations', 'joining_date', 'expected_stipend_industrial', 'preferred_domains_industrial', 'preferred_industries_industrial'],
+    'articleship':         ['gender', 'preferred_locations', 'joining_date', 'expected_stipend_articleship', 'preferred_firm_type', 'preferred_industries_articleship'],
     'fresher_fresher':     ['gender', 'preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries'],
-    'fresher_experienced': ['gender', 'yoe_experienced', 'preferred_locations', 'joining_date', 'current_ctc', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
-    'semi_fresher':        ['gender', 'preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
-    'semi_experienced':    ['gender', 'yoe_semi', 'preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
+    'fresher_experienced': ['gender', 'yoe_experienced', 'preferred_locations', 'joining_date', 'current_ctc', 'expected_ctc_experienced', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
+    'semi_fresher':        ['gender', 'preferred_locations', 'joining_date', 'expected_ctc_semi', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
+    'semi_experienced':    ['gender', 'yoe_semi', 'preferred_locations', 'joining_date', 'expected_ctc_semi', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
 };
 
 // Master list of fields to check after AI extraction — portal-specific
@@ -494,7 +510,6 @@ function getWzMissingFields(portalType) {
     ];
     const currentSalaryField = f('emp_current_salary', 'Current CTC', '💰', 'text', true);
 
-    const numPartnersField = f('articleship_num_partners', 'Number of Partners in Articleship Firm', '🤝', 'radio', true, '', null, ['1 (Sole Proprietor)', '2–5', '6–10', '11–20', '21–50', '51+']);
     const itIndustryField = f('it_industry', 'Industrial Training Company Industry', '🏢', 'radio', true, '', 'If you completed Industrial Training, select the industry of your company', ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']);
     const currentIndustryField = f('current_industry', 'Current Industry', '🏭', 'radio', true, '', null, ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']);
     const noticePeriodField = f('notice_period', 'Notice Period', '📋', 'radio', true, '', 'What is your current notice period?', ['Immediate Joiner', '15 Days or less', '1 Month', '2 Months', '3 Months']);
@@ -516,7 +531,7 @@ function getWzMissingFields(portalType) {
     if (portalType === 'semi_fresher')    return [...common, ...caInterFields, currentIndustryField];
     if (portalType === 'semi_experienced')return [...common, ...caInterFields, ...empFields, currentSalaryField, currentIndustryField];
     if (portalType === 'fresher_experienced') return [...common, ...caFinalFields, ...empFields, currentIndustryField];
-    return [...common, ...caFinalFields, numPartnersField, itIndustryField, noticePeriodField]; // fresher_fresher
+    return [...common, ...caFinalFields, itIndustryField, noticePeriodField]; // fresher_fresher
 }
 
 
@@ -813,8 +828,7 @@ const WZ = (() => {
         const yoeRaw = profileData ? (profileData.emp_exp_years != null ? profileData.emp_exp_years : profileData.yoe_years) : null;
         const yoe = parseInt(yoeRaw || '', 10);
         if (isNaN(yoe) || yoeRaw == null) return null; // unknown — ask in wizard
-        if (yoe >= 1) return type === 'fresher_fresher' ? 'fresher_experienced' : 'semi_experienced';
-        return type; // 0 years = fresher/semi_fresher confirmed
+        return type; // respect user's chosen subtype regardless of YOE
     }
 
     function mapLookingForToType(lf) {
@@ -1695,7 +1709,7 @@ const WZ = (() => {
     function buildReviewGroups() {
         const type = st.programType || 'fresher_fresher';
         // fv: form value first, then AI data fallback
-        const fv = k => { const v = getFormValue(k); return v || (st.aiData ? (st.aiData[k] || '') : ''); };
+        const fv = k => { const v = getFormValue(k); return v || st.answers[k] || st.answers['missing_' + k] || (st.aiData ? (st.aiData[k] || '') : ''); };
         const fv2 = (k1, k2) => { const a = fv(k1); const b = fv(k2); return a ? (b ? a + ' ' + b : a) : b; };
 
         const personalGroup = {
@@ -1740,39 +1754,57 @@ const WZ = (() => {
         };
 
         if (type === 'industrial' || type === 'articleship') {
+            const caJourneyGroup = {
+                label: 'CA Journey',
+                fields: [
+                    { key: 'ca_inter_course',      label: 'CA Inter',          value: fv('ca_inter_course') },
+                    { key: 'ca_inter_clear_month', label: 'CA Inter Cleared',  value: fv2('ca_inter_clear_month','ca_inter_clear_year') },
+                    { key: 'ca_inter_air',         label: 'CA Inter AIR',      value: fv('ca_inter_air') },
+                    { key: 'ca_found_course',      label: 'CA Foundation',     value: fv('ca_found_course') },
+                    { key: 'ca_found_clear_month', label: 'Foundation Cleared',value: fv2('ca_found_clear_month','ca_found_clear_year') },
+                    { key: 'ca_final_app_month',   label: 'CA Final Appearing',value: fv2('ca_final_app_month','ca_final_app_year') },
+                ]
+            };
+            const articleshipGroup = {
+                label: 'Articleship',
+                fields: [
+                    { key: 'articleship_firm_type',          label: 'Firm Type',              value: fv('articleship_firm_type') },
+                    { key: 'articleship_firm_name',          label: 'Firm Name',              value: fv('articleship_firm_name') },
+                    { key: 'articleship_start_month',        label: 'Start Month',            value: fv('articleship_start_month') },
+                    { key: 'articleship_start_year',         label: 'Start Year',             value: fv('articleship_start_year') },
+                    { key: 'articleship_domain',             label: 'Domain',                 value: fv('articleship_domain') },
+                    { key: 'articleship_responsibilities',   label: 'Key Responsibilities',   value: fv('articleship_responsibilities'), wide: true, textarea: true },
+                ]
+            };
+            const certGroup = {
+                label: 'Certification',
+                fields: [
+                    { key: 'cert_name',   label: 'Certification Name',   value: fv('cert_name'), wide: true },
+                    { key: 'cert_issuer', label: 'Issuing Organization',  value: fv('cert_issuer') },
+                    { key: 'cert_month',  label: 'Month',                 value: fv('cert_month') },
+                    { key: 'cert_year',   label: 'Year',                  value: fv('cert_year') },
+                ]
+            };
+            if (type === 'articleship') {
+                return [personalGroup, caJourneyGroup, educationGroup, articleshipGroup, certGroup, achievementsGroup];
+            }
             return [
                 personalGroup,
-                {
-                    label: 'CA Journey',
-                    fields: [
-                        { key: 'ca_inter_course',      label: 'CA Inter',          value: fv('ca_inter_course') },
-                        { key: 'ca_inter_clear_month', label: 'CA Inter Cleared',  value: fv2('ca_inter_clear_month','ca_inter_clear_year') },
-                        { key: 'ca_inter_air',         label: 'CA Inter AIR',      value: fv('ca_inter_air') },
-                        { key: 'ca_found_course',      label: 'CA Foundation',     value: fv('ca_found_course') },
-                        { key: 'ca_found_clear_month', label: 'Foundation Cleared',value: fv2('ca_found_clear_month','ca_found_clear_year') },
-                        { key: 'ca_final_app_month',   label: 'CA Final Appearing',value: fv2('ca_final_app_month','ca_final_app_year') },
-                    ]
-                },
+                caJourneyGroup,
                 educationGroup,
+                articleshipGroup,
                 {
-                    label: 'Articleship',
+                    label: 'Other Work Experience',
                     fields: [
-                        { key: 'articleship_firm_type',     label: 'Firm Type',              value: fv('articleship_firm_type') },
-                        { key: 'articleship_firm_name',     label: 'Firm Name',              value: fv('articleship_firm_name') },
-                        { key: 'articleship_start_month',   label: 'Start Month',            value: fv('articleship_start_month') },
-                        { key: 'articleship_start_year',    label: 'Start Year',             value: fv('articleship_start_year') },
-                        { key: 'articleship_domain',        label: 'Domain',                 value: fv('articleship_domain') },
+                        { key: 'industrial_training_company', label: 'Company / Organisation', value: fv('industrial_training_company') },
+                        { key: 'it_start_month',              label: 'Start Month',            value: fv('it_start_month') },
+                        { key: 'it_start_year',               label: 'Start Year',             value: fv('it_start_year') },
+                        { key: 'it_end_month',                label: 'End Month',              value: fv('it_end_month') },
+                        { key: 'it_end_year',                 label: 'End Year',               value: fv('it_end_year') },
+                        { key: 'it_responsibilities',         label: 'Key Responsibilities',   value: fv('it_responsibilities'), wide: true, textarea: true },
                     ]
                 },
-                {
-                    label: 'Certification',
-                    fields: [
-                        { key: 'cert_name',   label: 'Certification Name',   value: fv('cert_name'), wide: true },
-                        { key: 'cert_issuer', label: 'Issuing Organization',  value: fv('cert_issuer') },
-                        { key: 'cert_month',  label: 'Month',                 value: fv('cert_month') },
-                        { key: 'cert_year',   label: 'Year',                  value: fv('cert_year') },
-                    ]
-                },
+                certGroup,
                 achievementsGroup,
             ];
         }
@@ -1793,20 +1825,35 @@ const WZ = (() => {
                 {
                     label: 'Articleship',
                     fields: [
-                        { key: 'articleship_firm_type',       label: 'Firm Type',              value: fv('articleship_firm_type') },
-                        { key: 'articleship_firm_name',       label: 'Firm Name',              value: fv('articleship_firm_name') },
-                        { key: 'articleship_start_month',     label: 'Start Month',            value: fv('articleship_start_month') },
-                        { key: 'articleship_start_year',      label: 'Start Year',             value: fv('articleship_start_year') },
-                        { key: 'articleship_domain',          label: 'Domain',                 value: fv('articleship_domain') },
+                        { key: 'articleship_firm_type',        label: 'Firm Type',            value: fv('articleship_firm_type') },
+                        { key: 'articleship_firm_name',        label: 'Firm Name',            value: fv('articleship_firm_name') },
+                        { key: 'articleship_start_month',      label: 'Start Month',          value: fv('articleship_start_month') },
+                        { key: 'articleship_start_year',       label: 'Start Year',           value: fv('articleship_start_year') },
+                        { key: 'articleship_domain',           label: 'Domain',               value: fv('articleship_domain') },
+                        { key: 'articleship_responsibilities', label: 'Key Responsibilities', value: fv('articleship_responsibilities'), wide: true, textarea: true },
+                    ]
+                },
+                {
+                    label: 'Other Work Experience',
+                    fields: [
+                        { key: 'industrial_training_company', label: 'Company / Organisation', value: fv('industrial_training_company') },
+                        { key: 'it_start_month',              label: 'Start Month',            value: fv('it_start_month') },
+                        { key: 'it_start_year',               label: 'Start Year',             value: fv('it_start_year') },
+                        { key: 'it_end_month',                label: 'End Month',              value: fv('it_end_month') },
+                        { key: 'it_end_year',                 label: 'End Year',               value: fv('it_end_year') },
+                        { key: 'it_responsibilities',         label: 'Key Responsibilities',   value: fv('it_responsibilities'), wide: true, textarea: true },
                     ]
                 },
                 {
                     label: 'Employment',
                     fields: [
-                        { key: 'emp_company_name', label: 'Company',    value: fv('emp_company_name') },
-                        { key: 'emp_job_title',    label: 'Designation',value: fv('emp_job_title') },
-                        { key: 'emp_join_year',    label: 'Joined',     value: fv2('emp_join_month','emp_join_year') },
-                        { key: 'emp_job_profile',  label: 'Profile',    value: fv('emp_job_profile'), wide: true, textarea: true },
+                        { key: 'emp_company_name',     label: 'Company',            value: fv('emp_company_name') },
+                        { key: 'emp_job_title',        label: 'Designation',        value: fv('emp_job_title') },
+                        { key: 'emp_join_year',        label: 'Joined',             value: fv2('emp_join_month','emp_join_year') },
+                        { key: 'emp_job_profile',      label: 'Job Profile',        value: fv('emp_job_profile'), wide: true, textarea: true },
+                        { key: 'prev_emp_company_name',label: 'Previous Company',   value: fv('prev_emp_company_name') },
+                        { key: 'prev_emp_job_title',   label: 'Previous Designation',value: fv('prev_emp_job_title') },
+                        { key: 'prev_emp_job_profile', label: 'Previous Job Profile',value: fv('prev_emp_job_profile'), wide: true, textarea: true },
                     ]
                 },
                 {
@@ -1841,20 +1888,33 @@ const WZ = (() => {
             {
                 label: 'Articleship',
                 fields: [
-                    { key: 'articleship_firm_type',       label: 'Firm Type',              value: fv('articleship_firm_type') },
-                    { key: 'articleship_firm_name',       label: 'Firm Name',              value: fv('articleship_firm_name') },
-                    { key: 'articleship_start_month',     label: 'Start Month',            value: fv('articleship_start_month') },
-                    { key: 'articleship_start_year',      label: 'Start Year',             value: fv('articleship_start_year') },
-                    { key: 'articleship_domain',          label: 'Domain',                 value: fv('articleship_domain') },
+                    { key: 'articleship_firm_type',        label: 'Firm Type',            value: fv('articleship_firm_type') },
+                    { key: 'articleship_firm_name',        label: 'Firm Name',            value: fv('articleship_firm_name') },
+                    { key: 'articleship_start_month',      label: 'Start Month',          value: fv('articleship_start_month') },
+                    { key: 'articleship_start_year',       label: 'Start Year',           value: fv('articleship_start_year') },
+                    { key: 'articleship_domain',           label: 'Domain',               value: fv('articleship_domain') },
+                    { key: 'articleship_responsibilities', label: 'Key Responsibilities', value: fv('articleship_responsibilities'), wide: true, textarea: true },
+                ]
+            },
+            {
+                label: 'Other Work Experience',
+                fields: [
+                    { key: 'industrial_training_company', label: 'Company / Organisation', value: fv('industrial_training_company') },
+                    { key: 'it_start_month',              label: 'Start',                  value: fv2('it_start_month','it_start_year') },
+                    { key: 'it_end_month',                label: 'End',                    value: fv2('it_end_month','it_end_year') },
+                    { key: 'it_responsibilities',         label: 'Key Responsibilities',   value: fv('it_responsibilities'), wide: true, textarea: true },
                 ]
             },
             {
                 label: 'Employment',
                 fields: [
-                    { key: 'emp_company_name', label: 'Company',     value: fv('emp_company_name') },
-                    { key: 'emp_job_title',    label: 'Designation', value: fv('emp_job_title') },
-                    { key: 'emp_join_year',    label: 'Joined',      value: fv2('emp_join_month','emp_join_year') },
-                    { key: 'emp_job_profile',  label: 'Profile',     value: fv('emp_job_profile'), wide: true, textarea: true },
+                    { key: 'emp_company_name',     label: 'Company',             value: fv('emp_company_name') },
+                    { key: 'emp_job_title',        label: 'Designation',         value: fv('emp_job_title') },
+                    { key: 'emp_join_year',        label: 'Joined',              value: fv2('emp_join_month','emp_join_year') },
+                    { key: 'emp_job_profile',      label: 'Job Profile',         value: fv('emp_job_profile'), wide: true, textarea: true },
+                    { key: 'prev_emp_company_name',label: 'Previous Company',    value: fv('prev_emp_company_name') },
+                    { key: 'prev_emp_job_title',   label: 'Previous Designation',value: fv('prev_emp_job_title') },
+                    { key: 'prev_emp_job_profile', label: 'Previous Job Profile',value: fv('prev_emp_job_profile'), wide: true, textarea: true },
                 ]
             },
             {
@@ -2561,6 +2621,12 @@ function populateForm(profileData) {
 
     const noticeSelect = document.getElementById('notice_period');
     if (noticeSelect) noticeSelect.dispatchEvent(new Event('change'));
+
+    // Fire change on attempts dropdowns so hidden count inputs get cleared when type != "Other"
+    ['ca_final_attempts_type', 'ca_inter_attempts_type', 'ca_found_attempts_type'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.dispatchEvent(new Event('change'));
+    });
 }
 
 // =================== FILE HANDLING ===================
@@ -3199,7 +3265,18 @@ function refreshHeader() {
     // Header details
     document.getElementById('hdLocation').textContent = d.current_city || d.current_location || 'Add location';
     document.getElementById('hdPhone').textContent = d.contact_number || 'Add mobile number';
-    document.getElementById('hdExperience').textContent = d.total_experience || 'Fresher';
+    const _jobPref = (d.job_preference || '').trim();
+    const _expY = (d.emp_exp_years || '').trim();
+    const _expM = (d.emp_exp_months || '').trim();
+    const _isExperienced = _jobPref === 'fresher_experienced' || _jobPref === 'semi_experienced';
+    let _expDisplay;
+    if (_isExperienced) {
+        const _yoeParts = [_expY && _expY !== '0 Years' ? _expY : '', _expM && _expM !== '0 Months' ? _expM : ''].filter(Boolean);
+        _expDisplay = _yoeParts.length ? _yoeParts.join(' ') + ' Experience' : 'Experienced';
+    } else {
+        _expDisplay = 'Fresher';
+    }
+    document.getElementById('hdExperience').textContent = _expDisplay;
     document.getElementById('hdEmail').textContent = d.email || (currentUser ? currentUser.email : 'Add email');
     document.getElementById('hdNotice').textContent = d.notice_period || 'Add availability to join';
     const hdLinkedinItem = document.getElementById('hdLinkedinItem');
@@ -3544,7 +3621,8 @@ function refreshSavedDisplays(d) {
         if (addFinalLink) addFinalLink.style.display = 'none';
     } else {
         finalDisplay.style.display = 'none';
-        if (addFinalLink) addFinalLink.style.display = 'flex';
+        const caFinalPortals = ['fresher_fresher', 'fresher_experienced', 'semi_fresher', 'semi_experienced'];
+        if (addFinalLink) addFinalLink.style.display = caFinalPortals.includes(d.job_preference) ? 'flex' : 'none';
     }
 
     // CA Inter display
@@ -3708,6 +3786,12 @@ function refreshSavedDisplays(d) {
             const type = (d.employment_type || '').trim();
             if (type) metaParts.push(type);
             document.getElementById('emp-org-meta').textContent = metaParts.join(' · ');
+            const orgProfile = document.getElementById('emp-org-profile');
+            if (orgProfile) {
+                const profileText = (d.emp_job_profile || '').trim();
+                orgProfile.textContent = profileText;
+                orgProfile.style.display = profileText ? '' : 'none';
+            }
         }
     }
 
@@ -3723,20 +3807,33 @@ function refreshSavedDisplays(d) {
         if (artType && artType !== 'None') metaParts.push(artType);
         if ((d.articleship_domain || '').trim()) metaParts.push(d.articleship_domain);
         document.getElementById('emp-art-meta').textContent = metaParts.join(' · ');
+        const artResp = document.getElementById('emp-art-responsibilities');
+        if (artResp) {
+            const respText = (d.articleship_responsibilities || '').trim();
+            artResp.textContent = respText;
+            artResp.style.display = respText ? '' : 'none';
+        }
         if (addArtLink) addArtLink.style.display = 'none';
     } else {
         artDisplay.style.display = 'none';
         if (addArtLink) addArtLink.style.display = 'flex';
     }
 
-    // Industrial Training display
+    // Industrial Training / Other Work Experience display
     const itCompany = (d.industrial_training_company || '').trim();
     const itDisplay = document.getElementById('emp-it-display');
     const addITLink = document.getElementById('addITLink');
     if (itCompany) {
         itDisplay.style.display = 'block';
         document.getElementById('emp-it-title').textContent = itCompany;
-        document.getElementById('emp-it-meta').textContent = 'Industrial Training';
+        const itMeta = (d.it_industry || '').trim();
+        document.getElementById('emp-it-meta').textContent = itMeta || 'Other Work Experience';
+        const itResp = document.getElementById('emp-it-responsibilities');
+        if (itResp) {
+            const respText = (d.it_responsibilities || '').trim();
+            itResp.textContent = respText;
+            itResp.style.display = respText ? '' : 'none';
+        }
         if (addITLink) addITLink.style.display = 'none';
     } else {
         itDisplay.style.display = 'none';
@@ -4013,7 +4110,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             const targetId = e.target.getAttribute('data-target');
             const targetEl = document.getElementById(targetId);
             if (targetEl) {
-                targetEl.style.display = e.target.value === 'Other' ? 'flex' : 'none';
+                const isOther = e.target.value === 'Other';
+                targetEl.style.display = isOther ? 'flex' : 'none';
+                if (!isOther) {
+                    // Clear hidden count input so min="1" constraint doesn't block form save
+                    const countInput = targetEl.querySelector('input[type="number"]');
+                    if (countInput) countInput.value = '';
+                }
             }
         });
     });
@@ -4524,7 +4627,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             !el.disabled &&
             !!el.name
         );
-        return controls.find((el) => !el.checkValidity()) || null;
+        return controls.find((el) => {
+            if (el.checkValidity()) return false;
+            // A hidden, non-required control (e.g. a collapsed education modal's optional
+            // number field left at a stale value that violates min/max) must never hijack
+            // Save. Only surface it if it's actually required or currently visible.
+            if (!el.required && el.offsetParent === null) return false;
+            return true;
+        }) || null;
     }
 
     function revealInvalidControl(control) {

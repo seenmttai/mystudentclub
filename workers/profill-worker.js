@@ -7,7 +7,8 @@ const PORTAL_CONTEXTS = {
         focus: `CA Final is NOT yet cleared — they are still in articleship and seeking industrial training.
 Extract CA Inter (cleared), CA Foundation (cleared), and CA Final APPEARANCE (upcoming attempt) details.
 Do NOT extract ca_final_clear_month or ca_final_clear_year — they haven't cleared CA Final.
-Extract articleship details (firm, type, domain) and industrial_training_company if present.
+Extract articleship details (firm, type, domain) including articleship_responsibilities (ALL bullet points verbatim, do not summarise).
+Extract industrial_training_company and it_* fields if any other non-articleship work experience is present, including it_responsibilities (ALL bullet points verbatim).
 Do NOT extract emp_company_name/emp_job_title/emp_job_profile/emp_current_salary — these candidates have no post-qualification employment.`,
         skipFields: ['ca_final_clear_month', 'ca_final_clear_year', 'ca_final_air', 'emp_company_name', 'emp_job_title', 'emp_job_profile', 'emp_join_year', 'emp_join_month', 'emp_current_salary'],
     },
@@ -16,7 +17,8 @@ Do NOT extract emp_company_name/emp_job_title/emp_job_profile/emp_current_salary
         focus: `CA Inter is cleared. CA Final is NOT yet cleared. Candidate is seeking articleship.
 Extract CA Inter (cleared), CA Foundation (cleared), and CA Final APPEARANCE (upcoming attempt) details.
 Do NOT extract ca_final_clear_month or ca_final_clear_year.
-Extract articleship details if they have any prior stint.
+Extract articleship details if they have any prior stint (including articleship_responsibilities — extract ALL bullet points verbatim).
+If any OTHER work experience is present that is NOT the articleship firm (e.g., industrial training, internship, corporate project, part-time job), capture the company name in industrial_training_company and use it_* fields for details including it_responsibilities (all bullet points verbatim).
 Do NOT extract emp_company_name/emp_job_title/emp_current_salary — no post-qualification employment.`,
         skipFields: ['ca_final_clear_month', 'ca_final_clear_year', 'ca_final_air', 'emp_company_name', 'emp_job_title', 'emp_job_profile', 'emp_join_year', 'emp_join_month', 'emp_current_salary'],
     },
@@ -25,8 +27,8 @@ Do NOT extract emp_company_name/emp_job_title/emp_current_salary — no post-qua
         focus: `CA Final is cleared. Candidate has NO post-qualification work experience.
 Extract full CA Final details (course, attempts, clear month/year, AIR).
 Extract CA Inter and CA Foundation details.
-Extract articleship details.
-If any OTHER work experience is present (internship, corporate project, industrial training, part-time job — anything that is NOT the articleship firm), capture the company name in industrial_training_company and use it_* fields for details.
+Extract articleship details (including articleship_responsibilities — extract ALL bullet points verbatim, do not summarise).
+If any OTHER work experience is present (internship, corporate project, industrial training, part-time job — anything that is NOT the articleship firm), capture the company name in industrial_training_company and use it_* fields for details including it_responsibilities (extract ALL bullet points verbatim).
 Do NOT extract emp_company_name/emp_job_title/emp_job_profile/emp_current_salary — this is a fresher with no post-qualification employment.`,
         skipFields: ['emp_company_name', 'emp_job_title', 'emp_job_profile', 'emp_join_year', 'emp_join_month', 'emp_current_salary', 'ca_final_app_month', 'ca_final_app_year'],
     },
@@ -35,9 +37,11 @@ Do NOT extract emp_company_name/emp_job_title/emp_job_profile/emp_current_salary
         focus: `CA Final is cleared. Candidate HAS post-qualification work experience.
 Extract full CA Final details (course, attempts, clear month/year, AIR).
 Extract CA Inter and CA Foundation details.
-Extract articleship details, industrial_training_company if present.
-Also extract current/most recent employer details into emp_company_name, emp_job_title, emp_job_profile, emp_join_year, emp_join_month.
-Also extract emp_current_salary — the candidate's current annual CTC/salary — if explicitly mentioned anywhere on the resume.`,
+Extract articleship details (including articleship_responsibilities — extract ALL bullet points verbatim, do not summarise).
+Extract industrial_training_company and it_* fields if any non-articleship, non-post-qualification work is present (including it_responsibilities — all bullet points verbatim).
+Also extract current/most recent employer details into emp_company_name, emp_job_title, emp_job_profile (ALL bullet points verbatim), emp_join_year, emp_join_month.
+Also extract emp_current_salary — the candidate's current annual CTC/salary — if explicitly mentioned anywhere on the resume.
+Also extract prev_emp_company_name, prev_emp_job_title, prev_emp_job_profile (ALL bullet points verbatim) if a previous employer is mentioned.`,
         skipFields: ['ca_final_app_month', 'ca_final_app_year'],
     },
     semi_fresher: {
@@ -46,8 +50,10 @@ Also extract emp_current_salary — the candidate's current annual CTC/salary �
 Extract CA Inter details (cleared), CA Foundation details.
 Extract CA Final APPEARANCE/attempt details (ca_final_app_month, ca_final_app_year) if upcoming attempt is mentioned.
 Do NOT extract ca_final_clear_month or ca_final_clear_year unless explicitly stated as cleared.
-Extract articleship details if present.
-Extract emp_company_name, emp_job_title, emp_job_profile if any employment found.`,
+Extract articleship details if present (including articleship_responsibilities — extract ALL bullet points verbatim).
+If any OTHER work experience is present that is NOT the articleship firm and NOT post-qualification employment (e.g., industrial training, internship, corporate project, part-time job), capture the company name in industrial_training_company and use it_* fields for details including it_responsibilities (all bullet points verbatim).
+Extract emp_company_name, emp_job_title, emp_job_profile (ALL bullet points verbatim) if any post-qualification employment found.
+Extract prev_emp_company_name, prev_emp_job_title, prev_emp_job_profile (ALL bullet points verbatim) if a second employer is mentioned.`,
         skipFields: [],
     },
     semi_experienced: {
@@ -55,8 +61,10 @@ Extract emp_company_name, emp_job_title, emp_job_profile if any employment found
         focus: `CA Inter is cleared but CA Final is NOT yet cleared.
 Extract CA Inter details (cleared), CA Foundation details.
 Extract CA Final APPEARANCE details if upcoming attempt mentioned.
-Extract articleship details if present.
-Extract current employment: emp_company_name, emp_job_title, emp_job_profile, emp_join_year, emp_join_month, emp_current_salary.`,
+Extract articleship details if present (including articleship_responsibilities — extract ALL bullet points verbatim).
+If any OTHER work experience is present that is NOT the articleship firm and NOT the current/previous post-qualification employer (e.g., industrial training, internship, corporate project done during studies), capture the company name in industrial_training_company and use it_* fields for details including it_responsibilities (all bullet points verbatim).
+Extract current employment: emp_company_name, emp_job_title, emp_job_profile (ALL bullet points verbatim), emp_join_year, emp_join_month, emp_current_salary.
+Extract prev_emp_company_name, prev_emp_job_title, prev_emp_job_profile (ALL bullet points verbatim) if a previous employer is mentioned.`,
         skipFields: [],
     },
 };
@@ -210,7 +218,7 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
 63. **articleship_end_year**: Year articleship ended or expected to end.
 64. **articleship_domain**: Comma-separated list of ALL domains the candidate worked in, from: "Statutory Audit", "Internal Audit", "Concurrent Audit", "SOX / IFC Controls", "Direct Tax", "Indirect Tax (GST)", "International Taxation", "Transfer Pricing", "M&A Tax", "Forensics", "Risk Advisory", "Consulting", "Due Diligence", "Valuation", "Deals & Transaction Advisory", "Accounting & Reporting", "Financial Reporting (Ind AS / IFRS)", "Compliance", "Other". Include every domain mentioned.
 65. **articleship_client_industries**: Comma-separated list of client industries from: "Banking", "Financial Services", "FMCG", "Manufacturing", "Pharma", "IT", "E-Commerce", "Automobile", "Infrastructure", "Real Estate", "Consulting", "Retail", "Energy", "Telecom", "Logistics", "Others".
-66. **articleship_responsibilities**: Paragraph summarising key responsibilities during articleship.
+66. **articleship_responsibilities**: Extract ALL key responsibilities and achievements from the articleship — preserve every bullet point and detail verbatim from the resume. Do NOT summarise or condense. Include every line about what the candidate did, handled, prepared, reviewed, or achieved during articleship.
 
 ### Industrial Training / Other Work Experience:
 67. **industrial_training_company**: Company name of industrial training or any other work experience (internship, corporate project, part-time job) that is NOT the articleship firm and NOT post-qualification employment. For fresher portals (fresher_fresher, fresher_experienced), use this field to capture any such experience found on the resume.
@@ -219,7 +227,7 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
 70. **it_start_year**: Year started.
 71. **it_end_month**: Month ended.
 72. **it_end_year**: Year ended.
-73. **it_responsibilities**: Key responsibilities during this experience.
+73. **it_responsibilities**: Extract ALL key responsibilities and achievements from this work experience — preserve every bullet point and detail verbatim from the resume. Do NOT summarise or condense. Include every line about what the candidate did, handled, prepared, reviewed, or achieved during this experience.
 
 ### Employment (post-qualification jobs only — see portal context):
 74. **is_current_employment**: "Yes" or "No".
@@ -229,7 +237,7 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
 78. **emp_industry**: Industry of current employer.
 79. **emp_domain**: Comma-separated list of ALL domains of work (from: "Statutory Audit", "Internal Audit & Risk", "SOX / IFC Controls", "Forensics & Compliance", "Direct Tax", "Indirect Tax (GST)", "International Taxation", "Transfer Pricing", "Accounting & Reporting", "FP&A", "Controllership", "Treasury", "Costing & Plant Finance", "Supply Chain Finance", "Commercial Finance", "Business Finance", "Consulting", "Due Diligence", "Valuation", "Deals & Transaction Advisory", "M&A Advisory", "Project Finance", "Banking & Credit", "Investment Banking", "Equity Research", "ESG", "Financial Reporting (IND AS / IFRS)", "Data Analytics", "Overall Exposure", "Other"). Include ALL domains mentioned — do NOT limit to one.
 80. **emp_job_title**: Job title.
-81. **emp_job_profile**: Full paragraph summarising all responsibilities and achievements for this role.
+81. **emp_job_profile**: Extract ALL key responsibilities and achievements for this role — preserve every bullet point and detail verbatim from the resume. Do NOT summarise or condense. Include every line about what the candidate did, handled, prepared, reviewed, or achieved in this position.
 82. **emp_join_year**: Year started.
 83. **emp_join_month**: Month started.
 84. **emp_exp_years**: Total post-qualification years of experience as a string matching exactly one of: "0 Years", "1 Year", "2 Years", "3 Years", ... "30 Years". For fresher portals (industrial, articleship, fresher_fresher) always return "0 Years". For experienced portals, extract from explicit mentions ("3 years experience") or calculate from emp_join_year to present. Return "0 Years" if unclear.
@@ -248,6 +256,7 @@ Return STRICT JSON only — no markdown, no \`\`\`json wrappers.
 94. **prev_emp_start_year**: Start year.
 95. **prev_emp_end_month**: End month.
 96. **prev_emp_end_year**: End year.
+96a. **prev_emp_job_profile**: Extract ALL key responsibilities and achievements for the previous role — preserve every bullet point and detail verbatim from the resume. Do NOT summarise or condense. Return empty string if no previous employer found.
 
 ### Achievements:
 97.  **achievement_air**: AIR or academic rank mentions (e.g. "CA Final AIR 42").

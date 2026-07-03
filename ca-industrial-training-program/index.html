@@ -77,10 +77,10 @@
   <div class="hero-container">
     <div class="hero-content" data-aos="fade-right">
       <div class="closed-notice">
-        <i class="fas fa-calendar-alt"></i> Registrations Open on 3rd July
+        <i class="fas fa-calendar-alt"></i> Registrations Open on 5th July
       </div>
       <h1 class="hero-title">MSC <span class="highlight-blue">Industrial Training Program</span></h1>
-      <p class="hero-subtitle">Registrations for Next Batch of Industrial Training Program Commencing will be Live on 3rd July</p>
+      <p class="hero-subtitle">Registrations for Next Batch of Industrial Training Program will be Live on 5th July</p>
       
       <div class="hero-cta-group">
         <button id="notifyMeBtn" class="notify-me-btn">
@@ -169,7 +169,7 @@
         <span>That's why WE BUILT THIS</span>
       </div>
       <h2 class="pane-title">Why <span class="highlight-green">Enroll?</span></h2>
-      <p class="pane-sub">Get direct access to everything you need to break through the competition.</p>
+      <p class="pane-sub">Recorded Batch with Same Support. Get direct access to everything you need to break through the competition.</p>
       
       <div class="benefits-grid-savvy">
         <div class="benefit-item-savvy">
@@ -440,7 +440,7 @@
       <div class="pricing-header">
         <span class="tagline">All In One Program</span>
         <h2>MSC CA Industrial Training Program</h2>
-        <p class="subtitle">Complete 6 Day Masterclass(Recorded), Exclusive Resources & Vacancies</p>
+        <p class="subtitle">Complete 6 Day Masterclass (Recorded Batch with Same Support), Exclusive Resources & Vacancies</p>
       </div>
       
       <div class="pricing-amount">
@@ -453,7 +453,11 @@
         <ul>
           <li>
             <span class="check-icon">✓</span>
-            <span>6 Days of Recorded Sessions + Full MSC LMS Access</span>
+            <span>6 Days of Recorded Sessions (Recorded Batch with Same Support)</span>
+          </li>
+          <li>
+            <span class="check-icon">✓</span>
+            <span>Full MSC LMS Access</span>
           </li>
           <li>
             <span class="check-icon">✓</span>
@@ -508,6 +512,16 @@
   </button>
 </div>
 
+<!-- Postponed Announcement Modal -->
+<div id="postponedModal" class="postponed-modal">
+  <div class="postponed-modal-content">
+    <span id="postponedCloseBtn" class="postponed-close">&times;</span>
+    <h2>Announcement</h2>
+    <p>Sorry for the inconvenience.</p>
+    <p>Registrations for the batch commencing on <strong>10th July</strong> have been delayed. The registration process will now begin on <strong>5th July</strong>.</p>
+    <button id="postponedOkBtn" class="postponed-btn">Okay</button>
+  </div>
+</div>
 
 <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
 <script src="app.js" type="module"></script>
@@ -725,6 +739,32 @@
     }
 
     initNotifyMe();
+
+    // Show postponed modal on page load (occurs every visit/reload)
+    const postponedModal = document.getElementById('postponedModal');
+    const postponedCloseBtn = document.getElementById('postponedCloseBtn');
+    const postponedOkBtn = document.getElementById('postponedOkBtn');
+
+    if (postponedModal) {
+      postponedModal.style.display = 'flex';
+
+      const closePostponed = () => {
+        postponedModal.style.display = 'none';
+      };
+
+      if (postponedCloseBtn) {
+        postponedCloseBtn.addEventListener('click', closePostponed);
+      }
+      if (postponedOkBtn) {
+        postponedOkBtn.addEventListener('click', closePostponed);
+      }
+
+      postponedModal.addEventListener('click', (e) => {
+        if (e.target === postponedModal) {
+          closePostponed();
+        }
+      });
+    }
   });
 </script>
 <!-- Google Analytics -->

@@ -195,6 +195,10 @@
                 catch (e) { console.error('Load failed', e); }
             }
             ensureCvDataShape();
+            if (!cvData.experience || cvData.experience.length === 0) {
+                const artEntry = buildArticleshipEntryFromProfile();
+                if (artEntry) cvData.experience = [artEntry];
+            }
             normalizeSectionOrder();
             loadHistory();
 
@@ -2396,6 +2400,62 @@
                 ];
                 renderEduInputs(); updateCV();
             }
+        }
+
+        function buildArticleshipEntryFromProfile() {
+            const raw = localStorage.getItem('userProfileData');
+            if (!raw) return null;
+            let p;
+            try { p = JSON.parse(raw); } catch(e) { return null; }
+
+            const firmName = (p.articleship_firm_name || '').trim();
+            const firmType = (p.articleship_firm_type || '').trim();
+            if (!firmName && (!firmType || firmType === 'None')) return null;
+
+            const domain = (p.articleship_domain || '').trim();
+            const startMonth = (p.articleship_start_month || '').trim();
+            const startYear = String(p.articleship_start_year || '').trim();
+            const endMonth = (p.articleship_end_month || '').trim();
+            const endYear = String(p.articleship_end_year || '').trim();
+            const responsibilities = (p.articleship_responsibilities || '').trim();
+
+            const startPart = [startMonth, startYear].filter(Boolean).join(' ');
+            const endPart = endYear ? [endMonth, endYear].filter(Boolean).join(' ') : 'Present';
+            const dates = startPart ? `${startPart} – ${endPart}` : '';
+
+            const company = [firmName, firmType && firmType !== 'None' ? firmType : ''].filter(Boolean).join(' | ');
+
+            const bullets = responsibilities
+                ? responsibilities.split('\n')
+                    .map(line => line.replace(/^[\s\-•●*]+/, '').trim())
+                    .filter(Boolean)
+                    .map(line => normalizeImportedRichText(line, 'experience'))
+                : [];
+
+            return {
+                role: 'Article Assistant',
+                company,
+                dates,
+                intro: '',
+                category: domain,
+                bullets,
+                mergedWithPrevious: false,
+                titleMergedWithPrevious: false
+            };
+        }
+
+        function importArticleshipFromProfile(e) {
+            if (e) e.stopPropagation();
+            const entry = buildArticleshipEntryFromProfile();
+            if (!entry) {
+                alert('No articleship data found in your profile. Please fill in the Articleship Experience section on your profile page first.');
+                return;
+            }
+            if (cvData.experience.length > 0 && !confirm('This will replace your current experience entries with your profile articleship data. Continue?')) return;
+            cvData.experience = [entry];
+            normalizeExperienceMerges();
+            renderExpInputs();
+            postToFrame();
         }
 
         // Core Utilities
