@@ -825,8 +825,7 @@ const WZ = (() => {
         const yoeRaw = profileData ? (profileData.emp_exp_years != null ? profileData.emp_exp_years : profileData.yoe_years) : null;
         const yoe = parseInt(yoeRaw || '', 10);
         if (isNaN(yoe) || yoeRaw == null) return null; // unknown — ask in wizard
-        if (yoe >= 1) return type === 'fresher_fresher' ? 'fresher_experienced' : 'semi_experienced';
-        return type; // 0 years = fresher/semi_fresher confirmed
+        return type; // respect user's chosen subtype regardless of YOE
     }
 
     function mapLookingForToType(lf) {
@@ -3562,7 +3561,8 @@ function refreshSavedDisplays(d) {
         if (addFinalLink) addFinalLink.style.display = 'none';
     } else {
         finalDisplay.style.display = 'none';
-        if (addFinalLink) addFinalLink.style.display = 'flex';
+        const caFinalPortals = ['fresher_fresher', 'fresher_experienced', 'semi_fresher', 'semi_experienced'];
+        if (addFinalLink) addFinalLink.style.display = caFinalPortals.includes(d.job_preference) ? 'flex' : 'none';
     }
 
     // CA Inter display
