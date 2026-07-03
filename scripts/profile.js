@@ -4013,7 +4013,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             const targetId = e.target.getAttribute('data-target');
             const targetEl = document.getElementById(targetId);
             if (targetEl) {
-                targetEl.style.display = e.target.value === 'Other' ? 'flex' : 'none';
+                const isOther = e.target.value === 'Other';
+                targetEl.style.display = isOther ? 'flex' : 'none';
+                if (!isOther) {
+                    // Clear hidden count input so min="1" constraint doesn't block form save
+                    const countInput = targetEl.querySelector('input[type="number"]');
+                    if (countInput) countInput.value = '';
+                }
             }
         });
     });
