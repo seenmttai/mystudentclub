@@ -1707,7 +1707,7 @@ const WZ = (() => {
     function buildReviewGroups() {
         const type = st.programType || 'fresher_fresher';
         // fv: form value first, then AI data fallback
-        const fv = k => { const v = getFormValue(k); return v || (st.aiData ? (st.aiData[k] || '') : ''); };
+        const fv = k => { const v = getFormValue(k); return v || st.answers[k] || st.answers['missing_' + k] || (st.aiData ? (st.aiData[k] || '') : ''); };
         const fv2 = (k1, k2) => { const a = fv(k1); const b = fv(k2); return a ? (b ? a + ' ' + b : a) : b; };
 
         const personalGroup = {
