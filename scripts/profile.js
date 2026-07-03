@@ -355,14 +355,6 @@ const WZ_QUESTION_CONFIGS = {
         options: ['FP&A', 'Business Finance', 'Supply Chain Finance', 'Treasury', 'Controllership', 'Financial Reporting', 'Accounting & Reporting', 'MIS Reporting', 'Finance & Accounts', 'Banking & Credit', 'Costing & Plant Finance', 'Finance', 'Internal Audit', 'Direct Tax', 'Indirect Tax (GST)', 'Transfer Pricing', 'Valuation', 'Due Diligence', 'Deals & Transaction Advisory', 'Investment Banking', 'Equity Research', 'Mergers & Acquisitions (M&A)', 'Strategy', 'Management Consulting', 'Forensics', 'Other'],
         profileKey: 'preferred_domains', optional: true
     },
-    preferred_domains_articleship: {
-        id: 'preferred_domains', icon: '🎯',
-        question: 'Which domains did you work in during articleship?',
-        hint: 'Select all that apply',
-        type: 'chips',
-        options: ['Statutory Audit', 'Internal Audit', 'Concurrent Audit', 'SOX / IFC Controls', 'Direct Tax', 'Indirect Tax (GST)', 'International Taxation', 'Transfer Pricing', 'M&A Tax', 'Forensics', 'Risk Advisory', 'Consulting', 'Due Diligence', 'Valuation', 'Deals & Transaction Advisory', 'Accounting & Bookkeeping', 'Accounting & Reporting', 'Financial Reporting (Ind AS / IFRS)', 'Compliance', 'Other'],
-        profileKey: 'preferred_domains', optional: true
-    },
     preferred_firm_type: {
         id: 'preferred_firm_type', icon: '🏢',
         question: 'What type of CA firm are you looking for?',
@@ -518,7 +510,6 @@ function getWzMissingFields(portalType) {
     ];
     const currentSalaryField = f('emp_current_salary', 'Current CTC', '💰', 'text', true);
 
-    const numPartnersField = f('articleship_num_partners', 'Number of Partners in Articleship Firm', '🤝', 'radio', true, '', null, ['1 (Sole Proprietor)', '2–5', '6–10', '11–20', '21–50', '51+']);
     const itIndustryField = f('it_industry', 'Industrial Training Company Industry', '🏢', 'radio', true, '', 'If you completed Industrial Training, select the industry of your company', ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']);
     const currentIndustryField = f('current_industry', 'Current Industry', '🏭', 'radio', true, '', null, ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']);
     const noticePeriodField = f('notice_period', 'Notice Period', '📋', 'radio', true, '', 'What is your current notice period?', ['Immediate Joiner', '15 Days or less', '1 Month', '2 Months', '3 Months']);
@@ -540,7 +531,7 @@ function getWzMissingFields(portalType) {
     if (portalType === 'semi_fresher')    return [...common, ...caInterFields, currentIndustryField];
     if (portalType === 'semi_experienced')return [...common, ...caInterFields, ...empFields, currentSalaryField, currentIndustryField];
     if (portalType === 'fresher_experienced') return [...common, ...caFinalFields, ...empFields, currentIndustryField];
-    return [...common, ...caFinalFields, numPartnersField, itIndustryField, noticePeriodField]; // fresher_fresher
+    return [...common, ...caFinalFields, itIndustryField, noticePeriodField]; // fresher_fresher
 }
 
 
