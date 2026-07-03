@@ -293,7 +293,7 @@ const WZ_QUESTION_CONFIGS = {
         id: 'expected_ctc', icon: '💰',
         question: 'What is your expected CTC?',
         hint: 'Annual package in INR',
-        type: 'salary', profileKey: 'expected_salary', optional: true
+        type: 'salary', profileKey: 'expected_salary', placeholder: 'e.g., 12,00,000', optional: true
     },
     current_ctc: {
         id: 'current_ctc', icon: '💵',
@@ -306,6 +306,18 @@ const WZ_QUESTION_CONFIGS = {
         question: 'What monthly stipend are you expecting?',
         hint: 'In ₹ — leave blank if not sure',
         type: 'salary', profileKey: 'expected_salary', placeholder: 'e.g., 2,30,000', optional: true
+    },
+    expected_stipend_industrial: {
+        id: 'expected_stipend', icon: '💰',
+        question: 'What monthly stipend are you expecting?',
+        hint: 'In ₹ — leave blank if not sure',
+        type: 'salary', profileKey: 'expected_salary', placeholder: 'e.g., 25,000', optional: true
+    },
+    expected_stipend_articleship: {
+        id: 'expected_stipend', icon: '💰',
+        question: 'What monthly stipend are you expecting?',
+        hint: 'In ₹ — leave blank if not sure',
+        type: 'salary', profileKey: 'expected_salary', placeholder: 'e.g., 10,000', optional: true
     },
     preferred_domains: {
         id: 'preferred_domains', icon: '🎯',
@@ -439,8 +451,8 @@ const WZ_QUESTION_CONFIGS = {
 };
 
 const WZ_ROLE_QUESTIONS = {
-    'industrial':          ['gender', 'preferred_locations', 'joining_date', 'expected_stipend', 'preferred_domains_industrial', 'preferred_industries_industrial'],
-    'articleship':         ['gender', 'preferred_locations', 'joining_date', 'expected_stipend', 'preferred_firm_type', 'preferred_industries_articleship'],
+    'industrial':          ['gender', 'preferred_locations', 'joining_date', 'expected_stipend_industrial', 'preferred_domains_industrial', 'preferred_industries_industrial'],
+    'articleship':         ['gender', 'preferred_locations', 'joining_date', 'expected_stipend_articleship', 'preferred_firm_type', 'preferred_industries_articleship'],
     'fresher_fresher':     ['gender', 'preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries'],
     'fresher_experienced': ['gender', 'yoe_experienced', 'preferred_locations', 'joining_date', 'current_ctc', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
     'semi_fresher':        ['gender', 'preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
