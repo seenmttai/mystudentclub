@@ -293,7 +293,19 @@ const WZ_QUESTION_CONFIGS = {
         id: 'expected_ctc', icon: '💰',
         question: 'What is your expected CTC?',
         hint: 'Annual package in INR',
-        type: 'salary', profileKey: 'expected_salary', placeholder: 'e.g., 12,00,000', optional: true
+        type: 'salary', profileKey: 'expected_salary', placeholder: 'e.g., 10,00,000', optional: true
+    },
+    expected_ctc_experienced: {
+        id: 'expected_ctc', icon: '💰',
+        question: 'What is your expected CTC?',
+        hint: 'Annual package in INR',
+        type: 'salary', profileKey: 'expected_salary', placeholder: 'e.g., 40,00,000', optional: true
+    },
+    expected_ctc_semi: {
+        id: 'expected_ctc', icon: '💰',
+        question: 'What is your expected CTC?',
+        hint: 'Annual package in INR',
+        type: 'salary', profileKey: 'expected_salary', placeholder: 'e.g., 8,00,000', optional: true
     },
     current_ctc: {
         id: 'current_ctc', icon: '💵',
@@ -454,9 +466,9 @@ const WZ_ROLE_QUESTIONS = {
     'industrial':          ['gender', 'preferred_locations', 'joining_date', 'expected_stipend_industrial', 'preferred_domains_industrial', 'preferred_industries_industrial'],
     'articleship':         ['gender', 'preferred_locations', 'joining_date', 'expected_stipend_articleship', 'preferred_firm_type', 'preferred_industries_articleship'],
     'fresher_fresher':     ['gender', 'preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries'],
-    'fresher_experienced': ['gender', 'yoe_experienced', 'preferred_locations', 'joining_date', 'current_ctc', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
-    'semi_fresher':        ['gender', 'preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
-    'semi_experienced':    ['gender', 'yoe_semi', 'preferred_locations', 'joining_date', 'expected_ctc', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
+    'fresher_experienced': ['gender', 'yoe_experienced', 'preferred_locations', 'joining_date', 'current_ctc', 'expected_ctc_experienced', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
+    'semi_fresher':        ['gender', 'preferred_locations', 'joining_date', 'expected_ctc_semi', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
+    'semi_experienced':    ['gender', 'yoe_semi', 'preferred_locations', 'joining_date', 'expected_ctc_semi', 'preferred_domains', 'preferred_industries', 'employment_status', 'notice_period'],
 };
 
 // Master list of fields to check after AI extraction — portal-specific
