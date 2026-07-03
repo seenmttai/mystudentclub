@@ -931,7 +931,7 @@ async function fetchJobs() {
             }
         }
 
-        if (currentTable === 'Fresher Jobs') {
+        if (currentTable === 'Fresher Jobs' && !isExperiencedFresherPortal()) {
             query = query.or('yoe.is.null,yoe.lte.1');
         }
 
