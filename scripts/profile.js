@@ -4536,7 +4536,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             !el.disabled &&
             !!el.name
         );
-        return controls.find((el) => !el.checkValidity()) || null;
+        return controls.find((el) => {
+            if (el.checkValidity()) return false;
+            // A hidden, non-required control (e.g. a collapsed education modal's optional
+            // number field left at a stale value that violates min/max) must never hijack
+            // Save. Only surface it if it's actually required or currently visible.
+            if (!el.required && el.offsetParent === null) return false;
+            return true;
+        }) || null;
     }
 
     function revealInvalidControl(control) {
