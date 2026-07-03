@@ -145,8 +145,8 @@ const ENTRY_CLEAR_MAP = {
     'edu-10-display': ['class10_board', 'class10_school', 'class10_year', 'class10_percentage'],
     'edu-other-display': ['other_edu_level', 'other_edu_course', 'other_edu_institute', 'other_edu_year', 'other_edu_score'],
     'emp-org-display': ['is_current_employment', 'employment_type', 'emp_exp_years', 'emp_exp_months', 'emp_company_name', 'emp_job_title', 'emp_join_year', 'emp_join_month', 'emp_salary_currency', 'emp_current_salary', 'emp_salary_breakdown', 'emp_skills_hidden', 'emp_job_profile', 'emp_notice_period'],
-    'emp-art-display': ['articleship_firm_type', 'articleship_firm_name', 'articleship_domain', 'articleship_domain_other'],
-    'emp-it-display': ['industrial_training_company'],
+    'emp-art-display': ['articleship_firm_type', 'articleship_firm_name', 'articleship_domain', 'articleship_domain_other', 'articleship_start_year', 'articleship_start_month', 'articleship_end_year', 'articleship_end_month', 'articleship_client_industries', 'articleship_responsibilities'],
+    'emp-it-display': ['industrial_training_company', 'it_industry', 'it_start_year', 'it_start_month', 'it_end_year', 'it_end_month', 'it_responsibilities'],
     'project-entry-display': ['project_title', 'project_tag', 'project_client', 'project_status', 'project_worked_from_year', 'project_worked_from_month', 'project_details', 'project_domain', 'project_skills', 'project_attachment_name', 'project_drive_link'],
     'key-skills-entry-display': ['key_skills']
 };
@@ -1780,11 +1780,23 @@ const WZ = (() => {
                 {
                     label: 'Articleship',
                     fields: [
-                        { key: 'articleship_firm_type',     label: 'Firm Type',              value: fv('articleship_firm_type') },
-                        { key: 'articleship_firm_name',     label: 'Firm Name',              value: fv('articleship_firm_name') },
-                        { key: 'articleship_start_month',   label: 'Start Month',            value: fv('articleship_start_month') },
-                        { key: 'articleship_start_year',    label: 'Start Year',             value: fv('articleship_start_year') },
-                        { key: 'articleship_domain',        label: 'Domain',                 value: fv('articleship_domain') },
+                        { key: 'articleship_firm_type',          label: 'Firm Type',              value: fv('articleship_firm_type') },
+                        { key: 'articleship_firm_name',          label: 'Firm Name',              value: fv('articleship_firm_name') },
+                        { key: 'articleship_start_month',        label: 'Start Month',            value: fv('articleship_start_month') },
+                        { key: 'articleship_start_year',         label: 'Start Year',             value: fv('articleship_start_year') },
+                        { key: 'articleship_domain',             label: 'Domain',                 value: fv('articleship_domain') },
+                        { key: 'articleship_responsibilities',   label: 'Key Responsibilities',   value: fv('articleship_responsibilities'), wide: true, textarea: true },
+                    ]
+                },
+                {
+                    label: 'Other Work Experience',
+                    fields: [
+                        { key: 'industrial_training_company', label: 'Company / Organisation', value: fv('industrial_training_company') },
+                        { key: 'it_start_month',              label: 'Start Month',            value: fv('it_start_month') },
+                        { key: 'it_start_year',               label: 'Start Year',             value: fv('it_start_year') },
+                        { key: 'it_end_month',                label: 'End Month',              value: fv('it_end_month') },
+                        { key: 'it_end_year',                 label: 'End Year',               value: fv('it_end_year') },
+                        { key: 'it_responsibilities',         label: 'Key Responsibilities',   value: fv('it_responsibilities'), wide: true, textarea: true },
                     ]
                 },
                 {
@@ -1816,20 +1828,35 @@ const WZ = (() => {
                 {
                     label: 'Articleship',
                     fields: [
-                        { key: 'articleship_firm_type',       label: 'Firm Type',              value: fv('articleship_firm_type') },
-                        { key: 'articleship_firm_name',       label: 'Firm Name',              value: fv('articleship_firm_name') },
-                        { key: 'articleship_start_month',     label: 'Start Month',            value: fv('articleship_start_month') },
-                        { key: 'articleship_start_year',      label: 'Start Year',             value: fv('articleship_start_year') },
-                        { key: 'articleship_domain',          label: 'Domain',                 value: fv('articleship_domain') },
+                        { key: 'articleship_firm_type',        label: 'Firm Type',            value: fv('articleship_firm_type') },
+                        { key: 'articleship_firm_name',        label: 'Firm Name',            value: fv('articleship_firm_name') },
+                        { key: 'articleship_start_month',      label: 'Start Month',          value: fv('articleship_start_month') },
+                        { key: 'articleship_start_year',       label: 'Start Year',           value: fv('articleship_start_year') },
+                        { key: 'articleship_domain',           label: 'Domain',               value: fv('articleship_domain') },
+                        { key: 'articleship_responsibilities', label: 'Key Responsibilities', value: fv('articleship_responsibilities'), wide: true, textarea: true },
+                    ]
+                },
+                {
+                    label: 'Other Work Experience',
+                    fields: [
+                        { key: 'industrial_training_company', label: 'Company / Organisation', value: fv('industrial_training_company') },
+                        { key: 'it_start_month',              label: 'Start Month',            value: fv('it_start_month') },
+                        { key: 'it_start_year',               label: 'Start Year',             value: fv('it_start_year') },
+                        { key: 'it_end_month',                label: 'End Month',              value: fv('it_end_month') },
+                        { key: 'it_end_year',                 label: 'End Year',               value: fv('it_end_year') },
+                        { key: 'it_responsibilities',         label: 'Key Responsibilities',   value: fv('it_responsibilities'), wide: true, textarea: true },
                     ]
                 },
                 {
                     label: 'Employment',
                     fields: [
-                        { key: 'emp_company_name', label: 'Company',    value: fv('emp_company_name') },
-                        { key: 'emp_job_title',    label: 'Designation',value: fv('emp_job_title') },
-                        { key: 'emp_join_year',    label: 'Joined',     value: fv2('emp_join_month','emp_join_year') },
-                        { key: 'emp_job_profile',  label: 'Profile',    value: fv('emp_job_profile'), wide: true, textarea: true },
+                        { key: 'emp_company_name',     label: 'Company',            value: fv('emp_company_name') },
+                        { key: 'emp_job_title',        label: 'Designation',        value: fv('emp_job_title') },
+                        { key: 'emp_join_year',        label: 'Joined',             value: fv2('emp_join_month','emp_join_year') },
+                        { key: 'emp_job_profile',      label: 'Job Profile',        value: fv('emp_job_profile'), wide: true, textarea: true },
+                        { key: 'prev_emp_company_name',label: 'Previous Company',   value: fv('prev_emp_company_name') },
+                        { key: 'prev_emp_job_title',   label: 'Previous Designation',value: fv('prev_emp_job_title') },
+                        { key: 'prev_emp_job_profile', label: 'Previous Job Profile',value: fv('prev_emp_job_profile'), wide: true, textarea: true },
                     ]
                 },
                 {
@@ -1864,20 +1891,33 @@ const WZ = (() => {
             {
                 label: 'Articleship',
                 fields: [
-                    { key: 'articleship_firm_type',       label: 'Firm Type',              value: fv('articleship_firm_type') },
-                    { key: 'articleship_firm_name',       label: 'Firm Name',              value: fv('articleship_firm_name') },
-                    { key: 'articleship_start_month',     label: 'Start Month',            value: fv('articleship_start_month') },
-                    { key: 'articleship_start_year',      label: 'Start Year',             value: fv('articleship_start_year') },
-                    { key: 'articleship_domain',          label: 'Domain',                 value: fv('articleship_domain') },
+                    { key: 'articleship_firm_type',        label: 'Firm Type',            value: fv('articleship_firm_type') },
+                    { key: 'articleship_firm_name',        label: 'Firm Name',            value: fv('articleship_firm_name') },
+                    { key: 'articleship_start_month',      label: 'Start Month',          value: fv('articleship_start_month') },
+                    { key: 'articleship_start_year',       label: 'Start Year',           value: fv('articleship_start_year') },
+                    { key: 'articleship_domain',           label: 'Domain',               value: fv('articleship_domain') },
+                    { key: 'articleship_responsibilities', label: 'Key Responsibilities', value: fv('articleship_responsibilities'), wide: true, textarea: true },
+                ]
+            },
+            {
+                label: 'Other Work Experience',
+                fields: [
+                    { key: 'industrial_training_company', label: 'Company / Organisation', value: fv('industrial_training_company') },
+                    { key: 'it_start_month',              label: 'Start',                  value: fv2('it_start_month','it_start_year') },
+                    { key: 'it_end_month',                label: 'End',                    value: fv2('it_end_month','it_end_year') },
+                    { key: 'it_responsibilities',         label: 'Key Responsibilities',   value: fv('it_responsibilities'), wide: true, textarea: true },
                 ]
             },
             {
                 label: 'Employment',
                 fields: [
-                    { key: 'emp_company_name', label: 'Company',     value: fv('emp_company_name') },
-                    { key: 'emp_job_title',    label: 'Designation', value: fv('emp_job_title') },
-                    { key: 'emp_join_year',    label: 'Joined',      value: fv2('emp_join_month','emp_join_year') },
-                    { key: 'emp_job_profile',  label: 'Profile',     value: fv('emp_job_profile'), wide: true, textarea: true },
+                    { key: 'emp_company_name',     label: 'Company',             value: fv('emp_company_name') },
+                    { key: 'emp_job_title',        label: 'Designation',         value: fv('emp_job_title') },
+                    { key: 'emp_join_year',        label: 'Joined',              value: fv2('emp_join_month','emp_join_year') },
+                    { key: 'emp_job_profile',      label: 'Job Profile',         value: fv('emp_job_profile'), wide: true, textarea: true },
+                    { key: 'prev_emp_company_name',label: 'Previous Company',    value: fv('prev_emp_company_name') },
+                    { key: 'prev_emp_job_title',   label: 'Previous Designation',value: fv('prev_emp_job_title') },
+                    { key: 'prev_emp_job_profile', label: 'Previous Job Profile',value: fv('prev_emp_job_profile'), wide: true, textarea: true },
                 ]
             },
             {
@@ -3749,6 +3789,12 @@ function refreshSavedDisplays(d) {
             const type = (d.employment_type || '').trim();
             if (type) metaParts.push(type);
             document.getElementById('emp-org-meta').textContent = metaParts.join(' · ');
+            const orgProfile = document.getElementById('emp-org-profile');
+            if (orgProfile) {
+                const profileText = (d.emp_job_profile || '').trim();
+                orgProfile.textContent = profileText;
+                orgProfile.style.display = profileText ? '' : 'none';
+            }
         }
     }
 
@@ -3764,20 +3810,33 @@ function refreshSavedDisplays(d) {
         if (artType && artType !== 'None') metaParts.push(artType);
         if ((d.articleship_domain || '').trim()) metaParts.push(d.articleship_domain);
         document.getElementById('emp-art-meta').textContent = metaParts.join(' · ');
+        const artResp = document.getElementById('emp-art-responsibilities');
+        if (artResp) {
+            const respText = (d.articleship_responsibilities || '').trim();
+            artResp.textContent = respText;
+            artResp.style.display = respText ? '' : 'none';
+        }
         if (addArtLink) addArtLink.style.display = 'none';
     } else {
         artDisplay.style.display = 'none';
         if (addArtLink) addArtLink.style.display = 'flex';
     }
 
-    // Industrial Training display
+    // Industrial Training / Other Work Experience display
     const itCompany = (d.industrial_training_company || '').trim();
     const itDisplay = document.getElementById('emp-it-display');
     const addITLink = document.getElementById('addITLink');
     if (itCompany) {
         itDisplay.style.display = 'block';
         document.getElementById('emp-it-title').textContent = itCompany;
-        document.getElementById('emp-it-meta').textContent = 'Industrial Training';
+        const itMeta = (d.it_industry || '').trim();
+        document.getElementById('emp-it-meta').textContent = itMeta || 'Other Work Experience';
+        const itResp = document.getElementById('emp-it-responsibilities');
+        if (itResp) {
+            const respText = (d.it_responsibilities || '').trim();
+            itResp.textContent = respText;
+            itResp.style.display = respText ? '' : 'none';
+        }
         if (addITLink) addITLink.style.display = 'none';
     } else {
         itDisplay.style.display = 'none';
