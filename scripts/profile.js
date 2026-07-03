@@ -2561,6 +2561,12 @@ function populateForm(profileData) {
 
     const noticeSelect = document.getElementById('notice_period');
     if (noticeSelect) noticeSelect.dispatchEvent(new Event('change'));
+
+    // Fire change on attempts dropdowns so hidden count inputs get cleared when type != "Other"
+    ['ca_final_attempts_type', 'ca_inter_attempts_type', 'ca_found_attempts_type'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.dispatchEvent(new Event('change'));
+    });
 }
 
 // =================== FILE HANDLING ===================
