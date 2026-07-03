@@ -3228,7 +3228,18 @@ function refreshHeader() {
     // Header details
     document.getElementById('hdLocation').textContent = d.current_city || d.current_location || 'Add location';
     document.getElementById('hdPhone').textContent = d.contact_number || 'Add mobile number';
-    document.getElementById('hdExperience').textContent = d.total_experience || 'Fresher';
+    const _jobPref = (d.job_preference || '').trim();
+    const _expY = (d.emp_exp_years || '').trim();
+    const _expM = (d.emp_exp_months || '').trim();
+    const _isExperienced = _jobPref === 'fresher_experienced' || _jobPref === 'semi_experienced';
+    let _expDisplay;
+    if (_isExperienced) {
+        const _yoeParts = [_expY && _expY !== '0 Years' ? _expY : '', _expM && _expM !== '0 Months' ? _expM : ''].filter(Boolean);
+        _expDisplay = _yoeParts.length ? _yoeParts.join(' ') + ' Experience' : 'Experienced';
+    } else {
+        _expDisplay = 'Fresher';
+    }
+    document.getElementById('hdExperience').textContent = _expDisplay;
     document.getElementById('hdEmail').textContent = d.email || (currentUser ? currentUser.email : 'Add email');
     document.getElementById('hdNotice').textContent = d.notice_period || 'Add availability to join';
     const hdLinkedinItem = document.getElementById('hdLinkedinItem');
