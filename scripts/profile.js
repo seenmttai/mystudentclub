@@ -477,7 +477,6 @@ function getWzMissingFields(portalType) {
     ];
 
     const caInterFields = [
-        f('ca_inter_course', 'CA Inter Course', '📚', 'radio', true, '', null, ['CA Inter (Both Groups)', 'CA Inter G1', 'CA Inter G2']),
         f('ca_inter_clear_year',          'CA Inter Cleared Year',              '📚', 'text',   true),
         f('ca_inter_score',               'CA Inter Score %',                   '📊', 'text',   true),
         f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'If First Attempt, 1'),
@@ -493,7 +492,6 @@ function getWzMissingFields(portalType) {
         f('ca_final_clear_year',          'CA Final Cleared Year',              '🏆', 'text',   true),
         f('ca_final_score',               'CA Final Score %',                   '📊', 'text',   true),
         f('ca_final_attempts',            'CA Final Attempts',                  '🔄', 'number', true, 'If First Attempt, 1'),
-        f('ca_inter_course', 'CA Inter Course', '📚', 'radio', true, '', null, ['CA Inter (Both Groups)', 'CA Inter G1', 'CA Inter G2']),
         f('ca_inter_clear_year',          'CA Inter Cleared Year',              '📚', 'text',   true),
         f('ca_inter_score',               'CA Inter Score %',                   '📊', 'text',   true),
         f('ca_inter_attempts',            'CA Inter Attempts',                  '🔄', 'number', true, 'If First Attempt, 1'),
