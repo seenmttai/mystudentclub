@@ -417,8 +417,8 @@ h1 {
 }
 
 .fixed-cta .register-btn {
-  background: white;
-  color: #1a1a4b;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
   border: none;
   padding: 10px 25px;
   border-radius: 25px;
@@ -426,7 +426,7 @@ h1 {
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
   text-decoration: none;
   display: inline-block;
   white-space: nowrap;
@@ -434,7 +434,8 @@ h1 {
 
 .fixed-cta .register-btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+  background: linear-gradient(135deg, #45a049 0%, #3d8b3f 100%);
 }
 
 .student-card .company-info {
