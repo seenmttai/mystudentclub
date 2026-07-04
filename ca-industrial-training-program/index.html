@@ -76,17 +76,20 @@
 
   <div class="hero-container">
     <div class="hero-content" data-aos="fade-right">
-      <div class="closed-notice">
-        <i class="fas fa-calendar-alt"></i> Registrations Open on 5th July
+      <div class="open-notice">
+        <i class="fas fa-check-circle"></i> Registrations Open Now!
       </div>
       <h1 class="hero-title">MSC <span class="highlight-blue">Industrial Training Program</span></h1>
-      <p class="hero-subtitle">Registrations for Next Batch of Industrial Training Program will be Live on 5th July</p>
+      <p class="hero-subtitle">Registrations are live for the next batch of the Industrial Training Program. Enroll now to secure your seat.</p>
       
       <div class="hero-cta-group">
-        <button id="notifyMeBtn" class="notify-me-btn">
-          <span class="notify-btn-icon">🔔</span>
-          <span class="notify-btn-text">Notify Me When Open</span>
-        </button>
+        <a href="https://u.payu.in/4IknM3Yb3nEF" class="register-btn pulse-btn hero-cta" id="registerButtonHero" target="_blank">
+          <span class="btn-content">
+            <svg class="lightning-icon" viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: currentColor; display: inline-block; vertical-align: middle; margin-right: 8px;">
+              <path d="M12 2L2 14h9v8l10-12h-9z"></path>
+            </svg>Register Now
+          </span>
+        </a>
         <a href="#curriculum-section" class="btn-secondary">
           <i class="far fa-file-alt"></i> View Curriculum
         </a>
@@ -483,12 +486,15 @@
       </div>
       
       <div class="pricing-cta">
-        <button id="registerButtonWorkshop" class="notify-me-btn">
-          <span class="notify-btn-icon">🔔</span>
-          <span class="notify-btn-text">Notify Me When Open</span>
-        </button>
-        <p class="cta-subtext" style="color: #f59e0b; font-weight: 700; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.95rem;">
-          <i class="fas fa-calendar-alt"></i> Registrations Open on 3rd July
+        <a href="https://u.payu.in/4IknM3Yb3nEF" class="register-btn pulse-btn" id="registerButtonWorkshop" target="_blank" style="text-align: center; width: 100%; justify-content: center; box-sizing: border-box;">
+          <span class="btn-content">
+            <svg class="lightning-icon" viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: currentColor; display: inline-block; vertical-align: middle; margin-right: 8px;">
+              <path d="M12 2L2 14h9v8l10-12h-9z"></path>
+            </svg>Register Now
+          </span>
+        </a>
+        <p class="cta-subtext" style="color: #4CAF50; font-weight: 700; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.95rem;">
+          <i class="fas fa-check-circle"></i> Registrations are Open Now
         </p>
       </div>
     </div>
@@ -498,7 +504,7 @@
 <!-- Beautiful Floating status alerts placeholder -->
 <div id="notifyStatus" class="notify-status"></div>
 
-<div class="fixed-cta closed" id="cta-footer">
+<div class="fixed-cta" id="cta-footer">
   <div class="price-container">
     <span class="price-label">Program Fee</span>
     <div class="price">
@@ -506,21 +512,13 @@
       <span class="original">₹4999</span>
     </div>
   </div>
-  <button id="notifyMeFooterBtn" class="notify-me-footer-btn" style="margin-left: auto;">
-    <span class="notify-footer-icon">🔔</span>
-    <span class="notify-footer-text">Notify Me</span>
-  </button>
-</div>
-
-<!-- Postponed Announcement Modal -->
-<div id="postponedModal" class="postponed-modal">
-  <div class="postponed-modal-content">
-    <span id="postponedCloseBtn" class="postponed-close">&times;</span>
-    <h2>Announcement</h2>
-    <p>Sorry for the inconvenience.</p>
-    <p>Registrations for the batch commencing on <strong>10th July</strong> have been delayed. The registration process will now begin on <strong>5th July</strong>.</p>
-    <button id="postponedOkBtn" class="postponed-btn">Okay</button>
-  </div>
+  <a href="https://u.payu.in/4IknM3Yb3nEF" class="register-btn" id="registerButtonFooter" target="_blank" style="margin-left: auto; font-size: 16px; padding: 10px 25px; border-radius: 25px;">
+    <span class="btn-content">
+      <svg class="lightning-icon" viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: currentColor; display: inline-block; vertical-align: middle; margin-right: 6px;">
+        <path d="M12 2L2 14h9v8l10-12h-9z"></path>
+      </svg>Register Now
+    </span>
+  </a>
 </div>
 
 <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
@@ -738,9 +736,10 @@
       });
     }
 
-    initNotifyMe();
+    // initNotifyMe();
 
     // Show postponed modal on page load (occurs every visit/reload)
+    /*
     const postponedModal = document.getElementById('postponedModal');
     const postponedCloseBtn = document.getElementById('postponedCloseBtn');
     const postponedOkBtn = document.getElementById('postponedOkBtn');
@@ -765,6 +764,7 @@
         }
       });
     }
+    */
   });
 </script>
 <!-- Google Analytics -->
