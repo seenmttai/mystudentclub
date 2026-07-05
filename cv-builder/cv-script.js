@@ -2530,7 +2530,8 @@
             { file: 'navy-banner-resume.html', name: 'Navy Banner Resume', accent: '#1F487C', style: 'navybanner' },
             { file: 'teal-serif-grid.html', name: 'Teal Serif Grid', accent: '#074F6A', style: 'tealserif' },
             { file: 'serif-grid-ledger.html', name: 'Serif Grid Ledger', accent: '#1F487C', style: 'template27' },
-            { file: 'navy-serif-ledger.html', name: 'Navy Serif Ledger', accent: '#001F5F', style: 'template28' }
+            { file: 'navy-serif-ledger.html', name: 'Navy Serif Ledger', accent: '#001F5F', style: 'template28' },
+            { file: 'cambria-navy-ledger.html', name: 'Cambria Navy Ledger', accent: '#1F3760', style: 'template29' }
         ];
         const TEMPLATE_COLOR_PRESETS = ['#2b2b2b', '#0f6cbd', '#155e95', '#1f8f63', '#c0392b', '#7b4db3'];
 
