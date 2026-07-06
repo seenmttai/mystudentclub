@@ -659,8 +659,10 @@
             const tmp = document.createElement('div');
             tmp.innerHTML = convertMarkdownBoldToHTML(String(value));
             return (tmp.textContent || '')
-                .replace(/\u00a0/g, ' ')
-                .replace(/\s+/g, ' ')
+                .replace(/\r/g, '')
+                .split('\n')
+                .map(line => line.replace(/[^\S\r\n]+/g, ' ').trim())
+                .join('\n')
                 .trim();
         }
 
