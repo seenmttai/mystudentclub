@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -27,7 +27,17 @@
             <a href="/" class="brand-link">
                 <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
             </a>
+            <nav class="dv2-header-nav" aria-label="Primary">
+                <a href="/" class="dv2-nav-link active">Jobs</a>
+                <a href="/history.html" class="dv2-nav-link">Applications</a>
+                <a href="/learning-management-system/" class="dv2-nav-link">My Courses</a>
+                <a href="/cv-reviewer/" class="dv2-nav-link">CV Reviewer</a>
+                <a href="/contact.html" class="dv2-nav-link">Contact</a>
+            </nav>
             <div class="nav-actions">
+                <a href="/profile.html" id="dv2CompleteProfileBtn" class="dv2-complete-profile-btn">
+                    Complete Profile <span class="dv2-profile-percent" id="dv2ProfilePercent">0%</span>
+                </a>
                 <div class="auth-buttons-container"></div>
                 <button id="notificationsBtn" class="icon-button notification-icon-btn"
                     aria-label="Manage Notifications">
@@ -115,29 +125,31 @@
     </div>
 
     <main class="main-content-area">
-        <section class="banner-section">
-            <div class="carousel"></div>
-        </section>
 
         <nav class="portal-nav-bar">
             <a href="/" class="footer-tab">
+                <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                 <span>Industrial Training</span>
             </a>
             <a href="/ca-articleship-opportunities" class="footer-tab">
+                <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 <span>Articleship</span>
             </a>
             <a href="/semi-qualified-ca-jobs" class="footer-tab">
+                <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                 <span>Semi Qualified</span>
             </a>
             <a href="/ca-fresher-jobs" class="footer-tab">
+                <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
                 <span>CA Freshers</span>
             </a>
             <a href="/experienced-ca-jobs" class="footer-tab active">
+                <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                 <span>Experienced CA</span>
             </a>
         </nav>
 
-        <div class="job-portal-layout">
+        <div class="job-portal-layout dv2-has-rail">
             <aside class="filter-sidebar">
                 <div class="filter-sidebar-header">
                     <h3>Filters</h3>
@@ -150,14 +162,6 @@
                         <option value="salary_desc">Salary: High to Low</option>
                         <option value="salary_asc">Salary: Low to High</option>
                     </select>
-                </div>
-                <div class="filter-group">
-                    <label for="searchFilterDesktop">Keyword</label>
-                    <div class="search-bar-wrapper">
-                        <i class="fas fa-search search-button"></i>
-                        <input type="text" id="searchFilterDesktop" placeholder="Search jobs by keyword..."
-                            class="search-input-field">
-                    </div>
                 </div>
                 <div class="filter-group">
                     <label for="locationFilterDesktop">Location</label>
@@ -245,6 +249,35 @@
             </aside>
 
             <div class="job-listings-container">
+                <div class="dv2-top-search">
+                    <i class="fas fa-search" aria-hidden="true"></i>
+                    <input type="text" id="dv2TopSearchInput" placeholder="Search jobs, companies or keywords...">
+                    <button type="button" id="dv2TopSearchBtn" class="dv2-top-search-btn">Search</button>
+                </div>
+
+                <section class="banner-section">
+                    <div class="carousel"></div>
+                </section>
+
+                <div class="dv2-stats-row">
+                    <div class="dv2-stat-card">
+                        <div class="dv2-stat-icon dv2-stat-blue"><i class="fas fa-briefcase" aria-hidden="true"></i></div>
+                        <div class="dv2-stat-text"><strong id="dv2StatTotal">—</strong><span>Total Jobs</span></div>
+                    </div>
+                    <div class="dv2-stat-card">
+                        <div class="dv2-stat-icon dv2-stat-green"><i class="fas fa-chart-line" aria-hidden="true"></i></div>
+                        <div class="dv2-stat-text"><strong id="dv2StatNew">—</strong><span>New This Week</span></div>
+                    </div>
+                    <div class="dv2-stat-card">
+                        <div class="dv2-stat-icon dv2-stat-red"><i class="fas fa-building" aria-hidden="true"></i></div>
+                        <div class="dv2-stat-text"><strong id="dv2StatCompanies">—</strong><span>Companies Hiring</span></div>
+                    </div>
+                    <div class="dv2-stat-card">
+                        <div class="dv2-stat-icon dv2-stat-purple"><i class="fas fa-paper-plane" aria-hidden="true"></i></div>
+                        <div class="dv2-stat-text"><strong id="dv2StatApplications">—</strong><span>Applications Sent</span></div>
+                    </div>
+                </div>
+
                 <div class="mobile-controls">
                     <div class="search-bar-wrapper">
                         <i class="fas fa-search search-button"></i>
@@ -277,6 +310,52 @@
                         style="display: none; width: 30px; height: 30px; border-width: 3px;"></div>
                 </div>
             </div>
+
+            <aside class="dv2-right-rail">
+                <div class="dv2-rail-card">
+                    <h3>Career Programs</h3>
+                    <p class="dv2-rail-sub">Explore MSC programs to accelerate your CA career</p>
+                    <a href="/ca-industrial-training-program/" class="dv2-rail-link">
+                        <span class="dv2-rail-link-icon"><i class="fas fa-industry" aria-hidden="true"></i></span>
+                        <span class="dv2-rail-link-text">MSC Industrial Training Program</span>
+                        <i class="fas fa-chevron-right dv2-rail-arrow" aria-hidden="true"></i>
+                    </a>
+                    <a href="/articleship-program/" class="dv2-rail-link">
+                        <span class="dv2-rail-link-icon"><i class="fas fa-book-open" aria-hidden="true"></i></span>
+                        <span class="dv2-rail-link-text">MSC Articleship Program</span>
+                        <i class="fas fa-chevron-right dv2-rail-arrow" aria-hidden="true"></i>
+                    </a>
+                    <a href="/msc-ca-fresher-program/" class="dv2-rail-link">
+                        <span class="dv2-rail-link-icon"><i class="fas fa-graduation-cap" aria-hidden="true"></i></span>
+                        <span class="dv2-rail-link-text">MSC CA Freshers Program</span>
+                        <i class="fas fa-chevron-right dv2-rail-arrow" aria-hidden="true"></i>
+                    </a>
+                </div>
+
+                <div class="dv2-rail-card" id="dv2TrendingCard" style="display: none;">
+                    <h3>Trending Jobs</h3>
+                    <div id="dv2TrendingList"></div>
+                </div>
+
+                <div class="dv2-rail-card">
+                    <h3>Career Resources</h3>
+                    <a href="/ca-fresher-training-resources.html" class="dv2-rail-link">
+                        <span class="dv2-rail-link-icon"><i class="fas fa-file-alt" aria-hidden="true"></i></span>
+                        <span class="dv2-rail-link-text">CA Fresher Resources</span>
+                        <i class="fas fa-chevron-right dv2-rail-arrow" aria-hidden="true"></i>
+                    </a>
+                    <a href="/ca-industrial-training-resources.html" class="dv2-rail-link">
+                        <span class="dv2-rail-link-icon"><i class="fas fa-tools" aria-hidden="true"></i></span>
+                        <span class="dv2-rail-link-text">Industrial Training Resources</span>
+                        <i class="fas fa-chevron-right dv2-rail-arrow" aria-hidden="true"></i>
+                    </a>
+                    <a href="/ca-articleship-opportunities" class="dv2-rail-link">
+                        <span class="dv2-rail-link-icon"><i class="fas fa-briefcase" aria-hidden="true"></i></span>
+                        <span class="dv2-rail-link-text">Articleship Resources</span>
+                        <i class="fas fa-chevron-right dv2-rail-arrow" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </aside>
         </div>
     </main>
 

@@ -1,0 +1,1987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Articleship Firm Reviews - My Student Club</title>
+  <meta name="description" content="Read and write anonymous reviews of CA articleship firms — stipend, work-life balance, learning exposure, and culture.">
+  <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/scripts/portal-style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-main);
+      background: #f8fafc;
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Header Glassmorphism & Unified Search/Filter Overrides ── */
+    .site-header {
+      background: rgba(255, 255, 255, 0.85) !important;
+      backdrop-filter: blur(16px) !important;
+      -webkit-backdrop-filter: blur(16px) !important;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02) !important;
+    }
+    .header-container {
+      max-width: 1440px !important;
+    }
+    .header-search-container {
+      display: flex;
+      align-items: center;
+      background: rgba(241, 245, 249, 0.7);
+      border: 1.5px solid #e2e8f0;
+      border-radius: 999px;
+      padding: 0.25rem;
+      flex: 1;
+      max-width: 760px;
+      margin: 0 2rem;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .header-search-container:focus-within {
+      background: #fff;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+    }
+    .header-search-container .afr-search-field {
+      flex: 1.5;
+      position: relative;
+    }
+    .header-search-container .afr-search-field i {
+      position: absolute;
+      left: 1.15rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #94a3b8;
+      font-size: 0.85rem;
+      transition: color 0.2s ease;
+    }
+    .header-search-container .afr-search-field input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      padding: 0.4rem 0.5rem 0.4rem 2.5rem;
+      font-family: var(--font-main);
+      font-size: 0.8125rem;
+      color: #0f172a;
+      outline: none;
+    }
+    .header-filters {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      flex: 2.2;
+    }
+    /* Custom Dropdown Container */
+    .custom-dropdown {
+      position: relative;
+      flex: 1;
+      display: inline-block;
+      min-width: 0;
+      border-left: 1.5px solid #e2e8f0;
+    }
+    .dropdown-trigger {
+      width: 100%;
+      background: transparent;
+      border: none;
+      padding: 0.4rem 1.25rem 0.4rem 0.75rem;
+      font-family: var(--font-main);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.35rem;
+      cursor: pointer;
+      outline: none;
+      transition: color 0.2s ease, background 0.2s ease;
+      text-align: left;
+      border-radius: 0;
+    }
+    .dropdown-trigger:hover {
+      color: #1e293b;
+    }
+    .dropdown-trigger .trigger-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .dropdown-trigger i {
+      font-size: 0.65rem;
+      color: #94a3b8;
+      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      margin-left: 0.25rem;
+    }
+    .custom-dropdown.active .dropdown-trigger i {
+      transform: rotate(180deg);
+      color: #1d4ed8;
+    }
+
+    /* Floating Menu styling */
+    .custom-dropdown-menu {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      min-width: 160px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 14px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08), 0 8px 16px -6px rgba(0,0,0,0.03);
+      z-index: 1000;
+      max-height: 240px;
+      overflow-y: auto;
+      opacity: 0;
+      transform: translateY(-8px) scale(0.96);
+      pointer-events: none;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 0.35rem;
+      scrollbar-width: thin;
+      scrollbar-color: #cbd5e1 transparent;
+    }
+    .custom-dropdown.active .custom-dropdown-menu {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    /* Dropdown options */
+    .custom-dropdown-item {
+      padding: 0.45rem 0.75rem;
+      font-family: var(--font-main);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #475569;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .custom-dropdown-item:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    .custom-dropdown-item.selected {
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+    .custom-dropdown-item.selected::after {
+      content: '✓';
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+    .custom-dropdown-menu::-webkit-scrollbar {
+      width: 4px;
+    }
+    .custom-dropdown-menu::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 99px;
+    }
+
+    /* Mobile sticky filter bar (shown below header on mobile) */
+    .mobile-filter-bar {
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .header-search-container {
+        margin: 0 1rem;
+      }
+      .header-filters {
+        display: none; /* hide from header, show on mobile bar */
+      }
+      .mobile-filter-bar {
+        display: flex;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 1px solid #e2e8f0;
+        position: sticky;
+        top: 70px;
+        z-index: 99;
+        padding: 0.6rem 1rem;
+        gap: 0.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      }
+      .mobile-filter-bar .custom-dropdown {
+        flex: 1;
+        border-left: none;
+      }
+      .mobile-filter-bar .dropdown-trigger {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 999px;
+        padding: 0.45rem 1rem;
+      }
+      .mobile-filter-bar .dropdown-trigger:hover {
+        background: #f1f5f9;
+      }
+    }
+    @media (max-width: 480px) {
+      .brand-logo {
+        content: url('/assets/icon-70x70.png');
+        height: 32px !important;
+        width: 32px !important;
+      }
+      .header-search-container {
+        margin: 0 0.5rem;
+      }
+    }
+
+    /* ── Overhauled Body Layout (2-Column Dashboard) ── */
+    .afr-body-wrapper {
+      background: #f8fafc;
+      width: 100%;
+    }
+    .afr-body-container {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 2rem;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+    }
+    .afr-sidebar {
+      position: sticky;
+      top: 90px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.875rem;
+      align-self: start;
+      max-height: calc(100vh - 110px);
+      overflow-y: auto;
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none; /* IE and Edge */
+    }
+    .afr-sidebar::-webkit-scrollbar {
+      display: none; /* Chrome, Safari and Opera */
+    }
+    .afr-sidebar-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 1.15rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+    }
+    .afr-sidebar-card h3 {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .afr-sidebar-card h3 i {
+      color: #1d4ed8;
+    }
+    .afr-sidebar-card .card-desc {
+      font-size: 0.725rem;
+      color: #94a3b8;
+      font-weight: 600;
+      margin-top: -0.35rem;
+      margin-bottom: 0.75rem;
+    }
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #f1f5f9;
+      padding: 0.55rem 0;
+    }
+    .stat-item:last-child {
+      border-bottom: none;
+    }
+    .stat-lbl {
+      font-size: 0.775rem;
+      color: #64748b;
+      font-weight: 600;
+    }
+    .stat-val {
+      font-size: 0.875rem;
+      color: #0f172a;
+      font-weight: 700;
+    }
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+    .tag-pill-btn {
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      font-family: var(--font-main);
+      font-size: 0.725rem;
+      font-weight: 600;
+      border-radius: 999px;
+      padding: 0.3rem 0.7rem;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      outline: none;
+    }
+    .tag-pill-btn:hover {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1d4ed8;
+      transform: translateY(-1px);
+    }
+    .tag-pill-btn.active {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(29,78,216,0.25);
+    }
+    .clear-filters-btn {
+      background: none;
+      border: none;
+      color: #ef4444;
+      font-family: var(--font-main);
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: color 0.15s ease;
+    }
+    .clear-filters-btn:hover {
+      color: #dc2626;
+    }
+
+    /* CTA Card styles */
+    .cta-card {
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%) !important;
+      border: none !important;
+    }
+    .cta-card-content h4 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.25rem;
+    }
+    .cta-card-content p {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.4;
+      margin-bottom: 1rem;
+    }
+    .afr-btn-sidebar {
+      background: #fff;
+      border: none;
+      color: #1d4ed8;
+      font-family: var(--font-main);
+      font-size: 0.775rem;
+      font-weight: 700;
+      padding: 0.55rem 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      transition: all 0.2s ease;
+    }
+    .afr-btn-sidebar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+
+    /* ── Main Content Grid Overrides ── */
+    .afr-main-content {
+      min-width: 0;
+    }
+    .afr-count-bar {
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .afr-count-label {
+      font-size: 0.875rem;
+      color: #64748b;
+      font-weight: 600;
+      background: #f1f5f9;
+      padding: 0.35rem 0.875rem;
+      border-radius: 999px;
+      border: 1px solid #e2e8f0;
+      display: inline-block;
+    }
+    .active-filter-badge {
+      font-size: 0.75rem;
+      color: #1d4ed8;
+      font-weight: 700;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 0.35rem 0.875rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* ── Modern Firm Cards Styling ── */
+    .afr-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .afr-card {
+      background: #fff !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 12px !important;
+      padding: 0.875rem !important;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.02) !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem !important;
+    }
+    .afr-card::before {
+      display: none !important;
+    }
+    .afr-card:hover {
+      transform: translateY(-6px) scale(1.01) !important;
+      box-shadow: 0 20px 35px -10px rgba(59, 130, 246, 0.1) !important;
+      border-color: rgba(59, 130, 246, 0.3) !important;
+    }
+    .afr-firm-avatar {
+      width: 48px !important;
+      height: 48px !important;
+      background: #ffffff !important;
+      border: 1.5px solid #e2e8f0 !important;
+      border-radius: 14px !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #2563eb !important;
+      font-size: 1.375rem !important;
+      font-weight: 800 !important;
+      flex-shrink: 0 !important;
+      letter-spacing: -0.02em !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02) !important;
+    }
+    .afr-card-name {
+      font-size: 1.125rem !important;
+      font-weight: 700 !important;
+      color: #0f172a !important;
+      margin-bottom: 0.15rem !important;
+    }
+    .afr-card-loc {
+      font-size: 0.775rem !important;
+      color: #64748b !important;
+      font-weight: 500;
+    }
+    .afr-card-loc i {
+      color: #94a3b8;
+    }
+    .afr-card-metrics {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .afr-card-rating {
+      background: #f8fafc;
+      padding: 0.25rem 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #f1f5f9;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem !important;
+    }
+    .afr-rating-num {
+      font-size: 1.1rem !important;
+      font-weight: 800 !important;
+      color: #0f172a !important;
+    }
+    .afr-rating-right {
+      display: flex;
+      flex-direction: column;
+      gap: 0.05rem;
+    }
+    .afr-stars-text {
+      color: #f59e0b !important;
+      font-size: 0.7rem !important;
+      letter-spacing: 0.2px !important;
+      line-height: 1 !important;
+    }
+    .afr-review-count {
+      font-size: 0.65rem !important;
+      color: #64748b !important;
+      font-weight: 600 !important;
+      line-height: 1 !important;
+    }
+    .afr-card-stipend {
+      font-size: 0.775rem !important;
+      font-weight: 700 !important;
+      color: #065f46 !important;
+      background: #f0fdf4 !important;
+      border: 1px solid #dcfce7 !important;
+      padding: 0.35rem 0.875rem !important;
+      border-radius: 999px !important;
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .afr-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem !important;
+      margin-top: 0.25rem;
+    }
+    .afr-tag {
+      font-size: 0.725rem !important;
+      font-weight: 600 !important;
+      color: #334155 !important;
+      background: #f1f5f9 !important;
+      border: 1px solid #e2e8f0 !important;
+      padding: 0.25rem 0.65rem !important;
+      border-radius: 999px !important;
+      transition: all 0.2s ease;
+    }
+    .afr-tag:hover {
+      background: #e2e8f0 !important;
+    }
+    .afr-card-footer {
+      border-top: 1px solid #f1f5f9 !important;
+      padding-top: 1rem !important;
+      margin-top: auto !important;
+    }
+    .afr-card-cta {
+      font-size: 0.8125rem !important;
+      color: #2563eb !important;
+      font-weight: 700 !important;
+    }
+    .afr-card-arrow {
+      background: #eff6ff !important;
+      color: #2563eb !important;
+      transition: all 0.25s ease !important;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .afr-card:hover .afr-card-arrow {
+      background: #2563eb !important;
+      color: #fff !important;
+      transform: translateX(3px);
+    }
+
+    @media (max-width: 1024px) {
+      .afr-body-container {
+        grid-template-columns: 1fr;
+        padding: 2rem 1rem 5rem;
+      }
+      .afr-sidebar {
+        position: static;
+      }
+      .afr-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+
+
+    /* ── Compact Page Title Row ── */
+    .afr-page-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 1rem;
+      gap: 1.5rem;
+    }
+    .afr-page-title-row h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 0.35rem;
+    }
+    .afr-page-title-row p {
+      font-size: 0.875rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+    .afr-count-badge {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      white-space: nowrap;
+      display: inline-block;
+      box-shadow: 0 2px 8px rgba(29, 78, 216, 0.08);
+    }
+    @media (max-width: 576px) {
+      .afr-page-title-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      .afr-count-badge {
+        width: auto;
+      }
+    }
+    .afr-count-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    .afr-count-label {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+
+    /* ── Firm grid ────────────────────────────────────────────────────── */
+    .afr-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    /* ── Firm card ────────────────────────────────────────────────────── */
+    .afr-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 0.875rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      text-decoration: none;
+      color: inherit;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: box-shadow 0.22s ease, transform 0.22s ease, border-color 0.15s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    /* Colored top accent stripe */
+    .afr-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--card-color, var(--primary-brand));
+      border-radius: 18px 18px 0 0;
+    }
+    .afr-card:hover {
+      box-shadow: 0 20px 60px -10px rgba(0,0,0,0.13);
+      transform: translateY(-5px);
+      border-color: transparent;
+    }
+    .afr-card:focus-visible {
+      outline: 2px solid var(--primary-brand);
+      outline-offset: 2px;
+    }
+
+    .afr-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .afr-firm-avatar {
+      width: 48px;
+      height: 48px;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #2563eb;
+      font-size: 1.375rem;
+      font-weight: 800;
+      flex-shrink: 0;
+      letter-spacing: -0.02em;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+    .afr-card-info { flex: 1; min-width: 0; }
+    .afr-card-name {
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.3;
+      margin-bottom: 0.25rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .afr-card-loc {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* Rating Badge on top right */
+    .afr-card-badge-rating {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: #fffbeb;
+      color: #d97706;
+      border: 1px solid #fef3c7;
+      font-size: 0.775rem;
+      font-weight: 700;
+      padding: 0.25rem 0.55rem;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+    .afr-card-badge-rating i {
+      font-size: 0.7rem;
+      color: #f59e0b;
+    }
+
+    /* Card body for tag rows */
+    .afr-card-body {
+      padding: 0.15rem 0;
+    }
+
+    /* Stipend pill inline with tags */
+    .afr-card-stipend {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #065f46;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      padding: 0.2rem 0.625rem;
+      border-radius: var(--radius-full);
+      white-space: nowrap;
+    }
+
+    /* Culture tags */
+    .afr-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.375rem;
+    }
+    .afr-tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: #334155;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      padding: 0.2rem 0.625rem;
+      border-radius: var(--radius-full);
+      white-space: nowrap;
+    }
+
+    /* Card Footer styling */
+    .afr-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 0.75rem;
+      border-top: 1px solid #f1f5f9;
+      margin-top: auto;
+    }
+    .afr-review-count {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      line-height: 1;
+    }
+    .afr-card-cta {
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: #1d4ed8;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      letter-spacing: 0.01em;
+      transition: color 0.15s ease;
+    }
+    .afr-card-cta i {
+      transition: transform 0.2s ease;
+      font-size: 0.75rem;
+    }
+    .afr-card:hover .afr-card-cta i {
+      transform: translateX(3px);
+    }
+
+    /* ── States ───────────────────────────────────────────────────────── */
+    .afr-loading {
+      grid-column: 1/-1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      padding: 5rem 1rem;
+      color: var(--text-muted);
+    }
+    .afr-spinner {
+      width: 38px; height: 38px;
+      border: 3px solid #e2e8f0;
+      border-top-color: var(--primary-brand);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .afr-empty {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 4rem 1rem;
+    }
+    .afr-empty-icon {
+      font-size: 2.25rem !important;
+      margin-bottom: 1rem !important;
+      display: block !important;
+      opacity: 0.45 !important;
+      color: #94a3b8 !important;
+    }
+    .afr-empty h3 {
+      font-size: 1.125rem;
+      color: #0f172a;
+      margin-bottom: 0.35rem;
+      font-weight: 700;
+    }
+    .afr-empty p {
+      font-size: 0.8125rem;
+      color: #64748b;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+    }
+    .afr-btn-empty-state {
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
+      color: #fff;
+      font-family: var(--font-main);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      padding: 0.55rem 1.15rem;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.875rem;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.15);
+      transition: all 0.2s ease;
+    }
+    .afr-btn-empty-state:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(29, 78, 216, 0.25);
+    }
+    .afr-btn-empty-state i {
+      font-size: 0.8125rem !important;
+      display: inline-block !important;
+      opacity: 1 !important;
+      color: #fff !important;
+      margin-bottom: 0 !important;
+    }
+    .afr-error {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #dc2626;
+    }
+    .afr-error i { font-size: 2rem; margin-bottom: 0.75rem; display: block; }
+
+    /* ── Modal ────────────────────────────────────────────────────────── */
+    .afr-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(10,16,32,0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      overflow-y: auto;
+      padding: 2rem 1rem;
+      align-items: flex-start;
+      justify-content: center;
+    }
+    .afr-modal.active { display: flex; }
+
+    .afr-modal-card {
+      background: #fff;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 960px; /* Widened to 960px */
+      margin: 1.5rem auto;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.22);
+      overflow: visible;
+      display: block;
+      animation: modal-in 0.22s ease-out;
+    }
+    @keyframes modal-in {
+      from { opacity: 0; transform: translateY(20px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .afr-modal-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      padding: 1.75rem 1.75rem 0;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 1.25rem;
+    }
+    .afr-modal-header h2 { font-size: 1.25rem; font-weight: 700; }
+    .afr-modal-header p {
+      font-size: 0.8rem;
+      color: #059669;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 0.2rem;
+    }
+    .afr-modal-close {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      flex-shrink: 0;
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+    .afr-modal-close:hover { background: #fee2e2; color: #dc2626; border-color: #fecaca; }
+
+    #afr-login-prompt { padding: 2.5rem 1.75rem; text-align: center; }
+    .afr-login-gate i { font-size: 2.5rem; color: #cbd5e1; margin-bottom: 1rem; display: block; }
+    .afr-login-gate p { color: var(--text-secondary); margin-bottom: 1.25rem; }
+
+    #afr-form {
+      padding: 1.5rem 1.75rem 1.75rem;
+      margin: 0;
+    }
+    #afr-fieldset {
+      border: none;
+      padding: 0;
+      margin: 0;
+      overflow: visible;
+    }
+    .afr-form-section { margin-bottom: 1.15rem; }
+    .afr-section-title {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: #94a3b8;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .afr-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; }
+    .afr-form-row-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.875rem; }
+    .afr-field { display: flex; flex-direction: column; gap: 0.35rem; }
+    .afr-field label { font-size: 0.8125rem; font-weight: 600; color: #475569; }
+    .afr-field input,
+    .afr-field textarea {
+      font-family: var(--font-main);
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 0.65rem 0.875rem;
+      outline: none;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .afr-field input:focus,
+    .afr-field textarea:focus {
+      border-color: var(--primary-brand);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+      background: #fff;
+    }
+    .afr-field textarea {
+      min-height: 54px;
+      height: 54px;
+      resize: none;
+    }
+
+    .afr-ratings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+    @media (max-width: 600px) {
+      .afr-ratings-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .afr-rating-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.4rem 0.75rem;
+      background: #f8fafc;
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+    }
+    .afr-rating-label { font-size: 0.875rem; font-weight: 600; color: #475569; flex-shrink: 0; }
+    .afr-rating-label .req { color: #dc2626; }
+    .afr-star-input { display: flex; align-items: center; gap: 0.1rem; }
+    .afr-star-input button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.2rem;
+      font-size: 1.375rem;
+      line-height: 1;
+      color: #cbd5e1;
+      transition: color var(--transition-fast), transform var(--transition-fast);
+    }
+    .afr-star-input button:hover,
+    .afr-star-input button.filled { color: #f59e0b; }
+    .afr-star-input button:hover { transform: scale(1.18); }
+
+    .afr-tag-group { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.625rem; }
+    .afr-tag-pill { position: relative; }
+    .afr-tag-pill input { position: absolute; opacity: 0; pointer-events: none; }
+    .afr-tag-pill span {
+      display: inline-block;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      padding: 0.35rem 0.875rem;
+      border-radius: var(--radius-full);
+      border: 1.5px solid #e2e8f0;
+      color: #64748b;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      border: 1px solid #e2e8f0;
+      color: #64748b;
+      cursor: pointer;
+    }
+    .afr-tag-pill input:checked + span { background: #eff6ff; border-color: #3b82f6; color: #2563eb; }
+
+    .afr-form-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 1rem;
+      margin-top: 1.15rem;
+      gap: 1rem;
+    }
+    .afr-form-status { font-size: 0.8125rem; min-height: 1.2em; margin-bottom: 0; font-weight: 600; flex: 1; }
+    .afr-form-status.ok { color: #059669; }
+    .afr-form-status.err { color: #dc2626; }
+ 
+    .afr-btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: #fff;
+      font-family: var(--font-main);
+      font-size: 0.9375rem;
+      font-weight: 700;
+      padding: 0.65rem 1.5rem;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+      box-shadow: 0 4px 16px rgba(37,99,235,0.35);
+    }
+    .afr-btn-primary:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(37,99,235,0.4); }
+    .afr-btn-primary:active { transform: translateY(0); }
+    .afr-btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ── Responsive ───────────────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .afr-hero { padding: 4rem 1.5rem 3.5rem; }
+      .afr-body { padding: 1.5rem 1rem 5rem; }
+      .afr-search-bar { padding: 0.75rem 1rem; }
+      .afr-grid { grid-template-columns: 1fr; }
+      .afr-form-row { grid-template-columns: 1fr; }
+      .afr-search-inner { gap: 0.5rem; }
+      .afr-filter-select { flex: 1; }
+    }
+    @media (min-width: 1280px) {
+      .afr-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/" class="brand-link">
+        <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
+      </a>
+      <div class="header-search-container">
+        <div class="afr-search-field">
+          <i class="fas fa-search"></i>
+          <input id="search-input" type="search" placeholder="Search firms…" aria-label="Search firm name">
+        </div>
+        <div class="header-filters">
+          <select id="filter-location" class="header-filter-select" aria-label="Filter by location">
+            <option value="">All locations</option>
+          </select>
+          <select id="filter-stipend" class="header-filter-select" aria-label="Filter by stipend">
+            <option value="">Any stipend</option>
+            <option value="5000">₹5,000+</option>
+            <option value="10000">₹10,000+</option>
+            <option value="15000">₹15,000+</option>
+            <option value="20000">₹20,000+</option>
+          </select>
+          <select id="sort-by" class="header-filter-select" aria-label="Sort">
+            <option value="rating">Highest rated</option>
+            <option value="count">Most reviewed</option>
+            <option value="newest">Newest</option>
+          </select>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <div class="auth-buttons-container"></div>
+        <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="expanded-menu" id="expandedMenu">
+    <button class="icon-button menu-close-btn" id="menuCloseBtn" aria-label="Close menu">
+      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+    <div class="menu-items-container">
+      <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display:none">My Courses</a>
+      <a href="/history.html" class="menu-item" id="history-nav-link" style="display:none">My Applications</a>
+      <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
+      <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
+      <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
+      <div class="menu-item-dropdown">
+        <button class="menu-item" id="resourcesDropdownBtn">
+          Free Resources
+          <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div class="dropdown-content" id="resourcesDropdown">
+          <a href="/ca-fresher-training-resources.html" class="dropdown-item">CA Fresher</a>
+          <a href="/ca-industrial-training-resources.html" class="dropdown-item">Industrial Training</a>
+          <a href="/ca-articleship-opportunities" class="dropdown-item">Articleship</a>
+        </div>
+      </div>
+      <div class="menu-item-dropdown">
+        <button class="menu-item" id="toolsDropdownBtn">
+          Tools
+          <svg class="dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div class="dropdown-content" id="toolsDropdown">
+          <a href="/articleship-firm-reviews.html" class="dropdown-item active" aria-current="page">Articleship Firm Reviews</a>
+          <a href="/cv-reviewer/" class="dropdown-item">AI CV Reviewer</a>
+          <a href="/ai-interview.html" class="dropdown-item">AI Mock Interview Bot</a>
+          <a href="/ICAI-Campus-Shortlisting-Predictor/index.html" class="dropdown-item">Campus Shortlisting Predictor</a>
+        </div>
+      </div>
+      <a href="/contact.html" class="menu-item">Contact Us</a>
+    </div>
+  </div>
+
+
+
+  <!-- Mobile-only sticky filter bar -->
+  <div class="mobile-filter-bar">
+    <select id="mobile-filter-location" class="mobile-filter-select" aria-label="Filter by location">
+      <option value="">All locations</option>
+    </select>
+    <select id="mobile-filter-stipend" class="mobile-filter-select" aria-label="Filter by stipend">
+      <option value="">Any stipend</option>
+      <option value="5000">₹5,000+</option>
+      <option value="10000">₹10,000+</option>
+      <option value="15000">₹15,000+</option>
+      <option value="20000">₹20,000+</option>
+    </select>
+    <select id="mobile-sort-by" class="mobile-filter-select" aria-label="Sort">
+      <option value="rating">Highest rated</option>
+      <option value="count">Most reviewed</option>
+      <option value="newest">Newest</option>
+    </select>
+  </div>
+
+  <!-- Overhauled 2-Column Dashboard Body -->
+  <div class="afr-body-wrapper">
+    <div class="afr-body-container">
+      
+      <!-- LEFT Sidebar -->
+      <aside class="afr-sidebar">
+        <!-- Dynamic Stats Card -->
+        <div class="afr-sidebar-card stats-card">
+          <h3><i class="fas fa-chart-simple"></i> Platform Stats</h3>
+          <div class="stat-item">
+            <span class="stat-lbl">Anonymous Reviews</span>
+            <span class="stat-val" id="stat-total-reviews">—</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-lbl">Average Stipend</span>
+            <span class="stat-val" id="stat-avg-stipend">—</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-lbl">Reviewed Locations</span>
+            <span class="stat-val" id="stat-locations-count">—</span>
+          </div>
+        </div>
+
+        <!-- Interactive Tag Cloud Card -->
+        <div class="afr-sidebar-card tags-card">
+          <h3><i class="fas fa-tags"></i> Popular Tags</h3>
+          <p class="card-desc">Click tag to filter reviews</p>
+          <div class="tag-cloud" id="tag-cloud">
+            <button class="tag-pill-btn" data-tag="Good Mentorship">Good Mentorship</button>
+            <button class="tag-pill-btn" data-tag="Heavy Workload">Heavy Workload</button>
+            <button class="tag-pill-btn" data-tag="Good Stipend">Good Stipend</button>
+            <button class="tag-pill-btn" data-tag="Friendly Team">Friendly Team</button>
+            <button class="tag-pill-btn" data-tag="Great Exposure">Great Exposure</button>
+            <button class="tag-pill-btn" data-tag="Study Leave">Study Leave</button>
+          </div>
+          <button id="clear-tag-btn" class="clear-filters-btn" style="display: none;">
+            <i class="fas fa-xmark"></i> Clear tag filter
+          </button>
+        </div>
+
+        <!-- Call-to-action Card -->
+        <div class="afr-sidebar-card cta-card">
+          <div class="cta-card-content">
+            <h4>Reviewed a firm?</h4>
+            <p>Help other CA students by posting an anonymous review.</p>
+            <button id="sidebar-write-btn" class="afr-btn-sidebar"><i class="fas fa-pen"></i> Write a Review</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- RIGHT Content -->
+      <main class="afr-main-content">
+        <!-- Compact Page Header -->
+        <div class="afr-page-title-row">
+          <div>
+            <h1>Articleship Firm Reviews</h1>
+            <p>Anonymous reviews by CA articles from across India</p>
+          </div>
+          <span id="title-firms-count" class="afr-count-badge" style="display: none;"></span>
+        </div>
+
+        <div class="afr-count-bar">
+          <span id="active-tag-badge" class="active-filter-badge" style="display: none;"></span>
+        </div>
+        <div class="afr-grid" id="firm-list" aria-live="polite"></div>
+      </main>
+
+    </div>
+  </div>
+
+  <!-- Write a review modal -->
+  <div id="review-form-modal" class="afr-modal" aria-hidden="true">
+    <div class="afr-modal-card" role="dialog" aria-modal="true" aria-labelledby="afr-modal-title">
+
+      <div class="afr-modal-header">
+        <div>
+          <h2 id="afr-modal-title">Write a Review</h2>
+          <p><i class="fas fa-user-secret"></i> Anonymous · your name is never shown</p>
+        </div>
+        <button class="afr-modal-close" id="afr-modal-close" aria-label="Close">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div id="afr-login-prompt" hidden>
+        <div class="afr-login-gate">
+          <i class="fas fa-lock"></i>
+          <p>Log in to post an anonymous review</p>
+          <a class="afr-btn-primary" href="/login.html" style="max-width:200px;margin:0 auto">Log in</a>
+        </div>
+      </div>
+
+      <form id="afr-form">
+        <fieldset id="afr-fieldset">
+
+          <div class="afr-form-section">
+            <h3 class="afr-section-title">Firm Details</h3>
+            <div class="afr-form-row-4">
+              <div class="afr-field">
+                <label for="f-firm">Firm name <span style="color:#dc2626">*</span></label>
+                <input id="f-firm" name="firm_name" required placeholder="e.g., Deloitte India">
+              </div>
+              <div class="afr-field">
+                <label for="f-location">Location <span style="color:#dc2626">*</span></label>
+                <input id="f-location" name="location" required placeholder="e.g., Mumbai">
+              </div>
+              <div class="afr-field">
+                <label for="f-role">Your role</label>
+                <input id="f-role" name="role_title" placeholder="e.g., Audit Article">
+              </div>
+              <div class="afr-field">
+                <label for="f-stipend">Stipend (₹)</label>
+                <input id="f-stipend" name="stipend" type="number" min="0" placeholder="e.g., 12000">
+              </div>
+            </div>
+          </div>
+
+          <div class="afr-form-section">
+            <h3 class="afr-section-title">Your Ratings</h3>
+            <div class="afr-ratings-grid">
+              <div class="afr-rating-row">
+                <span class="afr-rating-label">Overall <span class="req">*</span></span>
+                <div class="afr-star-input" data-name="overall_rating" data-required="true"></div>
+              </div>
+              <div class="afr-rating-row">
+                <span class="afr-rating-label">Work-Life Balance</span>
+                <div class="afr-star-input" data-name="work_life_balance_rating"></div>
+              </div>
+              <div class="afr-rating-row">
+                <span class="afr-rating-label">Learning &amp; Exposure</span>
+                <div class="afr-star-input" data-name="learning_exposure_rating"></div>
+              </div>
+              <div class="afr-rating-row">
+                <span class="afr-rating-label">Stipend Satisfaction</span>
+                <div class="afr-star-input" data-name="stipend_satisfaction_rating"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="afr-form-section">
+            <h3 class="afr-section-title">Your Experience</h3>
+            <div class="afr-field" style="margin-bottom:0.875rem">
+              <label for="f-review">Your review</label>
+              <textarea id="f-review" name="review_text" rows="4" placeholder="Share your honest experience — hours, work type, management style…"></textarea>
+            </div>
+            <div class="afr-form-row">
+              <div class="afr-field">
+                <label for="f-pros">Pros</label>
+                <textarea id="f-pros" name="pros" rows="2" placeholder="What's great here?"></textarea>
+              </div>
+              <div class="afr-field">
+                <label for="f-cons">Cons</label>
+                <textarea id="f-cons" name="cons" rows="2" placeholder="What could be better?"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="afr-form-section">
+            <h3 class="afr-section-title">Culture</h3>
+            <div class="afr-recommend-row">
+              <label>
+                <input type="checkbox" name="would_recommend">
+                I would recommend this firm to other CA students
+              </label>
+            </div>
+            <div class="afr-tag-group">
+              <label class="afr-tag-pill"><input type="checkbox" name="culture_tags" value="Good Mentorship"><span>Good Mentorship</span></label>
+              <label class="afr-tag-pill"><input type="checkbox" name="culture_tags" value="Heavy Workload"><span>Heavy Workload</span></label>
+              <label class="afr-tag-pill"><input type="checkbox" name="culture_tags" value="Good Stipend"><span>Good Stipend</span></label>
+              <label class="afr-tag-pill"><input type="checkbox" name="culture_tags" value="Friendly Team"><span>Friendly Team</span></label>
+              <label class="afr-tag-pill"><input type="checkbox" name="culture_tags" value="Great Exposure"><span>Great Exposure</span></label>
+              <label class="afr-tag-pill"><input type="checkbox" name="culture_tags" value="Study Leave"><span>Study Leave</span></label>
+            </div>
+          </div>
+
+          <div class="afr-form-footer">
+            <p id="afr-form-status" class="afr-form-status" role="status"></p>
+            <button type="submit" class="afr-btn-primary">
+              <i class="fas fa-paper-plane"></i> Submit Anonymous Review
+            </button>
+          </div>
+
+        </fieldset>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    async function getCurrentSession() {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      return session || null;
+    }
+
+    // ── Sidemenu ──────────────────────────────────────────────────────────
+    const menuButton = document.getElementById('menuButton');
+    const expandedMenu = document.getElementById('expandedMenu');
+    const menuCloseBtn = document.getElementById('menuCloseBtn');
+    menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
+    menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+    document.addEventListener('click', (e) => {
+      if (expandedMenu.classList.contains('active') &&
+          !expandedMenu.contains(e.target) && !menuButton.contains(e.target))
+        expandedMenu.classList.remove('active');
+    });
+    document.querySelectorAll('.menu-item-dropdown > .menu-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const panel = btn.nextElementSibling;
+        const icon = btn.querySelector('.dropdown-icon');
+        if (panel) panel.classList.toggle('active');
+        if (icon) icon.classList.toggle('open');
+      });
+    });
+
+    // ── Helpers ───────────────────────────────────────────────────────────
+    function escapeHTML(s) {
+      return String(s ?? '').replace(/[&<>"']/g, c =>
+        ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    }
+
+    const AVATAR_COLORS = ['#1e3a8a','#1d4ed8','#2563eb','#0284c7','#475569','#334155'];
+    function firmColor(name) {
+      let h = 0;
+      for (const c of String(name)) h = (h * 31 + c.charCodeAt(0)) & 0x7fffffff;
+      return AVATAR_COLORS[h % AVATAR_COLORS.length];
+    }
+
+    function starsHTML(value) {
+      const full = Math.round(value);
+      let html = '';
+      for (let i = 1; i <= 5; i++)
+        html += `<i class="${i <= full ? 'fas' : 'far'} fa-star"></i>`;
+      return html;
+    }
+
+    function avg(nums) {
+      const xs = nums.filter(n => typeof n === 'number');
+      return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0;
+    }
+
+    // ── Data ──────────────────────────────────────────────────────────────
+    async function fetchAllReviews() {
+      const { data, error } = await supabaseClient
+        .from('articleship_firm_reviews_public')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data || [];
+    }
+
+    function groupByFirm(reviews) {
+      const map = new Map();
+      for (const r of reviews) {
+        const key = r.firm_name.trim().toLowerCase();
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(r);
+      }
+      return [...map.values()].map(rs => {
+        const tagCounts = {};
+        rs.forEach(r => (r.culture_tags || []).forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; }));
+        const topTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 3).map(e => e[0]);
+        const stipends = rs.map(r => r.stipend).filter(s => typeof s === 'number');
+        return {
+          firmName: rs[0].firm_name,
+          location: rs[0].location,
+          count: rs.length,
+          avgOverall: avg(rs.map(r => r.overall_rating)),
+          avgStipend: stipends.length ? Math.round(stipends.reduce((a, b) => a + b, 0) / stipends.length) : null,
+          topTags,
+          reviews: rs,
+        };
+      });
+    }
+
+    let FIRMS = [];
+
+    function renderFirmList(firms) {
+      const host = document.getElementById('firm-list');
+      const titleCount = document.getElementById('title-firms-count');
+      if (titleCount) {
+        if (firms.length > 0) {
+          titleCount.textContent = `${firms.length} ${firms.length === 1 ? 'firm' : 'firms'} found`;
+          titleCount.style.display = 'inline-block';
+        } else {
+          titleCount.style.display = 'none';
+        }
+      }
+
+      if (!firms.length) {
+        const q = document.getElementById('search-input').value.trim();
+        let titleText = 'No firms found';
+        let descText = 'Be the first to add a review for your firm.';
+        if (q) {
+          titleText = `"${escapeHTML(q)}" is not available`;
+          descText = `Be the first one to write a review for ${escapeHTML(q)}!`;
+        }
+        
+        host.innerHTML = `
+          <div class="afr-empty">
+            <i class="fas fa-building-circle-exclamation afr-empty-icon"></i>
+            <h3>${titleText}</h3>
+            <p>${descText}</p>
+            <button id="empty-write-btn" class="afr-btn-empty-state"><i class="fas fa-pen"></i> Write a Review</button>
+          </div>`;
+          
+        const emptyBtn = document.getElementById('empty-write-btn');
+        if (emptyBtn) {
+          emptyBtn.addEventListener('click', () => openReviewModal(q));
+        }
+        return;
+      }
+
+      host.innerHTML = firms.map(f => {
+        const color = firmColor(f.firmName);
+        const initial = f.firmName.trim()[0].toUpperCase();
+        const tagsHTML = f.topTags.map(t => `<span class="afr-tag">${escapeHTML(t)}</span>`).join('');
+        const stipendHTML = f.avgStipend
+          ? `<span class="afr-card-stipend"><i class="fas fa-indian-rupee-sign"></i> ${Number(f.avgStipend).toLocaleString('en-IN')}/mo avg</span>`
+          : '';
+        return `
+          <a class="afr-card" style="--card-color:${color}" href="/articleship-firm-review.html?firm=${encodeURIComponent(f.firmName)}" aria-label="View reviews for ${escapeHTML(f.firmName)}">
+            <div class="afr-card-top">
+              <div class="afr-firm-avatar">${initial}</div>
+              <div class="afr-card-info">
+                <div class="afr-card-name">${escapeHTML(f.firmName)}</div>
+                <div class="afr-card-loc"><i class="fas fa-location-dot"></i> ${escapeHTML(f.location)}</div>
+              </div>
+              <div class="afr-card-badge-rating">
+                <i class="fas fa-star"></i> ${f.avgOverall.toFixed(1)}
+              </div>
+            </div>
+            ${(stipendHTML || tagsHTML) ? `
+            <div class="afr-card-body">
+              <div class="afr-tags">
+                ${stipendHTML}
+                ${tagsHTML}
+              </div>
+            </div>` : ''}
+            <div class="afr-card-footer">
+              <span class="afr-review-count">${f.count} review${f.count > 1 ? 's' : ''}</span>
+              <span class="afr-card-cta">View Reviews <i class="fas fa-arrow-right"></i></span>
+            </div>
+          </a>`;
+      }).join('');
+    }
+
+    // ── Custom Dropdowns UI Generator ──
+    function initCustomDropdown(selectId) {
+      const select = document.getElementById(selectId);
+      if (!select) return;
+
+      // Hide native select
+      select.style.display = 'none';
+
+      // Check if wrapper already exists
+      let wrapper = select.nextElementSibling;
+      if (!wrapper || !wrapper.classList.contains('custom-dropdown')) {
+        wrapper = document.createElement('div');
+        wrapper.className = 'custom-dropdown';
+        select.parentNode.insertBefore(wrapper, select.nextSibling);
+      }
+
+      // Rebuild inner HTML of custom dropdown
+      const selectedOption = select.options[select.selectedIndex] || select.options[0] || { text: '', value: '' };
+      
+      let itemsHTML = '';
+      for (let i = 0; i < select.options.length; i++) {
+        const opt = select.options[i];
+        const isSelected = opt.value === select.value;
+        itemsHTML += `
+          <div class="custom-dropdown-item ${isSelected ? 'selected' : ''}" data-value="${escapeHTML(opt.value)}">
+            ${escapeHTML(opt.text)}
+          </div>`;
+      }
+
+      wrapper.innerHTML = `
+        <button class="dropdown-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+          <span class="trigger-label">${escapeHTML(selectedOption.text)}</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div class="custom-dropdown-menu" role="listbox">
+          ${itemsHTML}
+        </div>
+      `;
+
+      const trigger = wrapper.querySelector('.dropdown-trigger');
+
+      // Click to toggle dropdown
+      trigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        
+        // Close other dropdowns
+        document.querySelectorAll('.custom-dropdown').forEach(d => {
+          if (d !== wrapper) d.classList.remove('active');
+        });
+        
+        const isActive = wrapper.classList.toggle('active');
+        trigger.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+      });
+
+      // Click option item
+      wrapper.querySelectorAll('.custom-dropdown-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.stopPropagation();
+          select.value = item.dataset.value;
+          
+          // Trigger events
+          select.dispatchEvent(new Event('input', { bubbles: true }));
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+          
+          // Re-init this dropdown to update selection classes and labels
+          initCustomDropdown(selectId);
+        });
+      });
+    }
+
+    // Global click handler to close dropdowns when clicking outside
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.custom-dropdown').forEach(d => {
+        d.classList.remove('active');
+        const trigger = d.querySelector('.dropdown-trigger');
+        if (trigger) trigger.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // ── Search / filter / sort ────────────────────────────────────────────
+    let SELECTED_TAG = null;
+
+    function populateLocationFilter() {
+      const locs = [...new Set(FIRMS.map(f => f.location))].sort();
+      const optionsHTML = '<option value="">All locations</option>' +
+        locs.map(l => `<option value="${escapeHTML(l)}">${escapeHTML(l)}</option>`).join('');
+      
+      const deskSel = document.getElementById('filter-location');
+      const mobSel = document.getElementById('mobile-filter-location');
+      if (deskSel) deskSel.innerHTML = optionsHTML;
+      if (mobSel) mobSel.innerHTML = optionsHTML;
+
+      // Re-initialize dynamic custom dropdowns
+      initCustomDropdown('filter-location');
+      initCustomDropdown('mobile-filter-location');
+    }
+
+    function updateSidebarStats(reviews) {
+      document.getElementById('stat-total-reviews').textContent = reviews.length;
+      
+      const stipends = reviews.map(r => r.stipend).filter(s => typeof s === 'number');
+      const avgStipend = stipends.length ? Math.round(stipends.reduce((a, b) => a + b, 0) / stipends.length) : null;
+      document.getElementById('stat-avg-stipend').textContent = avgStipend ? `₹${Number(avgStipend).toLocaleString('en-IN')}/mo` : '—';
+      
+      const locations = new Set(reviews.map(r => r.location).filter(Boolean));
+      document.getElementById('stat-locations-count').textContent = locations.size;
+    }
+
+    function applyControls() {
+      const q = document.getElementById('search-input').value.trim().toLowerCase();
+      
+      const isMobile = window.innerWidth < 900;
+      const loc = document.getElementById(isMobile ? 'mobile-filter-location' : 'filter-location').value;
+      const minStipend = document.getElementById(isMobile ? 'mobile-filter-stipend' : 'filter-stipend').value;
+      const sort = document.getElementById(isMobile ? 'mobile-sort-by' : 'sort-by').value;
+      
+      let out = FIRMS.filter(f => {
+        const matchesQuery = !q || f.firmName.toLowerCase().includes(q);
+        const matchesLocation = !loc || f.location === loc;
+        const matchesStipend = !minStipend || (f.avgStipend && f.avgStipend >= parseInt(minStipend, 10));
+        const matchesTag = !SELECTED_TAG || f.topTags.includes(SELECTED_TAG) || f.reviews.some(r => (r.culture_tags || []).includes(SELECTED_TAG));
+        return matchesQuery && matchesLocation && matchesStipend && matchesTag;
+      });
+      
+      if (sort === 'rating') out.sort((a, b) => b.avgOverall - a.avgOverall);
+      else if (sort === 'count') out.sort((a, b) => b.count - a.count);
+      else out.sort((a, b) => new Date(b.reviews[0].created_at) - new Date(a.reviews[0].created_at));
+      
+      renderFirmList(out);
+    }
+
+    // Sync input events across both selectors (desktop and mobile)
+    const inputsToBind = [
+      'search-input',
+      'filter-location', 'mobile-filter-location',
+      'filter-stipend', 'mobile-filter-stipend',
+      'sort-by', 'mobile-sort-by'
+    ];
+    inputsToBind.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', (e) => {
+        // Sync values between desktop and mobile controls if they target the same filter
+        if (id === 'filter-location') {
+          document.getElementById('mobile-filter-location').value = e.target.value;
+          initCustomDropdown('mobile-filter-location');
+        }
+        if (id === 'mobile-filter-location') {
+          document.getElementById('filter-location').value = e.target.value;
+          initCustomDropdown('filter-location');
+        }
+        if (id === 'filter-stipend') {
+          document.getElementById('mobile-filter-stipend').value = e.target.value;
+          initCustomDropdown('mobile-filter-stipend');
+        }
+        if (id === 'mobile-filter-stipend') {
+          document.getElementById('filter-stipend').value = e.target.value;
+          initCustomDropdown('filter-stipend');
+        }
+        if (id === 'sort-by') {
+          document.getElementById('mobile-sort-by').value = e.target.value;
+          initCustomDropdown('mobile-sort-by');
+        }
+        if (id === 'mobile-sort-by') {
+          document.getElementById('sort-by').value = e.target.value;
+          initCustomDropdown('sort-by');
+        }
+        applyControls();
+      });
+    });
+
+    function initTagCloud() {
+      const clearBtn = document.getElementById('clear-tag-btn');
+      const badge = document.getElementById('active-tag-badge');
+      
+      document.querySelectorAll('.tag-pill-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tag = btn.dataset.tag;
+          if (SELECTED_TAG === tag) {
+            SELECTED_TAG = null;
+            btn.classList.remove('active');
+            clearBtn.style.display = 'none';
+            badge.style.display = 'none';
+          } else {
+            document.querySelectorAll('.tag-pill-btn').forEach(b => b.classList.remove('active'));
+            SELECTED_TAG = tag;
+            btn.classList.add('active');
+            clearBtn.style.display = 'inline-flex';
+            badge.textContent = `Tag: ${tag}`;
+            badge.style.display = 'inline-flex';
+          }
+          applyControls();
+        });
+      });
+      
+      clearBtn.addEventListener('click', () => {
+        SELECTED_TAG = null;
+        document.querySelectorAll('.tag-pill-btn').forEach(b => b.classList.remove('active'));
+        clearBtn.style.display = 'none';
+        badge.style.display = 'none';
+        applyControls();
+      });
+    }
+
+    async function loadFirms() {
+      const host = document.getElementById('firm-list');
+      host.innerHTML = '<div class="afr-loading"><div class="afr-spinner"></div><span>Loading reviews…</span></div>';
+      try {
+        const reviews = await fetchAllReviews();
+        FIRMS = groupByFirm(reviews);
+        populateLocationFilter();
+        updateSidebarStats(reviews);
+        initTagCloud();
+        
+        // Initialize custom static dropdowns
+        initCustomDropdown('filter-stipend');
+        initCustomDropdown('mobile-filter-stipend');
+        initCustomDropdown('sort-by');
+        initCustomDropdown('mobile-sort-by');
+        
+        const sidebarWriteBtn = document.getElementById('sidebar-write-btn');
+        if (sidebarWriteBtn) {
+          sidebarWriteBtn.addEventListener('click', () => openReviewModal());
+        }
+        
+        // Parse search query parameter from URL to pre-fill search input
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlQuery = urlParams.get('q');
+        if (urlQuery) {
+          const searchInput = document.getElementById('search-input');
+          if (searchInput) {
+            searchInput.value = urlQuery;
+          }
+        }
+        
+        applyControls();
+      } catch (e) {
+        host.innerHTML = `<div class="afr-error"><i class="fas fa-triangle-exclamation"></i><p>Couldn't load reviews: ${escapeHTML(e.message)}</p></div>`;
+      }
+    }
+    loadFirms();
+
+    // ── Review modal ──────────────────────────────────────────────────────
+    function initStarInputs() {
+      document.querySelectorAll('.afr-star-input').forEach(group => {
+        group.dataset.value = '';
+        for (let i = 1; i <= 5; i++) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.innerHTML = '<i class="far fa-star"></i>';
+          btn.dataset.v = i;
+          btn.setAttribute('aria-label', `${i} star`);
+          btn.addEventListener('mouseenter', () => hoverStars(group, i));
+          btn.addEventListener('mouseleave', () => refreshStars(group));
+          btn.addEventListener('click', () => setStars(group, i));
+          group.appendChild(btn);
+        }
+      });
+    }
+
+    function hoverStars(group, v) {
+      group.querySelectorAll('button').forEach((b, idx) => {
+        b.querySelector('i').className = idx < v ? 'fas fa-star' : 'far fa-star';
+        b.classList.toggle('filled', idx < v);
+      });
+    }
+
+    function refreshStars(group) {
+      const v = Number(group.dataset.value) || 0;
+      group.querySelectorAll('button').forEach((b, idx) => {
+        b.querySelector('i').className = idx < v ? 'fas fa-star' : 'far fa-star';
+        b.classList.toggle('filled', idx < v);
+      });
+    }
+
+    function setStars(group, v) {
+      const current = Number(group.dataset.value) || 0;
+      if (current === v) {
+        group.dataset.value = '';
+      } else {
+        group.dataset.value = String(v);
+      }
+      refreshStars(group);
+    }
+
+    const modal = document.getElementById('review-form-modal');
+    let lastFocused = null;
+
+    async function openReviewModal(prefillFirm) {
+      lastFocused = document.activeElement;
+      const session = await getCurrentSession();
+      document.getElementById('afr-login-prompt').hidden = !!session;
+      document.getElementById('afr-fieldset').disabled = !session;
+      if (session && prefillFirm) {
+        const firmInput = document.getElementById('f-firm');
+        if (firmInput && !firmInput.value) firmInput.value = prefillFirm;
+      }
+      modal.classList.add('active');
+      modal.setAttribute('aria-hidden', 'false');
+      const first = session
+        ? modal.querySelector('input[name="firm_name"], #f-firm')
+        : modal.querySelector('#afr-login-prompt a');
+      if (first) first.focus();
+    }
+
+    function closeReviewModal() {
+      modal.classList.remove('active');
+      modal.setAttribute('aria-hidden', 'true');
+      if (lastFocused) lastFocused.focus();
+    }
+
+    const openReviewBtn = document.getElementById('open-review-btn');
+    if (openReviewBtn) {
+      openReviewBtn.addEventListener('click', () => openReviewModal());
+    }
+    document.getElementById('afr-modal-close').addEventListener('click', closeReviewModal);
+    modal.addEventListener('click', e => { if (e.target === modal) closeReviewModal(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && modal.classList.contains('active')) closeReviewModal();
+    });
+
+    modal.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab' || !modal.classList.contains('active')) return;
+      const focusable = [...modal.querySelectorAll('button,[href],input,select,textarea')]
+        .filter(el => !el.disabled && el.offsetParent !== null);
+      if (!focusable.length) return;
+      const first = focusable[0], last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
+
+    async function handleReviewSubmit(e) {
+      e.preventDefault();
+      const status = document.getElementById('afr-form-status');
+      const session = await getCurrentSession();
+      if (!session) { status.textContent = 'Please log in first.'; return; }
+
+      const form = e.target;
+      const overall = Number(document.querySelector('.afr-star-input[data-name="overall_rating"]').dataset.value);
+      if (!overall) {
+        status.textContent = 'Please give an overall rating.';
+        status.className = 'afr-form-status err';
+        return;
+      }
+
+      const starVal = name => {
+        const v = Number(document.querySelector(`.afr-star-input[data-name="${name}"]`).dataset.value);
+        return v || null;
+      };
+      const tags = [...form.querySelectorAll('input[name="culture_tags"]:checked')].map(c => c.value);
+
+      const row = {
+        user_id: session.user.id,
+        firm_name: (form.elements['firm_name'] || document.getElementById('f-firm')).value.trim(),
+        location: (form.elements['location'] || document.getElementById('f-location')).value.trim(),
+        role_title: document.getElementById('f-role').value.trim() || null,
+        stipend: document.getElementById('f-stipend').value ? parseInt(document.getElementById('f-stipend').value, 10) : null,
+        overall_rating: overall,
+        work_life_balance_rating: starVal('work_life_balance_rating'),
+        learning_exposure_rating: starVal('learning_exposure_rating'),
+        stipend_satisfaction_rating: starVal('stipend_satisfaction_rating'),
+        review_text: document.getElementById('f-review').value.trim() || null,
+        pros: document.getElementById('f-pros').value.trim() || null,
+        cons: document.getElementById('f-cons').value.trim() || null,
+        culture_tags: tags,
+        would_recommend: form.elements['would_recommend'].checked,
+      };
+
+      const btn = form.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+
+      try {
+        const { error } = await supabaseClient.from('articleship_firm_reviews').insert([row]);
+        if (error) {
+          if (error.code === '23505') throw new Error("You've already reviewed this firm.");
+          throw error;
+        }
+        status.textContent = '✓ Your review is posted!';
+        status.className = 'afr-form-status ok';
+        form.reset();
+        document.querySelectorAll('.afr-star-input').forEach(g => { g.dataset.value = ''; refreshStars(g); });
+        setTimeout(() => { closeReviewModal(); status.textContent = ''; loadFirms(); }, 1400);
+      } catch (err) {
+        status.textContent = err.message;
+        status.className = 'afr-form-status err';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Anonymous Review';
+      }
+    }
+
+    document.getElementById('afr-form').addEventListener('submit', handleReviewSubmit);
+    initStarInputs();
+  </script>
+
+</body>
+</html>

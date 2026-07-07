@@ -279,6 +279,37 @@ function adjustFiltersForPortal() {
     }
 }
 
+const SAVED_JOBS_KEY = 'msc_saved_jobs';
+
+function getSavedJobs() {
+    try {
+        return JSON.parse(localStorage.getItem(SAVED_JOBS_KEY) || '[]');
+    } catch (e) {
+        return [];
+    }
+}
+
+function isJobSaved(jobId, table) {
+    return getSavedJobs().some(s => String(s.id) === String(jobId) && s.table === table);
+}
+
+function toggleSaveJob(job, btnElement) {
+    const saved = getSavedJobs();
+    const idx = saved.findIndex(s => String(s.id) === String(job.id) && s.table === currentTable);
+    if (idx >= 0) {
+        saved.splice(idx, 1);
+        btnElement.classList.remove('saved');
+        btnElement.title = 'Save job';
+        if (typeof showToast === 'function') showToast('Job removed from saved.', 'info');
+    } else {
+        saved.push({ id: job.id, table: currentTable, savedAt: new Date().toISOString() });
+        btnElement.classList.add('saved');
+        btnElement.title = 'Remove from saved';
+        if (typeof showToast === 'function') showToast('Job saved! Find it under My Applications → Saved Jobs.', 'success');
+    }
+    localStorage.setItem(SAVED_JOBS_KEY, JSON.stringify(saved));
+}
+
 function renderJobCard(job) {
     const jobCard = document.createElement('article');
     jobCard.className = 'job-card';
@@ -289,19 +320,18 @@ function renderJobCard(job) {
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     const isApplied = appliedJobIds.has(job.id);
     const isPopular = (job.application_count || 0) > 50;
-    const buttonText = isApplied ? 'Applied' : 'View Details';
     const buttonClass = isApplied ? 'applied' : '';
     const applyLink = getApplicationLink(job['Application ID']);
-    const applyButtonText = 'Apply Now';
 
-    // Premium tags and metadata values
+    // Data values
     const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
     const secondaryDomain = (currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs') ? job['Secondary Domain'] : null;
     const companyType = job['Company Type'];
     const firmType = job['Firm Type'];
     const industryType = job['Industry Type'];
+    const compLabel = (currentTable === 'Semi Qualified Jobs' || currentTable === 'Fresher Jobs') ? 'Salary' : 'Stipend';
+    const roleLabel = job.Role || (currentTable === 'Industrial Training Job Portal' ? 'Industrial Trainee' : currentTable === 'Articleship Jobs' ? 'Articleship' : 'Professional');
 
-    // Compensation display parsing
     let compText = '';
     if (currentTable === 'Fresher Jobs') {
         compText = job['CTC Range'] || (job.Salary ? `₹${job.Salary}` : '');
@@ -311,62 +341,89 @@ function renderJobCard(job) {
         compText = job.Salary ? `₹${job.Salary}` : '';
     }
 
-    // Small tag array pills display
-    let tagPillsHtml = '';
-    let tagsList = [];
-    if (currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs') {
-        tagsList = Array.isArray(job.Tags) ? job.Tags : [];
-    } else if (currentTable === 'Articleship Jobs') {
-        tagsList = Array.isArray(job['Exposure Tags']) ? job['Exposure Tags'] : [];
-    }
+    const isRecent = job.Created_At && (Date.now() - new Date(job.Created_At).getTime()) < 3 * 24 * 60 * 60 * 1000;
+    const postedClass = isRecent ? '' : 'old';
 
-    if (tagsList && tagsList.length > 0) {
-        tagPillsHtml = `<div class="job-card-tags-row" style="display: flex; gap: 0.35rem; flex-wrap: wrap; margin-top: 0.5rem; width: 100%;">
-            ${tagsList.slice(0, 4).map(t => `<span class="pill-badge" style="font-size: 0.75rem; padding: 0.2rem 0.5rem; background-color: #f1f5f9; color: #475569; border-radius: 9999px; border: 1px solid #e2e8f0; font-weight: 500;">${t}</span>`).join('')}
-            ${tagsList.length > 4 ? `<span class="pill-badge" style="font-size: 0.75rem; padding: 0.2rem 0.5rem; background-color: #f1f5f9; color: #475569; border-radius: 9999px; border: 1px solid #e2e8f0; font-weight: 500;">+${tagsList.length - 4} more</span>` : ''}
-        </div>`;
-    }
+    const infoRowItems = [];
+    if (industryType) infoRowItems.push(`
+            <div class="job-info-item">
+                <span class="job-info-label"><i class="fas fa-chart-line"></i> Industry</span>
+                <span class="job-info-value">${industryType}</span>
+            </div>`);
+    if (compText) infoRowItems.push(`
+            <div class="job-info-item">
+                <span class="job-info-label">${compLabel}</span>
+                <span class="job-info-value">${compText}</span>
+            </div>`);
+    if (job.Location) infoRowItems.push(`
+            <div class="job-info-item">
+                <span class="job-info-label"><i class="fas fa-map-marker-alt"></i> Location</span>
+                <span class="job-info-value">${job.Location}</span>
+            </div>`);
+    const infoRowHtml = infoRowItems.length ? `<div class="job-card-info-row">${infoRowItems.join('')}</div>` : '';
+    const descriptionText = job.Description ? job.Description.replace(/[#*_`\[\]]/g, '').trim() : '';
 
     jobCard.innerHTML = `
-        <div class="job-card-logo">${companyInitial}</div>
-        <div class="job-card-details">
+        <div class="job-card-top-row">
+            <div class="job-card-logo">${companyInitial}</div>
             <div class="job-card-header">
-                <h3 class="job-card-company">${job.Company || 'N/A'}</h3>
-                <p class="job-card-posted">Posted ${postedDate}</p>
+                <h3 class="job-card-role-title">${roleLabel}</h3>
+                <h3 class="job-card-company">${job.Company || "N/A"}</h3>
+                <p class="job-card-posted ${postedClass}">Posted ${postedDate}</p>
             </div>
-            <div class="job-card-tags" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;">
-                ${isPopular ? `<span class="job-tag" style="background-color: #fef3c7; color: #d97706; border: 1px solid #fcd34d;">Popular</span>` : ''}
-                <span class="job-tag">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    ${job.Location || 'N/A'}
-                </span>
-                ${compText ? `<span class="job-tag"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>${compText}</span>` : ''}
-                <span class="job-tag primary-domain-tag" style="background-color: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-weight: 600;">${primaryDomain}</span>
-                ${secondaryDomain ? `<span class="job-tag secondary-domain-tag" style="background-color: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; font-weight: 500;">${secondaryDomain}</span>` : ''}
-                ${companyType ? `<span class="job-tag company-type-tag" style="background-color: #f3f4f6; color: #374151; border: 1px solid #e5e7eb;"><i class="fas fa-building" style="margin-right: 4px; color: #4b5563;"></i>${companyType}</span>` : ''}
-                ${firmType ? `<span class="job-tag firm-type-tag" style="background-color: #f3f4f6; color: #374151; border: 1px solid #e5e7eb;"><i class="fas fa-briefcase" style="margin-right: 4px; color: #4b5563;"></i>${firmType}</span>` : ''}
-                ${industryType ? `<span class="job-tag industry-type-tag" style="background-color: #f3f4f6; color: #374151; border: 1px solid #e5e7eb;"><i class="fas fa-industry" style="margin-right: 4px; color: #4b5563;"></i>${industryType}</span>` : ''}
-            </div>
-            ${tagPillsHtml}
+            <button class="job-card-bookmark" title="Save job" aria-label="Bookmark job">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+            </button>
         </div>
+        <div class="job-card-side">
+            <span class="job-card-side-comp">${compText ? (/^\d/.test(compText.trim()) ? "₹" + compText.trim() : compText) : "Not Disclosed"}</span>
+            <span class="job-card-side-posted ${postedClass}">Posted ${postedDate}</span>
+        </div>
+        <div class="job-card-tags">
+            ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ""}
+            <span class="job-tag job-tag-location">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                ${job.Location || "N/A"}
+            </span>
+            <span class="job-tag job-tag-exp"><i class="far fa-clock"></i> ${job.Experience || "0–2 Years"}</span>
+            <span class="job-tag tag-primary"><i class="fas fa-briefcase"></i> ${primaryDomain}</span>
+            ${companyType ? `<span class="job-tag"><i class="fas fa-building"></i> ${companyType}</span>` : ""}
+            ${firmType ? `<span class="job-tag"><i class="fas fa-file-alt"></i> ${firmType}</span>` : ""}
+            ${industryType ? `<span class="job-tag job-tag-industry"><i class="fas fa-chart-line"></i> ${industryType}</span>` : ""}
+            ${secondaryDomain ? `<span class="job-tag tag-secondary">${secondaryDomain}</span>` : ""}
+        </div>
+        ${infoRowHtml}
+        ${descriptionText ? `<p class="job-card-description">${descriptionText.slice(0, 120)}${descriptionText.length > 120 ? "…" : ""}</p>` : ""}
         <div class="job-card-actions">
-             <a href="${applyLink}" target="_blank" class="apply-now-card-btn primary ${buttonClass}" style="background: #3B82F6; color: white; text-decoration: none; padding: 0.5rem 1rem; display: inline-flex; align-items: center; justify-content: center; min-height: 2.5rem;">${applyButtonText}</a>
-             <button class="apply-now-card-btn secondary" style="padding: 0.5rem 1rem; min-height: 2.5rem;">View Details</button>
+            <a href="${applyLink}" target="_blank" class="apply-now-card-btn primary ${buttonClass}">
+                Apply Now
+                <svg fill="currentColor" viewBox="0 0 24 24" width="13" height="13"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg>
+            </a>
+            <button class="view-details-card-btn secondary">View Details ›</button>
         </div>`;
 
-    // Add click handler for Apply Now button
     const applyBtn = jobCard.querySelector('.apply-now-card-btn.primary');
     if (applyBtn) {
         applyBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            // Mark as applied after a short delay (allows link to open first)
             setTimeout(() => markJobAsApplied(job), 500);
         });
     }
 
-    // Add click handler to entire card for View Details
+    const bookmarkBtn = jobCard.querySelector('.job-card-bookmark');
+    if (bookmarkBtn) {
+        if (isJobSaved(job.id, currentTable)) {
+            bookmarkBtn.classList.add('saved');
+            bookmarkBtn.title = 'Remove from saved';
+        }
+        bookmarkBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleSaveJob(job, bookmarkBtn);
+        });
+    }
+
     jobCard.addEventListener('click', (e) => {
-        if (!e.target.closest('.apply-now-card-btn.primary')) {
+        if (!e.target.closest('.apply-now-card-btn.primary') && !e.target.closest('.job-card-bookmark')) {
             showModal(job);
         }
     });
@@ -2603,6 +2660,7 @@ async function initializePage() {
         initializeFCM();
     }
     renderProfileCompletionBanner();
+    dv2Init();
 }
 
 // Check URL parameters and auto-open job modal if shared link
@@ -2644,6 +2702,17 @@ async function fetchSharedJob(jobId) {
 }
 
 document.addEventListener('DOMContentLoaded', initializePage);
+
+// Handle explicit portal nav navigation flag
+document.addEventListener('DOMContentLoaded', () => {
+    const handlePortalClick = (e) => {
+        const tabLink = e.target.closest('.portal-nav-bar .footer-tab, .site-footer-nav .footer-tab');
+        if (tabLink) {
+            sessionStorage.setItem('explicitPortalNav', 'true');
+        }
+    };
+    document.addEventListener('click', handlePortalClick);
+});
 
 // Update portal nav scroll fade indicator (mobile only)
 document.addEventListener('DOMContentLoaded', () => {
@@ -2952,6 +3021,10 @@ async function loadJobPreferenceFromProfile() {
 
 // Redirect to preferred portal if not already on it
 function redirectToPreferredPortal(preference) {
+    if (sessionStorage.getItem('explicitPortalNav') === 'true') {
+        return false;
+    }
+
     const currentPref = getCurrentPagePreference();
     const targetUrl = PREFERENCE_REDIRECT_MAP[preference];
 
@@ -3468,7 +3541,12 @@ function calculateProfileCompletion() {
 
 function renderProfileCompletionBanner() {
     const existing = document.getElementById('profile-completion-banner');
-    if (existing) existing.remove();
+    if (existing) {
+        if (existing._observer) {
+            existing._observer.disconnect();
+        }
+        existing.remove();
+    }
 
     const percent = currentSession ? calculateProfileCompletion() : 0;
     
@@ -3496,13 +3574,164 @@ function renderProfileCompletionBanner() {
     document.body.insertBefore(banner, document.body.firstChild);
     document.body.classList.add('with-completion-banner');
 
-    setTimeout(() => {
-        const bannerHeight = banner.offsetHeight;
-        document.body.style.paddingTop = (70 + bannerHeight) + 'px';
-        const header = document.querySelector('.site-header, .floating-header');
-        if (header) {
-            header.style.top = bannerHeight + 'px';
+    if (window.ResizeObserver) {
+        const observer = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                const height = entry.target.offsetHeight;
+                const isMobile = window.innerWidth < 1024;
+                const basePadding = isMobile ? 60 : 70;
+                document.body.style.paddingTop = (basePadding + height) + 'px';
+                const header = document.querySelector('.site-header, .floating-header');
+                if (header) {
+                    if (isMobile) {
+                        header.style.top = height + 'px';
+                    } else {
+                        header.style.top = '';
+                    }
+                }
+            }
+        });
+        observer.observe(banner);
+        banner._observer = observer;
+    } else {
+        setTimeout(() => {
+            const bannerHeight = banner.offsetHeight;
+            const isMobile = window.innerWidth < 1024;
+            const basePadding = isMobile ? 60 : 70;
+            document.body.style.paddingTop = (basePadding + bannerHeight) + 'px';
+            const header = document.querySelector('.site-header, .floating-header');
+            if (header) {
+                header.style.top = isMobile ? (bannerHeight + 'px') : '';
+            }
+        }, 50);
+    }
+}
+
+function dv2Init() {
+    if (!document.getElementById('dv2TopSearchInput') && !document.querySelector('.dv2-right-rail')) return;
+    dv2SetupTopSearch();
+    dv2UpdateProfileWidgets();
+    dv2PopulateStats();
+    dv2PopulateTrending();
+}
+
+function dv2SetupTopSearch() {
+    const input = document.getElementById('dv2TopSearchInput');
+    if (!input) return;
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            processAndApplySearch(input);
         }
-    }, 50);
+    });
+    const btn = document.getElementById('dv2TopSearchBtn');
+    if (btn) btn.addEventListener('click', () => processAndApplySearch(input));
+}
+
+function dv2UpdateProfileWidgets() {
+    const banner = document.getElementById('dv2PromoBanner');
+    const headerBtn = document.getElementById('dv2CompleteProfileBtn');
+    const ring = document.getElementById('dv2RingProgress');
+    const ringPercent = document.getElementById('dv2RingPercent');
+    const cta = document.getElementById('dv2PromoCta');
+    if (!banner && !headerBtn) return;
+
+    const percent = currentSession ? calculateProfileCompletion() : 0;
+
+    // Viewport visibility is CSS's job (.dv2-visible only displays ≥1024px),
+    // so resizing between mobile and desktop can never leak the button.
+    if (headerBtn) {
+        headerBtn.classList.toggle('dv2-visible', !!currentSession && percent < 100);
+        const pctEl = document.getElementById('dv2ProfilePercent');
+        if (pctEl) pctEl.textContent = percent + '%';
+    }
+
+    if (currentSession) {
+        if (banner && percent === 100) banner.style.display = 'none';
+    } else {
+        if (cta) {
+            cta.textContent = 'Sign Up Free';
+            cta.href = '/sign-up.html';
+        }
+    }
+
+    if (ring && ringPercent) {
+        const circumference = 2 * Math.PI * 52; // r=52 in the SVG
+        ring.style.strokeDashoffset = (circumference * (1 - percent / 100)).toFixed(1);
+        ringPercent.textContent = percent + '%';
+    }
+}
+
+async function dv2PopulateStats() {
+    const totalEl = document.getElementById('dv2StatTotal');
+    const newEl = document.getElementById('dv2StatNew');
+    const companiesEl = document.getElementById('dv2StatCompanies');
+    const applicationsEl = document.getElementById('dv2StatApplications');
+    if (!totalEl && !newEl && !companiesEl && !applicationsEl) return;
+    try {
+        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+        const [totalRes, newRes, companiesRes] = await Promise.all([
+            supabaseClient.from(currentTable).select('id', { count: 'exact', head: true }),
+            supabaseClient.from(currentTable).select('id', { count: 'exact', head: true }).gte('Created_At', weekAgo),
+            supabaseClient.from(currentTable).select('Company, application_count')
+        ]);
+
+        if (totalEl && typeof totalRes.count === 'number') totalEl.textContent = totalRes.count.toLocaleString('en-IN');
+        if (newEl && typeof newRes.count === 'number') newEl.textContent = newRes.count.toLocaleString('en-IN');
+
+        if (companiesRes.data) {
+            if (companiesEl) {
+                const uniqueCompanies = new Set(
+                    companiesRes.data
+                        .map(row => (row.Company || '').trim().toLowerCase())
+                        .filter(Boolean)
+                );
+                companiesEl.textContent = uniqueCompanies.size.toLocaleString('en-IN');
+            }
+            if (applicationsEl) {
+                const totalApplications = companiesRes.data
+                    .reduce((sum, row) => sum + (row.application_count || 0), 0);
+                applicationsEl.textContent = totalApplications.toLocaleString('en-IN');
+            }
+        }
+    } catch (err) {
+        console.warn('dv2 stats failed:', err);
+    }
+}
+
+async function dv2PopulateTrending() {
+    const card = document.getElementById('dv2TrendingCard');
+    const list = document.getElementById('dv2TrendingList');
+    if (!card || !list) return;
+    try {
+        const { data, error } = await supabaseClient
+            .from(currentTable)
+            .select('*')
+            .order('Created_At', { ascending: false, nullsFirst: false })
+            .limit(5);
+        if (error || !data || data.length === 0) return;
+
+        list.innerHTML = '';
+        data.forEach(job => {
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.className = 'dv2-trending-item';
+            const initial = (job.Company || '?').charAt(0).toUpperCase();
+            const stipend = job['Stipend Range'] || (job.Salary ? '₹' + job.Salary : '');
+            const domain = job['Primary Domain'] || job.Category || '';
+            item.innerHTML = `
+                <span class="dv2-trending-logo">${initial}</span>
+                <span class="dv2-trending-info">
+                    <strong>${job.Company || 'N/A'}</strong>
+                    <small>${domain}${stipend ? ' · ' + stipend : ''}</small>
+                </span>`;
+            item.addEventListener('click', () => showModal(job));
+            list.appendChild(item);
+        });
+        card.style.display = '';
+    } catch (err) {
+        console.warn('dv2 trending failed:', err);
+    }
 }
 
