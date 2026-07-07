@@ -588,6 +588,35 @@
                 </div>
             </div>
         </div>
+        <div id="docx-info-overlay" class="docx-info-overlay" aria-hidden="true" onclick="closeDocxInfoModal()">
+            <div class="docx-info-card" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+                <div class="docx-info-header">
+                    <div class="docx-info-icon">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                    </div>
+                    <h3>Perfect DOCX Export</h3>
+                    <button class="docx-info-close" type="button" onclick="closeDocxInfoModal()" aria-label="Close">×</button>
+                </div>
+                <div class="docx-info-body">
+                    <p class="docx-info-text">
+                        Your DOCX download is in progress.
+                    </p>
+                    <div class="docx-tip-box">
+                        <span class="docx-tip-badge">Note</span>
+                        <p>To get perfect editable files, use <a href="https://www.ilovepdf.com/pdf_to_word" target="_blank" rel="noopener noreferrer" class="docx-link">ilovepdf</a> for pdf to docx conversion.</p>
+                    </div>
+                </div>
+                <div class="docx-info-actions">
+                    <button class="btn-icon btn-primary" type="button" onclick="closeDocxInfoModal()">Got it</button>
+                </div>
+            </div>
+        </div>
         <div id="ai-preview-overlay" class="ai-preview-overlay" aria-hidden="true" onclick="handleAiPreviewOverlayClick(event)">
             <div class="ai-preview-card" role="dialog" aria-modal="true" aria-labelledby="ai-preview-title" onclick="event.stopPropagation()">
                 <div class="ai-preview-header">

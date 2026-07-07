@@ -1625,6 +1625,159 @@
     pointer-events: all;
 }
 
+/* DOCX Export Info Popup */
+.docx-info-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, backdrop-filter 0.25s ease;
+    z-index: 1500;
+    padding: 20px;
+}
+
+.docx-info-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.docx-info-card {
+    width: min(92vw, 420px);
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+    transform: translateY(10px);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.docx-info-overlay.open .docx-info-card {
+    transform: translateY(0);
+}
+
+.docx-info-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.docx-info-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eff6ff;
+    color: var(--primary);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.docx-info-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-main);
+}
+
+.docx-info-close {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: var(--bg-hover);
+    color: var(--text-muted);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.docx-info-close:hover {
+    background: var(--border-color);
+    color: var(--text-main);
+}
+
+.docx-info-body {
+    margin-bottom: 20px;
+}
+
+.docx-info-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin: 0 0 16px;
+    line-height: 1.5;
+}
+
+.docx-tip-box {
+    background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+    border: 1px solid #bbf7d0;
+    border-radius: 12px;
+    padding: 16px;
+    position: relative;
+}
+
+.docx-tip-badge {
+    display: inline-block;
+    background: #dcfce7;
+    color: #15803d;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+}
+
+.docx-tip-box p {
+    margin: 0;
+    font-size: 13px;
+    color: #166534;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+.docx-link {
+    color: #10b981;
+    text-decoration: none;
+    font-weight: 600;
+    border-bottom: 1.5px solid rgba(16, 185, 129, 0.3);
+    transition: all 0.15s ease;
+}
+
+.docx-link:hover {
+    color: #059669;
+    border-bottom-color: #059669;
+}
+
+.docx-info-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.docx-info-actions button {
+    min-width: 90px;
+    padding: 10px 18px;
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: 10px;
+}
+
 .ai-prompt-overlay {
     position: fixed;
     inset: 0;

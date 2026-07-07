@@ -659,8 +659,10 @@
             const tmp = document.createElement('div');
             tmp.innerHTML = convertMarkdownBoldToHTML(String(value));
             return (tmp.textContent || '')
-                .replace(/\u00a0/g, ' ')
-                .replace(/\s+/g, ' ')
+                .replace(/\r/g, '')
+                .split('\n')
+                .map(line => line.replace(/[^\S\r\n]+/g, ' ').trim())
+                .join('\n')
                 .trim();
         }
 
@@ -2956,6 +2958,10 @@ async function downloadCvFile(format = 'pdf') {
     const menu = document.getElementById('download-menu-popover');
     if (menu) menu.classList.remove('active');
     
+    if (format === 'docx') {
+        openDocxInfoModal();
+    }
+    
     const frame = document.getElementById('cv-frame');
     const doc = frame?.contentDocument || frame?.contentWindow?.document;
 
@@ -3315,6 +3321,36 @@ async function downloadCvFile(format = 'pdf') {
             overlay.setAttribute('aria-hidden', 'true');
             resolve(Boolean(accept));
         }
+
+        function openDocxInfoModal() {
+            const overlay = document.getElementById('docx-info-overlay');
+            if (overlay) {
+                overlay.classList.add('open');
+                overlay.setAttribute('aria-hidden', 'false');
+            }
+        }
+
+        function closeDocxInfoModal() {
+            const overlay = document.getElementById('docx-info-overlay');
+            if (overlay) {
+                overlay.classList.remove('open');
+                overlay.setAttribute('aria-hidden', 'true');
+            }
+        }
+
+        window.addEventListener('keydown', (event) => {
+            const overlay = document.getElementById('docx-info-overlay');
+            if (overlay && overlay.classList.contains('open')) {
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    closeDocxInfoModal();
+                }
+                if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                    event.preventDefault();
+                    closeDocxInfoModal();
+                }
+            }
+        });
 
         window.addEventListener('keydown', (event) => {
             if (!aiPromptResolver) return;
