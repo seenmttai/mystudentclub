@@ -815,8 +815,7 @@
                         try {
                             const { data, error } = await supabase.storage.from('industrial-training-mastery-resources').createSignedUrl(resource.view_storage_path, 300);
                             if (error) throw error;
-                            const proxyUrl = `https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`;
-                            let viewerUrl = `/ca-resource/?pdf=${encodeURIComponent(proxyUrl)}`;
+                            let viewerUrl = `/ca-resource/?pdf=${encodeURIComponent(data.signedUrl)}`;
                             if (this.hasDownloadPath(resource)) {
                                 const { data: dlData, error: dlError } = await supabase.storage
                                     .from('industrial-training-mastery-resources')
