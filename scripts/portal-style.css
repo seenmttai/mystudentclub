@@ -3525,8 +3525,7 @@ body:has(.portal-nav-bar) {
 
 /* ---- dv2 center column: top search, promo banner, stats ---- */
 .dv2-top-search,
-.dv2-promo-banner,
-.dv2-stats-row {
+.dv2-promo-banner {
   display: none;
 }
 
@@ -3689,57 +3688,6 @@ body:has(.portal-nav-bar) {
     color: var(--text-muted);
     max-width: 70px;
     line-height: 1.3;
-  }
-
-  .dv2-stats-row {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .dv2-stat-card {
-    display: flex;
-    align-items: center;
-    gap: 0.9rem;
-    background: var(--surface-bg);
-    border: 1px solid var(--border-light);
-    border-radius: var(--radius-lg);
-    padding: 1rem 1.25rem;
-    box-shadow: var(--shadow-xs);
-  }
-
-  .dv2-stat-icon {
-    width: 42px;
-    height: 42px;
-    flex-shrink: 0;
-    border-radius: var(--radius-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-  }
-
-  .dv2-stat-blue   { background: #eff6ff; color: #3b82f6; }
-  .dv2-stat-green  { background: #ecfdf5; color: #10b981; }
-  .dv2-stat-red    { background: #fef2f2; color: #ef4444; }
-  .dv2-stat-purple { background: #f5f3ff; color: #8b5cf6; }
-
-  .dv2-stat-text {
-    display: flex;
-    flex-direction: column;
-    line-height: 1.3;
-  }
-
-  .dv2-stat-text strong {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--text-primary);
-  }
-
-  .dv2-stat-text span {
-    font-size: 0.75rem;
-    color: var(--text-muted);
   }
 
   /* On desktop the header's "Complete Profile" button is the profile-completion

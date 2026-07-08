@@ -3611,7 +3611,6 @@ function dv2Init() {
     if (!document.getElementById('dv2TopSearchInput') && !document.querySelector('.dv2-right-rail')) return;
     dv2SetupTopSearch();
     dv2UpdateProfileWidgets();
-    dv2PopulateStats();
     dv2PopulateTrending();
 }
 
@@ -3659,44 +3658,6 @@ function dv2UpdateProfileWidgets() {
         const circumference = 2 * Math.PI * 52; // r=52 in the SVG
         ring.style.strokeDashoffset = (circumference * (1 - percent / 100)).toFixed(1);
         ringPercent.textContent = percent + '%';
-    }
-}
-
-async function dv2PopulateStats() {
-    const totalEl = document.getElementById('dv2StatTotal');
-    const newEl = document.getElementById('dv2StatNew');
-    const companiesEl = document.getElementById('dv2StatCompanies');
-    const applicationsEl = document.getElementById('dv2StatApplications');
-    if (!totalEl && !newEl && !companiesEl && !applicationsEl) return;
-    try {
-        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-
-        const [totalRes, newRes, companiesRes] = await Promise.all([
-            supabaseClient.from(currentTable).select('id', { count: 'exact', head: true }),
-            supabaseClient.from(currentTable).select('id', { count: 'exact', head: true }).gte('Created_At', weekAgo),
-            supabaseClient.from(currentTable).select('Company, application_count')
-        ]);
-
-        if (totalEl && typeof totalRes.count === 'number') totalEl.textContent = totalRes.count.toLocaleString('en-IN');
-        if (newEl && typeof newRes.count === 'number') newEl.textContent = newRes.count.toLocaleString('en-IN');
-
-        if (companiesRes.data) {
-            if (companiesEl) {
-                const uniqueCompanies = new Set(
-                    companiesRes.data
-                        .map(row => (row.Company || '').trim().toLowerCase())
-                        .filter(Boolean)
-                );
-                companiesEl.textContent = uniqueCompanies.size.toLocaleString('en-IN');
-            }
-            if (applicationsEl) {
-                const totalApplications = companiesRes.data
-                    .reduce((sum, row) => sum + (row.application_count || 0), 0);
-                applicationsEl.textContent = totalApplications.toLocaleString('en-IN');
-            }
-        }
-    } catch (err) {
-        console.warn('dv2 stats failed:', err);
     }
 }
 
