@@ -404,7 +404,29 @@
                 margin: 2% auto;
             }
         }
-    </style>
+    
+        /* subsection heading + category (entries marked "Subsection" in the editor):
+           cv-common hides the entry's role/company/dates band; renderSubsectionHeadings()
+           surfaces them as this in-line heading above the subsection's bullets. */
+        .sub-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            font-weight: bold;
+        }
+
+        .sub-head .sub-head-dates {
+            font-weight: normal;
+            font-style: italic;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .sub-cat { font-weight: bold; }
+
+        .sub-cat:empty { display: none; }
+</style>
 </head>
 
 <body>
@@ -453,6 +475,7 @@
                             <div class="sub-header-date" data-field="dates"></div>
                         </div>
                         <div class="content-block">
+                            <div class="sub-cat" data-field="category"></div>
                             <ul data-list="bullets">
                             </ul>
                         </div>
@@ -542,6 +565,42 @@
     <!-- SCRIPT -->
     <script src="cv-common.js"></script>
     <script>
+        // Subsection entries (editor "Subsection" merge): cv-common hides the
+        // entry's role/company/dates, but users can still fill them — surface
+        // them as a bold heading (plus the category line) above the bullets.
+        const originalRenderCV = window.renderCV;
+        window.renderCV = function (data) {
+            originalRenderCV(data);
+            renderSubsectionHeadings();
+        };
+
+        function renderSubsectionHeadings() {
+            document.querySelectorAll('#experience-list > div:not(.template)').forEach(block => {
+                const stale = block.querySelector('.sub-head');
+                if (stale) stale.remove();
+                if (!block.classList.contains('experience-title-merged')) return;
+
+                const roleEl = block.querySelector('[data-field="role"]');
+                const companyEl = block.querySelector('[data-field="company"]');
+                const datesEl = block.querySelector('[data-field="dates"]');
+                const roleText = (roleEl?.textContent || '').trim();
+                const companyText = (companyEl?.textContent || '').trim();
+                const datesText = (datesEl?.textContent || '').trim();
+                if (!roleText && !companyText && !datesText) return;
+
+                const titleHTML = (roleText && companyText)
+                    ? roleEl.innerHTML + ' | ' + companyEl.innerHTML
+                    : (roleText ? roleEl.innerHTML : (companyText ? companyEl.innerHTML : ''));
+                const subHead = document.createElement('div');
+                subHead.className = 'sub-head';
+                subHead.innerHTML = '<span>' + titleHTML + '</span>' +
+                    (datesText ? '<span class="sub-head-dates">' + datesEl.innerHTML + '</span>' : '');
+
+                const anchor = block.querySelector('.sub-cat') || block.querySelector('[data-list="bullets"]');
+                if (anchor && anchor.parentElement) anchor.parentElement.insertBefore(subHead, anchor);
+            });
+        }
+
         // 1. SCALING LOGIC (Visual Zoom)
         function scaleToFit() {
             const page = document.getElementById('cv-page');

@@ -352,6 +352,35 @@
             padding: calc(2px * var(--content-scale)) 3.77px 0;
         }
 
+        /* subsection title (entry category shown when its band title is merged away) */
+        .sub-cat {
+            font-weight: 700;
+            font-size: calc(15.09px * var(--content-scale));
+            line-height: calc(18.3px * var(--content-scale));
+            padding: calc(2px * var(--content-scale)) 3.77px calc(1px * var(--content-scale));
+        }
+
+        .sub-cat:empty { display: none; }
+
+        /* subsection Role – Firm + Duration heading (built by adjustExperienceHeaders) */
+        .sub-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            font-weight: 700;
+            font-size: calc(15.09px * var(--content-scale));
+            line-height: calc(18.3px * var(--content-scale));
+            padding: calc(2px * var(--content-scale)) 4.78px calc(1px * var(--content-scale)) 3.77px;
+        }
+
+        .sub-head .sub-head-dates {
+            font-weight: 400;
+            font-style: italic;            /* band dates in this design are italic */
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
         .summary-cell {
             padding: calc(4px * var(--content-scale)) 3.77px;
         }
@@ -593,6 +622,10 @@
                             <tr>
                                 <td class="li-cell">
                                     <div class="pre-gap"></div>
+                                    <!-- subsection title: shown when the editor's "Subsection"
+                                         merge hides role/company/dates (cv-common displays
+                                         the entry's category field instead) -->
+                                    <div class="sub-cat" data-field="category"></div>
                                     <div class="exp-intro" data-field="intro"></div>
                                     <ul data-list="bullets" class="bullet-list"></ul>
                                 </td>
@@ -1115,6 +1148,25 @@
                     companyEl && companyEl.style.display === 'none';
                 const empty = !roleText && !companyText && !datesText;
                 headerRow.style.display = (merged || empty) ? 'none' : '';
+
+                // Subsection entries ("Subsection" merge): the band is hidden but the
+                // user can still type Role / Firm / Duration — surface them as a bold
+                // in-cell heading above the category line and bullets.
+                const staleSubHead = block.querySelector('.sub-head');
+                if (staleSubHead) staleSubHead.remove();
+                if (merged && !empty) {
+                    const titleHTML = (roleText && companyText)
+                        ? `${roleEl.innerHTML} &#8211; ${companyEl.innerHTML}`
+                        : (roleText ? roleEl.innerHTML : companyEl.innerHTML);
+                    const subHead = document.createElement('div');
+                    subHead.className = 'sub-head';
+                    subHead.innerHTML =
+                        `<span>${titleHTML || ''}</span>` +
+                        (datesText ? `<span class="sub-head-dates">${datesEl.innerHTML}</span>` : '');
+                    const cell = block.querySelector('.li-cell');
+                    const anchor = block.querySelector('.sub-cat');
+                    if (cell) cell.insertBefore(subHead, anchor || cell.firstChild);
+                }
                 if (merged || empty) return;
 
                 const cleanRole = roleText.toLowerCase().replace(/[\s\-–—,]/g, '');

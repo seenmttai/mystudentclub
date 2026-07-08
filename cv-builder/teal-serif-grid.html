@@ -627,6 +627,20 @@
 
     <script src="cv-common.js"></script>
     <script>
+        // Subsection entries (editor "Subsection" merge): this template's grey
+        // title bar shows role/firm/category together, so simply re-show the
+        // fields cv-common hid — the bar then reads like the DOCX's stint bars.
+        const originalRenderCV = window.renderCV;
+        window.renderCV = function (data) {
+            originalRenderCV(data);
+            document.querySelectorAll('#experience-list .experience-title-merged').forEach(block => {
+                ['role', 'company', 'dates'].forEach(field => {
+                    const el = block.querySelector('[data-field="' + field + '"]');
+                    if (el && (el.textContent || '').trim()) el.style.display = '';
+                });
+            });
+        };
+
         function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
         var _lastPersonal = null, _lastSectionOrder = null, _lastSectionLabels = {};

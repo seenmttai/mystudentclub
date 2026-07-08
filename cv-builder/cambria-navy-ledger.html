@@ -348,7 +348,29 @@
                 position: static !important;
             }
         }
-    </style>
+    
+        /* subsection heading + category (entries marked "Subsection" in the editor):
+           cv-common hides the entry's role/company/dates; renderSubsectionHeadings()
+           surfaces them as this in-line heading above the subsection's bullets. */
+        .sub-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            font-weight: bold;
+        }
+
+        .sub-head .sub-head-dates {
+            font-weight: normal;
+            font-style: italic;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .sub-cat { font-weight: bold; }
+
+        .sub-cat:empty { display: none; }
+</style>
 </head>
 <body>
     <div id="zoom-wrapper">
@@ -450,6 +472,7 @@
                             </tr>
                             <tr>
                                 <td class="cell-pad">
+                                    <div class="sub-cat" data-field="category"></div>
                                     <div class="exp-intro" data-field="intro"></div>
                                     <ul data-list="bullets"></ul>
                                 </td>
@@ -600,6 +623,8 @@
             formatLeadershipEntries();
             foldCustomSectionsIntoExtracurricular(dataCopy.customSections);
             refreshExtracurricularRows();
+
+            renderSubsectionHeadings();
 
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
@@ -1031,6 +1056,44 @@
             clearTimeout(_resizeTimer);
             _resizeTimer = setTimeout(scaleToFit, 100);
         });
-    </script>
+    
+        // Subsection entries (editor "Subsection" merge): cv-common hides the
+        // entry's role/company/dates, but users can still fill them — surface
+        // them as a bold heading above the subsection's category and bullets.
+        function renderSubsectionHeadings() {
+            document.querySelectorAll('#experience-list > *').forEach(block => {
+                if (block.classList.contains('template')) return;
+                const stale = block.querySelector('.sub-head');
+                if (stale) stale.remove();
+                if (!block.classList.contains('experience-title-merged')) return;
+
+                const roleEl = block.querySelector('[data-field="role"]');
+                const companyEl = block.querySelector('[data-field="company"]');
+                const datesEl = block.querySelector('[data-field="dates"]');
+                const roleText = (roleEl?.textContent || '').trim();
+                const companyText = (companyEl?.textContent || '').trim();
+                const datesText = (datesEl?.textContent || '').trim();
+                if (!roleText && !companyText && !datesText) return;
+
+                const titleHTML = (roleText && companyText)
+                    ? roleEl.innerHTML + ' | ' + companyEl.innerHTML
+                    : (roleText ? roleEl.innerHTML : (companyText ? companyEl.innerHTML : ''));
+                const subHead = document.createElement('div');
+                subHead.className = 'sub-head';
+                subHead.innerHTML = '<span>' + titleHTML + '</span>' +
+                    (datesText ? '<span class="sub-head-dates">' + datesEl.innerHTML + '</span>' : '');
+
+                const ul = block.querySelector('[data-list="bullets"]');
+                if (!ul || !ul.parentElement) return;
+                const cell = ul.parentElement;
+                const catEl = block.querySelector('.sub-cat, [data-field="category"]');
+                const introEl = block.querySelector('[data-field="intro"]');
+                const anchor = (catEl && catEl.parentElement === cell) ? catEl
+                    : ((introEl && introEl.parentElement === cell) ? introEl : ul);
+                cell.insertBefore(subHead, anchor);
+            });
+        }
+
+</script>
 </body>
 </html>
