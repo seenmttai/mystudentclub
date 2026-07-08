@@ -1564,6 +1564,16 @@ async function checkEnrollmentForTable(tableName, userId) {
     }
 }
 
+function getCoursePageLink() {
+    if (currentTable === 'Articleship Jobs') {
+        return '/articleship-program';
+    }
+    if (currentTable === 'Industrial Training Job Portal' || currentTable === 'Semi Qualified Jobs') {
+        return '/ca-industrial-training-program';
+    }
+    return '/msc-ca-fresher-program';
+}
+
 function showEnrollmentRequiredPopup() {
     const existing = document.querySelector('.cv-popup-overlay');
     if (existing) existing.remove();
@@ -1577,7 +1587,7 @@ function showEnrollmentRequiredPopup() {
                 <h3>Exclusive Premium Feature</h3>
                 <p>This feature is exclusively only available for course enrolled students.</p>
                 <div class="cv-popup-btns">
-                    <a href="https://www.mystudentclub.com/#courses" target="_blank" class="cv-popup-btn-primary">View Courses</a>
+                    <a href="${getCoursePageLink()}" target="_blank" class="cv-popup-btn-primary">View Courses</a>
                     <button class="cv-popup-btn-secondary" id="closeEnrollmentPopup">Maybe Later</button>
                 </div>
             </div>
