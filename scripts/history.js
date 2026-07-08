@@ -110,8 +110,16 @@ async function fetchApplications() {
                     const [t, id] = app.job_table.split('|');
                     targetTable = t; targetJobId = id;
                 }
-                let sel = 'id, Company, Location, Category, Salary, Description, Created_At, "Application ID"';
-                if (targetTable === 'Fresher Jobs') sel += ', Experience';
+                let sel = 'id, Company, Location, Category, Salary, Description, Created_At, "Application ID", "Primary Domain", "Company Type", "Industry Type"';
+                if (targetTable === 'Fresher Jobs') {
+                    sel += ', Experience, yoe, "Secondary Domain", Tags, "CTC Range"';
+                } else if (targetTable === 'Semi Qualified Jobs') {
+                    sel += ', Experience, "Secondary Domain", Tags';
+                } else if (targetTable === 'Industrial Training Job Portal') {
+                    sel += ', "Stipend Range", "Functional Tags", "Technology Tags"';
+                } else if (targetTable === 'Articleship Jobs') {
+                    sel += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
+                }
                 const { data: job, error: je } = await supabaseClient.from(targetTable).select(sel).eq('id', targetJobId).single();
                 if (je) return { ...app, job_table: targetTable, job_id: targetJobId, job: { id: targetJobId, Company: 'Unknown Company', Location: 'N/A', Category: 'Job Unavailable', Description: 'This job post may have been removed.', 'Application ID': '#' } };
                 return { ...app, job_table: targetTable, job_id: targetJobId, job };
@@ -141,6 +149,15 @@ function renderAppliedCard(app) {
     if (app.job_table === 'Fresher Jobs' && job.Experience === 'Experienced') portalLabel = 'Experienced CA';
     const isStipend = app.job_table === 'Industrial Training Job Portal' || app.job_table === 'Articleship Jobs';
 
+    const primaryDomain = job['Primary Domain'] || job.Category || '';
+    const secondaryDomain = (app.job_table === 'Fresher Jobs' || app.job_table === 'Semi Qualified Jobs') ? job['Secondary Domain'] : null;
+    const companyType = job['Company Type'];
+    const firmType = job['Firm Type'];
+    const industryType = job['Industry Type'];
+    
+    const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : '';
+    const postedText = postedDate ? `Posted ${postedDate}` : '';
+
     const card = document.createElement('article');
     card.className = 'job-card-new';
     card.innerHTML = `
@@ -148,18 +165,39 @@ function renderAppliedCard(app) {
             <div class="jc-avatar" style="background:${colors.bg};color:${colors.fg}">${initials}</div>
             <div class="jc-info">
                 <div class="jc-role">${job.Company || 'N/A'}</div>
-                <div class="jc-company">${job.Category || ''}</div>
+                <div class="jc-company">${postedText}</div>
             </div>
             <span class="hist-applied-badge">✓ Applied</span>
         </div>
         <div class="jc-chips">
             <span class="jc-chip jc-chip-type">${portalLabel}</span>
-            ${job.Location ? `<span class="jc-chip">📍 ${job.Location.split(',')[0]}</span>` : ''}
+            ${primaryDomain ? `<span class="jc-chip jc-chip-domain">${primaryDomain}</span>` : ''}
+            ${secondaryDomain ? `<span class="jc-chip jc-chip-domain" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">${secondaryDomain}</span>` : ''}
+            ${companyType ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right: 4px; color: #94a3b8;"></i>${companyType}</span>` : ''}
+            ${firmType ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right: 4px; color: #94a3b8;"></i>${firmType}</span>` : ''}
+            ${industryType ? `<span class="jc-chip"><i class="fa-solid fa-industry" style="margin-right: 4px; color: #94a3b8;"></i>${industryType}</span>` : ''}
+            ${job.Location ? `<span class="jc-chip"><i class="fa-regular fa-compass" style="margin-right: 4px; color: #94a3b8;"></i>${job.Location.split(',')[0]}</span>` : ''}
         </div>
         <div class="jc-divider"></div>
         <div class="jc-footer">
             <div class="jc-footer-left">
-                ${job.Salary ? `<div class="jc-salary">₹${job.Salary}<span class="jc-salary-period">${isStipend ? '/month' : ''}</span></div>` : ''}
+                ${(() => {
+                  if (job.Salary) {
+                    const period = isStipend ? '<span class="jc-salary-period">/month</span>' : "";
+                    return `<div class="jc-salary">₹${job.Salary}${period}</div>`;
+                  } else if (app.job_table === "Fresher Jobs" && job["CTC Range"]) {
+                    return `<div class="jc-salary">${job["CTC Range"]}</div>`;
+                  } else if (isStipend && job["Stipend Range"]) {
+                    let range = job["Stipend Range"];
+                    if (range && /^\d+/.test(range.trim())) {
+                      range = `₹${range}`;
+                    }
+                    const period = isStipend ? '<span class="jc-salary-period">/month</span>' : "";
+                    return `<div class="jc-salary">${range}${period}</div>`;
+                  } else {
+                    return "";
+                  }
+                })()}
                 <div class="jc-meta">${appliedDate ? `Applied ${appliedDate}` : ''}</div>
             </div>
             <button class="jc-apply-btn applied">View →</button>
@@ -176,6 +214,15 @@ function renderSavedCard(bm) {
     const savedDate = bm.savedAt ? getDaysAgo(bm.savedAt) : '';
     const isStipend = bm.table === 'Industrial Training Job Portal' || bm.table === 'Articleship Jobs';
 
+    const primaryDomain = bm['Primary Domain'] || bm.Category || '';
+    const secondaryDomain = (bm.table === 'Fresher Jobs' || bm.table === 'Semi Qualified Jobs') ? bm['Secondary Domain'] : null;
+    const companyType = bm['Company Type'];
+    const firmType = bm['Firm Type'];
+    const industryType = bm['Industry Type'];
+    
+    const postedDate = bm.Created_At ? getDaysAgo(bm.Created_At) : '';
+    const postedText = postedDate ? `Posted ${postedDate}` : '';
+
     const card = document.createElement('article');
     card.className = 'job-card-new';
     card.innerHTML = `
@@ -183,7 +230,7 @@ function renderSavedCard(bm) {
             <div class="jc-avatar" style="background:${colors.bg};color:${colors.fg}">${initials}</div>
             <div class="jc-info">
                 <div class="jc-role">${bm.Company || 'N/A'}</div>
-                <div class="jc-company">${bm.Category || ''}</div>
+                <div class="jc-company">${postedText}</div>
             </div>
             <button class="jc-bookmark saved" data-id="${bm.id}" data-table="${bm.table || ''}" aria-label="Remove saved">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17l-6-4-6 4z"/></svg>
@@ -191,12 +238,33 @@ function renderSavedCard(bm) {
         </div>
         <div class="jc-chips">
             ${portalLabel ? `<span class="jc-chip jc-chip-type">${portalLabel}</span>` : ''}
-            ${bm.Location ? `<span class="jc-chip">📍 ${bm.Location.split(',')[0]}</span>` : ''}
+            ${primaryDomain ? `<span class="jc-chip jc-chip-domain">${primaryDomain}</span>` : ''}
+            ${secondaryDomain ? `<span class="jc-chip jc-chip-domain" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">${secondaryDomain}</span>` : ''}
+            ${companyType ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right: 4px; color: #94a3b8;"></i>${companyType}</span>` : ''}
+            ${firmType ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right: 4px; color: #94a3b8;"></i>${firmType}</span>` : ''}
+            ${industryType ? `<span class="jc-chip"><i class="fa-solid fa-industry" style="margin-right: 4px; color: #94a3b8;"></i>${industryType}</span>` : ''}
+            ${bm.Location ? `<span class="jc-chip"><i class="fa-regular fa-compass" style="margin-right: 4px; color: #94a3b8;"></i>${bm.Location.split(',')[0]}</span>` : ''}
         </div>
         <div class="jc-divider"></div>
         <div class="jc-footer">
             <div class="jc-footer-left">
-                ${bm.Salary ? `<div class="jc-salary">₹${bm.Salary}<span class="jc-salary-period">${isStipend ? '/month' : ''}</span></div>` : ''}
+                ${(() => {
+                  if (bm.Salary) {
+                    const period = isStipend ? '<span class="jc-salary-period">/month</span>' : "";
+                    return `<div class="jc-salary">₹${bm.Salary}${period}</div>`;
+                  } else if (bm.table === "Fresher Jobs" && bm["CTC Range"]) {
+                    return `<div class="jc-salary">${bm["CTC Range"]}</div>`;
+                  } else if (isStipend && bm["Stipend Range"]) {
+                    let range = bm["Stipend Range"];
+                    if (range && /^\d+/.test(range.trim())) {
+                      range = `₹${range}`;
+                    }
+                    const period = isStipend ? '<span class="jc-salary-period">/month</span>' : "";
+                    return `<div class="jc-salary">${range}${period}</div>`;
+                  } else {
+                    return "";
+                  }
+                })()}
                 <div class="jc-meta">${savedDate ? `Saved ${savedDate}` : ''}</div>
             </div>
             <button class="jc-apply-btn">Apply →</button>

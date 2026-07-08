@@ -248,11 +248,21 @@ async function fetchTrendingJobs() {
   if (!dom.trendingSection || !dom.trendingScroll) return;
   dom.trendingScroll.innerHTML = `<div class="trending-placeholder">${[0, 1, 2].map(() => '<div class="trending-card-skeleton"></div>').join("")}</div>`;
   try {
+    let selectCols =
+      'id, Company, Location, Salary, Description, Created_At, Category, "Application ID", application_count, connect_link, "Primary Domain", "Company Type", "Industry Type"';
+    if (currentTable === "Fresher Jobs") {
+      selectCols += ', Experience, yoe, "Secondary Domain", Tags, "CTC Range"';
+    } else if (currentTable === "Semi Qualified Jobs") {
+      selectCols += ', Experience, "Secondary Domain", Tags';
+    } else if (currentTable === "Industrial Training Job Portal") {
+      selectCols += ', "Stipend Range", "Functional Tags", "Technology Tags"';
+    } else if (currentTable === "Articleship Jobs") {
+      selectCols += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
+    }
+
     const { data, error } = await supabaseClient
       .from(currentTable)
-      .select(
-        'id, Company, Location, Salary, Category, "Application ID", application_count, Created_At, Description, connect_link',
-      )
+      .select(selectCols)
       .order("application_count", { ascending: false, nullsFirst: false })
       .limit(8);
     if (error) throw error;
@@ -311,6 +321,14 @@ function renderJobCard(job) {
   const portalLabel =
     PORTALS.find((p) => p.id === currentPortalId)?.label || "";
 
+  const isStipend = currentTable === "Industrial Training Job Portal" || currentTable === "Articleship Jobs";
+  const primaryDomain = job['Primary Domain'] || job.Category || '';
+  const secondaryDomain = (currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs') ? job['Secondary Domain'] : null;
+  const companyType = job['Company Type'];
+  const firmType = job['Firm Type'];
+  const industryType = job['Industry Type'];
+  const postedText = postedDate ? `Posted ${postedDate}` : "";
+
   const card = document.createElement("article");
   card.className = "job-card-new";
   card.dataset.jobId = job.id;
@@ -319,7 +337,7 @@ function renderJobCard(job) {
             <div class="jc-avatar" style="background:${colors.bg};color:${colors.fg}">${initials}</div>
             <div class="jc-info">
                 <div class="jc-role">${job.Company || "N/A"}</div>
-                <div class="jc-company">${job.Category || ""}</div>
+                <div class="jc-company">${postedText}</div>
             </div>
             <button class="jc-bookmark${isBookmarked(job.id, currentTable) ? " saved" : ""}" aria-label="Save">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="${isBookmarked(job.id, currentTable) ? "currentColor" : "none"}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -328,26 +346,35 @@ function renderJobCard(job) {
             </button>
         </div>
         <div class="jc-chips">
-            ${job.Location ? `<span class="jc-chip">📍 ${job.Location.split(",")[0]}</span>` : ""}
+            ${primaryDomain ? `<span class="jc-chip jc-chip-domain">${primaryDomain}</span>` : ""}
+            ${secondaryDomain ? `<span class="jc-chip jc-chip-domain" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">${secondaryDomain}</span>` : ""}
+            ${companyType ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right: 4px; color: #94a3b8;"></i>${companyType}</span>` : ""}
+            ${firmType ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right: 4px; color: #94a3b8;"></i>${firmType}</span>` : ""}
+            ${industryType ? `<span class="jc-chip"><i class="fa-solid fa-industry" style="margin-right: 4px; color: #94a3b8;"></i>${industryType}</span>` : ""}
             ${job.Experience ? `<span class="jc-chip">${job.Experience}</span>` : ""}
+            ${job.Location ? `<span class="jc-chip"><i class="fa-regular fa-compass" style="margin-right: 4px; color: #94a3b8;"></i>${job.Location.split(",")[0]}</span>` : ""}
         </div>
         <div class="jc-divider"></div>
         <div class="jc-footer">
             <div class="jc-footer-left">
-                ${
-                  job.Salary
-                    ? (() => {
-                        const isStipend =
-                          currentTable === "Industrial Training Job Portal" ||
-                          currentTable === "Articleship Jobs";
-                        const period = isStipend
-                          ? '<span class="jc-salary-period">/month</span>'
-                          : "";
-                        return `<div class="jc-salary">₹${job.Salary}${period}</div>`;
-                      })()
-                    : ""
-                }
-                <div class="jc-meta">${postedDate}${applicants > 0 ? ` · ${applicants} applied` : ""}</div>
+                ${(() => {
+                  if (job.Salary) {
+                    const period = isStipend ? '<span class="jc-salary-period">/month</span>' : "";
+                    return `<div class="jc-salary">₹${job.Salary}${period}</div>`;
+                  } else if (currentTable === "Fresher Jobs" && job["CTC Range"]) {
+                    return `<div class="jc-salary">${job["CTC Range"]}</div>`;
+                  } else if (isStipend && job["Stipend Range"]) {
+                    let range = job["Stipend Range"];
+                    if (range && /^\d+/.test(range.trim())) {
+                      range = `₹${range}`;
+                    }
+                    const period = isStipend ? '<span class="jc-salary-period">/month</span>' : "";
+                    return `<div class="jc-salary">${range}${period}</div>`;
+                  } else {
+                    return "";
+                  }
+                })()}
+                <div class="jc-meta">${applicants > 0 ? `${applicants} applied` : "Be the first to apply!"}</div>
             </div>
             <button class="jc-apply-btn${isApplied ? " applied" : ""}">${isApplied ? "✓ Applied" : "Apply →"}</button>
         </div>`;
@@ -378,10 +405,16 @@ async function fetchJobs() {
 
   try {
     let selectCols =
-      'id, Company, Location, Salary, Description, Created_At, Category, "Application ID", application_count, connect_link';
-    if (currentTable === "Fresher Jobs") selectCols += ", Experience, yoe";
-    else if (currentTable === "Semi Qualified Jobs")
-      selectCols += ", Experience";
+      'id, Company, Location, Salary, Description, Created_At, Category, "Application ID", application_count, connect_link, "Primary Domain", "Company Type", "Industry Type"';
+    if (currentTable === "Fresher Jobs") {
+      selectCols += ', Experience, yoe, "Secondary Domain", Tags, "CTC Range"';
+    } else if (currentTable === "Semi Qualified Jobs") {
+      selectCols += ', Experience, "Secondary Domain", Tags';
+    } else if (currentTable === "Industrial Training Job Portal") {
+      selectCols += ', "Stipend Range", "Functional Tags", "Technology Tags"';
+    } else if (currentTable === "Articleship Jobs") {
+      selectCols += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
+    }
 
     let query = supabaseClient.from(currentTable).select(selectCols);
 
@@ -794,11 +827,31 @@ function showJobDetail(job) {
                         <div class="jd-hero-location">${job.Location || ""}</div>
                     </div>
                 </div>
-                ${job.Category ? `<div class="jd-hero-category">${job.Category}</div>` : ""}
+                <div class="jd-meta-pills">
+                    ${job['Secondary Domain'] ? `<span class="jc-chip jc-chip-domain" style="background-color:#e0f2fe;color:#0369a1;border-color:#bae6fd;">${job['Secondary Domain']}</span>` : ""}
+                    ${job['Company Type'] ? `<span class="jc-chip"><i class="fa-solid fa-building" style="margin-right:4px;color:#94a3b8;"></i>${job['Company Type']}</span>` : ""}
+                    ${job['Firm Type'] ? `<span class="jc-chip"><i class="fa-solid fa-briefcase" style="margin-right:4px;color:#94a3b8;"></i>${job['Firm Type']}</span>` : ""}
+                    ${job['Industry Type'] ? `<span class="jc-chip"><i class="fa-solid fa-industry" style="margin-right:4px;color:#94a3b8;"></i>${job['Industry Type']}</span>` : ""}
+                    ${job.Experience ? `<span class="jc-chip">${job.Experience}</span>` : ""}
+                </div>
                 <div class="jd-stats-grid">
-                    ${job.Salary ? `<div class="jd-stat"><span class="jd-stat-label">${currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs" ? "Salary" : "Stipend"}</span><span class="jd-stat-value">₹${job.Salary}</span></div>` : ""}
+                    ${(job['Primary Domain'] || job.Category) ? `<div class="jd-stat jd-stat-role"><span class="jd-stat-label">Role</span><span class="jd-stat-value jd-stat-role-value">${job['Primary Domain'] || job.Category}</span></div>` : ""}
+                    ${(() => {
+                      const isStipend = currentTable === "Industrial Training Job Portal" || currentTable === "Articleship Jobs";
+                      const label = isStipend ? "Stipend" : "Salary";
+                      if (job.Salary) {
+                        return `<div class="jd-stat"><span class="jd-stat-label">${label}</span><span class="jd-stat-value">₹${job.Salary}${isStipend ? "/mo" : ""}</span></div>`;
+                      } else if (currentTable === "Fresher Jobs" && job["CTC Range"]) {
+                        return `<div class="jd-stat"><span class="jd-stat-label">CTC Range</span><span class="jd-stat-value">${job["CTC Range"]}</span></div>`;
+                      } else if (isStipend && job["Stipend Range"]) {
+                        let range = job["Stipend Range"];
+                        if (range && /^\d+/.test(range.trim())) range = `₹${range}`;
+                        return `<div class="jd-stat"><span class="jd-stat-label">Stipend Range</span><span class="jd-stat-value">${range}/mo</span></div>`;
+                      }
+                      return "";
+                    })()}
                     ${applicants > 0 ? `<div class="jd-stat"><span class="jd-stat-label">Applicants</span><span class="jd-stat-value">${applicants}</span></div>` : ""}
-                    ${job.Created_At ? `<div class="jd-stat"><span class="jd-stat-label">Posted</span><span class="jd-stat-value">${getDaysAgo(job.Created_At)}</span></div>` : ""}
+
                 </div>
             </div>
             ${applyHtml}
@@ -2421,6 +2474,15 @@ function toggleBookmark(job, table) {
     Experience: job.Experience,
     "Application ID": job["Application ID"],
     Description: job.Description,
+    connect_link: job.connect_link,
+    Created_At: job.Created_At,
+    "Primary Domain": job["Primary Domain"],
+    "Secondary Domain": job["Secondary Domain"],
+    "Company Type": job["Company Type"],
+    "Firm Type": job["Firm Type"],
+    "Industry Type": job["Industry Type"],
+    "CTC Range": job["CTC Range"],
+    "Stipend Range": job["Stipend Range"],
     savedAt: new Date().toISOString(),
   });
   saveBookmarks(bms);

@@ -7,7 +7,14 @@
     <title>My Student Club CV Builder</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Apply saved Airy Flow theme before paint to avoid flash -->
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem("msc-theme");
+            if (savedTheme) document.documentElement.setAttribute("data-theme", savedTheme);
+        })();
+    </script>
     <!-- Driver.js for Guided Tour -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css" />
     <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.js.iife.js"></script>
@@ -54,16 +61,22 @@
                     <img src="/assets/logo.png" alt="My Student Club logo">
                     <span class="beta-badge">Beta</span>
                 </a>
-                <div style="display: flex; gap: 6px;">
-                    <button class="btn-icon" onclick="startTour()" title="Take a quick tour"
-                        style="background: #f0f4ff; border-color: var(--primary-light);">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
-                            stroke-width="2.5">
+                <div class="hdr-actions">
+                    <button class="hdr-icon-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle light / dark" aria-label="Toggle theme">
+                        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"></path>
+                        </svg>
+                        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                        </svg>
+                    </button>
+                    <button class="hdr-icon-btn" onclick="startTour()" title="Take a quick tour" aria-label="Help">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="10"></circle>
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
                             <circle cx="12" cy="17" r="0.5" fill="currentColor"></circle>
                         </svg>
-                        <span style="color: var(--primary);">Help</span>
                     </button>
                     <button class="btn-icon btn-magic" onclick="generateAI()" title="Auto-improve with AI">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -1300,6 +1313,15 @@
         </div>
     </div>
 </body>
+<script>
+    // Airy Flow theme toggle — persists to localStorage 'msc-theme' (shared across portal)
+    function toggleTheme() {
+        const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+        const next = isDark ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        try { localStorage.setItem("msc-theme", next); } catch (e) {}
+    }
+</script>
 <script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
 <script src="cv-script.js"></script>
 

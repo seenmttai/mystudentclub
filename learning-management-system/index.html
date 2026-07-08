@@ -362,7 +362,7 @@
       <!-- HEADER -->
       <header class="app-header" id="appHeader">
         <div class="header-left">
-          <a href="\index.html">
+          <a href="../index.html">
             <svg
               class="header-logo"
               xmlns="http://www.w3.org/2000/svg"
@@ -557,7 +557,7 @@
             class="menu-item"
             >Resources</a
           >
-          <a href="/cv-reviewer.html" class="menu-item"
+          <a href="/cv-reviewer/" class="menu-item"
             >CV Review</a
           >
           <a href="/profile.html" class="menu-item"
@@ -717,7 +717,7 @@
           <div class="lms-empty-title">No Enrolled Courses Yet</div>
           <p>Browse our courses to start learning.</p>
           <a
-            href="https://www.mystudentclub.com/#courses"
+            href="/#courses"
             class="lms-empty-link"
             >Browse Courses</a
           >
@@ -823,7 +823,7 @@
           </svg>
           <span>Resources</span>
         </a>
-        <a href="https://mystudentclub.com/cv-reviewer/" class="bnav-item">
+        <a href="/cv-reviewer/" class="bnav-item">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -973,14 +973,14 @@
               this.user = session.user;
               window._lmsLogout = async () => {
                 await supabase.auth.signOut();
-                window.location.href = "https://www.mystudentclub.com/login";
+                window.location.href = "/login";
               };
               if (document.getElementById("lmsGreetingName"))
                 document.getElementById("lmsGreetingName").textContent =
                   this.getUserName();
               await this.fetchUserEnrollments();
             } else {
-              window.location.href = "https://www.mystudentclub.com/login";
+              window.location.href = "/login";
             }
           },
 
@@ -994,7 +994,7 @@
 
           async logout() {
             await supabase.auth.signOut();
-            window.location.href = "https://www.mystudentclub.com/login";
+            window.location.href = "/login";
           },
 
           openReportModal() {
@@ -1119,7 +1119,7 @@
 
           supabase.auth.onAuthStateChange((event, session) => {
             if (event === "SIGNED_OUT") {
-              window.location.href = "https://www.mystudentclub.com/login";
+              window.location.href = "/login";
             }
           });
         },
