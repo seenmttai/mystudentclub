@@ -1524,10 +1524,19 @@ const WZ = (() => {
             collectPrefAnswer();
             advancePref('collected');
         } else if (phase === 'missing') {
+            const field = st.missingQueue[st.missingIdx];
             collectMissingAnswer();
+            if (field && !field.optional && !(st.answers['missing_' + field.id] || '').trim()) {
+                showToast(`${field.label} is required.`, 'warning');
+                return;
+            }
             advanceMissing('collected');
         } else if (phase === 'review') {
             collectReviewAnswers();
+            if (!(getFormValue('name') || '').trim()) {
+                showToast('Full Name is required.', 'warning');
+                return;
+            }
             saveProgress(); // save reviewed/confirmed AI data to Supabase
             st.history.push({ phase: 'review' });
             goTo('preview', 'forward');
