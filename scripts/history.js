@@ -285,7 +285,30 @@ function renderApplicationCard(application) {
 
     return card;
 }
-// Show job details modal (as premium right slide-over)
+// Record application in Supabase when applying from saved view
+async function recordApplicationFromSaved(application) {
+    if (!currentSession) return false;
+    try {
+        const { error } = await supabaseClient
+            .from('job_applications')
+            .insert({
+                user_id: currentSession.user.id,
+                job_id: application.job_id,
+                job_table: application.job_table,
+                applied_at: new Date().toISOString()
+            });
+        if (error && error.code !== '23505') { // ignore duplicate
+            console.error('Error recording application:', error);
+            return false;
+        }
+        return true;
+    } catch (e) {
+        console.error('Application exception:', e);
+        return false;
+    }
+}
+
+// Show job details modal (as premium centered popup)
 function showJobModal(application) {
     const job = application.job;
     const companyName = (job.Company || '').trim();
@@ -332,28 +355,44 @@ function showJobModal(application) {
                 <p>${job.Location}</p>
             </div>
         </div>
-        
-        <div class="modal-meta-tags">
-            ${application.isSaved ? `<span class="app-status-badge" style="background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8;">
+
+        <div class="modal-meta-tags" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+            ${application.isSaved ? `<span class="job-tag" style="background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8;">
                 <svg fill="currentColor" viewBox="0 0 24 24" style="width: 12px; height: 12px; margin-right: 4px;"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
                 Saved ${appliedDate}
-            </span>` : `<span class="app-status-badge">
+            </span>` : `<span class="job-tag" style="background: #ecfdf5; border-color: #a7f3d0; color: #065f46;">
                 <svg fill="currentColor" viewBox="0 0 24 24" style="width: 12px; height: 12px; margin-right: 4px;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                 Applied ${appliedDate}
             </span>`}
-            <span class="app-portal-tag">${portalName}</span>
+            <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">${portalName}</span>
             ${job.Salary ? `<span class="job-tag">${application.job_table.includes('Semi Qualified') || application.job_table.includes('Fresher') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
         </div>
 
+        ${application.isSaved ? `
+        <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
+            <button id="modalApplyNowBtn" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 1.25rem; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #fff; border: none; border-radius: 12px; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(59,130,246,0.25);">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                Apply Now
+            </button>
+        </div>
+        ` : ''}
+
         <div class="modal-section">
-            <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>Application Link</h3>
+            <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>Apply here!</h3>
             ${generateApplicationLinks(job['Application ID'])}
         </div>
 
         <div class="modal-section">
-            <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /></svg>Job Details</h3>
+            <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Job Description</h3>
             <div class="modal-description">${renderMarkdown(job.Description)}</div>
+        </div>
+
+        <div class="modal-footer" style="text-align: center; padding: 1rem; border-top: 1px solid #e5e7eb; margin-top: 1rem;">
+            <p style="color: #6b7280; font-size: 0.9rem;">
+                Found an issue with this job posting?
+                <a href="/contact.html" style="color: #2563eb; text-decoration: none; font-weight: 500;">Report it</a>
+            </p>
         </div>
     `;
 
@@ -382,6 +421,68 @@ function showJobModal(application) {
             });
         });
     });
+
+    // Apply Now button (only in saved view)
+    if (application.isSaved) {
+        const applyNowBtn = dom.modalBody.querySelector('#modalApplyNowBtn');
+        if (applyNowBtn) {
+            applyNowBtn.addEventListener('click', async () => {
+                const appId = job['Application ID'];
+                const firstLink = appId ? appId.split(',')[0].trim() : null;
+
+                // Determine link type
+                let applyHref = null;
+                if (firstLink) {
+                    if (firstLink.toLowerCase().startsWith('http')) {
+                        applyHref = firstLink;
+                    } else if (firstLink.includes('@')) {
+                        applyHref = `mailto:${firstLink}`;
+                    } else {
+                        applyHref = `https://www.google.com/search?q=${encodeURIComponent(firstLink + ' careers')}`;
+                    }
+                }
+
+                // Show loading
+                applyNowBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:0.9rem;"></i> Applying...';
+                applyNowBtn.disabled = true;
+
+                const success = await recordApplicationFromSaved(application);
+
+                if (success) {
+                    // Build full application record and push to allApplications
+                    const newApp = {
+                        ...application,
+                        isSaved: false,
+                        applied_at: new Date().toISOString()
+                    };
+                    delete newApp.isSaved;
+                    allApplications.unshift(newApp);
+
+                    // Remove from saved list
+                    removeSavedJob(application.job_id, application.job_table);
+
+                    // Close modal
+                    closeModal();
+
+                    // Switch to applied view
+                    const appliedBtn = document.getElementById('appliedToggleBtn');
+                    const savedBtn = document.getElementById('savedToggleBtn');
+                    currentViewMode = 'applied';
+                    if (appliedBtn) appliedBtn.classList.add('active');
+                    if (savedBtn) savedBtn.classList.remove('active');
+                    filterAndSortApplications();
+                    updateCounts();
+
+                    // Open the apply link
+                    if (applyHref) window.open(applyHref, '_blank');
+                } else {
+                    applyNowBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg> Apply Now';
+                    applyNowBtn.disabled = false;
+                    alert('Failed to record application. Please try again.');
+                }
+            });
+        }
+    }
 }
 
 // Close drawer modal
