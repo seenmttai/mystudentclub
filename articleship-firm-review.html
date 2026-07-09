@@ -1,0 +1,1918 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Firm Reviews - My Student Club</title>
+    <meta
+      name="description"
+      content="Anonymous reviews for this CA articleship firm — stipend, culture, learning, and more."
+    />
+    <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/scripts/portal-style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: var(--font-main);
+        background: #f4f6fb;
+        color: #1e293b;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── Header ─────────────────────────────────────────────────────────── */
+      .site-header {
+        background: rgba(255, 255, 255, 0.92) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04) !important;
+      }
+      .header-container {
+        max-width: 1550px !important;
+      }
+
+      /* ── Page wrapper ────────────────────────────────────────────────────── */
+      .afd-outer {
+        max-width: 1550px;
+        margin: 0 auto;
+        padding: 2rem 2rem 5rem;
+      }
+
+      /* ── Top bar: back button + page title ──────────────────────────────── */
+      .afd-topbar {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1.25rem;
+        margin-bottom: 1.75rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 1px solid #e2e8f0;
+      }
+      .afd-reviews-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.2;
+      }
+      .afd-reviews-subtitle {
+        font-size: 0.8125rem;
+        color: #64748b;
+        font-weight: 500;
+        margin-top: 0.15rem;
+        display: block;
+      }
+      .afd-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: #1d4ed8;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s;
+      }
+      .afd-back:hover {
+        color: #1e3a8a;
+        border-color: #bfdbfe;
+        background: #eff6ff;
+        transform: translateX(-2px);
+      }
+
+      /* ── 2-col layout ────────────────────────────────────────────────────── */
+      .afd-layout {
+        display: grid;
+        grid-template-columns: 30% 1fr;
+        gap: 1.75rem;
+        align-items: start;
+      }
+
+      /* ── Sidebar ─────────────────────────────────────────────────────────── */
+      .afd-sidebar {
+        position: sticky;
+        top: 90px;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .afd-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+      }
+
+      /* Firm identity */
+      .afd-firm-card-top {
+        padding: 1.375rem 1.375rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.875rem;
+      }
+      .afd-avatar {
+        width: 52px;
+        height: 52px;
+        background: #ffffff;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #2563eb;
+        font-size: 1.5rem;
+        font-weight: 800;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      }
+      .afd-firm-name {
+        font-size: 1.0625rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.2;
+      }
+      .afd-firm-loc {
+        font-size: 0.775rem;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-top: 0.2rem;
+        font-weight: 500;
+      }
+
+      /* Stats grid */
+      .afd-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        margin: 0 1.375rem 1rem;
+        padding: 0.875rem 0;
+      }
+      .afd-stat-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.1rem;
+        text-align: center;
+        border-right: 1px solid #f1f5f9;
+        padding: 0 0.35rem;
+      }
+      .afd-stat-col:last-child {
+        border-right: none;
+      }
+      .afd-stat-val {
+        font-size: 1rem;
+        font-weight: 800;
+        color: #0f172a;
+        display: flex;
+        align-items: center;
+        gap: 0.15rem;
+      }
+      .afd-stat-lbl {
+        font-size: 0.6rem;
+        font-weight: 700;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      /* Sub-ratings bars */
+      .afd-sub-section {
+        padding: 0 1.375rem 1.25rem;
+      }
+      .afd-sub-label-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.3rem;
+      }
+      .afd-sub-label {
+        font-size: 0.775rem;
+        font-weight: 600;
+        color: #475569;
+      }
+      .afd-sub-val {
+        font-size: 0.775rem;
+        font-weight: 700;
+        color: #1e293b;
+      }
+      .afd-bar-track {
+        height: 5px;
+        background: #f1f5f9;
+        border-radius: 999px;
+        overflow: hidden;
+        margin-bottom: 0.625rem;
+      }
+      .afd-bar-track:last-child {
+        margin-bottom: 0;
+      }
+      .afd-bar-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #1d4ed8, #3b82f6);
+        transition: width 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+
+      /* CTA card */
+      .afd-cta-card {
+        background: linear-gradient(
+          135deg,
+          #1d4ed8 0%,
+          #1e3a8a 100%
+        ) !important;
+        border: none !important;
+        border-radius: 18px !important;
+        overflow: hidden;
+        box-shadow: 0 8px 28px rgba(29, 78, 216, 0.22) !important;
+        padding: 1.375rem !important;
+      }
+      .afd-cta-card h3 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 0.35rem;
+      }
+      .afd-cta-card p {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.82);
+        line-height: 1.5;
+        margin-bottom: 1rem;
+      }
+      .afd-write-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background: #fff;
+        color: #1d4ed8;
+        font-family: var(--font-main);
+        font-size: 0.875rem;
+        font-weight: 700;
+        padding: 0.75rem 1.25rem;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        transition: all 0.2s;
+      }
+      .afd-write-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+      }
+      .afd-anon-note {
+        text-align: center;
+        font-size: 0.725rem;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.3rem;
+        margin-top: 0.625rem;
+      }
+
+      /* ── Main column ─────────────────────────────────────────────────────── */
+      .afd-main {
+        min-width: 0;
+      }
+
+      /* Reviews grid */
+      #afd-reviews-list {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      /* Review card */
+      .afd-review-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 0.875rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+        transition:
+          box-shadow 0.2s,
+          border-color 0.2s;
+      }
+      .afd-review-card:hover {
+        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+        border-color: rgba(37, 99, 235, 0.2);
+      }
+
+      /* Review card top */
+      .afd-review-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+      }
+      .afd-anon-block {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .afd-anon-icon {
+        width: 36px;
+        height: 36px;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        font-size: 0.875rem;
+      }
+      .afd-anon-name {
+        font-weight: 700;
+        font-size: 0.875rem;
+        color: #1e293b;
+      }
+      .afd-anon-meta {
+        font-size: 0.7rem;
+        color: #94a3b8;
+        font-weight: 500;
+        margin-top: 0.1rem;
+      }
+
+      .afd-review-top-right {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .afd-score-badge-compact {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: #fffbeb;
+        color: #d97706;
+        border: 1px solid #fef3c7;
+        font-size: 0.775rem;
+        font-weight: 700;
+        padding: 0.25rem 0.55rem;
+        border-radius: 8px;
+        flex-shrink: 0;
+      }
+      .afd-score-badge-compact i {
+        color: #f59e0b;
+        font-size: 0.7rem;
+      }
+
+      .afd-delete-btn {
+        background: none;
+        border: 1px solid #e2e8f0;
+        color: #94a3b8;
+        font-size: 0.7rem;
+        padding: 0.3rem 0.6rem;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-family: var(--font-main);
+        font-weight: 600;
+        flex-shrink: 0;
+        transition: all 0.15s;
+      }
+      .afd-delete-btn:hover {
+        border-color: #fca5a5;
+        color: #dc2626;
+        background: #fff5f5;
+      }
+
+      /* Pills */
+      .afd-review-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        margin-bottom: 0.15rem;
+      }
+
+      .afd-pill-role,
+      .afd-pill-stipend,
+      .afd-rec {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 0.225rem 0.625rem;
+        border-radius: 999px;
+      }
+      .afd-pill-role {
+        color: #1e3a8a;
+        background: #eff6ff;
+        border: 1px solid #dbeafe;
+      }
+      .afd-pill-stipend {
+        color: #065f46;
+        background: #f0fdf4;
+        border: 1px solid #dcfce7;
+      }
+      .afd-rec.yes {
+        color: #16a34a;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+      }
+      .afd-rec.no {
+        color: #dc2626;
+        background: #fff5f5;
+        border: 1px solid #fecaca;
+      }
+
+      /* Sub ratings inline list */
+      .afd-sub-ratings-list {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.625rem;
+        margin-bottom: 0.25rem;
+        padding: 0.1rem 0;
+      }
+      .afd-sub-rating-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.725rem;
+        color: #475569;
+        font-weight: 600;
+      }
+      .afd-sub-rating-item span {
+        color: #0f172a;
+        font-weight: 700;
+      }
+      .afd-sub-rating-item i {
+        color: #f59e0b;
+        font-size: 0.65rem;
+      }
+
+      /* Review text */
+      .afd-review-text {
+        font-size: 0.875rem;
+        line-height: 1.6;
+        color: #475569;
+        margin-bottom: 0.5rem;
+        white-space: pre-line;
+      }
+
+      /* Pros/cons */
+      .afd-pros-cons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        margin-bottom: 0.4rem;
+        margin-top: 0.25rem;
+      }
+      .afd-pros,
+      .afd-cons {
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.775rem;
+        line-height: 1.5;
+        color: #475569;
+        white-space: pre-line;
+      }
+      .afd-pros {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+      }
+      .afd-cons {
+        background: #fff5f5;
+        border: 1px solid #fecaca;
+      }
+      .afd-pros strong,
+      .afd-cons strong {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        margin-bottom: 0.25rem;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        font-weight: 700;
+      }
+      .afd-pros strong {
+        color: #16a34a;
+      }
+      .afd-cons strong {
+        color: #dc2626;
+      }
+
+      /* Tags */
+      .afd-review-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+        margin-bottom: 0.25rem;
+        margin-top: 0.25rem;
+      }
+      .afd-review-tag {
+        font-size: 0.675rem;
+        font-weight: 600;
+        color: #334155;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        padding: 0.2rem 0.5rem;
+        border-radius: 999px;
+      }
+
+      /* ── States ──────────────────────────────────────────────────────────── */
+      .afd-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 6rem 1rem;
+        color: #94a3b8;
+      }
+      .afd-spinner {
+        width: 34px;
+        height: 34px;
+        border: 3px solid #e2e8f0;
+        border-top-color: #1d4ed8;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .afd-empty {
+        text-align: center;
+        padding: 4rem 1rem;
+        color: #94a3b8;
+        grid-column: 1/-1;
+      }
+      .afd-empty i {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+        display: block;
+        opacity: 0.35;
+      }
+      .afd-error {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #dc2626;
+      }
+
+      /* ── Toast ───────────────────────────────────────────────────────────── */
+      .afd-toast {
+        position: fixed;
+        bottom: 1.5rem;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #1e293b;
+        color: #fff;
+        padding: 0.7rem 1.5rem;
+        border-radius: 999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
+        z-index: 2000;
+        opacity: 1;
+        transition: opacity 0.3s;
+        white-space: nowrap;
+      }
+      .afd-toast.hide {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      /* ── Modal ───────────────────────────────────────────────────────────── */
+      .afr-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        background: rgba(10, 16, 32, 0.65);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        overflow-y: auto;
+        padding: 2rem 1rem;
+        align-items: flex-start;
+        justify-content: center;
+      }
+      .afr-modal.active {
+        display: flex;
+      }
+      .afr-modal-card {
+        background: #fff;
+        border-radius: 20px;
+        width: 100%;
+        max-width: 960px;
+        margin: 1.5rem auto;
+        box-shadow: 0 32px 80px rgba(0, 0, 0, 0.22);
+        overflow: visible;
+        display: block;
+        animation: modal-in 0.22s ease-out;
+      }
+      @keyframes modal-in {
+        from {
+          opacity: 0;
+          transform: translateY(20px) scale(0.96);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      .afr-modal-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 1.75rem 1.75rem 1.25rem;
+        border-bottom: 1px solid #f1f5f9;
+      }
+      .afr-modal-header h2 {
+        font-size: 1.25rem;
+        font-weight: 700;
+      }
+      .afr-modal-header p {
+        font-size: 0.8rem;
+        color: #059669;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        margin-top: 0.2rem;
+      }
+      .afr-modal-close {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: #94a3b8;
+        font-size: 0.875rem;
+        flex-shrink: 0;
+        transition: all 0.15s;
+      }
+      .afr-modal-close:hover {
+        background: #fee2e2;
+        color: #dc2626;
+        border-color: #fecaca;
+      }
+      #afr-login-prompt {
+        padding: 2.5rem 1.75rem;
+        text-align: center;
+      }
+      .afr-login-gate i {
+        font-size: 2.5rem;
+        color: #cbd5e1;
+        margin-bottom: 1rem;
+        display: block;
+      }
+      .afr-login-gate p {
+        color: #64748b;
+        margin-bottom: 1.25rem;
+      }
+      #afr-form {
+        padding: 1.5rem 1.75rem 1.75rem;
+        margin: 0;
+      }
+      #afr-fieldset {
+        border: none;
+        padding: 0;
+        margin: 0;
+        overflow: visible;
+      }
+      .afr-form-section {
+        margin-bottom: 1.15rem;
+      }
+      .afr-section-title {
+        font-size: 0.6875rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.09em;
+        color: #94a3b8;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #f1f5f9;
+      }
+      .afr-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.875rem;
+      }
+      .afr-form-row-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 0.875rem;
+      }
+      .afr-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+      }
+      .afr-field label {
+        font-size: 0.8125rem;
+        font-weight: 600;
+        color: #475569;
+      }
+      .afr-field input,
+      .afr-field textarea {
+        font-family: var(--font-main);
+        font-size: 0.9rem;
+        color: #1e293b;
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.65rem 0.875rem;
+        outline: none;
+        resize: vertical;
+        transition:
+          border-color 0.15s,
+          box-shadow 0.15s;
+      }
+      .afr-field input:focus,
+      .afr-field textarea:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        background: #fff;
+      }
+      .afr-field textarea {
+        min-height: 84px;
+      }
+      .afr-ratings-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+      }
+      .afr-rating-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.5rem 0.875rem;
+        background: #f8fafc;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+      }
+      .afr-rating-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #475569;
+        flex-shrink: 0;
+      }
+      .afr-rating-label .req {
+        color: #dc2626;
+      }
+      .afr-star-input {
+        display: flex;
+        align-items: center;
+        gap: 0.1rem;
+      }
+      .afr-star-input button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.2rem;
+        font-size: 1.375rem;
+        line-height: 1;
+        color: #cbd5e1;
+        transition:
+          color 0.12s,
+          transform 0.12s;
+      }
+      .afr-star-input button:hover,
+      .afr-star-input button.filled {
+        color: #f59e0b;
+      }
+      .afr-star-input button:hover {
+        transform: scale(1.18);
+      }
+      .afr-tag-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.625rem;
+      }
+      .afr-tag-pill {
+        position: relative;
+      }
+      .afr-tag-pill input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+      }
+      .afr-tag-pill span {
+        display: inline-block;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        background: #f8fafc;
+        cursor: pointer;
+        transition: all 0.12s;
+      }
+      .afr-tag-pill:hover span {
+        border-color: #93c5fd;
+        color: #2563eb;
+        background: #eff6ff;
+      }
+      .afr-tag-pill input:checked + span {
+        background: #eff6ff;
+        border-color: #3b82f6;
+        color: #2563eb;
+      }
+      .afr-recommend-row {
+        display: flex;
+        align-items: center;
+        gap: 0.625rem;
+        margin-bottom: 1rem;
+      }
+      .afr-recommend-row label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: #475569;
+        cursor: pointer;
+        font-weight: 600;
+      }
+      .afr-recommend-row input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        accent-color: #3b82f6;
+      }
+      .afr-form-footer {
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+        padding: 1.25rem 1.75rem;
+        display: flex;
+        flex-direction: column;
+      }
+      .afr-form-status {
+        font-size: 0.8125rem;
+        min-height: 1.2em;
+        margin-bottom: 0.875rem;
+        font-weight: 600;
+      }
+      .afr-form-status.ok {
+        color: #059669;
+      }
+      .afr-form-status.err {
+        color: #dc2626;
+      }
+      .afr-btn-primary {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: #fff;
+        font-family: var(--font-main);
+        font-size: 0.9375rem;
+        font-weight: 700;
+        padding: 0.8rem 1.5rem;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        text-decoration: none;
+        transition:
+          opacity 0.15s,
+          transform 0.15s,
+          box-shadow 0.15s;
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+      }
+      .afr-btn-primary:hover {
+        opacity: 0.92;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+      }
+      .afr-btn-primary:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      /* ── Responsive ──────────────────────────────────────────────────────── */
+      @media (max-width: 1100px) {
+        #afd-reviews-list {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 900px) {
+        .afd-outer {
+          padding: 1.5rem 1rem 4rem;
+        }
+        .afd-layout {
+          grid-template-columns: 1fr;
+          gap: 1.25rem;
+        }
+        .afd-sidebar {
+          position: static;
+        }
+        .afd-pros-cons {
+          grid-template-columns: 1fr 1fr;
+        }
+        .afr-form-row-4 {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 600px) {
+        #afd-reviews-list {
+          grid-template-columns: 1fr;
+        }
+        .afd-pros-cons {
+          grid-template-columns: 1fr;
+        }
+        .afr-form-row {
+          grid-template-columns: 1fr;
+        }
+        .afr-form-row-4 {
+          grid-template-columns: 1fr;
+        }
+        .afr-ratings-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-container">
+        <a href="/" class="brand-link">
+          <img
+            src="/assets/logo.png"
+            alt="My Student Club"
+            class="brand-logo"
+          />
+        </a>
+        <div class="nav-actions">
+          <div class="auth-buttons-container"></div>
+          <button
+            class="icon-button menu-toggle-btn"
+            id="menuButton"
+            aria-label="Open menu"
+          >
+            <svg
+              width="24"
+              height="24"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="expanded-menu" id="expandedMenu">
+      <button
+        class="icon-button menu-close-btn"
+        id="menuCloseBtn"
+        aria-label="Close menu"
+      >
+        <svg
+          width="24"
+          height="24"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+      <div class="menu-items-container">
+        <a
+          href="/learning-management-system/"
+          class="menu-item"
+          id="lms-nav-link"
+          style="display: none"
+          >My Courses</a
+        >
+        <a
+          href="/history.html"
+          class="menu-item"
+          id="history-nav-link"
+          style="display: none"
+          >My Applications</a
+        >
+        <a href="/ca-industrial-training-program/" class="menu-item"
+          >MSC Industrial Training Program</a
+        >
+        <a href="/articleship-program/" class="menu-item"
+          >MSC Articleship Program</a
+        >
+        <a href="/msc-ca-fresher-program/" class="menu-item"
+          >MSC CA Freshers Program</a
+        >
+        <div class="menu-item-dropdown">
+          <button class="menu-item" id="resourcesDropdownBtn">
+            Free Resources
+            <svg
+              class="dropdown-icon"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+          <div class="dropdown-content" id="resourcesDropdown">
+            <a href="/ca-fresher-training-resources.html" class="dropdown-item"
+              >CA Fresher</a
+            >
+            <a
+              href="/ca-industrial-training-resources.html"
+              class="dropdown-item"
+              >Industrial Training</a
+            >
+            <a href="/ca-articleship-opportunities" class="dropdown-item"
+              >Articleship</a
+            >
+          </div>
+        </div>
+        <div class="menu-item-dropdown">
+          <button class="menu-item" id="toolsDropdownBtn">
+            Tools
+            <svg
+              class="dropdown-icon"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+          <div class="dropdown-content" id="toolsDropdown">
+            <a href="/articleship-firm-reviews.html" class="dropdown-item"
+              >Articleship Firm Reviews</a
+            >
+            <a href="/cv-reviewer/" class="dropdown-item">AI CV Reviewer</a>
+            <a href="/ai-interview.html" class="dropdown-item"
+              >AI Mock Interview Bot</a
+            >
+            <a
+              href="/ICAI-Campus-Shortlisting-Predictor/index.html"
+              class="dropdown-item"
+              >Campus Shortlisting Predictor</a
+            >
+          </div>
+        </div>
+        <a href="/contact.html" class="menu-item">Contact Us</a>
+      </div>
+    </div>
+
+    <div class="afd-outer">
+      <!-- Top bar: back button + page title (shown after data loads) -->
+      <div id="afd-page-header" style="display: none">
+        <div class="afd-topbar">
+          <a href="/articleship-firm-reviews.html" class="afd-back">
+            <i class="fas fa-arrow-left"></i> Back to all firms
+          </a>
+          <div>
+            <h2 class="afd-reviews-title" id="afd-reviews-title">
+              Anonymous Reviews
+            </h2>
+            <span class="afd-reviews-subtitle" id="afd-reviews-subtitle"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading state -->
+      <div id="afd-loading-state">
+        <div class="afd-loading">
+          <div class="afd-spinner"></div>
+          <span>Loading…</span>
+        </div>
+      </div>
+
+      <!-- 2-column layout (shown after data loads) -->
+      <div class="afd-layout" id="afd-layout" style="display: none">
+        <!-- LEFT — Sidebar -->
+        <aside class="afd-sidebar" id="afd-sidebar"></aside>
+
+        <!-- RIGHT — Reviews -->
+        <main class="afd-main" id="afd-main">
+          <div id="afd-reviews-list" aria-live="polite"></div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Write a Review modal -->
+    <div id="review-form-modal" class="afr-modal" aria-hidden="true">
+      <div
+        class="afr-modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="afr-modal-title"
+      >
+        <div class="afr-modal-header">
+          <div>
+            <h2 id="afr-modal-title">Write a Review</h2>
+            <p>
+              <i class="fas fa-user-secret"></i> Anonymous · your name is never
+              shown
+            </p>
+          </div>
+          <button
+            class="afr-modal-close"
+            id="afr-modal-close"
+            aria-label="Close"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div id="afr-login-prompt" hidden>
+          <div class="afr-login-gate">
+            <i class="fas fa-lock"></i>
+            <p>Log in to post an anonymous review</p>
+            <a
+              class="afr-btn-primary"
+              href="/login.html"
+              style="max-width: 200px; margin: 0 auto"
+              >Log in</a
+            >
+          </div>
+        </div>
+        <form id="afr-form">
+          <fieldset id="afr-fieldset">
+            <div class="afr-form-section">
+              <h3 class="afr-section-title">Firm Details</h3>
+              <div class="afr-form-row-4">
+                <div class="afr-field">
+                  <label for="f-firm"
+                    >Firm name <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    id="f-firm"
+                    name="firm_name"
+                    required
+                    placeholder="e.g., Deloitte India"
+                  />
+                </div>
+                <div class="afr-field">
+                  <label for="f-location"
+                    >Location <span style="color: #dc2626">*</span></label
+                  >
+                  <input
+                    id="f-location"
+                    name="location"
+                    required
+                    placeholder="e.g., Mumbai"
+                  />
+                </div>
+                <div class="afr-field">
+                  <label for="f-role">Your role</label>
+                  <input
+                    id="f-role"
+                    name="role_title"
+                    placeholder="e.g., Audit Article"
+                  />
+                </div>
+                <div class="afr-field">
+                  <label for="f-stipend">Stipend (₹)</label>
+                  <input
+                    id="f-stipend"
+                    name="stipend"
+                    type="number"
+                    min="0"
+                    placeholder="e.g., 12000"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="afr-form-section">
+              <h3 class="afr-section-title">Your Ratings</h3>
+              <div class="afr-ratings-grid">
+                <div class="afr-rating-row">
+                  <span class="afr-rating-label"
+                    >Overall <span class="req">*</span></span
+                  >
+                  <div class="afr-star-input" data-name="overall_rating"></div>
+                </div>
+                <div class="afr-rating-row">
+                  <span class="afr-rating-label">Work-Life Balance</span>
+                  <div
+                    class="afr-star-input"
+                    data-name="work_life_balance_rating"
+                  ></div>
+                </div>
+                <div class="afr-rating-row">
+                  <span class="afr-rating-label">Learning &amp; Exposure</span>
+                  <div
+                    class="afr-star-input"
+                    data-name="learning_exposure_rating"
+                  ></div>
+                </div>
+                <div class="afr-rating-row">
+                  <span class="afr-rating-label">Stipend Satisfaction</span>
+                  <div
+                    class="afr-star-input"
+                    data-name="stipend_satisfaction_rating"
+                  ></div>
+                </div>
+              </div>
+            </div>
+            <div class="afr-form-section">
+              <h3 class="afr-section-title">Your Experience</h3>
+              <div class="afr-field" style="margin-bottom: 0.875rem">
+                <label for="f-review">Your review</label>
+                <textarea
+                  id="f-review"
+                  name="review_text"
+                  rows="4"
+                  placeholder="Share your honest experience…"
+                ></textarea>
+              </div>
+              <div class="afr-form-row">
+                <div class="afr-field">
+                  <label for="f-pros">Pros</label>
+                  <textarea
+                    id="f-pros"
+                    name="pros"
+                    rows="2"
+                    placeholder="What's great here?"
+                  ></textarea>
+                </div>
+                <div class="afr-field">
+                  <label for="f-cons">Cons</label>
+                  <textarea
+                    id="f-cons"
+                    name="cons"
+                    rows="2"
+                    placeholder="What could be better?"
+                  ></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="afr-form-section">
+              <h3 class="afr-section-title">Culture</h3>
+              <div class="afr-recommend-row">
+                <label>
+                  <input type="checkbox" name="would_recommend" />
+                  I would recommend this firm to other CA students
+                </label>
+              </div>
+              <div class="afr-tag-group">
+                <label class="afr-tag-pill"
+                  ><input
+                    type="checkbox"
+                    name="culture_tags"
+                    value="Good Mentorship"
+                  /><span>Good Mentorship</span></label
+                >
+                <label class="afr-tag-pill"
+                  ><input
+                    type="checkbox"
+                    name="culture_tags"
+                    value="Heavy Workload"
+                  /><span>Heavy Workload</span></label
+                >
+                <label class="afr-tag-pill"
+                  ><input
+                    type="checkbox"
+                    name="culture_tags"
+                    value="Good Stipend"
+                  /><span>Good Stipend</span></label
+                >
+                <label class="afr-tag-pill"
+                  ><input
+                    type="checkbox"
+                    name="culture_tags"
+                    value="Friendly Team"
+                  /><span>Friendly Team</span></label
+                >
+                <label class="afr-tag-pill"
+                  ><input
+                    type="checkbox"
+                    name="culture_tags"
+                    value="Great Exposure"
+                  /><span>Great Exposure</span></label
+                >
+                <label class="afr-tag-pill"
+                  ><input
+                    type="checkbox"
+                    name="culture_tags"
+                    value="Study Leave"
+                  /><span>Study Leave</span></label
+                >
+              </div>
+            </div>
+            <div class="afr-form-footer">
+              <p id="afr-form-status" class="afr-form-status" role="status"></p>
+              <button type="submit" class="afr-btn-primary">
+                <i class="fas fa-paper-plane"></i> Submit Anonymous Review
+              </button>
+            </div>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      const supabaseUrl = "https://izsggdtdiacxdsjjncdq.supabase.co";
+      const supabaseKey =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0";
+      const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+      async function getCurrentSession() {
+        const {
+          data: { session },
+        } = await supabaseClient.auth.getSession();
+        return session || null;
+      }
+
+      // ── Sidemenu ──────────────────────────────────────────────────────────
+      document
+        .getElementById("menuButton")
+        .addEventListener("click", () => expandedMenu.classList.add("active"));
+      document
+        .getElementById("menuCloseBtn")
+        .addEventListener("click", () =>
+          expandedMenu.classList.remove("active"),
+        );
+      const expandedMenu = document.getElementById("expandedMenu");
+      document.addEventListener("click", (e) => {
+        if (
+          expandedMenu.classList.contains("active") &&
+          !expandedMenu.contains(e.target) &&
+          !document.getElementById("menuButton").contains(e.target)
+        )
+          expandedMenu.classList.remove("active");
+      });
+      document
+        .querySelectorAll(".menu-item-dropdown > .menu-item")
+        .forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const panel = btn.nextElementSibling;
+            const icon = btn.querySelector(".dropdown-icon");
+            if (panel) panel.classList.toggle("active");
+            if (icon) icon.classList.toggle("open");
+          });
+        });
+
+      // ── Helpers ───────────────────────────────────────────────────────────
+      function escapeHTML(s) {
+        return String(s ?? "").replace(
+          /[&<>"']/g,
+          (c) =>
+            ({
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;",
+            })[c],
+        );
+      }
+
+      const AVATAR_COLORS = [
+        "#1e3a8a",
+        "#1d4ed8",
+        "#2563eb",
+        "#0284c7",
+        "#475569",
+        "#334155",
+      ];
+      function firmColor(name) {
+        let h = 0;
+        for (const c of String(name))
+          h = (h * 31 + c.charCodeAt(0)) & 0x7fffffff;
+        return AVATAR_COLORS[h % AVATAR_COLORS.length];
+      }
+
+      function avg(nums) {
+        const xs = nums.filter((n) => typeof n === "number");
+        return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
+      }
+
+      function starsHTML(v) {
+        if (!v) return "";
+        const full = Math.round(v);
+        let s = "";
+        for (let i = 1; i <= 5; i++)
+          s += `<i class="${i <= full ? "fas" : "far"} fa-star"></i>`;
+        return s;
+      }
+
+      function relTime(iso) {
+        const d = (Date.now() - new Date(iso)) / 86400000;
+        if (d < 1) return "today";
+        if (d < 30) return `${Math.floor(d)}d ago`;
+        if (d < 365) return `${Math.floor(d / 30)}mo ago`;
+        return `${Math.floor(d / 365)}y ago`;
+      }
+
+      function showToast(msg) {
+        let t = document.querySelector(".afd-toast");
+        if (!t) {
+          t = document.createElement("div");
+          t.className = "afd-toast";
+          document.body.appendChild(t);
+        }
+        t.textContent = msg;
+        t.classList.remove("hide");
+        clearTimeout(t._t);
+        t._t = setTimeout(() => t.classList.add("hide"), 3000);
+      }
+
+      // ── Firm from URL ─────────────────────────────────────────────────────
+      const FIRM_NAME = decodeURIComponent(
+        new URLSearchParams(location.search).get("firm") || "",
+      );
+
+      if (!FIRM_NAME) {
+        document.getElementById("afd-loading-state").innerHTML =
+          '<div class="afd-error"><i class="fas fa-triangle-exclamation"></i><p>No firm specified.</p></div>';
+      } else {
+        document.title = `${FIRM_NAME} Reviews - My Student Club`;
+        loadFirmPage();
+      }
+
+      let MY_REVIEW_IDS = new Set();
+
+      async function loadFirmPage() {
+        document.getElementById("afd-loading-state").innerHTML =
+          '<div class="afd-loading"><div class="afd-spinner"></div><span>Loading…</span></div>';
+        document.getElementById("afd-loading-state").style.display = "";
+        document.getElementById("afd-layout").style.display = "none";
+
+        try {
+          const { data: reviews, error } = await supabaseClient
+            .from("articleship_firm_reviews_public")
+            .select("*")
+            .ilike("firm_name", FIRM_NAME)
+            .order("created_at", { ascending: false });
+          if (error) throw error;
+
+          const session = await getCurrentSession();
+          if (session) {
+            const { data: myRows } = await supabaseClient
+              .from("articleship_firm_reviews")
+              .select("id")
+              .eq("user_id", session.user.id)
+              .ilike("firm_name", FIRM_NAME);
+            MY_REVIEW_IDS = new Set((myRows || []).map((r) => r.id));
+          }
+
+          document.getElementById("afd-loading-state").style.display = "none";
+          document.getElementById("afd-page-header").style.display = "block";
+          document.getElementById("afd-layout").style.display = "grid";
+
+          renderSidebar(reviews);
+          renderReviews(reviews);
+        } catch (e) {
+          document.getElementById("afd-loading-state").innerHTML =
+            `<div class="afd-error"><i class="fas fa-triangle-exclamation"></i><p>${escapeHTML(e.message)}</p></div>`;
+        }
+      }
+
+      function renderSidebar(reviews) {
+        const color = firmColor(FIRM_NAME);
+        const initial = FIRM_NAME.trim()[0].toUpperCase();
+        const location = reviews[0]?.location || "—";
+        const overallAvg = avg(reviews.map((r) => r.overall_rating));
+        const wlbAvg = avg(reviews.map((r) => r.work_life_balance_rating));
+        const learnAvg = avg(reviews.map((r) => r.learning_exposure_rating));
+        const stipendSatAvg = avg(
+          reviews.map((r) => r.stipend_satisfaction_rating),
+        );
+        const stipends = reviews
+          .map((r) => r.stipend)
+          .filter((s) => typeof s === "number");
+        const avgStipend = stipends.length
+          ? Math.round(stipends.reduce((a, b) => a + b, 0) / stipends.length)
+          : null;
+
+        const subRatings = [
+          { label: "Work-Life Balance", val: wlbAvg },
+          { label: "Learning & Exposure", val: learnAvg },
+          { label: "Stipend Satisfaction", val: stipendSatAvg },
+        ].filter((s) => s.val !== null);
+
+        const subHTML = subRatings.length
+          ? `
+        <div class="afd-sub-section">
+          ${subRatings
+            .map(
+              (s) => `
+            <div class="afd-sub-label-row">
+              <span class="afd-sub-label">${escapeHTML(s.label)}</span>
+              <span class="afd-sub-val">${s.val.toFixed(1)}</span>
+            </div>
+            <div class="afd-bar-track"><div class="afd-bar-fill" style="width:${((s.val / 5) * 100).toFixed(1)}%"></div></div>
+          `,
+            )
+            .join("")}
+        </div>`
+          : "";
+
+        const ratingText = overallAvg ? overallAvg.toFixed(1) : "—";
+        const stipendText = avgStipend
+          ? avgStipend >= 1000
+            ? "₹" + (avgStipend / 1000).toFixed(1).replace(".0", "") + "k"
+            : "₹" + avgStipend
+          : "—";
+
+        document.getElementById("afd-sidebar").innerHTML = `
+        <div class="afd-card afd-firm-card">
+          <div class="afd-firm-card-top">
+            <div class="afd-avatar">${initial}</div>
+            <div>
+              <div class="afd-firm-name">${escapeHTML(FIRM_NAME)}</div>
+              <div class="afd-firm-loc"><i class="fas fa-location-dot"></i> ${escapeHTML(location)}</div>
+            </div>
+          </div>
+          <div class="afd-stats-grid">
+            <div class="afd-stat-col">
+              <div class="afd-stat-val">${ratingText} <i class="fas fa-star" style="color:#f59e0b;font-size:0.7rem"></i></div>
+              <div class="afd-stat-lbl">Avg Rating</div>
+            </div>
+            <div class="afd-stat-col">
+              <div class="afd-stat-val">${reviews.length}</div>
+              <div class="afd-stat-lbl">${reviews.length === 1 ? "Review" : "Reviews"}</div>
+            </div>
+            <div class="afd-stat-col">
+              <div class="afd-stat-val">${stipendText}</div>
+              <div class="afd-stat-lbl">Avg Stipend</div>
+            </div>
+          </div>
+          ${subHTML}
+        </div>
+        <div class="afd-card afd-cta-card">
+          <h3>Share Your Experience</h3>
+          <p>Help other CA students make informed career decisions. Your submission is 100% anonymous.</p>
+          <button id="open-review-btn" class="afd-write-btn">
+            <i class="fas fa-pen"></i> Write a Review
+          </button>
+          <div class="afd-anon-note"><i class="fas fa-user-secret"></i> Posted anonymously</div>
+        </div>`;
+
+        document
+          .getElementById("open-review-btn")
+          .addEventListener("click", openReviewModal);
+      }
+
+      function renderReviews(reviews) {
+        const subTitleText = `${reviews.length} verified review${reviews.length !== 1 ? "s" : ""} submitted anonymously by articleship students`;
+        document.getElementById("afd-reviews-title").textContent =
+          "Anonymous Reviews";
+        document.getElementById("afd-reviews-subtitle").textContent =
+          subTitleText;
+
+        const list = document.getElementById("afd-reviews-list");
+
+        if (!reviews.length) {
+          list.innerHTML =
+            '<div class="afd-empty"><i class="fas fa-comment-slash"></i><p>No reviews yet — be the first!</p></div>';
+          return;
+        }
+
+        list.innerHTML = reviews
+          .map((r) => {
+            const isOwn = MY_REVIEW_IDS.has(r.id);
+            const deleteBtn = isOwn
+              ? `<button class="afd-delete-btn" data-id="${r.id}"><i class="fas fa-trash"></i> Delete</button>`
+              : "";
+
+            const recHTML =
+              r.would_recommend === true
+                ? '<span class="afd-rec yes"><i class="fas fa-circle-check"></i> Recommends this firm</span>'
+                : r.would_recommend === false
+                  ? '<span class="afd-rec no"><i class="fas fa-circle-xmark"></i> Does not recommend</span>'
+                  : "";
+
+            const metaPills = [
+              r.role_title
+                ? `<span class="afd-pill-role"><i class="fas fa-briefcase"></i> ${escapeHTML(r.role_title)}</span>`
+                : "",
+              r.stipend != null
+                ? `<span class="afd-pill-stipend"><i class="fas fa-indian-rupee-sign"></i> ${Number(r.stipend).toLocaleString("en-IN")}/mo</span>`
+                : "",
+              recHTML,
+            ]
+              .filter(Boolean)
+              .join("");
+
+            const subRatingsHTML = [
+              r.work_life_balance_rating
+                ? `<span class="afd-sub-rating-item">WLB: <span>${r.work_life_balance_rating}.0</span> <i class="fas fa-star"></i></span>`
+                : "",
+              r.learning_exposure_rating
+                ? `<span class="afd-sub-rating-item">Learning: <span>${r.learning_exposure_rating}.0</span> <i class="fas fa-star"></i></span>`
+                : "",
+              r.stipend_satisfaction_rating
+                ? `<span class="afd-sub-rating-item">Stipend: <span>${r.stipend_satisfaction_rating}.0</span> <i class="fas fa-star"></i></span>`
+                : "",
+            ]
+              .filter(Boolean)
+              .join('<span style="color:#e2e8f0;font-size:0.8rem">•</span>');
+
+            const prosConsHTML =
+              r.pros || r.cons
+                ? `
+          <div class="afd-pros-cons">
+            ${r.pros ? `<div class="afd-pros"><strong><i class="fas fa-circle-check"></i> Pros</strong>${escapeHTML(r.pros)}</div>` : ""}
+            ${r.cons ? `<div class="afd-cons"><strong><i class="fas fa-circle-xmark"></i> Cons</strong>${escapeHTML(r.cons)}</div>` : ""}
+          </div>`
+                : "";
+
+            const tagsHTML = (r.culture_tags || []).length
+              ? `<div class="afd-review-tags">${r.culture_tags.map((t) => `<span class="afd-review-tag">${escapeHTML(t)}</span>`).join("")}</div>`
+              : "";
+
+            return `
+          <div class="afd-review-card" data-id="${r.id}">
+            <div class="afd-review-top">
+              <div class="afd-anon-block">
+                <div class="afd-anon-icon"><i class="fas fa-user-secret"></i></div>
+                <div>
+                  <div class="afd-anon-name">Anonymous</div>
+                  <div class="afd-anon-meta">${relTime(r.created_at)}</div>
+                </div>
+              </div>
+              <div class="afd-review-top-right">
+                <span class="afd-score-badge-compact"><i class="fas fa-star"></i> ${r.overall_rating}.0</span>
+                ${deleteBtn}
+              </div>
+            </div>
+            ${metaPills ? `<div class="afd-review-pills">${metaPills}</div>` : ""}
+            ${subRatingsHTML ? `<div class="afd-sub-ratings-list">${subRatingsHTML}</div>` : ""}
+            ${r.review_text ? `<p class="afd-review-text">${escapeHTML(r.review_text)}</p>` : ""}
+            ${prosConsHTML}
+            ${tagsHTML}
+          </div>`;
+          })
+          .join("");
+
+        list.querySelectorAll(".afd-delete-btn").forEach((btn) => {
+          btn.addEventListener("click", () =>
+            handleDelete(btn.dataset.id, btn),
+          );
+        });
+      }
+
+      async function handleDelete(reviewId, btn) {
+        if (!confirm("Delete your review? This cannot be undone.")) return;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+        try {
+          const { error } = await supabaseClient
+            .from("articleship_firm_reviews")
+            .delete()
+            .eq("id", reviewId);
+          if (error) throw error;
+          btn.closest(".afd-review-card").remove();
+          showToast("Review deleted.");
+          setTimeout(loadFirmPage, 600);
+        } catch (e) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fas fa-trash"></i> Delete';
+          showToast("Could not delete: " + e.message);
+        }
+      }
+
+      // ── Modal ─────────────────────────────────────────────────────────────
+      function initStarInputs() {
+        document.querySelectorAll(".afr-star-input").forEach((group) => {
+          group.dataset.value = "";
+          for (let i = 1; i <= 5; i++) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.innerHTML = '<i class="far fa-star"></i>';
+            btn.dataset.v = i;
+            btn.setAttribute("aria-label", `${i} star`);
+            btn.addEventListener("mouseenter", () => hoverStars(group, i));
+            btn.addEventListener("mouseleave", () => refreshStars(group));
+            btn.addEventListener("click", () => setStars(group, i));
+            group.appendChild(btn);
+          }
+        });
+      }
+
+      function hoverStars(group, v) {
+        group.querySelectorAll("button").forEach((b, idx) => {
+          b.querySelector("i").className =
+            idx < v ? "fas fa-star" : "far fa-star";
+          b.classList.toggle("filled", idx < v);
+        });
+      }
+      function refreshStars(group) {
+        const v = Number(group.dataset.value) || 0;
+        group.querySelectorAll("button").forEach((b, idx) => {
+          b.querySelector("i").className =
+            idx < v ? "fas fa-star" : "far fa-star";
+          b.classList.toggle("filled", idx < v);
+        });
+      }
+      function setStars(group, v) {
+        const current = Number(group.dataset.value) || 0;
+        if (current === v) {
+          group.dataset.value = "";
+        } else {
+          group.dataset.value = String(v);
+        }
+        refreshStars(group);
+      }
+
+      const modal = document.getElementById("review-form-modal");
+      let lastFocused = null;
+
+      async function openReviewModal() {
+        lastFocused = document.activeElement;
+        const session = await getCurrentSession();
+        document.getElementById("afr-login-prompt").hidden = !!session;
+        document.getElementById("afr-fieldset").disabled = !session;
+        if (session) {
+          const fi = document.getElementById("f-firm");
+          if (fi) {
+            fi.value = FIRM_NAME;
+            fi.readOnly = true;
+          }
+        }
+        modal.classList.add("active");
+        modal.setAttribute("aria-hidden", "false");
+        const first = session
+          ? document.getElementById("f-location")
+          : modal.querySelector("#afr-login-prompt a");
+        if (first) first.focus();
+      }
+
+      function closeReviewModal() {
+        modal.classList.remove("active");
+        modal.setAttribute("aria-hidden", "true");
+        if (lastFocused) lastFocused.focus();
+      }
+
+      document
+        .getElementById("afr-modal-close")
+        .addEventListener("click", closeReviewModal);
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeReviewModal();
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modal.classList.contains("active"))
+          closeReviewModal();
+      });
+
+      modal.addEventListener("keydown", (e) => {
+        if (e.key !== "Tab" || !modal.classList.contains("active")) return;
+        const focusable = [
+          ...modal.querySelectorAll("button,[href],input,select,textarea"),
+        ].filter((el) => !el.disabled && el.offsetParent !== null);
+        if (!focusable.length) return;
+        const first = focusable[0],
+          last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      });
+
+      async function handleReviewSubmit(e) {
+        e.preventDefault();
+        const status = document.getElementById("afr-form-status");
+        const session = await getCurrentSession();
+        if (!session) {
+          status.textContent = "Please log in first.";
+          return;
+        }
+
+        const form = e.target;
+        const overall = Number(
+          document.querySelector('.afr-star-input[data-name="overall_rating"]')
+            .dataset.value,
+        );
+        if (!overall) {
+          status.textContent = "Please give an overall rating.";
+          status.className = "afr-form-status err";
+          return;
+        }
+
+        const starVal = (name) => {
+          const v = Number(
+            document.querySelector(`.afr-star-input[data-name="${name}"]`)
+              .dataset.value,
+          );
+          return v || null;
+        };
+        const tags = [
+          ...form.querySelectorAll('input[name="culture_tags"]:checked'),
+        ].map((c) => c.value);
+
+        const row = {
+          user_id: session.user.id,
+          firm_name: document.getElementById("f-firm").value.trim(),
+          location: document.getElementById("f-location").value.trim(),
+          role_title: document.getElementById("f-role").value.trim() || null,
+          stipend: document.getElementById("f-stipend").value
+            ? parseInt(document.getElementById("f-stipend").value, 10)
+            : null,
+          overall_rating: overall,
+          work_life_balance_rating: starVal("work_life_balance_rating"),
+          learning_exposure_rating: starVal("learning_exposure_rating"),
+          stipend_satisfaction_rating: starVal("stipend_satisfaction_rating"),
+          review_text: document.getElementById("f-review").value.trim() || null,
+          pros: document.getElementById("f-pros").value.trim() || null,
+          cons: document.getElementById("f-cons").value.trim() || null,
+          culture_tags: tags,
+          would_recommend: form.elements["would_recommend"].checked,
+        };
+
+        const btn = form.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+
+        try {
+          const { error } = await supabaseClient
+            .from("articleship_firm_reviews")
+            .insert([row]);
+          if (error) {
+            if (error.code === "23505")
+              throw new Error("You've already reviewed this firm.");
+            throw error;
+          }
+          status.textContent = "✓ Your review is posted!";
+          status.className = "afr-form-status ok";
+          form.reset();
+          document.getElementById("f-firm").value = FIRM_NAME;
+          document.querySelectorAll(".afr-star-input").forEach((g) => {
+            g.dataset.value = "";
+            refreshStars(g);
+          });
+          setTimeout(() => {
+            closeReviewModal();
+            status.textContent = "";
+            loadFirmPage();
+          }, 1400);
+        } catch (err) {
+          status.textContent = err.message;
+          status.className = "afr-form-status err";
+        } finally {
+          btn.disabled = false;
+          btn.innerHTML =
+            '<i class="fas fa-paper-plane"></i> Submit Anonymous Review';
+        }
+      }
+
+      document
+        .getElementById("afr-form")
+        .addEventListener("submit", handleReviewSubmit);
+      initStarInputs();
+    </script>
+  </body>
+</html>

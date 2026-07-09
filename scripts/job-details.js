@@ -2,6 +2,12 @@
 import { getDaysAgo } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
+function isSalaryDisclosed(val) {
+    if (!val) return false;
+    const clean = val.toString().replace(/[₹\s\-\.]/g, '').toLowerCase();
+    return clean !== '' && clean !== 'notdisclosed' && clean !== 'nil' && clean !== 'null' && clean !== 'na';
+}
+
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
@@ -20,7 +26,13 @@ const TABLE_MAP = {
     "articleship": "Articleship Jobs"
 };
 
+let currentSession = null;
+
 async function init() {
+    currentSession = await getCurrentSession();
+    if (currentSession && currentSession.user) {
+        prefetchEnrollmentStatus(currentSession.user.id);
+    }
     const params = new URLSearchParams(window.location.search);
     const id = params.get('id');
 
@@ -129,7 +141,7 @@ function renderJob(job, tableName) {
     const companyName = (job.Company || 'Company Name').trim();
     const companyInitial = companyName.charAt(0).toUpperCase();
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'Recently';
-    const salary = job.Salary ? `₹${job.Salary}` : '';
+    const salary = isSalaryDisclosed(job.Salary) ? `₹${job.Salary}` : '';
     const location = job.Location || 'Remote / Unspecified';
     const category = job.Category || 'General';
     const description = job.Description || 'No description provided.';
@@ -245,17 +257,16 @@ function renderJob(job, tableName) {
 
     const connectPeersBtn = container.querySelector('#connectPeersBtn');
     if (connectPeersBtn) {
-        connectPeersBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const session = await getCurrentSession();
-            if (!session) {
+        connectPeersBtn.addEventListener('click', (e) => {
+            if (!currentSession) {
+                e.preventDefault();
                 window.location.href = '/login.html';
                 return;
             }
-            const isEnrolled = await checkEnrollmentForTable(tableName, session.user.id);
-            if (isEnrolled) {
-                window.open(connectLink, '_blank');
+            if (isEnrolledSync(tableName)) {
+                // let natural link target open
             } else {
+                e.preventDefault();
                 showEnrollmentRequiredPopup();
             }
         });
@@ -263,17 +274,16 @@ function renderJob(job, tableName) {
 
     const originalPostBtn = container.querySelector('#originalPostBtn');
     if (originalPostBtn) {
-        originalPostBtn.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const session = await getCurrentSession();
-            if (!session) {
+        originalPostBtn.addEventListener('click', (e) => {
+            if (!currentSession) {
+                e.preventDefault();
                 window.location.href = '/login.html';
                 return;
             }
-            const isEnrolled = await checkEnrollmentForTable(tableName, session.user.id);
-            if (isEnrolled) {
-                window.open(job.posts_link, '_blank');
+            if (isEnrolledSync(tableName)) {
+                // let natural link target open
             } else {
+                e.preventDefault();
                 showEnrollmentRequiredPopup();
             }
         });
@@ -367,14 +377,12 @@ async function handleAiApply(job, buttonElement, tableName) {
     const spinner = buttonElement.querySelector('.fa-spinner');
     const originalText = btnText.textContent;
 
-    const session = await getCurrentSession();
-    if (!session) {
+    if (!currentSession) {
         window.location.href = '/login.html';
         return;
     }
 
-    const isEnrolled = await checkEnrollmentForTable(tableName, session.user.id);
-    if (!isEnrolled) {
+    if (!isEnrolledSync(tableName)) {
         showEnrollmentRequiredPopup();
         return;
     }
@@ -473,6 +481,37 @@ function showError(msg) {
 }
 
 let userEnrollmentsCache = null;
+let enrollmentStatusCache = null;
+
+async function prefetchEnrollmentStatus(userId) {
+    try {
+        const { count: anyCount, error: e1 } = await supabaseClient
+            .from('enrollment')
+            .select('course', { count: 'exact', head: true })
+            .eq('uuid', userId);
+        if (e1) throw e1;
+        const hasAny = (anyCount || 0) > 0;
+        enrollmentStatusCache = { any: hasAny, industrialTraining: false, freshers: false };
+        if (hasAny) {
+            const [r1, r2] = await Promise.all([
+                supabaseClient.from('enrollment').select('course', { count: 'exact', head: true }).eq('uuid', userId).eq('course', 'industrial-training-mastery'),
+                supabaseClient.from('enrollment').select('course', { count: 'exact', head: true }).eq('uuid', userId).eq('course', 'msc-ca-freshers-program')
+            ]);
+            enrollmentStatusCache.industrialTraining = (r1.count || 0) > 0;
+            enrollmentStatusCache.freshers = (r2.count || 0) > 0;
+        }
+    } catch (e) {
+        console.error('Failed to prefetch enrollment:', e);
+        enrollmentStatusCache = { any: false, industrialTraining: false, freshers: false };
+    }
+}
+
+function isEnrolledSync(tableName) {
+    if (!enrollmentStatusCache) return false;
+    if (tableName === 'Industrial Training Job Portal') return enrollmentStatusCache.industrialTraining;
+    if (tableName === 'Fresher Jobs') return enrollmentStatusCache.freshers;
+    return enrollmentStatusCache.any;
+}
 
 async function getUserEnrollments(userId) {
     if (userEnrollmentsCache !== null) {
