@@ -2747,3 +2747,108 @@ body:has(.portal-nav-bar) {
     border: none !important;
   }
 }
+
+.cv-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(31, 41, 55, 0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2100;
+  padding: 1rem;
+  opacity: 0;
+  transition: opacity var(--transition-std);
+}
+
+.cv-popup-overlay.show {
+  opacity: 1;
+}
+
+.cv-popup-card {
+  background: var(--surface-bg);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 380px;
+  padding: 2rem 1.75rem;
+  text-align: center;
+  transform: translateY(20px) scale(0.98);
+  transition: transform var(--transition-std);
+}
+
+.cv-popup-overlay.show .cv-popup-card {
+  transform: translateY(0) scale(1);
+}
+
+.cv-popup-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1.25rem;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  background-color: #eff6ff;
+  color: var(--primary-brand);
+}
+
+.cv-popup-card h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0.6rem;
+}
+
+.cv-popup-card p {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.cv-popup-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cv-popup-btn-primary,
+.cv-popup-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.cv-popup-btn-primary {
+  background-color: var(--primary-brand);
+  color: #ffffff;
+  border: none;
+}
+
+.cv-popup-btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.cv-popup-btn-secondary {
+  background-color: var(--surface-bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-medium);
+}
+
+.cv-popup-btn-secondary:hover {
+  background-color: var(--neutral-bg);
+}

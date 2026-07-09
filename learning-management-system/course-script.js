@@ -1361,8 +1361,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     }
 
-                    const proxyUrl = `https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(viewData.signedUrl)}`;
-                    let viewerUrl = `/ca-resource/?pdf=${encodeURIComponent(proxyUrl)}`;
+                    let viewerUrl = `/ca-resource/?pdf=${encodeURIComponent(viewData.signedUrl)}`;
                     if (dlUrl) {
                         viewerUrl += `&dl=${encodeURIComponent(dlUrl)}`;
                     }

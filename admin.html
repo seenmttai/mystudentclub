@@ -2315,8 +2315,10 @@
         if (!data || data.length === 0) break;
 
         rows.push(...data);
-        if (data.length < PROFILE_EXPORT_BATCH_SIZE) break;
-        from += PROFILE_EXPORT_BATCH_SIZE;
+        // Supabase/PostgREST can silently cap a page below PROFILE_EXPORT_BATCH_SIZE
+        // (server-side max-rows setting), so a short page does not mean "last page".
+        // Only stop once a request returns nothing at all.
+        from += data.length;
       }
 
       return rows;
@@ -2359,8 +2361,9 @@
         if (error) throw error;
         if (!data || data.length === 0) break;
         rows.push(...data);
-        if (data.length < batchSize) break;
-        from += batchSize;
+        // Supabase/PostgREST can silently cap a page below batchSize
+        // (server-side max-rows setting), so a short page does not mean "last page".
+        from += data.length;
       }
       return rows;
     }
