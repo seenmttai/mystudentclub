@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Resume</title>
+    <style>
+        :root {
+            --banner-bg: #0E4660;
+            --label-bg: #DAE9F7;
+            --page-bg: #FFFFFF;
+            --viewer-bg: #525659;
+            --text: #000000;
+            --banner-txt: #FFFFFF;
+            --border-out: #000000;
+            --border-in: #155F82;
+            --link-email: #0000FF;
+            --link-li: #0000FF;
+            --font-main: 'Times New Roman', Times, Georgia, serif;
+            --font-emoji: 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif;
+            --cs: 1;
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background: var(--viewer-bg);
+            font-family: var(--font-main);
+            color: var(--text);
+            min-height: 100vh;
+            width: 100vw;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #zoom-wrapper {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            padding: 24px 0 32px;
+        }
+
+        #cv-page {
+            position: relative;
+            width: 1000px;
+            min-height: 1413.94px;
+            background: var(--page-bg);
+            color: var(--text);
+            padding: 52px 35px 35px;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, .5);
+            flex-shrink: 0;
+            transform-origin: top center;
+            font-size: calc(16.79px * var(--cs));
+            line-height: 1.25;
+        }
+
+        .cv-name {
+            display: block;
+            text-align: center;
+            font-weight: 700;
+            font-size: calc(23.51px * var(--cs));
+            line-height: calc(27px * var(--cs));
+            margin-bottom: calc(2px * var(--cs));
+        }
+
+        .cv-contact {
+            display: block;
+            text-align: center;
+            font-size: calc(15.11px * var(--cs));
+            line-height: calc(22px * var(--cs));
+            font-family: var(--font-main);
+            font-weight: 400;
+            margin-bottom: calc(14px * var(--cs));
+        }
+
+        .cv-contact *,
+        .cv-contact a {
+            font-family: inherit;
+            font-size: inherit;
+            line-height: inherit;
+            font-weight: inherit;
+        }
+
+        .cv-contact .emoji { font-family: var(--font-emoji); }
+        .cv-contact a { color: var(--link-email); text-decoration: none; }
+        .cv-contact a.li { color: var(--link-li); }
+        .cv-contact a:hover { text-decoration: underline; }
+        .cv-contact .sep { margin: 0 calc(4px * var(--cs)); }
+
+        .cv-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+            font-size: calc(16.79px * var(--cs));
+            line-height: 1.25;
+        }
+
+        .cv-table td,
+        .cv-table th {
+            border: 1px solid var(--border-in);
+            padding: calc(4px * var(--cs)) calc(6px * var(--cs));
+            vertical-align: top;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+
+        .cv-table tr:first-child td,
+        .cv-table tr:first-child th { border-top-color: var(--border-out); }
+        .cv-table tr:last-child td,
+        .cv-table tr:last-child th { border-bottom-color: var(--border-out); }
+        .cv-table tr > :first-child { border-left-color: var(--border-out); }
+        .cv-table tr > :last-child { border-right-color: var(--border-out); }
+
+        .cv-table .c1 { width: 15.41%; }
+        .cv-table .c2 { width: 13.80%; }
+        .cv-table .c3 { width: 29.78%; }
+        .cv-table .c4 { width: 9.59%; }
+        .cv-table .c5 { width: 9.64%; }
+        .cv-table .c6 { width: 21.78%; }
+
+        .sh {
+            background: var(--banner-bg) !important;
+            color: var(--banner-txt) !important;
+            font-weight: 700;
+            vertical-align:middle;
+            padding: calc(5px * var(--cs)) calc(6px * var(--cs));
+            border-color: var(--border-out) !important;
+        }
+
+        .subh {
+            background: var(--label-bg);
+            font-weight: 700;
+            vertical-align: middle;
+            padding: calc(4px * var(--cs)) calc(6px * var(--cs));
+        }
+
+        .co {
+            background: var(--label-bg);
+            vertical-align: middle;
+            text-align: left;
+            padding: calc(4px * var(--cs)) calc(6px * var(--cs));
+        }
+
+        .work-date-cell {
+            text-align: right;
+            white-space: nowrap;
+            padding-left: calc(3px * var(--cs));
+            padding-right: calc(3px * var(--cs));
+            font-size: calc(13.4px * var(--cs));
+            line-height: calc(18px * var(--cs));
+            word-wrap: normal !important;
+            overflow-wrap: normal !important;
+            word-break: normal !important;
+        }
+
+        .content-full {
+            width: 100% !important;
+        }
+
+        .lb {
+            background: var(--label-bg);
+            font-weight: 700;
+            text-align: left;
+            vertical-align: middle;
+            padding: calc(4px * var(--cs));
+            word-break: break-word;
+        }
+
+        .qd,
+        .qdc {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .cc { vertical-align: top; }
+        .cc > p { line-height: 1.3; }
+
+        .cv-bullets {
+            list-style: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .cv-bullets > li {
+            position: relative;
+            padding-left: calc(13px * var(--cs));
+            line-height: 1.3;
+            margin: 0 0 calc(2px * var(--cs)) !important;
+        }
+
+        .cv-bullets > li:last-child { margin-bottom: 0 !important; }
+
+        .cv-bullets > li::before {
+            content: '\2022';
+            position: absolute;
+            left: calc(2px * var(--cs));
+            top: 0;
+            line-height: inherit;
+        }
+
+        b, strong { font-weight: 700; }
+        i, em { font-style: italic; }
+        sup { font-size: .7em; line-height: 0; }
+        .template, .template32-hidden-hosts { display: none !important; }
+
+        @media (max-width: 1040px) {
+            #zoom-wrapper { padding: 12px 0 24px; }
+        }
+
+        @media print {
+            @page { size: A4 portrait; margin: 0; }
+            html, body {
+                background: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 210mm;
+                min-height: 297mm;
+                overflow: hidden !important;
+            }
+            #zoom-wrapper {
+                padding: 0;
+                display: block;
+                width: 100% !important;
+                height: auto !important;
+            }
+            #cv-page {
+                transform: scale(1) !important;
+                zoom: .79375;
+                margin: 0 auto !important;
+                min-height: 1413.94px;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="zoom-wrapper">
+        <div id="cv-page">
+            <span class="cv-name" id="template32-name"></span>
+            <span class="cv-contact contact-block" id="template32-contact"></span>
+
+            <table class="cv-table" cellspacing="0">
+                <colgroup>
+                    <col class="c1"><col class="c2"><col class="c3">
+                    <col class="c4"><col class="c5"><col class="c6">
+                </colgroup>
+                <tbody id="template32-body"></tbody>
+            </table>
+
+            <div class="template32-hidden-hosts">
+                <div data-field="name"></div>
+                <div data-field="summary"></div>
+                <div data-field="skills"></div>
+                <div id="projects-list">
+                    <div class="template">
+                        <div data-field="title"></div>
+                        <div data-field="description"></div>
+                        <ul data-list="bullets"></ul>
+                    </div>
+                </div>
+                <ul data-list="achievements"></ul>
+                <ul data-list="leadership"></ul>
+                <ul data-list="interests"></ul>
+                <ul data-list="certifications"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="cv-common.js"></script>
+    <script>
+        (function () {
+            'use strict';
+
+            const PAGE_H = 1413.94;
+            const PAGE_W = 1000;
+            const originalRenderCV = window.renderCV;
+
+            window.renderCV = function (data) {
+                data = data || {};
+                applyTemplate32Accent(data.themeAccent || '');
+                if (typeof window.syncDocumentTitle === 'function') {
+                    window.syncDocumentTitle(data);
+                }
+                renderTemplate32(data);
+                requestAnimationFrame(function () {
+                    requestAnimationFrame(function () {
+                        shrinkContentToFit();
+                        scaleToFit();
+                    });
+                });
+            };
+
+            function renderTemplate32(data) {
+                const personal = data.personal || {};
+                const name = document.getElementById('template32-name');
+                const contact = document.getElementById('template32-contact');
+                const body = document.getElementById('template32-body');
+                if (!name || !contact || !body) return;
+                removeInjectedProjectsFallback();
+
+                name.innerHTML = rich(personal.name);
+                contact.innerHTML = contactHTML(personal);
+                contact.style.display = contact.innerHTML.trim() ? '' : 'none';
+
+                const sections = [];
+                const summary = rich(data.summary || personal.tagline || '');
+                if (text(summary)) {
+                    sections.push({ id: 'summary', rows: [labelContentRow(data, 'summary', 'CAREER OBJECTIVE', `<p>${summary}</p>`)] });
+                }
+
+                const education = Array.isArray(data.education) ? data.education.filter(hasObjectContent) : [];
+                if (education.length) {
+                    const rows = [];
+                    rows.push('<tr><td class="sh" colspan="6">PROFESSIONAL AND EDUACTIONAL QUALIFICATIONS</td></tr>');
+                    rows.push('<tr><td class="subh" colspan="2" style="text-align:center">Degree/Examination</td><td class="subh" style="text-align:center">Board/Institute</td><td class="subh" style="text-align:center">%/CGPA</td><td class="subh" colspan="2" style="text-align:center">Remarks</td></tr>');
+                    education.forEach(function (item) {
+                        rows.push(
+                            '<tr>' +
+                            `<td class="qd" colspan="2">${rich(item.degree)}</td>` +
+                            `<td class="qd">${rich(item.institute || item.institution)}</td>` +
+                            `<td class="qdc">${rich(item.marks)}</td>` +
+                            `<td class="qd" colspan="2">${rich(item.remarks || item.year)}</td>` +
+                            '</tr>'
+                        );
+                    });
+                    sections.push({ id: 'education', rows: rows });
+                }
+
+                const experience = typeof window.buildRenderedExperience === 'function'
+                    ? window.buildRenderedExperience(data.experience || [])
+                    : (Array.isArray(data.experience) ? data.experience : []);
+                const visibleExperience = experience.filter(function (item) {
+                    return item && (text(item.role) || text(item.company) || text(item.dates) || text(item.category) || hasList(item.bullets) || text(item.intro));
+                });
+                if (visibleExperience.length) {
+                    const rows = [];
+                    rows.push('<tr><td class="sh" colspan="6">WORK EXPERIENCE</td></tr>');
+                    visibleExperience.forEach(function (item) {
+                        const merged = !!item.titleMergedWithPrevious;
+                        if (!merged && (text(item.role) || text(item.company) || text(item.dates) || text(item.intro))) {
+                            const title = [rich(item.role), rich(item.company)].filter(text).join(' | ');
+                            const intro = text(item.intro) ? ` <span>${rich(item.intro)}</span>` : '';
+                            rows.push(
+                                '<tr>' +
+                                `<td class="co" colspan="5"><strong>${title || rich(item.company)}</strong>${intro}</td>` +
+                                `<td class="co work-date-cell"><strong>${rich(item.dates)}</strong></td>` +
+                                '</tr>'
+                            );
+                        }
+
+                        const label = rich(item.category || (merged ? item.role : '') || 'Experience');
+                        const bullets = normalizeList(item.bullets);
+                        if (bullets.length || text(item.intro)) {
+                            const introRow = merged && text(item.intro) ? `<li>${rich(item.intro)}</li>` : '';
+                            rows.push(labelContentRow(data, 'experience', label, `<ul class="cv-bullets">${introRow}${bullets.map(function (b) { return `<li>${rich(b)}</li>`; }).join('')}</ul>`));
+                        }
+                    });
+                    sections.push({ id: 'experience', rows: rows });
+                }
+
+                const projects = Array.isArray(data.projects) ? data.projects.filter(hasObjectContent) : [];
+                if (projects.length) {
+                    const rows = [];
+                    rows.push('<tr><td class="sh" colspan="6">PROJECTS</td></tr>');
+                    projects.forEach(function (item) {
+                        if (text(item.title) || text(item.description)) {
+                            rows.push(
+                                '<tr>' +
+                                `<td class="co" colspan="6"><strong>${rich(item.title || 'Project')}</strong></td>` +
+                                '</tr>'
+                            );
+                        }
+
+                        const bullets = normalizeList(item.bullets);
+                        const description = text(item.description) ? `<p>${rich(item.description)}</p>` : '';
+                        if (bullets.length || description) {
+                            rows.push(`<tr><td class="cc" colspan="6">${description}<ul class="cv-bullets">${bullets.map(function (b) { return `<li>${rich(b)}</li>`; }).join('')}</ul></td></tr>`);
+                        }
+                    });
+                    sections.push({ id: 'projects', rows: rows });
+                }
+
+                const combined = buildCombinedRows(data);
+                if (combined.length) {
+                    const rows = [];
+                    rows.push('<tr><td class="sh" colspan="6" style="font-size:calc(13.5px * var(--cs))">POSITION OF RESPONSIBILITY, EXTRACURRICULAR ACTIVITIES, CERTIFICATIONS AND SKILLS</td></tr>');
+                    orderCombinedRows(combined, data.sectionOrder).forEach(function (row) {
+                        rows.push(labelContentRow(data, row.id, row.label, `<ul class="cv-bullets">${row.items.map(function (item) { return `<li>${item}</li>`; }).join('')}</ul>`));
+                    });
+                    sections.push({ id: 'template32-combined', memberIds: combined.map(function (row) { return row.id; }), rows: rows });
+                }
+
+                const customRows = customSectionRows(data.customSections || []);
+                customRows.forEach(function (section) {
+                    sections.push({
+                        id: section.id,
+                        rows: [
+                            `<tr><td class="sh" colspan="6">${rich(section.title)}</td></tr>`,
+                            labelContentRow(data, section.id, section.title, `<ul class="cv-bullets">${section.items.map(function (item) { return `<li>${item}</li>`; }).join('')}</ul>`)
+                        ]
+                    });
+                });
+
+                body.innerHTML = orderSections(sections, data.sectionOrder).flatMap(function (section) { return section.rows; }).join('');
+            }
+
+            function removeInjectedProjectsFallback() {
+                document.querySelectorAll('.sortable-section[data-section-id="projects"]').forEach(function (section) {
+                    if (!section.closest('.template32-hidden-hosts')) section.remove();
+                });
+            }
+
+            function buildCombinedRows(data) {
+                const rows = [];
+                addRow(rows, 'leadership', 'Position of Responsibility', listFromSimple(data.leadership));
+                addRow(rows, 'achievements', 'Extra Curricular Activities', listFromSimple(data.achievements));
+
+                const skillItems = [];
+                listFromSkills(data.skills).forEach(function (item) { skillItems.push(item); });
+                listFromSimple(data.interests).forEach(function (item) { skillItems.push(item); });
+                addRow(rows, 'skills', 'Technical Skill', skillItems);
+
+                addRow(rows, 'certifications', 'Certifications', listFromCertifications(data.certifications));
+                return rows;
+            }
+
+            function orderSections(sections, sectionOrder) {
+                if (!Array.isArray(sectionOrder) || !sectionOrder.length) return sections;
+                const orderIndex = new Map(sectionOrder.map(function (id, index) { return [id, index]; }));
+                return sections.slice().sort(function (a, b) {
+                    return sectionRank(a, orderIndex) - sectionRank(b, orderIndex);
+                });
+            }
+
+            function sectionRank(section, orderIndex) {
+                if (orderIndex.has(section.id)) return orderIndex.get(section.id);
+                const members = Array.isArray(section.memberIds) ? section.memberIds : [];
+                const memberRanks = members.map(function (id) {
+                    return orderIndex.has(id) ? orderIndex.get(id) : Infinity;
+                });
+                const best = Math.min.apply(Math, memberRanks);
+                return Number.isFinite(best) ? best : 9999;
+            }
+
+            function orderCombinedRows(rows, sectionOrder) {
+                if (!Array.isArray(sectionOrder) || !sectionOrder.length) return rows;
+                const orderIndex = new Map(sectionOrder.map(function (id, index) { return [id, index]; }));
+                return rows.slice().sort(function (a, b) {
+                    const ai = orderIndex.has(a.id) ? orderIndex.get(a.id) : 9999;
+                    const bi = orderIndex.has(b.id) ? orderIndex.get(b.id) : 9999;
+                    return ai - bi;
+                });
+            }
+
+            function addRow(rows, id, label, items) {
+                const cleaned = (items || []).filter(text);
+                if (cleaned.length) rows.push({ id: id, label: label, items: cleaned });
+            }
+
+            function customSectionRows(customSections) {
+                return (Array.isArray(customSections) ? customSections : []).map(function (section) {
+                    const title = section && section.title ? section.title : 'Additional Information';
+                    const items = listFromSimple(section && section.items);
+                    return { id: section && section.id, title: title, items: items };
+                }).filter(function (section) {
+                    return text(section.title) && section.items.length;
+                });
+            }
+
+            function labelContentRow(data, sectionId, fallbackLabel, contentHTML) {
+                const config = labelConfig(data, sectionId, fallbackLabel);
+                if (!config.visible) {
+                    return `<tr><td class="cc content-full" colspan="6">${contentHTML}</td></tr>`;
+                }
+                return `<tr><td class="lb">${labelWithBreaks(rich(config.text))}</td><td class="cc" colspan="5">${contentHTML}</td></tr>`;
+            }
+
+            function labelConfig(data, sectionId, fallbackLabel) {
+                const labels = data && data.sectionLabels && typeof data.sectionLabels === 'object'
+                    ? data.sectionLabels
+                    : {};
+                const cfg = sectionId && labels[sectionId] && typeof labels[sectionId] === 'object'
+                    ? labels[sectionId]
+                    : null;
+                const builderDefaultLabels = {
+                    achievements: 'Highlights'
+                };
+                const hasTemplateOverride = cfg && cfg.text === builderDefaultLabels[sectionId];
+                return {
+                    text: cfg && typeof cfg.text === 'string' && cfg.text.trim() && !hasTemplateOverride ? cfg.text : fallbackLabel,
+                    visible: !cfg || cfg.visible !== false
+                };
+            }
+
+            function listFromCertifications(items) {
+                return (Array.isArray(items) ? items : []).map(function (item) {
+                    if (typeof item === 'string') return rich(item);
+                    if (!item) return '';
+                    const main = rich(item.name || item.title || item.cert || '');
+                    const issuer = rich(item.issuer || item.authority || '');
+                    return [main, issuer].filter(text).join(' - ');
+                }).filter(text);
+            }
+
+            function listFromSimple(items) {
+                return (Array.isArray(items) ? items : []).flatMap(function (item) {
+                    if (typeof item === 'string') return splitBlocks(item);
+                    if (!item) return [];
+                    if (Array.isArray(item.bullets) && item.bullets.length) {
+                        const prefix = rich(item.title || item.role || item.name || '');
+                        return item.bullets.map(function (bullet) {
+                            const value = rich(bullet);
+                            return prefix ? `<strong>${prefix}</strong>: ${value}` : value;
+                        });
+                    }
+                    return splitBlocks(item.description || item.title || item.name || item.value || '');
+                }).filter(text);
+            }
+
+            function listFromSkills(value) {
+                const raw = String(value || '').trim();
+                if (!raw) return [];
+                if (/<(ul|ol|li|p|div|br)\b/i.test(raw)) return splitBlocks(raw);
+                const lines = raw.split(/\r?\n/).map(function (v) { return v.trim(); }).filter(Boolean);
+                if (lines.length > 1) return lines.map(escapeHTML);
+                const comma = raw.split(',').map(function (v) { return v.trim(); }).filter(Boolean);
+                return (comma.length >= 3 ? comma : [raw]).map(escapeHTML);
+            }
+
+            function splitBlocks(value) {
+                const html = rich(value);
+                if (!html) return [];
+                const tpl = document.createElement('template');
+                tpl.innerHTML = html.replace(/<br\s*\/?>/gi, '</p><p>');
+                const lis = Array.from(tpl.content.querySelectorAll('li')).map(function (li) { return li.innerHTML.trim(); }).filter(text);
+                if (lis.length) return lis;
+                const blocks = Array.from(tpl.content.querySelectorAll('p, div')).map(function (el) { return el.innerHTML.trim(); }).filter(text);
+                if (blocks.length) return blocks;
+                return [html];
+            }
+
+            function normalizeList(items) {
+                return (Array.isArray(items) ? items : []).flatMap(splitBlocks).filter(text);
+            }
+
+            function hasList(items) {
+                return Array.isArray(items) && items.some(text);
+            }
+
+            function hasObjectContent(item) {
+                if (!item || typeof item !== 'object') return false;
+                return Object.keys(item).some(function (key) { return text(item[key]); });
+            }
+
+            function contactHTML(personal) {
+                const parts = [];
+                if (text(personal.phone)) parts.push(`<span class="emoji">&#128241;</span>${rich(personal.phone)}`);
+                if (text(personal.email)) {
+                    const email = strip(rich(personal.email));
+                    parts.push(`<span class="emoji">&#9993;</span>&nbsp;<a href="mailto:${escapeAttr(email)}">${rich(personal.email)}</a>`);
+                }
+                if (text(personal.linkedin)) {
+                    const href = linkHref(strip(rich(personal.linkedin)));
+                    parts.push(`<a class="li" href="${escapeAttr(href)}" target="_blank" rel="noopener">${rich(personal.linkedin)}</a>`);
+                }
+                if (text(personal.location)) parts.push(rich(personal.location));
+                if (Array.isArray(personal.socialLinks)) {
+                    personal.socialLinks.forEach(function (link) {
+                        if (!link || !text(link.url)) return;
+                        const label = text(link.label) ? rich(link.label) : rich(link.url);
+                        parts.push(`<a class="li" href="${escapeAttr(linkHref(strip(rich(link.url))))}" target="_blank" rel="noopener">${label}</a>`);
+                    });
+                }
+                return parts.join('<span class="sep">|</span>');
+            }
+
+            function linkHref(value) {
+                if (!value) return '';
+                if (/^(https?:|mailto:|tel:)/i.test(value)) return value;
+                if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(value)) return 'mailto:' + value;
+                return 'https://' + value.replace(/^\/+/, '');
+            }
+
+            function labelWithBreaks(value) {
+                return String(value || '').replace(/\s+/g, '<br>');
+            }
+
+            function applyTemplate32Accent(accent) {
+                const color = normalizeTemplate32Hex(accent);
+                const root = document.documentElement;
+                if (!root) return;
+                if (!color) {
+                    root.style.removeProperty('--banner-bg');
+                    root.style.removeProperty('--label-bg');
+                    root.style.removeProperty('--border-in');
+                    return;
+                }
+                root.style.setProperty('--banner-bg', color);
+                root.style.setProperty('--label-bg', mixTemplate32Hex(color, '#FFFFFF', 0.82));
+                root.style.setProperty('--border-in', mixTemplate32Hex(color, '#000000', 0.12));
+            }
+
+            function normalizeTemplate32Hex(value) {
+                const raw = String(value || '').trim();
+                if (!raw) return '';
+                const withHash = raw.startsWith('#') ? raw : '#' + raw;
+                const shortMatch = /^#([0-9a-fA-F]{3})$/.exec(withHash);
+                if (shortMatch) {
+                    return '#' + shortMatch[1].split('').map(function (ch) { return ch + ch; }).join('').toUpperCase();
+                }
+                const fullMatch = /^#([0-9a-fA-F]{6})$/.exec(withHash);
+                return fullMatch ? '#' + fullMatch[1].toUpperCase() : '';
+            }
+
+            function mixTemplate32Hex(base, target, ratio) {
+                const a = hexToTemplate32Rgb(base);
+                const b = hexToTemplate32Rgb(target);
+                if (!a || !b) return base;
+                const t = Math.max(0, Math.min(1, Number(ratio) || 0));
+                const r = Math.round(a.r + (b.r - a.r) * t);
+                const g = Math.round(a.g + (b.g - a.g) * t);
+                const bl = Math.round(a.b + (b.b - a.b) * t);
+                return '#' + [r, g, bl].map(function (v) { return v.toString(16).padStart(2, '0'); }).join('').toUpperCase();
+            }
+
+            function hexToTemplate32Rgb(hex) {
+                const value = normalizeTemplate32Hex(hex);
+                if (!value) return null;
+                return {
+                    r: parseInt(value.slice(1, 3), 16),
+                    g: parseInt(value.slice(3, 5), 16),
+                    b: parseInt(value.slice(5, 7), 16)
+                };
+            }
+
+            function rich(value) {
+                const raw = String(value || '').trim();
+                if (!raw) return '';
+                if (typeof window.normalizeRichFieldHTML === 'function') return window.normalizeRichFieldHTML(raw);
+                return /<[^>]+>/.test(raw) ? raw : escapeHTML(raw);
+            }
+
+            function text(value) {
+                return !!strip(value).trim();
+            }
+
+            function strip(value) {
+                const div = document.createElement('div');
+                div.innerHTML = String(value || '');
+                return (div.textContent || div.innerText || '').replace(/\s+/g, ' ').trim();
+            }
+
+            function escapeHTML(value) {
+                return String(value || '').replace(/[&<>"']/g, function (ch) {
+                    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+                });
+            }
+
+            function escapeAttr(value) {
+                return escapeHTML(value).replace(/`/g, '&#96;');
+            }
+
+            window.scaleToFit = function scaleToFit() {
+                const page = document.getElementById('cv-page');
+                if (!page) return;
+                const avail = window.innerWidth - 20;
+                const scale = avail < PAGE_W ? avail / PAGE_W : 1;
+                page.style.transform = 'scale(' + scale + ')';
+                page.style.marginBottom = '-' + (PAGE_H - PAGE_H * scale) + 'px';
+            };
+
+            window.shrinkContentToFit = function shrinkContentToFit() {
+                const page = document.getElementById('cv-page');
+                if (!page) return;
+                let cs = 1;
+                document.documentElement.style.setProperty('--cs', cs);
+                page.style.height = 'auto';
+                let i = 0;
+                while (page.scrollHeight > PAGE_H + 1 && i < 80) {
+                    cs = Math.round((cs - .01) * 1000) / 1000;
+                    document.documentElement.style.setProperty('--cs', cs);
+                    i++;
+                }
+                page.style.height = '';
+            };
+
+            let screenTransform = '';
+            let screenMarginBottom = '';
+
+            function enablePrintMode() {
+                const page = document.getElementById('cv-page');
+                if (!page) return;
+                screenTransform = page.style.transform;
+                screenMarginBottom = page.style.marginBottom;
+                page.style.transform = 'scale(1)';
+                page.style.marginBottom = '0';
+                shrinkContentToFit();
+            }
+
+            function disablePrintMode() {
+                const page = document.getElementById('cv-page');
+                if (!page) return;
+                page.style.transform = screenTransform || '';
+                page.style.marginBottom = screenMarginBottom || '';
+                scaleToFit();
+            }
+
+            window.addEventListener('load', function () {
+                shrinkContentToFit();
+                scaleToFit();
+                const mq = window.matchMedia('print');
+                const handler = function (e) { e.matches ? enablePrintMode() : disablePrintMode(); };
+                if (mq.addEventListener) mq.addEventListener('change', handler);
+                else if (mq.addListener) mq.addListener(handler);
+                window.addEventListener('beforeprint', enablePrintMode);
+                window.addEventListener('afterprint', disablePrintMode);
+            });
+
+            let resizeTimer;
+            window.addEventListener('resize', function () {
+                clearTimeout(resizeTimer);
+                resizeTimer = setTimeout(scaleToFit, 100);
+            });
+
+            if (typeof originalRenderCV !== 'function') {
+                window.renderCV({ personal: {}, customSections: [] });
+            }
+        }());
+    </script>
+</body>
+</html>
