@@ -325,7 +325,7 @@
                 }
 
                 // Optionally, attempt to generate the download URL as well
-                let targetUrl = `/ca-resource/?pdf=${encodeURIComponent(`https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(viewData.signedUrl)}`)}`;
+                let targetUrl = `/ca-resource/?pdf=${encodeURIComponent(viewData.signedUrl)}`;
                 
                 try {
                     const { data: dlData, error: dlError } = await supabaseClient.storage

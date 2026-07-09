@@ -511,6 +511,7 @@ function getWzMissingFields(portalType) {
     const itIndustryField = f('it_industry', 'Industrial Training Company Industry', '🏢', 'radio', true, '', 'If you completed Industrial Training, select the industry of your company', ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']);
     const currentIndustryField = f('current_industry', 'Current Industry', '🏭', 'radio', true, '', null, ['Banking', 'Financial Services', 'Insurance', 'FMCG', 'Manufacturing', 'IT / Technology', 'E-Commerce', 'Pharma & Healthcare', 'Automobile', 'Infrastructure', 'Energy & Power', 'Logistics & Supply Chain', 'Telecom', 'Real Estate', 'Retail', 'Consulting', 'Media & Entertainment', 'Other']);
     const noticePeriodField = f('notice_period', 'Notice Period', '📋', 'radio', true, '', 'What is your current notice period?', ['Immediate Joiner', '15 Days or less', '1 Month', '2 Months', '3 Months']);
+    const numPartnersField = f('articleship_num_partners', 'Number of Partners', '👥', 'number', true, 'e.g., 3', 'Number of partners in the firm');
 
     if (portalType === 'industrial') return [
         ...common, ...caInterFields,
@@ -521,15 +522,16 @@ function getWzMissingFields(portalType) {
         f('notice_period', 'Notice Period', '📋', 'text', true,
             'e.g., Immediate Joiner, 1 Month, 2 Months, 3 Months',
             'What is your current notice period?'),
+        numPartnersField,
     ];
     if (portalType === 'articleship') {
         const caInterFieldsArticleship = caInterFields.filter(f => !['articleship_firm_name', 'articleship_domain', 'articleship_client_industries'].includes(f.id));
         return [...common, ...caInterFieldsArticleship];
     }
-    if (portalType === 'semi_fresher')    return [...common, ...caInterFields, currentIndustryField];
-    if (portalType === 'semi_experienced')return [...common, ...caInterFields, ...empFields, currentSalaryField, currentIndustryField];
+    if (portalType === 'semi_fresher')    return [...common, ...caInterFields, currentIndustryField, numPartnersField];
+    if (portalType === 'semi_experienced')return [...common, ...caInterFields, ...empFields, currentSalaryField, currentIndustryField, numPartnersField];
     if (portalType === 'fresher_experienced') return [...common, ...caFinalFields, ...empFields, currentIndustryField];
-    return [...common, ...caFinalFields, itIndustryField, noticePeriodField]; // fresher_fresher
+    return [...common, ...caFinalFields, itIndustryField, noticePeriodField, numPartnersField]; // fresher_fresher
 }
 
 
@@ -2179,6 +2181,7 @@ const WZ = (() => {
             // Build profile object from form
             const profileData = buildProfileFromForm();
             profileData.cv_cloud_synced = isCloudSynced();
+            if (currentUser?.email) profileData.email = currentUser.email;
 
             // Wizard-specific fields (stored in profile JSON)
             if (st.answers['preferred_locations']) profileData.preferred_locations = Array.isArray(st.answers['preferred_locations']) ? st.answers['preferred_locations'].join(', ') : st.answers['preferred_locations'];
@@ -2388,6 +2391,7 @@ const WZ = (() => {
         applyAnswersToForm();
         const profileData = buildProfileFromForm();
         profileData.cv_cloud_synced = isCloudSynced();
+        if (currentUser?.email) profileData.email = currentUser.email;
         // Wizard preference fields
         if (st.answers['preferred_locations']) profileData.preferred_locations = formatArrayAnswer(st.answers['preferred_locations']);
         if (st.answers['relocation'])          profileData.relocation_preference = st.answers['relocation'];

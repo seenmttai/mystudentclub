@@ -443,8 +443,7 @@ async function init() {
 
         if (error) throw error;
 
-        const proxyUrl = `https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=${encodeURIComponent(data.signedUrl)}`;
-        window.location.replace('/ca-resource/index.html?pdf=' + encodeURIComponent(proxyUrl));
+        window.location.replace('/ca-resource/index.html?pdf=' + encodeURIComponent(data.signedUrl));
     } catch (e) {
         console.error('Error loading guidebook:', e);
         alert('Failed to load guidebook.');

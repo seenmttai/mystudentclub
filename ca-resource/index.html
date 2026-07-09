@@ -10,6 +10,18 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
+        // Resolve a resource URL to the fetchable URL: bare Supabase URLs are
+        // routed through the pdf-proxy-viewer worker (direct fetch fails due to
+        // CORS/range limits); already-proxied or local URLs pass through as-is.
+        window.resolvePdfFetchUrl = function(pdf) {
+            if (!pdf) return pdf;
+            if (pdf.indexOf('pdf-proxy-viewer.') !== -1) return pdf;
+            if (pdf.indexOf('.supabase.co/') !== -1) {
+                return 'https://pdf-proxy-viewer.bhansalimanan55.workers.dev/?url=' + encodeURIComponent(pdf);
+            }
+            return pdf;
+        };
+
         // Pre-fetch the PDF binary while the page is loading
         (function() {
             var params = new URLSearchParams(window.location.search);
@@ -18,7 +30,7 @@
                 window.location.replace('/ca-resource/resource/?name=doc.pdf');
                 return;
             }
-            window.__pdfPreFetch = fetch(pdfUrl)
+            window.__pdfPreFetch = fetch(window.resolvePdfFetchUrl(pdfUrl))
                 .then(function(r) { return r.arrayBuffer(); })
                 .catch(function() { return null; });
         })();

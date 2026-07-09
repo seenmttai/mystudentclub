@@ -1415,6 +1415,7 @@ async function saveSubscribedTopics(topics) {
 
             const profileData = existingProfile?.profile || {};
             profileData.notification_subscriptions = topics;
+            if (!profileData.email && currentSession.user.email) profileData.email = currentSession.user.email;
 
             await supabaseClient.from('profiles').upsert({
                 uuid: currentSession.user.id,
@@ -2257,6 +2258,7 @@ async function saveJobPreference(preference) {
 
             const profileData = existingProfile?.profile || {};
             profileData.job_preference = preference;
+            if (!profileData.email && currentSession.user.email) profileData.email = currentSession.user.email;
 
             await supabaseClient.from('profiles').upsert({
                 uuid: currentSession.user.id,
@@ -2548,6 +2550,7 @@ async function checkAndSyncCVBackground() {
                     } catch (e) {}
                 }
                 profileObj.cv_cloud_synced = true;
+                if (!profileObj.email && currentSession.user.email) profileObj.email = currentSession.user.email;
                 localStorage.setItem('userProfileData', JSON.stringify(profileObj));
 
                 // Update Supabase

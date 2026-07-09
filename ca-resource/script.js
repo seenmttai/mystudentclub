@@ -25,6 +25,7 @@ const paramPdf = urlParams.get('pdf');
 const paramDl = urlParams.get('dl');
 const previewMode = urlParams.get('preview');
 const PDF_URL = paramPdf ? paramPdf : 'https://www.mystudentclub.com/assets/doc.pdf';
+const PDF_FETCH_URL = window.resolvePdfFetchUrl ? window.resolvePdfFetchUrl(PDF_URL) : PDF_URL;
 
 let pdfDoc = null;
 let totalPages = 0;
@@ -1232,7 +1233,7 @@ async function checkAuthAndLoad() {
 
         // Successfully authenticated
         userEmail = session.user.email;
-        loadPdf(PDF_URL);
+        loadPdf(PDF_FETCH_URL);
     } catch (err) {
         console.error('Session verification failed:', err);
         showAccessRestrictedOverlay("An error occurred during authentication verification.");

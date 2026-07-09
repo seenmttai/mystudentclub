@@ -517,7 +517,7 @@ function showEnrollmentRequiredPopup() {
                 <h3>Exclusive Premium Feature</h3>
                 <p>This feature is exclusively only available for course enrolled students.</p>
                 <div class="cv-popup-btns">
-                    <a href="https://www.mystudentclub.com/#courses" target="_blank" class="cv-popup-btn-primary">View Courses</a>
+                    <a href="https://www.mystudentclub.com/ca-industrial-training-program/" target="_blank" class="cv-popup-btn-primary">View Courses</a>
                     <button class="cv-popup-btn-secondary" id="closeEnrollmentPopup">Maybe Later</button>
                 </div>
             </div>
