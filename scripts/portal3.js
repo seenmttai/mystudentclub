@@ -1,6 +1,12 @@
 import { getDaysAgo } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
+function isSalaryDisclosed(val) {
+    if (!val) return false;
+    const clean = val.toString().replace(/[₹\s\-\.]/g, '').toLowerCase();
+    return clean !== '' && clean !== 'notdisclosed' && clean !== 'nil' && clean !== 'null' && clean !== 'na';
+}
+
 async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) {
     if (!currentSession) {
         window.location.href = '/login.html';
@@ -350,7 +356,7 @@ function renderJobCard(job) {
                 <span class="job-info-label"><i class="fas fa-chart-line"></i> Industry</span>
                 <span class="job-info-value">${industryType}</span>
             </div>`);
-    if (compText) infoRowItems.push(`
+    if (isSalaryDisclosed(compText)) infoRowItems.push(`
             <div class="job-info-item">
                 <span class="job-info-label">${compLabel}</span>
                 <span class="job-info-value">${compText}</span>
@@ -367,7 +373,7 @@ function renderJobCard(job) {
         <div class="job-card-top-row">
             <div class="job-card-logo">${companyInitial}</div>
             <div class="job-card-header">
-                <h3 class="job-card-role-title">${roleLabel}</h3>
+                <h3 class="job-card-role-title">${roleLabel} <span class="job-card-role-posted ${postedClass}" style="color: var(--text-muted); font-weight: 400; margin-left: 4px;">| Posted ${postedDate}</span></h3>
                 <h3 class="job-card-company">${job.Company || "N/A"}</h3>
                 <p class="job-card-posted ${postedClass}">Posted ${postedDate}</p>
             </div>
@@ -376,8 +382,7 @@ function renderJobCard(job) {
             </button>
         </div>
         <div class="job-card-side">
-            <span class="job-card-side-comp">${compText ? (/^\d/.test(compText.trim()) ? "₹" + compText.trim() : compText) : "Not Disclosed"}</span>
-            <span class="job-card-side-posted ${postedClass}">Posted ${postedDate}</span>
+            ${isSalaryDisclosed(compText) ? `<span class="job-card-side-comp">${/^\d/.test(compText.trim()) ? "₹" + compText.trim() : compText}</span>` : ''}
         </div>
         <div class="job-card-tags">
             ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ""}
@@ -705,7 +710,7 @@ function showModal(job) {
             </div>
         </div>
         <div class="modal-meta-tags" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
-            ${compDisplay ? `<span class="job-tag">${compLabel}: ${compDisplay}</span>` : ''}
+            ${isSalaryDisclosed(compDisplay) ? `<span class="job-tag">${compLabel}: ${compDisplay}</span>` : ''}
             <span class="job-tag">Posted: ${postedDate}</span>
             <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">Category: ${primaryDomain}</span>
             ${job['Secondary Domain'] ? `<span class="job-tag" style="background-color: #e0f2fe; color: #0369a1; border-color: #bae6fd;">Secondary: ${job['Secondary Domain']}</span>` : ''}
@@ -3692,7 +3697,8 @@ async function dv2PopulateTrending() {
             item.type = 'button';
             item.className = 'dv2-trending-item';
             const initial = (job.Company || '?').charAt(0).toUpperCase();
-            const stipend = job['Stipend Range'] || (job.Salary ? '₹' + job.Salary : '');
+            const rawStipend = job['Stipend Range'] || (job.Salary ? '₹' + job.Salary : '');
+            const stipend = isSalaryDisclosed(rawStipend) ? rawStipend : '';
             const domain = job['Primary Domain'] || job.Category || '';
             item.innerHTML = `
                 <span class="dv2-trending-logo">${initial}</span>

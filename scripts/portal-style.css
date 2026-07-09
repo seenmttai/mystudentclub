@@ -4040,6 +4040,7 @@ body:has(.portal-nav-bar) {
 
 .job-card-bookmark.saved svg {
   fill: currentColor;
+}
 .cv-popup-overlay {
   position: fixed;
   top: 0;

@@ -1,5 +1,11 @@
 import { getDaysAgo } from './date-utils.js';
 
+function isSalaryDisclosed(val) {
+    if (!val) return false;
+    const clean = val.toString().replace(/[₹\s\-\.]/g, '').toLowerCase();
+    return clean !== '' && clean !== 'notdisclosed' && clean !== 'nil' && clean !== 'null' && clean !== 'na';
+}
+
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
@@ -259,7 +265,7 @@ function renderApplicationCard(application) {
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                     ${job.Location}
                 </span>` : ''}
-            ${compText ? `<span class="job-tag" style="background-color: #ecfdf5; color: #065f46; border-color: #a7f3d0;">₹${compText}</span>` : ''}
+            ${isSalaryDisclosed(compText) ? `<span class="job-tag" style="background-color: #ecfdf5; color: #065f46; border-color: #a7f3d0;">₹${compText}</span>` : ''}
             ${job.Category ? `<span class="job-tag">${job.Category}</span>` : ''}
         </div>
         <p class="job-card-description" style="margin-bottom: 0.85rem;">${snippet}</p>
@@ -365,7 +371,7 @@ function showJobModal(application) {
                 Applied ${appliedDate}
             </span>`}
             <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">${portalName}</span>
-            ${job.Salary ? `<span class="job-tag">${application.job_table.includes('Semi Qualified') || application.job_table.includes('Fresher') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
+            ${isSalaryDisclosed(job.Salary) ? `<span class="job-tag">${application.job_table.includes('Semi Qualified') || application.job_table.includes('Fresher') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
         </div>
 

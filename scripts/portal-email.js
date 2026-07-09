@@ -1,6 +1,12 @@
 import { getDaysAgo } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
+function isSalaryDisclosed(val) {
+    if (!val) return false;
+    const clean = val.toString().replace(/[₹\s\-\.]/g, '').toLowerCase();
+    return clean !== '' && clean !== 'notdisclosed' && clean !== 'nil' && clean !== 'null' && clean !== 'na';
+}
+
 async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) {
     if (!currentSession) {
         window.location.href = '/login.html';
@@ -211,10 +217,11 @@ function renderJobCard(job) {
                 <span class="job-info-label"><i class="fas fa-briefcase"></i> Role</span>
                 <span class="job-info-value">${roleLabel}</span>
             </div>
+            ${isSalaryDisclosed(compText) ? `
             <div class="job-info-item">
                 <span class="job-info-label"><i class="fas fa-rupee-sign"></i> ${compLabel}</span>
-                <span class="job-info-value">${compText || 'Not Disclosed'}</span>
-            </div>
+                <span class="job-info-value">${compText}</span>
+            </div>` : ''}
             <div class="job-info-item">
                 <span class="job-info-label"><i class="fas fa-clock"></i> Experience</span>
                 <span class="job-info-value">${job.Experience || '0–2 Years'}</span>
@@ -427,6 +434,33 @@ function showModal(job) {
     }
 
     let actionsHtml = '';
+    const connectButtonHtml = `
+        <a href="${connectLink}" id="modalConnectPeersBtn" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            <i class="fab fa-linkedin"></i>
+            Connect to Peers
+        </a>`;
+    const shareButtonHtml = `
+        <button id="modalShareBtnInline" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            <i class="fas fa-share-alt"></i>
+            Share this job
+        </button>`;
+    
+    let originalPostHtml = '';
+    if (job.posts_link) {
+        originalPostHtml = `
+            <a href="${job.posts_link}" id="modalOriginalPostBtn" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-color: #0a66c2; color: #0a66c2;">
+                <i class="fab fa-linkedin"></i>
+                Original Post
+            </a>`;
+    }
+
+    const secondaryActionsHtml = `
+        <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap;">
+            ${connectButtonHtml}
+            ${originalPostHtml}
+            ${shareButtonHtml}
+        </div>`;
+
     if (isMailto) {
         const simpleApplyText = 'Simple Apply';
         const aiApplyText = 'AI Powered Apply';
@@ -441,36 +475,16 @@ function showModal(job) {
                     <span class="btn-text">${aiApplyText}</span>
                     <i class="fas fa-spinner fa-spin"></i>
                 </button>
-            </div>`;
-        actionsHtml += `
-            <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap;">
-                <a href="${connectLink}" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <i class="fab fa-linkedin"></i>
-                    Connect to Peers
-                </a>
-                <button id="modalShareBtnInline" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <i class="fas fa-share-alt"></i>
-                    Share this job
-                </button>
-            </div>`;
+            </div>
+            ${secondaryActionsHtml}`;
     } else {
         const applyText = 'Apply Now';
         actionsHtml = `
             <a href="${applyLink}" id="modalExternalApplyBtn" class="btn btn-primary ${buttonClass}" target="_blank" style="padding: 0.5rem 1rem; min-height: 3rem; display: flex; align-items: center; justify-content: center;">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 ${applyText}
-            </a>`;
-        actionsHtml += `
-            <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap;">
-                <a href="${connectLink}" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <i class="fab fa-linkedin"></i>
-                    Connect to Peers
-                </a>
-                <button id="modalShareBtnInline" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <i class="fas fa-share-alt"></i>
-                    Share this job
-                </button>
-            </div>`;
+            </a>
+            ${secondaryActionsHtml}`;
     }
 
     dom.modalBody.innerHTML = `
@@ -482,7 +496,7 @@ function showModal(job) {
             </div>
         </div>
         <div class="modal-meta-tags">
-            ${job.Salary ? `<span class="job-tag">${((job.source_table || state.portalType) === 'Semi Qualified Jobs' || (job.source_table || state.portalType) === 'Fresher Jobs') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
+            ${isSalaryDisclosed(job.Salary) ? `<span class="job-tag">${((job.source_table || state.portalType) === 'Semi Qualified Jobs' || (job.source_table || state.portalType) === 'Fresher Jobs') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
             <span class="job-tag">Posted: ${postedDate}</span>
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
         </div>
@@ -519,11 +533,18 @@ function showModal(job) {
             });
         }
         if (modalAiApplyBtn) {
-            // Import the helper dynamically or assume it's available via module
-            // Since this is a module, we should import at top, but for inline replacement:
             modalAiApplyBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
-                await handleAiApplyClick(job, e.currentTarget, currentTable, applyLink);
+                if (!currentSession) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                const table = job.source_table || state.portalType;
+                if (isEnrolledSync(table)) {
+                    await handleAiApplyClick(job, e.currentTarget, table, applyLink);
+                } else {
+                    showEnrollmentRequiredPopup();
+                }
             });
         }
     } else {
@@ -537,6 +558,38 @@ function showModal(job) {
                 }
             });
         }
+    }
+
+    const modalConnectPeersBtn = document.getElementById('modalConnectPeersBtn');
+    if (modalConnectPeersBtn) {
+        modalConnectPeersBtn.addEventListener('click', (e) => {
+            if (!currentSession) {
+                e.preventDefault();
+                window.location.href = '/login.html';
+                return;
+            }
+            const table = job.source_table || state.portalType;
+            if (!isEnrolledSync(table)) {
+                e.preventDefault();
+                showEnrollmentRequiredPopup();
+            }
+        });
+    }
+
+    const modalOriginalPostBtn = document.getElementById('modalOriginalPostBtn');
+    if (modalOriginalPostBtn) {
+        modalOriginalPostBtn.addEventListener('click', (e) => {
+            if (!currentSession) {
+                e.preventDefault();
+                window.location.href = '/login.html';
+                return;
+            }
+            const table = job.source_table || state.portalType;
+            if (!isEnrolledSync(table)) {
+                e.preventDefault();
+                showEnrollmentRequiredPopup();
+            }
+        });
     }
 
     // Attach copy button event listeners (multiple buttons for comma-separated links)
@@ -1040,6 +1093,7 @@ async function checkAuth() {
 
     // If logged in, fetch and cache profile data
     if (session?.user?.id) {
+        prefetchEnrollmentStatus(session.user.id);
         // Check if profile data needs to be fetched (not in localStorage)
         const cachedProfile = localStorage.getItem('userProfileData');
         if (!cachedProfile) {
@@ -1099,6 +1153,8 @@ function updateHeaderAuth(session) {
 }
 
 window.handleLogout = async () => {
+    userEnrollmentsCache = null;
+    enrollmentStatusCache = null;
     // Sign out from Supabase
     await supabaseClient.auth.signOut();
 
@@ -1150,6 +1206,76 @@ async function checkUserEnrollment() {
     if (historyNavLink && currentSession) {
         historyNavLink.style.display = 'flex';
     }
+}
+
+let userEnrollmentsCache = null;
+let enrollmentStatusCache = null; // { any, industrialTraining, freshers }
+
+async function prefetchEnrollmentStatus(userId) {
+    try {
+        const { count: anyCount, error: e1 } = await supabaseClient
+            .from('enrollment')
+            .select('course', { count: 'exact', head: true })
+            .eq('uuid', userId);
+        if (e1) throw e1;
+        const hasAny = (anyCount || 0) > 0;
+        enrollmentStatusCache = { any: hasAny, industrialTraining: false, freshers: false };
+        if (hasAny) {
+            const [r1, r2] = await Promise.all([
+                supabaseClient.from('enrollment').select('course', { count: 'exact', head: true }).eq('uuid', userId).eq('course', 'industrial-training-mastery'),
+                supabaseClient.from('enrollment').select('course', { count: 'exact', head: true }).eq('uuid', userId).eq('course', 'msc-ca-freshers-program')
+            ]);
+            enrollmentStatusCache.industrialTraining = (r1.count || 0) > 0;
+            enrollmentStatusCache.freshers = (r2.count || 0) > 0;
+        }
+    } catch (e) {
+        console.error('Failed to prefetch enrollment:', e);
+        enrollmentStatusCache = { any: false, industrialTraining: false, freshers: false };
+    }
+}
+
+function isEnrolledSync(tableName) {
+    if (!enrollmentStatusCache) return false;
+    if (tableName === 'Industrial Training Job Portal') return enrollmentStatusCache.industrialTraining;
+    if (tableName === 'Fresher Jobs') return enrollmentStatusCache.freshers;
+    return enrollmentStatusCache.any;
+}
+
+function showEnrollmentRequiredPopup() {
+    const existing = document.querySelector('.cv-popup-overlay');
+    if (existing) existing.remove();
+
+    const popupHtml = `
+        <div class="cv-popup-overlay">
+            <div class="cv-popup-card">
+                <div class="cv-popup-icon" style="background-color: #fef3c7; color: #d97706;">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>Exclusive Premium Feature</h3>
+                <p>This feature is exclusively only available for course enrolled students.</p>
+                <div class="cv-popup-btns">
+                    <a href="https://www.mystudentclub.com/#courses" target="_blank" class="cv-popup-btn-primary">View Courses</a>
+                    <button class="cv-popup-btn-secondary" id="closeEnrollmentPopup">Maybe Later</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', popupHtml);
+
+    const overlay = document.querySelector('.cv-popup-overlay');
+    setTimeout(() => overlay.classList.add('show'), 10);
+
+    const closeBtn = document.getElementById('closeEnrollmentPopup');
+    const closePopup = () => {
+        overlay.classList.remove('show');
+        setTimeout(() => overlay.remove(), 300);
+    };
+
+    closeBtn.addEventListener('click', closePopup);
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closePopup();
+    });
 }
 
 
