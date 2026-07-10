@@ -1,6 +1,12 @@
 import { getDaysAgo } from './date-utils.js';
 import { isProfileComplete, generateEmailBody, generateFallbackEmail, showResumeRedirectModal, showToast } from './ai-helper.js';
 
+function isSalaryDisclosed(val) {
+    if (!val) return false;
+    const clean = val.toString().replace(/[₹\s\-\.]/g, '').toLowerCase();
+    return clean !== '' && clean !== 'notdisclosed' && clean !== 'nil' && clean !== 'null' && clean !== 'na';
+}
+
 async function handleAiApplyClick(job, btnElement, tableName, simpleMailtoLink) {
     if (!currentSession) {
         window.location.href = '/login.html';
@@ -162,30 +168,72 @@ function renderJobCard(job) {
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
     const isApplied = appliedJobIds.has(job.id);
     const isPopular = (job.application_count || 0) > 50;
-    const buttonText = isApplied ? 'Applied' : 'View Details';
     const buttonClass = isApplied ? 'applied' : '';
     const applyLink = getApplicationLink(job['Application ID']);
-    const applyButtonText = 'Apply Now';
+
+    const primaryDomain = job['Primary Domain'] || job.Category || 'N/A';
+    const companyType = job['Company Type'];
+    const firmType = job['Firm Type'];
+    const industryType = job['Industry Type'];
+
+    let compText = '';
+    let compLabel = 'Stipend';
+    const table = job.source_table || state.portalType || '';
+    if (table === 'Fresher Jobs') {
+        compText = job['CTC Range'] || (job.Salary ? `₹${job.Salary}` : '');
+        compLabel = 'Salary';
+    } else {
+        compText = job['Stipend Range'] || (job.Salary ? `₹${job.Salary}` : '');
+    }
+    const roleLabel = job.Role || (table === 'Industrial Training Job Portal' ? 'Industrial Trainee' : table === 'Articleship Jobs' ? 'Articleship' : 'Professional');
+    const isRecent = job.Created_At && (Date.now() - new Date(job.Created_At).getTime()) < 3 * 24 * 60 * 60 * 1000;
+    const postedClass = isRecent ? '' : 'old';
+    const descriptionText = job.Description ? job.Description.replace(/[#*_`\[\]]/g, '').trim() : '';
 
     jobCard.innerHTML = `
-        <div class="job-card-logo">${companyInitial}</div>
-        <div class="job-card-details">
+        <div class="job-card-top-row">
+            <div class="job-card-logo">${companyInitial}</div>
             <div class="job-card-header">
                 <h3 class="job-card-company">${job.Company || 'N/A'}</h3>
-                <p class="job-card-posted">Posted ${postedDate}</p>
+                <p class="job-card-posted ${postedClass}">Posted ${postedDate}</p>
             </div>
-                ${isPopular ? `<span class="job-tag" style="background-color: #fef3c7; color: #d97706; border: 1px solid #fcd34d;">Popular</span>` : ''}
-                <span class="job-tag">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    ${job.Location || 'N/A'}
-                </span>
-                ${job.Salary ? `<span class="job-tag"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>₹${job.Salary}</span>` : ''}
-                ${job.Category ? `<span class="job-tag">${job.Category}</span>` : ''}
+            <button class="job-card-bookmark" title="Save job" aria-label="Bookmark job">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+            </button>
+        </div>
+        <div class="job-card-tags">
+            ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ''}
+            <span class="job-tag">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                ${job.Location || 'N/A'}
+            </span>
+            <span class="job-tag tag-primary"><i class="fas fa-briefcase"></i> ${primaryDomain}</span>
+            ${companyType ? `<span class="job-tag"><i class="fas fa-building"></i> ${companyType}</span>` : ''}
+            ${firmType ? `<span class="job-tag"><i class="fas fa-file-alt"></i> ${firmType}</span>` : ''}
+            ${industryType ? `<span class="job-tag"><i class="fas fa-chart-line"></i> ${industryType}</span>` : ''}
+        </div>
+        <div class="job-card-info-row">
+            <div class="job-info-item">
+                <span class="job-info-label"><i class="fas fa-briefcase"></i> Role</span>
+                <span class="job-info-value">${roleLabel}</span>
+            </div>
+            ${isSalaryDisclosed(compText) ? `
+            <div class="job-info-item">
+                <span class="job-info-label"><i class="fas fa-rupee-sign"></i> ${compLabel}</span>
+                <span class="job-info-value">${compText}</span>
+            </div>` : ''}
+            <div class="job-info-item">
+                <span class="job-info-label"><i class="fas fa-clock"></i> Experience</span>
+                <span class="job-info-value">${job.Experience || '0–2 Years'}</span>
             </div>
         </div>
+        ${descriptionText ? `<p class="job-card-description">${descriptionText.slice(0, 120)}${descriptionText.length > 120 ? '…' : ''}</p>` : ''}
         <div class="job-card-actions">
-             <a href="${applyLink}" target="_blank" class="apply-now-card-btn primary ${buttonClass}" style="background: #3B82F6; color: white; text-decoration: none; padding: 0.5rem 1rem; display: inline-flex; align-items: center; justify-content: center; min-height: 2.5rem;">${applyButtonText}</a>
-             <button class="apply-now-card-btn secondary" style="padding: 0.5rem 1rem; min-height: 2.5rem;">View Details</button>
+            <a href="${applyLink}" target="_blank" class="apply-now-card-btn primary ${buttonClass}">
+                <svg fill="currentColor" viewBox="0 0 24 24" width="13" height="13"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg>
+                Apply Now
+            </a>
+            <button class="view-details-card-btn secondary">View Details ›</button>
         </div>`;
 
     // Add click handler for Apply Now button
@@ -200,7 +248,7 @@ function renderJobCard(job) {
 
     // Add click handler to entire card for View Details
     jobCard.addEventListener('click', (e) => {
-        if (!e.target.closest('.apply-now-card-btn.primary')) {
+        if (!e.target.closest('.apply-now-card-btn.primary') && !e.target.closest('.job-card-bookmark')) {
             showModal(job);
         }
     });
@@ -386,6 +434,33 @@ function showModal(job) {
     }
 
     let actionsHtml = '';
+    const connectButtonHtml = `
+        <a href="${connectLink}" id="modalConnectPeersBtn" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            <i class="fab fa-linkedin"></i>
+            Connect to Peers
+        </a>`;
+    const shareButtonHtml = `
+        <button id="modalShareBtnInline" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            <i class="fas fa-share-alt"></i>
+            Share this job
+        </button>`;
+    
+    let originalPostHtml = '';
+    if (job.posts_link) {
+        originalPostHtml = `
+            <a href="${job.posts_link}" id="modalOriginalPostBtn" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem; border-color: #0a66c2; color: #0a66c2;">
+                <i class="fab fa-linkedin"></i>
+                Original Post
+            </a>`;
+    }
+
+    const secondaryActionsHtml = `
+        <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap;">
+            ${connectButtonHtml}
+            ${originalPostHtml}
+            ${shareButtonHtml}
+        </div>`;
+
     if (isMailto) {
         const simpleApplyText = 'Simple Apply';
         const aiApplyText = 'AI Powered Apply';
@@ -400,36 +475,16 @@ function showModal(job) {
                     <span class="btn-text">${aiApplyText}</span>
                     <i class="fas fa-spinner fa-spin"></i>
                 </button>
-            </div>`;
-        actionsHtml += `
-            <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap;">
-                <a href="${connectLink}" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <i class="fab fa-linkedin"></i>
-                    Connect to Peers
-                </a>
-                <button id="modalShareBtnInline" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <i class="fas fa-share-alt"></i>
-                    Share this job
-                </button>
-            </div>`;
+            </div>
+            ${secondaryActionsHtml}`;
     } else {
         const applyText = 'Apply Now';
         actionsHtml = `
             <a href="${applyLink}" id="modalExternalApplyBtn" class="btn btn-primary ${buttonClass}" target="_blank" style="padding: 0.5rem 1rem; min-height: 3rem; display: flex; align-items: center; justify-content: center;">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 ${applyText}
-            </a>`;
-        actionsHtml += `
-            <div style="display: flex; gap: 0.75rem; margin-top: 0.75rem; flex-wrap: wrap;">
-                <a href="${connectLink}" target="_blank" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <i class="fab fa-linkedin"></i>
-                    Connect to Peers
-                </a>
-                <button id="modalShareBtnInline" class="btn btn-secondary" style="flex: 1; min-width: calc(50% - 0.375rem); padding: 0.1rem 1rem; min-height: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
-                    <i class="fas fa-share-alt"></i>
-                    Share this job
-                </button>
-            </div>`;
+            </a>
+            ${secondaryActionsHtml}`;
     }
 
     dom.modalBody.innerHTML = `
@@ -441,7 +496,7 @@ function showModal(job) {
             </div>
         </div>
         <div class="modal-meta-tags">
-            ${job.Salary ? `<span class="job-tag">${((job.source_table || state.portalType) === 'Semi Qualified Jobs' || (job.source_table || state.portalType) === 'Fresher Jobs') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
+            ${isSalaryDisclosed(job.Salary) ? `<span class="job-tag">${((job.source_table || state.portalType) === 'Semi Qualified Jobs' || (job.source_table || state.portalType) === 'Fresher Jobs') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
             <span class="job-tag">Posted: ${postedDate}</span>
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
         </div>
@@ -478,11 +533,18 @@ function showModal(job) {
             });
         }
         if (modalAiApplyBtn) {
-            // Import the helper dynamically or assume it's available via module
-            // Since this is a module, we should import at top, but for inline replacement:
             modalAiApplyBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
-                await handleAiApplyClick(job, e.currentTarget, currentTable, applyLink);
+                if (!currentSession) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                const table = job.source_table || state.portalType;
+                if (isEnrolledSync(table)) {
+                    await handleAiApplyClick(job, e.currentTarget, table, applyLink);
+                } else {
+                    showEnrollmentRequiredPopup();
+                }
             });
         }
     } else {
@@ -496,6 +558,38 @@ function showModal(job) {
                 }
             });
         }
+    }
+
+    const modalConnectPeersBtn = document.getElementById('modalConnectPeersBtn');
+    if (modalConnectPeersBtn) {
+        modalConnectPeersBtn.addEventListener('click', (e) => {
+            if (!currentSession) {
+                e.preventDefault();
+                window.location.href = '/login.html';
+                return;
+            }
+            const table = job.source_table || state.portalType;
+            if (!isEnrolledSync(table)) {
+                e.preventDefault();
+                showEnrollmentRequiredPopup();
+            }
+        });
+    }
+
+    const modalOriginalPostBtn = document.getElementById('modalOriginalPostBtn');
+    if (modalOriginalPostBtn) {
+        modalOriginalPostBtn.addEventListener('click', (e) => {
+            if (!currentSession) {
+                e.preventDefault();
+                window.location.href = '/login.html';
+                return;
+            }
+            const table = job.source_table || state.portalType;
+            if (!isEnrolledSync(table)) {
+                e.preventDefault();
+                showEnrollmentRequiredPopup();
+            }
+        });
     }
 
     // Attach copy button event listeners (multiple buttons for comma-separated links)
@@ -999,6 +1093,7 @@ async function checkAuth() {
 
     // If logged in, fetch and cache profile data
     if (session?.user?.id) {
+        prefetchEnrollmentStatus(session.user.id);
         // Check if profile data needs to be fetched (not in localStorage)
         const cachedProfile = localStorage.getItem('userProfileData');
         if (!cachedProfile) {
@@ -1058,6 +1153,8 @@ function updateHeaderAuth(session) {
 }
 
 window.handleLogout = async () => {
+    userEnrollmentsCache = null;
+    enrollmentStatusCache = null;
     // Sign out from Supabase
     await supabaseClient.auth.signOut();
 
@@ -1109,6 +1206,76 @@ async function checkUserEnrollment() {
     if (historyNavLink && currentSession) {
         historyNavLink.style.display = 'flex';
     }
+}
+
+let userEnrollmentsCache = null;
+let enrollmentStatusCache = null; // { any, industrialTraining, freshers }
+
+async function prefetchEnrollmentStatus(userId) {
+    try {
+        const { count: anyCount, error: e1 } = await supabaseClient
+            .from('enrollment')
+            .select('course', { count: 'exact', head: true })
+            .eq('uuid', userId);
+        if (e1) throw e1;
+        const hasAny = (anyCount || 0) > 0;
+        enrollmentStatusCache = { any: hasAny, industrialTraining: false, freshers: false };
+        if (hasAny) {
+            const [r1, r2] = await Promise.all([
+                supabaseClient.from('enrollment').select('course', { count: 'exact', head: true }).eq('uuid', userId).eq('course', 'industrial-training-mastery'),
+                supabaseClient.from('enrollment').select('course', { count: 'exact', head: true }).eq('uuid', userId).eq('course', 'msc-ca-freshers-program')
+            ]);
+            enrollmentStatusCache.industrialTraining = (r1.count || 0) > 0;
+            enrollmentStatusCache.freshers = (r2.count || 0) > 0;
+        }
+    } catch (e) {
+        console.error('Failed to prefetch enrollment:', e);
+        enrollmentStatusCache = { any: false, industrialTraining: false, freshers: false };
+    }
+}
+
+function isEnrolledSync(tableName) {
+    if (!enrollmentStatusCache) return false;
+    if (tableName === 'Industrial Training Job Portal') return enrollmentStatusCache.industrialTraining;
+    if (tableName === 'Fresher Jobs') return enrollmentStatusCache.freshers;
+    return enrollmentStatusCache.any;
+}
+
+function showEnrollmentRequiredPopup() {
+    const existing = document.querySelector('.cv-popup-overlay');
+    if (existing) existing.remove();
+
+    const popupHtml = `
+        <div class="cv-popup-overlay">
+            <div class="cv-popup-card">
+                <div class="cv-popup-icon" style="background-color: #fef3c7; color: #d97706;">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>Exclusive Premium Feature</h3>
+                <p>This feature is exclusively only available for course enrolled students.</p>
+                <div class="cv-popup-btns">
+                    <a href="https://www.mystudentclub.com/#courses" target="_blank" class="cv-popup-btn-primary">View Courses</a>
+                    <button class="cv-popup-btn-secondary" id="closeEnrollmentPopup">Maybe Later</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', popupHtml);
+
+    const overlay = document.querySelector('.cv-popup-overlay');
+    setTimeout(() => overlay.classList.add('show'), 10);
+
+    const closeBtn = document.getElementById('closeEnrollmentPopup');
+    const closePopup = () => {
+        overlay.classList.remove('show');
+        setTimeout(() => overlay.remove(), 300);
+    };
+
+    closeBtn.addEventListener('click', closePopup);
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closePopup();
+    });
 }
 
 
@@ -2303,6 +2470,10 @@ async function loadJobPreferenceFromProfile() {
 
 // Redirect to preferred portal if not already on it
 function redirectToPreferredPortal(preference) {
+    if (sessionStorage.getItem('explicitPortalNav') === 'true') {
+        return false;
+    }
+
     const currentPref = getCurrentPagePreference();
     const targetUrl = PREFERENCE_REDIRECT_MAP[preference];
 
@@ -2590,7 +2761,12 @@ function calculateProfileCompletion() {
 
 function renderProfileCompletionBanner() {
     const existing = document.getElementById('profile-completion-banner');
-    if (existing) existing.remove();
+    if (existing) {
+        if (existing._observer) {
+            existing._observer.disconnect();
+        }
+        existing.remove();
+    }
 
     const percent = currentSession ? calculateProfileCompletion() : 0;
     
@@ -2618,13 +2794,47 @@ function renderProfileCompletionBanner() {
     document.body.insertBefore(banner, document.body.firstChild);
     document.body.classList.add('with-completion-banner');
 
-    setTimeout(() => {
-        const bannerHeight = banner.offsetHeight;
-        document.body.style.paddingTop = (70 + bannerHeight) + 'px';
-        const header = document.querySelector('.site-header, .floating-header');
-        if (header) {
-            header.style.top = bannerHeight + 'px';
-        }
-    }, 50);
+    if (window.ResizeObserver) {
+        const observer = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                const height = entry.target.offsetHeight;
+                const isMobile = window.innerWidth < 1024;
+                const basePadding = isMobile ? 60 : 70;
+                document.body.style.paddingTop = (basePadding + height) + 'px';
+                const header = document.querySelector('.site-header, .floating-header');
+                if (header) {
+                    if (isMobile) {
+                        header.style.top = height + 'px';
+                    } else {
+                        header.style.top = '';
+                    }
+                }
+            }
+        });
+        observer.observe(banner);
+        banner._observer = observer;
+    } else {
+        setTimeout(() => {
+            const bannerHeight = banner.offsetHeight;
+            const isMobile = window.innerWidth < 1024;
+            const basePadding = isMobile ? 60 : 70;
+            document.body.style.paddingTop = (basePadding + bannerHeight) + 'px';
+            const header = document.querySelector('.site-header, .floating-header');
+            if (header) {
+                header.style.top = isMobile ? (bannerHeight + 'px') : '';
+            }
+        }, 50);
+    }
 }
+
+// Handle explicit portal nav navigation flag
+document.addEventListener('DOMContentLoaded', () => {
+    const handlePortalClick = (e) => {
+        const tabLink = e.target.closest('.portal-nav-bar .footer-tab, .site-footer-nav .footer-tab');
+        if (tabLink) {
+            sessionStorage.setItem('explicitPortalNav', 'true');
+        }
+    };
+    document.addEventListener('click', handlePortalClick);
+});
 

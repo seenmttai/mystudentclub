@@ -12,7 +12,7 @@
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="scripts/portal-style.css">
-  <link rel="stylesheet" href="/scripts/history-style.css">
+  <link rel="stylesheet" href="/scripts/history-style.css?v=2">
   <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
   <link rel="canonical" href="https://www.mystudentclub.com/history.html" />
   <meta name="robots" content="noindex, follow">
@@ -112,40 +112,49 @@
 
   <main class="main-content-area">
     <!-- Portal Tabs like index page -->
-    <nav class="portal-tabs-container">
-      <div class="portal-filter-pills" id="portalFilters">
-        <button class="portal-pill active" data-portal="all">
-          All Jobs
-          <span class="pill-count" data-count="all">0</span>
-        </button>
-        <button class="portal-pill" data-portal="Industrial Training Job Portal">
-          Industrial Training
-          <span class="pill-count" data-count="Industrial Training Job Portal">0</span>
-        </button>
-        <button class="portal-pill" data-portal="Articleship Jobs">
-          Articleship
-          <span class="pill-count" data-count="Articleship Jobs">0</span>
-        </button>
-        <button class="portal-pill" data-portal="Semi Qualified Jobs">
-          Semi Qualified
-          <span class="pill-count" data-count="Semi Qualified Jobs">0</span>
-        </button>
-        <button class="portal-pill" data-portal="Fresher Jobs">
-          CA Freshers
-          <span class="pill-count" data-count="Fresher Jobs">0</span>
-        </button>
-        <button class="portal-pill" data-portal="Experienced CA Jobs">
-          Experienced CA
-          <span class="pill-count" data-count="Experienced CA Jobs">0</span>
-        </button>
-      </div>
+    <nav class="portal-nav-bar" id="portalFilters">
+      <button class="footer-tab active" data-portal="all" type="button">
+        <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" style="stroke-width: 1.8;"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+        <span class="desktop-tab-label">All Jobs</span>
+        <span class="mobile-tab-label">All</span>
+        <span class="pill-count" data-count="all">0</span>
+      </button>
+      <button class="footer-tab" data-portal="Industrial Training Job Portal" type="button">
+        <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" style="stroke-width: 1.8;"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+        <span class="desktop-tab-label">Industrial Training</span>
+        <span class="mobile-tab-label">Industrial</span>
+        <span class="pill-count" data-count="Industrial Training Job Portal">0</span>
+      </button>
+      <button class="footer-tab" data-portal="Articleship Jobs" type="button">
+        <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" style="stroke-width: 1.8;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        <span class="desktop-tab-label">Articleship</span>
+        <span class="mobile-tab-label">Articleship</span>
+        <span class="pill-count" data-count="Articleship Jobs">0</span>
+      </button>
+      <button class="footer-tab" data-portal="Semi Qualified Jobs" type="button">
+        <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" style="stroke-width: 1.8;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5z"/><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
+        <span class="desktop-tab-label">Semi Qualified</span>
+        <span class="mobile-tab-label">Semi Qualified</span>
+        <span class="pill-count" data-count="Semi Qualified Jobs">0</span>
+      </button>
+      <button class="footer-tab" data-portal="Fresher Jobs" type="button">
+        <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" style="stroke-width: 1.8;"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+        <span class="desktop-tab-label">CA Freshers</span>
+        <span class="mobile-tab-label">CA Freshers</span>
+        <span class="pill-count" data-count="Fresher Jobs">0</span>
+      </button>
+      <button class="footer-tab" data-portal="Experienced CA Jobs" type="button">
+        <svg class="tab-nav-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16" style="stroke-width: 1.8;"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        <span class="desktop-tab-label">Experienced CA</span>
+        <span class="mobile-tab-label">Experienced CA</span>
+        <span class="pill-count" data-count="Experienced CA Jobs">0</span>
+      </button>
     </nav>
 
     <div class="job-portal-layout">
       <!-- Mobile Controls (Visible only on mobile) -->
       <div class="mobile-controls">
         <div class="search-bar-wrapper">
-          <!-- Using same icon class as index -->
           <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" width="18" height="18">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -202,6 +211,24 @@
 
       <!-- Right Content Area -->
       <section class="job-listings-area">
+        <!-- Applied / Saved Toggle -->
+        <div class="view-mode-toggle" id="viewModeToggle">
+          <button class="view-mode-btn active" id="appliedToggleBtn" data-mode="applied">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15" style="margin-right: 0.25rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Applied
+            <span class="vmt-count" id="vmtAppliedCount">0</span>
+          </button>
+          <button class="view-mode-btn" id="savedToggleBtn" data-mode="saved">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15" style="margin-right: 0.25rem;">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+            Saved
+            <span class="vmt-count" id="vmtSavedCount">0</span>
+          </button>
+        </div>
+
         <div class="history-content" id="historyContent">
           <div class="loader-container" id="loader">
             <div class="loader-spinner"></div>
@@ -211,10 +238,10 @@
     </div>
   </main>
 
-  <!-- Job Details Modal -->
+  <!-- Job Details Modal (Styled as centered popup, matching index.html) -->
   <div id="modal" class="modal-overlay-container">
     <div class="modal-dialog">
-      <button class="modal-close-action" id="modalCloseBtn">×</button>
+      <button class="modal-close-action" id="modalCloseBtn" aria-label="Close details">×</button>
       <div id="modal-body-content"></div>
     </div>
   </div>

@@ -1,15 +1,25 @@
 import { getDaysAgo } from './date-utils.js';
 
+function isSalaryDisclosed(val) {
+    if (!val) return false;
+    const clean = val.toString().replace(/[₹\s\-\.]/g, '').toLowerCase();
+    return clean !== '' && clean !== 'notdisclosed' && clean !== 'nil' && clean !== 'null' && clean !== 'na';
+}
+
 const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 let currentSession = null;
 let allApplications = [];
+let savedJobsList = [];
 let filteredApplications = [];
 let currentPortalFilter = 'all';
+let currentViewMode = 'applied'; // 'applied' | 'saved'
 let currentSearchTerm = '';
 let currentSort = 'newest';
+
+const SAVED_JOBS_KEY = 'msc_saved_jobs';
 
 const PORTAL_DISPLAY_NAMES = {
     'Industrial Training Job Portal': 'Industrial Training',
@@ -56,7 +66,6 @@ async function checkAuth() {
         return false;
     }
 
-    // Update auth UI
     updateAuthUI();
     return true;
 }
@@ -97,7 +106,6 @@ async function fetchApplications() {
         const applicationsWithDetails = await Promise.all(
             data.map(async (app) => {
                 try {
-                    // Start Hack: Check for piggybacked UUID in job_table
                     let targetTable = app.job_table;
                     let targetJobId = app.job_id;
 
@@ -106,7 +114,6 @@ async function fetchApplications() {
                         targetTable = parts[0];
                         targetJobId = parts[1]; // This is the UUID
                     }
-                    // End Hack
 
                     let selectQuery = 'id, Company, Location, Category, Salary, Description, Created_At, "Application ID"';
                     if (targetTable === 'Fresher Jobs') selectQuery += ', Experience';
@@ -114,15 +121,13 @@ async function fetchApplications() {
                     const { data: jobData, error: jobError } = await supabaseClient
                         .from(targetTable)
                         .select(selectQuery)
-                        .eq('id', targetJobId) // Use the real ID (UUID or Int)
+                        .eq('id', targetJobId)
                         .single();
 
                     if (jobError) {
                         console.error(`Failed to fetch job ${targetJobId} from ${targetTable}:`, jobError);
-                        // Return a placeholder so the application is still visible
                         return {
                             ...app,
-                            // Fix: Ensure we use the clean table name for grouping/filtering later
                             job_table: targetTable,
                             job_id: targetJobId,
                             job: {
@@ -140,7 +145,6 @@ async function fetchApplications() {
 
                     return {
                         ...app,
-                        // Fix: Normalize the app object with clean data
                         job_table: targetTable,
                         job_id: targetJobId,
                         job: jobData
@@ -161,7 +165,6 @@ async function fetchApplications() {
             })
         );
 
-        // Filter out failed fetches
         return applicationsWithDetails.filter(app => app !== null && app.job !== null);
     } catch (error) {
         console.error('Error fetching applications:', error);
@@ -169,70 +172,149 @@ async function fetchApplications() {
     }
 }
 
-// Render application card
+// Fetch details for jobs saved via bookmark
+function getSavedJobRefs() {
+    try {
+        return JSON.parse(localStorage.getItem(SAVED_JOBS_KEY) || '[]');
+    } catch (e) {
+        return [];
+    }
+}
+
+async function fetchSavedJobs() {
+    const refs = getSavedJobRefs();
+    if (refs.length === 0) return [];
+
+    const results = await Promise.all(refs.map(async (ref) => {
+        try {
+            const { data, error } = await supabaseClient
+                .from(ref.table)
+                .select('*')
+                .eq('id', ref.id)
+                .single();
+            if (error || !data) return null;
+            return {
+                isSaved: true,
+                applied_at: ref.savedAt,
+                job_table: ref.table,
+                job_id: ref.id,
+                job: data
+            };
+        } catch (e) {
+            return null;
+        }
+    }));
+
+    return results.filter(Boolean).sort((a, b) => new Date(b.applied_at) - new Date(a.applied_at));
+}
+
+function removeSavedJob(jobId, table) {
+    const refs = getSavedJobRefs().filter(r => !(String(r.id) === String(jobId) && r.table === table));
+    localStorage.setItem(SAVED_JOBS_KEY, JSON.stringify(refs));
+    savedJobsList = savedJobsList.filter(s => !(String(s.job_id) === String(jobId) && s.job_table === table));
+    filterAndSortApplications();
+}
+
+// Render list layout application card
 function renderApplicationCard(application) {
     const job = application.job;
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const appliedDate = application.applied_at ? getDaysAgo(application.applied_at) : 'N/A';
 
-    // Determine Portal Name dynamically
     let portalName = PORTAL_DISPLAY_NAMES[application.job_table] || application.job_table;
     if (application.job_table === 'Fresher Jobs' && job.Experience === 'Experienced') {
         portalName = 'Experienced CA';
     }
 
     const card = document.createElement('article');
-    card.className = 'application-card';
+    card.className = 'job-card'; // Reuse portal card styles from portal-style.css
     card.dataset.applicationId = application.id;
     card.dataset.jobId = application.job_id;
 
-    // Set data-portal for filtering
     if (application.job_table === 'Fresher Jobs' && job.Experience === 'Experienced') {
-        card.dataset.jobTable = 'Experienced CA Jobs'; // Custom tag for filtering
+        card.dataset.jobTable = 'Experienced CA Jobs';
     } else {
         card.dataset.jobTable = application.job_table;
     }
 
+    const roleLabel = job.Role || (application.job_table === 'Industrial Training Job Portal' ? 'Industrial Trainee' : application.job_table === 'Articleship Jobs' ? 'Articleship' : 'Professional');
+    const compText = job.Salary ? `${job.Salary}` : '';
+    const descriptionText = job.Description ? job.Description.replace(/[#*_`\[\]]/g, '').trim() : '';
+    const snippet = descriptionText ? `${descriptionText.slice(0, 110)}${descriptionText.length > 110 ? '...' : ''}` : 'No description available.';
+
+    const statusText = application.isSaved ? 'Saved' : 'Applied';
     const isPopular = (application.job.application_count || 0) > 50;
 
     card.innerHTML = `
-        <div class="application-card-logo">${companyInitial}</div>
-        <div class="application-card-details">
-            <div class="application-card-header">
-                <h3 class="application-card-company">${job.Company || 'N/A'}</h3>
-                <p class="application-card-applied">Applied ${appliedDate}</p>
-            </div>
-            <div class="application-card-meta">
-                ${isPopular ? `<span class="job-tag" style="background-color: #fef3c7; color: #d97706; border: 1px solid #fcd34d;">Popular</span>` : ''}
-                <span class="app-status-badge">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                    Applied
-                </span>
-                <span class="app-portal-tag">${portalName}</span>
-                ${job.Location ? `<span class="job-tag">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    ${job.Location}
-                </span>` : ''}
-                ${job.Category ? `<span class="job-tag">${job.Category}</span>` : ''}
-                ${job.Salary ? `<span class="job-tag">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    ₹${job.Salary}
-                </span>` : ''}
+        <div class="job-card-top-row">
+            <div class="job-card-logo">${companyInitial}</div>
+            <div class="job-card-header">
+                <h3 class="job-card-role-title" style="margin-bottom: 0.15rem;">${roleLabel}</h3>
+                <h4 class="job-card-company" style="font-size: 0.9rem; font-weight: 500; color: #475569; margin-bottom: 0.25rem;">${job.Company || 'N/A'}</h4>
+                <p class="job-card-posted old" style="font-size: 0.72rem; color: #94a3b8; font-weight: 500;">
+                    ${statusText} ${appliedDate}
+                </p>
             </div>
         </div>
-        <div class="application-card-actions">
-             <button class="view-details-btn secondary" type="button">View Details</button>
+        <div class="job-card-tags" style="margin-bottom: 0.75rem;">
+            ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ''}
+            <span class="job-tag tag-primary">${portalName}</span>
+            ${job.Location ? `
+                <span class="job-tag">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    ${job.Location}
+                </span>` : ''}
+            ${isSalaryDisclosed(compText) ? `<span class="job-tag" style="background-color: #ecfdf5; color: #065f46; border-color: #a7f3d0;">₹${compText}</span>` : ''}
+            ${job.Category ? `<span class="job-tag">${job.Category}</span>` : ''}
+        </div>
+        <p class="job-card-description" style="margin-bottom: 0.85rem;">${snippet}</p>
+        <div class="job-card-actions" style="display: grid; grid-template-columns: ${application.isSaved ? '1fr 1fr' : '1fr 1.5fr'}; gap: 0.5rem; margin-top: auto; width: 100%;">
+             ${application.isSaved 
+                 ? `<button class="unsave-btn" type="button" style="padding: 0.65rem 1rem; background: #fff; color: #ef4444; border: 1.5px solid #fee2e2; border-radius: 12px; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;">Remove</button>` 
+                 : `<div class="app-status-badge" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.65rem 1rem; border-radius: 12px; font-size: 0.82rem; font-weight: 700; background: rgba(16, 185, 129, 0.08); color: #10b981; border: 1.5px solid rgba(16, 185, 129, 0.15); box-sizing: border-box; text-align: center; height: 38px;">
+                      <svg fill="currentColor" viewBox="0 0 24 24" style="width:11px; height:11px;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Applied
+                    </div>`}
+             <button class="view-details-card-btn secondary" type="button" style="width: 100%;">View Details ›</button>
         </div>
     `;
 
-    // Add click handler to show job details
     card.addEventListener('click', () => showJobModal(application));
+
+    const unsaveBtn = card.querySelector('.unsave-btn');
+    if (unsaveBtn) {
+        unsaveBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            removeSavedJob(application.job_id, application.job_table);
+        });
+    }
 
     return card;
 }
+// Record application in Supabase when applying from saved view
+async function recordApplicationFromSaved(application) {
+    if (!currentSession) return false;
+    try {
+        const { error } = await supabaseClient
+            .from('job_applications')
+            .insert({
+                user_id: currentSession.user.id,
+                job_id: application.job_id,
+                job_table: application.job_table,
+                applied_at: new Date().toISOString()
+            });
+        if (error && error.code !== '23505') { // ignore duplicate
+            console.error('Error recording application:', error);
+            return false;
+        }
+        return true;
+    } catch (e) {
+        console.error('Application exception:', e);
+        return false;
+    }
+}
 
-// Show job details modal
+// Show job details modal (as premium centered popup)
 function showJobModal(application) {
     const job = application.job;
     const companyName = (job.Company || '').trim();
@@ -240,7 +322,6 @@ function showJobModal(application) {
     const appliedDate = application.applied_at ? getDaysAgo(application.applied_at) : 'N/A';
     const portalName = PORTAL_DISPLAY_NAMES[application.job_table] || application.job_table;
 
-    // Simple markdown renderer
     const renderMarkdown = (text) => {
         if (!text) return 'No description available.';
         let html = text
@@ -257,7 +338,6 @@ function showJobModal(application) {
         return '<p>' + html + '</p>';
     };
 
-    // Generate application links
     const generateApplicationLinks = (applicationId) => {
         if (!applicationId) return '<p class="modal-description">No Application ID Available</p>';
         const links = applicationId.split(',').map(link => link.trim()).filter(link => link);
@@ -265,8 +345,8 @@ function showJobModal(application) {
 
         return links.map((link, index) => `
             <div style="display: flex; align-items: center; gap: 0.75rem; background: #f8fafc; padding: 0.4rem; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: ${index < links.length - 1 ? '0.75rem' : '0'};">
-                <p class="modal-description" style="flex: 1; margin: 0; word-break: break-all; font-size: 0.95rem;">${link}</p>
-                <button class="modal-copy-btn" data-copy-text="${link.replace(/"/g, '&quot;')}" style="background: #2563eb; color: white; border: none; border-radius: 6px; padding: 0.6rem 0.8rem; cursor: pointer; transition: all 0.2s; flex-shrink: 0; min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" title="Copy to clipboard">
+                <p class="modal-description" style="flex: 1; margin: 0; word-break: break-all; font-size: 0.95rem; background:none; border:none; padding:0;">${link}</p>
+                <button class="modal-copy-btn" data-copy-text="${link.replace(/"/g, '&quot;')}" style="background: #3b82f6; color: white; border: none; border-radius: 6px; padding: 0.6rem 0.8rem; cursor: pointer; transition: all 0.2s; flex-shrink: 0; min-width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" title="Copy to clipboard">
                     <i class="fas fa-copy" style="font-size: 1rem;"></i>
                 </button>
             </div>
@@ -281,32 +361,52 @@ function showJobModal(application) {
                 <p>${job.Location}</p>
             </div>
         </div>
-        <div class="modal-meta-tags">
-            <span class="job-tag" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border: 1px solid #6ee7b7; color: #065f46;">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 14px; height: 14px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
+
+        <div class="modal-meta-tags" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+            ${application.isSaved ? `<span class="job-tag" style="background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8;">
+                <svg fill="currentColor" viewBox="0 0 24 24" style="width: 12px; height: 12px; margin-right: 4px;"><path d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+                Saved ${appliedDate}
+            </span>` : `<span class="job-tag" style="background: #ecfdf5; border-color: #a7f3d0; color: #065f46;">
+                <svg fill="currentColor" viewBox="0 0 24 24" style="width: 12px; height: 12px; margin-right: 4px;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
                 Applied ${appliedDate}
-            </span>
-            <span class="job-tag">Portal: ${portalName}</span>
-            ${job.Salary ? `<span class="job-tag">${application.job_table.includes('Semi Qualified') || application.job_table.includes('Fresher') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
+            </span>`}
+            <span class="job-tag" style="background-color: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; font-weight: 600;">${portalName}</span>
+            ${isSalaryDisclosed(job.Salary) ? `<span class="job-tag">${application.job_table.includes('Semi Qualified') || application.job_table.includes('Fresher') ? 'Salary' : 'Stipend'}: ₹${job.Salary}</span>` : ''}
             ${job.Category ? `<span class="job-tag">Category: ${job.Category}</span>` : ''}
         </div>
+
+        ${application.isSaved ? `
+        <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
+            <button id="modalApplyNowBtn" style="flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 1.25rem; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #fff; border: none; border-radius: 12px; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(59,130,246,0.25);">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                Apply Now
+            </button>
+        </div>
+        ` : ''}
+
         <div class="modal-section">
-            <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>Application Link</h3>
+            <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>Apply here!</h3>
             ${generateApplicationLinks(job['Application ID'])}
         </div>
+
         <div class="modal-section">
             <h3><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Job Description</h3>
             <div class="modal-description">${renderMarkdown(job.Description)}</div>
+        </div>
+
+        <div class="modal-footer" style="text-align: center; padding: 1rem; border-top: 1px solid #e5e7eb; margin-top: 1rem;">
+            <p style="color: #6b7280; font-size: 0.9rem;">
+                Found an issue with this job posting?
+                <a href="/contact.html" style="color: #2563eb; text-decoration: none; font-weight: 500;">Report it</a>
+            </p>
         </div>
     `;
 
     dom.modalOverlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';
 
-    // Attach copy button event listeners
-    const copyBtns = document.querySelectorAll('.modal-copy-btn');
+    // Copy clipboards
+    const copyBtns = dom.modalBody.querySelectorAll('.modal-copy-btn');
     copyBtns.forEach(copyBtn => {
         copyBtn.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -316,20 +416,82 @@ function showJobModal(application) {
 
             navigator.clipboard.writeText(text).then(() => {
                 icon.className = 'fas fa-check';
-                copyBtn.style.background = '#22c55e';
+                copyBtn.style.background = '#10b981';
                 setTimeout(() => {
                     icon.className = originalClass;
-                    copyBtn.style.background = '#2563eb';
+                    copyBtn.style.background = '#3b82f6';
                 }, 2000);
             }).catch(err => {
                 console.error('Copy failed:', err);
-                alert('Failed to copy. Please copy manually.');
+                alert('Failed to copy.');
             });
         });
     });
+
+    // Apply Now button (only in saved view)
+    if (application.isSaved) {
+        const applyNowBtn = dom.modalBody.querySelector('#modalApplyNowBtn');
+        if (applyNowBtn) {
+            applyNowBtn.addEventListener('click', async () => {
+                const appId = job['Application ID'];
+                const firstLink = appId ? appId.split(',')[0].trim() : null;
+
+                // Determine link type
+                let applyHref = null;
+                if (firstLink) {
+                    if (firstLink.toLowerCase().startsWith('http')) {
+                        applyHref = firstLink;
+                    } else if (firstLink.includes('@')) {
+                        applyHref = `mailto:${firstLink}`;
+                    } else {
+                        applyHref = `https://www.google.com/search?q=${encodeURIComponent(firstLink + ' careers')}`;
+                    }
+                }
+
+                // Show loading
+                applyNowBtn.innerHTML = '<i class="fas fa-spinner fa-spin" style="font-size:0.9rem;"></i> Applying...';
+                applyNowBtn.disabled = true;
+
+                const success = await recordApplicationFromSaved(application);
+
+                if (success) {
+                    // Build full application record and push to allApplications
+                    const newApp = {
+                        ...application,
+                        isSaved: false,
+                        applied_at: new Date().toISOString()
+                    };
+                    delete newApp.isSaved;
+                    allApplications.unshift(newApp);
+
+                    // Remove from saved list
+                    removeSavedJob(application.job_id, application.job_table);
+
+                    // Close modal
+                    closeModal();
+
+                    // Switch to applied view
+                    const appliedBtn = document.getElementById('appliedToggleBtn');
+                    const savedBtn = document.getElementById('savedToggleBtn');
+                    currentViewMode = 'applied';
+                    if (appliedBtn) appliedBtn.classList.add('active');
+                    if (savedBtn) savedBtn.classList.remove('active');
+                    filterAndSortApplications();
+                    updateCounts();
+
+                    // Open the apply link
+                    if (applyHref) window.open(applyHref, '_blank');
+                } else {
+                    applyNowBtn.innerHTML = '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg> Apply Now';
+                    applyNowBtn.disabled = false;
+                    alert('Failed to record application. Please try again.');
+                }
+            });
+        }
+    }
 }
 
-// Close modal
+// Close drawer modal
 function closeModal() {
     dom.modalOverlay.style.display = 'none';
     document.body.style.overflow = 'auto';
@@ -337,9 +499,10 @@ function closeModal() {
 
 // Filter and sort applications
 function filterAndSortApplications() {
-    // Filter by portal
-    let filtered = allApplications;
-    if (currentPortalFilter !== 'all') {
+    let filtered = currentViewMode === 'saved' ? savedJobsList : allApplications;
+
+    // Apply portal filters in applied view
+    if (currentViewMode === 'applied' && currentPortalFilter !== 'all') {
         if (currentPortalFilter === 'Experienced CA Jobs') {
             filtered = filtered.filter(app => app.job_table === 'Fresher Jobs' && app.job?.Experience === 'Experienced');
         } else if (currentPortalFilter === 'Fresher Jobs') {
@@ -349,7 +512,7 @@ function filterAndSortApplications() {
         }
     }
 
-    // Filter by search term
+    // Apply search filter (Company, Location)
     if (currentSearchTerm.trim()) {
         const searchLower = currentSearchTerm.toLowerCase();
         filtered = filtered.filter(app => {
@@ -359,7 +522,7 @@ function filterAndSortApplications() {
         });
     }
 
-    // Sort
+    // Sorting logic
     if (currentSort === 'newest') {
         filtered.sort((a, b) => new Date(b.applied_at) - new Date(a.applied_at));
     } else if (currentSort === 'oldest') {
@@ -375,14 +538,22 @@ function filterAndSortApplications() {
     updateCounts();
 }
 
-// Update application counts
+// Update counters
 function updateCounts() {
-    const total = allApplications.length;
-    dom.applicationCount.textContent = total;
+    // View Mode Count Badges
+    const vmtApplied = document.getElementById('vmtAppliedCount');
+    const vmtSaved = document.getElementById('vmtSavedCount');
+    if (vmtApplied) vmtApplied.textContent = allApplications.length;
+    if (vmtSaved) vmtSaved.textContent = savedJobsList.length;
 
-    // Update portal pill counts
-    const counts = {
-        'all': total,
+    // Inline counter
+    if (dom.applicationCount) {
+        dom.applicationCount.textContent = allApplications.length;
+    }
+
+    // Portal pill count tags
+    const portalCounts = {
+        'all': allApplications.length,
         'Industrial Training Job Portal': 0,
         'Articleship Jobs': 0,
         'Semi Qualified Jobs': 0,
@@ -395,79 +566,83 @@ function updateCounts() {
         if (app.job_table === 'Fresher Jobs' && app.job?.Experience === 'Experienced') {
             key = 'Experienced CA Jobs';
         }
-
-        if (counts.hasOwnProperty(key)) {
-            counts[key]++;
+        if (portalCounts.hasOwnProperty(key)) {
+            portalCounts[key]++;
         }
     });
 
-    Object.keys(counts).forEach(portal => {
+    Object.keys(portalCounts).forEach(portal => {
         const countElement = document.querySelector(`[data-count="${portal}"]`);
         if (countElement) {
-            countElement.textContent = counts[portal];
+            countElement.textContent = portalCounts[portal];
         }
     });
 }
 
-// Render applications
+// Render dynamic content
 function renderApplications() {
     if (!dom.historyContent) return;
 
     if (filteredApplications.length === 0) {
+        if (currentViewMode === 'saved') {
+            dom.historyContent.innerHTML = `
+                <div class="empty-state">
+                    <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                    </svg>
+                    <h3>No saved jobs found</h3>
+                    <p>Bookmarks help you remember interesting jobs. Tap the bookmark icon on any portal card to save jobs here.</p>
+                    <a href="/" class="empty-state-cta">Browse Portals</a>
+                </div>
+            `;
+            return;
+        }
+
         dom.historyContent.innerHTML = `
             <div class="empty-state">
                 <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <h3>${allApplications.length === 0 ? "You haven't applied to any jobs yet" : 'No applications found'}</h3>
-                <p>${allApplications.length === 0 ? 'Start your job search journey by browsing available opportunities across our job portals.' : 'Try adjusting your search or filter criteria.'}</p>
-                ${allApplications.length === 0 ? '<a href="/" class="empty-state-cta"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>Browse Jobs</a>' : ''}
+                <h3>No applications found</h3>
+                <p>Track your recruitment process easily here. Tap applied links in any portal to see items list here.</p>
+                <a href="/" class="empty-state-cta">Browse Jobs</a>
             </div>
         `;
         return;
     }
 
-    // Show all in flat list (no grouping)
     dom.historyContent.innerHTML = '';
 
-    // Create a container for the grid/list if needed, or append directly
-    // Using direct append for now to match existing style
     filteredApplications.forEach(app => {
         dom.historyContent.appendChild(renderApplicationCard(app));
     });
 }
 
-// Initialize page
+// Initialize Page Controller
 async function initializePage() {
     initializeDOM();
 
     const isAuthenticated = await checkAuth();
     if (!isAuthenticated) return;
 
-    // Show loader
     if (dom.loader) dom.loader.style.display = 'flex';
 
-    // Fetch applications
-    allApplications = await fetchApplications();
+    // Parallel fetch from Supabase and LocalStorage bookmarks
+    [allApplications, savedJobsList] = await Promise.all([fetchApplications(), fetchSavedJobs()]);
     filteredApplications = [...allApplications];
 
-    // Hide loader
     if (dom.loader) dom.loader.style.display = 'none';
 
-    // Render
     renderApplications();
     updateCounts();
 
-    // Setup event listeners
     setupEventListeners();
-
-    // Initialize custom dropdowns
     initCustomSelects();
 }
 
-// Setup event listeners
+// Attach Event Listeners
 function setupEventListeners() {
-    // Search
+    // Search input keyword filtering
     if (dom.searchInput) {
         dom.searchInput.addEventListener('input', (e) => {
             currentSearchTerm = e.target.value;
@@ -475,7 +650,7 @@ function setupEventListeners() {
         });
     }
 
-    // Sort
+    // Sorting selection dropdown
     if (dom.sortBySelect) {
         dom.sortBySelect.addEventListener('change', (e) => {
             currentSort = e.target.value;
@@ -483,16 +658,15 @@ function setupEventListeners() {
         });
     }
 
-    // Portal filters
+    // Portal header filter tabs click mapping
     if (dom.portalFilters) {
-        const pills = dom.portalFilters.querySelectorAll('.portal-pill');
-        pills.forEach(pill => {
-            pill.addEventListener('click', () => {
-                pills.forEach(p => p.classList.remove('active'));
-                pill.classList.add('active');
-                currentPortalFilter = pill.dataset.portal;
+        const tabs = dom.portalFilters.querySelectorAll('.footer-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentPortalFilter = tab.dataset.portal;
 
-                // Sync mobile dropdown
                 if (dom.portalSelectMobile) {
                     dom.portalSelectMobile.value = currentPortalFilter;
                 }
@@ -502,12 +676,32 @@ function setupEventListeners() {
         });
     }
 
-    // Mobile Portal Dropdown
+    // Main Toggle: Applied vs Saved Opportunity View Mode
+    const appliedBtn = document.getElementById('appliedToggleBtn');
+    const savedBtn = document.getElementById('savedToggleBtn');
+
+    function setViewMode(mode) {
+        currentViewMode = mode;
+        if (appliedBtn) appliedBtn.classList.toggle('active', mode === 'applied');
+        if (savedBtn) savedBtn.classList.toggle('active', mode === 'saved');
+
+        const tabsContainer = document.querySelector('.portal-tabs-container');
+        if (tabsContainer) {
+            tabsContainer.style.opacity = mode === 'saved' ? '0.4' : '1';
+            tabsContainer.style.pointerEvents = mode === 'saved' ? 'none' : '';
+        }
+
+        filterAndSortApplications();
+    }
+
+    if (appliedBtn) appliedBtn.addEventListener('click', () => setViewMode('applied'));
+    if (savedBtn) savedBtn.addEventListener('click', () => setViewMode('saved'));
+
+    // Mobile Portal drop sync
     if (dom.portalSelectMobile) {
         dom.portalSelectMobile.addEventListener('change', (e) => {
             currentPortalFilter = e.target.value;
 
-            // Sync desktop pills
             if (dom.portalFilters) {
                 const pills = dom.portalFilters.querySelectorAll('.portal-pill');
                 pills.forEach(p => {
@@ -523,7 +717,7 @@ function setupEventListeners() {
         });
     }
 
-    // Modal close
+    // Modal drawer close triggers
     if (dom.modalCloseBtn) {
         dom.modalCloseBtn.addEventListener('click', closeModal);
     }
@@ -535,7 +729,7 @@ function setupEventListeners() {
         });
     }
 
-    // Menu toggle
+    // Top Header menu toggle triggers
     const menuButton = document.getElementById('menuButton');
     const menuCloseBtn = document.getElementById('menuCloseBtn');
     const expandedMenu = document.getElementById('expandedMenu');
@@ -552,38 +746,22 @@ function setupEventListeners() {
         });
     }
 
-    // Dropdown toggles
-    const dropdownBtns = document.querySelectorAll('.menu-item-dropdown:not(.always-open) .menu-item');
-    dropdownBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            const dropdown = btn.nextElementSibling;
-            const icon = btn.querySelector('.dropdown-icon');
-            if (dropdown) {
-                dropdown.classList.toggle('active');
-                if (icon) icon.classList.toggle('open');
-            }
-        });
-    });
-
-    // --- Mobile Interactions ---
+    // Mobile Sidebar filter buttons
     const mobileSearchInput = document.getElementById('mobileSearchInput');
     const mobileFilterToggle = document.getElementById('mobileFilterToggle');
     const filterSidebar = document.getElementById('filterSidebar');
     const closeSidebarBtn = document.getElementById('closeSidebarBtn');
 
-    // Sync Mobile Search with Desktop Search Logic
     if (mobileSearchInput) {
         mobileSearchInput.addEventListener('input', (e) => {
-            const searchFilter = document.getElementById('searchFilter') || document.getElementById('searchInput');
+            const searchFilter = document.getElementById('searchInput');
             if (searchFilter) {
                 searchFilter.value = e.target.value;
-                // Trigger the existing search logic
                 searchFilter.dispatchEvent(new Event('input'));
             }
         });
     }
 
-    // Toggle Filter Sidebar on Mobile
     if (mobileFilterToggle && filterSidebar) {
         mobileFilterToggle.addEventListener('click', (e) => {
             e.stopPropagation();
@@ -592,7 +770,6 @@ function setupEventListeners() {
         });
     }
 
-    // Close Sidebar Helper
     function closeSidebar() {
         if (filterSidebar) {
             filterSidebar.classList.remove('active');
@@ -604,10 +781,8 @@ function setupEventListeners() {
         closeSidebarBtn.addEventListener('click', closeSidebar);
     }
 
-    // Close sidebar when clicking outside
     document.addEventListener('click', (e) => {
         if (filterSidebar && filterSidebar.classList.contains('active')) {
-            // Check if click is outside sidebar and not on the toggle button
             if (!filterSidebar.contains(e.target) && !mobileFilterToggle.contains(e.target)) {
                 closeSidebar();
             }
@@ -615,13 +790,10 @@ function setupEventListeners() {
     });
 }
 
-
-
-// Custom Dropdown Implementation (Matches index.html/portal3.js)
+// Re-implement Custom Select Dropdown logic to align with styles
 function initCustomSelects() {
     const selectorIds = ['sortBySelect', 'portalSelectMobile'];
 
-    // Close dropdowns on outside click
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.custom-select-wrapper')) {
             document.querySelectorAll('.custom-select-wrapper.open').forEach(wrapper => {
@@ -639,10 +811,8 @@ function initCustomSelects() {
         const select = document.getElementById(id);
         if (!select) return;
 
-        // Ensure we don't double-wrap if re-run
         if (select.parentNode.classList.contains('custom-select-wrapper')) return;
 
-        // Create Custom UI
         const wrapper = document.createElement('div');
         wrapper.className = 'custom-select-wrapper';
 
@@ -653,7 +823,6 @@ function initCustomSelects() {
         const optionsList = document.createElement('div');
         optionsList.className = 'custom-options';
 
-        // Function to rebuild options
         const buildOptions = () => {
             optionsList.innerHTML = '';
             Array.from(select.options).forEach(opt => {
@@ -666,33 +835,27 @@ function initCustomSelects() {
                     select.value = opt.value;
                     trigger.querySelector('span').textContent = opt.text;
                     wrapper.classList.remove('open');
-                    optionsList.style.display = 'none'; // Instant hide
+                    optionsList.style.display = 'none';
 
-                    // Visual update
                     optionsList.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
                     div.classList.add('selected');
 
-                    // Trigger native event
                     select.dispatchEvent(new Event('change'));
                 });
                 optionsList.appendChild(div);
             });
         };
 
-        // Initial build
         buildOptions();
 
-        // Assemble
         select.style.display = 'none';
         select.parentNode.insertBefore(wrapper, select);
-        wrapper.appendChild(select); // Move select inside to keep DOM clean-ish
+        wrapper.appendChild(select);
         wrapper.appendChild(trigger);
         wrapper.appendChild(optionsList);
 
-        // Toggle Event
         trigger.addEventListener('click', () => {
             const isOpen = wrapper.classList.contains('open');
-            // Close others
             document.querySelectorAll('.custom-select-wrapper.open').forEach(w => {
                 if (w !== wrapper) {
                     w.classList.remove('open');
@@ -703,7 +866,6 @@ function initCustomSelects() {
             if (!isOpen) {
                 wrapper.classList.add('open');
                 optionsList.style.display = 'block';
-                // Trigger reflow
                 optionsList.offsetHeight;
                 optionsList.style.opacity = '1';
             } else {
@@ -713,8 +875,6 @@ function initCustomSelects() {
             }
         });
 
-        // REACTIVITY: Watch for Native Changes (JS updates, Resets)
-        // 1. MutationObserver for option changes (dynamic loading)
         const observer = new MutationObserver(() => {
             buildOptions();
             const sel = select.options[select.selectedIndex];
@@ -722,13 +882,11 @@ function initCustomSelects() {
         });
         observer.observe(select, { childList: true, subtree: true });
 
-        // 2. Intercept programmatic .value changes (e.g. Reset Button)
         const descriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
         Object.defineProperty(select, 'value', {
             get: function () { return descriptor.get.call(this); },
             set: function (val) {
                 descriptor.set.call(this, val);
-                // Update UI
                 const sel = this.options[this.selectedIndex];
                 if (sel) {
                     trigger.querySelector('span').textContent = sel.text;
@@ -739,7 +897,6 @@ function initCustomSelects() {
             }
         });
 
-        // 3. Listen for internal value changes (standard change event)
         select.addEventListener('change', () => {
             const sel = select.options[select.selectedIndex];
             if (sel) {
@@ -752,5 +909,4 @@ function initCustomSelects() {
     });
 }
 
-// Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', initializePage);
