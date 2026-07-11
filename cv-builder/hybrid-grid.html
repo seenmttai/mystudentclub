@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>CV - Royal Blue Grid</title>
+    <title>CV - Steel Blue Grid</title>
     <style>
         :root {
-            --blue-header: #2d5294;
-            --light-blue-bg: #deeaf6;
+            --blue-header: #0d465f;
+            --light-blue-bg: #dae9f7;
             --border-color: #000000;
             --text-black: #000000;
             --bg-white: #ffffff;
@@ -76,8 +76,19 @@
         }
 
         header {
-            text-align: center;
-            margin-bottom: calc(10px * var(--content-scale));
+            margin-bottom: calc(8px * var(--content-scale));
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: calc(10px * var(--content-scale));
+            width: 100%;
+        }
+
+        .header-left {
+            min-width: 0;
         }
 
         h1[data-field="name"] {
@@ -85,21 +96,25 @@
             font-weight: bold;
             margin-bottom: calc(2px * var(--content-scale));
             line-height: 1.05;
+            text-align: left;
         }
 
         .subtitle {
-            font-size: calc(18px * var(--content-scale));
-            margin-bottom: calc(8px * var(--content-scale));
+            font-size: calc(17.5px * var(--content-scale));
+            margin-bottom: 0;
+            text-align: left;
         }
 
         .contact-info {
-            font-size: calc(16px * var(--content-scale));
+            font-size: calc(15.5px * var(--content-scale));
             display: flex;
-            justify-content: center;
             align-items: center;
-            flex-wrap: wrap;
-            gap: calc(14px * var(--content-scale));
+            justify-content: flex-end;
+            flex-wrap: nowrap;
+            gap: calc(8px * var(--content-scale));
             min-height: calc(20px * var(--content-scale));
+            white-space: nowrap;
+            text-align: right;
         }
 
         .contact-info .contact-sep {
@@ -145,16 +160,13 @@
             letter-spacing: 0.5px;
         }
 
-        .sortable-section {
-            margin-bottom: calc(10px * var(--content-scale));
-        }
+        .sortable-section { margin: 0; }
 
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: calc(16.5px * var(--content-scale));
             table-layout: fixed;
-            margin-bottom: calc(12px * var(--content-scale));
         }
 
         th,
@@ -204,6 +216,7 @@
 
         .summary-box {
             border: 1px solid var(--border-color);
+            background-color: transparent !important;
             border-top: none;
             padding: calc(6px * var(--content-scale)) calc(8px * var(--content-scale));
             text-align: justify;
@@ -240,28 +253,9 @@
             text-align: right;
         }
 
-        .sortable-section[data-section-id="experience"] > .section-banner,
-        .sortable-section[data-section-id="experience"] > .section-header {
-            margin-bottom: 0 !important;
-        }
-
-        .sortable-section[data-section-id="experience"] > #experience-list {
-            margin-top: 0 !important;
-        }
-
-        .sortable-section[data-section-id="experience"] #experience-list > .job-group:not(.template):first-child .job-headers-container {
-            margin-top: 0 !important;
-        }
-
-        .sortable-section[data-section-id="experience"] #experience-list .grid-table {
-            margin-bottom: 0 !important;
-        }
-
         .grid-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 0;
-            margin-bottom: calc(12px * var(--content-scale));
         }
 
         .grid-table td {
@@ -339,9 +333,7 @@
             border-top: none;
         }
 
-        .grouped-support-block {
-            margin-bottom: calc(10px * var(--content-scale));
-        }
+        .grouped-support-block { margin: 0; }
 
         .detail-table td.section-label {
             width: 18%;
@@ -362,9 +354,7 @@
         }
 
         .universal-injected,
-        .custom-section-injected {
-            margin-bottom: calc(8px * var(--content-scale));
-        }
+        .custom-section-injected { margin: 0; }
 
         .universal-injected ul,
         .custom-section-injected ul {
@@ -430,9 +420,13 @@
     <div id="zoom-wrapper">
         <div class="resume-container" id="cv-page">
             <header>
-                <h1 data-field="name"></h1>
-                <div class="subtitle" data-field="tagline"></div>
-                <div class="contact-info" data-field="contact"></div>
+                <div class="header-top">
+                    <div class="header-left">
+                        <h1 data-field="name"></h1>
+                        <div class="subtitle" data-field="tagline"></div>
+                    </div>
+                    <div class="contact-info" data-field="contact"></div>
+                </div>
             </header>
 
             <div class="sortable-section" data-section-id="summary">
@@ -492,15 +486,16 @@
                 <div class="section-banner section-header">Projects</div>
                 <div id="projects-list">
                     <div class="job-group template">
-                        <table class="grid-table">
+                        <div class="job-headers-container job-header">
+                            <div class="job-list-header job-title-row">
+                                <span><span data-field="title"></span></span>
+                            </div>
+                        </div>
+                        <table class="grid-table" data-preserve-label-columns>
                             <tbody>
                                 <tr>
-                                    <td class="grid-left">Project</td>
+                                    <td class="grid-left"><span data-field="description"></span></td>
                                     <td class="grid-right">
-                                        <div class="cell-sub-header">
-                                            <span data-field="title"></span>
-                                        </div>
-                                        <div class="item-meta" data-field="description"></div>
                                         <ul data-list="bullets"></ul>
                                     </td>
                                 </tr>
@@ -587,8 +582,8 @@
             document.documentElement.style.setProperty("--content-scale", contentScale);
 
             let iterations = 0;
-            while (page.scrollHeight > maxHeight && iterations < 60) {
-                contentScale -= 0.01;
+            while (page.scrollHeight > maxHeight && iterations < 50) {
+                contentScale -= 0.02;
                 document.documentElement.style.setProperty("--content-scale", contentScale);
                 iterations++;
             }

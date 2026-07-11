@@ -268,7 +268,7 @@
             line-height: 1.18;
         }
 
-        */ .exp-titlebar {
+        .exp-titlebar {
             background: var(--sub-bg);
             font-weight: bold;
         }
@@ -358,9 +358,9 @@
 
         /* ---------- Projects (styled like Work Experience entries) ---------- */
         #projects-render {
-            border: 1px solid #000;
+            /* border: 1px solid #000;
             border-top: none;
-            padding: calc(2px * var(--content-scale)) calc(9px * var(--content-scale));
+            padding: calc(2px * var(--content-scale)) calc(9px * var(--content-scale)); */
         }
 
         #projects-render>div+div {
@@ -632,7 +632,9 @@
         // fields cv-common hid — the bar then reads like the DOCX's stint bars.
         const originalRenderCV = window.renderCV;
         window.renderCV = function (data) {
-            originalRenderCV(data);
+            const dataCopy = JSON.parse(JSON.stringify(data || {}));
+            applyDocxEducationWidths(dataCopy);
+            originalRenderCV(dataCopy);
             document.querySelectorAll('#experience-list .experience-title-merged').forEach(block => {
                 ['role', 'company', 'dates'].forEach(field => {
                     const el = block.querySelector('[data-field="' + field + '"]');
@@ -640,6 +642,36 @@
                 });
             });
         };
+
+        function applyDocxEducationWidths(dataCopy) {
+            dataCopy.tableSettings = dataCopy.tableSettings || {};
+            dataCopy.tableSettings.education = dataCopy.tableSettings.education || {};
+            const cols = dataCopy.tableSettings.education.columns || {};
+            const defaultWidths = { degree: 20, institution: 38, marks: 11, year: 10, remarks: 21 };
+            const effective = {};
+            Object.keys(defaultWidths).forEach(key => {
+                effective[key] = {
+                    visible: cols?.[key]?.visible !== false,
+                    width: Number(cols?.[key]?.width) || defaultWidths[key]
+                };
+            });
+            dataCopy.tableSettings.education.columns = effective;
+
+            const colgroup = document.querySelector('#education-table colgroup') || document.querySelector('.edu-table colgroup');
+            if (colgroup) {
+                colgroup.innerHTML = '';
+                const order = ['degree', 'institution', 'marks', 'year', 'remarks'];
+                const visibleTotal = order.reduce((sum, key) =>
+                    sum + (effective[key].visible ? effective[key].width : 0), 0) || 1;
+                order.forEach(key => {
+                    if (effective[key].visible) {
+                        const col = document.createElement('col');
+                        col.style.width = ((effective[key].width / visibleTotal) * 100).toFixed(2) + '%';
+                        colgroup.appendChild(col);
+                    }
+                });
+            }
+        }
 
         function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
@@ -713,20 +745,40 @@
                 var titleEl = div.querySelector('.project-title');
                 var descEl = div.querySelector('.project-desc');
                 var title = titleEl ? titleEl.innerHTML.trim() : '';
+                var desc = descEl ? descEl.innerHTML.trim() : '';
                 var bullets = [];
-                if (descEl && descEl.textContent.trim()) bullets.push(descEl.innerHTML.trim());
                 Array.prototype.forEach.call(div.querySelectorAll('ul li'), function (li) {
                     var t = li.innerHTML.trim(); if (t) bullets.push(t);
                 });
                 var year = '';
                 var mt = title.match(YR);
                 if (mt) { title = mt[1].trim(); year = mt[2]; }
-                if (!title && !bullets.length) return;
-                html += '<div><div class="pj-head">'
-                    + (year ? '<span class="pj-date">' + year + '</span>' : '')
-                    + '<span class="pj-title">' + title + '</span></div>';
-                if (bullets.length) html += '<ul>' + bullets.map(function (b) { return '<li>' + b + '</li>'; }).join('') + '</ul>';
-                html += '</div>';
+                if (!title && !desc && !bullets.length) return;
+                
+                var descEmpty = !desc;
+                
+                html += '<table class="exp-entry" data-preserve-label-columns style="width:100%; border-collapse:collapse; table-layout:fixed; margin-top: -1px;">'
+                    + '<colgroup>'
+                    + '<col class="exp-l">'
+                    + '<col class="exp-r">'
+                    + '</colgroup>'
+                    + '<tbody>'
+                    + '<tr>'
+                    + '<td class="exp-titlebar" colspan="2" style="background:var(--sub-bg); font-weight:bold; border: 1px solid #000; padding: calc(1.5px * var(--content-scale)) calc(9px * var(--content-scale));">'
+                    + '<div class="exp-titlebar-inner" style="display:flex; justify-content:space-between; align-items:baseline;">'
+                    + '<span class="exp-titletext"><span class="exp-role">' + title + '</span></span>'
+                    + (year ? '<span class="exp-date">' + year + '</span>' : '')
+                    + '</div>'
+                    + '</td>'
+                    + '</tr>'
+                    + '<tr>'
+                    + '<td class="exp-keylabel" style="' + (descEmpty ? 'display: none;' : '') + ' width:12%; background:var(--sub-bg); font-weight:bold; vertical-align:top; border: 1px solid #000; padding: calc(1.5px * var(--content-scale)) calc(9px * var(--content-scale));">' + desc + '</td>'
+                    + '<td class="exp-keybody" ' + (descEmpty ? 'colspan="2" style="width:100% !important; border: 1px solid #000; padding: calc(1.5px * var(--content-scale)) calc(9px * var(--content-scale));"' : 'style="width:84%; border: 1px solid #000; padding: calc(1.5px * var(--content-scale)) calc(9px * var(--content-scale));"') + '>'
+                    + (bullets.length ? '<ul style="list-style:disc; margin:0; padding-left:calc(25px * var(--content-scale));">' + bullets.map(function (b) { return '<li style="line-height:1.18; text-align:justify; padding-left:4px;">' + b + '</li>'; }).join('') + '</ul>' : '')
+                    + '</td>'
+                    + '</tr>'
+                    + '</tbody>'
+                    + '</table>';
             });
             host.innerHTML = html;
             sec.style.display = html ? '' : 'none';

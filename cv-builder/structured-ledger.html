@@ -156,7 +156,7 @@
 
         /* ── QUALIFICATIONS HEADER SHADING ── */
         .qual-header {
-            background-color: var(--grey-bg) !important;
+            background-color: var(--sub-header-bg) !important;
             vertical-align: middle;
             padding: calc(2px * var(--content-scale)) calc(3px * var(--content-scale));
             text-align: center;
@@ -616,6 +616,10 @@
             
           
             originalRenderCV(dataCopy);
+
+            document.querySelectorAll('.sortable-section table').forEach(t => {
+                t.style.setProperty('table-layout', 'fixed', 'important');
+            });
             
         
             splitEducationSections();
@@ -871,6 +875,94 @@
                 const clone = row.cloneNode(true);
                 qualList.appendChild(clone);
             });
+
+            // Adjust headers and colgroup in qualifications table to match visibility of columns
+            const template = hiddenList.querySelector('.template');
+            if (template) {
+                const visibility = {};
+                Array.from(template.children).forEach(cell => {
+                    const field = cell.getAttribute('data-field');
+                    if (field) {
+                        visibility[field] = cell.style.display !== 'none';
+                    }
+                });
+
+                const qualSection = document.getElementById('qualifications-section');
+                if (qualSection) {
+                    // Update headers
+                    const headerRow = qualSection.querySelector('tr:has(.qual-header)');
+                    if (headerRow) {
+                        const headers = Array.from(headerRow.children);
+                        if (headers.length === 5) {
+                            headers[0].style.display = visibility['degree'] ? '' : 'none';
+                            headers[1].style.display = visibility['year'] ? '' : 'none';
+                            headers[2].style.display = visibility['institution'] ? '' : 'none';
+                            headers[3].style.display = visibility['marks'] ? '' : 'none';
+                            headers[4].style.display = visibility['remarks'] ? '' : 'none';
+                        }
+                    }
+
+                    // Update colgroup widths proportionally to fill 940px
+                    const colgroup = qualSection.querySelector('colgroup');
+                    if (colgroup) {
+                        colgroup.innerHTML = '';
+                        
+                        // Map hidden template cells
+                        const templateCells = {};
+                        Array.from(template.children).forEach(cell => {
+                            const field = cell.getAttribute('data-field');
+                            if (field) {
+                                templateCells[field] = cell;
+                            }
+                        });
+
+                        const widths = {};
+                        const visibility = {};
+                        ['degree', 'year', 'institution', 'marks', 'remarks'].forEach(field => {
+                            const cell = templateCells[field];
+                            if (cell) {
+                                visibility[field] = cell.style.display !== 'none';
+                                widths[field] = parseFloat(cell.style.width) || 0;
+                            } else {
+                                visibility[field] = false;
+                                widths[field] = 0;
+                            }
+                        });
+
+                        // Rebuild col elements with proportional pixel widths
+                        if (visibility['degree']) {
+                            const degTotal = (widths['degree'] / 100) * 940.0;
+                            const col1 = document.createElement('col');
+                            col1.style.width = (degTotal * (124.17 / 175.33)).toFixed(2) + 'px';
+                            colgroup.appendChild(col1);
+
+                            const col2 = document.createElement('col');
+                            col2.style.width = (degTotal * (51.16 / 175.33)).toFixed(2) + 'px';
+                            colgroup.appendChild(col2);
+                        }
+                        if (visibility['year']) {
+                            const col = document.createElement('col');
+                            col.style.width = ((widths['year'] / 100) * 940.0).toFixed(2) + 'px';
+                            colgroup.appendChild(col);
+                        }
+                        if (visibility['institution']) {
+                            const col = document.createElement('col');
+                            col.style.width = ((widths['institution'] / 100) * 940.0).toFixed(2) + 'px';
+                            colgroup.appendChild(col);
+                        }
+                        if (visibility['marks']) {
+                            const col = document.createElement('col');
+                            col.style.width = ((widths['marks'] / 100) * 940.0).toFixed(2) + 'px';
+                            colgroup.appendChild(col);
+                        }
+                        if (visibility['remarks']) {
+                            const col = document.createElement('col');
+                            col.style.width = ((widths['remarks'] / 100) * 940.0).toFixed(2) + 'px';
+                            colgroup.appendChild(col);
+                        }
+                    }
+                }
+            }
 
             const qualSection = document.getElementById('qualifications-section');
             if (qualSection) {

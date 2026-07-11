@@ -7,7 +7,7 @@
     <style>
         :root {
             --blue-header: #17365d;
-            --light-blue-bg: #c5d9ed;
+            --light-blue-bg: var(--sub-header-bg, #c5d9ed);
             --section-bg: #efefef;
             --border-color: #000000;
             --text-black: #000000;
@@ -96,6 +96,22 @@
             line-height: 1;
         }
 
+        .name-block-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header-tagline {
+            font-size: calc(18.00px * var(--content-scale));
+            font-weight: bold;
+            margin-top: calc(4px * var(--content-scale));
+        }
+
+        .header-tagline:empty {
+            display: none;
+        }
+
         .contact-info {
             font-size: calc(15px * var(--content-scale));
             display: flex;
@@ -147,6 +163,7 @@
             padding: calc(10px * var(--content-scale)) calc(15px * var(--content-scale));
             font-size: calc(15px * var(--content-scale));
             text-align: justify;
+            background-color: transparent !important;
             line-height: 1.35;
         }
 
@@ -350,7 +367,10 @@
     <div id="zoom-wrapper">
         <div class="resume-container" id="cv-page">
             <header>
-                <h1 data-field="name"></h1>
+                <div class="name-block-wrapper">
+                    <h1 data-field="name"></h1>
+                    <div class="header-tagline" data-field="tagline"></div>
+                </div>
                 <div class="contact-info" data-field="contact"></div>
             </header>
 

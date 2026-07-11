@@ -733,9 +733,41 @@
     <script>
         const originalRenderCV = window.renderCV;
         window.renderCV = function (data) {
-            originalRenderCV(data);
+            const dataCopy = JSON.parse(JSON.stringify(data || {}));
+            applyDocxEducationWidths(dataCopy);
+            originalRenderCV(dataCopy);
             renderSubsectionHeadings();
         };
+
+        function applyDocxEducationWidths(dataCopy) {
+            dataCopy.tableSettings = dataCopy.tableSettings || {};
+            dataCopy.tableSettings.education = dataCopy.tableSettings.education || {};
+            const cols = dataCopy.tableSettings.education.columns || {};
+            const defaultWidths = { year: 12, degree: 20.8, institution: 36.5, remarks: 13.4, marks: 17.3 };
+            const effective = {};
+            Object.keys(defaultWidths).forEach(key => {
+                effective[key] = {
+                    visible: cols?.[key]?.visible !== false,
+                    width: Number(cols?.[key]?.width) || defaultWidths[key]
+                };
+            });
+            dataCopy.tableSettings.education.columns = effective;
+
+            const colgroup = document.querySelector('#education-table colgroup') || document.querySelector('.edu-table colgroup');
+            if (colgroup) {
+                colgroup.innerHTML = '';
+                const order = ['year', 'degree', 'institution', 'remarks', 'marks'];
+                const visibleTotal = order.reduce((sum, key) =>
+                    sum + (effective[key].visible ? effective[key].width : 0), 0) || 1;
+                order.forEach(key => {
+                    if (effective[key].visible) {
+                        const col = document.createElement('col');
+                        col.style.width = ((effective[key].width / visibleTotal) * 100).toFixed(2) + '%';
+                        colgroup.appendChild(col);
+                    }
+                });
+            }
+        }
 
         // Subsection entries (editor "Subsection" merge): cv-common hides the
         // entry's role/company/dates, but users can still fill them — surface

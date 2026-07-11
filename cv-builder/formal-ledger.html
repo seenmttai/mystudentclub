@@ -15,7 +15,7 @@
             /* ── Colours: exact values from Resume_Template_29.docx ── */
             --accent-color: var(--header-bg, #1F3760);
             /* navy section banners (themeable) */
-            --subhead-bg: #B8CCE2;
+            --subhead-bg: var(--sub-header-bg, #B8CCE2);
             /* light-blue sub-header / column-header rows */
             --border-color: #000000;
             /* table grid: single sz12 #000000 */
@@ -93,6 +93,19 @@
             font-weight: 700;
             text-align: center;
             color: var(--name-color);
+        }
+
+        .hdr [data-field="tagline"] {
+            display: block;
+            font-size: calc(18.00px * var(--content-scale));
+            font-weight: bold;
+            text-align: center;
+            color: var(--name-color);
+            margin-top: calc(4px * var(--content-scale));
+        }
+
+        .hdr [data-field="tagline"]:empty {
+            display: none;
         }
 
         .hdr-contact-line {
@@ -386,6 +399,7 @@
             <!-- HEADER -->
             <header class="hdr">
                 <span data-field="name">Padam Bhansali</span>
+                <div data-field="tagline"></div>
                 <div class="contact-block">
                     <div class="hdr-contact-line" id="hc-line">
                         <span class="hc-item" id="hc-phone"><span data-field="phone"></span></span>
@@ -415,7 +429,12 @@
 
             <!-- EDUCATIONAL QUALIFICATIONS (education) -->
             <div class="sortable-section" data-section-id="education">
-                <table id="education-table">
+                <table>
+                    <tr>
+                        <td class="section-header">EDUCATIONAL QUALIFICATIONS</td>
+                    </tr>
+                </table>
+                <table id="education-table" style="margin-top:-1px;">
                     <colgroup>
                         <col style="width:162.75px">
                         <col style="width:351.25px">
@@ -424,9 +443,6 @@
                         <col style="width:153.02px">
                     </colgroup>
                     <thead>
-                        <tr>
-                            <td class="section-header" colspan="5">EDUCATIONAL QUALIFICATIONS</td>
-                        </tr>
                         <tr class="qual-head">
                             <th>Course</th>
                             <th>Institute</th>
@@ -580,15 +596,23 @@
 
         var _BASE_ORDER = ['summary', 'education', 'experience', 'projects', 'certifications', 'achievements', 'leadership', 'interests', 'skills'];
         var _WANT_ORDER = ['summary', 'education', 'achievements', 'experience', 'leadership', 'interests', 'skills', 'projects', 'certifications'];
-        var _orderAppliedOnce = false;
+
+        function isDefaultOrder(order) {
+            if (!Array.isArray(order) || order.length === 0) return true;
+            const baseOnly = order.filter(function (id) { return _BASE_ORDER.indexOf(id) !== -1; });
+            if (baseOnly.length !== _BASE_ORDER.length) return false;
+            for (var i = 0; i < _BASE_ORDER.length; i++) {
+                if (baseOnly[i] !== _BASE_ORDER[i]) return false;
+            }
+            return true;
+        }
 
         window.renderCV = function (data) {
             const dataCopy = JSON.parse(JSON.stringify(data || {}));
 
-            if (!_orderAppliedOnce) {
-                _orderAppliedOnce = true;
-                var _curOrder = Array.isArray(dataCopy.sectionOrder) ? dataCopy.sectionOrder : [];
-                var _customs = _curOrder.filter(function (id) { return _BASE_ORDER.indexOf(id) === -1; });
+            var curOrder = Array.isArray(dataCopy.sectionOrder) ? dataCopy.sectionOrder : [];
+            if (isDefaultOrder(curOrder)) {
+                var _customs = curOrder.filter(function (id) { return _BASE_ORDER.indexOf(id) === -1; });
                 (Array.isArray(dataCopy.customSections) ? dataCopy.customSections : []).forEach(function (section) {
                     var id = section && section.id;
                     if (id && _BASE_ORDER.indexOf(id) === -1 && _customs.indexOf(id) === -1) _customs.push(id);
@@ -649,17 +673,20 @@
 
             // Mirror the widths onto the colgroup: with table-layout fixed the <col>
             // elements govern, so cv-common's per-cell width writes need this sync.
-            const colEls = document.querySelectorAll('#education-table colgroup col');
-            const order = ['degree', 'institution', 'remarks', 'marks', 'year'];
-            const visibleTotal = order.reduce((sum, key) =>
-                sum + (effective[key].visible ? effective[key].width : 0), 0) || 1;
-            colEls.forEach((col, i) => {
-                const key = order[i];
-                if (!key) return;
-                col.style.width = effective[key].visible
-                    ? ((effective[key].width / visibleTotal) * 100).toFixed(2) + '%'
-                    : '0%';
-            });
+            const colgroup = document.querySelector('#education-table colgroup') || document.querySelector('.edu-table colgroup');
+            if (colgroup) {
+                colgroup.innerHTML = '';
+                const order = ['degree', 'institution', 'remarks', 'marks', 'year'];
+                const visibleTotal = order.reduce((sum, key) =>
+                    sum + (effective[key].visible ? effective[key].width : 0), 0) || 1;
+                order.forEach(key => {
+                    if (effective[key].visible) {
+                        const col = document.createElement('col');
+                        col.style.width = ((effective[key].width / visibleTotal) * 100).toFixed(2) + '%';
+                        colgroup.appendChild(col);
+                    }
+                });
+            }
         }
 
 

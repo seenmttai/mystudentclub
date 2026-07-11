@@ -97,6 +97,18 @@
             padding-left: 7.05px;
         }
 
+        .hdr [data-field="tagline"] {
+            display: block;
+            font-size: calc(18.47px * var(--content-scale));
+            font-weight: bold;
+            padding-left: 7.05px;
+            margin-top: calc(4px * var(--content-scale));
+        }
+
+        .hdr [data-field="tagline"]:empty {
+            display: none;
+        }
+
         /* contact pills — DOCX drawing group: #8FAADE rounded rects + bold text */
         .pill-row {
             display: flex;
@@ -432,9 +444,10 @@
     <div id="zoom-wrapper">
         <div class="resume-container" id="cv-page">
 
-            <!-- HEADER: name + #8FAADE contact pills -->
+            <!-- HEADER: name + tagline + #8FAADE contact pills -->
             <header class="hdr">
                 <span data-field="name"></span>
+                <div data-field="tagline"></div>
                 <div class="contact-block pill-row" id="pill-row">
                     <span class="pill-item" id="pl-email">Email:&nbsp;<span data-field="email"></span></span>
                     <span class="pill-item" id="pl-phone">Contact No:&nbsp;<span data-field="phone"></span></span>
@@ -459,31 +472,35 @@
 
             <!-- ACADEMIC QUALIFICATIONS (education): Examination|Institution|Performance|Year -->
             <div class="sortable-section" data-section-id="education">
-                <table id="education-table">
+                <table>
+                    <tr>
+                        <td class="section-header">ACADEMIC QUALIFICATIONS &amp; SCHOLASTIC ACHIEVEMENTS</td>
+                    </tr>
+                </table>
+                <table id="education-table" style="margin-top:-1px;">
                     <colgroup>
-                        <col style="width:27.69%">
-                        <col style="width:39.61%">
-                        <col style="width:17.95%">
-                        <col style="width:14.75%">
+                        <col style="width:18.68%">
+                        <col style="width:13.12%">
+                        <col style="width:33.09%">
+                        <col style="width:21.12%">
+                        <col style="width:13.98%">
                     </colgroup>
                     <thead>
-                        <tr>
-                            <td class="section-header" colspan="4">ACADEMIC QUALIFICATIONS &amp; SCHOLASTIC ACHIEVEMENTS
-                            </td>
-                        </tr>
                         <tr class="qual-head">
-                            <th>Examination</th>
-                            <th>Institution</th>
-                            <th>Performance</th>
+                            <th>Course</th>
                             <th>Year</th>
+                            <th>Institution</th>
+                            <th>Board</th>
+                            <th>Score</th>
                         </tr>
                     </thead>
                     <tbody id="education-list">
                         <tr class="template">
                             <td data-field="degree"></td>
-                            <td data-field="institution"></td>
-                            <td data-field="marks"></td>
                             <td data-field="year"></td>
+                            <td data-field="institution"></td>
+                            <td data-field="remarks"></td>
+                            <td data-field="marks"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -672,11 +689,7 @@
             });
         };
 
-        // DOCX academic grid: 3060/4733/1984/1276 tw of 11053 ⇒ 27.69/42.82/17.95/11.54 %
-        // for Examination/Institution/Performance/Year. Year is widened to the
-        // professional-qualifications table's 1631tw (14.75%) so month names like
-        // "September 2024" fit on one line; Institution absorbs the difference.
-        const DOCX_EDU_WIDTHS = { degree: 27.7, institution: 39.6, marks: 18.0, year: 14.7 };
+        const DOCX_EDU_WIDTHS = { degree: 18.7, year: 13.1, institution: 33.1, remarks: 21.1, marks: 14.0 };
         const BUILDER_DEFAULT_EDU_WIDTHS = { degree: 22, year: 12, institution: 36, marks: 14, remarks: 16 };
 
         function applyDocxEducationWidths(dataCopy) {
@@ -696,17 +709,20 @@
             });
             dataCopy.tableSettings.education.columns = effective;
 
-            const colEls = document.querySelectorAll('#education-table colgroup col');
-            const order = ['degree', 'institution', 'marks', 'year'];
-            const visibleTotal = order.reduce((sum, key) =>
-                sum + (effective[key].visible ? effective[key].width : 0), 0) || 1;
-            colEls.forEach((col, i) => {
-                const key = order[i];
-                if (!key) return;
-                col.style.width = effective[key].visible
-                    ? ((effective[key].width / visibleTotal) * 100).toFixed(2) + '%'
-                    : '0%';
-            });
+            const colgroup = document.querySelector('#education-table colgroup') || document.querySelector('.edu-table colgroup');
+            if (colgroup) {
+                colgroup.innerHTML = '';
+                const order = ['degree', 'year', 'institution', 'remarks', 'marks'];
+                const visibleTotal = order.reduce((sum, key) =>
+                    sum + (effective[key].visible ? effective[key].width : 0), 0) || 1;
+                order.forEach(key => {
+                    if (effective[key].visible) {
+                        const col = document.createElement('col');
+                        col.style.width = ((effective[key].width / visibleTotal) * 100).toFixed(2) + '%';
+                        colgroup.appendChild(col);
+                    }
+                });
+            }
         }
 
         // Contact pills: prefix labels + hyperlinks like the DOCX; hide empty pills.

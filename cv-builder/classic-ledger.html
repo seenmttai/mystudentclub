@@ -440,7 +440,12 @@
 
             <!-- ACADEMIC QUALIFICATIONS (education) -->
             <div class="sortable-section" data-section-id="education">
-                <table id="education-table">
+                <table>
+                    <tr>
+                        <td class="section-header bt-strong bb-strong">ACADEMIC QUALIFICATIONS</td>
+                    </tr>
+                </table>
+                <table id="education-table" style="margin-top:-1px;">
                     <colgroup>
                         <col style="width:154.4px">
                         <col style="width:107.2px">
@@ -449,9 +454,6 @@
                         <col style="width:202.9px">
                     </colgroup>
                     <thead>
-                        <tr>
-                            <td class="section-header bt-strong bb-strong" colspan="5">ACADEMIC QUALIFICATIONS</td>
-                        </tr>
                         <tr class="qual-head">
                             <th class="bt-strong">Qualification</th>
                             <th class="bt-strong">Year</th>
@@ -658,6 +660,10 @@
 
             originalRenderCV(dataCopy);
 
+            document.querySelectorAll('.sortable-section table').forEach(t => {
+                t.style.setProperty('table-layout', 'fixed', 'important');
+            });
+
             adjustSkillsRendering();
             adjustExperienceHeaders();
             adjustContactHeader(dataCopy.personal || {});
@@ -699,17 +705,20 @@
 
             // Mirror the widths onto the colgroup: with table-layout fixed the <col>
             // elements govern, so cv-common's per-cell width writes need this sync.
-            const colEls = document.querySelectorAll('#education-table colgroup col');
-            const order = ['degree', 'year', 'institution', 'marks', 'remarks'];
-            const visibleTotal = order.reduce((sum, key) =>
-                sum + (effective[key].visible ? effective[key].width : 0), 0) || 1;
-            colEls.forEach((col, i) => {
-                const key = order[i];
-                if (!key) return;
-                col.style.width = effective[key].visible
-                    ? ((effective[key].width / visibleTotal) * 100).toFixed(2) + '%'
-                    : '0%';
-            });
+            const colgroup = document.querySelector('#education-table colgroup') || document.querySelector('.edu-table colgroup');
+            if (colgroup) {
+                colgroup.innerHTML = '';
+                const order = ['degree', 'year', 'institution', 'marks', 'remarks'];
+                const visibleTotal = order.reduce((sum, key) =>
+                    sum + (effective[key].visible ? effective[key].width : 0), 0) || 1;
+                order.forEach(key => {
+                    if (effective[key].visible) {
+                        const col = document.createElement('col');
+                        col.style.width = ((effective[key].width / visibleTotal) * 100).toFixed(2) + '%';
+                        colgroup.appendChild(col);
+                    }
+                });
+            }
         }
 
         // Skills must render as DOCX-style bullets. Rich-text (Quill) skills arrive as

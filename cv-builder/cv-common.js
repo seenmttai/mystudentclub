@@ -235,7 +235,32 @@ function renderCV(data) {
     const hasProjects = data.projects && data.projects.length > 0;
     updateList('projects-list', data.projects, hasProjects, (block, item) => {
         setHTMLIn(block, '[data-field="title"]', item.title);
-        setHTMLIn(block, '[data-field="description"]', item.description);
+
+        const descSpan = block.querySelector('[data-field="description"]');
+        if (descSpan) {
+            const descriptionText = item.description || '';
+            const normalized = normalizeRichFieldHTML(descriptionText);
+            const host = ensureFieldHostSupportsRichContent(descSpan, normalized);
+            host.innerHTML = normalized;
+
+            // Find the parent TD containing the description
+            const descCell = host.closest('td');
+            if (descCell) {
+                const descEmpty = !stripTags(descriptionText).trim();
+                descCell.style.display = descEmpty ? 'none' : '';
+                
+                const bulletsCell = descCell.nextElementSibling;
+                if (bulletsCell && /^TD$/i.test(bulletsCell.tagName || '')) {
+                    if (descEmpty) {
+                        bulletsCell.setAttribute('colspan', '2');
+                        bulletsCell.style.setProperty('width', '100%', 'important');
+                    } else {
+                        bulletsCell.removeAttribute('colspan');
+                        bulletsCell.style.removeProperty('width');
+                    }
+                }
+            }
+        }
 
         const ul = block.querySelector('[data-list="bullets"]');
         if (ul) {
@@ -563,11 +588,15 @@ function applySectionLabels(sectionLabels) {
             return; // Both or neither have bindings — skip
         }
 
-        // Apply custom text if provided
+        // Apply custom text if provided. Prefer writing into a nested title
+        // element (e.g. .section-header-title) so decorative siblings like
+        // .section-header-bar aren't destroyed; only fall back to overwriting
+        // the whole label cell when it has no such nested title element.
         if (customText !== null && customText !== '') {
-            const currentText = (labelCell.textContent || '').trim();
+            const titleEl = labelCell.querySelector('.section-header-title, .section-header, .section-header-2, .section-title, .gray-bar') || labelCell;
+            const currentText = (titleEl.textContent || '').trim();
             if (currentText !== customText) {
-                labelCell.textContent = customText;
+                titleEl.textContent = customText;
             }
         }
 
@@ -877,12 +906,12 @@ function hexToRgb(hex) {
 }
 
 function applyAccentInlineStyles(color, light, softer, deep) {
-    setInlineStyles('.section-header, .section-header-2, .work-exp-header, .project-title-row, .header-name-box', {
+    setInlineStyles('.section-header, .section-header-2, .header-name-box', {
         backgroundColor: color,
         color: '#ffffff',
         borderColor: deep
     });
-    setInlineStyles('.contact-bar, .work-company-row, .qual-table th, .extra-table td.category, .section-detail-table td.section-label, .role-col, .summary-box, .summary-content, .header-bg-lite', {
+    setInlineStyles('.contact-bar, .work-company-row, .qual-table th, .extra-table td.category, .section-detail-table td.section-label, .role-col, .summary-box, .summary-content, .header-bg-lite, .project-title-row, .work-exp-header, .contact-container .contact-icon-item', {
         backgroundColor: light,
         borderColor: deep
     });
@@ -892,8 +921,8 @@ function applyAccentInlineStyles(color, light, softer, deep) {
 }
 
 function clearAccentInlineStyles() {
-    clearInlineStyles('.section-header, .section-header-2, .work-exp-header, .project-title-row, .header-name-box', ['backgroundColor', 'color', 'borderColor']);
-    clearInlineStyles('.contact-bar, .work-company-row, .qual-table th, .extra-table td.category, .section-detail-table td.section-label, .role-col, .summary-box, .summary-content, .header-bg-lite', ['backgroundColor', 'borderColor']);
+    clearInlineStyles('.section-header, .section-header-2, .header-name-box', ['backgroundColor', 'color', 'borderColor']);
+    clearInlineStyles('.contact-bar, .work-company-row, .qual-table th, .extra-table td.category, .section-detail-table td.section-label, .role-col, .summary-box, .summary-content, .header-bg-lite, .project-title-row, .work-exp-header, .contact-container .contact-icon-item', ['backgroundColor', 'borderColor']);
     clearInlineStyles('.edu-institution', ['color']);
 }
 

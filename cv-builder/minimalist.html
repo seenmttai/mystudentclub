@@ -90,6 +90,17 @@
             margin-bottom: calc(5px * var(--content-scale));
         }
 
+        .header-tagline {
+            font-size: calc(18.00px * var(--content-scale));
+            font-weight: bold;
+            margin-bottom: calc(5px * var(--content-scale));
+            color: #333333;
+        }
+
+        .header-tagline:empty {
+            display: none;
+        }
+
         .contact-info {
             font-size: calc(18px * var(--content-scale));
         }
@@ -298,6 +309,7 @@
             <!-- HEADER -->
             <div class="main-header">
                 <div class="name" data-field="name"></div>
+                <div class="header-tagline" data-field="tagline"></div>
                 <div class="contact-info" data-field="contact">
                 </div>
             </div>

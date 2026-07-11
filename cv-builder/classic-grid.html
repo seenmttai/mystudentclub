@@ -100,6 +100,18 @@
             /* match reference name→contact gap */
         }
 
+        .hdr [data-field="tagline"] {
+            display: block;
+            font-size: calc(18.00px * var(--content-scale));
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: calc(8px * var(--content-scale));
+        }
+
+        .hdr [data-field="tagline"]:empty {
+            display: none;
+        }
+
         .hdr-contact-line {
             display: flex;
             flex-wrap: wrap;
@@ -173,9 +185,9 @@
             padding: calc(3px * var(--content-scale)) 4px calc(3px * var(--content-scale)) 9.66px;
             height: calc(33.00px * var(--content-scale));
             /* trHeight 393tw */
-            border-left-color: var(--banner-side);
-            border-right-color: var(--banner-side);
-            border-top-color: var(--banner-side);
+            border-left-color: var(--border-color);
+            border-right-color: var(--border-color);
+            border-top-color: var(--border-color);
         }
 
         /* ── EDUCATION GRID (DEEAF6 bold caps header row, black grid) ── */
@@ -408,9 +420,10 @@
     <div id="zoom-wrapper">
         <div class="resume-container" id="cv-page">
 
-            <!-- HEADER: centered Cambria name + centered pipe-separated contact -->
+            <!-- HEADER: centered Cambria name + tagline + centered pipe-separated contact -->
             <header class="hdr">
                 <span data-field="name"></span>
+                <div data-field="tagline"></div>
                 <div class="contact-block">
                     <div class="hdr-contact-line" id="hc-line">
                         <span class="hc-item" id="hc-location"><span data-field="location"></span></span>
@@ -440,7 +453,12 @@
 
             <!-- EDUCATIONAL QUALIFICATION: COURSE|YEAR|INSTITUTION|MARKS|REMARKS -->
             <div class="sortable-section" data-section-id="education">
-                <table id="education-table">
+                <table>
+                    <tr>
+                        <td class="section-header">Educational Qualification</td>
+                    </tr>
+                </table>
+                <table id="education-table" class="qual-table" style="margin-top:-1px;">
                     <colgroup>
                         <col style="width:17.88%">
                         <col style="width:10.63%">
@@ -449,9 +467,6 @@
                         <col style="width:31.20%">
                     </colgroup>
                     <thead>
-                        <tr>
-                            <td class="section-header" colspan="5">Educational Qualification</td>
-                        </tr>
                         <tr class="qual-head">
                             <th>COURSE</th>
                             <th>YEAR</th>
@@ -574,6 +589,11 @@
                         <td class="extra-label">Skills &amp; Technical Expertise</td>
                         <td class="extra-content" colspan="2">
                             <div data-field="skills"></div>
+                        </td>
+                    </tr>
+                    <tr id="extra-row-interests">
+                        <td class="extra-label">Interests</td>
+                        <td class="extra-content" colspan="2">
                             <ul data-list="interests" class="bullet-list"></ul>
                         </td>
                     </tr>
@@ -600,22 +620,76 @@
             if (!_orderAppliedOnce) {
                 _orderAppliedOnce = true;
                 var _curOrder = Array.isArray(dataCopy.sectionOrder) ? dataCopy.sectionOrder : [];
-                var _customs = _curOrder.filter(function (id) { return _BASE_ORDER.indexOf(id) === -1; });
-                (Array.isArray(dataCopy.customSections) ? dataCopy.customSections : []).forEach(function (section) {
-                    var id = section && section.id;
-                    if (id && _BASE_ORDER.indexOf(id) === -1 && _customs.indexOf(id) === -1) _customs.push(id);
-                });
-                var _order = _WANT_ORDER.slice();
-                _order.splice(_order.indexOf('leadership') + 1, 0, ..._customs);
-                dataCopy.sectionOrder = _order;
+                // Check if current order is default BASE_SECTION_ORDER
+                var _baseCurOrder = _curOrder.filter(function(id) { return _BASE_ORDER.indexOf(id) !== -1; });
+                var _isDefault = _baseCurOrder.length === 0 || (_baseCurOrder.length === _BASE_ORDER.length && _baseCurOrder.every(function(val, index) {
+                    return val === _BASE_ORDER[index];
+                }));
+
+                if (_isDefault) {
+                    var _customs = _curOrder.filter(function (id) { return _BASE_ORDER.indexOf(id) === -1; });
+                    (Array.isArray(dataCopy.customSections) ? dataCopy.customSections : []).forEach(function (section) {
+                        var id = section && section.id;
+                        if (id && _BASE_ORDER.indexOf(id) === -1 && _customs.indexOf(id) === -1) _customs.push(id);
+                    });
+                    var _order = _WANT_ORDER.slice();
+                    _order.splice(_order.indexOf('leadership') + 1, 0, ..._customs);
+                    dataCopy.sectionOrder = _order;
+                }
+            }
+
+            // Find which sub-sections in the certifications container are actually active/visible based on the data.
+            const hasCerts = Array.isArray(dataCopy.certifications) && dataCopy.certifications.length > 0;
+            const hasAch = Array.isArray(dataCopy.achievements) && dataCopy.achievements.length > 0;
+            const hasLead = Array.isArray(dataCopy.leadership) && dataCopy.leadership.length > 0;
+            const hasSkills = !!(dataCopy.skills && String(dataCopy.skills).trim());
+            const hasInterests = Array.isArray(dataCopy.interests) && dataCopy.interests.length > 0;
+
+            const activeSubSections = [];
+            if (hasCerts) activeSubSections.push('certifications');
+            if (hasAch) activeSubSections.push('achievements');
+            if (hasLead) activeSubSections.push('leadership');
+            if (hasSkills) activeSubSections.push('skills');
+            if (hasInterests) activeSubSections.push('interests');
+            (Array.isArray(dataCopy.customSections) ? dataCopy.customSections : []).forEach(s => {
+                if (s && s.id && Array.isArray(s.items) && s.items.length > 0) activeSubSections.push(s.id);
+            });
+
+            // Find the active sub-section with the highest priority (lowest index) in sectionOrder
+            const sectionOrder = dataCopy.sectionOrder || [];
+            let bestSectionId = 'certifications';
+            let minIndex = Infinity;
+            activeSubSections.forEach(id => {
+                const idx = sectionOrder.indexOf(id);
+                if (idx !== -1 && idx < minIndex) {
+                    minIndex = idx;
+                    bestSectionId = id;
+                }
+            });
+
+            // Find the certifications/extra-table container and dynamically set its data-section-id
+            let container = null;
+            document.querySelectorAll('.sortable-section').forEach(el => {
+                if (el.querySelector('table.extra-table')) {
+                    container = el;
+                }
+            });
+            if (!container) {
+                container = document.querySelector('.sortable-section[data-section-id="certifications"]') ||
+                            document.querySelector('.sortable-section[data-section-id="achievements"]') ||
+                            document.querySelector('.sortable-section[data-section-id="leadership"]') ||
+                            document.querySelector('.sortable-section[data-section-id="skills"]');
+            }
+            if (container) {
+                container.setAttribute('data-section-id', bestSectionId);
             }
 
             // DOCX row titles: swap the editor's stock label defaults for the DOCX
             // titles; a rename the user typed in the Label panel passes through.
             var DOCX_LABEL_OVERRIDES = {
                 achievements: { stock: 'Highlights', docx: 'Academic & Extracurricular Achievements' },
-                skills: { stock: 'Skills', docx: 'Skills & Technical Expertise' },
-                interests: { stock: 'Interests', docx: 'Skills & Technical Expertise' }
+                skills: { stock: 'Skills', docx: 'Skills' },
+                interests: { stock: 'Interests', docx: 'Interests' }
             };
             dataCopy.sectionLabels = dataCopy.sectionLabels || {};
             Object.keys(DOCX_LABEL_OVERRIDES).forEach(function (key) {
@@ -649,7 +723,7 @@
             splitMultiParagraphListItems('[data-list="certifications"] > li');
             formatLeadershipEntries();
             foldCustomSectionsIntoExtras(dataCopy);
-            refreshExtraRows();
+            refreshExtraRows(dataCopy.sectionOrder);
 
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
@@ -681,17 +755,20 @@
             });
             dataCopy.tableSettings.education.columns = effective;
 
-            const colEls = document.querySelectorAll('#education-table colgroup col');
-            const order = ['degree', 'year', 'institution', 'marks', 'remarks'];
-            const visibleTotal = order.reduce((sum, key) =>
-                sum + (effective[key].visible ? effective[key].width : 0), 0) || 1;
-            colEls.forEach((col, i) => {
-                const key = order[i];
-                if (!key) return;
-                col.style.width = effective[key].visible
-                    ? ((effective[key].width / visibleTotal) * 100).toFixed(2) + '%'
-                    : '0%';
-            });
+            const colgroup = document.querySelector('#education-table colgroup') || document.querySelector('.edu-table colgroup');
+            if (colgroup) {
+                colgroup.innerHTML = '';
+                const order = ['degree', 'year', 'institution', 'marks', 'remarks'];
+                const visibleTotal = order.reduce((sum, key) =>
+                    sum + (effective[key].visible ? effective[key].width : 0), 0) || 1;
+                order.forEach(key => {
+                    if (effective[key].visible) {
+                        const col = document.createElement('col');
+                        col.style.width = ((effective[key].width / visibleTotal) * 100).toFixed(2) + '%';
+                        colgroup.appendChild(col);
+                    }
+                });
+            }
         }
 
         // Contact: blue links like the DOCX; hide empty items + neighbouring pipes.
@@ -762,7 +839,7 @@
         // Custom sections fold into the combined table as extra label|content rows;
         // hide the standalone clones cv-common builds. Rebuilt every render.
         function foldCustomSectionsIntoExtras(dataCopy) {
-            const table = document.querySelector('.sortable-section[data-section-id="certifications"] table.extra-table');
+            const table = document.querySelector('.sortable-section table.extra-table');
             document.querySelectorAll('[data-custom-section-root]').forEach(el => {
                 el.style.setProperty('display', 'none', 'important');
             });
@@ -800,14 +877,67 @@
 
         // Certifications, achievements and skills&interests share one wrapper —
         // decide each row's visibility, and the section's, explicitly per render.
-        function refreshExtraRows() {
-            const section = document.querySelector('.sortable-section[data-section-id="certifications"]');
+        function refreshExtraRows(sectionOrder) {
+            // Find the certifications/extra-table container dynamically
+            let section = null;
+            document.querySelectorAll('.sortable-section').forEach(el => {
+                if (el.querySelector('table.extra-table')) {
+                    section = el;
+                }
+            });
             if (!section) return;
+
+            const extraTable = section.querySelector('table.extra-table');
+            if (extraTable && Array.isArray(sectionOrder) && sectionOrder.length > 0) {
+                const tbody = extraTable.querySelector('tbody') || extraTable;
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                const headerRow = rows.find(r => r.querySelector('td.section-header'));
+                if (headerRow) {
+                    const contentRows = rows.filter(r => r !== headerRow);
+                    const rowMap = new Map();
+                    contentRows.forEach(row => {
+                        if (row.id === 'extra-row-certifications') {
+                            rowMap.set('certifications', row);
+                        } else if (row.id === 'extra-row-achievements') {
+                            rowMap.set('achievements', row);
+                        } else if (row.id === 'extra-row-leadership') {
+                            rowMap.set('leadership', row);
+                        } else if (row.id === 'extra-row-skills') {
+                            rowMap.set('skills', row);
+                        } else if (row.id === 'extra-row-interests') {
+                            rowMap.set('interests', row);
+                        } else {
+                            const customId = row.getAttribute('data-custom-extra-row');
+                            if (customId) {
+                                rowMap.set(customId, row);
+                            }
+                        }
+                    });
+
+                    const sortedRows = [];
+                    const addedRows = new Set();
+                    sectionOrder.forEach(id => {
+                        let row = rowMap.get(id);
+                        if (row && !addedRows.has(row)) {
+                            sortedRows.push(row);
+                            addedRows.add(row);
+                        }
+                    });
+                    contentRows.forEach(row => {
+                        if (!addedRows.has(row)) {
+                            sortedRows.push(row);
+                            addedRows.add(row);
+                        }
+                    });
+                    sortedRows.forEach(row => tbody.appendChild(row));
+                }
+            }
 
             const certRow = document.getElementById('extra-row-certifications');
             const achRow = document.getElementById('extra-row-achievements');
             const leadRow = document.getElementById('extra-row-leadership');
             const skillsRow = document.getElementById('extra-row-skills');
+            const interestsRow = document.getElementById('extra-row-interests');
 
             const certList = certRow?.querySelector('[data-list="certifications"]');
             const hasCerts = !!(certList && certList.children.length > 0);
@@ -820,19 +950,14 @@
                 !!(leadFormatted && leadFormatted.children.length > 0);
             const skillsField = skillsRow?.querySelector('[data-field="skills"]');
             const hasSkills = !!(skillsField && skillsField.textContent.trim());
-            const interestsList = skillsRow?.querySelector('[data-list="interests"]');
+            const interestsList = interestsRow?.querySelector('[data-list="interests"]');
             const hasInterests = !!(interestsList && interestsList.children.length > 0);
 
             if (certRow) certRow.style.display = hasCerts ? '' : 'none';
             if (achRow) achRow.style.display = hasAch ? '' : 'none';
             if (leadRow) leadRow.style.display = hasLead ? '' : 'none';
-            if (skillsRow) skillsRow.style.display = (hasSkills || hasInterests) ? '' : 'none';
-
-            // section ordering can move the skills div after interests — re-assert
-            if (skillsField && interestsList && skillsField.parentElement === interestsList.parentElement) {
-                interestsList.parentElement.insertBefore(skillsField, interestsList);
-            }
-            if (skillsField) skillsField.style.display = hasSkills ? '' : 'none';
+            if (skillsRow) skillsRow.style.display = hasSkills ? '' : 'none';
+            if (interestsRow) interestsRow.style.display = hasInterests ? '' : 'none';
 
             const hasCustomRows = section.querySelectorAll('tr[data-custom-extra-row]').length > 0;
             section.style.display = (hasCerts || hasAch || hasLead || hasSkills || hasInterests || hasCustomRows) ? '' : 'none';
@@ -853,7 +978,6 @@
                 label.style.setProperty('word-break', 'normal', 'important');
                 label.style.setProperty('white-space', 'normal', 'important');
             });
-            const extraTable = section.querySelector('table.extra-table');
             if (extraTable) extraTable.style.setProperty('table-layout', 'fixed', 'important');
         }
 

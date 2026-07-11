@@ -269,11 +269,23 @@
             margin: 0;
         }
 
+        table.edu-table th {
+            background: var(--pale);
+            color: var(--navy);
+            font-weight: bold;
+            border: 1px solid var(--ink);
+            padding: calc(4px * var(--content-scale)) calc(6px * var(--content-scale));
+            text-align: center;
+            vertical-align: middle;
+        }
+
         table.edu-table td {
+            border: 1px solid var(--ink);
             padding: calc(2px * var(--content-scale)) calc(6px * var(--content-scale));
             vertical-align: middle;
             line-height: 1.28;
             overflow-wrap: anywhere;
+            text-align: center;
         }
 
         /* alternating shaded rows (1st *visible* row shaded, like the source).
@@ -283,26 +295,13 @@
             background: var(--pale);
         }
 
-        .edu-table .td-date {
-            width: 13%;
-            font-style: italic;
+        table.edu-table td[data-field="degree"],
+        table.edu-table td[data-field="remarks"] {
             text-align: left;
         }
 
-        .edu-table .td-deg {
-            width: 17%;
-            text-align: left;
-        }
-
-        .edu-table .td-inst {
-            width: 38%;
+        table.edu-table td[data-field="institution"] {
             font-weight: bold;
-            text-align: center;
-        }
-
-        .edu-table .td-marks {
-            width: 32%;
-            text-align: left;
         }
 
         b,
@@ -413,16 +412,33 @@
                 </div>
             </div>
 
-            <!-- EDUCATION (4-column table) -->
+            <!-- EDUCATION (5-column table) -->
             <div class="sortable-section" data-section-id="education">
                 <div class="section-header">Education</div>
-                <table class="edu-table">
+                <table class="edu-table qual-table" id="education-table">
+                    <colgroup>
+                        <col style="width: 20%;">
+                        <col style="width: 12%;">
+                        <col style="width: 36%;">
+                        <col style="width: 14%;">
+                        <col style="width: 18%;">
+                    </colgroup>
+                    <thead>
+                        <tr class="qual-head">
+                            <th>COURSE</th>
+                            <th>YEAR</th>
+                            <th>INSTITUTION</th>
+                            <th>MARKS</th>
+                            <th>REMARKS</th>
+                        </tr>
+                    </thead>
                     <tbody id="education-list">
                         <tr class="template" style="display:none;">
-                            <td class="td-date" data-field="year"></td>
-                            <td class="td-deg" data-field="degree"></td>
-                            <td class="td-inst" data-field="institution"></td>
-                            <td class="td-marks" data-field="marks"></td>
+                            <td data-field="degree"></td>
+                            <td data-field="year"></td>
+                            <td data-field="institution"></td>
+                            <td data-field="marks"></td>
+                            <td data-field="remarks"></td>
                         </tr>
                     </tbody>
                 </table>
@@ -481,9 +497,50 @@
     <script>
         const originalRenderCV = window.renderCV;
         window.renderCV = function (data) {
-            originalRenderCV(data);
+            const dataCopy = JSON.parse(JSON.stringify(data || {}));
+            applyDocxEducationWidths(dataCopy);
+            originalRenderCV(dataCopy);
+            document.querySelectorAll('.sortable-section table').forEach(t => {
+                t.style.setProperty('table-layout', 'fixed', 'important');
+            });
             renderSubsectionHeadings();
         };
+
+        const DOCX_EDU_WIDTHS = { degree: 20, year: 12, institution: 36, marks: 14, remarks: 18 };
+        const BUILDER_DEFAULT_EDU_WIDTHS = { degree: 22, year: 12, institution: 36, marks: 14, remarks: 16 };
+
+        function applyDocxEducationWidths(dataCopy) {
+            dataCopy.tableSettings = dataCopy.tableSettings || {};
+            dataCopy.tableSettings.education = dataCopy.tableSettings.education || {};
+            const cols = dataCopy.tableSettings.education.columns || {};
+            const untouched = Object.keys(DOCX_EDU_WIDTHS).every(key => {
+                const width = Number(cols?.[key]?.width);
+                return !Number.isFinite(width) || width === BUILDER_DEFAULT_EDU_WIDTHS[key];
+            });
+            const effective = {};
+            Object.keys(DOCX_EDU_WIDTHS).forEach(key => {
+                effective[key] = {
+                    visible: cols?.[key]?.visible !== false,
+                    width: untouched ? DOCX_EDU_WIDTHS[key] : (Number(cols?.[key]?.width) || DOCX_EDU_WIDTHS[key])
+                };
+            });
+            dataCopy.tableSettings.education.columns = effective;
+
+            const colgroup = document.querySelector('#education-table colgroup');
+            if (colgroup) {
+                colgroup.innerHTML = '';
+                const order = ['degree', 'year', 'institution', 'marks', 'remarks'];
+                const visibleTotal = order.reduce((sum, key) =>
+                    sum + (effective[key].visible ? effective[key].width : 0), 0) || 1;
+                order.forEach(key => {
+                    if (effective[key].visible) {
+                        const col = document.createElement('col');
+                        col.style.width = ((effective[key].width / visibleTotal) * 100).toFixed(2) + '%';
+                        colgroup.appendChild(col);
+                    }
+                });
+            }
+        }
 
         // Subsection entries (editor "Subsection" merge): cv-common hides the
         // entry's role/company/dates, but users can still fill them — surface

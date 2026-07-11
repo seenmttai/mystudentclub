@@ -79,6 +79,19 @@
             margin-bottom: calc(2px * var(--cs));
         }
 
+        .header-tagline {
+            display: block;
+            text-align: center;
+            font-weight: 700;
+            font-size: calc(16.00px * var(--cs));
+            line-height: calc(20px * var(--cs));
+            margin-bottom: calc(2px * var(--cs));
+        }
+
+        .header-tagline:empty {
+            display: none;
+        }
+
         .cv-contact {
             display: block;
             text-align: center;
@@ -328,6 +341,7 @@
     <div id="zoom-wrapper">
         <div id="cv-page">
             <span class="cv-name" id="template32-name"></span>
+            <div class="header-tagline" data-field="tagline"></div>
             <span class="cv-contact contact-block" id="template32-contact"></span>
 
             <table class="cv-table" cellspacing="0">
@@ -394,6 +408,11 @@
                 removeInjectedProjectsFallback();
 
                 name.innerHTML = rich(personal.name);
+                const taglineEl = document.querySelector('[data-field="tagline"]');
+                if (taglineEl) {
+                    taglineEl.innerHTML = rich(personal.tagline);
+                    taglineEl.style.display = (personal.tagline && personal.tagline.trim()) ? 'block' : 'none';
+                }
                 contact.innerHTML = contactHTML(personal);
                 contact.style.display = contact.innerHTML.trim() ? '' : 'none';
 
@@ -406,19 +425,70 @@
                 const education = Array.isArray(data.education) ? data.education.filter(hasObjectContent) : [];
                 if (education.length) {
                     const rows = [];
-                    rows.push('<tr><td class="sh" colspan="6">PROFESSIONAL AND EDUACTIONAL QUALIFICATIONS</td></tr>');
-                    rows.push('<tr><td class="subh" colspan="2" style="text-align:center">Degree/Examination</td><td class="subh" style="text-align:center">Board/Institute</td><td class="subh" style="text-align:center">%/CGPA</td><td class="subh" colspan="2" style="text-align:center">Remarks</td></tr>');
-                    education.forEach(function (item) {
-                        rows.push(
-                            '<tr>' +
-                            `<td class="qd" colspan="2">${rich(item.degree)}</td>` +
-                            `<td class="qd">${rich(item.institute || item.institution)}</td>` +
-                            `<td class="qdc">${rich(item.marks)}</td>` +
-                            `<td class="qd" colspan="2">${rich(item.remarks || item.year)}</td>` +
-                            '</tr>'
-                        );
+                    rows.push('<tr><td class="sh" colspan="6">PROFESSIONAL AND EDUCATIONAL QUALIFICATIONS</td></tr>');
+
+                    const colsConfig = data.tableSettings?.education?.columns || {};
+                    const defaultWidths = { degree: 22, year: 12, institution: 36, marks: 14, remarks: 16 };
+                    const effective = {};
+                    Object.keys(defaultWidths).forEach(key => {
+                        effective[key] = {
+                            visible: colsConfig[key]?.visible !== false,
+                            width: Number(colsConfig[key]?.width) || defaultWidths[key]
+                        };
                     });
-                    sections.push({ id: 'education', rows: rows });
+
+                    // Build the nested table HTML
+                    const order = ['degree', 'year', 'institution', 'marks', 'remarks'];
+                    const visibleTotal = order.reduce((sum, key) => sum + (effective[key].visible ? effective[key].width : 0), 0) || 1;
+                    
+                    let colgroupHtml = '<colgroup>';
+                    order.forEach(key => {
+                        if (effective[key].visible) {
+                            const percent = ((effective[key].width / visibleTotal) * 100).toFixed(2) + '%';
+                            colgroupHtml += `<col style="width:${percent};">`;
+                        }
+                    });
+                    colgroupHtml += '</colgroup>';
+
+                    const colDefs = [
+                        { key: 'degree', label: 'Degree/Examination', value: (item) => rich(item.degree), align: 'left', cls: 'qd' },
+                        { key: 'year', label: 'Year', value: (item) => rich(item.year), align: 'center', cls: 'qdc' },
+                        { key: 'institution', label: 'Board/Institute', value: (item) => rich(item.institute || item.institution), align: 'left', cls: 'qd' },
+                        { key: 'marks', label: 'Marks/Percentage', value: (item) => rich(item.marks), align: 'center', cls: 'qdc' },
+                        { key: 'remarks', label: 'Remarks', value: (item) => rich(item.remarks), align: 'left', cls: 'qd' }
+                    ];
+
+                    const activeCols = colDefs.filter(c => effective[c.key].visible);
+
+                    if (activeCols.length > 0) {
+                        const headerRow = '<tr>' + activeCols.map((c, idx) => {
+                            const isFirst = idx === 0;
+                            const isLast = idx === activeCols.length - 1;
+                            const borderStyle = (isFirst ? 'border-left:none !important;' : '') + (isLast ? 'border-right:none !important;' : '');
+                            return `<td class="subh" style="text-align:center; font-weight:700; ${borderStyle}">${c.label}</td>`;
+                        }).join('') + '</tr>';
+
+                        const dataRows = education.map(function (item) {
+                            return '<tr>' + activeCols.map((c, idx) => {
+                                const isFirst = idx === 0;
+                                const isLast = idx === activeCols.length - 1;
+                                const borderStyle = (isFirst ? 'border-left:none !important;' : '') + (isLast ? 'border-right:none !important;' : '');
+                                const val = c.value(item);
+                                const alignStyle = c.align === 'center' ? 'text-align:center;' : '';
+                                return `<td class="${c.cls}" style="${alignStyle} ${borderStyle}">${val}</td>`;
+                            }).join('') + '</tr>';
+                        }).join('');
+
+                        const nestedTableHtml = 
+                            '<table class="nested-edu-table" style="width:100%; border-collapse:collapse; table-layout:fixed; border:none; margin:0;">' +
+                            colgroupHtml +
+                            '<thead>' + headerRow + '</thead>' +
+                            '<tbody>' + dataRows + '</tbody>' +
+                            '</table>';
+
+                        rows.push(`<tr><td colspan="6" style="padding:0; border-top:none !important; border-bottom:none !important; border-left:1px solid var(--border-out) !important; border-right:1px solid var(--border-out) !important; vertical-align:top;">${nestedTableHtml}</td></tr>`);
+                        sections.push({ id: 'education', rows: rows });
+                    }
                 }
 
                 const experience = typeof window.buildRenderedExperience === 'function'
@@ -458,18 +528,25 @@
                     const rows = [];
                     rows.push('<tr><td class="sh" colspan="6">PROJECTS</td></tr>');
                     projects.forEach(function (item) {
-                        if (text(item.title) || text(item.description)) {
+                        if (text(item.title)) {
                             rows.push(
                                 '<tr>' +
-                                `<td class="co" colspan="6"><strong>${rich(item.title || 'Project')}</strong></td>` +
+                                `<td class="co" colspan="6"><strong>${rich(item.title)}</strong></td>` +
                                 '</tr>'
                             );
                         }
 
                         const bullets = normalizeList(item.bullets);
-                        const description = text(item.description) ? `<p>${rich(item.description)}</p>` : '';
-                        if (bullets.length || description) {
-                            rows.push(`<tr><td class="cc" colspan="6">${description}<ul class="cv-bullets">${bullets.map(function (b) { return `<li>${rich(b)}</li>`; }).join('')}</ul></td></tr>`);
+                        const label = rich(item.description || '');
+                        
+                        if (bullets.length || text(label)) {
+                            const bulletsHTML = `<ul class="cv-bullets">${bullets.map(function (b) { return `<li>${rich(b)}</li>`; }).join('')}</ul>`;
+                            const descEmpty = !text(label);
+                            if (descEmpty) {
+                                rows.push(`<tr><td class="cc content-full" colspan="6">${bulletsHTML}</td></tr>`);
+                            } else {
+                                rows.push(`<tr><td class="lb">${labelWithBreaks(label)}</td><td class="cc" colspan="5">${bulletsHTML}</td></tr>`);
+                            }
                         }
                     });
                     sections.push({ id: 'projects', rows: rows });

@@ -11,7 +11,7 @@
             --edu-header-bg: #DEEAF6;
             --edu-exam-bg: #F1F1F1;
             --work-sub-bg: #DDEBF7;
-            --header-box-bg: #F1F1F1;
+            --header-box-bg: var(--sub-header-bg, #F1F1F1);
             --text-black: #000000;
             --text-navy: #001F5F;
             --text-link: #0461C1;
@@ -391,7 +391,7 @@
         .skills-table td.lbl {
             width: 14.5%;
             font-weight: bold;
-            white-space: nowrap;
+            white-space: normal;
             padding-right: calc(6px * var(--content-scale));
         }
 
@@ -677,9 +677,44 @@
     <script>
         const originalRenderCV = window.renderCV;
         window.renderCV = function (data) {
-            originalRenderCV(data);
+            const dataCopy = JSON.parse(JSON.stringify(data || {}));
+            applyDocxEducationWidths(dataCopy);
+            originalRenderCV(dataCopy);
+            document.querySelectorAll('.sortable-section table').forEach(t => {
+                t.style.setProperty('table-layout', 'fixed', 'important');
+            });
             renderSubsectionHeadings();
         };
+
+        function applyDocxEducationWidths(dataCopy) {
+            dataCopy.tableSettings = dataCopy.tableSettings || {};
+            dataCopy.tableSettings.education = dataCopy.tableSettings.education || {};
+            const cols = dataCopy.tableSettings.education.columns || {};
+            const defaultWidths = { degree: 19, institution: 34, year: 11, marks: 9, remarks: 27 };
+            const effective = {};
+            Object.keys(defaultWidths).forEach(key => {
+                effective[key] = {
+                    visible: cols?.[key]?.visible !== false,
+                    width: Number(cols?.[key]?.width) || defaultWidths[key]
+                };
+            });
+            dataCopy.tableSettings.education.columns = effective;
+
+            const colgroup = document.querySelector('#education-table colgroup') || document.querySelector('.edu-table colgroup');
+            if (colgroup) {
+                colgroup.innerHTML = '';
+                const order = ['degree', 'institution', 'year', 'marks', 'remarks'];
+                const visibleTotal = order.reduce((sum, key) =>
+                    sum + (effective[key].visible ? effective[key].width : 0), 0) || 1;
+                order.forEach(key => {
+                    if (effective[key].visible) {
+                        const col = document.createElement('col');
+                        col.style.width = ((effective[key].width / visibleTotal) * 100).toFixed(2) + '%';
+                        colgroup.appendChild(col);
+                    }
+                });
+            }
+        }
 
         // Subsection entries (editor "Subsection" merge): cv-common hides the
         // entry's role/company/dates, but users can still fill them — surface
@@ -817,10 +852,12 @@
                 _root.style.setProperty('--banner-color', _accent);
                 _root.style.setProperty('--work-sub-bg', _lightBox);
                 _root.style.setProperty('--edu-header-bg', _lightBox);
+                _root.style.setProperty('--header-box-bg', _lightBox);
             } else {
                 _root.style.setProperty('--banner-color', '#1F4E79');
                 _root.style.setProperty('--work-sub-bg', '#DDEBF7');
                 _root.style.setProperty('--edu-header-bg', '#DEEAF6');
+                _root.style.setProperty('--header-box-bg', '#F1F1F1');
             }
             var _banner = _accent || '#1F4E79';
             document.querySelectorAll('#cv-page .section-header, #cv-page .section-banner, #cv-page .section-title, #cv-page .section-header-2').forEach(function (h) {

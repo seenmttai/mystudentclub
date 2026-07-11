@@ -138,6 +138,16 @@
             text-transform: none;
         }
 
+        .header-tagline {
+            font-size: calc(18.00px * var(--content-scale));
+            font-weight: bold;
+            margin-bottom: calc(4px * var(--content-scale));
+        }
+
+        .header-tagline:empty {
+            display: none;
+        }
+
         .contact-info {
             font-size: calc(18px * var(--content-scale));
         }
@@ -395,6 +405,7 @@
         <div class="resume-container" id="cv-page">
             <header>
                 <h1 data-field="name"></h1>
+                <div class="header-tagline" data-field="tagline"></div>
                 <div class="contact-info" data-field="contact">
                 </div>
             </header>

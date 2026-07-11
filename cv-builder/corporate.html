@@ -105,13 +105,32 @@
             padding: 0;
         }
 
+        .name-block-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+            padding-left: calc(10px * var(--content-scale));
+        }
+
         .name-block {
             font-size: calc(36px * var(--content-scale));
             font-weight: normal;
             display: flex;
             align-items: center;
-            padding-left: calc(10px * var(--content-scale));
-            flex-grow: 1;
+            padding-left: 0;
+            flex-grow: 0;
+        }
+
+        .header-tagline {
+            font-size: calc(16px * var(--content-scale));
+            font-weight: bold;
+            color: var(--header-bg);
+            margin-top: calc(4px * var(--content-scale));
+        }
+
+        .header-tagline:empty {
+            display: none;
         }
 
         .contact-block {
@@ -437,7 +456,10 @@
 
                 <!-- HEADER -->
                 <div class="header-section">
-                    <div class="name-block" data-field="name"></div>
+                    <div class="name-block-wrapper">
+                        <div class="name-block" data-field="name"></div>
+                        <div class="header-tagline" data-field="tagline"></div>
+                    </div>
                     <div class="contact-block">
                         <div class="contact-row">
                             <div class="contact-label">Mobile:</div>
@@ -572,6 +594,12 @@
         window.renderCV = function (data) {
             originalRenderCV(data);
             renderSubsectionHeadings();
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    shrinkContentToFit();
+                    scaleToFit();
+                });
+            });
         };
 
         function renderSubsectionHeadings() {
@@ -621,13 +649,16 @@
         // 2. SHRINK TO FIT LOGIC (Content Compression)
         function shrinkContentToFit() {
             const page = document.getElementById('cv-page');
-            const maxHeight = 1414;
+            if (!page) return;
+            const mainContainer = page.querySelector('.main-container');
+            const targetElement = mainContainer || page;
+            const limit = (mainContainer && mainContainer.offsetHeight > 0) ? mainContainer.offsetHeight : 1354;
 
             let contentScale = 1;
             document.documentElement.style.setProperty('--content-scale', contentScale);
 
             let iterations = 0;
-            while (page.scrollHeight > maxHeight && iterations < 50) {
+            while (targetElement.scrollHeight > limit && iterations < 50) {
                 contentScale -= 0.02;
                 document.documentElement.style.setProperty('--content-scale', contentScale);
                 iterations++;
