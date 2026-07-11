@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,7 +8,9 @@
     <!-- Tinos ≈ Times New Roman, Caladea ≈ Cambria: deterministic on Linux PDF workers -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Caladea:wght@400;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&family=Caladea:wght@400;700&display=swap"
+        rel="stylesheet">
     <style>
         /* ============================================================
            Serif Blue Grid — built from Resume_Template_33.docx
@@ -24,8 +27,10 @@
             --banner-side: #D9D9D9;
             --text-color: #000000;
             --banner-text: #FFFFFF;
-            --link-email: #0000FF;                  /* DOCX Hyperlink style */
-            --link-linkedin: #0462C1;               /* DOCX "LinkedIn" run color */
+            --link-email: #0000FF;
+            /* DOCX Hyperlink style */
+            --link-linkedin: #0462C1;
+            /* DOCX "LinkedIn" run color */
             --page-bg: #FFFFFF;
             --viewer-bg: #525659;
             --font-main: 'Times New Roman', 'Tinos', Times, serif;
@@ -79,7 +84,8 @@
             flex-direction: column;
             flex-shrink: 0;
             transform-origin: top center;
-            font-size: calc(16.79px * var(--content-scale)); /* sz20 = 10pt body */
+            font-size: calc(16.79px * var(--content-scale));
+            /* sz20 = 10pt body */
             line-height: 1.15;
         }
 
@@ -90,7 +96,8 @@
             font-size: calc(47.02px * var(--content-scale));
             line-height: calc(52.06px * var(--content-scale));
             text-align: center;
-            margin-bottom: calc(8px * var(--content-scale)); /* match reference name→contact gap */
+            margin-bottom: calc(8px * var(--content-scale));
+            /* match reference name→contact gap */
         }
 
         .hdr-contact-line {
@@ -120,14 +127,19 @@
         }
 
         /* gap between the contact line and the first section (kept tight) */
-        .hdr { margin-bottom: calc(10px * var(--content-scale)); }
+        .hdr {
+            margin-bottom: calc(10px * var(--content-scale));
+        }
 
         /* ── SECTION GEOMETRY: separate bordered tables with blank-line gaps ── */
         .sortable-section {
-            width: 936.19px;               /* ~11150tw */
+            width: 936.19px;
+            /* ~11150tw */
             max-width: calc(100% - 8.48px);
-            margin-left: 8.48px;           /* tblInd ~101tw */
-            margin-bottom: calc(19.3px * var(--content-scale)); /* DOCX blank line between tables */
+            margin-left: 8.48px;
+            /* tblInd ~101tw */
+            margin-bottom: calc(19.3px * var(--content-scale));
+            /* DOCX blank line between tables */
         }
 
         .sortable-section table {
@@ -154,10 +166,13 @@
             font-weight: 700;
             text-align: left;
             vertical-align: middle;
-            font-size: calc(23.51px * var(--content-scale));  /* sz28 = 14pt */
-            line-height: calc(26.87px * var(--content-scale)); /* spacing line 320tw exact */
+            font-size: calc(23.51px * var(--content-scale));
+            /* sz28 = 14pt */
+            line-height: calc(26.87px * var(--content-scale));
+            /* spacing line 320tw exact */
             padding: calc(3px * var(--content-scale)) 4px calc(3px * var(--content-scale)) 9.66px;
-            height: calc(33.00px * var(--content-scale));      /* trHeight 393tw */
+            height: calc(33.00px * var(--content-scale));
+            /* trHeight 393tw */
             border-left-color: var(--banner-side);
             border-right-color: var(--banner-side);
             border-top-color: var(--banner-side);
@@ -168,11 +183,13 @@
             background: var(--fill);
             font-weight: 700;
             font-size: calc(16.79px * var(--content-scale));
-            line-height: calc(19.23px * var(--content-scale)); /* line 229tw exact */
+            line-height: calc(19.23px * var(--content-scale));
+            /* line 229tw exact */
             text-align: center;
             vertical-align: middle;
             padding: calc(2px * var(--content-scale)) 3px;
-            height: calc(24.10px * var(--content-scale));      /* trHeight 287tw */
+            height: calc(24.10px * var(--content-scale));
+            /* trHeight 287tw */
         }
 
         #education-list td {
@@ -180,11 +197,15 @@
             vertical-align: middle;
             line-height: 1.15;
             padding: calc(2px * var(--content-scale)) 3px;
-            height: calc(25.69px * var(--content-scale));      /* trHeight ~306tw */
+            height: calc(25.69px * var(--content-scale));
+            /* trHeight ~306tw */
         }
 
         /* ── EXPERIENCE: DEEAF6 band (bold 11pt) + italic intro row + content cell ── */
-        .band-row td, .intro-row td { background: var(--fill); }
+        .band-row td,
+        .intro-row td {
+            background: var(--fill);
+        }
 
         .band-heading {
             display: flex;
@@ -192,14 +213,16 @@
             align-items: baseline;
             gap: 12px;
             font-weight: 700;
-            font-size: calc(18.47px * var(--content-scale));   /* default sz22 = 11pt */
+            font-size: calc(18.47px * var(--content-scale));
+            /* default sz22 = 11pt */
             line-height: 1.15;
             padding: calc(2.5px * var(--content-scale)) 8px calc(2.5px * var(--content-scale)) 9.99px;
             color: var(--text-color);
         }
 
         .band-heading .band-dates {
-            font-weight: 700;              /* DOCX band dates are bold 10pt, not italic */
+            font-weight: 700;
+            /* DOCX band dates are bold 10pt, not italic */
             font-size: calc(16.79px * var(--content-scale));
             white-space: nowrap;
             flex-shrink: 0;
@@ -220,7 +243,8 @@
             font-weight: 700;
             font-size: calc(18.47px * var(--content-scale));
             line-height: 1.15;
-            padding: calc(2px * var(--content-scale)) 8px calc(1px * var(--content-scale)) 17.72px; /* ind 211tw */
+            padding: calc(2px * var(--content-scale)) 8px calc(1px * var(--content-scale)) 17.72px;
+            /* ind 211tw */
         }
 
         .sub-head .sub-head-dates {
@@ -236,9 +260,13 @@
             padding: calc(1px * var(--content-scale)) 8px calc(1px * var(--content-scale)) 17.72px;
         }
 
-        .sub-cat:empty { display: none; }
+        .sub-cat:empty {
+            display: none;
+        }
 
-        .summary-cell { padding: calc(3px * var(--content-scale)) 9.66px calc(6px * var(--content-scale)); }
+        .summary-cell {
+            padding: calc(3px * var(--content-scale)) 9.66px calc(6px * var(--content-scale));
+        }
 
         [data-field="summary"] {
             text-align: justify;
@@ -269,16 +297,20 @@
         ul[data-list="bullets"] li::before {
             content: "\2022";
             position: absolute;
-            left: calc(5.96px * var(--content-scale));         /* 214-143 = 71tw */
+            left: calc(5.96px * var(--content-scale));
+            /* 214-143 = 71tw */
             font-size: calc(16.79px * var(--content-scale));
         }
 
         /* trailing white space the DOCX leaves inside each content row */
-        .li-cell { padding: calc(2px * var(--content-scale)) 0 calc(12px * var(--content-scale)); }
+        .li-cell {
+            padding: calc(2px * var(--content-scale)) 0 calc(12px * var(--content-scale));
+        }
 
         /* ── COMBINED label|content table (Certifications & Additional Information) ── */
         .extra-table td.extra-label {
-            width: 15.12%;                 /* 1686tw of 11150 */
+            width: 15.12%;
+            /* 1686tw of 11150 */
             min-width: 110px;
             background-color: var(--fill);
             font-weight: 700;
@@ -294,7 +326,9 @@
         }
 
         /* leadership entries rebuilt as band + bullets cards */
-        .leadership-body { padding: 0; }
+        .leadership-body {
+            padding: 0;
+        }
 
         .leadership-entry .band-plain {
             background-color: var(--fill);
@@ -305,17 +339,32 @@
             align-items: center;
         }
 
-        .leadership-entry:first-child .band-plain { border-top: none; }
+        .leadership-entry:first-child .band-plain {
+            border-top: none;
+        }
 
-        .leadership-entry .band-plain .band-heading { width: 100%; }
+        .leadership-entry .band-plain .band-heading {
+            width: 100%;
+        }
 
-        b, strong { font-weight: 700; }
-        i, em { font-style: italic; }
+        b,
+        strong {
+            font-weight: 700;
+        }
 
-        .template { display: none !important; }
+        i,
+        em {
+            font-style: italic;
+        }
+
+        .template {
+            display: none !important;
+        }
 
         @media (max-width: 1040px) {
-            #zoom-wrapper { padding: 12px 0; }
+            #zoom-wrapper {
+                padding: 12px 0;
+            }
         }
 
         /* ── PRINT (A4 exact: 1000px sheet ⇒ 210mm via zoom) ── */
@@ -324,7 +373,9 @@
                 size: A4 portrait;
                 margin: 0;
             }
-            html, body {
+
+            html,
+            body {
                 background: var(--page-bg);
                 width: 210mm;
                 height: 297mm;
@@ -332,6 +383,7 @@
                 padding: 0 !important;
                 overflow: hidden !important;
             }
+
             #zoom-wrapper {
                 padding: 0;
                 display: block;
@@ -339,16 +391,19 @@
                 width: 100% !important;
                 height: auto !important;
             }
+
             .resume-container {
                 box-shadow: none;
                 transform: none;
-                zoom: 0.79375;              /* 1000px -> 210mm */
+                zoom: 0.79375;
+                /* 1000px -> 210mm */
                 margin: 0 auto;
                 position: static !important;
             }
         }
     </style>
 </head>
+
 <body>
     <div id="zoom-wrapper">
         <div class="resume-container" id="cv-page">
@@ -387,7 +442,11 @@
             <div class="sortable-section" data-section-id="education">
                 <table id="education-table">
                     <colgroup>
-                        <col style="width:17.88%"><col style="width:10.63%"><col style="width:32.61%"><col style="width:7.68%"><col style="width:31.20%">
+                        <col style="width:17.88%">
+                        <col style="width:10.63%">
+                        <col style="width:32.61%">
+                        <col style="width:7.68%">
+                        <col style="width:31.20%">
                     </colgroup>
                     <thead>
                         <tr>
@@ -427,7 +486,8 @@
                                 <td>
                                     <div class="band-heading">
                                         <span>
-                                            <span data-field="role"></span><span class="company-sep-inline" style="display:none;"> | </span><span data-field="company"></span>
+                                            <span data-field="role"></span><span class="company-sep-inline"
+                                                style="display:none;"> | </span><span data-field="company"></span>
                                         </span>
                                         <span class="band-dates" data-field="dates"></span>
                                     </div>
@@ -468,7 +528,8 @@
                             </tr>
                             <tr>
                                 <td class="li-cell">
-                                    <div class="exp-intro" data-field="description" style="background:transparent"></div>
+                                    <div class="exp-intro" data-field="description" style="background:transparent">
+                                    </div>
                                     <ul data-list="bullets" class="bullet-list"></ul>
                                 </td>
                             </tr>
@@ -483,7 +544,11 @@
                  cv-common.js strips 2-column colgroups on non-education sections. -->
             <div class="sortable-section" data-section-id="certifications">
                 <table class="extra-table" data-preserve-label-columns>
-                    <colgroup><col style="width:15.12%"><col style="width:42.44%"><col style="width:42.44%"></colgroup>
+                    <colgroup>
+                        <col style="width:15.12%">
+                        <col style="width:42.44%">
+                        <col style="width:42.44%">
+                    </colgroup>
                     <tr>
                         <td class="section-header" colspan="3">Certifications &amp; Additional Information</td>
                     </tr>
@@ -566,6 +631,15 @@
             applyDocxEducationWidths(dataCopy);
 
             originalRenderCV(dataCopy);
+
+            // cv-common's stabilizeSectionLayouts() force-sets table-layout:auto
+            // (inline, !important) on every section table; with border-collapse the
+            // auto tables render their outer borders past the 100% box, so banner
+            // tables drift out of alignment with the content boxes. Re-force fixed
+            // — our colgroups/widths govern — after its pass on every render.
+            document.querySelectorAll('.sortable-section table').forEach(t => {
+                t.style.setProperty('table-layout', 'fixed', 'important');
+            });
 
             adjustExperienceHeaders();
             adjustContactHeader(dataCopy.personal || {});
@@ -743,7 +817,7 @@
             const leadList = leadRow?.querySelector('[data-list="leadership"]');
             const leadFormatted = leadRow?.querySelector('#leadership-formatted');
             const hasLead = !!(leadList && leadList.children.length > 0) ||
-                            !!(leadFormatted && leadFormatted.children.length > 0);
+                !!(leadFormatted && leadFormatted.children.length > 0);
             const skillsField = skillsRow?.querySelector('[data-field="skills"]');
             const hasSkills = !!(skillsField && skillsField.textContent.trim());
             const interestsList = skillsRow?.querySelector('[data-list="interests"]');
@@ -909,14 +983,14 @@
                 const datesText = (datesEl?.textContent || '').trim();
 
                 const merged = roleEl && roleEl.style.display === 'none' &&
-                               companyEl && companyEl.style.display === 'none';
+                    companyEl && companyEl.style.display === 'none';
                 const empty = !roleText && !companyText && !datesText;
                 headerRow.style.display = (merged || empty) ? 'none' : '';
 
                 // hide the italic intro row when its content is empty or suppressed
                 if (introRow) {
                     const introVisible = introEl && introEl.style.display !== 'none' &&
-                                         (introEl.textContent || '').trim();
+                        (introEl.textContent || '').trim();
                     introRow.style.display = introVisible ? '' : 'none';
                 }
 
@@ -1010,4 +1084,5 @@
         });
     </script>
 </body>
+
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,7 +8,8 @@
     <!-- Carlito is metric-compatible with Calibri: deterministic rendering on Linux PDF workers -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
     <style>
         /* ============================================================
            Calibri Blue Ledger — built from Resume_Template_31.docx
@@ -16,13 +18,18 @@
            1 twip = 1000/11910 px. All values below come from that file.
            ============================================================ */
         :root {
-            --banner-bg: var(--header-bg, #2E5395);     /* dark blue section banners */
-            --band-bg: var(--sub-header-bg, #8EAADB);   /* experience sub-header band */
-            --pill-bg: var(--sub-header-bg, #8FAADE);   /* header contact pills */
-            --border-color: #000000;                    /* table grid: single sz4 black */
+            --banner-bg: var(--header-bg, #2E5395);
+            /* dark blue section banners */
+            --band-bg: var(--sub-header-bg, #8EAADB);
+            /* experience sub-header band */
+            --pill-bg: var(--sub-header-bg, #8FAADE);
+            /* header contact pills */
+            --border-color: #000000;
+            /* table grid: single sz4 black */
             --text-color: #000000;
             --banner-text: #FFFFFF;
-            --link-color: #0000FF;                      /* DOCX Hyperlink style */
+            --link-color: #0000FF;
+            /* DOCX Hyperlink style */
             --page-bg: #FFFFFF;
             --viewer-bg: #525659;
             --font-main: 'Calibri', 'Carlito', 'Segoe UI', sans-serif;
@@ -76,7 +83,8 @@
             flex-direction: column;
             flex-shrink: 0;
             transform-origin: top center;
-            font-size: calc(16.79px * var(--content-scale)); /* sz20 = 10pt body */
+            font-size: calc(16.79px * var(--content-scale));
+            /* sz20 = 10pt body */
             line-height: 1.22;
         }
 
@@ -106,12 +114,17 @@
             min-height: calc(26.87px * var(--content-scale));
             padding: calc(2px * var(--content-scale)) calc(14px * var(--content-scale)) calc(2px * var(--content-scale)) calc(6px * var(--content-scale));
             font-weight: 700;
-            font-size: calc(18.47px * var(--content-scale));  /* default 11pt bold */
+            font-size: calc(18.47px * var(--content-scale));
+            /* default 11pt bold */
             line-height: calc(18.56px * var(--content-scale));
             white-space: nowrap;
         }
 
-        #pl-email { font-size: calc(16.79px * var(--content-scale)); } /* "Email:" runs are sz20 */
+        #pl-email {
+            font-size: calc(16.79px * var(--content-scale));
+        }
+
+        /* "Email:" runs are sz20 */
 
         .pill-item a {
             color: var(--link-color);
@@ -119,14 +132,19 @@
         }
 
         /* gap before first section: one empty BodyText 10pt line */
-        .hdr { margin-bottom: calc(20.5px * var(--content-scale)); }
+        .hdr {
+            margin-bottom: calc(20.5px * var(--content-scale));
+        }
 
         /* ── SECTION GEOMETRY (single bordered ledger, 1px black grid) ── */
         .sortable-section {
-            width: 928.04px;                /* DOCX table 11053tw */
+            width: 928.04px;
+            /* DOCX table 11053tw */
             max-width: calc(100% - 12.26px);
-            margin-left: 12.26px;           /* tblInd 146tw */
-            margin-top: -1px;               /* collapse borders between stacked boxes */
+            margin-left: 12.26px;
+            /* tblInd 146tw */
+            margin-top: -1px;
+            /* collapse borders between stacked boxes */
         }
 
         .sortable-section table {
@@ -146,6 +164,30 @@
             overflow: hidden;
         }
 
+        /* The collapsed 1px outer verticals antialias to faint gray at the editor
+           preview's fractional scale, so rows look misaligned (filled banner/band
+           rows read wider than white rows). Chrome won't paint inset shadows on
+           collapsed-border TABLE boxes, so reinforce the side edges per cell:
+           every row's first cell gets extra left ink, its last cell right ink. */
+        .sortable-section td:first-child,
+        .sortable-section th:first-child {
+            box-shadow: inset 1px 0 0 var(--border-color);
+        }
+
+        .sortable-section td:last-child,
+        .sortable-section th:last-child {
+            box-shadow: inset -1px 0 0 var(--border-color);
+        }
+
+        .sortable-section td:first-child:last-child,
+        .sortable-section th:first-child:last-child {
+            box-shadow: inset 1px 0 0 var(--border-color), inset -1px 0 0 var(--border-color);
+        }
+
+        .leadership-entry .band-plain {
+            box-shadow: inset 1px 0 0 var(--border-color), inset -1px 0 0 var(--border-color);
+        }
+
         /* ── SECTION BANNERS (fill 2E5395, Calibri b 10pt white, ind 107tw) ── */
         td.section-header {
             background-color: var(--banner-bg) !important;
@@ -159,7 +201,8 @@
             font-size: calc(16.79px * var(--content-scale));
             line-height: calc(20.32px * var(--content-scale));
             padding: calc(3px * var(--content-scale)) 4px calc(3px * var(--content-scale)) 8.98px;
-            height: calc(26.37px * var(--content-scale)); /* trHeight ~314tw */
+            height: calc(26.37px * var(--content-scale));
+            /* trHeight ~314tw */
         }
 
         /* ── EDUCATION GRID (bold 10pt centered header row, 10pt rows) ── */
@@ -179,16 +222,20 @@
             vertical-align: middle;
             line-height: calc(20.32px * var(--content-scale));
             padding: calc(2px * var(--content-scale)) 4px;
-            height: calc(26.37px * var(--content-scale)); /* trHeight ~314tw */
+            height: calc(26.37px * var(--content-scale));
+            /* trHeight ~314tw */
         }
 
         /* ── EXPERIENCE sub-band (fill 8EAADB, bold, date right, not italic) ── */
         .band-row td {
             vertical-align: middle;
-            height: calc(26.11px * var(--content-scale)); /* trHeight 311tw */
+            height: calc(26.11px * var(--content-scale));
+            /* trHeight 311tw */
         }
 
-        .band { background-color: var(--band-bg); }
+        .band {
+            background-color: var(--band-bg);
+        }
 
         .band-heading {
             display: flex;
@@ -197,14 +244,17 @@
             gap: 12px;
             font-weight: 700;
             font-size: calc(16.79px * var(--content-scale));
-            line-height: calc(20.15px * var(--content-scale)); /* line 240tw exact */
-            padding-left: 8.98px;                              /* ind left 107tw */
+            line-height: calc(20.15px * var(--content-scale));
+            /* line 240tw exact */
+            padding-left: 8.98px;
+            /* ind left 107tw */
             padding-right: 7.5px;
             color: var(--text-color);
         }
 
         .band-heading .band-dates {
-            font-weight: 700;              /* DOCX band dates are bold, not italic */
+            font-weight: 700;
+            /* DOCX band dates are bold, not italic */
             white-space: nowrap;
             flex-shrink: 0;
         }
@@ -223,7 +273,9 @@
             padding: calc(2px * var(--content-scale)) 8.98px calc(1px * var(--content-scale));
         }
 
-        .sub-cat:empty { display: none; }
+        .sub-cat:empty {
+            display: none;
+        }
 
         /* subsection Role | Firm + Duration heading (built by adjustExperienceHeaders) */
         .sub-head {
@@ -238,18 +290,23 @@
         }
 
         .sub-head .sub-head-dates {
-            font-weight: 700;              /* band dates in this design are bold */
+            font-weight: 700;
+            /* band dates in this design are bold */
             white-space: nowrap;
             flex-shrink: 0;
         }
 
-        .summary-cell { padding: calc(2px * var(--content-scale)) 0 calc(4px * var(--content-scale)); }
+        .summary-cell {
+            padding: calc(2px * var(--content-scale)) 0 calc(4px * var(--content-scale));
+        }
 
         [data-field="summary"] {
             text-align: justify;
             font-size: calc(16.79px * var(--content-scale));
-            line-height: 1.317;             /* spacing line 259 auto */
-            padding: 0 23.51px 0 8.98px;    /* ind l107 r280 */
+            line-height: 1.317;
+            /* spacing line 259 auto */
+            padding: 0 23.51px 0 8.98px;
+            /* ind l107 r280 */
         }
 
         /* ── DASH BULLETS (numbering "-" Calibri 11pt, ind left 465tw hanging 358tw) ── */
@@ -276,19 +333,26 @@
             content: "-";
             position: absolute;
             left: calc(8.98px * var(--content-scale));
-            font-size: calc(18.47px * var(--content-scale)); /* 11pt bullet glyph */
+            font-size: calc(18.47px * var(--content-scale));
+            /* 11pt bullet glyph */
             font-weight: 400;
         }
 
         /* DOCX rows are taller than content: trailing white space in each box */
-        .li-cell { padding: calc(1px * var(--content-scale)) 0 calc(14px * var(--content-scale)); }
+        .li-cell {
+            padding: calc(1px * var(--content-scale)) 0 calc(14px * var(--content-scale));
+        }
 
         /* ── SKILLS & HOBBIES (dash bullets rebuilt from data each render) ── */
         /* raw bound hosts stay hidden; #skills-bullets presents their content */
-        .grid-hosts { display: none !important; }
+        .grid-hosts {
+            display: none !important;
+        }
 
         /* leadership entries rebuilt as band + bullets cards */
-        .leadership-body { padding: 0; }
+        .leadership-body {
+            padding: 0;
+        }
 
         .leadership-entry .band-plain {
             background-color: var(--band-bg);
@@ -299,17 +363,32 @@
             align-items: center;
         }
 
-        .leadership-entry:first-child .band-plain { border-top: none; }
+        .leadership-entry:first-child .band-plain {
+            border-top: none;
+        }
 
-        .leadership-entry .band-plain .band-heading { width: 100%; }
+        .leadership-entry .band-plain .band-heading {
+            width: 100%;
+        }
 
-        b, strong { font-weight: 700; }
-        i, em { font-style: italic; }
+        b,
+        strong {
+            font-weight: 700;
+        }
 
-        .template { display: none !important; }
+        i,
+        em {
+            font-style: italic;
+        }
+
+        .template {
+            display: none !important;
+        }
 
         @media (max-width: 1040px) {
-            #zoom-wrapper { padding: 12px 0; }
+            #zoom-wrapper {
+                padding: 12px 0;
+            }
         }
 
         /* ── PRINT (A4 exact: 1000px sheet ⇒ 210mm via zoom) ── */
@@ -318,7 +397,9 @@
                 size: A4 portrait;
                 margin: 0;
             }
-            html, body {
+
+            html,
+            body {
                 background: var(--page-bg);
                 width: 210mm;
                 height: 297mm;
@@ -326,6 +407,7 @@
                 padding: 0 !important;
                 overflow: hidden !important;
             }
+
             #zoom-wrapper {
                 padding: 0;
                 display: block;
@@ -333,16 +415,19 @@
                 width: 100% !important;
                 height: auto !important;
             }
+
             .resume-container {
                 box-shadow: none;
                 transform: none;
-                zoom: 0.79375;              /* 1000px -> 210mm */
+                zoom: 0.79375;
+                /* 1000px -> 210mm */
                 margin: 0 auto;
                 position: static !important;
             }
         }
     </style>
 </head>
+
 <body>
     <div id="zoom-wrapper">
         <div class="resume-container" id="cv-page">
@@ -376,11 +461,15 @@
             <div class="sortable-section" data-section-id="education">
                 <table id="education-table">
                     <colgroup>
-                        <col style="width:27.69%"><col style="width:39.61%"><col style="width:17.95%"><col style="width:14.75%">
+                        <col style="width:27.69%">
+                        <col style="width:39.61%">
+                        <col style="width:17.95%">
+                        <col style="width:14.75%">
                     </colgroup>
                     <thead>
                         <tr>
-                            <td class="section-header" colspan="4">ACADEMIC QUALIFICATIONS &amp; SCHOLASTIC ACHIEVEMENTS</td>
+                            <td class="section-header" colspan="4">ACADEMIC QUALIFICATIONS &amp; SCHOLASTIC ACHIEVEMENTS
+                            </td>
                         </tr>
                         <tr class="qual-head">
                             <th>Examination</th>
@@ -414,7 +503,8 @@
                                 <td class="band">
                                     <div class="band-heading">
                                         <span>
-                                            <span data-field="role"></span><span class="company-sep-inline" style="display:none;"> | </span><span data-field="company"></span>
+                                            <span data-field="role"></span><span class="company-sep-inline"
+                                                style="display:none;"> | </span><span data-field="company"></span>
                                         </span>
                                         <span class="band-dates" data-field="dates"></span>
                                     </div>
@@ -557,6 +647,15 @@
             applyDocxEducationWidths(dataCopy);
 
             originalRenderCV(dataCopy);
+
+
+            // cv-common's stabilizeSectionLayouts() force-sets table-layout:auto
+            // (inline, !important) on every section table; with border-collapse the
+            // auto tables render their outer borders past the 100% box, so banner
+            // tables drift out of alignment with the content boxes. Re-force fixed.
+            document.querySelectorAll('.sortable-section table').forEach(t => {
+                t.style.setProperty('table-layout', 'fixed', 'important');
+            });
 
             adjustExperienceHeaders();
             adjustContactPills(dataCopy.personal || {});
@@ -803,7 +902,7 @@
                 const datesText = (datesEl?.textContent || '').trim();
 
                 const merged = roleEl && roleEl.style.display === 'none' &&
-                               companyEl && companyEl.style.display === 'none';
+                    companyEl && companyEl.style.display === 'none';
                 const empty = !roleText && !companyText && !datesText;
                 headerRow.style.display = (merged || empty) ? 'none' : '';
 
@@ -898,4 +997,5 @@
         });
     </script>
 </body>
+
 </html>

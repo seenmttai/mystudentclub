@@ -643,7 +643,7 @@
 
         function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
-        var _lastPersonal = null, _lastSectionOrder = null, _lastSectionLabels = {};
+        var _lastPersonal = null, _lastSectionOrder = null, _lastSectionLabels = {}, _lastCustomSections = [];
         window.addEventListener('message', function (ev) {
             try {
                 var d = (typeof ev.data === 'string') ? JSON.parse(ev.data) : ev.data;
@@ -652,6 +652,7 @@
                 if (d.personal) _lastPersonal = d.personal;
                 if (Array.isArray(d.sectionOrder)) _lastSectionOrder = d.sectionOrder;
                 if (d.sectionLabels && typeof d.sectionLabels === 'object') _lastSectionLabels = d.sectionLabels;
+                if (Array.isArray(d.customSections)) _lastCustomSections = d.customSections;
             } catch (e) { }
         });
 
@@ -808,7 +809,27 @@
                 var label = (pCfg.text && String(pCfg.text).trim()) ? pCfg.text : row.defLabel;
                 html += '<tr><td class="cb-label">' + label + '</td><td class="cb-content"><ul>' + liList(items) + '</ul></td></tr>';
             });
+
+            // User-added custom sections fold in as extra label|content rows. Their
+            // standalone clones (built by cv-common from the achievements section)
+            // inherit this template's hidden `.src` list, so they can never display
+            // content on their own — always hide them and present the data here.
+            (_lastCustomSections || []).forEach(function (section) {
+                if (!section || !section.id) return;
+                var cfg = labelCfg(section.id);
+                if (cfg.visible === false) return;             // "Show label" toggle hides the row
+                var items = (section.items || []).map(function (it) {
+                    return String(it || '').trim();
+                }).filter(Boolean);
+                if (!items.length) return;
+                var label = (cfg.text && String(cfg.text).trim()) ? cfg.text : (section.title || 'Custom');
+                html += '<tr><td class="cb-label">' + esc(label) + '</td><td class="cb-content"><ul>' + liList(items) + '</ul></td></tr>';
+            });
             body.innerHTML = html;
+
+            document.querySelectorAll('[data-custom-section-root]').forEach(function (el) {
+                el.style.setProperty('display', 'none', 'important');
+            });
 
             // Hide the standalone source sections; show the combined block only if it has rows.
             ['skills', 'certifications', 'achievements', 'leadership'].forEach(function (id) {

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,13 +8,17 @@
     <!-- Caladea is metric-compatible with Cambria: deterministic rendering on Linux PDF workers -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caladea:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caladea:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             /* ── Colours: exact values from Resume_Template_29.docx ── */
-            --accent-color: var(--header-bg, #1F3760);  /* navy section banners (themeable) */
-            --subhead-bg: #B8CCE2;                       /* light-blue sub-header / column-header rows */
-            --border-color: #000000;                    /* table grid: single sz12 #000000 */
+            --accent-color: var(--header-bg, #1F3760);
+            /* navy section banners (themeable) */
+            --subhead-bg: #B8CCE2;
+            /* light-blue sub-header / column-header rows */
+            --border-color: #000000;
+            /* table grid: single sz12 #000000 */
             --text-color: #000000;
             --name-color: #0D223C;
             --banner-text: #FFFFFF;
@@ -57,11 +62,7 @@
             padding: 24px 12px;
         }
 
-        /* Page: 1072px outer box (border-box) = 1000px content + 36px gutters, matching
-           the reference Resume_Template_29.html viewer exactly. Left/right/bottom margins
-           stay fixed regardless of content volume — shrinkContentToFit() only compresses
-           font-size/line-height/inner spacing (all wrapped in --content-scale below), so the
-           white margin never shrinks or gets crowded out by a long resume. */
+
         .resume-container {
             position: relative;
             width: 1072px;
@@ -69,12 +70,13 @@
             background: var(--page-bg);
             color: var(--text-color);
             padding: 0 34px 30px 34px;
-            box-shadow: 0 4px 24px rgba(0,0,0,.5);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, .5);
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
             transform-origin: top center;
-            font-size: calc(15.1px * var(--content-scale)); /* 9pt body */
+            font-size: calc(15.1px * var(--content-scale));
+            /* 9pt body */
             line-height: 1.25;
         }
 
@@ -120,19 +122,16 @@
             text-decoration: underline;
         }
 
-        /* ── SECTION GEOMETRY ──
-           Border widths: the table element itself carries the (thicker) outer edge,
-           while td/th carry a thinner inner grid — border-collapse keeps whichever is
-           wider at each shared edge, so the section's outline reads heavier than its
-           internal grid lines without any per-cell overrides. */
+
         .sortable-section {
             width: 975.92px;
             max-width: 100%;
             margin: 0 auto;
-            margin-top: -2px; /* collapse hairline borders between stacked section tables */
+            margin-top: -2px;
+            /* collapse hairline borders between stacked section tables */
         }
 
-        .hdr + .sortable-section,
+        .hdr+.sortable-section,
         .sortable-section:first-of-type {
             margin-top: 0;
         }
@@ -199,14 +198,12 @@
             padding-bottom: calc(3.5px * var(--content-scale));
         }
 
-        /* ── POSITIONS OF RESPONSIBILITY (plain div entries, not nested tables) ──
-           Reuses .exp-heading / .exp-intro / .bullet-list / .cell-pad so fonts, weight,
-           spacing and bullet indentation are identical to Work Experience. */
+
         .leadership-body {
             padding: 0;
         }
 
-        .leadership-entry + .leadership-entry {
+        .leadership-entry+.leadership-entry {
             margin-top: calc(6px * var(--content-scale));
         }
 
@@ -225,7 +222,8 @@
             font-size: calc(15.1px * var(--content-scale));
             padding-left: 5px;
             padding-right: 5px;
-            color: #0D0D0D; /* exact DOCX run color for the Work Experience sub-header text */
+            color: #0D0D0D;
+            /* exact DOCX run color for the Work Experience sub-header text */
         }
 
         .exp-intro {
@@ -286,9 +284,6 @@
             padding: 0 !important;
         }
 
-        /* ── EXTRACURRICULAR (label | content two-column grid, matching the DOCX) ──
-           Width is set on the cells themselves (not a <colgroup>): cv-common.js
-           unconditionally strips any 2-column <colgroup> on non-"education" sections. */
         .extra-table td.extra-label {
             width: 16.7%;
             min-width: 115px;
@@ -325,7 +320,9 @@
                 size: A4 portrait;
                 margin: 0;
             }
-            html, body {
+
+            html,
+            body {
                 background: var(--page-bg);
                 width: 210mm;
                 height: 297mm;
@@ -333,6 +330,7 @@
                 padding: 0 !important;
                 overflow: hidden !important;
             }
+
             #zoom-wrapper {
                 padding: 0;
                 display: block;
@@ -340,6 +338,7 @@
                 width: 100% !important;
                 height: auto !important;
             }
+
             .resume-container {
                 box-shadow: none;
                 transform: none;
@@ -348,16 +347,17 @@
                 position: static !important;
             }
         }
-    
-        /* subsection heading + category (entries marked "Subsection" in the editor):
-           cv-common hides the entry's role/company/dates; renderSubsectionHeadings()
-           surfaces them as this in-line heading above the subsection's bullets. */
+
+
         .sub-head {
             display: flex;
             justify-content: space-between;
             align-items: baseline;
             gap: 12px;
             font-weight: bold;
+            padding-left: 5px;
+            /* keep clear of the cell border, like .exp-heading */
+            padding-right: 5px;
         }
 
         .sub-head .sub-head-dates {
@@ -367,11 +367,18 @@
             flex-shrink: 0;
         }
 
-        .sub-cat { font-weight: bold; }
+        .sub-cat {
+            font-weight: bold;
+            padding-left: 5px;
+            /* keep clear of the cell border, like .exp-heading */
+        }
 
-        .sub-cat:empty { display: none; }
-</style>
+        .sub-cat:empty {
+            display: none;
+        }
+    </style>
 </head>
+
 <body>
     <div id="zoom-wrapper">
         <div class="resume-container" id="cv-page">
@@ -410,7 +417,11 @@
             <div class="sortable-section" data-section-id="education">
                 <table id="education-table">
                     <colgroup>
-                        <col style="width:162.75px"><col style="width:351.25px"><col style="width:166.36px"><col style="width:142.54px"><col style="width:153.02px">
+                        <col style="width:162.75px">
+                        <col style="width:351.25px">
+                        <col style="width:166.36px">
+                        <col style="width:142.54px">
+                        <col style="width:153.02px">
                     </colgroup>
                     <thead>
                         <tr>
@@ -464,7 +475,8 @@
                                 <td>
                                     <div class="exp-heading">
                                         <span>
-                                            <span data-field="role"></span><span class="company-sep-inline" style="display:none;"> | </span><span data-field="company"></span>
+                                            <span data-field="role"></span><span class="company-sep-inline"
+                                                style="display:none;"> | </span><span data-field="company"></span>
                                         </span>
                                         <span data-field="dates"></span>
                                     </div>
@@ -482,9 +494,6 @@
                 </div>
             </div>
 
-            <!-- POSITIONS OF RESPONSIBILITY (leadership) — each entry is rendered as a
-                 plain div (title/date bar + intro + bullets), not a nested table; see
-                 formatLeadershipEntries() below. -->
             <div class="sortable-section" data-section-id="leadership">
                 <table>
                     <tr>
@@ -526,31 +535,21 @@
                 </div>
             </div>
 
-            <!-- EXTRACURRICULAR ACTIVITIES AND OTHERS: interests + skills + certifications,
-                 all folded under one banner as a two-column label|content grid — matching the
-                 DOCX's Presentation Skills / Business Case Study / MUN / Social Service /
-                 Sports / Skills-and-Interests rows. Each label cell doubles as cv-common's
-                 standard "section label" cell (data-preserve-label-columns makes it look up
-                 each binding's own row independently), so every row is still renameable via
-                 the Section Labels panel exactly like a standalone section would be — only
-                 the visual placement changed, nothing in the editor did.
-                 Row visibility (hide a row when its data is empty, and hide the whole section
-                 when all three are empty) is handled explicitly in script, see
-                 refreshExtracurricularRows() below — cv-common's own empty-section toggle
-                 would otherwise fight itself across three bindings sharing one section. -->
+
             <div class="sortable-section" data-section-id="interests">
-                <!-- The colgroup has 3 <col>s (label + two content sub-columns merged via
-                     colspan="2") rather than 2: cv-common.js unconditionally strips any
-                     *2*-column colgroup on non-"education" sections to fix up other
-                     templates' accidental columns, which would otherwise blow away our
-                     intentional proportional widths and let the label column collapse. -->
+
                 <table class="extra-table" data-preserve-label-columns>
-                    <colgroup><col style="width:163px"><col style="width:406.5px"><col style="width:406.5px"></colgroup>
+
+                    <colgroup>
+                        <col style="width:16.70%">
+                        <col style="width:41.65%">
+                        <col style="width:41.65%">
+                    </colgroup>
                     <tr>
                         <td class="section-header" colspan="3">EXTRACURRICULAR ACTIVITIES AND OTHERS</td>
                     </tr>
                     <tr id="extra-row-interests">
-                        <td class="extra-label">Interests &amp;  Activities</td>
+                        <td class="extra-label">Interests &amp; Activities</td>
                         <td class="extra-content" colspan="2">
                             <ul data-list="interests" class="bullet-list"></ul>
                         </td>
@@ -578,18 +577,7 @@
         // ── Template-specific post-processing over the shared renderer ──
         const originalRenderCV = window.renderCV;
 
-        // Section order for this template, matching the DOCX banner sequence:
-        // Objective, Educational Qualifications, Academic Achievements, Work Experience,
-        // custom sections, Positions of Responsibility, Extracurricular (interests),
-        // Skills and Interests, Projects, Certifications.
-        //
-        // `changeTemplate()` in cv-script.js reassigns the iframe's `src`, which is a full
-        // navigation — this script block re-executes from scratch exactly once per template
-        // selection. So `_orderAppliedOnce` naturally distinguishes "the user just switched
-        // into this template" (apply the DOCX order, no matter what order a *previous*
-        // template's own default happened to leave behind in cvData) from "the user is
-        // typing/using the Reorder drawer while already on this template" (respect their
-        // order untouched on every subsequent render).
+
         var _BASE_ORDER = ['summary', 'education', 'experience', 'projects', 'certifications', 'achievements', 'leadership', 'interests', 'skills'];
         var _WANT_ORDER = ['summary', 'education', 'achievements', 'experience', 'leadership', 'interests', 'skills', 'projects', 'certifications'];
         var _orderAppliedOnce = false;
@@ -615,6 +603,11 @@
 
             originalRenderCV(dataCopy);
 
+
+            document.querySelectorAll('.sortable-section table').forEach(t => {
+                t.style.setProperty('table-layout', 'fixed', 'important');
+            });
+
             adjustExperienceHeaders();
             adjustContactHeader(dataCopy.personal || {});
             adjustSkillsRendering();
@@ -634,8 +627,6 @@
             });
         };
 
-        // DOCX grid: 129.33/279.13/132.2/113.27/121.6 px (775.53 total) ⇒
-        // 16.68/35.99/17.04/14.60/15.68 % for degree/institution/remarks(board-group)/marks/year.
         const DOCX_EDU_WIDTHS = { degree: 16.7, institution: 36.0, remarks: 17.0, marks: 14.6, year: 15.7 };
         const BUILDER_DEFAULT_EDU_WIDTHS = { degree: 22, year: 12, institution: 36, marks: 14, remarks: 16 };
 
@@ -671,9 +662,7 @@
             });
         }
 
-        // Skills must render as DOCX-style bullets. Rich-text (Quill) skills arrive as
-        // <p>…</p> blocks which cv-common passes through untouched; rebuild them as a list.
-        // (Skills now lives inside the Extracurricular row, not its own sortable-section.)
+
         function adjustSkillsRendering() {
             const host = document.querySelector('[data-field="skills"]');
             if (!host || host.querySelector('li')) return; // real lists are styled by CSS
@@ -699,18 +688,11 @@
             host.innerHTML = '<ul class="bullet-list">' + lines.map(l => '<li>' + l + '</li>').join('') + '</ul>';
         }
 
-        // User-added custom sections (e.g. "Languages") normally render as their own
-        // standalone banner, cloned from the Achievements section's markup by
-        // cv-common.js's renderCustomSections(). Instead, fold each one's content into
-        // the Extracurricular table as an extra label|content row, and hide the
-        // standalone clone cv-common already built. Rebuilt on every render since
-        // custom sections can be added/removed/renamed at any time.
+
         function foldCustomSectionsIntoExtracurricular(customSections) {
             const table = document.querySelector('.sortable-section[data-section-id="interests"] table.extra-table');
 
-            // Always hide cv-common's own standalone clones — even if there's no
-            // Extracurricular table to fold into, the fallback is "don't show them
-            // twice"; the standalone ids would just have no visible label rewrite.
+
             document.querySelectorAll('[data-custom-section-root]').forEach(el => {
                 el.style.setProperty('display', 'none', 'important');
             });
@@ -741,13 +723,7 @@
             });
         }
 
-        // Interests, Skills and Certifications are folded into one Extracurricular section
-        // as three label|content rows sharing a single section wrapper. cv-common's own
-        // empty-section toggles (renderSimpleList / toggleSectionByContent) all resolve to
-        // that *same* shared wrapper, so calling them for three different bindings would
-        // just have the last one win and hide/show the whole section regardless of the
-        // other two. Decide each row's visibility — and the section's overall visibility —
-        // explicitly instead, based on what's actually left in the DOM after rendering.
+
         function refreshExtracurricularRows() {
             const section = document.querySelector('.sortable-section[data-section-id="interests"]');
             if (!section) return;
@@ -773,46 +749,23 @@
 
             section.style.display = (hasInterests || hasSkills || hasCerts || hasCustomRows) ? '' : 'none';
 
-            // applySectionLabels() (part of cv-common's own renderCV pipeline, runs just
-            // before this) assumes a content cell's colspan="2" only ever means "the label
-            // next to me is hidden, so span both grid columns" — and strips it back off
-            // whenever the label is visible. Our colspan="2" is permanent structure (it
-            // spans two of this table's *three* declared <col>s, see the colgroup comment
-            // above), so restore it unconditionally after cv-common's pass runs.
+
             section.querySelectorAll('td.extra-content').forEach(content => {
                 content.setAttribute('colspan', '2');
             });
 
-            // cv-common's stabilizeSectionLayouts() force-sets overflow-wrap:anywhere
-            // (inline, !important) on every cell so long words don't overflow elsewhere.
-            // On this narrow label column that lets the auto table layout collapse it to
-            // near-zero width (text wraps one letter per line) since "anywhere" removes
-            // the word's own width as a floor. Restore normal wrapping on just these
-            // label cells — inline styles set here, after cv-common's own pass, win.
+
             section.querySelectorAll('td.extra-label').forEach(label => {
                 label.style.setProperty('overflow-wrap', 'normal', 'important');
                 label.style.setProperty('word-break', 'normal', 'important');
                 label.style.setProperty('white-space', 'normal', 'important');
             });
 
-            // cv-common's stabilizeSectionLayouts() also force-sets table-layout:auto
-            // (inline, !important) on every .sortable-section table, which makes our
-            // colgroup widths just a hint the browser is free to override with
-            // content-based sizing (hence the stray gap on the right). cv-common's own
-            // education-table code re-forces table-layout:fixed for exactly this reason
-            // (cv-common.js's applyEducationTableFormat()); do the same here so our
-            // colgroup governs the label/content split reliably.
+
             const extraTable = section.querySelector('table.extra-table');
             if (extraTable) extraTable.style.setProperty('table-layout', 'fixed', 'important');
         }
 
-        // Positions of Responsibility: each `leadership` array entry can be either a
-        // plain one-line bullet, or a whole "position" typed as several Quill paragraphs
-        // in one box — bold header line (role | team, optionally ending in "(dates)" or
-        // "[dates]"), an optional italic "Key Highlights: ..." intro line, then bullets.
-        // Rebuild those multi-paragraph entries into the same header-bar + intro + bullets
-        // card used for Work Experience; leave genuinely one-line entries as plain bullets
-        // (grouped together so they don't each get their own list's top/bottom padding).
         function formatLeadershipEntries() {
             const container = document.querySelector('[data-list="leadership"]');
             if (!container) return;
@@ -890,10 +843,7 @@
             parent.appendChild(formatted);
         }
 
-        // Achievements/Interests are flat arrays of strings, one <li> per array element.
-        // If a single element was authored as several Quill paragraphs it would otherwise
-        // render as one unbroken block with no bullet marks — split it into one <li> per
-        // inner paragraph/line.
+
         function splitMultiParagraphListItems(selector) {
             document.querySelectorAll(selector).forEach(li => {
                 const blocks = Array.from(li.children).filter(el =>
@@ -937,7 +887,7 @@
                 const datesText = (datesEl?.textContent || '').trim();
 
                 const merged = roleEl && roleEl.style.display === 'none' &&
-                               companyEl && companyEl.style.display === 'none';
+                    companyEl && companyEl.style.display === 'none';
                 const empty = !roleText && !companyText && !datesText;
                 headerRow.style.display = (merged || empty) ? 'none' : '';
                 if (merged || empty) return;
@@ -1056,10 +1006,7 @@
             clearTimeout(_resizeTimer);
             _resizeTimer = setTimeout(scaleToFit, 100);
         });
-    
-        // Subsection entries (editor "Subsection" merge): cv-common hides the
-        // entry's role/company/dates, but users can still fill them — surface
-        // them as a bold heading above the subsection's category and bullets.
+
         function renderSubsectionHeadings() {
             document.querySelectorAll('#experience-list > *').forEach(block => {
                 if (block.classList.contains('template')) return;
@@ -1094,6 +1041,7 @@
             });
         }
 
-</script>
+    </script>
 </body>
+
 </html>

@@ -178,12 +178,12 @@
             margin-left: 6.45px;
             /* DOCX tblInd 77tw */
             margin: -1px 0 0 6.45px;
-              padding:0;
+            padding: 0;
             /* collapse borders between stacked boxes */
         }
-       
+
         .sortable-section table {
-    border-spacing:0;
+            border-spacing: 0;
             border-collapse: collapse;
             table-layout: fixed;
             width: 100%;
@@ -206,7 +206,7 @@
 
         /* ── SECTION BANNERS (DOCX shd fill 000D53, Calibri b 10pt white) ── */
         td.section-header {
-            margin:0;
+            margin: 0;
             background-color: var(--banner-bg) !important;
             color: var(--banner-text) !important;
             font-weight: 700;
@@ -250,8 +250,8 @@
             list-style-type: none !important;
             padding: 0 !important;
             /* margin: 0 !important; */
-              margin:4px 0 8px;
-    /*padding-left:18px; */
+            margin: 4px 0 8px;
+            /*padding-left:18px; */
         }
 
         .bullet-list li,
@@ -292,14 +292,14 @@
 
         /* blank 9pt paragraph the DOCX puts above every bullet group */
         .pre-gap {
-             height:2px;
+            height: 2px;
             /* height: calc(18.41px * var(--content-scale)); */
         }
 
         /* DOCX rows are taller than their content: ~18px of white space is left
            under every bullet group before the next band/banner. */
         .li-cell {
-            padding:4px 8px 8px 8px;
+            padding: 4px 8px 8px 8px;
             /* padding-bottom: calc(18px * var(--content-scale)); */
         }
 
@@ -346,7 +346,7 @@
         }
 
         .exp-intro {
-            margin-bottom:6px;
+            margin-bottom: 6px;
             font-style: italic;
             font-size: calc(15.09px * var(--content-scale));
             padding: calc(2px * var(--content-scale)) 3.77px 0;
@@ -360,7 +360,9 @@
             padding: calc(2px * var(--content-scale)) 3.77px calc(1px * var(--content-scale));
         }
 
-        .sub-cat:empty { display: none; }
+        .sub-cat:empty {
+            display: none;
+        }
 
         /* subsection Role – Firm + Duration heading (built by adjustExperienceHeaders) */
         .sub-head {
@@ -376,7 +378,8 @@
 
         .sub-head .sub-head-dates {
             font-weight: 400;
-            font-style: italic;            /* band dates in this design are italic */
+            font-style: italic;
+            /* band dates in this design are italic */
             white-space: nowrap;
             flex-shrink: 0;
         }
@@ -402,7 +405,7 @@
             width: auto !important;
             max-width: none !important;
             margin: 0 !important;
-            padding:4px 8px 8px;
+            padding: 4px 8px 8px;
         }
 
         /* ── EXTRA-CURRICULAR (label | content grid, DOCX label col 1355tw = 113.58px) ── */
@@ -433,7 +436,7 @@
         /* leadership entries rebuilt as band + bullets cards (formatLeadershipEntries) */
         .leadership-body {
             /* padding: 0; */
-             padding:4px 8px 8px;
+            padding: 4px 8px 8px;
         }
 
         .leadership-entry .band-plain {
@@ -766,6 +769,14 @@
 
             originalRenderCV(dataCopy);
 
+            // cv-common's stabilizeSectionLayouts() force-sets table-layout:auto
+            // (inline, !important) on every section table; with border-collapse the
+            // auto tables render their edges past the 100% box and banners drift
+            // out of alignment with the content boxes. Re-force fixed.
+            document.querySelectorAll('.sortable-section table').forEach(t => {
+                t.style.setProperty('table-layout', 'fixed', 'important');
+            });
+
             adjustExperienceHeaders();
             adjustContactHeader(dataCopy.personal || {});
             renderTaglineChips();
@@ -780,6 +791,17 @@
             pullTrailingDatesRight('tr[data-custom-extra-row] li');
             joinAchievementsToEducation();
             refreshExtraRows();
+
+            // cv-common force-sets white-space:normal / overflow-wrap:anywhere on the
+            // experience [data-field="dates"] fields, which lets band dates wrap at
+            // the cell's right edge — the fixed-height overflow:hidden band then
+            // clips the tail (e.g. "January 2025 - Presen"). Re-assert nowrap on the
+            // band dates and the subsection headings' dates (built above).
+            document.querySelectorAll('#experience-list [data-field="dates"], #experience-list .sub-head-dates').forEach(el => {
+                el.style.setProperty('white-space', 'nowrap', 'important');
+                el.style.setProperty('overflow-wrap', 'normal', 'important');
+                el.style.setProperty('word-break', 'normal', 'important');
+            });
 
             requestAnimationFrame(() => {
                 requestAnimationFrame(() => {

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,18 +8,24 @@
     <!-- Tinos is metric-compatible with Times New Roman: deterministic rendering on Linux PDF workers -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tinos:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             /* ── Colours: exact values from Resume_Template_28.docx ── */
-            --accent-color: var(--header-bg, #001F5F);  /* navy section banners (themeable) */
-            --border-color: #7E7E7E;                    /* table grid: single sz2 #7E7E7E */
-            --border-strong: #000000;                   /* objective/qualifications black rules: single sz4 */
+            --accent-color: var(--header-bg, #001F5F);
+            /* navy section banners (themeable) */
+            --border-color: #7E7E7E;
+            /* table grid: single sz2 #7E7E7E */
+            --border-strong: #000000;
+            /* objective/qualifications black rules: single sz4 */
             --text-color: #000000;
             --banner-text: #FFFFFF;
-            --link-color: #0000FF;                      /* email + LinkedIn hyperlinks */
+            --link-color: #0000FF;
+            /* email + LinkedIn hyperlinks */
             --page-bg: #FFFFFF;
-            --viewer-bg: #525659;                       /* PDF-viewer chrome (not from DOCX) */
+            --viewer-bg: #525659;
+            /* PDF-viewer chrome (not from DOCX) */
             --font-main: 'Tinos', 'Times New Roman', 'Liberation Serif', Times, serif;
             --font-emoji: 'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', sans-serif;
             --content-scale: 1.0;
@@ -65,12 +72,13 @@
             background: var(--page-bg);
             color: var(--text-color);
             padding: calc(26.9px * var(--content-scale)) 11.8px calc(16px * var(--content-scale));
-            box-shadow: 0 4px 24px rgba(0,0,0,.5);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, .5);
             display: flex;
             flex-direction: column;
             flex-shrink: 0;
             transform-origin: top center;
-            font-size: calc(18.47px * var(--content-scale)); /* 11pt body */
+            font-size: calc(18.47px * var(--content-scale));
+            /* 11pt body */
             line-height: 1.15;
         }
 
@@ -98,6 +106,9 @@
             display: grid;
             grid-template-columns: 491.7px minmax(0, 1fr);
             padding-left: 21px;
+            /* right end sits just inside the section boxes' right edge below,
+               with a small breathing gap */
+            padding-right: 24px;
             font-weight: 700;
             font-size: calc(18.47px * var(--content-scale));
             line-height: calc(21.2px * var(--content-scale));
@@ -107,6 +118,15 @@
             min-width: 0;
             overflow-wrap: anywhere;
             word-break: break-word;
+        }
+
+        /* location + LinkedIn sit flush at the right end, sharing the same right
+           edge, regardless of whether the left-column phone/email items exist */
+        #hc-location,
+        #hc-linkedin {
+            grid-column: 2;
+            justify-self: end;
+            text-align: right;
         }
 
         .emj {
@@ -126,10 +146,11 @@
             width: 952.6px;
             max-width: calc(100% - 12.1px);
             margin-left: 12.1px;
-            margin-top: -1px; /* collapse hairline borders between stacked section tables */
+            margin-top: -1px;
+            /* collapse hairline borders between stacked section tables */
         }
 
-        .hdr + .sortable-section,
+        .hdr+.sortable-section,
         .sortable-section:first-of-type {
             margin-top: 0;
         }
@@ -153,8 +174,13 @@
         }
 
         /* Black 0.5pt rules around the objective/qualifications block (DOCX tcBorders sz4 000000) */
-        .bb-strong { border-bottom: 1px solid var(--border-strong) !important; }
-        .bt-strong { border-top: 1px solid var(--border-strong) !important; }
+        .bb-strong {
+            border-bottom: 1px solid var(--border-strong) !important;
+        }
+
+        .bt-strong {
+            border-top: 1px solid var(--border-strong) !important;
+        }
 
         /* ── SECTION BANNERS (DOCX shd fill 001F5F, white bold; 12pt / OBJECTIVE 11pt) ──
            All banner styling lives on the td itself: cv-common.js writes custom-section
@@ -194,14 +220,16 @@
         #education-list td {
             text-align: center;
             vertical-align: middle;
-            line-height: calc(21.16px * var(--content-scale)); /* line 252 exact */
+            line-height: calc(21.16px * var(--content-scale));
+            /* line 252 exact */
             height: calc(24.5px * var(--content-scale));
             padding: calc(2px * var(--content-scale)) 4px;
         }
 
         #education-list td.edu-remarks {
             text-align: left;
-            padding-left: 9px; /* ind left 107 twips */
+            padding-left: 9px;
+            /* ind left 107 twips */
         }
 
         /* ── WORK EXPERIENCE (bold italic 12pt heading row, dates tab-aligned right) ── */
@@ -250,7 +278,8 @@
         [data-field="skills"] ul li,
         [data-field="skills"] .cv-skills-list li {
             font-size: calc(18.47px * var(--content-scale));
-            line-height: calc(22.59px * var(--content-scale)); /* line 269 exact */
+            line-height: calc(22.59px * var(--content-scale));
+            /* line 269 exact */
             padding-left: calc(69.4px * var(--content-scale));
             margin: 0;
             position: relative;
@@ -275,11 +304,13 @@
         }
 
         .summary-cell {
-            height: calc(52.6px * var(--content-scale)); /* DOCX trHeight 626 twips (min) */
+            height: calc(52.6px * var(--content-scale));
+            /* DOCX trHeight 626 twips (min) */
         }
 
         [data-field="summary"] {
-            padding-left: 9px;   /* ind left 107 twips */
+            padding-left: 9px;
+            /* ind left 107 twips */
             padding-right: 9px;
             text-align: justify;
             font-size: calc(18.47px * var(--content-scale));
@@ -308,7 +339,9 @@
                 size: A4 portrait;
                 margin: 0;
             }
-            html, body {
+
+            html,
+            body {
                 background: var(--page-bg);
                 width: 210mm;
                 height: 297mm;
@@ -316,6 +349,7 @@
                 padding: 0 !important;
                 overflow: hidden !important;
             }
+
             #zoom-wrapper {
                 padding: 0;
                 display: block;
@@ -323,6 +357,7 @@
                 width: 100% !important;
                 height: auto !important;
             }
+
             .resume-container {
                 box-shadow: none;
                 transform: none;
@@ -331,7 +366,7 @@
                 position: static !important;
             }
         }
-    
+
         /* subsection heading + category (entries marked "Subsection" in the editor):
            cv-common hides the entry's role/company/dates; renderSubsectionHeadings()
            surfaces them as this in-line heading above the subsection's bullets. */
@@ -341,6 +376,9 @@
             align-items: baseline;
             gap: 12px;
             font-weight: bold;
+            padding-left: 9px;
+            /* keep clear of the cell border, like .exp-intro */
+            padding-right: 9px;
         }
 
         .sub-head .sub-head-dates {
@@ -350,11 +388,18 @@
             flex-shrink: 0;
         }
 
-        .sub-cat { font-weight: bold; }
+        .sub-cat {
+            font-weight: bold;
+            padding-left: 9px;
+            /* keep clear of the cell border, like .exp-intro */
+        }
 
-        .sub-cat:empty { display: none; }
-</style>
+        .sub-cat:empty {
+            display: none;
+        }
+    </style>
 </head>
+
 <body>
     <div id="zoom-wrapper">
         <div class="resume-container" id="cv-page">
@@ -365,12 +410,16 @@
                 <span data-field="tagline">CA Intermediate</span>
                 <div class="contact-block">
                     <div class="hdr-contact-line" id="hc-line-1">
-                        <span class="hc-item" id="hc-phone"><span class="emj">📞</span> <span data-field="phone"></span></span>
-                        <span class="hc-item" id="hc-location"><span class="emj">🌐</span> <span data-field="location"></span></span>
+                        <span class="hc-item" id="hc-phone"><span class="emj">📞</span> <span
+                                data-field="phone"></span></span>
+                        <span class="hc-item" id="hc-location"><span class="emj">🌐</span> <span
+                                data-field="location"></span></span>
                     </div>
                     <div class="hdr-contact-line" id="hc-line-2">
-                        <span class="hc-item" id="hc-email"><span class="emj">✉️</span> <span class="hc-link" data-field="email"></span></span>
-                        <span class="hc-item" id="hc-linkedin"><span class="emj">🔗</span> <span class="hc-link" data-field="linkedin"></span></span>
+                        <span class="hc-item" id="hc-email"><span class="emj">✉️</span> <span class="hc-link"
+                                data-field="email"></span></span>
+                        <span class="hc-item" id="hc-linkedin"><span class="emj">🔗</span> <span class="hc-link"
+                                data-field="linkedin"></span></span>
                     </div>
                 </div>
             </header>
@@ -393,7 +442,11 @@
             <div class="sortable-section" data-section-id="education">
                 <table id="education-table">
                     <colgroup>
-                        <col style="width:154.4px"><col style="width:107.2px"><col style="width:345.2px"><col style="width:142.7px"><col style="width:202.9px">
+                        <col style="width:154.4px">
+                        <col style="width:107.2px">
+                        <col style="width:345.2px">
+                        <col style="width:142.7px">
+                        <col style="width:202.9px">
                     </colgroup>
                     <thead>
                         <tr>
@@ -433,7 +486,8 @@
                                 <td>
                                     <div class="exp-heading">
                                         <span>
-                                            <span data-field="role"></span><span class="company-sep-inline" style="display:none;"> – </span><span data-field="company"></span>
+                                            <span data-field="role"></span><span class="company-sep-inline"
+                                                style="display:none;"> – </span><span data-field="company"></span>
                                         </span>
                                         <span data-field="dates"></span>
                                     </div>
@@ -702,7 +756,7 @@
                 // Merged stints (titleMergedWithPrevious): cv-common hides the fields;
                 // hide the whole heading row so bullets continue under the previous stint.
                 const merged = roleEl && roleEl.style.display === 'none' &&
-                               companyEl && companyEl.style.display === 'none';
+                    companyEl && companyEl.style.display === 'none';
                 const empty = !roleText && !companyText && !datesText;
                 headerRow.style.display = (merged || empty) ? 'none' : '';
                 if (merged || empty) return;
@@ -738,14 +792,17 @@
                     : '';
             }
 
-            // Hide empty items; hide a whole line when both of its items are empty
+            // Hide empty items; display:none (not visibility) so a lone right-column
+            // item (location / LinkedIn) falls back into the LEFT grid column and the
+            // two lines stay aligned with each other instead of floating at the
+            // DOCX tab position with an empty gap before them.
             const toggles = [
                 ['hc-phone', phone], ['hc-location', location],
                 ['hc-email', email], ['hc-linkedin', linkedin]
             ];
             toggles.forEach(([id, value]) => {
                 const el = document.getElementById(id);
-                if (el) el.style.visibility = value ? '' : 'hidden';
+                if (el) el.style.display = value ? '' : 'none';
             });
             const line1 = document.getElementById('hc-line-1');
             if (line1) line1.style.display = (phone || location) ? '' : 'none';
@@ -816,7 +873,7 @@
             clearTimeout(_resizeTimer);
             _resizeTimer = setTimeout(scaleToFit, 100);
         });
-    
+
         // Subsection entries (editor "Subsection" merge): cv-common hides the
         // entry's role/company/dates, but users can still fill them — surface
         // them as a bold heading above the subsection's category and bullets.
@@ -854,6 +911,7 @@
             });
         }
 
-</script>
+    </script>
 </body>
+
 </html>

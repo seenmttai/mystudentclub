@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -26,7 +27,9 @@
             text-size-adjust: 100%;
         }
 
-        *, *::before, *::after {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -94,11 +97,26 @@
             font-weight: inherit;
         }
 
-        .cv-contact .emoji { font-family: var(--font-emoji); }
-        .cv-contact a { color: var(--link-email); text-decoration: none; }
-        .cv-contact a.li { color: var(--link-li); }
-        .cv-contact a:hover { text-decoration: underline; }
-        .cv-contact .sep { margin: 0 calc(4px * var(--cs)); }
+        .cv-contact .emoji {
+            font-family: var(--font-emoji);
+        }
+
+        .cv-contact a {
+            color: var(--link-email);
+            text-decoration: none;
+        }
+
+        .cv-contact a.li {
+            color: var(--link-li);
+        }
+
+        .cv-contact a:hover {
+            text-decoration: underline;
+        }
+
+        .cv-contact .sep {
+            margin: 0 calc(4px * var(--cs));
+        }
 
         .cv-table {
             width: 100%;
@@ -118,24 +136,52 @@
         }
 
         .cv-table tr:first-child td,
-        .cv-table tr:first-child th { border-top-color: var(--border-out); }
-        .cv-table tr:last-child td,
-        .cv-table tr:last-child th { border-bottom-color: var(--border-out); }
-        .cv-table tr > :first-child { border-left-color: var(--border-out); }
-        .cv-table tr > :last-child { border-right-color: var(--border-out); }
+        .cv-table tr:first-child th {
+            border-top-color: var(--border-out);
+        }
 
-        .cv-table .c1 { width: 15.41%; }
-        .cv-table .c2 { width: 13.80%; }
-        .cv-table .c3 { width: 29.78%; }
-        .cv-table .c4 { width: 9.59%; }
-        .cv-table .c5 { width: 9.64%; }
-        .cv-table .c6 { width: 21.78%; }
+        .cv-table tr:last-child td,
+        .cv-table tr:last-child th {
+            border-bottom-color: var(--border-out);
+        }
+
+        .cv-table tr> :first-child {
+            border-left-color: var(--border-out);
+        }
+
+        .cv-table tr> :last-child {
+            border-right-color: var(--border-out);
+        }
+
+        .cv-table .c1 {
+            width: 15.41%;
+        }
+
+        .cv-table .c2 {
+            width: 13.80%;
+        }
+
+        .cv-table .c3 {
+            width: 29.78%;
+        }
+
+        .cv-table .c4 {
+            width: 9.59%;
+        }
+
+        .cv-table .c5 {
+            width: 9.64%;
+        }
+
+        .cv-table .c6 {
+            width: 21.78%;
+        }
 
         .sh {
             background: var(--banner-bg) !important;
             color: var(--banner-txt) !important;
             font-weight: 700;
-            vertical-align:middle;
+            vertical-align: middle;
             padding: calc(5px * var(--cs)) calc(6px * var(--cs));
             border-color: var(--border-out) !important;
         }
@@ -185,8 +231,13 @@
             text-align: center;
         }
 
-        .cc { vertical-align: top; }
-        .cc > p { line-height: 1.3; }
+        .cc {
+            vertical-align: top;
+        }
+
+        .cc>p {
+            line-height: 1.3;
+        }
 
         .cv-bullets {
             list-style: none !important;
@@ -194,16 +245,18 @@
             padding: 0 !important;
         }
 
-        .cv-bullets > li {
+        .cv-bullets>li {
             position: relative;
             padding-left: calc(13px * var(--cs));
             line-height: 1.3;
             margin: 0 0 calc(2px * var(--cs)) !important;
         }
 
-        .cv-bullets > li:last-child { margin-bottom: 0 !important; }
+        .cv-bullets>li:last-child {
+            margin-bottom: 0 !important;
+        }
 
-        .cv-bullets > li::before {
+        .cv-bullets>li::before {
             content: '\2022';
             position: absolute;
             left: calc(2px * var(--cs));
@@ -211,18 +264,40 @@
             line-height: inherit;
         }
 
-        b, strong { font-weight: 700; }
-        i, em { font-style: italic; }
-        sup { font-size: .7em; line-height: 0; }
-        .template, .template32-hidden-hosts { display: none !important; }
+        b,
+        strong {
+            font-weight: 700;
+        }
+
+        i,
+        em {
+            font-style: italic;
+        }
+
+        sup {
+            font-size: .7em;
+            line-height: 0;
+        }
+
+        .template,
+        .template32-hidden-hosts {
+            display: none !important;
+        }
 
         @media (max-width: 1040px) {
-            #zoom-wrapper { padding: 12px 0 24px; }
+            #zoom-wrapper {
+                padding: 12px 0 24px;
+            }
         }
 
         @media print {
-            @page { size: A4 portrait; margin: 0; }
-            html, body {
+            @page {
+                size: A4 portrait;
+                margin: 0;
+            }
+
+            html,
+            body {
                 background: none !important;
                 margin: 0 !important;
                 padding: 0 !important;
@@ -230,12 +305,14 @@
                 min-height: 297mm;
                 overflow: hidden !important;
             }
+
             #zoom-wrapper {
                 padding: 0;
                 display: block;
                 width: 100% !important;
                 height: auto !important;
             }
+
             #cv-page {
                 transform: scale(1) !important;
                 zoom: .79375;
@@ -246,6 +323,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="zoom-wrapper">
         <div id="cv-page">
@@ -254,8 +332,12 @@
 
             <table class="cv-table" cellspacing="0">
                 <colgroup>
-                    <col class="c1"><col class="c2"><col class="c3">
-                    <col class="c4"><col class="c5"><col class="c6">
+                    <col class="c1">
+                    <col class="c2">
+                    <col class="c3">
+                    <col class="c4">
+                    <col class="c5">
+                    <col class="c6">
                 </colgroup>
                 <tbody id="template32-body"></tbody>
             </table>
@@ -426,7 +508,7 @@
             function buildCombinedRows(data) {
                 const rows = [];
                 addRow(rows, 'leadership', 'Position of Responsibility', listFromSimple(data.leadership));
-                addRow(rows, 'achievements', 'Extra Curricular Activities', listFromSimple(data.achievements));
+                addRow(rows, 'achievements', 'Extra-Curricular Activities', listFromSimple(data.achievements));
 
                 const skillItems = [];
                 listFromSkills(data.skills).forEach(function (item) { skillItems.push(item); });
@@ -741,4 +823,5 @@
         }());
     </script>
 </body>
+
 </html>

@@ -452,7 +452,6 @@
             padding-left: calc(10px * var(--content-scale));
         }
 
-        /* Internships: compact full-width paragraphs (no bullet discs), max 2 lines each */
         #projects-list ul {
             list-style: none !important;
             padding-left: 0 !important;
@@ -560,7 +559,7 @@
                 margin: 0 auto !important;
             }
         }
-    
+
         /* subsection heading + category (entries marked "Subsection" in the editor):
            cv-common hides the entry's role/company/dates; renderSubsectionHeadings()
            surfaces them as this in-line heading above the subsection's bullets. */
@@ -580,8 +579,10 @@
         }
 
         /* the header row is not in cv-common's wrapper-hide list */
-        .experience-title-merged .we-header-row { display: none; }
-</style>
+        .experience-title-merged .we-header-row {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
@@ -624,7 +625,7 @@
                         <tr class="template" style="display:none;">
                             <td class="year" data-field="year"></td>
                             <td class="exam" data-field="degree"></td>
-                            <td class="board institution" style="text-align:left;" data-field="institution"></td>
+                            <td class="board institution" data-field="institution"></td>
                             <td class="board" data-field="remarks"></td>
                             <td class="marks" data-field="marks"></td>
                         </tr>
