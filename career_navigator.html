@@ -4,254 +4,906 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MSC Career Navigator Assessment</title>
+    <title>MSC Career Navigator - Pinpoint Your Finance Niche</title>
+    <meta name="description" content="Discover your ideal finance niche with the MSC Career Navigator. Answer targeted questions to map your path to Big 4, investment banking, corporate finance, or startups.">
+    <meta name="keywords" content="CA fresher jobs, finance career path, finance assessment, Chartered Accountant niche, investment banking audit">
+    
+    <!-- Typography & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
         :root {
-            --primary: #1E3A8A;
-            --primary-light: #3B82F6;
-            --bg-color: #F3F4F6;
+            --primary: #4F46E5; /* Modern Indigo */
+            --primary-light: #6366F1;
+            --primary-dark: #3730A3;
+            --bg-color: #F8FAFC; /* Slate-50 */
             --card-bg: #FFFFFF;
-            --text-main: #1F2937;
-            --text-muted: #6B7280;
-            --border: #E5E7EB;
-            --success: #10B981;
-            --warning: #EF4444;
+            --text-main: #0F172A; /* Slate-900 */
+            --text-muted: #64748B; /* Slate-500 */
+            --border: #E2E8F0; /* Slate-200 */
+            --border-hover: #CBD5E1; /* Slate-300 */
+            --success: #10B981; /* Emerald-500 */
+            --success-bg: #EFF6FF; /* Sky-50 */
+            --warning: #EF4444; /* Rose-500 */
+            --warning-bg: #FEF2F2; /* Rose-50 */
+            
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            
+            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
             background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(79, 70, 229, 0.04) 0%, transparent 40%),
+                radial-gradient(circle at 100% 100%, rgba(99, 102, 241, 0.04) 0%, transparent 40%);
             color: var(--text-main);
-            line-height: 1.6;
-            padding: 20px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.5;
+            min-height: 100vh;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .container {
-            max-width: 800px;
-            margin: 0 auto;
+            width: 100%;
+            max-width: 760px;
+            transition: max-width 0.4s ease;
         }
 
-        header {
+        /* Container expands for the dashboard layout */
+        .container.dashboard-mode {
+            max-width: 1040px;
+        }
+
+        /* Brand Header */
+        .brand-header {
             text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: var(--primary);
-            color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 32px;
         }
 
-        header h1 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
+        .brand-logo {
+            height: 40px;
+            width: auto;
+            margin-bottom: 8px;
+            transition: var(--transition);
         }
 
-        header p {
-            font-size: 1rem;
-            opacity: 0.9;
+        .brand-logo:hover {
+            transform: scale(1.03);
         }
 
-        .question-card {
-            background: var(--card-bg);
-            padding: 24px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        .brand-tagline {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--primary);
+            font-weight: 700;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Wizard Wrapper Card */
+        .quiz-card-wrapper {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
             border: 1px solid var(--border);
-            transition: all 0.3s ease;
+            box-shadow: var(--shadow-lg);
+            padding: 40px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .question-card.hidden {
+        @media (max-width: 640px) {
+            .quiz-card-wrapper {
+                padding: 24px 20px;
+            }
+            body {
+                padding: 20px 12px;
+            }
+        }
+
+        /* Progress Header */
+        .progress-bar-container {
+            margin-bottom: 32px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .progress-step {
+            color: var(--primary);
+            font-family: 'Poppins', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .progress-percentage {
+            color: var(--text-muted);
+        }
+
+        .progress-track {
+            height: 6px;
+            background-color: var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Question Cards Styling */
+        .question-card {
             display: none;
         }
 
-        .question-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: var(--primary);
+        .question-card.active {
+            display: block;
+            animation: slideIn 0.3s ease-out forwards;
         }
 
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            line-height: 1.4;
+            color: var(--text-main);
+            margin-bottom: 24px;
+        }
+
+        /* Custom Interactive Options */
         .options {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
+        @media (min-width: 640px) {
+            .options.grid-2 {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 14px;
+            }
+        }
+
         .option-label {
             display: flex;
             align-items: flex-start;
-            padding: 14px;
+            padding: 16px 20px;
             border: 2px solid var(--border);
-            border-radius: 8px;
+            border-radius: var(--radius-md);
             cursor: pointer;
-            transition: all 0.2s ease;
+            background-color: var(--card-bg);
+            transition: var(--transition);
+            position: relative;
         }
 
         .option-label:hover {
             border-color: var(--primary-light);
-            background-color: #F8FAFC;
+            background-color: rgba(99, 102, 241, 0.02);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-sm);
         }
 
-        .option-label input {
-            margin-top: 4px;
-            margin-right: 12px;
-            accent-color: var(--primary);
-            width: 18px;
-            height: 18px;
-        }
-
-        .option-text strong {
-            display: block;
-            margin-bottom: 4px;
-            color: var(--text-main);
-        }
-
-        .option-text span {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        /* Checkbox selected state logic handled via JS, but basic active styling here */
         .option-label.selected {
             border-color: var(--primary);
-            background-color: #EFF6FF;
+            background-color: rgba(79, 70, 229, 0.04);
+            box-shadow: var(--shadow-md);
         }
 
-        .btn-submit {
+        .option-label input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* Custom Radio Dots */
+        .option-radio-dot {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--text-muted);
+            border-radius: 50%;
+            margin-top: 2px;
+            margin-right: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: var(--transition);
+            background-color: var(--card-bg);
+        }
+
+        .option-label:hover .option-radio-dot {
+            border-color: var(--primary-light);
+        }
+
+        .option-label.selected .option-radio-dot {
+            border-color: var(--primary);
+            background-color: var(--primary);
+        }
+
+        .option-radio-dot::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: white;
+            transform: scale(0);
+            transition: var(--transition);
+        }
+
+        .option-label.selected .option-radio-dot::after {
+            transform: scale(1);
+        }
+
+        .option-text-wrapper {
+            flex: 1;
+        }
+
+        .option-title-text {
             display: block;
-            width: 100%;
-            padding: 16px;
-            font-size: 1.2rem;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
             font-weight: 600;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .option-desc-text {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Navigation Footer */
+        .navigation-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 36px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-nav {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
             cursor: pointer;
-            transition: background 0.3s;
-            margin-bottom: 40px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
         }
 
-        .btn-submit:hover {
-            background: #1E40AF;
+        .btn-nav-back {
+            background-color: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border);
         }
 
-        /* Report Styles */
+        .btn-nav-back:hover {
+            background-color: #F1F5F9;
+            color: var(--text-main);
+            border-color: var(--border-hover);
+        }
+
+        .btn-nav-next {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.15);
+            margin-left: auto;
+        }
+
+        .btn-nav-next:hover:not(:disabled) {
+            background-color: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(79, 70, 229, 0.25);
+        }
+
+        .btn-nav-next:disabled {
+            background-color: #CBD5E1;
+            color: #94A3B8;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .btn-nav-next.btn-generate {
+            background-color: var(--success);
+            box-shadow: 0 4px 10px rgba(16, 185, 129, 0.15);
+        }
+
+        .btn-nav-next.btn-generate:hover:not(:disabled) {
+            background-color: #059669;
+            box-shadow: 0 6px 14px rgba(16, 185, 129, 0.25);
+        }
+
+        /* Analyzer Loading Overlay */
+        .loader-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .loader-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .loader-card {
+            background-color: var(--card-bg);
+            padding: 40px;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            max-width: 440px;
+            width: 90%;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .loader-overlay.visible .loader-card {
+            transform: scale(1);
+        }
+
+        .loader-spinner-ring {
+            position: relative;
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 24px;
+        }
+
+        .spinner-circle {
+            width: 100%;
+            height: 100%;
+            border: 4px solid var(--border);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .spinner-center-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.6rem;
+            color: var(--primary);
+        }
+
+        .loader-card h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .loader-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            height: 20px;
+        }
+
+        .mini-progress-bar {
+            width: 100%;
+            height: 6px;
+            background-color: var(--border);
+            border-radius: 10px;
+            margin-top: 24px;
+            overflow: hidden;
+        }
+
+        .mini-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+        }
+
+        /* Report Layout (Dashboard-Style) */
         #report-container {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 40px;
-        }
-
-        #report-container.hidden {
             display: none;
         }
 
-        .report-header {
+        #report-container.visible {
+            display: block;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Hero Persona Card */
+        .report-hero {
+            background: linear-gradient(135deg, #1E1B4B 0%, #312E81 100%);
+            color: white;
+            padding: 48px;
+            border-radius: var(--radius-lg);
             text-align: center;
-            border-bottom: 2px solid var(--border);
-            padding-bottom: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .hero-accent-circle {
+            position: absolute;
+            top: -20%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .report-badge {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #E2E8F0;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            padding: 6px 16px;
+            border-radius: 30px;
+            display: inline-block;
+            margin-bottom: 16px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .report-hero h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 500;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .primary-archetype {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-top: 12px;
+            background: linear-gradient(90deg, #FFFFFF 0%, #C7D2FE 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .compatibility-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34D399;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-top: 16px;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .compatibility-badge i {
+            font-size: 1rem;
+        }
+
+        /* Grid Layout */
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 768px) {
+            .report-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .report-hero {
+                padding: 32px 20px;
+            }
+            .primary-archetype {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Cards in grid */
+        .report-card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-md);
+            padding: 32px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .report-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .report-card-full {
+            grid-column: 1 / -1;
+        }
+
+        /* Icons wrapper in cards */
+        .card-icon-wrapper {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
             margin-bottom: 20px;
         }
 
-        .report-header h2 {
+        .match-icon {
+            background-color: rgba(79, 70, 229, 0.08);
             color: var(--primary);
-            font-size: 1.8rem;
         }
 
-        .report-section {
-            margin-bottom: 24px;
-            padding: 20px;
-            border-radius: 8px;
-            background: #F9FAFB;
-            border-left: 4px solid var(--primary);
+        .alt-icon {
+            background-color: rgba(14, 165, 233, 0.08);
+            color: #0EA5E9;
         }
 
-        .report-section.avoid {
-            border-left-color: var(--warning);
-            background: #FEF2F2;
+        .avoid-icon {
+            background-color: rgba(239, 68, 68, 0.08);
+            color: var(--warning);
         }
 
-        .report-section.gap {
-            border-left-color: var(--success);
-            background: #F0FDF4;
+        .companies-icon {
+            background-color: rgba(245, 158, 11, 0.08);
+            color: #F59E0B;
         }
 
-        .report-section h3 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
+        .skills-icon {
+            background-color: rgba(16, 185, 129, 0.08);
+            color: var(--success);
+        }
+
+        .report-card h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
             color: var(--text-main);
+            margin-bottom: 8px;
+        }
+
+        .niche-value {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .avoid-value {
+            color: var(--warning);
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .card-subtitle-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+
+        /* Specific card details style */
+        .avoid-card {
+            background-color: var(--warning-bg);
+            border-color: #FEE2E2;
+        }
+
+        /* Company Badges Style */
+        .company-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .company-badge {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            color: #334155;
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 8px;
+            transition: var(--transition);
         }
 
-        .report-section p {
-            font-size: 1rem;
-            color: var(--text-muted);
-            margin-bottom: 10px;
-        }
-
-        .report-section ul {
-            list-style-type: none;
-        }
-
-        .report-section ul li {
-            position: relative;
-            padding-left: 24px;
-            margin-bottom: 8px;
-            color: var(--text-muted);
-        }
-
-        .report-section ul li::before {
-            content: "•";
+        .company-badge:hover {
+            background-color: white;
+            border-color: var(--primary-light);
             color: var(--primary);
-            font-size: 1.5rem;
-            position: absolute;
-            left: 0;
-            top: -4px;
+            transform: translateY(-1px);
         }
 
-        .report-section.gap ul li::before {
-            content: "☐";
-            color: var(--success);
-            font-size: 1.2rem;
-            top: -2px;
+        .company-badge i {
+            color: var(--primary-light);
+            font-size: 0.9rem;
         }
 
-        .btn-restart {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background: var(--border);
-            color: var(--text-main);
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
+        /* Skills Checklist Style */
+        .checklist-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 18px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
             cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .checklist-item:hover {
+            border-color: var(--success);
+            background-color: rgba(16, 185, 129, 0.02);
+        }
+
+        .checklist-item input[type="checkbox"] {
+            margin-top: 3px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--success);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .checklist-text {
+            font-size: 0.9rem;
+            color: var(--text-main);
+            font-weight: 500;
+            line-height: 1.4;
+            transition: var(--transition);
+        }
+
+        .checklist-item input[type="checkbox"]:checked + .checklist-text {
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+
+        /* Report Bottom Actions */
+        .report-actions {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 10px;
+        }
+
+        .btn-action {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 14px 28px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
             border: none;
         }
 
-        .btn-restart:hover {
-            background: #D1D5DB;
+        .btn-action-primary {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
         }
 
-        @media (max-width: 600px) {
-            .question-card {
-                padding: 16px;
+        .btn-action-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.3);
+        }
+
+        .btn-action-secondary {
+            background-color: white;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-action-secondary:hover {
+            background-color: #F8FAFC;
+            border-color: var(--text-muted);
+            transform: translateY(-2px);
+        }
+
+        /* Hidden Class */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Animations */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Print stylesheet */
+        @media print {
+            body {
+                background: white !important;
+                background-image: none !important;
+                color: black !important;
+                padding: 0 !important;
+            }
+            
+            .container {
+                max-width: 100% !important;
+                margin: 0 !important;
+                box-shadow: none !important;
             }
 
-            .option-label {
-                padding: 12px;
+            .brand-header, 
+            .quiz-card-wrapper, 
+            .loader-overlay, 
+            .report-actions,
+            .checklist-item input[type="checkbox"] {
+                display: none !important;
+            }
+
+            #report-container {
+                display: block !important;
+                opacity: 1 !important;
+                transform: none !important;
+            }
+
+            .report-hero {
+                background: #1E1B4B !important;
+                color: white !important;
+                padding: 30px !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+                border-radius: 0 !important;
+                box-shadow: none !important;
+            }
+
+            .primary-archetype {
+                -webkit-text-fill-color: white !important;
+                color: white !important;
+            }
+
+            .compatibility-badge {
+                border: 1px solid #10B981 !important;
+                color: #10B981 !important;
+                background-color: transparent !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .report-grid {
+                display: block !important;
+            }
+
+            .report-card {
+                break-inside: avoid;
+                margin-bottom: 20px !important;
+                padding: 20px !important;
+                border: 1px solid #E2E8F0 !important;
+                box-shadow: none !important;
+                background: white !important;
+                border-radius: 8px !important;
+            }
+
+            .avoid-card {
+                background-color: #FEF2F2 !important;
+                border-color: #FEE2E2 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .checklist-item {
+                background: white !important;
+                border: none !important;
+                padding: 4px 0 !important;
+            }
+
+            .checklist-text {
+                font-size: 0.9rem !important;
+            }
+
+            .checklist-item::before {
+                content: "☐ ";
+                font-family: monospace;
+                color: #64748B;
+                font-weight: bold;
+            }
+
+            .company-badge {
+                border: 1px solid #CBD5E1 !important;
+                background: #F8FAFC !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
         }
     </style>
@@ -259,331 +911,688 @@
 
 <body>
 
-    <div class="container">
-        <header>
-            <h1>THE ASSESSMENT QUESTIONNAIRE</h1>
-            <p>8 Questions to Pinpoint Your Exact Finance Niche</p>
+    <div class="container" id="main-container">
+        
+        <!-- Brand Header -->
+        <header class="brand-header">
+            <a href="/" class="brand-logo-link">
+                <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
+            </a>
+            <div class="brand-tagline">MSC Career Navigator</div>
         </header>
 
-        <main id="quiz-container">
+        <!-- Quiz Wizard Card -->
+        <main class="quiz-card-wrapper" id="quiz-wrapper">
+            
+            <!-- Progress Bar -->
+            <div class="progress-bar-container">
+                <div class="progress-info">
+                    <span class="progress-step" id="progress-step-text">Question 1 of 8</span>
+                    <span class="progress-percentage" id="progress-percent-text">12% Complete</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-bar-fill" style="width: 12.5%;"></div>
+                </div>
+            </div>
+
             <form id="assessment-form">
 
                 <!-- Q1 -->
                 <div class="question-card" id="card-q1">
-                    <div class="question-title">Q1. The "Work DNA" Test: If you had to look at a laptop screen for 10
-                        hours a day, what should be on it?</div>
-                    <div class="options">
-                        <label class="option-label"><input type="radio" name="q1" value="A" required>
-                            <div class="option-text"><strong>A) Bare Acts & Case Laws</strong><span>I enjoy reading
-                                    heavy tax laws, interpreting notifications, and finding legal loopholes.</span>
+                    <h2 class="question-title">Q1. The "Work DNA" Test: If you had to look at a laptop screen for 10 hours a day, what should be on it?</h2>
+                    <div class="options grid-2">
+                        <label class="option-label">
+                            <input type="radio" name="q1" value="A" required>
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">A) Bare Acts & Case Laws</span>
+                                <span class="option-desc-text">I enjoy reading heavy tax laws, interpreting notifications, and finding legal loopholes.</span>
                             </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q1" value="B">
-                            <div class="option-text"><strong>B) Excel Models & Pitch Decks</strong><span>I want to build
-                                    financial models, value businesses, and project future cash flows.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q1" value="B">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">B) Excel Models & Pitch Decks</span>
+                                <span class="option-desc-text">I want to build financial models, value businesses, and project future cash flows.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q1" value="C">
-                            <div class="option-text"><strong>C) Process Flowcharts & SOPs</strong><span>I want to study
-                                    how a business operates, find internal leaks, and map processes.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q1" value="C">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">C) Process Flowcharts & SOPs</span>
+                                <span class="option-desc-text">I want to study how a business operates, find internal leaks, and map processes.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q1" value="D">
-                            <div class="option-text"><strong>D) Tally/ERPs & General Ledgers</strong><span>I want to
-                                    manage core accounts, ensure perfect IndAS/GAAP compliance, and close the
-                                    books.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q1" value="D">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">D) Tally/ERPs & General Ledgers</span>
+                                <span class="option-desc-text">I want to manage core accounts, ensure perfect IndAS/GAAP compliance, and close the books.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q1" value="E">
-                            <div class="option-text"><strong>E) Bloomberg Terminals & Market Data</strong><span>I want
-                                    to track global markets, interest rates, currency movements, and stock
-                                    charts.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q1" value="E">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">E) Bloomberg Terminals & Market Data</span>
+                                <span class="option-desc-text">I want to track global markets, interest rates, currency movements, and stock charts.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q1" value="F">
-                            <div class="option-text"><strong>F) Algorithms & System Architecture</strong><span>I want to
-                                    write SQL queries, automate accounting via Python/ERPs, or build FinTech
-                                    products.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q1" value="F">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">F) Algorithms & System Architecture</span>
+                                <span class="option-desc-text">I want to write SQL queries, automate accounting via Python/ERPs, or build FinTech products.</span>
+                            </div>
                         </label>
                     </div>
                 </div>
 
                 <!-- Q2 -->
                 <div class="question-card" id="card-q2">
-                    <div class="question-title">Q2. The "Stakeholder" Test: Who do you want to advise/work for?</div>
-                    <div class="options">
-                        <label class="option-label"><input type="radio" name="q2" value="A" required>
-                            <div class="option-text"><strong>A) Multiple Corporate Clients (Advisory)</strong><span>I
-                                    want to jump from project to project, advising different companies.</span></div>
-                        </label>
-                        <label class="option-label"><input type="radio" name="q2" value="B">
-                            <div class="option-text"><strong>B) A Single Corporate Employer (Industry)</strong><span>I
-                                    want to join one company, deeply understand operations, and help it grow from
-                                    inside.</span></div>
-                        </label>
-                        <label class="option-label"><input type="radio" name="q2" value="C">
-                            <div class="option-text"><strong>C) Retail/HNI/Corporate Borrowers</strong><span>I want to
-                                    deal with clients who need loans or need their wealth managed.</span></div>
-                        </label>
-                        <label class="option-label"><input type="radio" name="q2" value="D">
-                            <div class="option-text"><strong>D) Global Parent Entities (GCCs)</strong><span>I want to
-                                    sit in India but manage backend reporting/tax for US/UK/European parents.</span>
+                    <h2 class="question-title">Q2. The "Stakeholder" Test: Who do you want to advise/work for?</h2>
+                    <div class="options grid-2">
+                        <label class="option-label">
+                            <input type="radio" name="q2" value="A" required>
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">A) Multiple Corporate Clients (Advisory)</span>
+                                <span class="option-desc-text">I want to jump from project to project, advising different companies.</span>
                             </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q2" value="E">
-                            <div class="option-text"><strong>E) The Government/Nation (Public Sector)</strong><span>I
-                                    want to regulate markets, investigate white-collar crime, or draft public
-                                    policy.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q2" value="B">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">B) A Single Corporate Employer (Industry)</span>
+                                <span class="option-desc-text">I want to join one company, deeply understand operations, and help it grow from inside.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q2" value="F">
-                            <div class="option-text"><strong>F) Early-Stage Startups/Founders</strong><span>I want to
-                                    work with chaotic startups and help them build finance functions from
-                                    scratch.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q2" value="C">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">C) Retail/HNI/Corporate Borrowers</span>
+                                <span class="option-desc-text">I want to deal with clients who need loans or need their wealth managed.</span>
+                            </div>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q2" value="D">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">D) Global Parent Entities (GCCs)</span>
+                                <span class="option-desc-text">I want to sit in India but manage backend reporting/tax for US/UK/European parents.</span>
+                            </div>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q2" value="E">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">E) The Government/Nation (Public Sector)</span>
+                                <span class="option-desc-text">I want to regulate markets, investigate white-collar crime, or draft public policy.</span>
+                            </div>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q2" value="F">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">F) Early-Stage Startups/Founders</span>
+                                <span class="option-desc-text">I want to work with chaotic startups and help them build finance functions from scratch.</span>
+                            </div>
                         </label>
                     </div>
                 </div>
 
                 <!-- Q3 -->
                 <div class="question-card" id="card-q3">
-                    <div class="question-title">Q3. The "Ambiguity" Test: How do you want to handle numbers?</div>
+                    <h2 class="question-title">Q3. The "Ambiguity" Test: How do you want to handle numbers?</h2>
                     <div class="options">
-                        <label class="option-label"><input type="radio" name="q3" value="A" required>
-                            <div class="option-text"><strong>A) Precision & Auditing (Past)</strong><span>Numbers should
-                                    be exact. The balance sheet must tally. Checking historical data.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q3" value="A" required>
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">A) Precision & Auditing (Past)</span>
+                                <span class="option-desc-text">Numbers should be exact. The balance sheet must tally. Checking historical data.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q3" value="B">
-                            <div class="option-text"><strong>B) Estimating & Forecasting (Future)</strong><span>Okay if
-                                    numbers don't tie to the penny, as long as forecast and business logic are
-                                    sound.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q3" value="B">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">B) Estimating & Forecasting (Future)</span>
+                                <span class="option-desc-text">Okay if numbers don't tie to the penny, as long as forecast and business logic are sound.</span>
+                            </div>
                         </label>
                     </div>
                 </div>
 
                 <!-- Q4 -->
                 <div class="question-card" id="card-q4">
-                    <div class="question-title">Q4. The "Lifestyle vs. Reward" Trade-off: What is your preferred
-                        balance?</div>
+                    <h2 class="question-title">Q4. The "Lifestyle vs. Reward" Trade-off: What is your preferred balance?</h2>
                     <div class="options">
-                        <label class="option-label"><input type="radio" name="q4" value="A" required>
-                            <div class="option-text"><strong>A) Uncapped Money & Extreme Grind</strong><span>Gladly work
-                                    14–16 hrs/day and weekends for a shot at massive money. Thrive under
-                                    pressure.</span></div>
-                        </label>
-                        <label class="option-label"><input type="radio" name="q4" value="B">
-                            <div class="option-text"><strong>B) Strategic Impact & Cyclical Grind</strong><span>Normal
-                                    hours generally, fine working late during month-end closes or budget seasons.</span>
+                        <label class="option-label">
+                            <input type="radio" name="q4" value="A" required>
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">A) Uncapped Money & Extreme Grind</span>
+                                <span class="option-desc-text">Gladly work 14–16 hrs/day and weekends for a shot at massive money. Thrive under pressure.</span>
                             </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q4" value="C">
-                            <div class="option-text"><strong>C) Stability & Clean Hours</strong><span>Prefer a stable,
-                                    predictable 9-to-6 job with good corporate benefits and free weekends.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q4" value="B">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">B) Strategic Impact & Cyclical Grind</span>
+                                <span class="option-desc-text">Normal hours generally, fine working late during month-end closes or budget seasons.</span>
+                            </div>
+                        </label>
+                        <label class="option-label">
+                            <input type="radio" name="q4" value="C">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">C) Stability & Clean Hours</span>
+                                <span class="option-desc-text">Prefer a stable, predictable 9-to-6 job with good corporate benefits and free weekends.</span>
+                            </div>
                         </label>
                     </div>
                 </div>
 
                 <!-- Conditional Q5 (If Q1=A) -->
-                <div class="question-card hidden" id="card-q5">
-                    <div class="question-title">Q5. Which flavor of Law excites you the most?</div>
-                    <div class="options">
-                        <label class="option-label"><input type="radio" name="q5" value="A">
-                            <div class="option-text"><strong>A) General Compliance</strong><span>Regular corporate
-                                    income tax filing and general compliance.</span></div>
+                <div class="question-card" id="card-q5">
+                    <h2 class="question-title">Q5. Which flavor of Law excites you the most?</h2>
+                    <div class="options grid-2">
+                        <label class="option-label">
+                            <input type="radio" name="q5" value="A">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">A) General Compliance</span>
+                                <span class="option-desc-text">Regular corporate income tax filing and general compliance.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q5" value="B">
-                            <div class="option-text"><strong>B) International Treaties</strong><span>Complex
-                                    cross-border pricing policies and international treaties (DTAA).</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q5" value="B">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">B) International Treaties</span>
+                                <span class="option-desc-text">Complex cross-border pricing policies and international treaties (DTAA).</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q5" value="C">
-                            <div class="option-text"><strong>C) M&A Structuring</strong><span>Structuring mergers to
-                                    save maximum tax during a massive acquisition.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q5" value="C">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">C) M&A Structuring</span>
+                                <span class="option-desc-text">Structuring mergers to save maximum tax during a massive acquisition.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q5" value="D">
-                            <div class="option-text"><strong>D) Supply Chain & Subsidies</strong><span>Supply chain
-                                    taxation (GST, Customs) and securing government subsidies (PLI).</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q5" value="D">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">D) Supply Chain & Subsidies</span>
+                                <span class="option-desc-text">Supply chain taxation (GST, Customs) and securing government subsidies (PLI).</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q5" value="E">
-                            <div class="option-text"><strong>E) Litigation</strong><span>Fighting cases against the tax
-                                    department in tribunals and courts.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q5" value="E">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">E) Litigation</span>
+                                <span class="option-desc-text">Fighting cases against the tax department in tribunals and courts.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q5" value="F">
-                            <div class="option-text"><strong>F) Enforcement</strong><span>Undertaking massive operations
-                                    to investigate and enforce tax collection (UPSC).</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q5" value="F">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">F) Enforcement</span>
+                                <span class="option-desc-text">Undertaking massive operations to investigate and enforce tax collection (UPSC).</span>
+                            </div>
                         </label>
                     </div>
                 </div>
 
                 <!-- Conditional Q6 (If Q1=B) -->
-                <div class="question-card hidden" id="card-q6">
-                    <div class="question-title">Q6. What part of the "Deal" do you want to do?</div>
-                    <div class="options">
-                        <label class="option-label"><input type="radio" name="q6" value="A">
-                            <div class="option-text"><strong>A) Front-End Negotiations</strong><span>Finding targets and
-                                    doing hardcore front-end pitching and deal negotiations.</span></div>
+                <div class="question-card" id="card-q6">
+                    <h2 class="question-title">Q6. What part of the "Deal" do you want to do?</h2>
+                    <div class="options grid-2">
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="A">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">A) Front-End Negotiations</span>
+                                <span class="option-desc-text">Finding targets and doing hardcore front-end pitching and deal negotiations.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q6" value="B">
-                            <div class="option-text"><strong>B) Due Diligence</strong><span>Validating target’s
-                                    historical numbers and stripping out fake EBITDA (QoE).</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="B">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">B) Due Diligence</span>
+                                <span class="option-desc-text">Validating target’s historical numbers and stripping out fake EBITDA (QoE).</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q6" value="C">
-                            <div class="option-text"><strong>C) Valuation</strong><span>Running DCF valuation models to
-                                    find the fair value of a brand or business.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="C">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">C) Valuation</span>
+                                <span class="option-desc-text">Running DCF valuation models to find the fair value of a brand or business.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q6" value="D">
-                            <div class="option-text"><strong>D) Backend Execution</strong><span>Executing trades or
-                                    doing backend settlements for Wall Street bankers.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="D">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">D) Backend Execution</span>
+                                <span class="option-desc-text">Executing trades or doing backend settlements for Wall Street bankers.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q6" value="E">
-                            <div class="option-text"><strong>E) Restructuring</strong><span>Taking over a bankrupt
-                                    company, fighting creditors, and restructuring it.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q6" value="E">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">E) Restructuring</span>
+                                <span class="option-desc-text">Taking over a bankrupt company, fighting creditors, and restructuring it.</span>
+                            </div>
                         </label>
                     </div>
                 </div>
 
                 <!-- Conditional Q7 (If Q1=E) -->
-                <div class="question-card hidden" id="card-q7">
-                    <div class="question-title">Q7. How do you want to interact with the Market?</div>
-                    <div class="options">
-                        <label class="option-label"><input type="radio" name="q7" value="A">
-                            <div class="option-text"><strong>A) Advising (Research)</strong><span>Advising institutional
-                                    clients on which stock to buy (Writing research reports).</span></div>
+                <div class="question-card" id="card-q7">
+                    <h2 class="question-title">Q7. How do you want to interact with the Market?</h2>
+                    <div class="options grid-2">
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="A">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">A) Advising (Research)</span>
+                                <span class="option-desc-text">Advising institutional clients on which stock to buy (Writing research reports).</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q7" value="B">
-                            <div class="option-text"><strong>B) Investing (Buy Side)</strong><span>Putting my fund's
-                                    actual money into stocks or startups and managing the portfolio.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="B">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">B) Investing (Buy Side)</span>
+                                <span class="option-desc-text">Putting my fund's actual money into stocks or startups and managing the portfolio.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q7" value="C">
-                            <div class="option-text"><strong>C) Credit Risk</strong><span>Assessing if a company will
-                                    default on a multi-crore bank loan.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="C">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">C) Credit Risk</span>
+                                <span class="option-desc-text">Assessing if a company will default on a multi-crore bank loan.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q7" value="D">
-                            <div class="option-text"><strong>D) Trading Desk</strong><span>Sitting on a trading desk
-                                    betting on Forex, proprietary trades, and hedging risks.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="D">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">D) Trading Desk</span>
+                                <span class="option-desc-text">Sitting on a trading desk betting on Forex, proprietary trades, and hedging risks.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q7" value="E">
-                            <div class="option-text"><strong>E) Wealth Management</strong><span>Schmoozing and bringing
-                                    in rich clients to manage personal wealth or corporate limits.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q7" value="E">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">E) Wealth Management</span>
+                                <span class="option-desc-text">Schmoozing and bringing in rich clients to manage personal wealth or corporate limits.</span>
+                            </div>
                         </label>
                     </div>
                 </div>
 
                 <!-- Conditional Q8 (If Q2=B) -->
-                <div class="question-card hidden" id="card-q8">
-                    <div class="question-title">Q8. Where do you want to sit within the company?</div>
-                    <div class="options">
-                        <label class="option-label"><input type="radio" name="q8" value="A">
-                            <div class="option-text"><strong>A) Reporting & Audit</strong><span>Preparing board reports
-                                    and dealing with Statutory Auditors.</span></div>
+                <div class="question-card" id="card-q8">
+                    <h2 class="question-title">Q8. Where do you want to sit within the company?</h2>
+                    <div class="options grid-2">
+                        <label class="option-label">
+                            <input type="radio" name="q8" value="A">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">A) Reporting & Audit</span>
+                                <span class="option-desc-text">Preparing board reports and dealing with Statutory Auditors.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q8" value="B">
-                            <div class="option-text"><strong>B) Ops Finance (AR/AP)</strong><span>Handling day-to-day
-                                    accounts payable, receivable, and cash ledgers.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q8" value="B">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">B) Ops Finance (AR/AP)</span>
+                                <span class="option-desc-text">Handling day-to-day accounts payable, receivable, and cash ledgers.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q8" value="C">
-                            <div class="option-text"><strong>C) Business Partnering</strong><span>Partnering with
-                                    Sales/Marketing to decide product pricing and profitability.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q8" value="C">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">C) Business Partnering</span>
+                                <span class="option-desc-text">Partnering with Sales/Marketing to decide product pricing and profitability.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q8" value="D">
-                            <div class="option-text"><strong>D) Treasury Operations</strong><span>Managing the company's
-                                    daily cash, bank limits, and currency hedging.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q8" value="D">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">D) Treasury Operations</span>
+                                <span class="option-desc-text">Managing the company's daily cash, bank limits, and currency hedging.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q8" value="E">
-                            <div class="option-text"><strong>E) Supply Chain/Factory</strong><span>Managing inventory
-                                    costs and negotiating with vendors at a factory plant.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q8" value="E">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">E) Supply Chain/Factory</span>
+                                <span class="option-desc-text">Managing inventory costs and negotiating with vendors at a factory plant.</span>
+                            </div>
                         </label>
-                        <label class="option-label"><input type="radio" name="q8" value="F">
-                            <div class="option-text"><strong>F) Investor Relations</strong><span>Drafting scripts for
-                                    the CEO to read to stock market investors during earnings calls.</span></div>
+                        <label class="option-label">
+                            <input type="radio" name="q8" value="F">
+                            <span class="option-radio-dot"></span>
+                            <div class="option-text-wrapper">
+                                <span class="option-title-text">F) Investor Relations</span>
+                                <span class="option-desc-text">Drafting scripts for the CEO to read to stock market investors during earnings calls.</span>
+                            </div>
                         </label>
                     </div>
                 </div>
 
-                <button type="submit" class="btn-submit">Generate My Career Navigator Report</button>
             </form>
+
+            <!-- Navigation Buttons -->
+            <div class="navigation-footer">
+                <button type="button" class="btn-nav btn-nav-back" id="btn-back">
+                    <i class="fas fa-chevron-left"></i> Back
+                </button>
+                <button type="button" class="btn-nav btn-nav-next" id="btn-next" disabled>
+                    Continue <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
         </main>
 
-        <section id="report-container" class="hidden">
-            <div class="report-header">
-                <h2>🎯 YOUR MSC CAREER NAVIGATOR REPORT</h2>
-                <p>Calculated based on your unique Work DNA and preferences.</p>
+        <!-- Dynamic Dashboard Results Container -->
+        <section id="report-container">
+            
+            <!-- Hero Persona Header -->
+            <div class="report-hero">
+                <div class="hero-accent-circle"></div>
+                <span class="report-badge">Analysis Completed</span>
+                <h2>Your Optimal Finance Archetype</h2>
+                <div class="primary-archetype" id="out-primary-niche-header">Statutory Auditor (Firm)</div>
+                <div>
+                    <div class="compatibility-badge">
+                        <i class="fas fa-award"></i> <span id="out-compatibility-score">100% Match</span>
+                    </div>
+                </div>
             </div>
 
-            <div class="report-section">
-                <h3>1. YOUR EXACT DOMAIN MATCH</h3>
-                <p><strong>Primary Niche:</strong> <span id="out-primary-niche"></span></p>
-                <p><em>Why this fits:</em> <span id="out-primary-reason"></span></p>
+            <!-- Dashboard Grid -->
+            <div class="report-grid">
+                
+                <!-- Card 1: Primary Match -->
+                <div class="report-card">
+                    <div class="card-icon-wrapper match-icon">
+                        <i class="fas fa-compass"></i>
+                    </div>
+                    <h3>Primary Niche Alignment</h3>
+                    <div class="niche-value" id="out-primary-niche"></div>
+                    <p class="card-description" id="out-primary-reason"></p>
+                </div>
+
+                <!-- Card 2: Alternative Path -->
+                <div class="report-card">
+                    <div class="card-icon-wrapper alt-icon">
+                        <i class="fas fa-arrows-split-up-and-left"></i>
+                    </div>
+                    <h3>Secondary Corporate Match</h3>
+                    <div class="niche-value" id="out-alt-niche"></div>
+                    <p class="card-description" id="out-alt-reason"></p>
+                </div>
+
+                <!-- Card 3: Avoid Section -->
+                <div class="report-card avoid-card">
+                    <div class="card-icon-wrapper avoid-icon">
+                        <i class="fas fa-circle-exclamation"></i>
+                    </div>
+                    <h3>Niches to Actively Avoid</h3>
+                    <div class="niche-value avoid-value" id="out-avoid-niche"></div>
+                    <p class="card-description" id="out-avoid-reason"></p>
+                </div>
+
+                <!-- Card 4: Target Companies -->
+                <div class="report-card">
+                    <div class="card-icon-wrapper companies-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h3>Target Employers</h3>
+                    <p class="card-subtitle-text">Recommended firms and companies matching this profile:</p>
+                    <div class="company-list" id="out-companies"></div>
+                </div>
+
+                <!-- Card 5: Skills Bridge Roadmap (Full Width) -->
+                <div class="report-card report-card-full">
+                    <div class="card-icon-wrapper skills-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3>Your Actionable Upskilling Roadmap</h3>
+                    <p class="card-subtitle-text">Complete these high-impact tasks to fill your skillset gaps and stand out on shortlist selectors:</p>
+                    <div class="checklist-container" id="out-skills"></div>
+                </div>
+
             </div>
 
-            <div class="report-section">
-                <h3>2. YOUR CLOSEST CORPORATE (INDUSTRY) MATCH</h3>
-                <p><strong>Alternative Path:</strong> <span id="out-alt-niche"></span></p>
-                <p><em>Why this fits:</em> <span id="out-alt-reason"></span></p>
+            <!-- Report Bottom Action Row -->
+            <div class="report-actions">
+                <button class="btn-action btn-action-primary" onclick="window.print()">
+                    <i class="fas fa-print"></i> Save PDF / Print Report
+                </button>
+                <button class="btn-action btn-action-secondary" onclick="location.reload()">
+                    <i class="fas fa-rotate-left"></i> Retake Assessment
+                </button>
             </div>
 
-            <div class="report-section avoid">
-                <h3>3. DOMAINS TO ACTIVELY AVOID</h3>
-                <p><strong>Avoid:</strong> <span id="out-avoid-niche"></span></p>
-                <p><em>Reasoning:</em> <span id="out-avoid-reason"></span></p>
-            </div>
-
-            <div class="report-section">
-                <h3>4. YOUR TARGET COMPANIES</h3>
-                <p><em>Customized by filtering Domain Match + Size/Loc:</em></p>
-                <ul id="out-companies">
-                </ul>
-            </div>
-
-            <div class="report-section gap">
-                <h3>5. YOUR CURRENT "SKILL GAP" (Action Required)</h3>
-                <p>To guarantee you get shortlisted, you need more than generic knowledge:</p>
-                <ul id="out-skills">
-                </ul>
-            </div>
-
-            <button class="btn-restart" onclick="location.reload()">Take Assessment Again</button>
         </section>
+
+    </div>
+
+    <!-- Analyzing Loader Overlay -->
+    <div id="loader-overlay" class="loader-overlay">
+        <div class="loader-card">
+            <div class="loader-spinner-ring">
+                <div class="spinner-circle"></div>
+                <i class="fas fa-brain spinner-center-icon"></i>
+            </div>
+            <h3>Analyzing Your Responses</h3>
+            <p id="loader-subtitle">Evaluating Work DNA matches...</p>
+            <div class="mini-progress-bar">
+                <div class="mini-progress-fill" id="mini-progress-fill"></div>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Highlight selected options
+        // DOM Elements
+        const form = document.getElementById('assessment-form');
+        const mainContainer = document.getElementById('main-container');
+        const quizWrapper = document.getElementById('quiz-wrapper');
+        const reportContainer = document.getElementById('report-container');
+        const loaderOverlay = document.getElementById('loader-overlay');
+        const loaderSubtitle = document.getElementById('loader-subtitle');
+        const miniProgressFill = document.getElementById('mini-progress-fill');
+        
+        const btnBack = document.getElementById('btn-back');
+        const btnNext = document.getElementById('btn-next');
+        const progressBarFill = document.getElementById('progress-bar-fill');
+        const progressStepText = document.getElementById('progress-step-text');
+        const progressPercentText = document.getElementById('progress-percent-text');
+
+        let currentStepIndex = 0;
+
+        // Dynamic Wizard Questions Routing
+        function getActiveQuestions() {
+            const list = [
+                document.getElementById('card-q1'),
+                document.getElementById('card-q2'),
+                document.getElementById('card-q3'),
+                document.getElementById('card-q4')
+            ];
+            
+            const q1Value = document.querySelector('input[name="q1"]:checked')?.value;
+            const q2Value = document.querySelector('input[name="q2"]:checked')?.value;
+
+            // Conditional inserts
+            if (q1Value === 'A') list.push(document.getElementById('card-q5'));
+            if (q1Value === 'B') list.push(document.getElementById('card-q6'));
+            if (q1Value === 'E') list.push(document.getElementById('card-q7'));
+            if (q2Value === 'B') list.push(document.getElementById('card-q8'));
+
+            return list;
+        }
+
+        // Render Current Wizard Step
+        function goToStep(index) {
+            const activeCards = getActiveQuestions();
+            if (index < 0 || index >= activeCards.length) return;
+
+            currentStepIndex = index;
+
+            // Hide all questions
+            const allCards = document.querySelectorAll('.question-card');
+            allCards.forEach(card => {
+                card.classList.remove('active');
+                card.style.display = 'none';
+            });
+
+            // Show active question
+            const activeCard = activeCards[currentStepIndex];
+            if (activeCard) {
+                activeCard.style.display = 'block';
+                activeCard.offsetHeight; // force reflow
+                activeCard.classList.add('active');
+            }
+
+            // Sync HTML required attributes for standard forms
+            allCards.forEach(card => {
+                const inputs = card.querySelectorAll('input');
+                const isCardActive = activeCards.includes(card);
+                inputs.forEach(input => {
+                    // Only enforce 'required' for active elements to allow form submit trigger
+                    if (isCardActive && card === activeCard) {
+                        // First option in card is required if card has radio inputs
+                        if (input.name && !document.querySelector(`input[name="${input.name}"]:checked`)) {
+                            // Ensure at least one has required
+                            card.querySelectorAll('input')[0].required = true;
+                        }
+                    } else {
+                        input.required = false;
+                    }
+                });
+            });
+
+            updateProgress();
+            updateNavigationButtons();
+            
+            // Scroll smoothly to card header
+            quizWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Update Wizard progress indicator
+        function updateProgress() {
+            const activeCards = getActiveQuestions();
+            const totalSteps = activeCards.length;
+            const currentNumber = currentStepIndex + 1;
+            const percent = Math.round((currentNumber / totalSteps) * 100);
+
+            progressStepText.textContent = `Question ${currentNumber} of ${totalSteps}`;
+            progressPercentText.textContent = `${percent}% Complete`;
+            progressBarFill.style.width = `${percent}%`;
+        }
+
+        // Update Nav button states
+        function updateNavigationButtons() {
+            const activeCards = getActiveQuestions();
+            const currentCard = activeCards[currentStepIndex];
+            
+            // Check if current card is answered
+            const inputName = currentCard?.querySelector('input')?.name;
+            const isAnswered = inputName ? document.querySelector(`input[name="${inputName}"]:checked`) !== null : false;
+
+            // Back button
+            if (currentStepIndex === 0) {
+                btnBack.style.visibility = 'hidden';
+            } else {
+                btnBack.style.visibility = 'visible';
+            }
+
+            // Next button text & styling
+            if (currentStepIndex === activeCards.length - 1) {
+                btnNext.innerHTML = `Generate Report <i class="fas fa-magic"></i>`;
+                btnNext.classList.add('btn-generate');
+            } else {
+                btnNext.innerHTML = `Continue <i class="fas fa-arrow-right"></i>`;
+                btnNext.classList.remove('btn-generate');
+            }
+
+            btnNext.disabled = !isAnswered;
+        }
+
+        // Listen for Option selects
         document.addEventListener('change', function (e) {
             if (e.target.type === 'radio') {
-                const labels = document.querySelectorAll(`input[name="${e.target.name}"]`);
-                labels.forEach(radio => {
-                    radio.closest('.option-label').classList.remove('selected');
+                const name = e.target.name;
+                
+                // Visual selected classes
+                document.querySelectorAll(`input[name="${name}"]`).forEach(radio => {
+                    const label = radio.closest('.option-label');
+                    if (label) label.classList.remove('selected');
                 });
-                e.target.closest('.option-label').classList.add('selected');
+                const selectedLabel = e.target.closest('.option-label');
+                if (selectedLabel) selectedLabel.classList.add('selected');
+
+                updateNavigationButtons();
+
+                // Auto-advance with a slight delay
+                const activeCards = getActiveQuestions();
+                setTimeout(() => {
+                    if (currentStepIndex < activeCards.length - 1 && e.target.checked) {
+                        goToStep(currentStepIndex + 1);
+                    }
+                }, 380);
             }
         });
 
-        // Handle Conditional logic for Q5-Q8
-        const form = document.getElementById('assessment-form');
-        form.addEventListener('change', function () {
-            const q1 = document.querySelector('input[name="q1"]:checked')?.value;
-            const q2 = document.querySelector('input[name="q2"]:checked')?.value;
-
-            // Reset and hide
-            document.getElementById('card-q5').classList.add('hidden');
-            document.getElementById('card-q6').classList.add('hidden');
-            document.getElementById('card-q7').classList.add('hidden');
-            document.getElementById('card-q8').classList.add('hidden');
-
-            document.querySelectorAll('#card-q5 input, #card-q6 input, #card-q7 input, #card-q8 input').forEach(el => el.required = false);
-
-            if (q1 === 'A') {
-                document.getElementById('card-q5').classList.remove('hidden');
-                document.querySelectorAll('#card-q5 input').forEach(el => el.required = true);
-            }
-            if (q1 === 'B') {
-                document.getElementById('card-q6').classList.remove('hidden');
-                document.querySelectorAll('#card-q6 input').forEach(el => el.required = true);
-            }
-            if (q1 === 'E') {
-                document.getElementById('card-q7').classList.remove('hidden');
-                document.querySelectorAll('#card-q7 input').forEach(el => el.required = true);
-            }
-            if (q2 === 'B') {
-                document.getElementById('card-q8').classList.remove('hidden');
-                document.querySelectorAll('#card-q8 input').forEach(el => el.required = true);
+        // Setup Wizard Nav click handlers
+        btnBack.addEventListener('click', () => {
+            if (currentStepIndex > 0) {
+                goToStep(currentStepIndex - 1);
             }
         });
 
-        // MASTER ROUTING LOGIC DATABASE
+        btnNext.addEventListener('click', () => {
+            const activeCards = getActiveQuestions();
+            if (currentStepIndex < activeCards.length - 1) {
+                goToStep(currentStepIndex + 1);
+            } else {
+                form.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        // Initialize quiz
+        goToStep(0);
+
+
+        // ==========================================
+        // MASTER ROUTING LOGIC DATABASE & CALCULATIONS
+        // ==========================================
         const domains = [
             // 1. PRACTICE & CONSULTING
             { name: "Statutory Audit", cat: "Firm", req: { q1: ['D'], q2: ['A'], q3: ['A'] } },
@@ -644,7 +1653,6 @@
             { name: "Virtual CFO (vCFO)", cat: "Entrepreneurial", req: { q1: ['D'], q2: ['F'] } }
         ];
 
-        // Data mappings for output context
         const reasonsMap = {
             q1: {
                 'A': "interpreting laws, drafting legal opinions, and navigating tax codes",
@@ -688,27 +1696,62 @@
 
         function getSkillGaps(domainStr) {
             const d = domainStr.toLowerCase();
-            if (d.includes('tax') || d.includes('pricing')) return ["Read OECD Guidelines & recent DTAA amendments.", "Follow Supreme Court rulings closely.", "Download MSC Resume Template 4 (Regulatory/Advisory focus)."];
+            if (d.includes('tax') || d.includes('pricing')) return ["Read OECD Guidelines & recent DTAA amendments.", "Follow Supreme Court tax rulings closely.", "Download MSC Resume Template 4 (Regulatory/Advisory focus)."];
             if (d.includes('audit') && d.includes('statutory')) return ["Master IndAS & CARO 2020 intricacies.", "Learn Advanced Excel data sampling techniques.", "Highlight IFC and Substantive Procedures on CV."];
             if (d.includes('fdd') || d.includes('m&a') || d.includes('valuation') || d.includes('banking - front')) return ["Master 3-statement Financial Modeling & DCF.", "Understand 'Quality of Earnings' and EBITDA normalization.", "Learn to build flawless pitch decks (PowerPoint)."];
             if (d.includes('fp&a') || d.includes('business finance')) return ["Master Variance Analysis and Budget Forecasting.", "Learn Data Visualization (Power BI / Tableau).", "Understand Unit Economics (Gross Margins, CAC, LTV)."];
             if (d.includes('tech') || d.includes('data') || d.includes('system')) return ["Learn SQL for database querying.", "Understand ERP T-Codes and architecture (SAP/Oracle).", "Familiarize yourself with Python data libraries or API basics."];
             if (d.includes('credit') || d.includes('treasury')) return ["Master Credit Rating ratios and CMA Data prep.", "Track global macroeconomics (Fed rates, Bond yields).", "Understand RBI monetary policy updates."];
             if (d.includes('global') || d.includes('us gaap')) return ["Study US GAAP / IFRS differences deeply.", "Familiarize yourself with SEC filing formats (10-K).", "Consider pursuing CPA or ACCA DipIFR."];
-            return ["Upskill in Advanced Excel.", "Refine communication and presentation skills.", "Tailor your CV dropping generic vouching points."];
+            return ["Upskill in Advanced Excel functions.", "Refine client-facing communication and presentation skills.", "Tailor your CV by replacing generic vouching bullets with domain-specific metrics."];
         }
 
+        // Form Submit Handler (Generates Dashboard Report)
         form.addEventListener('submit', function (e) {
             e.preventDefault();
 
-            // Gather answers
-            const formData = new FormData(form);
-            const ans = {};
-            for (let [key, value] of formData.entries()) {
-                ans[key] = value;
-            }
+            // Setup loading overlay steps
+            const loaderSteps = [
+                { text: "Reading your Work DNA preferences...", percent: 20 },
+                { text: "Calculating domain alignment metrics...", percent: 45 },
+                { text: "Filtering top matching target employers...", percent: 70 },
+                { text: "Synthesizing upskilling action plan...", percent: 90 },
+                { text: "Generating your career blueprint...", percent: 100 }
+            ];
 
-            // Scoring algorithm
+            loaderOverlay.classList.add('visible');
+
+            // Sequential Loading Simulator
+            let stepIndex = 0;
+            const interval = setInterval(() => {
+                if (stepIndex < loaderSteps.length) {
+                    loaderSubtitle.textContent = loaderSteps[stepIndex].text;
+                    miniProgressFill.style.width = `${loaderSteps[stepIndex].percent}%`;
+                    stepIndex++;
+                } else {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        loaderOverlay.classList.remove('visible');
+                        renderReport();
+                    }, 300);
+                }
+            }, 350);
+        });
+
+        function renderReport() {
+            // Filter answers only from active questions
+            const activeCards = getActiveQuestions();
+            const activeNames = activeCards.map(card => card.querySelector('input')?.name).filter(Boolean);
+            
+            const ans = {};
+            activeNames.forEach(name => {
+                const checkedInput = document.querySelector(`input[name="${name}"]:checked`);
+                if (checkedInput) {
+                    ans[name] = checkedInput.value;
+                }
+            });
+
+            // Scoring Algorithm
             let results = [];
             domains.forEach(domain => {
                 let score = 0;
@@ -722,50 +1765,67 @@
                 results.push({ ...domain, matchScore: score / possible, absoluteScore: score });
             });
 
-            // Sort by percentage match, then absolute match
+            // Sort results by score
             results.sort((a, b) => b.matchScore - a.matchScore || b.absoluteScore - a.absoluteScore);
 
             // 1. Primary Match
             const primary = results[0];
+            const compatibilityScoreVal = Math.round(primary.matchScore * 100);
 
             // 2. Alternative Corporate Match (Industry)
             let alt = results.find(d => d.cat === 'Industry' && d.name !== primary.name);
             if (!alt) alt = results.find(d => d.name !== primary.name); // Fallback
 
             // 3. Domains to Avoid
-            // Find the absolute lowest score, preferably one with conflicting Q3 (Past vs Future) or Q4 (Grind vs Chill)
             let avoidList = results.filter(d => d.matchScore === 0);
             let avoid = avoidList.length > 0 ? avoidList[avoidList.length - 1] : results[results.length - 1];
 
-            // Fill Data
+            // Render output values
+            document.getElementById('out-primary-niche-header').textContent = primary.name;
+            document.getElementById('out-compatibility-score').textContent = `${compatibilityScoreVal}% Match`;
+
             document.getElementById('out-primary-niche').textContent = `${primary.name} (${primary.cat})`;
-            document.getElementById('out-primary-reason').textContent = `Based on your DNA test, you prefer ${reasonsMap.q1[ans.q1]}. Pairing this with your desire for ${reasonsMap.q2[ans.q2]} makes this niche your absolute optimal path.`;
+            document.getElementById('out-primary-reason').textContent = `Based on your DNA test, you prefer ${reasonsMap.q1[ans.q1]}. Pairing this with your preference for ${reasonsMap.q2[ans.q2]} makes this niche your absolute optimal career path.`;
 
-            document.getElementById('out-alt-niche').textContent = `${alt.name}`;
-            document.getElementById('out-alt-reason').textContent = `If you ever transition out of your primary niche, your skillset and logic preferences map perfectly to ${alt.name}, dealing with similar numbers but from an industry perspective.`;
+            document.getElementById('out-alt-niche').textContent = alt.name;
+            document.getElementById('out-alt-reason').textContent = `If you ever transition out of your primary niche, your skillset and logical preferences map closely to ${alt.name}, dealing with similar datasets but from an internal industry perspective.`;
 
-            document.getElementById('out-avoid-niche').textContent = `${avoid.name}`;
+            document.getElementById('out-avoid-niche').textContent = avoid.name;
+            
+            // Build custom avoid reason
             let avoidReason = "This domain requires a completely opposite workflow and stakeholder environment than what you selected. It will likely cause rapid burnout and frustration.";
-            if (ans.q3 === 'A') avoidReason = "You prefer exactness and past compliance. Domains involving high-ambiguity forecasting or chaotic unstructured data will frustrate you.";
-            if (ans.q3 === 'B') avoidReason = "You prefer strategy and future forecasting. Backend processing, routine compliance, or rigid statutory checking will bore you immensely.";
-            if (ans.q4 === 'C') avoidReason = "You selected a preference for clean hours and stability. This domain is notorious for brutal hours, unpredictable cycles, and extreme pressure.";
+            if (ans.q3 === 'A') avoidReason = "You selected a preference for exactness and historical auditing. Domains involving high-ambiguity forecasting or chaotic, unstructured forecasts will likely frustrate you.";
+            if (ans.q3 === 'B') avoidReason = "You selected a preference for business strategy and future forecasting. Backend processing, routine compliance, or rigid statutory checking will bore you quickly.";
+            if (ans.q4 === 'C') avoidReason = "You selected a preference for stable hours and work-life balance. This domain is notorious for brutal hours, seasonal closes, and high-pressure deliverables.";
             document.getElementById('out-avoid-reason').textContent = avoidReason;
 
-            // Companies
+            // Render Companies Badges
             const companies = getCompanies(primary.name);
-            document.getElementById('out-companies').innerHTML = companies.map(c => `<li>${c}</li>`).join('');
+            document.getElementById('out-companies').innerHTML = companies.map(c => `
+                <div class="company-badge">
+                    <i class="fas fa-building-user"></i>
+                    <span>${c}</span>
+                </div>
+            `).join('');
 
-            // Skills
+            // Render Skills Checklist
             const skills = getSkillGaps(primary.name);
-            document.getElementById('out-skills').innerHTML = skills.map(s => `<li>${s}</li>`).join('');
+            document.getElementById('out-skills').innerHTML = skills.map((s, idx) => `
+                <label class="checklist-item" id="chk-item-${idx}">
+                    <input type="checkbox">
+                    <span class="checklist-text">${s}</span>
+                </label>
+            `).join('');
 
-            // UI Swap
-            document.getElementById('quiz-container').classList.add('hidden');
-            document.getElementById('report-container').classList.remove('hidden');
-            window.scrollTo(0, 0);
-        });
+            // UI Reveal Transition
+            quizWrapper.classList.add('hidden');
+            mainContainer.classList.add('dashboard-mode');
+            reportContainer.classList.add('visible');
+
+            // Scroll back to top smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     </script>
-
 </body>
 
 </html>
