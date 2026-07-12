@@ -142,6 +142,16 @@
             color: #000;
         }
 
+        .header-tagline {
+            font-size: calc(18.00px * var(--content-scale));
+            font-weight: bold;
+            margin-bottom: calc(4px * var(--content-scale));
+        }
+
+        .header-tagline:empty {
+            display: none;
+        }
+
         .header-contact {
             margin-bottom: calc(5px * var(--content-scale));
             font-size: calc(20px * var(--content-scale));
@@ -323,6 +333,7 @@
         <div class="page" id="cv-page">
 
             <div class="header-name" data-field="name"></div>
+            <div class="header-tagline" data-field="tagline"></div>
             <div class="header-contact" data-field="contact">
             </div>
 

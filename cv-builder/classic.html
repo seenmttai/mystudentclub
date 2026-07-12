@@ -309,6 +309,7 @@
             font-size: calc(16px * var(--content-scale));
             line-height: 1.2;
             text-align: left;
+            background-color: transparent !important;
         }
 
         .project-entry {
@@ -467,12 +468,13 @@
                 <div class="section-header">PROJECTS</div>
                 <div id="projects-list">
                     <div class="project-entry template">
-                        <div class="project-title-row" data-field="title"></div>
-                        <table class="work-table">
+                        <div class="project-title-row no-top-border">
+                            <span><span data-field="title"></span></span>
+                        </div>
+                        <table class="work-table" data-preserve-label-columns>
                             <tr>
-                                <td class="role-col">Description</td>
+                                <td class="role-col"><span data-field="description"></span></td>
                                 <td class="desc-col">
-                                    <div class="project-desc" data-field="description"></div>
                                     <ul class="bullet-list" data-list="bullets"></ul>
                                 </td>
                             </tr>

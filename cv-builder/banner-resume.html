@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My CV</title>
+    <style>
+        :root {
+            --navy: var(--header-bg, #1F487C);
+            --pale: var(--sub-header-bg, #DBE4F0);
+            --ink: #000000;
+            --link: #0461C1;
+            --bg-white: #ffffff;
+            --viewer-bg: #525659;
+            --font-main: 'Calibri', 'Carlito', 'Segoe UI', 'Candara', Arial, sans-serif;
+            --ref-width: 970px;
+            --ref-height: 1414px;
+            --content-scale: 1;
+            --pad: calc(24px * var(--content-scale));
+            /* horizontal content padding / banner bleed width */
+        }
+
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        body {
+            background-color: var(--viewer-bg);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100vw;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #zoom-wrapper {
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            padding:0;
+        }
+
+        .resume-container {
+            margin: 0 auto;
+            width: var(--ref-width);
+            height: var(--ref-height);
+            background: var(--bg-white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+            position: relative;
+            padding:0 24px 0 24px;
+            /* uniform white margin around the framed resume (~8mm) */
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            transform-origin: top center;
+            font-size: calc(14.5px * var(--content-scale));
+            color: var(--ink);
+            line-height: 1.28;
+        }
+
+        /* thin 1px outer frame; inner padding keeps every banner / table off the
+           border so the frame stays a clean, unbroken rectangle (no bleed). */
+        .doc {
+            /* border: 1px solid var(--ink); */
+            padding: 6px;
+        }
+
+
+
+        /* ── HEADER (pale banner, centred) ── */
+        .cv-header {
+            background: var(--pale);
+            text-align: center;
+            color: var(--navy);
+            margin: 0;
+            padding: calc(6px * var(--content-scale)) calc(8px * var(--content-scale)) calc(7px * var(--content-scale));
+        }
+
+        .cv-header h1 {
+            font-size: calc(26px * var(--content-scale));
+            font-weight: bold;
+            line-height: 1.05;
+            letter-spacing: .2px;
+        }
+
+        .cv-header h1:empty {
+            display: none;
+        }
+
+        .header-tagline {
+            font-weight: bold;
+            font-size: calc(15.5px * var(--content-scale));
+            line-height: 1.2;
+        }
+
+        .header-tagline:empty {
+            display: none;
+        }
+
+        .contact-info {
+            font-size: calc(15px * var(--content-scale));
+            line-height: 1.2;
+        }
+
+        .contact-info a {
+            color: var(--navy);
+            text-decoration: none;
+        }
+
+        /* cv-common.js renders the LinkedIn / email links in #2563eb; soften
+           them to the document's navy so the header stays on-palette. */
+        .contact-info a[href^="mailto"],
+        .contact-info a[href^="http"],
+        .contact-info a[href^="tel"] {
+            color: var(--navy) !important;
+            border-bottom: none !important;
+        }
+
+        /* ── DARK SECTION BANNER (full-bleed) ──
+           Static markup + cv-common.js-injected custom/universal sections. */
+        .section-header,
+        .section-banner,
+        .section-title,
+        .universal-injected .section-header,
+        .custom-section-injected .section-header {
+            background: var(--navy);
+            color: var(--bg-white);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            line-height: 1.18;
+            margin: calc(8px * var(--content-scale)) 0 0;
+            padding: calc(2px * var(--content-scale)) calc(8px * var(--content-scale));
+            font-size: calc(14px * var(--content-scale));
+        }
+
+        .sortable-section:first-of-type .section-header {
+            margin-top: calc(7px * var(--content-scale));
+        }
+
+        /* ── PALE SUB-BANNER (job / project title + right-aligned date) ── */
+        .item-row {
+            background: var(--pale);
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: calc(12px * var(--content-scale));
+            margin: 0;
+            padding: calc(2px * var(--content-scale)) calc(8px * var(--content-scale)) calc(3px * var(--content-scale));
+        }
+
+        .item-left {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-title {
+            font-weight: bold;
+            text-align: left;
+            color: var(--navy);
+        }
+
+        .item-date {
+            font-style: italic;
+            font-weight: normal;
+            color: var(--ink);
+            text-align: right;
+            white-space: nowrap;
+            flex-shrink: 0;
+            padding-left: calc(8px * var(--content-scale));
+        }
+
+        /* "Role | Company" and "Title | Description" inline separators */
+        .exp-company-inline:not(:empty)::before,
+        .edu-inst-inline:not(:empty)::before {
+            content: " | ";
+            font-weight: normal;
+        }
+
+        /* department / category line shown under a job header */
+        .sub-section-title {
+            font-weight: bold;
+            font-style: italic;
+            color: var(--ink);
+            margin: calc(2px * var(--content-scale)) 0 calc(1px * var(--content-scale));
+        }
+
+        .sub-section-title:empty {
+            display: none;
+        }
+
+        /* project description line */
+        .proj-desc {
+            margin: calc(1px * var(--content-scale)) 0;
+        }
+
+        .proj-desc:empty {
+            display: none;
+        }
+
+        /* ── BODY content padding / lists ── */
+        .blk {
+            padding: calc(2px * var(--content-scale)) 0 calc(3px * var(--content-scale));
+        }
+
+        ul {
+            list-style-type: disc;
+            margin: calc(2px * var(--content-scale)) 0 calc(3px * var(--content-scale)) calc(20px * var(--content-scale));
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: calc(1.5px * var(--content-scale));
+            line-height: 1.28;
+            text-align: left;
+        }
+
+        li:last-child {
+            margin-bottom: 0;
+        }
+
+        /* nested bullets render as en-dashes (matches the source resume) */
+        ul ul {
+            list-style-type: none;
+            margin-left: calc(14px * var(--content-scale));
+        }
+
+        ul ul>li::before {
+            content: "- ";
+        }
+
+        /* Skills list spacing (cv-common.js renderSkillsContent output) */
+        [data-field="skills"] {
+            padding: calc(2px * var(--content-scale)) 0;
+        }
+
+        [data-field="skills"] ul,
+        [data-field="skills"] .cv-skills-list {
+            margin-left: calc(20px * var(--content-scale));
+        }
+
+        /* ── SUMMARY / CAREER OBJECTIVE ── */
+        .tagline-summary {
+            line-height: 1.32;
+            text-align: justify;
+            padding: calc(2px * var(--content-scale)) 0 calc(3px * var(--content-scale));
+        }
+
+        /* ── EDUCATION TABLE (date | degree | institution | marks) ── */
+        table.edu-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid var(--ink);
+            table-layout: fixed;
+            margin: 0;
+        }
+
+        table.edu-table th {
+            background: var(--pale);
+            color: var(--navy);
+            font-weight: bold;
+            border: 1px solid var(--ink);
+            padding: calc(4px * var(--content-scale)) calc(6px * var(--content-scale));
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        table.edu-table td {
+            border: 1px solid var(--ink);
+            padding: calc(2px * var(--content-scale)) calc(6px * var(--content-scale));
+            vertical-align: middle;
+            line-height: 1.28;
+            overflow-wrap: anywhere;
+            text-align: center;
+        }
+
+        /* alternating shaded rows (1st *visible* row shaded, like the source).
+           The hidden .template row is nth-child(1), so cloned rows start at
+           nth-child(2) -> shade the even children to shade the first one. */
+        table.edu-table tbody tr:nth-child(even) td {
+            background: var(--pale);
+        }
+
+        table.edu-table td[data-field="degree"],
+        table.edu-table td[data-field="remarks"] {
+            text-align: left;
+        }
+
+        table.edu-table td[data-field="institution"] {
+            font-weight: bold;
+        }
+
+        b,
+        strong {
+            font-weight: bold;
+        }
+
+        i,
+        em {
+            font-style: italic;
+        }
+
+        /* ── PRINT: single A4 sheet (matches every other builder template) ── */
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 0 10mm 10mm 10mm;
+            }
+
+            html,
+            body {
+                width: 210mm;
+                height: 297mm;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: hidden !important;
+                background: #ffffff !important;
+            }
+
+            #zoom-wrapper {
+                display: block !important;
+                width: 100% !important;
+                height: auto !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                overflow: visible !important;
+            }
+
+            .resume-container {
+                width: 1000px !important;
+                margin: 0 auto !important;
+                box-shadow: none !important;
+                border: none !important;
+                zoom: 0.7937;
+                transform-origin: top center;
+                position: static !important;
+            }
+        }
+    
+        /* subsection heading + category (entries marked "Subsection" in the editor):
+           cv-common hides the entry's role/company/dates; renderSubsectionHeadings()
+           surfaces them as this in-line heading above the subsection's bullets. */
+        .sub-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            font-weight: bold;
+        }
+
+        .sub-head .sub-head-dates {
+            font-weight: normal;
+            font-style: italic;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* the pale item-row band is not in cv-common's wrapper-hide list */
+        #experience-list .experience-title-merged .item-row { display: none; }
+</style>
+</head>
+
+<body>
+    <div id="zoom-wrapper">
+        <div class="resume-container" id="cv-page">
+          <div class="doc">
+
+            <!-- HEADER — not a sortable section, always at top -->
+            <header class="cv-header">
+                <h1 data-field="name"></h1>
+                <div class="header-tagline" data-field="tagline"></div>
+                <div class="contact-info contact-block" data-field="contact"></div>
+            </header>
+
+            <!-- CAREER OBJECTIVE -->
+            <div class="sortable-section" data-section-id="summary">
+                <div class="section-header">Career Objective</div>
+                <div class="tagline-summary" data-field="summary"></div>
+            </div>
+
+            <!-- WORK / INTERNSHIP EXPERIENCE -->
+            <div class="sortable-section" data-section-id="experience">
+                <div class="section-header">Work / Internship Experience</div>
+                <div id="experience-list" class="blk">
+                    <!-- template row — cloned by cv-common.js for each entry -->
+                    <div class="template" style="display:none;">
+                        <div class="item-row">
+                            <div class="item-title item-left">
+                                <span data-field="role"></span><span class="exp-company-inline"
+                                    data-field="company"></span>
+                            </div>
+                            <span class="item-date" data-field="dates"></span>
+                        </div>
+                        <!-- category shown as italic sub-header when present (auto-hidden when empty) -->
+                        <div class="sub-section-title" data-field="category"></div>
+                        <ul data-list="bullets"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EDUCATION (5-column table) -->
+            <div class="sortable-section" data-section-id="education">
+                <div class="section-header">Education</div>
+                <table class="edu-table qual-table" id="education-table">
+                    <colgroup>
+                        <col style="width: 20%;">
+                        <col style="width: 12%;">
+                        <col style="width: 36%;">
+                        <col style="width: 14%;">
+                        <col style="width: 18%;">
+                    </colgroup>
+                    <thead>
+                        <tr class="qual-head">
+                            <th>COURSE</th>
+                            <th>YEAR</th>
+                            <th>INSTITUTION</th>
+                            <th>MARKS</th>
+                            <th>REMARKS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="education-list">
+                        <tr class="template" style="display:none;">
+                            <td data-field="degree"></td>
+                            <td data-field="year"></td>
+                            <td data-field="institution"></td>
+                            <td data-field="marks"></td>
+                            <td data-field="remarks"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- POSITION OF RESPONSIBILITY -->
+            <div class="sortable-section" data-section-id="leadership">
+                <div class="section-header">Position of Responsibility</div>
+                <ul data-list="leadership"></ul>
+            </div>
+
+            <!-- TECHNICAL SKILLS -->
+            <div class="sortable-section" data-section-id="skills">
+                <div class="section-header">Technical Skills</div>
+                <div data-field="skills"></div>
+            </div>
+
+            <!-- RESEARCH WORK / PROJECTS -->
+            <div class="sortable-section" data-section-id="projects">
+                <div class="section-header">Research Work</div>
+                <div id="projects-list" class="blk">
+                    <div class="template" style="display:none;">
+                        <div class="item-row">
+                            <div class="item-title item-left" data-field="title"></div>
+                        </div>
+                        <div class="proj-desc" data-field="description"></div>
+                        <ul data-list="bullets"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CERTIFICATION & COURSE -->
+            <div class="sortable-section" data-section-id="certifications">
+                <div class="section-header">Certification &amp; Course</div>
+                <ul data-list="certifications"></ul>
+            </div>
+
+            <!-- CASE COMPETITIONS / ACHIEVEMENTS -->
+            <div class="sortable-section" data-section-id="achievements">
+                <div class="section-header">Case Competitions</div>
+                <ul data-list="achievements"></ul>
+            </div>
+
+            <!-- INTERESTS -->
+            <div class="sortable-section" data-section-id="interests">
+                <div class="section-header">Interests &amp; Hobbies</div>
+                <ul data-list="interests"></ul>
+            </div>
+
+          </div>
+        </div>
+    </div>
+
+    <!-- cv-common.js handles all postMessage rendering and section ordering -->
+    <script src="cv-common.js"></script>
+    <script>
+        const originalRenderCV = window.renderCV;
+        window.renderCV = function (data) {
+            const dataCopy = JSON.parse(JSON.stringify(data || {}));
+            applyDocxEducationWidths(dataCopy);
+            originalRenderCV(dataCopy);
+            document.querySelectorAll('.sortable-section table').forEach(t => {
+                t.style.setProperty('table-layout', 'fixed', 'important');
+            });
+            renderSubsectionHeadings();
+        };
+
+        const DOCX_EDU_WIDTHS = { degree: 20, year: 12, institution: 36, marks: 14, remarks: 18 };
+        const BUILDER_DEFAULT_EDU_WIDTHS = { degree: 22, year: 12, institution: 36, marks: 14, remarks: 16 };
+
+        function applyDocxEducationWidths(dataCopy) {
+            dataCopy.tableSettings = dataCopy.tableSettings || {};
+            dataCopy.tableSettings.education = dataCopy.tableSettings.education || {};
+            const cols = dataCopy.tableSettings.education.columns || {};
+            const untouched = Object.keys(DOCX_EDU_WIDTHS).every(key => {
+                const width = Number(cols?.[key]?.width);
+                return !Number.isFinite(width) || width === BUILDER_DEFAULT_EDU_WIDTHS[key];
+            });
+            const effective = {};
+            Object.keys(DOCX_EDU_WIDTHS).forEach(key => {
+                effective[key] = {
+                    visible: cols?.[key]?.visible !== false,
+                    width: untouched ? DOCX_EDU_WIDTHS[key] : (Number(cols?.[key]?.width) || DOCX_EDU_WIDTHS[key])
+                };
+            });
+            dataCopy.tableSettings.education.columns = effective;
+
+            const colgroup = document.querySelector('#education-table colgroup');
+            if (colgroup) {
+                colgroup.innerHTML = '';
+                const order = ['degree', 'year', 'institution', 'marks', 'remarks'];
+                const visibleTotal = order.reduce((sum, key) =>
+                    sum + (effective[key].visible ? effective[key].width : 0), 0) || 1;
+                order.forEach(key => {
+                    if (effective[key].visible) {
+                        const col = document.createElement('col');
+                        col.style.width = ((effective[key].width / visibleTotal) * 100).toFixed(2) + '%';
+                        colgroup.appendChild(col);
+                    }
+                });
+            }
+        }
+
+        // Subsection entries (editor "Subsection" merge): cv-common hides the
+        // entry's role/company/dates, but users can still fill them — surface
+        // them as a bold heading above the subsection's category and bullets.
+        function renderSubsectionHeadings() {
+            document.querySelectorAll('#experience-list > *').forEach(block => {
+                if (block.classList.contains('template')) return;
+                const stale = block.querySelector('.sub-head');
+                if (stale) stale.remove();
+                if (!block.classList.contains('experience-title-merged')) return;
+
+                const roleEl = block.querySelector('[data-field="role"]');
+                const companyEl = block.querySelector('[data-field="company"]');
+                const datesEl = block.querySelector('[data-field="dates"]');
+                const roleText = (roleEl?.textContent || '').trim();
+                const companyText = (companyEl?.textContent || '').trim();
+                const datesText = (datesEl?.textContent || '').trim();
+                if (!roleText && !companyText && !datesText) return;
+
+                const titleHTML = (roleText && companyText)
+                    ? roleEl.innerHTML + ' | ' + companyEl.innerHTML
+                    : (roleText ? roleEl.innerHTML : (companyText ? companyEl.innerHTML : ''));
+                const subHead = document.createElement('div');
+                subHead.className = 'sub-head';
+                subHead.innerHTML = '<span>' + titleHTML + '</span>' +
+                    (datesText ? '<span class="sub-head-dates">' + datesEl.innerHTML + '</span>' : '');
+
+                const ul = block.querySelector('[data-list="bullets"]');
+                if (!ul || !ul.parentElement) return;
+                const cell = ul.parentElement;
+                const catEl = block.querySelector('.sub-cat, [data-field="category"]');
+                const introEl = block.querySelector('[data-field="intro"]');
+                const anchor = (catEl && catEl.parentElement === cell) ? catEl
+                    : ((introEl && introEl.parentElement === cell) ? introEl : ul);
+                cell.insertBefore(subHead, anchor);
+            });
+        }
+
+        function scaleToFit() {
+            const page = document.getElementById('cv-page');
+            const targetWidth = window.innerWidth - 20;
+            const scale = targetWidth < 1000 ? targetWidth / 1000 : 1;
+            page.style.transform = `scale(${scale})`;
+            const spaceToRemove = 1414 - (1414 * scale);
+            page.style.marginBottom = `-${spaceToRemove}px`;
+        }
+
+        function shrinkContentToFit() {
+            const page = document.getElementById('cv-page');
+            let contentScale = 1.0;
+            document.documentElement.style.setProperty('--content-scale', contentScale);
+            let i = 0;
+            while (page.scrollHeight > 1414 && i < 60) {
+                contentScale -= 0.01;
+                document.documentElement.style.setProperty('--content-scale', contentScale);
+                i++;
+            }
+        }
+
+        let _screenTransform = '';
+        let _screenMarginBottom = '';
+
+        function enablePrintMode() {
+            const page = document.getElementById('cv-page');
+            _screenTransform = page.style.transform;
+            _screenMarginBottom = page.style.marginBottom;
+            page.style.transform = 'scale(1)';
+            page.style.marginBottom = '0px';
+            shrinkContentToFit();
+        }
+
+        function disablePrintMode() {
+            const page = document.getElementById('cv-page');
+            page.style.transform = _screenTransform || '';
+            page.style.marginBottom = _screenMarginBottom || '';
+            scaleToFit();
+        }
+
+        window.addEventListener('load', function () {
+            shrinkContentToFit();
+            scaleToFit();
+            const mq = window.matchMedia('print');
+            if (mq.addEventListener) {
+                mq.addEventListener('change', e => e.matches ? enablePrintMode() : disablePrintMode());
+            } else if (mq.addListener) {
+                mq.addListener(e => e.matches ? enablePrintMode() : disablePrintMode());
+            }
+            window.addEventListener('beforeprint', enablePrintMode);
+            window.addEventListener('afterprint', disablePrintMode);
+        });
+
+        let _resizeTimer;
+        window.addEventListener('resize', function () {
+            clearTimeout(_resizeTimer);
+            _resizeTimer = setTimeout(scaleToFit, 100);
+        });
+    </script>
+</body>
+
+</html>

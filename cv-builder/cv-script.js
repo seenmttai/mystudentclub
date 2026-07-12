@@ -1242,7 +1242,7 @@
             interests: 'Interests',
             skills: 'Skills',
             achievements: 'Highlights',
-            leadership: 'Responsibility'
+            leadership: 'Positions of Responsibility'
         };
 
         function ensureSectionLabelsShape() {
@@ -1260,6 +1260,10 @@
                     cvData.sectionLabels[key].visible = true;
                 }
             });
+            // Migrate the old terse leadership default to the clearer label.
+            if (cvData.sectionLabels.leadership && cvData.sectionLabels.leadership.text === 'Responsibility') {
+                cvData.sectionLabels.leadership.text = 'Positions of Responsibility';
+            }
         }
 
         function updateSectionLabel(sectionId, field, value) {
@@ -1345,7 +1349,7 @@
         }
 
         function getSelectedTemplateFile() {
-            return document.getElementById('template-select')?.value || 'classic-blue.html';
+            return document.getElementById('template-select')?.value || 'classic.html';
         }
 
         function syncCurrentTemplateName() {
@@ -1420,7 +1424,7 @@
             normalizeSectionOrder();
 
             const select = document.getElementById('template-select');
-            const targetTemplate = state.templateFile || 'classic-blue.html';
+            const targetTemplate = state.templateFile || 'classic.html';
             if (select) select.value = targetTemplate;
             syncCurrentTemplateName();
 
@@ -2111,7 +2115,14 @@
         function updateCustomSectionTitle(id, value) {
             const section = (cvData.customSections || []).find(item => item.id === id);
             if (!section) return;
+            const prevTitle = section.title || '';
             section.title = value;
+            // Keep the section-label text in sync while it still mirrors the title;
+            // a label the user customized in the Label panel is left untouched.
+            if (cvData.sectionLabels && cvData.sectionLabels[id] &&
+                (cvData.sectionLabels[id].text || '') === prevTitle) {
+                cvData.sectionLabels[id].text = value;
+            }
             renderSectionOrderEditor();
             postToFrame();
             saveLocal();
@@ -2500,30 +2511,40 @@
 
         // Template Sidebar Logic
         const TEMPLATES = [
-            { file: 'classic-blue.html', name: 'Classic Blue', accent: '#1e40af', style: 'sans' },
-            { file: 'ledger-blue-grid.html', name: 'Ledger Blue Grid', accent: '#0d465f', style: 'ledger' },
-            { file: 'royal-blue-grid.html', name: 'Royal Blue Grid', accent: '#2d5294', style: 'royal' },
-            { file: 'pill-banner-corporate.html', name: 'Pill Banner Corporate', accent: '#2d5294', style: 'pillcorp' },
-            { file: 'steel-blue-grid.html', name: 'Steel Blue Grid', accent: '#0d465f', style: 'steel' },
-            { file: 'corporate-blue-box.html', name: 'Corporate Blue Box', accent: '#003071', style: 'corpbox' },
-            { file: 'corporate-border-grid.html', name: 'Corporate Border Grid', accent: '#17365d', style: 'corpborder' },
-            { file: 'serif-split-ledger.html', name: 'Serif Split Ledger', accent: '#17365d', style: 'serifsplit' },
-            { file: 'academic-border-ledger.html', name: 'Academic Border Ledger', accent: '#16365d', style: 'academicledger' },
-            { file: 'modern-serif.html', name: 'Modern Serif', accent: '#4f81bc', style: 'serif' },
+            { file: 'classic.html', name: 'Classic', accent: '#1e40af', style: 'sans' },
+            { file: 'ledger-layout.html', name: 'Ledger Layout', accent: '#0d465f', style: 'ledger' },
+            { file: 'structured-grid.html', name: 'Structured Grid', accent: '#2d5294', style: 'royal' },
+            { file: 'pill-corporate.html', name: 'Pill Corporate', accent: '#2d5294', style: 'pillcorp' },
+            { file: 'hybrid-grid.html', name: 'Hybrid Grid', accent: '#0d465f', style: 'steel' },
+            { file: 'corporate-box.html', name: 'Corporate Box', accent: '#003071', style: 'corpbox' },
+            { file: 'bordered-grid.html', name: 'Bordered Grid', accent: '#17365d', style: 'corpborder' },
+            { file: 'split-ledger.html', name: 'Split Ledger', accent: '#17365d', style: 'serifsplit' },
+            { file: 'academic-ledger.html', name: 'Academic Ledger', accent: '#16365d', style: 'academicledger' },
+            { file: 'modern-elegant.html', name: 'Modern Elegant', accent: '#4f81bc', style: 'serif' },
             { file: 'grid-layout.html', name: 'Grid Layout', accent: '#059669', style: 'grid' },
             { file: 'professional.html', name: 'Professional', accent: '#374151', style: 'clean' },
             { file: 'corporate.html', name: 'Corporate', accent: '#0369a1', style: 'formal' },
             { file: 'minimalist.html', name: 'Minimalist', accent: '#6b7280', style: 'minimal' },
             { file: 'bold-modern.html', name: 'Bold Modern', accent: '#dc2626', style: 'bold' },
-            { file: 'classic-refined.html', name: 'Classic Refined', accent: '#2F557F', style: 'refined' },
-            { file: 'modern-deep-blue.html', name: 'Modern Deep Blue', accent: '#2c5d79', style: 'deepblue' },
-            { file: 'executive-dark.html', name: 'Executive Dark', accent: '#404040', style: 'dark' },
-            { file: 'navy-merit.html', name: 'Navy Merit', accent: '#0f2f63', style: 'merit' },
-            { file: 'monochrome-ledger.html', name: 'Monochrome Ledger', accent: '#111111', style: 'mono' },
-            { file: 'slate-split.html', name: 'Slate Split', accent: '#28535e', style: 'split' },
-            { file: 'blue-horizon-split.html', name: 'Blue Horizon Split', accent: '#1f385c', style: 'splitblue' },
-            { file: 'blue-banner-professional.html', name: 'Blue Banner Professional', accent: '#155f82', style: 'bluebanner' },
-            { file: 'navy-professional.html', name: 'Navy Professional', accent: '#1F4E79', style: 'navypro' }
+            { file: 'refined-classic.html', name: 'Refined Classic', accent: '#2F557F', style: 'refined' },
+            { file: 'modern-bold.html', name: 'Modern Bold', accent: '#2c5d79', style: 'deepblue' },
+            { file: 'executive.html', name: 'Executive', accent: '#404040', style: 'dark' },
+            { file: 'merit-layout.html', name: 'Merit Layout', accent: '#0f2f63', style: 'merit' },
+            { file: 'clean-ledger.html', name: 'Clean Ledger', accent: '#111111', style: 'mono' },
+            { file: 'modern-split.html', name: 'Modern Split', accent: '#28535e', style: 'split' },
+            { file: 'horizon-split.html', name: 'Horizon Split', accent: '#1f385c', style: 'splitblue' },
+            { file: 'professional-banner.html', name: 'Professional Banner', accent: '#155f82', style: 'bluebanner' },
+            { file: 'executive-professional.html', name: 'Executive Professional', accent: '#1F4E79', style: 'navypro' },
+            { file: 'corporate-grid.html', name: 'Corporate Grid', accent: '#073761', style: 'tealgrid' },
+            { file: 'banner-resume.html', name: 'Banner Resume', accent: '#1F487C', style: 'navybanner' },
+            { file: 'elegant-grid.html', name: 'Elegant Grid', accent: '#074F6A', style: 'tealserif' },
+            { file: 'structured-ledger.html', name: 'Structured Ledger', accent: '#1F487C', style: 'template27' },
+            { file: 'classic-ledger.html', name: 'Classic Ledger', accent: '#001F5F', style: 'template28' },
+            { file: 'formal-ledger.html', name: 'Formal Ledger', accent: '#1F3760', style: 'template29' },
+            { file: 'smart-ledger.html', name: 'Smart Ledger', accent: '#000D53', style: 'template30' },
+            { file: 'modern-ledger.html', name: 'Modern Ledger', accent: '#2E5395', style: 'template31' },
+            { file: 'standard-ledger.html', name: 'Standard Ledger', accent: '#0E4660', style: 'template32' },
+            { file: 'classic-grid.html', name: 'Classic Grid', accent: '#2E5395', style: 'template33' }
         ];
         const TEMPLATE_COLOR_PRESETS = ['#2b2b2b', '#0f6cbd', '#155e95', '#1f8f63', '#c0392b', '#7b4db3'];
 
@@ -3034,7 +3055,7 @@ async function downloadCvFile(format = 'pdf') {
             const trimmed = (text || '').trim();
             if (!trimmed) throw new Error('Nothing to refine');
 
-            const templateFile = document.getElementById('template-select')?.value || 'classic-blue.html';
+            const templateFile = document.getElementById('template-select')?.value || 'classic.html';
             const templateId = 'template_' + templateFile.replace('cv', '').replace('-', '').replace('.html', '');
 
             const response = await fetch(`${WORKER_URL}/refine-section`, {

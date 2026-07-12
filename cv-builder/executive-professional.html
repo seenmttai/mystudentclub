@@ -11,7 +11,7 @@
             --edu-header-bg: #DEEAF6;
             --edu-exam-bg: #F1F1F1;
             --work-sub-bg: #DDEBF7;
-            --header-box-bg: #F1F1F1;
+            --header-box-bg: var(--sub-header-bg, #F1F1F1);
             --text-black: #000000;
             --text-navy: #001F5F;
             --text-link: #0461C1;
@@ -391,7 +391,7 @@
         .skills-table td.lbl {
             width: 14.5%;
             font-weight: bold;
-            white-space: nowrap;
+            white-space: normal;
             padding-right: calc(6px * var(--content-scale));
         }
 
@@ -526,7 +526,25 @@
                 position: relative !important;
             }
         }
-    </style>
+    
+        /* subsection heading + category (entries marked "Subsection" in the editor):
+           cv-common hides the entry's role/company/dates; renderSubsectionHeadings()
+           surfaces them as this in-line heading above the subsection's bullets. */
+        .sub-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            font-weight: bold;
+        }
+
+        .sub-head .sub-head-dates {
+            font-weight: normal;
+            font-style: italic;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+</style>
 </head>
 
 <body>
@@ -657,6 +675,84 @@
 
     <script src="cv-common.js"></script>
     <script>
+        const originalRenderCV = window.renderCV;
+        window.renderCV = function (data) {
+            const dataCopy = JSON.parse(JSON.stringify(data || {}));
+            applyDocxEducationWidths(dataCopy);
+            originalRenderCV(dataCopy);
+            document.querySelectorAll('.sortable-section table').forEach(t => {
+                t.style.setProperty('table-layout', 'fixed', 'important');
+            });
+            renderSubsectionHeadings();
+        };
+
+        function applyDocxEducationWidths(dataCopy) {
+            dataCopy.tableSettings = dataCopy.tableSettings || {};
+            dataCopy.tableSettings.education = dataCopy.tableSettings.education || {};
+            const cols = dataCopy.tableSettings.education.columns || {};
+            const defaultWidths = { degree: 19, institution: 34, year: 11, marks: 9, remarks: 27 };
+            const effective = {};
+            Object.keys(defaultWidths).forEach(key => {
+                effective[key] = {
+                    visible: cols?.[key]?.visible !== false,
+                    width: Number(cols?.[key]?.width) || defaultWidths[key]
+                };
+            });
+            dataCopy.tableSettings.education.columns = effective;
+
+            const colgroup = document.querySelector('#education-table colgroup') || document.querySelector('.edu-table colgroup');
+            if (colgroup) {
+                colgroup.innerHTML = '';
+                const order = ['degree', 'institution', 'year', 'marks', 'remarks'];
+                const visibleTotal = order.reduce((sum, key) =>
+                    sum + (effective[key].visible ? effective[key].width : 0), 0) || 1;
+                order.forEach(key => {
+                    if (effective[key].visible) {
+                        const col = document.createElement('col');
+                        col.style.width = ((effective[key].width / visibleTotal) * 100).toFixed(2) + '%';
+                        colgroup.appendChild(col);
+                    }
+                });
+            }
+        }
+
+        // Subsection entries (editor "Subsection" merge): cv-common hides the
+        // entry's role/company/dates, but users can still fill them — surface
+        // them as a bold heading above the subsection's category and bullets.
+        function renderSubsectionHeadings() {
+            document.querySelectorAll('#experience-list > *').forEach(block => {
+                if (block.classList.contains('template')) return;
+                const stale = block.querySelector('.sub-head');
+                if (stale) stale.remove();
+                if (!block.classList.contains('experience-title-merged')) return;
+
+                const roleEl = block.querySelector('[data-field="role"]');
+                const companyEl = block.querySelector('[data-field="company"]');
+                const datesEl = block.querySelector('[data-field="dates"]');
+                const roleText = (roleEl?.textContent || '').trim();
+                const companyText = (companyEl?.textContent || '').trim();
+                const datesText = (datesEl?.textContent || '').trim();
+                if (!roleText && !companyText && !datesText) return;
+
+                const titleHTML = (roleText && companyText)
+                    ? roleEl.innerHTML + ' | ' + companyEl.innerHTML
+                    : (roleText ? roleEl.innerHTML : (companyText ? companyEl.innerHTML : ''));
+                const subHead = document.createElement('div');
+                subHead.className = 'sub-head';
+                subHead.innerHTML = '<span>' + titleHTML + '</span>' +
+                    (datesText ? '<span class="sub-head-dates">' + datesEl.innerHTML + '</span>' : '');
+
+                const ul = block.querySelector('[data-list="bullets"]');
+                if (!ul || !ul.parentElement) return;
+                const cell = ul.parentElement;
+                const catEl = block.querySelector('.sub-cat, [data-field="category"]');
+                const introEl = block.querySelector('[data-field="intro"]');
+                const anchor = (catEl && catEl.parentElement === cell) ? catEl
+                    : ((introEl && introEl.parentElement === cell) ? introEl : ul);
+                cell.insertBefore(subHead, anchor);
+            });
+        }
+
         /* ── Helpers ─────────────────────────────────────────────────────────── */
         function esc(s) {
             return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -756,10 +852,12 @@
                 _root.style.setProperty('--banner-color', _accent);
                 _root.style.setProperty('--work-sub-bg', _lightBox);
                 _root.style.setProperty('--edu-header-bg', _lightBox);
+                _root.style.setProperty('--header-box-bg', _lightBox);
             } else {
                 _root.style.setProperty('--banner-color', '#1F4E79');
                 _root.style.setProperty('--work-sub-bg', '#DDEBF7');
                 _root.style.setProperty('--edu-header-bg', '#DEEAF6');
+                _root.style.setProperty('--header-box-bg', '#F1F1F1');
             }
             var _banner = _accent || '#1F4E79';
             document.querySelectorAll('#cv-page .section-header, #cv-page .section-banner, #cv-page .section-title, #cv-page .section-header-2').forEach(function (h) {

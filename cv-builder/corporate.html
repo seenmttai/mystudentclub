@@ -105,13 +105,32 @@
             padding: 0;
         }
 
+        .name-block-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+            padding-left: calc(10px * var(--content-scale));
+        }
+
         .name-block {
             font-size: calc(36px * var(--content-scale));
             font-weight: normal;
             display: flex;
             align-items: center;
-            padding-left: calc(10px * var(--content-scale));
-            flex-grow: 1;
+            padding-left: 0;
+            flex-grow: 0;
+        }
+
+        .header-tagline {
+            font-size: calc(16px * var(--content-scale));
+            font-weight: bold;
+            color: var(--header-bg);
+            margin-top: calc(4px * var(--content-scale));
+        }
+
+        .header-tagline:empty {
+            display: none;
         }
 
         .contact-block {
@@ -404,7 +423,29 @@
                 margin: 2% auto;
             }
         }
-    </style>
+    
+        /* subsection heading + category (entries marked "Subsection" in the editor):
+           cv-common hides the entry's role/company/dates band; renderSubsectionHeadings()
+           surfaces them as this in-line heading above the subsection's bullets. */
+        .sub-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            font-weight: bold;
+        }
+
+        .sub-head .sub-head-dates {
+            font-weight: normal;
+            font-style: italic;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .sub-cat { font-weight: bold; }
+
+        .sub-cat:empty { display: none; }
+</style>
 </head>
 
 <body>
@@ -415,7 +456,10 @@
 
                 <!-- HEADER -->
                 <div class="header-section">
-                    <div class="name-block" data-field="name"></div>
+                    <div class="name-block-wrapper">
+                        <div class="name-block" data-field="name"></div>
+                        <div class="header-tagline" data-field="tagline"></div>
+                    </div>
                     <div class="contact-block">
                         <div class="contact-row">
                             <div class="contact-label">Mobile:</div>
@@ -453,6 +497,7 @@
                             <div class="sub-header-date" data-field="dates"></div>
                         </div>
                         <div class="content-block">
+                            <div class="sub-cat" data-field="category"></div>
                             <ul data-list="bullets">
                             </ul>
                         </div>
@@ -542,6 +587,48 @@
     <!-- SCRIPT -->
     <script src="cv-common.js"></script>
     <script>
+        // Subsection entries (editor "Subsection" merge): cv-common hides the
+        // entry's role/company/dates, but users can still fill them — surface
+        // them as a bold heading (plus the category line) above the bullets.
+        const originalRenderCV = window.renderCV;
+        window.renderCV = function (data) {
+            originalRenderCV(data);
+            renderSubsectionHeadings();
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    shrinkContentToFit();
+                    scaleToFit();
+                });
+            });
+        };
+
+        function renderSubsectionHeadings() {
+            document.querySelectorAll('#experience-list > div:not(.template)').forEach(block => {
+                const stale = block.querySelector('.sub-head');
+                if (stale) stale.remove();
+                if (!block.classList.contains('experience-title-merged')) return;
+
+                const roleEl = block.querySelector('[data-field="role"]');
+                const companyEl = block.querySelector('[data-field="company"]');
+                const datesEl = block.querySelector('[data-field="dates"]');
+                const roleText = (roleEl?.textContent || '').trim();
+                const companyText = (companyEl?.textContent || '').trim();
+                const datesText = (datesEl?.textContent || '').trim();
+                if (!roleText && !companyText && !datesText) return;
+
+                const titleHTML = (roleText && companyText)
+                    ? roleEl.innerHTML + ' | ' + companyEl.innerHTML
+                    : (roleText ? roleEl.innerHTML : (companyText ? companyEl.innerHTML : ''));
+                const subHead = document.createElement('div');
+                subHead.className = 'sub-head';
+                subHead.innerHTML = '<span>' + titleHTML + '</span>' +
+                    (datesText ? '<span class="sub-head-dates">' + datesEl.innerHTML + '</span>' : '');
+
+                const anchor = block.querySelector('.sub-cat') || block.querySelector('[data-list="bullets"]');
+                if (anchor && anchor.parentElement) anchor.parentElement.insertBefore(subHead, anchor);
+            });
+        }
+
         // 1. SCALING LOGIC (Visual Zoom)
         function scaleToFit() {
             const page = document.getElementById('cv-page');
@@ -562,13 +649,16 @@
         // 2. SHRINK TO FIT LOGIC (Content Compression)
         function shrinkContentToFit() {
             const page = document.getElementById('cv-page');
-            const maxHeight = 1414;
+            if (!page) return;
+            const mainContainer = page.querySelector('.main-container');
+            const targetElement = mainContainer || page;
+            const limit = (mainContainer && mainContainer.offsetHeight > 0) ? mainContainer.offsetHeight : 1354;
 
             let contentScale = 1;
             document.documentElement.style.setProperty('--content-scale', contentScale);
 
             let iterations = 0;
-            while (page.scrollHeight > maxHeight && iterations < 50) {
+            while (targetElement.scrollHeight > limit && iterations < 50) {
                 contentScale -= 0.02;
                 document.documentElement.style.setProperty('--content-scale', contentScale);
                 iterations++;
