@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MSC Career Navigator Assessment</title>
+    <style>
+        :root {
+            --primary: #1E3A8A;
+            --primary-light: #3B82F6;
+            --bg-color: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --border: #E5E7EB;
+            --success: #10B981;
+            --warning: #EF4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .question-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+        }
+
+        .question-card.hidden {
+            display: none;
+        }
+
+        .question-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--primary);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: flex-start;
+            padding: 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option-label:hover {
+            border-color: var(--primary-light);
+            background-color: #F8FAFC;
+        }
+
+        .option-label input {
+            margin-top: 4px;
+            margin-right: 12px;
+            accent-color: var(--primary);
+            width: 18px;
+            height: 18px;
+        }
+
+        .option-text strong {
+            display: block;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .option-text span {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* Checkbox selected state logic handled via JS, but basic active styling here */
+        .option-label.selected {
+            border-color: var(--primary);
+            background-color: #EFF6FF;
+        }
+
+        .btn-submit {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-bottom: 40px;
+        }
+
+        .btn-submit:hover {
+            background: #1E40AF;
+        }
+
+        /* Report Styles */
+        #report-container {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+
+        #report-container.hidden {
+            display: none;
+        }
+
+        .report-header {
+            text-align: center;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .report-header h2 {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .report-section {
+            margin-bottom: 24px;
+            padding: 20px;
+            border-radius: 8px;
+            background: #F9FAFB;
+            border-left: 4px solid var(--primary);
+        }
+
+        .report-section.avoid {
+            border-left-color: var(--warning);
+            background: #FEF2F2;
+        }
+
+        .report-section.gap {
+            border-left-color: var(--success);
+            background: #F0FDF4;
+        }
+
+        .report-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .report-section p {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        .report-section ul {
+            list-style-type: none;
+        }
+
+        .report-section ul li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        .report-section ul li::before {
+            content: "•";
+            color: var(--primary);
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -4px;
+        }
+
+        .report-section.gap ul li::before {
+            content: "☐";
+            color: var(--success);
+            font-size: 1.2rem;
+            top: -2px;
+        }
+
+        .btn-restart {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: var(--border);
+            color: var(--text-main);
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-restart:hover {
+            background: #D1D5DB;
+        }
+
+        @media (max-width: 600px) {
+            .question-card {
+                padding: 16px;
+            }
+
+            .option-label {
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>THE ASSESSMENT QUESTIONNAIRE</h1>
+            <p>8 Questions to Pinpoint Your Exact Finance Niche</p>
+        </header>
+
+        <main id="quiz-container">
+            <form id="assessment-form">
+
+                <!-- Q1 -->
+                <div class="question-card" id="card-q1">
+                    <div class="question-title">Q1. The "Work DNA" Test: If you had to look at a laptop screen for 10
+                        hours a day, what should be on it?</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q1" value="A" required>
+                            <div class="option-text"><strong>A) Bare Acts & Case Laws</strong><span>I enjoy reading
+                                    heavy tax laws, interpreting notifications, and finding legal loopholes.</span>
+                            </div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q1" value="B">
+                            <div class="option-text"><strong>B) Excel Models & Pitch Decks</strong><span>I want to build
+                                    financial models, value businesses, and project future cash flows.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q1" value="C">
+                            <div class="option-text"><strong>C) Process Flowcharts & SOPs</strong><span>I want to study
+                                    how a business operates, find internal leaks, and map processes.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q1" value="D">
+                            <div class="option-text"><strong>D) Tally/ERPs & General Ledgers</strong><span>I want to
+                                    manage core accounts, ensure perfect IndAS/GAAP compliance, and close the
+                                    books.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q1" value="E">
+                            <div class="option-text"><strong>E) Bloomberg Terminals & Market Data</strong><span>I want
+                                    to track global markets, interest rates, currency movements, and stock
+                                    charts.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q1" value="F">
+                            <div class="option-text"><strong>F) Algorithms & System Architecture</strong><span>I want to
+                                    write SQL queries, automate accounting via Python/ERPs, or build FinTech
+                                    products.</span></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="question-card" id="card-q2">
+                    <div class="question-title">Q2. The "Stakeholder" Test: Who do you want to advise/work for?</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q2" value="A" required>
+                            <div class="option-text"><strong>A) Multiple Corporate Clients (Advisory)</strong><span>I
+                                    want to jump from project to project, advising different companies.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q2" value="B">
+                            <div class="option-text"><strong>B) A Single Corporate Employer (Industry)</strong><span>I
+                                    want to join one company, deeply understand operations, and help it grow from
+                                    inside.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q2" value="C">
+                            <div class="option-text"><strong>C) Retail/HNI/Corporate Borrowers</strong><span>I want to
+                                    deal with clients who need loans or need their wealth managed.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q2" value="D">
+                            <div class="option-text"><strong>D) Global Parent Entities (GCCs)</strong><span>I want to
+                                    sit in India but manage backend reporting/tax for US/UK/European parents.</span>
+                            </div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q2" value="E">
+                            <div class="option-text"><strong>E) The Government/Nation (Public Sector)</strong><span>I
+                                    want to regulate markets, investigate white-collar crime, or draft public
+                                    policy.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q2" value="F">
+                            <div class="option-text"><strong>F) Early-Stage Startups/Founders</strong><span>I want to
+                                    work with chaotic startups and help them build finance functions from
+                                    scratch.</span></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="question-card" id="card-q3">
+                    <div class="question-title">Q3. The "Ambiguity" Test: How do you want to handle numbers?</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q3" value="A" required>
+                            <div class="option-text"><strong>A) Precision & Auditing (Past)</strong><span>Numbers should
+                                    be exact. The balance sheet must tally. Checking historical data.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q3" value="B">
+                            <div class="option-text"><strong>B) Estimating & Forecasting (Future)</strong><span>Okay if
+                                    numbers don't tie to the penny, as long as forecast and business logic are
+                                    sound.</span></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="question-card" id="card-q4">
+                    <div class="question-title">Q4. The "Lifestyle vs. Reward" Trade-off: What is your preferred
+                        balance?</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q4" value="A" required>
+                            <div class="option-text"><strong>A) Uncapped Money & Extreme Grind</strong><span>Gladly work
+                                    14–16 hrs/day and weekends for a shot at massive money. Thrive under
+                                    pressure.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q4" value="B">
+                            <div class="option-text"><strong>B) Strategic Impact & Cyclical Grind</strong><span>Normal
+                                    hours generally, fine working late during month-end closes or budget seasons.</span>
+                            </div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q4" value="C">
+                            <div class="option-text"><strong>C) Stability & Clean Hours</strong><span>Prefer a stable,
+                                    predictable 9-to-6 job with good corporate benefits and free weekends.</span></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Conditional Q5 (If Q1=A) -->
+                <div class="question-card hidden" id="card-q5">
+                    <div class="question-title">Q5. Which flavor of Law excites you the most?</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q5" value="A">
+                            <div class="option-text"><strong>A) General Compliance</strong><span>Regular corporate
+                                    income tax filing and general compliance.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q5" value="B">
+                            <div class="option-text"><strong>B) International Treaties</strong><span>Complex
+                                    cross-border pricing policies and international treaties (DTAA).</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q5" value="C">
+                            <div class="option-text"><strong>C) M&A Structuring</strong><span>Structuring mergers to
+                                    save maximum tax during a massive acquisition.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q5" value="D">
+                            <div class="option-text"><strong>D) Supply Chain & Subsidies</strong><span>Supply chain
+                                    taxation (GST, Customs) and securing government subsidies (PLI).</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q5" value="E">
+                            <div class="option-text"><strong>E) Litigation</strong><span>Fighting cases against the tax
+                                    department in tribunals and courts.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q5" value="F">
+                            <div class="option-text"><strong>F) Enforcement</strong><span>Undertaking massive operations
+                                    to investigate and enforce tax collection (UPSC).</span></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Conditional Q6 (If Q1=B) -->
+                <div class="question-card hidden" id="card-q6">
+                    <div class="question-title">Q6. What part of the "Deal" do you want to do?</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q6" value="A">
+                            <div class="option-text"><strong>A) Front-End Negotiations</strong><span>Finding targets and
+                                    doing hardcore front-end pitching and deal negotiations.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q6" value="B">
+                            <div class="option-text"><strong>B) Due Diligence</strong><span>Validating target’s
+                                    historical numbers and stripping out fake EBITDA (QoE).</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q6" value="C">
+                            <div class="option-text"><strong>C) Valuation</strong><span>Running DCF valuation models to
+                                    find the fair value of a brand or business.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q6" value="D">
+                            <div class="option-text"><strong>D) Backend Execution</strong><span>Executing trades or
+                                    doing backend settlements for Wall Street bankers.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q6" value="E">
+                            <div class="option-text"><strong>E) Restructuring</strong><span>Taking over a bankrupt
+                                    company, fighting creditors, and restructuring it.</span></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Conditional Q7 (If Q1=E) -->
+                <div class="question-card hidden" id="card-q7">
+                    <div class="question-title">Q7. How do you want to interact with the Market?</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q7" value="A">
+                            <div class="option-text"><strong>A) Advising (Research)</strong><span>Advising institutional
+                                    clients on which stock to buy (Writing research reports).</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q7" value="B">
+                            <div class="option-text"><strong>B) Investing (Buy Side)</strong><span>Putting my fund's
+                                    actual money into stocks or startups and managing the portfolio.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q7" value="C">
+                            <div class="option-text"><strong>C) Credit Risk</strong><span>Assessing if a company will
+                                    default on a multi-crore bank loan.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q7" value="D">
+                            <div class="option-text"><strong>D) Trading Desk</strong><span>Sitting on a trading desk
+                                    betting on Forex, proprietary trades, and hedging risks.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q7" value="E">
+                            <div class="option-text"><strong>E) Wealth Management</strong><span>Schmoozing and bringing
+                                    in rich clients to manage personal wealth or corporate limits.</span></div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Conditional Q8 (If Q2=B) -->
+                <div class="question-card hidden" id="card-q8">
+                    <div class="question-title">Q8. Where do you want to sit within the company?</div>
+                    <div class="options">
+                        <label class="option-label"><input type="radio" name="q8" value="A">
+                            <div class="option-text"><strong>A) Reporting & Audit</strong><span>Preparing board reports
+                                    and dealing with Statutory Auditors.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q8" value="B">
+                            <div class="option-text"><strong>B) Ops Finance (AR/AP)</strong><span>Handling day-to-day
+                                    accounts payable, receivable, and cash ledgers.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q8" value="C">
+                            <div class="option-text"><strong>C) Business Partnering</strong><span>Partnering with
+                                    Sales/Marketing to decide product pricing and profitability.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q8" value="D">
+                            <div class="option-text"><strong>D) Treasury Operations</strong><span>Managing the company's
+                                    daily cash, bank limits, and currency hedging.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q8" value="E">
+                            <div class="option-text"><strong>E) Supply Chain/Factory</strong><span>Managing inventory
+                                    costs and negotiating with vendors at a factory plant.</span></div>
+                        </label>
+                        <label class="option-label"><input type="radio" name="q8" value="F">
+                            <div class="option-text"><strong>F) Investor Relations</strong><span>Drafting scripts for
+                                    the CEO to read to stock market investors during earnings calls.</span></div>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Generate My Career Navigator Report</button>
+            </form>
+        </main>
+
+        <section id="report-container" class="hidden">
+            <div class="report-header">
+                <h2>🎯 YOUR MSC CAREER NAVIGATOR REPORT</h2>
+                <p>Calculated based on your unique Work DNA and preferences.</p>
+            </div>
+
+            <div class="report-section">
+                <h3>1. YOUR EXACT DOMAIN MATCH</h3>
+                <p><strong>Primary Niche:</strong> <span id="out-primary-niche"></span></p>
+                <p><em>Why this fits:</em> <span id="out-primary-reason"></span></p>
+            </div>
+
+            <div class="report-section">
+                <h3>2. YOUR CLOSEST CORPORATE (INDUSTRY) MATCH</h3>
+                <p><strong>Alternative Path:</strong> <span id="out-alt-niche"></span></p>
+                <p><em>Why this fits:</em> <span id="out-alt-reason"></span></p>
+            </div>
+
+            <div class="report-section avoid">
+                <h3>3. DOMAINS TO ACTIVELY AVOID</h3>
+                <p><strong>Avoid:</strong> <span id="out-avoid-niche"></span></p>
+                <p><em>Reasoning:</em> <span id="out-avoid-reason"></span></p>
+            </div>
+
+            <div class="report-section">
+                <h3>4. YOUR TARGET COMPANIES</h3>
+                <p><em>Customized by filtering Domain Match + Size/Loc:</em></p>
+                <ul id="out-companies">
+                </ul>
+            </div>
+
+            <div class="report-section gap">
+                <h3>5. YOUR CURRENT "SKILL GAP" (Action Required)</h3>
+                <p>To guarantee you get shortlisted, you need more than generic knowledge:</p>
+                <ul id="out-skills">
+                </ul>
+            </div>
+
+            <button class="btn-restart" onclick="location.reload()">Take Assessment Again</button>
+        </section>
+    </div>
+
+    <script>
+        // Highlight selected options
+        document.addEventListener('change', function (e) {
+            if (e.target.type === 'radio') {
+                const labels = document.querySelectorAll(`input[name="${e.target.name}"]`);
+                labels.forEach(radio => {
+                    radio.closest('.option-label').classList.remove('selected');
+                });
+                e.target.closest('.option-label').classList.add('selected');
+            }
+        });
+
+        // Handle Conditional logic for Q5-Q8
+        const form = document.getElementById('assessment-form');
+        form.addEventListener('change', function () {
+            const q1 = document.querySelector('input[name="q1"]:checked')?.value;
+            const q2 = document.querySelector('input[name="q2"]:checked')?.value;
+
+            // Reset and hide
+            document.getElementById('card-q5').classList.add('hidden');
+            document.getElementById('card-q6').classList.add('hidden');
+            document.getElementById('card-q7').classList.add('hidden');
+            document.getElementById('card-q8').classList.add('hidden');
+
+            document.querySelectorAll('#card-q5 input, #card-q6 input, #card-q7 input, #card-q8 input').forEach(el => el.required = false);
+
+            if (q1 === 'A') {
+                document.getElementById('card-q5').classList.remove('hidden');
+                document.querySelectorAll('#card-q5 input').forEach(el => el.required = true);
+            }
+            if (q1 === 'B') {
+                document.getElementById('card-q6').classList.remove('hidden');
+                document.querySelectorAll('#card-q6 input').forEach(el => el.required = true);
+            }
+            if (q1 === 'E') {
+                document.getElementById('card-q7').classList.remove('hidden');
+                document.querySelectorAll('#card-q7 input').forEach(el => el.required = true);
+            }
+            if (q2 === 'B') {
+                document.getElementById('card-q8').classList.remove('hidden');
+                document.querySelectorAll('#card-q8 input').forEach(el => el.required = true);
+            }
+        });
+
+        // MASTER ROUTING LOGIC DATABASE
+        const domains = [
+            // 1. PRACTICE & CONSULTING
+            { name: "Statutory Audit", cat: "Firm", req: { q1: ['D'], q2: ['A'], q3: ['A'] } },
+            { name: "Internal Audit (Risk Advisory)", cat: "Firm", req: { q1: ['C'], q2: ['A'], q3: ['A'] } },
+            { name: "Systems Audit (IS)", cat: "Firm", req: { q1: ['F'], q2: ['A'] } },
+            { name: "Corporate Tax", cat: "Firm", req: { q1: ['A'], q5: ['A'] } },
+            { name: "Transfer Pricing", cat: "Firm", req: { q1: ['A'], q5: ['B'] } },
+            { name: "International Tax", cat: "Firm", req: { q1: ['A'], q5: ['B'], q2: ['D'] } },
+            { name: "M&A Tax", cat: "Firm", req: { q1: ['A'], q5: ['C'], q4: ['A', 'B'] } },
+            { name: "GST Compliance & Advisory", cat: "Firm", req: { q1: ['A'], q5: ['D'] } },
+            { name: "Customs/FTP & Subsidies", cat: "Firm", req: { q1: ['A'], q5: ['D'] } },
+            { name: "Litigation", cat: "Firm", req: { q1: ['A'], q5: ['E'], q3: ['B'] } },
+            { name: "Financial Due Diligence (FDD)", cat: "Firm", req: { q1: ['B'], q2: ['A'], q6: ['B'] } },
+            { name: "Valuation", cat: "Firm", req: { q1: ['B'], q2: ['A'], q6: ['C'] } },
+            { name: "Forensic Investigation", cat: "Firm", req: { q1: ['C'], q3: ['A'] } },
+            { name: "Insolvency & Bankruptcy (IBC)", cat: "Firm", req: { q1: ['A', 'B'], q6: ['E'] } },
+            { name: "M&A Advisory", cat: "Firm", req: { q1: ['B'], q2: ['A'], q6: ['A'] } },
+
+            // 2. CORPORATE FINANCE
+            { name: "Financial Controllership", cat: "Industry", req: { q1: ['D'], q2: ['B'], q8: ['A'] } },
+            { name: "GL / MIS", cat: "Industry", req: { q1: ['D'], q2: ['B'], q3: ['A'] } },
+            { name: "Treasury (Operations)", cat: "Industry", req: { q1: ['E'], q2: ['B'], q8: ['D'] } },
+            { name: "AR / AP", cat: "Industry", req: { q1: ['C', 'D'], q2: ['B'], q8: ['B'] } },
+            { name: "Internal Audit (Corporate)", cat: "Industry", req: { q1: ['C'], q2: ['B'], q3: ['A'] } },
+            { name: "FP&A", cat: "Industry", req: { q1: ['B'], q2: ['B'], q3: ['B'], q4: ['B'] } },
+            { name: "Business Finance", cat: "Industry", req: { q1: ['B'], q2: ['B'], q8: ['C'] } },
+            { name: "Supply Chain Finance", cat: "Industry", req: { q1: ['B', 'C'], q2: ['B'], q8: ['E'] } },
+            { name: "Investor Relations (IR)", cat: "Industry", req: { q1: ['B', 'E'], q2: ['B'], q8: ['F'] } },
+
+            // 3. FINANCIAL SERVICES
+            { name: "Credit Analysis", cat: "Finance", req: { q1: ['E'], q2: ['C'], q7: ['C'] } },
+            { name: "Relationship Management (RM)", cat: "Finance", req: { q3: ['A'], q2: ['C'] } },
+            { name: "Treasury (Front Office)", cat: "Finance", req: { q1: ['E'], q2: ['C'], q7: ['D'], q4: ['A'] } },
+            { name: "Investment Banking – Front Office", cat: "Finance", req: { q1: ['B'], q2: ['C'], q4: ['A'], q6: ['A'] } },
+            { name: "Investment Banking – Mid Office", cat: "Finance", req: { q1: ['B', 'C'], q2: ['C'], q4: ['B'], q6: ['C'] } },
+            { name: "Investment Banking – Back Office", cat: "Finance", req: { q1: ['D'], q2: ['C', 'D'], q6: ['D'] } },
+            { name: "Equity Research (Sell Side)", cat: "Finance", req: { q1: ['E'], q3: ['B'], q7: ['A'] } },
+            { name: "Equity Research (Buy Side)", cat: "Finance", req: { q1: ['E'], q3: ['B'], q7: ['B'] } },
+            { name: "Private Equity (PE)", cat: "Finance", req: { q1: ['B'], q3: ['B'], q7: ['B'] } },
+            { name: "Venture Capital (VC)", cat: "Finance", req: { q1: ['B'], q3: ['B'], q7: ['B'] } },
+            { name: "Family Office Management", cat: "Finance", req: { q1: ['A', 'B'], q2: ['C'] } },
+            { name: "Wealth Management", cat: "Finance", req: { q3: ['A'], q7: ['E'] } },
+
+            // 4. NEW AGE & TECH
+            { name: "Finance Transformation (SAP)", cat: "Tech", req: { q1: ['F'], q2: ['A', 'B'] } },
+            { name: "FinTech / Digital Finance", cat: "Tech", req: { q1: ['F'], q2: ['F'] } },
+            { name: "Data Analytics & BI", cat: "Tech", req: { q1: ['F'], q4: ['B'] } },
+
+            // 5. GCCs
+            { name: "Global Reporting (US GAAP/IFRS)", cat: "GCC", req: { q1: ['D'], q2: ['D'], q4: ['C'] } },
+            { name: "Global Tax Compliance", cat: "GCC", req: { q1: ['A'], q2: ['D'], q4: ['C'] } },
+            { name: "Regulatory Reporting", cat: "GCC", req: { q1: ['D', 'E'], q2: ['D'] } },
+
+            // 6. PUBLIC SECTOR & ENTREPRENEURIAL
+            { name: "Regulatory Bodies (SEBI/RBI)", cat: "Public", req: { q1: ['A', 'C'], q2: ['E'], q3: ['A'] } },
+            { name: "Public Policy", cat: "Public", req: { q1: ['A', 'E'], q2: ['E'] } },
+            { name: "Civil Services (IRS)", cat: "Public", req: { q1: ['A'], q2: ['E'], q5: ['F'] } },
+            { name: "Virtual CFO (vCFO)", cat: "Entrepreneurial", req: { q1: ['D'], q2: ['F'] } }
+        ];
+
+        // Data mappings for output context
+        const reasonsMap = {
+            q1: {
+                'A': "interpreting laws, drafting legal opinions, and navigating tax codes",
+                'B': "building financial models, evaluating deals, and forecasting future cash flows",
+                'C': "mapping complex business processes, finding operational leaks, and optimizing workflows",
+                'D': "ensuring IndAS compliance, managing general ledgers, and maintaining core accounting hygiene",
+                'E': "tracking macroeconomic data, capital markets, and managing liquidity/investments",
+                'F': "working with databases, automating finance using tech, and designing system architectures"
+            },
+            q2: {
+                'A': "acting as a strategic consultant across multiple dynamic client projects.",
+                'B': "embedding yourself deep inside one core industry player to drive its internal growth.",
+                'C': "managing relationships and capital for HNI/retail/corporate borrowers in the financial markets.",
+                'D': "sitting in offshore centers (India) but handling massive global mandates for parent entities.",
+                'E': "regulating markets, shaping policy, or serving the nation at a macroeconomic level.",
+                'F': "navigating the chaotic, hyper-growth environment of early-stage startups and founders."
+            }
+        };
+
+        function getCompanies(domainStr) {
+            const d = domainStr.toLowerCase();
+            if (d.includes('tax') || d.includes('pricing') || d.includes('litigation')) {
+                return ["Big 4 (EY, PwC, Deloitte, KPMG)", "Tier 1 Tax Boutiques (Dhruva Advisors, Transaction Square)", "MNC In-house Tax Desks (Google, Amazon)"];
+            } else if (d.includes('audit') || d.includes('forensic')) {
+                return ["Big 4 Assurance & Risk Advisory", "Top 10 Firms (BDO, Grant Thornton, Mazars)", "Internal Audit Teams of FMCG giants (HUL, ITC)"];
+            } else if (d.includes('banking') || d.includes('equity') || d.includes('credit') || d.includes('wealth')) {
+                return ["Bulge Bracket Banks (Goldman Sachs, JP Morgan, Morgan Stanley)", "Top Private Banks (HDFC, ICICI, Kotak)", "Top Brokerages (Motilal Oswal, Avendus)"];
+            } else if (d.includes('fp&a') || d.includes('business finance') || d.includes('controllership') || d.includes('supply chain')) {
+                return ["FMCG Giants (HUL, ITC, Marico, Nestle)", "Tech/E-commerce (Amazon, Flipkart, Swiggy)", "Conglomerates (Tata, Reliance)"];
+            } else if (d.includes('deal') || d.includes('fdd') || d.includes('valuation') || d.includes('m&a')) {
+                return ["Big 4 Deal Advisory (Deals/SaT)", "Boutique IB & Restructuring (Alvarez & Marsal, o3 Capital)", "Private Equity / VC Funds"];
+            } else if (d.includes('global') || d.includes('reporting')) {
+                return ["Global Capability Centers (GCCs: Target, Shell, Walmart)", "MNC Bank Back-offices (Citi, Barclays, JPM GSC)", "Big 4 Global Delivery (EY GDS, Deloitte USI)"];
+            } else if (d.includes('tech') || d.includes('fintech') || d.includes('sap') || d.includes('data')) {
+                return ["FinTech Unicorns (Razorpay, CRED, PhonePe)", "Tech Consultancies (Accenture, IBM, Big 4 Tech)", "Oracle, SAP, Zoho"];
+            } else if (d.includes('public') || d.includes('sebi') || d.includes('irs')) {
+                return ["Regulatory Bodies (SEBI, RBI, CCI)", "Top Think Tanks (NIPFP, CPR)", "UPSC / Civil Services"];
+            }
+            return ["Top Tier CA Firms", "Fortune 500 Companies", "Leading Financial Institutions"];
+        }
+
+        function getSkillGaps(domainStr) {
+            const d = domainStr.toLowerCase();
+            if (d.includes('tax') || d.includes('pricing')) return ["Read OECD Guidelines & recent DTAA amendments.", "Follow Supreme Court rulings closely.", "Download MSC Resume Template 4 (Regulatory/Advisory focus)."];
+            if (d.includes('audit') && d.includes('statutory')) return ["Master IndAS & CARO 2020 intricacies.", "Learn Advanced Excel data sampling techniques.", "Highlight IFC and Substantive Procedures on CV."];
+            if (d.includes('fdd') || d.includes('m&a') || d.includes('valuation') || d.includes('banking - front')) return ["Master 3-statement Financial Modeling & DCF.", "Understand 'Quality of Earnings' and EBITDA normalization.", "Learn to build flawless pitch decks (PowerPoint)."];
+            if (d.includes('fp&a') || d.includes('business finance')) return ["Master Variance Analysis and Budget Forecasting.", "Learn Data Visualization (Power BI / Tableau).", "Understand Unit Economics (Gross Margins, CAC, LTV)."];
+            if (d.includes('tech') || d.includes('data') || d.includes('system')) return ["Learn SQL for database querying.", "Understand ERP T-Codes and architecture (SAP/Oracle).", "Familiarize yourself with Python data libraries or API basics."];
+            if (d.includes('credit') || d.includes('treasury')) return ["Master Credit Rating ratios and CMA Data prep.", "Track global macroeconomics (Fed rates, Bond yields).", "Understand RBI monetary policy updates."];
+            if (d.includes('global') || d.includes('us gaap')) return ["Study US GAAP / IFRS differences deeply.", "Familiarize yourself with SEC filing formats (10-K).", "Consider pursuing CPA or ACCA DipIFR."];
+            return ["Upskill in Advanced Excel.", "Refine communication and presentation skills.", "Tailor your CV dropping generic vouching points."];
+        }
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Gather answers
+            const formData = new FormData(form);
+            const ans = {};
+            for (let [key, value] of formData.entries()) {
+                ans[key] = value;
+            }
+
+            // Scoring algorithm
+            let results = [];
+            domains.forEach(domain => {
+                let score = 0;
+                let possible = Object.keys(domain.req).length;
+
+                for (let q in domain.req) {
+                    if (ans[q] && domain.req[q].includes(ans[q])) {
+                        score += 1;
+                    }
+                }
+                results.push({ ...domain, matchScore: score / possible, absoluteScore: score });
+            });
+
+            // Sort by percentage match, then absolute match
+            results.sort((a, b) => b.matchScore - a.matchScore || b.absoluteScore - a.absoluteScore);
+
+            // 1. Primary Match
+            const primary = results[0];
+
+            // 2. Alternative Corporate Match (Industry)
+            let alt = results.find(d => d.cat === 'Industry' && d.name !== primary.name);
+            if (!alt) alt = results.find(d => d.name !== primary.name); // Fallback
+
+            // 3. Domains to Avoid
+            // Find the absolute lowest score, preferably one with conflicting Q3 (Past vs Future) or Q4 (Grind vs Chill)
+            let avoidList = results.filter(d => d.matchScore === 0);
+            let avoid = avoidList.length > 0 ? avoidList[avoidList.length - 1] : results[results.length - 1];
+
+            // Fill Data
+            document.getElementById('out-primary-niche').textContent = `${primary.name} (${primary.cat})`;
+            document.getElementById('out-primary-reason').textContent = `Based on your DNA test, you prefer ${reasonsMap.q1[ans.q1]}. Pairing this with your desire for ${reasonsMap.q2[ans.q2]} makes this niche your absolute optimal path.`;
+
+            document.getElementById('out-alt-niche').textContent = `${alt.name}`;
+            document.getElementById('out-alt-reason').textContent = `If you ever transition out of your primary niche, your skillset and logic preferences map perfectly to ${alt.name}, dealing with similar numbers but from an industry perspective.`;
+
+            document.getElementById('out-avoid-niche').textContent = `${avoid.name}`;
+            let avoidReason = "This domain requires a completely opposite workflow and stakeholder environment than what you selected. It will likely cause rapid burnout and frustration.";
+            if (ans.q3 === 'A') avoidReason = "You prefer exactness and past compliance. Domains involving high-ambiguity forecasting or chaotic unstructured data will frustrate you.";
+            if (ans.q3 === 'B') avoidReason = "You prefer strategy and future forecasting. Backend processing, routine compliance, or rigid statutory checking will bore you immensely.";
+            if (ans.q4 === 'C') avoidReason = "You selected a preference for clean hours and stability. This domain is notorious for brutal hours, unpredictable cycles, and extreme pressure.";
+            document.getElementById('out-avoid-reason').textContent = avoidReason;
+
+            // Companies
+            const companies = getCompanies(primary.name);
+            document.getElementById('out-companies').innerHTML = companies.map(c => `<li>${c}</li>`).join('');
+
+            // Skills
+            const skills = getSkillGaps(primary.name);
+            document.getElementById('out-skills').innerHTML = skills.map(s => `<li>${s}</li>`).join('');
+
+            // UI Swap
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('report-container').classList.remove('hidden');
+            window.scrollTo(0, 0);
+        });
+    </script>
+
+</body>
+
+</html>
