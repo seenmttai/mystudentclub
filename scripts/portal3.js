@@ -318,7 +318,7 @@ function toggleSaveJob(job, btnElement) {
 
 function renderJobCard(job) {
     const jobCard = document.createElement('article');
-    jobCard.className = 'job-card';
+    jobCard.className = 'job-card' + (job.is_exclusive ? ' job-card-exclusive' : '');
     jobCard.dataset.jobId = job.id;
 
     const companyName = (job.Company || '').trim();
@@ -368,6 +368,23 @@ function renderJobCard(job) {
             </div>`);
     const infoRowHtml = infoRowItems.length ? `<div class="job-card-info-row">${infoRowItems.join('')}</div>` : '';
     const descriptionText = job.Description ? job.Description.replace(/[#*_`\[\]]/g, '').trim() : '';
+    const isLocked = job.is_exclusive && !isEnrolledSync('Industrial Training Job Portal');
+    let applyButtonHtml = '';
+    if (isLocked) {
+        applyButtonHtml = `
+            <button class="apply-now-card-btn primary exclusive-locked-btn" style="background: linear-gradient(135deg, #f59e0b, #d97706) !important; color: white !important; border: none !important; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; font-weight: 600;">
+                <svg fill="currentColor" viewBox="0 0 20 20" width="13" height="13" style="color: white; margin-right: 2px;"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/></svg>
+                Unlock Apply
+            </button>
+        `;
+    } else {
+        applyButtonHtml = `
+            <a href="${applyLink}" target="_blank" class="apply-now-card-btn primary ${buttonClass}">
+                Apply Now
+                <svg fill="currentColor" viewBox="0 0 24 24" width="13" height="13"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg>
+            </a>
+        `;
+    }
 
     jobCard.innerHTML = `
         <div class="job-card-top-row">
@@ -385,6 +402,7 @@ function renderJobCard(job) {
             ${isSalaryDisclosed(compText) ? `<span class="job-card-side-comp">${/^\d/.test(compText.trim()) ? "₹" + compText.trim() : compText}</span>` : ''}
         </div>
         <div class="job-card-tags">
+            ${job.is_exclusive ? `<span class="job-tag tag-exclusive"><i class="fas fa-star"></i> Exclusive</span>` : ""}
             ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ""}
             <span class="job-tag job-tag-location">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="11" height="11"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -400,10 +418,7 @@ function renderJobCard(job) {
         ${infoRowHtml}
         ${descriptionText ? `<p class="job-card-description">${descriptionText.slice(0, 120)}${descriptionText.length > 120 ? "…" : ""}</p>` : ""}
         <div class="job-card-actions">
-            <a href="${applyLink}" target="_blank" class="apply-now-card-btn primary ${buttonClass}">
-                Apply Now
-                <svg fill="currentColor" viewBox="0 0 24 24" width="13" height="13"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/></svg>
-            </a>
+            ${applyButtonHtml}
             <button class="view-details-card-btn secondary">View Details ›</button>
         </div>`;
 
@@ -411,6 +426,11 @@ function renderJobCard(job) {
     if (applyBtn) {
         applyBtn.addEventListener('click', (e) => {
             e.stopPropagation();
+            if (isLocked) {
+                e.preventDefault();
+                showExclusiveLockedModal(job);
+                return;
+            }
             setTimeout(() => markJobAsApplied(job), 500);
         });
     }
@@ -585,7 +605,85 @@ async function recordApplication(job, btnElement) {
     }
 }
 
+function showExclusiveLockedModal(job) {
+    const companyName = (job.Company || '').trim();
+    const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
+
+    dom.modalBody.innerHTML = `
+        <div class="modal-header">
+            <div class="modal-logo">${companyInitial}</div>
+            <div class="modal-title-group">
+                <h2>${job.Company || 'Company'}</h2>
+                <p>${job.Location || ''}</p>
+            </div>
+        </div>
+        <div style="
+            text-align: center;
+            padding: 2.5rem 1.5rem 2rem;
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border-radius: 16px;
+            border: 1.5px solid #fbbf24;
+            margin: 1.25rem 0;
+        ">
+            <div style="
+                width: 64px; height: 64px;
+                background: linear-gradient(135deg, #f59e0b, #d97706);
+                border-radius: 50%;
+                display: flex; align-items: center; justify-content: center;
+                margin: 0 auto 1rem;
+                box-shadow: 0 8px 20px rgba(245,158,11,0.35);
+            ">
+                <i class="fas fa-lock" style="color: white; font-size: 1.5rem;"></i>
+            </div>
+            <div style="
+                display: inline-flex; align-items: center; gap: 0.4rem;
+                background: linear-gradient(135deg, #f59e0b, #d97706);
+                color: white; font-size: 0.7rem; font-weight: 700;
+                padding: 3px 10px; border-radius: 999px; letter-spacing: 0.06em;
+                margin-bottom: 1rem;
+            ">
+                <i class="fas fa-star" style="font-size: 0.65rem;"></i> EXCLUSIVE VACANCY
+            </div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: #92400e; margin-bottom: 0.6rem;">
+                MSC Program Members Only
+            </h3>
+            <p style="color: #78350f; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem; max-width: 320px; margin-left: auto; margin-right: auto;">
+                This vacancy is exclusively available to students enrolled in the <strong>MSC ICAI Industrial Training Program</strong>. Enroll to unlock full details and apply directly.
+            </p>
+            <a href="/ca-industrial-training-program" target="_blank" style="
+                display: inline-flex; align-items: center; gap: 0.5rem;
+                background: linear-gradient(135deg, #f59e0b, #d97706);
+                color: white; font-weight: 600; font-size: 0.92rem;
+                padding: 0.75rem 1.75rem; border-radius: 10px;
+                text-decoration: none;
+                box-shadow: 0 4px 14px rgba(245,158,11,0.4);
+                transition: transform 0.2s, box-shadow 0.2s;
+            " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(245,158,11,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(245,158,11,0.4)'">
+                <i class="fas fa-graduation-cap"></i>
+                Enroll in MSC Program
+            </a>
+            ${!currentSession ? `
+            <p style="margin-top: 1rem; font-size: 0.82rem; color: #92400e;">
+                Already enrolled? <a href="/login.html" style="color: #d97706; font-weight: 600; text-decoration: underline;">Sign in</a> to access.
+            </p>` : ''}
+        </div>
+        <div class="modal-footer" style="text-align: center; padding: 1rem; border-top: 1px solid #e5e7eb; margin-top: 1rem;">
+            <p style="color: #6b7280; font-size: 0.85rem;">
+                <i class="fas fa-shield-alt" style="color: #f59e0b; margin-right: 4px;"></i>
+                Exclusive vacancies are MSCIT program enrolled students only.
+            </p>
+        </div>`;
+
+    dom.modalOverlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
 function showModal(job) {
+    // --- Exclusive vacancy gate ---
+    if (job.is_exclusive && !isEnrolledSync('Industrial Training Job Portal')) {
+        showExclusiveLockedModal(job);
+        return;
+    }
     const companyName = (job.Company || '').trim();
     const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
     const postedDate = job.Created_At ? getDaysAgo(job.Created_At) : 'N/A';
@@ -918,128 +1016,137 @@ async function fetchJobs() {
         } else if (currentTable === "Semi Qualified Jobs") {
             selectColumns += ', Experience, "Secondary Domain", Tags, "Company Type", "Industry Type"';
         } else if (currentTable === "Industrial Training Job Portal") {
-            selectColumns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags"';
+            selectColumns += ', "Company Type", "Industry Type", "Stipend Range", "Functional Tags", "Technology Tags", is_exclusive';
         } else if (currentTable === "Articleship Jobs") {
             selectColumns += ', "Exposure Tags", "Firm Type", "Client Exposure Tags", "Stipend Range"';
         }
 
-        let query = supabaseClient.from(currentTable).select(selectColumns);
+        const buildQuery = (cols) => {
+            let q = supabaseClient.from(currentTable).select(cols);
 
-        // Optimize keyword query building - pre-process terms once
-        if (state.keywords.length > 0) {
-            const keywordOrs = [];
-            for (let i = 0; i < state.keywords.length; i++) {
-                const keyword = state.keywords[i].trim();
-                // wildcard matching for spaces to find "PhonePe" from "Phone Pe"
-                const flexibleTerm = keyword.replace(/\s+/g, '%');
-                
-                const cols = [
-                    `Company.ilike."%${flexibleTerm}%"`,
-                    `Description.ilike."%${flexibleTerm}%"`,
-                    `Category.ilike."%${flexibleTerm}%"`,
-                    `Location.ilike."%${flexibleTerm}%"`,
-                    `"Primary Domain".ilike."%${flexibleTerm}%"`
-                ];
-                
-                if (currentTable === "Fresher Jobs") {
-                    cols.push(`"Secondary Domain".ilike."%${flexibleTerm}%"`);
-                    cols.push(`Tags.cs.{"${keyword}"}`);
-                } else if (currentTable === "Semi Qualified Jobs") {
-                    cols.push(`"Secondary Domain".ilike."%${flexibleTerm}%"`);
-                    cols.push(`Tags.cs.{"${keyword}"}`);
-                } else if (currentTable === "Industrial Training Job Portal") {
-                    cols.push(`"Functional Tags".cs.{"${keyword}"}`);
-                    cols.push(`"Technology Tags".cs.{"${keyword}"}`);
-                } else if (currentTable === "Articleship Jobs") {
-                    cols.push(`"Exposure Tags".cs.{"${keyword}"}`);
-                    cols.push(`"Client Exposure Tags".cs.{"${keyword}"}`);
+            // Optimize keyword query building - pre-process terms once
+            if (state.keywords.length > 0) {
+                const keywordOrs = [];
+                for (let i = 0; i < state.keywords.length; i++) {
+                    const keyword = state.keywords[i].trim();
+                    // wildcard matching for spaces to find "PhonePe" from "Phone Pe"
+                    const flexibleTerm = keyword.replace(/\s+/g, '%');
+                    
+                    const cols = [
+                        `Company.ilike."%${flexibleTerm}%"`,
+                        `Description.ilike."%${flexibleTerm}%"`,
+                        `Category.ilike."%${flexibleTerm}%"`,
+                        `Location.ilike."%${flexibleTerm}%"`,
+                        `"Primary Domain".ilike."%${flexibleTerm}%"`
+                    ];
+                    
+                    if (currentTable === "Fresher Jobs") {
+                        cols.push(`"Secondary Domain".ilike."%${flexibleTerm}%"`);
+                        cols.push(`Tags.cs.{"${keyword}"}`);
+                    } else if (currentTable === "Semi Qualified Jobs") {
+                        cols.push(`"Secondary Domain".ilike."%${flexibleTerm}%"`);
+                        cols.push(`Tags.cs.{"${keyword}"}`);
+                    } else if (currentTable === "Industrial Training Job Portal") {
+                        cols.push(`"Functional Tags".cs.{"${keyword}"}`);
+                        cols.push(`"Technology Tags".cs.{"${keyword}"}`);
+                    } else if (currentTable === "Articleship Jobs") {
+                        cols.push(`"Exposure Tags".cs.{"${keyword}"}`);
+                        cols.push(`"Client Exposure Tags".cs.{"${keyword}"}`);
+                    }
+                    
+                    keywordOrs.push(...cols);
                 }
-                
-                keywordOrs.push(...cols);
+                q = q.or(keywordOrs.join(','));
             }
-            query = query.or(keywordOrs.join(','));
-        }
 
-        if (state.locations.length > 0) {
-            const locationOr = [];
-            for (let i = 0; i < state.locations.length; i++) {
-                locationOr.push(`Location.ilike."%${state.locations[i]}%"`);
-            }
-            query = query.or(locationOr.join(','));
-        }
-
-        if (state.categories.length > 0) {
-            const categoryOr = [];
-            for (let i = 0; i < state.categories.length; i++) {
-                const cat = state.categories[i];
-                const hasSecondary = (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs");
-                
-                categoryOr.push(`"Primary Domain".eq."${cat}"`);
-                if (hasSecondary) {
-                    categoryOr.push(`"Secondary Domain".eq."${cat}"`);
+            if (state.locations.length > 0) {
+                const locationOr = [];
+                for (let i = 0; i < state.locations.length; i++) {
+                    locationOr.push(`Location.ilike."%${state.locations[i]}%"`);
                 }
-                categoryOr.push(`Category.ilike."%${cat}%"`);
+                q = q.or(locationOr.join(','));
             }
-            query = query.or(categoryOr.join(','));
-        }
 
-        if (state.salary) {
-            if (state.salary.endsWith('+')) {
-                const minValue = parseInt(state.salary);
-                if (!isNaN(minValue)) query = query.gte('Salary', minValue);
-            } else if (state.salary.includes('-')) {
-                const [min, max] = state.salary.split('-').map(Number);
-                if (!isNaN(min) && !isNaN(max)) query = query.gte('Salary', min).lte('Salary', max);
+            if (state.categories.length > 0) {
+                const categoryOr = [];
+                for (let i = 0; i < state.categories.length; i++) {
+                    const cat = state.categories[i];
+                    const hasSecondary = (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs");
+                    
+                    categoryOr.push(`"Primary Domain".eq."${cat}"`);
+                    if (hasSecondary) {
+                        categoryOr.push(`"Secondary Domain".eq."${cat}"`);
+                    }
+                    categoryOr.push(`Category.ilike."%${cat}%"`);
+                }
+                q = q.or(categoryOr.join(','));
             }
-        }
 
-        if (currentTable === 'Fresher Jobs' && !isExperiencedFresherPortal()) {
-            query = query.or('yoe.is.null,yoe.lte.1');
-        }
+            if (state.salary) {
+                if (state.salary.endsWith('+')) {
+                    const minValue = parseInt(state.salary);
+                    if (!isNaN(minValue)) q = q.gte('Salary', minValue);
+                } else if (state.salary.includes('-')) {
+                    const [min, max] = state.salary.split('-').map(Number);
+                    if (!isNaN(min) && !isNaN(max)) q = q.gte('Salary', min).lte('Salary', max);
+                }
+            }
 
-        // Experience filter:
-        // - Semi Qualified: optional filter via UI
-        // - Fresher: locked to Freshers
-        // - Experienced CA: locked to Experienced
-        if (currentTable === "Fresher Jobs") {
-            const lockedValue = isExperiencedFresherPortal() ? 'Experienced' : 'Freshers';
-            query = query.eq('Experience', lockedValue);
-        } else if (state.experience && currentTable === "Semi Qualified Jobs") {
-            query = query.eq('Experience', state.experience);
-        }
+            if (currentTable === 'Fresher Jobs' && !isExperiencedFresherPortal()) {
+                q = q.or('yoe.is.null,yoe.lte.1');
+            }
 
-        // Apply new Company Type, Industry Type and Firm Type filters
-        if (state.companyType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
-            query = query.eq('Company Type', state.companyType);
-        }
-        if (state.industryType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs" || currentTable === "Industrial Training Job Portal")) {
-            query = query.eq('Industry Type', state.industryType);
-        }
-        if (state.firmType && currentTable === "Articleship Jobs") {
-            query = query.eq('Firm Type', state.firmType);
-        }
+            // Experience filter
+            if (currentTable === "Fresher Jobs") {
+                const lockedValue = isExperiencedFresherPortal() ? 'Experienced' : 'Freshers';
+                q = q.eq('Experience', lockedValue);
+            } else if (state.experience && currentTable === "Semi Qualified Jobs") {
+                q = q.eq('Experience', state.experience);
+            }
 
-        if (state.applicationStatus === 'not_applied' && currentSession && appliedJobIds.size > 0) {
-            // Supabase requires parenthesized tuple format for 'in' operator: (1,2,3)
-            const appliedIds = Array.from(appliedJobIds);
-            const tupleString = `(${appliedIds.join(',')})`;
-            query = query.not('id', 'in', tupleString);
-        }
+            // Apply new Company Type, Industry Type and Firm Type filters
+            if (state.companyType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs")) {
+                q = q.eq('Company Type', state.companyType);
+            }
+            if (state.industryType && (currentTable === "Fresher Jobs" || currentTable === "Semi Qualified Jobs" || currentTable === "Industrial Training Job Portal")) {
+                q = q.eq('Industry Type', state.industryType);
+            }
+            if (state.firmType && currentTable === "Articleship Jobs") {
+                q = q.eq('Firm Type', state.firmType);
+            }
 
-        let sortCol = 'Created_At';
-        let isAsc = false;
+            if (state.applicationStatus === 'not_applied' && currentSession && appliedJobIds.size > 0) {
+                const appliedIds = Array.from(appliedJobIds);
+                const tupleString = `(${appliedIds.join(',')})`;
+                q = q.not('id', 'in', tupleString);
+            }
 
-        if (state.sortBy === 'salary_asc') { sortCol = 'Salary'; isAsc = true; }
-        else if (state.sortBy === 'salary_desc') { sortCol = 'Salary'; isAsc = false; }
-        // For 'popular' (default) and 'newest', we fetch by Created_At DESC from DB to get latest batch
+            let sortCol = 'Created_At';
+            let isAsc = false;
+            if (state.sortBy === 'salary_asc') { sortCol = 'Salary'; isAsc = true; }
+            else if (state.sortBy === 'salary_desc') { sortCol = 'Salary'; isAsc = false; }
 
-        query = query.order(sortCol, {
-            ascending: isAsc,
-            nullsFirst: false
-        }).order('id', { ascending: false });
+            q = q.order(sortCol, {
+                ascending: isAsc,
+                nullsFirst: false
+            }).order('id', { ascending: false });
 
-        query = query.range(page * limit, (page + 1) * limit - 1);
+            q = q.range(page * limit, (page + 1) * limit - 1);
+            return q;
+        };
+
+        let query = buildQuery(selectColumns);
         let { data, error } = await query;
+
+        // Failsafe Fallback: If is_exclusive does not exist yet on the table, strip it and retry.
+        if (error && error.message && error.message.includes('is_exclusive') && selectColumns.includes('is_exclusive')) {
+            console.warn('is_exclusive column does not exist on Supabase yet. Falling back to default query.');
+            selectColumns = selectColumns.replace(', is_exclusive', '');
+            query = buildQuery(selectColumns);
+            const fallbackResult = await query;
+            data = fallbackResult.data;
+            error = fallbackResult.error;
+        }
 
         if (!error && data && state.sortBy === 'popular') {
             data.sort((a, b) => (b.application_count || 0) - (a.application_count || 0));
@@ -1437,7 +1544,7 @@ async function checkAuth() {
 
     // If logged in, fetch and cache profile data
     if (session?.user?.id) {
-        prefetchEnrollmentStatus(session.user.id); // fire-and-forget, populates enrollmentStatusCache
+        await prefetchEnrollmentStatus(session.user.id); // Await this to populate cache before page load/clicks
         // Update last access date when user opens the portal
         updateLastAccessDate(session.user.id);
 

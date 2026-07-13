@@ -63,9 +63,10 @@
             customSections: [],
             sectionOrder: [...BASE_SECTION_ORDER],
             tableSettings: getDefaultTableSettings(),
-            sectionLabels: {}
+            sectionLabels: {},
+            sectionGroups: {}
         };
-        
+
         const DEMO_PREVIEW_DATA = {
             personal: {
                 name: "Padam Bhansali",
@@ -218,6 +219,13 @@
                 window.addEventListener('message', (e) => {
                     if (e.data && e.data.type === 'cv-frame-ready') {
                         postToFrame();
+                    } else if (e.data && e.data.type === 'section-grouping-capability') {
+                        const supported = !!e.data.supported;
+                        if (supported !== window.__sectionGroupingSupported) {
+                            window.__sectionGroupingSupported = supported;
+                            // Refresh the reorder UI so the Group toggle appears/disappears
+                            if (typeof renderSectionOrderEditor === 'function') renderSectionOrderEditor();
+                        }
                     }
                 });
                 // Fallback attempt
@@ -1034,6 +1042,17 @@
             return plain ? [plain] : [];
         }
 
+        function normalizeEducationMerges() {
+            if (!Array.isArray(cvData.education)) {
+                cvData.education = [];
+                return;
+            }
+            cvData.education.forEach((edu, index) => {
+                if (!edu || typeof edu !== 'object') cvData.education[index] = {};
+                cvData.education[index].mergedWithPrevious = !!cvData.education[index].mergedWithPrevious && index > 0;
+            });
+        }
+
         function normalizeExperienceMerges() {
             if (!Array.isArray(cvData.experience)) {
                 cvData.experience = [];
@@ -1122,7 +1141,9 @@
                     themeAccent: "",
                     customSections: [],
                     sectionOrder: [...BASE_SECTION_ORDER],
-                    tableSettings: getDefaultTableSettings()
+                    tableSettings: getDefaultTableSettings(),
+                    sectionLabels: {},
+                    sectionGroups: {}
                 };
             }
             if (!cvData.personal) cvData.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
@@ -1147,7 +1168,7 @@
             cvData.personal.email = normalizeImportedString(cvData.personal.email || '');
             cvData.personal.linkedin = normalizeImportedString(cvData.personal.linkedin || '');
             cvData.personal.location = normalizeImportedString(cvData.personal.location || '');
-            cvData.education = cvData.education.map(item => {
+            cvData.education = cvData.education.map((item, index) => {
                 const entry = item && typeof item === 'object' ? item : {};
                 return {
                     ...entry,
@@ -1155,7 +1176,8 @@
                     institute: normalizeCategoryHTML(htmlToMultilineText(entry.institute || entry.institution || '')),
                     year: normalizeImportedString(entry.year || ''),
                     marks: normalizeImportedString(entry.marks || ''),
-                    remarks: normalizeImportedString(entry.remarks || '')
+                    remarks: normalizeImportedString(entry.remarks || ''),
+                    mergedWithPrevious: !!entry.mergedWithPrevious && index > 0
                 };
             });
             cvData.experience = cvData.experience.map((item, index) => {
@@ -1200,6 +1222,7 @@
             });
             ensureTableSettingsShape();
             ensureSectionLabelsShape();
+            normalizeSectionGroups();
         }
 
         function ensureTableSettingsShape() {
@@ -1264,6 +1287,53 @@
             if (cvData.sectionLabels.leadership && cvData.sectionLabels.leadership.text === 'Responsibility') {
                 cvData.sectionLabels.leadership.text = 'Positions of Responsibility';
             }
+        }
+
+        // --- Section Grouping (merge Certifications/Achievements/Leadership/Interests/Skills
+        // and any custom sections under one shared heading) ---
+        const GROUPABLE_SECTIONS = Object.keys(SECTION_LABEL_DEFAULTS);
+
+        // Custom sections are groupable too — in the preview they are cloned from a built-in
+        // section, so they carry the same header + left-label structure grouping relies on.
+        function isGroupableSectionId(sectionId) {
+            if (GROUPABLE_SECTIONS.includes(sectionId)) return true;
+            return (cvData.customSections || []).some(section => section.id === sectionId);
+        }
+
+        // A section can only be grouped with whatever groupable section precedes it in the
+        // current section order — same adjacency rule as experience/education merging.
+        function normalizeSectionGroups() {
+            if (!cvData.sectionGroups || typeof cvData.sectionGroups !== 'object') {
+                cvData.sectionGroups = {};
+            }
+            const order = Array.isArray(cvData.sectionOrder) && cvData.sectionOrder.length
+                ? cvData.sectionOrder
+                : BASE_SECTION_ORDER;
+            const groupableInOrder = order.filter(isGroupableSectionId);
+            const cleaned = {};
+            groupableInOrder.forEach((id, index) => {
+                cleaned[id] = index > 0 && !!cvData.sectionGroups[id];
+            });
+            cvData.sectionGroups = cleaned;
+        }
+
+        function groupSectionWithPrevious(sectionId) {
+            normalizeSectionOrder();
+            cvData.sectionGroups = cvData.sectionGroups || {};
+            cvData.sectionGroups[sectionId] = true;
+            normalizeSectionGroups();
+            renderSectionOrderEditor();
+            postToFrame();
+            saveLocal();
+        }
+
+        function ungroupSection(sectionId) {
+            cvData.sectionGroups = cvData.sectionGroups || {};
+            cvData.sectionGroups[sectionId] = false;
+            normalizeSectionGroups();
+            renderSectionOrderEditor();
+            postToFrame();
+            saveLocal();
         }
 
         function updateSectionLabel(sectionId, field, value) {
@@ -1680,15 +1750,26 @@
         function renderEduInputs() {
             const container = document.getElementById('edu-container');
             container.innerHTML = '';
+            normalizeEducationMerges();
             cvData.education.forEach((edu, index) => {
                 const div = document.createElement('div');
                 div.className = 'list-item';
+                const isMerged = !!edu.mergedWithPrevious;
+                const canMerge = index > 0 && !isMerged;
+                const mergeAction = isMerged ? `unmergeEdu(${index})` : `mergeEduWithPrevious(${index})`;
+                const mergeTitle = isMerged
+                    ? 'Unmerge — give this row its own institute cell again'
+                    : (canMerge ? 'Merge this row\'s institute cell into the row above' : 'First entry cannot merge backward');
+                const mergeStyle = !isMerged && !canMerge ? 'opacity:.35;pointer-events:none;' : '';
+                const mergeLabel = isMerged ? 'Unmerge Institute' : 'Merge Institute';
                 div.innerHTML = `
                     <div class="item-actions">
                         <div class="action-btn" onclick="moveEdu(${index}, -1)">▲</div>
                         <div class="action-btn" onclick="moveEdu(${index}, 1)">▼</div>
+                        <div class="action-btn merge-toggle ${isMerged ? 'active' : ''}" onclick="${mergeAction}" title="${mergeTitle}" style="${mergeStyle}">${mergeLabel}</div>
                         <div class="action-btn delete" onclick="removeEdu(${index})">×</div>
                     </div>
+                    ${isMerged ? `<div style="margin-bottom:8px; padding:8px 10px; border:1px solid #dbeafe; background:#eff6ff; border-radius:12px; color:#1d4ed8; font-size:12px;">This row's institute is merged with the row above in preview and PDF.</div>` : ''}
                     <div class="form-group">
                         <label>Degree / Exam</label>
                         <div class="chip-container" style="margin-bottom:6px">
@@ -1895,9 +1976,12 @@
         function updateEdu(index, field, value) {
             if (field === 'institute') {
                 cvData.education[index][field] = normalizeCategoryHTML(value);
+            } else if (field === 'mergedWithPrevious') {
+                cvData.education[index].mergedWithPrevious = !!value && index > 0;
             } else {
                 cvData.education[index][field] = value;
             }
+            normalizeEducationMerges();
             postToFrame();
             if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') renderEduInputs();
         }
@@ -1947,17 +2031,33 @@
 
         // List Management
         function addEducation() {
-            cvData.education.push({ degree: "", institute: "", year: "", marks: "" });
+            cvData.education.push({ degree: "", institute: "", year: "", marks: "", mergedWithPrevious: false });
+            normalizeEducationMerges();
             renderEduInputs();
             postToFrame();
         }
         function removeEdu(i) {
-            if (confirm("Delete entry?")) { cvData.education.splice(i, 1); renderEduInputs(); postToFrame(); }
+            if (confirm("Delete entry?")) { cvData.education.splice(i, 1); normalizeEducationMerges(); renderEduInputs(); postToFrame(); }
         }
         function moveEdu(i, dir) {
             if (i + dir < 0 || i + dir >= cvData.education.length) return;
             [cvData.education[i], cvData.education[i + dir]] = [cvData.education[i + dir], cvData.education[i]];
+            normalizeEducationMerges();
             renderEduInputs(); postToFrame();
+        }
+        function mergeEduWithPrevious(i) {
+            if (i <= 0 || !cvData.education[i]) return;
+            cvData.education[i].mergedWithPrevious = true;
+            normalizeEducationMerges();
+            renderEduInputs();
+            postToFrame();
+        }
+        function unmergeEdu(i) {
+            if (i <= 0 || !cvData.education[i]) return;
+            cvData.education[i].mergedWithPrevious = false;
+            normalizeEducationMerges();
+            renderEduInputs();
+            postToFrame();
         }
 
         function addExperience() {
@@ -2301,18 +2401,28 @@
             if (!list) return;
 
             normalizeSectionOrder();
+            normalizeSectionGroups();
+            const groupingSupported = !!window.__sectionGroupingSupported;
+            const groupableInOrder = cvData.sectionOrder.filter(isGroupableSectionId);
             list.innerHTML = '';
             cvData.sectionOrder.forEach((sectionId, index) => {
                 const row = document.createElement('div');
                 row.className = 'reorder-item';
                 row.draggable = true;
                 row.setAttribute('data-section-id', sectionId);
+                const isGroupable = groupingSupported && isGroupableSectionId(sectionId);
+                const isGrouped = isGroupable && !!cvData.sectionGroups[sectionId];
+                const canGroup = isGroupable && groupableInOrder.indexOf(sectionId) > 0;
+                const groupBtn = isGroupable
+                    ? `<button class="reorder-group-btn${isGrouped ? ' active' : ''}" onclick="${isGrouped ? `ungroupSection('${sectionId}')` : `groupSectionWithPrevious('${sectionId}')`}" ${(!isGrouped && !canGroup) ? 'disabled' : ''} title="${isGrouped ? 'Ungroup — give this section its own heading' : (canGroup ? 'Group under the heading above' : 'No groupable section above')}">${isGrouped ? 'Ungroup' : 'Group'}</button>`
+                    : '';
                 row.innerHTML = `
                     <span class="reorder-item-handle">::</span>
-                    <span class="reorder-item-label">${getSectionLabel(sectionId)}</span>
+                    <span class="reorder-item-label">${getSectionLabel(sectionId)}${isGrouped ? '<span class="reorder-grouped-tag">grouped</span>' : ''}</span>
                     <span class="reorder-mini-actions">
                         <button class="reorder-mini-btn" onclick="moveSectionOrder(${index}, -1)" ${index > 0 ? '' : 'disabled'} title="Move Up">&#9650;</button>
                         <button class="reorder-mini-btn" onclick="moveSectionOrder(${index}, 1)" ${index < cvData.sectionOrder.length - 1 ? '' : 'disabled'} title="Move Down">&#9660;</button>
+                        ${groupBtn}
                     </span>
                 `;
 

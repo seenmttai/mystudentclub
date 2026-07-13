@@ -574,74 +574,7 @@
                 <div class="spinner"></div>
             </div>
         </div>
-        <div id="ai-prompt-overlay" class="ai-prompt-overlay" aria-hidden="true" onclick="handleAiPromptOverlayClick(event)">
-            <div class="ai-prompt-card" role="dialog" aria-modal="true" aria-labelledby="ai-prompt-title" onclick="event.stopPropagation()">
-                <div class="ai-prompt-header">
-                    <h3 id="ai-prompt-title">Optional AI instruction</h3>
-                    <button class="ai-prompt-close" type="button" onclick="closeAiPrompt('cancel')" aria-label="Close">×</button>
-                </div>
-                <p class="ai-prompt-sub">Add a short instruction for this section (optional).</p>
-                <div id="ai-prompt-suggestions" class="ai-prompt-suggestions"></div>
-                <textarea id="ai-prompt-input" class="form-control" rows="3"
-                    placeholder="e.g. Use action verbs, keep bullets under 18 words"></textarea>
-                <div class="ai-prompt-actions">
-                    <button class="btn-icon" type="button" onclick="closeAiPrompt('cancel')">Cancel</button>
-                    <button class="btn-icon" type="button" onclick="skipAiPrompt()">Skip</button>
-                    <button class="btn-iconte btn-primary" type="button" onclick="submitAiPrompt()">Apply</button>
-                </div>
-            </div>
-        </div>
-        <div id="docx-info-overlay" class="docx-info-overlay" aria-hidden="true" onclick="closeDocxInfoModal()">
-            <div class="docx-info-card" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
-                <div class="docx-info-header">
-                    <div class="docx-info-icon">
-                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                            <polyline points="10 9 9 9 8 9"></polyline>
-                        </svg>
-                    </div>
-                    <h3>Perfect DOCX Export</h3>
-                    <button class="docx-info-close" type="button" onclick="closeDocxInfoModal()" aria-label="Close">×</button>
-                </div>
-                <div class="docx-info-body">
-                    <p class="docx-info-text">
-                        Your DOCX download is in progress.
-                    </p>
-                    <div class="docx-tip-box">
-                        <span class="docx-tip-badge">Note</span>
-                        <p>To get perfect editable files, use <a href="https://www.ilovepdf.com/pdf_to_word" target="_blank" rel="noopener noreferrer" class="docx-link">ilovepdf</a> for pdf to docx conversion.</p>
-                    </div>
-                </div>
-                <div class="docx-info-actions">
-                    <button class="btn-icon btn-primary" type="button" onclick="closeDocxInfoModal()">Got it</button>
-                </div>
-            </div>
-        </div>
-        <div id="ai-preview-overlay" class="ai-preview-overlay" aria-hidden="true" onclick="handleAiPreviewOverlayClick(event)">
-            <div class="ai-preview-card" role="dialog" aria-modal="true" aria-labelledby="ai-preview-title" onclick="event.stopPropagation()">
-                <div class="ai-preview-header">
-                    <h3 id="ai-preview-title">Review AI changes</h3>
-                    <button class="ai-prompt-close" type="button" onclick="closeAiPreview(false)" aria-label="Close">×</button>
-                </div>
-                <div class="ai-preview-grid">
-                    <div class="ai-preview-pane">
-                        <div class="ai-preview-label" id="ai-preview-before-label">Before</div>
-                        <pre id="ai-preview-before" class="ai-preview-content"></pre>
-                    </div>
-                    <div class="ai-preview-pane">
-                        <div class="ai-preview-label" id="ai-preview-after-label">After</div>
-                        <pre id="ai-preview-after" class="ai-preview-content"></pre>
-                    </div>
-                </div>
-                <div class="ai-prompt-actions">
-                    <button class="btn-icon" type="button" onclick="closeAiPreview(false)">Discard</button>
-                    <button class="btn-icon btn-primary" type="button" onclick="closeAiPreview(true)">Apply Changes</button>
-                </div>
-            </div>
-        </div>
+
         <div class="mobile-history-controls">
             <button class="mobile-history-btn" data-undo-control onclick="undoChange()" title="Undo (Ctrl+Z)">
                 <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true">
@@ -1382,6 +1315,77 @@
             }
         };
     </script>
+
+
+    <!-- AI Prompt, DOCX Info, and AI Preview Overlays -->
+    <div id="ai-prompt-overlay" class="ai-prompt-overlay" aria-hidden="true" onclick="handleAiPromptOverlayClick(event)">
+        <div class="ai-prompt-card" role="dialog" aria-modal="true" aria-labelledby="ai-prompt-title" onclick="event.stopPropagation()">
+            <div class="ai-prompt-header">
+                <h3 id="ai-prompt-title">Optional AI instruction</h3>
+                <button class="ai-prompt-close" type="button" onclick="closeAiPrompt('cancel')" aria-label="Close">×</button>
+            </div>
+            <p class="ai-prompt-sub">Add a short instruction for this section (optional).</p>
+            <div id="ai-prompt-suggestions" class="ai-prompt-suggestions"></div>
+            <textarea id="ai-prompt-input" class="form-control" rows="3"
+                placeholder="e.g. Use action verbs, keep bullets under 18 words"></textarea>
+            <div class="ai-prompt-actions">
+                <button class="btn-icon" type="button" onclick="closeAiPrompt('cancel')">Cancel</button>
+                <button class="btn-icon" type="button" onclick="skipAiPrompt()">Skip</button>
+                <button class="btn-iconte btn-primary" type="button" onclick="submitAiPrompt()">Apply</button>
+            </div>
+        </div>
+    </div>
+    <div id="docx-info-overlay" class="docx-info-overlay" aria-hidden="true" onclick="closeDocxInfoModal()">
+        <div class="docx-info-card" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
+            <div class="docx-info-header">
+                <div class="docx-info-icon">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                </div>
+                <h3>Perfect DOCX Export</h3>
+                <button class="docx-info-close" type="button" onclick="closeDocxInfoModal()" aria-label="Close">×</button>
+            </div>
+            <div class="docx-info-body">
+                <p class="docx-info-text">
+                    Your DOCX download is in progress.
+                </p>
+                <div class="docx-tip-box">
+                    <span class="docx-tip-badge">Note</span>
+                    <p>To get perfect editable files, use <a href="https://www.ilovepdf.com/pdf_to_word" target="_blank" rel="noopener noreferrer" class="docx-link">ilovepdf</a> for pdf to docx conversion.</p>
+                </div>
+            </div>
+            <div class="docx-info-actions">
+                <button class="btn-icon btn-primary" type="button" onclick="closeDocxInfoModal()">Got it</button>
+            </div>
+        </div>
+    </div>
+    <div id="ai-preview-overlay" class="ai-preview-overlay" aria-hidden="true" onclick="handleAiPreviewOverlayClick(event)">
+        <div class="ai-preview-card" role="dialog" aria-modal="true" aria-labelledby="ai-preview-title" onclick="event.stopPropagation()">
+            <div class="ai-preview-header">
+                <h3 id="ai-preview-title">Review AI changes</h3>
+                <button class="ai-prompt-close" type="button" onclick="closeAiPreview(false)" aria-label="Close">×</button>
+            </div>
+            <div class="ai-preview-grid">
+                <div class="ai-preview-pane">
+                    <div class="ai-preview-label" id="ai-preview-before-label">Before</div>
+                    <pre id="ai-preview-before" class="ai-preview-content"></pre>
+                </div>
+                <div class="ai-preview-pane">
+                    <div class="ai-preview-label" id="ai-preview-after-label">After</div>
+                    <pre id="ai-preview-after" class="ai-preview-content"></pre>
+                </div>
+            </div>
+            <div class="ai-prompt-actions">
+                <button class="btn-icon" type="button" onclick="closeAiPreview(false)">Discard</button>
+                <button class="btn-icon btn-primary" type="button" onclick="closeAiPreview(true)">Apply Changes</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Template Sidebar Overlay -->
     <div class="template-sidebar-overlay" id="template-sidebar-overlay" onclick="toggleTemplateSidebar(false)"></div>

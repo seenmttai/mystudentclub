@@ -468,13 +468,27 @@
                             return `<td class="subh" style="text-align:center; font-weight:700; ${borderStyle}">${c.label}</td>`;
                         }).join('') + '</tr>';
 
-                        const dataRows = education.map(function (item) {
+                        const instituteSpans = education.map(function (item, i) {
+                            if (i > 0 && item.mergedWithPrevious) return 0;
+                            let span = 1;
+                            while (i + span < education.length && education[i + span].mergedWithPrevious) span++;
+                            return span;
+                        });
+
+                        const dataRows = education.map(function (item, rowIndex) {
                             return '<tr>' + activeCols.map((c, idx) => {
                                 const isFirst = idx === 0;
                                 const isLast = idx === activeCols.length - 1;
                                 const borderStyle = (isFirst ? 'border-left:none !important;' : '') + (isLast ? 'border-right:none !important;' : '');
                                 const val = c.value(item);
                                 const alignStyle = c.align === 'center' ? 'text-align:center;' : '';
+                                if (c.key === 'institution') {
+                                    const span = instituteSpans[rowIndex];
+                                    if (span === 0) return '';
+                                    const spanAttr = span > 1 ? ` rowspan="${span}"` : '';
+                                    const vAlign = span > 1 ? 'vertical-align:middle;' : '';
+                                    return `<td class="${c.cls}"${spanAttr} style="${alignStyle}${vAlign} ${borderStyle}">${val}</td>`;
+                                }
                                 return `<td class="${c.cls}" style="${alignStyle} ${borderStyle}">${val}</td>`;
                             }).join('') + '</tr>';
                         }).join('');
