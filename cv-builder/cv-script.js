@@ -1758,10 +1758,10 @@
                 const canMerge = index > 0 && !isMerged;
                 const mergeAction = isMerged ? `unmergeEdu(${index})` : `mergeEduWithPrevious(${index})`;
                 const mergeTitle = isMerged
-                    ? 'Unmerge this row'
-                    : (canMerge ? 'Merge with previous institute' : 'First entry cannot merge backward');
+                    ? 'Unmerge — give this row its own institute cell again'
+                    : (canMerge ? 'Merge this row\'s institute cell into the row above' : 'First entry cannot merge backward');
                 const mergeStyle = !isMerged && !canMerge ? 'opacity:.35;pointer-events:none;' : '';
-                const mergeLabel = isMerged ? 'Unmerge' : 'Merge';
+                const mergeLabel = isMerged ? 'Unmerge Institute' : 'Merge Institute';
                 div.innerHTML = `
                     <div class="item-actions">
                         <div class="action-btn" onclick="moveEdu(${index}, -1)">▲</div>

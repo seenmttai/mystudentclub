@@ -94,13 +94,12 @@ function renderCV(data) {
         setHTMLIn(row, '[data-field="degree"]', item.degree);
         setHTMLIn(row, '[data-field="year"]', item.year);
         // Map both 'institute' and 'institution' field names for compatibility across templates and worker output
-        const instituteText = item.mergedWithPrevious ? '' : (item.institute || item.institution);
-        setHTMLIn(row, '[data-field="institution"]', instituteText);
-        setHTMLIn(row, '[data-field="institute"]', instituteText);
+        setHTMLIn(row, '[data-field="institution"]', item.institute || item.institution);
+        setHTMLIn(row, '[data-field="institute"]', item.institute || item.institution);
         setHTMLIn(row, '[data-field="marks"]', item.marks || item.remarks);
         setHTMLIn(row, '[data-field="remarks"]', item.remarks);
-        row.classList.toggle('education-institute-merged', !!item.mergedWithPrevious);
     });
+    applyEducationInstituteMerges(data.education || []);
     
     // 3b. Grouped Education (CV8/CV9) - groups entries by institution
     const groupedEduContainer = document.getElementById('education-grouped-list');
@@ -1165,6 +1164,41 @@ function updateList(listId, dataArray, hasData, fillFn) {
         fillFn(clone, dataItem);
         listContainer.appendChild(clone);
     });
+}
+
+function applyEducationInstituteMerges(educationItems) {
+    const listContainer = document.getElementById('education-list');
+    if (!listContainer) return;
+
+    const rows = Array.from(listContainer.children)
+        .filter(row => row.tagName === 'TR' && !row.classList.contains('template'));
+    if (rows.length !== educationItems.length) return; // row/data mismatch — leave table untouched
+
+    const instituteCellOf = (row) => {
+        const field = row.querySelector('[data-field="institution"], [data-field="institute"]');
+        return field ? field.closest('td') : null;
+    };
+
+    for (let i = 0; i < rows.length; i++) {
+        if (educationItems[i]?.mergedWithPrevious) continue; // handled as part of an earlier run
+
+        // Count how many following rows merge into this one.
+        let runEnd = i + 1;
+        while (runEnd < rows.length && educationItems[runEnd]?.mergedWithPrevious) runEnd++;
+        const span = runEnd - i;
+        if (span < 2) continue;
+
+        const anchorCell = instituteCellOf(rows[i]);
+        if (!anchorCell) continue; // template doesn't use a table cell for institute — skip
+
+        anchorCell.setAttribute('rowspan', String(span));
+        anchorCell.style.verticalAlign = 'middle';
+
+        for (let j = i + 1; j < runEnd; j++) {
+            instituteCellOf(rows[j])?.remove();
+        }
+        i = runEnd - 1;
+    }
 }
 
 function renderSimpleList(items, selector) {
