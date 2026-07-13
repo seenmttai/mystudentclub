@@ -94,10 +94,12 @@ function renderCV(data) {
         setHTMLIn(row, '[data-field="degree"]', item.degree);
         setHTMLIn(row, '[data-field="year"]', item.year);
         // Map both 'institute' and 'institution' field names for compatibility across templates and worker output
-        setHTMLIn(row, '[data-field="institution"]', item.institute || item.institution);
-        setHTMLIn(row, '[data-field="institute"]', item.institute || item.institution);
+        const instituteText = item.mergedWithPrevious ? '' : (item.institute || item.institution);
+        setHTMLIn(row, '[data-field="institution"]', instituteText);
+        setHTMLIn(row, '[data-field="institute"]', instituteText);
         setHTMLIn(row, '[data-field="marks"]', item.marks || item.remarks);
         setHTMLIn(row, '[data-field="remarks"]', item.remarks);
+        row.classList.toggle('education-institute-merged', !!item.mergedWithPrevious);
     });
     
     // 3b. Grouped Education (CV8/CV9) - groups entries by institution
@@ -323,6 +325,10 @@ function renderCV(data) {
     // 11. Section ordering
     applySectionOrder(data.sectionOrder || []);
     normalizeClassicBlueDetailSections();
+    const groupingSupported = normalizeSectionGrouping(data.sectionGroups || {}, data.sectionLabels || {});
+    try {
+        window.parent.postMessage({ type: 'section-grouping-capability', supported: groupingSupported }, '*');
+    } catch (e) { /* cross-origin — ignore */ }
     enforceExperienceOnlyLeftLabels();
     stabilizeSectionLayouts();
     applyTableFormatSettings(data.tableSettings || {});
@@ -1900,6 +1906,98 @@ function buildClassicBlueGroupHeader(labels) {
     if (cleaned.length === 1) return cleaned[0].toUpperCase();
     if (cleaned.length === 2) return `${cleaned[0]} & ${cleaned[1]}`.toUpperCase();
     return `${cleaned.slice(0, -1).join(', ')} & ${cleaned[cleaned.length - 1]}`.toUpperCase();
+}
+
+const GROUPABLE_SECTION_DEFAULT_LABELS = {
+    certifications: 'Certifications',
+    interests: 'Interests',
+    skills: 'Skills',
+    achievements: 'Highlights',
+    leadership: 'Positions of Responsibility'
+};
+const GROUPABLE_SECTIONS = Object.keys(GROUPABLE_SECTION_DEFAULT_LABELS);
+
+/**
+ * Lets the user merge Certifications/Achievements/Leadership/Interests/Skills sections so
+ * they share one heading (mirroring Classic Blue's built-in grouping) instead of each getting
+ * its own banner. Driven by cvData.sectionGroups: { [sectionId]: true } means "grouped with
+ * whatever groupable section precedes it in the current section order." Reuses the anchor
+ * section's own real header element rather than inventing a new one, so the merged heading
+ * automatically matches each template's visual style.
+ */
+function getHeaderToggleTarget(header) {
+    // Headers embedded in a table row (colspan banner) must hide the whole <tr>,
+    // otherwise an empty row remains. Div-based headers toggle directly.
+    return header.closest('tr') || header;
+}
+
+/**
+ * Grouping is enabled for the Classic template only. It needs each groupable section to have a
+ * left-label cell (.section-label) to carry the sub-section name under the shared heading —
+ * banner-only templates have no such column, so the editor hides the Group button entirely
+ * (via the reported capability) and any stored grouping flags are ignored.
+ */
+function templateSupportsSectionGrouping() {
+    // Match classic.html exactly — not classic-blue/classic-grid/classic-ledger.
+    if (!/(^|\/)classic\.html$/i.test(String(window.location.pathname || ''))) return false;
+    return GROUPABLE_SECTIONS.some(id => {
+        const section = document.querySelector(`.sortable-section[data-section-id="${id}"]`);
+        return !!(section && section.querySelector('.section-label'));
+    });
+}
+
+// Returns true when this template supports grouping (so the editor can show/hide the toggle).
+function normalizeSectionGrouping(sectionGroups, sectionLabels) {
+    if (!templateSupportsSectionGrouping()) return false;
+
+    const groups = sectionGroups || {};
+    const labels = sectionLabels || {};
+    // Custom sections have no static default label, so fall back to their own left-label cell
+    // (populated by setSectionBodyLabel from the user's section title).
+    const labelFor = (member) => {
+        const custom = labels[member.id]?.text;
+        if (custom && String(custom).trim()) return String(custom).trim();
+        if (GROUPABLE_SECTION_DEFAULT_LABELS[member.id]) return GROUPABLE_SECTION_DEFAULT_LABELS[member.id];
+        const labelCell = member.section.querySelector('.section-label');
+        return toReadableSectionLabel(labelCell?.textContent || 'Custom Section');
+    };
+
+    const orderedSections = Array.from(document.querySelectorAll('.sortable-section[data-section-id]'))
+        .filter(section => GROUPABLE_SECTIONS.includes(section.getAttribute('data-section-id'))
+            || section.hasAttribute('data-custom-section-root'));
+
+    let anchor = null;
+    let anchorMembers = [];
+
+    const flushAnchorHeader = () => {
+        if (anchor && anchorMembers.length > 1) {
+            const header = getSectionHeaderElement(anchor);
+            if (header) header.textContent = buildClassicBlueGroupHeader(anchorMembers.map(labelFor));
+        }
+    };
+
+    orderedSections.forEach(section => {
+        const id = section.getAttribute('data-section-id');
+        if (section.style.display === 'none') return; // empty sections don't join the chain
+
+        section.classList.remove('section-grouped-continuation');
+        const header = getSectionHeaderElement(section);
+        if (header) getHeaderToggleTarget(header).style.display = '';
+
+        const grouped = !!groups[id] && !!anchor;
+        if (!grouped) {
+            flushAnchorHeader();
+            anchor = section;
+            anchorMembers = [{ section, id }];
+            return;
+        }
+
+        section.classList.add('section-grouped-continuation');
+        if (header) getHeaderToggleTarget(header).style.display = 'none';
+        anchorMembers.push({ section, id });
+    });
+    flushAnchorHeader();
+    return true;
 }
 
 function hasMeaningfulRenderedContent(node) {

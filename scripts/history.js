@@ -56,6 +56,37 @@ function initializeDOM() {
     dom.portalSelectMobile = document.getElementById('portalSelectMobile');
 }
 
+let enrollmentStatusCache = null;
+
+async function prefetchEnrollmentStatus(userId) {
+    try {
+        const { count: anyCount, error: e1 } = await supabaseClient
+            .from('enrollment')
+            .select('course', { count: 'exact', head: true })
+            .eq('uuid', userId);
+        if (e1) throw e1;
+        const hasAny = (anyCount || 0) > 0;
+        enrollmentStatusCache = { any: hasAny, industrialTraining: false, freshers: false };
+        if (hasAny) {
+            const [r1, r2] = await Promise.all([
+                supabaseClient.from('enrollment').select('course', { count: 'exact', head: true }).eq('uuid', userId).eq('course', 'industrial-training-mastery'),
+                supabaseClient.from('enrollment').select('course', { count: 'exact', head: true }).eq('uuid', userId).eq('course', 'msc-ca-freshers-program')
+            ]);
+            enrollmentStatusCache.industrialTraining = (r1.count || 0) > 0;
+            enrollmentStatusCache.freshers = (r2.count || 0) > 0;
+        }
+    } catch (e) {
+        console.error('Failed to prefetch enrollment:', e);
+        enrollmentStatusCache = { any: false, industrialTraining: false, freshers: false };
+    }
+}
+
+function isEnrolledSync(tableName) {
+    if (!enrollmentStatusCache) return false;
+    if (tableName === 'Industrial Training Job Portal') return enrollmentStatusCache.industrialTraining;
+    return enrollmentStatusCache.any;
+}
+
 // Check authentication
 async function checkAuth() {
     const { data: { session } } = await supabaseClient.auth.getSession();
@@ -65,6 +96,8 @@ async function checkAuth() {
         window.location.href = '/login.html';
         return false;
     }
+
+    await prefetchEnrollmentStatus(session.user.id);
 
     updateAuthUI();
     return true;
@@ -118,11 +151,27 @@ async function fetchApplications() {
                     let selectQuery = 'id, Company, Location, Category, Salary, Description, Created_At, "Application ID"';
                     if (targetTable === 'Fresher Jobs') selectQuery += ', Experience';
 
-                    const { data: jobData, error: jobError } = await supabaseClient
+                    let queryCols = selectQuery;
+                    if (targetTable === 'Industrial Training Job Portal') {
+                        queryCols += ', is_exclusive';
+                    }
+
+                    let { data: jobData, error: jobError } = await supabaseClient
                         .from(targetTable)
-                        .select(selectQuery)
+                        .select(queryCols)
                         .eq('id', targetJobId)
                         .single();
+
+                    if (jobError && jobError.message && jobError.message.includes('is_exclusive')) {
+                        console.warn('is_exclusive column does not exist on Supabase yet. Retrying without it.');
+                        const retryRes = await supabaseClient
+                            .from(targetTable)
+                            .select(selectQuery)
+                            .eq('id', targetJobId)
+                            .single();
+                        jobData = retryRes.data;
+                        jobError = retryRes.error;
+                    }
 
                     if (jobError) {
                         console.error(`Failed to fetch job ${targetJobId} from ${targetTable}:`, jobError);
@@ -227,8 +276,11 @@ function renderApplicationCard(application) {
         portalName = 'Experienced CA';
     }
 
+    const isExclusive = !!job.is_exclusive;
+    const isLocked = isExclusive && !isEnrolledSync('Industrial Training Job Portal');
+
     const card = document.createElement('article');
-    card.className = 'job-card'; // Reuse portal card styles from portal-style.css
+    card.className = 'job-card' + (isExclusive ? ' job-card-exclusive' : ''); // Reuse portal card styles from portal-style.css
     card.dataset.applicationId = application.id;
     card.dataset.jobId = application.job_id;
 
@@ -256,8 +308,12 @@ function renderApplicationCard(application) {
                     ${statusText} ${appliedDate}
                 </p>
             </div>
+            <button class="job-card-bookmark" title="Save job" aria-label="Bookmark job" style="display: none;">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/></svg>
+            </button>
         </div>
         <div class="job-card-tags" style="margin-bottom: 0.75rem;">
+            ${isExclusive ? `<span class="job-tag tag-exclusive"><i class="fas fa-star"></i> Exclusive</span>` : ""}
             ${isPopular ? `<span class="job-tag tag-popular"><i class="fas fa-fire"></i> Popular</span>` : ''}
             <span class="job-tag tag-primary">${portalName}</span>
             ${job.Location ? `
@@ -279,7 +335,13 @@ function renderApplicationCard(application) {
         </div>
     `;
 
-    card.addEventListener('click', () => showJobModal(application));
+    card.addEventListener('click', () => {
+        if (isLocked) {
+            showExclusiveLockedModal(job);
+        } else {
+            showJobModal(application);
+        }
+    });
 
     const unsaveBtn = card.querySelector('.unsave-btn');
     if (unsaveBtn) {
@@ -291,6 +353,80 @@ function renderApplicationCard(application) {
 
     return card;
 }
+
+function showExclusiveLockedModal(job) {
+    const companyName = (job.Company || '').trim();
+    const companyInitial = companyName ? companyName.charAt(0).toUpperCase() : '?';
+
+    dom.modalBody.innerHTML = `
+        <div class="modal-header">
+            <div class="modal-logo">${companyInitial}</div>
+            <div class="modal-title-group">
+                <h2>${job.Company || 'Company'}</h2>
+                <p>${job.Location || ''}</p>
+            </div>
+        </div>
+        <div style="
+            text-align: center;
+            padding: 2.5rem 1.5rem 2rem;
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+            border-radius: 16px;
+            border: 1.5px solid #fbbf24;
+            margin: 1.25rem 0;
+        ">
+            <div style="
+                width: 64px; height: 64px;
+                background: linear-gradient(135deg, #f59e0b, #d97706);
+                border-radius: 50%;
+                display: flex; align-items: center; justify-content: center;
+                margin: 0 auto 1rem;
+                box-shadow: 0 8px 20px rgba(245,158,11,0.35);
+            ">
+                <i class="fas fa-lock" style="color: white; font-size: 1.5rem;"></i>
+            </div>
+            <div style="
+                display: inline-flex; align-items: center; gap: 0.4rem;
+                background: linear-gradient(135deg, #f59e0b, #d97706);
+                color: white; font-size: 0.7rem; font-weight: 700;
+                padding: 3px 10px; border-radius: 999px; letter-spacing: 0.06em;
+                margin-bottom: 1rem;
+            ">
+                <i class="fas fa-star" style="font-size: 0.65rem;"></i> EXCLUSIVE VACANCY
+            </div>
+            <h3 style="font-size: 1.15rem; font-weight: 700; color: #92400e; margin-bottom: 0.6rem;">
+                MSC Program Members Only
+            </h3>
+            <p style="color: #78350f; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem; max-width: 320px; margin-left: auto; margin-right: auto;">
+                This vacancy is exclusively available to students enrolled in the <strong>MSC ICAI Industrial Training Program</strong>. Enroll to unlock full details and apply directly.
+            </p>
+            <a href="/ca-industrial-training-program" target="_blank" style="
+                display: inline-flex; align-items: center; gap: 0.5rem;
+                background: linear-gradient(135deg, #f59e0b, #d97706);
+                color: white; font-weight: 600; font-size: 0.92rem;
+                padding: 0.75rem 1.75rem; border-radius: 10px;
+                text-decoration: none;
+                box-shadow: 0 4px 14px rgba(245,158,11,0.4);
+                transition: transform 0.2s, box-shadow 0.2s;
+            " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 20px rgba(245,158,11,0.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 14px rgba(245,158,11,0.4)'">
+                <i class="fas fa-graduation-cap"></i>
+                Enroll in MSC Program
+            </a>
+            ${!currentSession ? `
+            <p style="margin-top: 1rem; font-size: 0.82rem; color: #92400e;">
+                Already enrolled? <a href="/login.html" style="color: #d97706; font-weight: 600; text-decoration: underline;">Sign in</a> to access.
+            </p>` : ''}
+        </div>
+        <div class="modal-footer" style="text-align: center; padding: 1rem; border-top: 1px solid #e5e7eb; margin-top: 1rem;">
+            <p style="color: #6b7280; font-size: 0.85rem;">
+                <i class="fas fa-shield-alt" style="color: #f59e0b; margin-right: 4px;"></i>
+                Exclusive vacancies are MSCIT program enrolled students only.
+            </p>
+        </div>`;
+
+    dom.modalOverlay.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
 // Record application in Supabase when applying from saved view
 async function recordApplicationFromSaved(application) {
     if (!currentSession) return false;

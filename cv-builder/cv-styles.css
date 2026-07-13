@@ -1583,6 +1583,57 @@
             cursor: not-allowed;
         }
 
+        /* Group/Ungroup toggle needs to fit a word, unlike the square arrow buttons. */
+        .reorder-group-btn {
+            width: auto;
+            height: 24px;
+            padding: 0 10px;
+            border-radius: 999px;
+            border: 1px solid var(--border-color);
+            background: #f8fafc;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            line-height: 1;
+            cursor: pointer;
+            transition: background .15s ease, color .15s ease, border-color .15s ease;
+        }
+
+        .reorder-group-btn:hover:not(:disabled) {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #1d4ed8;
+        }
+
+        .reorder-group-btn.active {
+            background: #1d4ed8;
+            border-color: #1d4ed8;
+            color: #ffffff;
+        }
+
+        .reorder-group-btn.active:hover {
+            background: #1e40af;
+            border-color: #1e40af;
+        }
+
+        .reorder-group-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .reorder-grouped-tag {
+            display: inline-block;
+            margin-left: 6px;
+            padding: 1px 7px;
+            border-radius: 999px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1d4ed8;
+            font-size: 10px;
+            font-weight: 600;
+            vertical-align: middle;
+        }
+
         .reorder-drawer-actions {
             padding: 12px 16px;
             border-top: 1px solid var(--border-color);

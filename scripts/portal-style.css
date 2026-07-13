@@ -1517,6 +1517,49 @@ body {
   font-weight: 600;
 }
 
+/* Exclusive vacancy badge */
+.job-tag.tag-exclusive {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: #fff;
+  border-color: #d97706;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+}
+
+/* Exclusive job card highlight */
+.job-card.job-card-exclusive {
+  border: 1px solid #fcd34d !important;
+  border-left: 5px solid #f59e0b !important;
+  background: linear-gradient(135deg, rgba(254, 243, 199, 0.2) 0%, var(--card-bg, #fff) 100%) !important;
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.06) !important;
+  transition: box-shadow 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+
+.job-card.job-card-exclusive:hover {
+  box-shadow: 0 8px 30px rgba(245, 158, 11, 0.15) !important;
+  border-color: #f59e0b !important;
+  transform: translateY(-3px);
+}
+
+.job-card.job-card-exclusive::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 0; height: 0;
+  border-style: solid;
+  border-width: 0 28px 28px 0;
+  border-color: transparent #f59e0b transparent transparent;
+  border-radius: 0 var(--radius-md, 12px) 0 0;
+  z-index: 1;
+}
+
+/* Shift bookmark slightly left on exclusive cards so it doesn't overlap the corner ribbon */
+.job-card.job-card-exclusive .job-card-bookmark {
+  margin-right: 12px;
+  z-index: 2;
+}
+
 /* Info row: Role | Stipend | Experience */
 .job-card-info-row {
   display: grid;
