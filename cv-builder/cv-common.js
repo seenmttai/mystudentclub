@@ -1965,15 +1965,9 @@ function getHeaderToggleTarget(header) {
     return header.closest('tr') || header;
 }
 
-/**
- * Grouping is enabled for the Classic template only. It needs each groupable section to have a
- * left-label cell (.section-label) to carry the sub-section name under the shared heading —
- * banner-only templates have no such column, so the editor hides the Group button entirely
- * (via the reported capability) and any stored grouping flags are ignored.
- */
+
 function templateSupportsSectionGrouping() {
-    // Match classic.html exactly — not classic-blue/classic-grid/classic-ledger.
-    if (!/(^|\/)classic\.html$/i.test(String(window.location.pathname || ''))) return false;
+    if (!document.querySelector('body[data-section-grouping]')) return false;
     return GROUPABLE_SECTIONS.some(id => {
         const section = document.querySelector(`.sortable-section[data-section-id="${id}"]`);
         return !!(section && section.querySelector('.section-label'));
