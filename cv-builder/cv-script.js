@@ -49,7 +49,7 @@
         }
 
         let cvData = {
-            personal: { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] },
+            personal: { name: "", tagline: "", contact: "", phone: "+91 ", email: "", linkedin: "", location: "", socialLinks: [] },
             summary: "",
             education: [],
             experience: [],
@@ -418,7 +418,8 @@
         function cleanupInlineRichEditors() {
             inlineRichEditors.forEach((entry, key) => {
                 if (!entry || !entry.textarea || !document.body.contains(entry.textarea)) {
-                    if (entry && entry.host && entry.host.parentNode) entry.host.parentNode.removeChild(entry.host);
+                    const node = (entry && (entry.wrapper || entry.host)) || null;
+                    if (node && node.parentNode) node.parentNode.removeChild(node);
                     inlineRichEditors.delete(key);
                 }
             });
@@ -429,9 +430,13 @@
             if (inlineRichEditors.has(editorKey)) return;
             const allowOrderedList = options.allowOrderedList !== false;
 
+            const wrapper = document.createElement('div');
+            wrapper.className = 'rich-editor-wrap';
+            textarea.parentNode.insertBefore(wrapper, textarea);
+
             const host = document.createElement('div');
             host.className = 'summary-rich-editor inline-rich-editor';
-            textarea.parentNode.insertBefore(host, textarea);
+            wrapper.appendChild(host);
             textarea.style.display = 'none';
 
             const quill = new Quill(host, {
@@ -454,6 +459,11 @@
 
             addToolbarTooltipsForQuill(quill);
 
+            const hint = document.createElement('div');
+            hint.className = 'rich-editor-hint';
+            hint.innerHTML = 'Highlight text, then click the <strong>🔗 Link</strong> button above to add a hyperlink.';
+            wrapper.appendChild(hint);
+
             let isSyncing = true;
             quill.clipboard.dangerouslyPasteHTML(sanitizeSummaryHTML(textarea.value || ''));
             isSyncing = false;
@@ -465,7 +475,7 @@
                 if (typeof onChange === 'function') onChange(sanitized);
             });
 
-            inlineRichEditors.set(editorKey, { textarea, quill, host });
+            inlineRichEditors.set(editorKey, { textarea, quill, host, wrapper });
         }
 
         function initSectionInlineRichEditors() {
@@ -885,6 +895,7 @@
                     company: normalizeImportedString(item?.company || ''),
                     dates: normalizeImportedString(item?.dates || ''),
                     intro: normalizeImportedString(item?.intro || ''),
+                    link: normalizeImportedString(item?.link || ''),
                     category: normalizeCategoryHTML(htmlToMultilineText(item?.category || '')),
                     bullets: applyBoldToBulletList(item?.bullets || [], 'experience'),
                     mergedWithPrevious: !!item?.mergedWithPrevious && index > 0,
@@ -895,6 +906,7 @@
             if (Array.isArray(incoming.projects)) {
                 normalized.projects = incoming.projects.map(item => ({
                     title: normalizeImportedString(item?.title || ''),
+                    titleLink: normalizeImportedString(item?.titleLink || ''),
                     description: normalizeImportedString(item?.description || ''),
                     bullets: applyBoldToBulletList(item?.bullets || [], 'projects')
                 })).filter(item => Object.values(item).some(v => Array.isArray(v) ? v.length : normalizeImportedString(getPlainTextFromHTML(v))));
@@ -1128,7 +1140,7 @@
         function ensureCvDataShape() {
             if (!cvData || typeof cvData !== 'object') {
                 cvData = {
-                    personal: { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] },
+                    personal: { name: "", tagline: "", contact: "", phone: "+91 ", email: "", linkedin: "", location: "", socialLinks: [] },
                     summary: "",
                     education: [],
                     experience: [],
@@ -1146,7 +1158,8 @@
                     sectionGroups: {}
                 };
             }
-            if (!cvData.personal) cvData.personal = { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] };
+            if (!cvData.personal) cvData.personal = { name: "", tagline: "", contact: "", phone: "+91 ", email: "", linkedin: "", location: "", socialLinks: [] };
+            if (!cvData.personal.phone) cvData.personal.phone = "+91 ";
             if (!Array.isArray(cvData.personal.socialLinks)) cvData.personal.socialLinks = [];
             if (!Array.isArray(cvData.education)) cvData.education = [];
             if (!Array.isArray(cvData.experience)) cvData.experience = [];
@@ -1846,6 +1859,10 @@
                         <input class="form-control" value="${exp.company || ''}" oninput="updateExp(${index}, 'company', this.value)" placeholder="e.g. ABC & Associates">
                     </div>
                     <div class="form-group">
+                        <label>Link <span style="font-weight:400;color:var(--text-muted);">(optional — shows a clickable [Link] next to the firm)</span></label>
+                        <input class="form-control" value="${exp.link || ''}" oninput="updateExp(${index}, 'link', this.value)" placeholder="e.g. company website or LinkedIn URL">
+                    </div>
+                    <div class="form-group">
                         <label>Duration</label>
                         <input class="form-control" value="${exp.dates || ''}" oninput="updateExp(${index}, 'dates', this.value)" placeholder="e.g. Jan 2023 - Present">
                     </div>
@@ -1901,6 +1918,10 @@
                         <input class="form-control" value="${proj.title || ''}" oninput="updateProj(${index}, 'title', this.value)" placeholder="e.g. Parag Milk Foods Ltd">
                     </div>
                     <div class="form-group">
+                        <label>Link <span style="font-weight:400;color:var(--text-muted);">(optional — shows a clickable [Link] next to the title)</span></label>
+                        <input class="form-control" value="${proj.titleLink || ''}" oninput="updateProj(${index}, 'titleLink', this.value)" placeholder="e.g. https://drive.google.com/...">
+                    </div>
+                    <div class="form-group">
                         <label>Description</label>
                         <input class="form-control" value="${proj.description || ''}" oninput="updateProj(${index}, 'description', this.value)" placeholder="e.g. Valued a leading dairy company">
                     </div>
@@ -1935,6 +1956,16 @@
                 `;
                 container.appendChild(div);
             });
+        }
+
+        function formatPhoneInput(input) {
+            if (!input) return;
+            const val = input.value.trim();
+            const digits = val.replace(/[^\d]/g, '');
+            if (digits.length === 10 && !val.startsWith('+') && !val.startsWith('0')) {
+                input.value = '+91 ' + val;
+                updateCV();
+            }
         }
 
         // Data Updates
@@ -2658,6 +2689,161 @@
         ];
         const TEMPLATE_COLOR_PRESETS = ['#2b2b2b', '#0f6cbd', '#155e95', '#1f8f63', '#c0392b', '#7b4db3'];
 
+        // ── Template paywall ──────────────────────────────────────────────
+        // First 3 templates are free for everyone; the rest are premium.
+        // Any paid enrollment (a row in the `enrollment` table) unlocks all.
+        const FREE_TEMPLATES = ['classic.html', 'ledger-layout.html', 'structured-grid.html'];
+        const FREE_FALLBACK_TEMPLATE = 'classic.html';
+
+        // Courses shown in the "unlock" popup. Add the 3rd entry here later.
+        const PREMIUM_COURSES = [
+            {
+                title: 'MSC Industrial Training Program',
+                desc: 'Master industrial training requirements for CA candidates with real-world case studies.',
+                url: 'https://www.mystudentclub.com/ca-industrial-training-program/'
+            },
+            {
+                title: 'MSC CA Freshers Program',
+                desc: 'A comprehensive program for CA freshers to kickstart their career.',
+                url: 'https://www.mystudentclub.com/ca-industrial-training-program/'
+            }
+        ];
+
+        // Entitlement state, resolved asynchronously once Supabase is ready.
+        let templateAccess = { checked: false, loggedIn: false, hasAccess: false };
+        let landingLoginPromptShown = false;
+
+        function isFreeTemplate(file) {
+            return FREE_TEMPLATES.includes(file);
+        }
+        function hasTemplateAccess() {
+            return !!templateAccess.hasAccess;
+        }
+        function isTemplateLocked(file) {
+            return !isFreeTemplate(file) && !hasTemplateAccess();
+        }
+
+        // Checks login + enrollment via the shared Supabase client, then
+        // re-renders the picker and enforces access on the current template.
+        async function refreshTemplateAccess() {
+            const sb = window.mscSupabase;
+            if (!sb) return; // Not ready yet; the ready-event handler will retry.
+            try {
+                const { data: { session } } = await sb.auth.getSession();
+                if (!session || !session.user) {
+                    templateAccess = { checked: true, loggedIn: false, hasAccess: false };
+                } else {
+                    // Session is local/fast — mark logged-in right away so the
+                    // feature gates don't misfire during the enrollment lookup.
+                    templateAccess = { checked: true, loggedIn: true, hasAccess: false };
+                    const { count, error } = await sb
+                        .from('enrollment')
+                        .select('course', { count: 'exact', head: true })
+                        .eq('uuid', session.user.id);
+                    if (error) throw error;
+                    templateAccess.hasAccess = (count || 0) > 0;
+                }
+            } catch (e) {
+                console.error('Template access check failed:', e);
+                // Fail closed: treat as logged-in-no-access so premium stays locked
+                // but the builder remains usable with the free templates.
+                templateAccess = { checked: true, loggedIn: !!(templateAccess.loggedIn), hasAccess: false };
+            }
+            enforceTemplateAccess();
+            const grid = document.getElementById('template-grid');
+            if (grid && grid.children.length) renderTemplateCards();
+
+            // On landing, invite logged-out users to sign in (dismissible).
+            if (!templateAccess.loggedIn && !landingLoginPromptShown) {
+                landingLoginPromptShown = true;
+                openTemplateLoginModal({
+                    title: 'Welcome to the MSC CV Builder',
+                    text: 'Log in to your MSC account to use AI tools, import, and export your CV. You can keep editing with the free templates in the meantime.'
+                });
+            }
+        }
+
+        // If the active template is premium and the user isn't entitled,
+        // silently switch to the free default before it can be used.
+        function enforceTemplateAccess() {
+            if (!templateAccess.checked || templateAccess.hasAccess) return;
+            const select = document.getElementById('template-select');
+            if (!select || !isTemplateLocked(select.value)) return;
+            const fallback = TEMPLATES.find(t => t.file === FREE_FALLBACK_TEMPLATE);
+            select.value = FREE_FALLBACK_TEMPLATE;
+            const nameSpan = document.getElementById('current-template-name');
+            if (nameSpan && fallback) nameSpan.textContent = fallback.name;
+            changeTemplate();
+        }
+
+        const TPL_LOGIN_DEFAULTS = {
+            title: 'Log in to unlock premium templates',
+            text: "This template is part of MSC's premium collection. Sign in to your MSC account to continue."
+        };
+        function openTemplateLoginModal(opts = {}) {
+            const titleEl = document.getElementById('tpl-login-title');
+            const textEl = document.getElementById('tpl-login-text');
+            if (titleEl) titleEl.textContent = opts.title || TPL_LOGIN_DEFAULTS.title;
+            if (textEl) textEl.textContent = opts.text || TPL_LOGIN_DEFAULTS.text;
+            const overlay = document.getElementById('template-login-overlay');
+            if (overlay) overlay.classList.add('active');
+        }
+        function closeTemplateLoginModal() {
+            const overlay = document.getElementById('template-login-overlay');
+            if (overlay) overlay.classList.remove('active');
+        }
+
+        // Gate for login-only features (AI tools, import, export). Returns true
+        // when the user may proceed; otherwise shows the login prompt and false.
+        function requireLogin(feature) {
+            if (templateAccess.loggedIn) return true;
+            openTemplateLoginModal({
+                title: 'Log in to continue',
+                text: `Log in to your MSC account to use ${feature}.`
+            });
+            return false;
+        }
+
+        // Import is login-gated: check before opening the file picker.
+        function triggerImport() {
+            if (!requireLogin('CV import')) return;
+            const input = document.getElementById('file-upload');
+            if (input) input.click();
+        }
+        function openTemplateBuyModal() {
+            const list = document.getElementById('tpl-buy-course-list');
+            if (list) {
+                list.innerHTML = PREMIUM_COURSES.map(c => `
+                    <a class="tpl-course-card" href="${escapeHtml(c.url)}" target="_blank" rel="noopener noreferrer">
+                        <span class="tpl-course-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 10 12 5 2 10l10 5 10-5z"></path>
+                                <path d="M6 12v5c0 1 2.7 3 6 3s6-2 6-3v-5"></path>
+                            </svg>
+                        </span>
+                        <div class="tpl-course-info">
+                            <div class="tpl-course-title">${escapeHtml(c.title)}</div>
+                            <div class="tpl-course-desc">${escapeHtml(c.desc)}</div>
+                        </div>
+                        <span class="tpl-course-cta">View<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m13 6 6 6-6 6"></path></svg></span>
+                    </a>
+                `).join('');
+            }
+            const overlay = document.getElementById('template-buy-overlay');
+            if (overlay) overlay.classList.add('active');
+        }
+        function closeTemplateBuyModal() {
+            const overlay = document.getElementById('template-buy-overlay');
+            if (overlay) overlay.classList.remove('active');
+        }
+
+        // Resolve entitlement as soon as the Supabase client is available.
+        if (window.mscSupabase) {
+            refreshTemplateAccess();
+        } else {
+            window.addEventListener('msc-supabase-ready', refreshTemplateAccess, { once: true });
+        }
+
         function normalizeHexColor(value) {
             const raw = String(value || '').trim();
             if (!raw) return '';
@@ -2738,15 +2924,26 @@
             const grid = document.getElementById('template-grid');
             const currentTemplate = document.getElementById('template-select').value;
             
-            grid.innerHTML = TEMPLATES.map(t => `
-                <div class="template-card ${t.file === currentTemplate ? 'active' : ''}" onclick="selectTemplate('${t.file}', '${t.name}')">
+            grid.innerHTML = TEMPLATES.map(t => {
+                const locked = isTemplateLocked(t.file);
+                return `
+                <div class="template-card ${t.file === currentTemplate ? 'active' : ''} ${locked ? 'locked' : ''}" onclick="selectTemplate('${t.file}', '${t.name}')">
                     <div class="template-card-preview">
                         <iframe data-src="${t.file}" data-template="${t.file}"></iframe>
                         <div class="template-loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12px;color:#9ca3af;">Loading...</div>
+                        ${locked ? `
+                        <div class="template-lock-scrim"></div>
+                        <div class="template-premium-badge">
+                            <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="4.5" y="10.5" width="15" height="10" rx="2"></rect>
+                                <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path>
+                            </svg>
+                            PREMIUM
+                        </div>` : ''}
                     </div>
                     <div class="template-card-name">${t.name}</div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
             
             // Initialize lazy loading after rendering
             initLazyLoading();
@@ -2879,9 +3076,16 @@
         }
 
         function selectTemplate(file, name) {
+            // Gate premium templates: don't switch — prompt to log in or unlock.
+            if (isTemplateLocked(file)) {
+                if (!templateAccess.loggedIn) openTemplateLoginModal();
+                else openTemplateBuyModal();
+                return;
+            }
+
             const select = document.getElementById('template-select');
             const nameSpan = document.getElementById('current-template-name');
-            
+
             select.value = file;
             if (nameSpan) nameSpan.textContent = name;
             
@@ -2909,7 +3113,7 @@
         function updateTemplateSpecificPanels() {
             const file = getSelectedTemplateFile();
             const panel = document.getElementById('highlights-panel');
-            if (panel) panel.style.display = file === 'monochrome-ledger.html' ? '' : 'none';
+            if (panel) panel.style.display = file === 'clean-ledger.html' ? '' : 'none';
         }
 
         function changeTemplate(options = {}) {
@@ -2977,6 +3181,7 @@
         function loadJSON(input) {
             const file = input.files[0];
             if (!file) return;
+            if (!requireLogin('CV import')) { input.value = ''; return; }
             const reader = new FileReader();
             reader.onload = (e) => {
                 try {
@@ -2999,7 +3204,7 @@
         function resetData() {
             if (confirm("Clear all data?")) {
                 cvData = {
-                    personal: { name: "", tagline: "", contact: "", phone: "", email: "", linkedin: "", location: "", socialLinks: [] },
+                    personal: { name: "", tagline: "", contact: "", phone: "+91 ", email: "", linkedin: "", location: "", socialLinks: [] },
                     summary: "",
                     education: [],
                     experience: [],
@@ -3070,7 +3275,10 @@ async function downloadCvFile(format = 'pdf') {
     // Hide the dropdown after selection
     const menu = document.getElementById('download-menu-popover');
     if (menu) menu.classList.remove('active');
-    
+
+    // Export is login-gated.
+    if (!requireLogin(format === 'docx' ? 'Word export' : 'PDF export')) return;
+
     if (format === 'docx') {
         openDocxInfoModal();
     }
@@ -3384,6 +3592,9 @@ async function downloadCvFile(format = 'pdf') {
         }
 
         async function getCustomPrompt(sectionLabel) {
+            // AI tools are login-gated. Returning null makes every caller
+            // (generateAI + aiRefine*) abort cleanly with no error toast.
+            if (!requireLogin('AI tools')) return null;
             return await openAiPromptModal(sectionLabel);
         }
 
@@ -3719,6 +3930,7 @@ async function downloadCvFile(format = 'pdf') {
         }
 
         async function generateAI() {
+            if (!requireLogin('AI Enhance')) return;
             if (!cvData.personal.name && !getPlainTextFromHTML(cvData.summary || '')) return alert("Please fill basic info first.");
 
             const overlay = document.querySelector('.loading-overlay');
@@ -3836,6 +4048,7 @@ async function downloadCvFile(format = 'pdf') {
 
         async function handleImageUpload(input) {
             if (!input.files[0]) return;
+            if (!requireLogin('CV import')) { input.value = ''; return; }
             const overlay = document.querySelector('.loading-overlay');
             overlay.classList.add('active');
 
@@ -4069,7 +4282,7 @@ async function downloadCvFile(format = 'pdf') {
                     }
                 },
                 {
-                    element: 'button[onclick="document.getElementById(\'file-upload\').click()"]',
+                    element: 'button[onclick="triggerImport()"]',
                     popover: {
                         title: '📄 Import Resume',
                         description: 'Already have a CV? Upload an image or PDF to auto-fill using AI.',
@@ -4203,7 +4416,9 @@ async function downloadCvFile(format = 'pdf') {
         // Auto-start tour for first-time visitors
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(() => {
-                if (!localStorage.getItem('cv_tour_completed')) {
+                // Don't collide with the landing login prompt shown to logged-out users.
+                const loginOpen = document.getElementById('template-login-overlay')?.classList.contains('active');
+                if (!localStorage.getItem('cv_tour_completed') && !loginOpen) {
                     startTour();
                 }
             }, 1200); // Delay to ensure page is fully loaded

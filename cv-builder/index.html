@@ -113,7 +113,7 @@
                     </svg>
                     Download
                 </button>
-                <button class="btn-icon" onclick="document.getElementById('file-upload').click()">
+                <button class="btn-icon" onclick="triggerImport()">
                     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                         <circle cx="8.5" cy="8.5" r="1.5"></circle>
@@ -177,7 +177,7 @@
                     <div class="form-group" data-section="phone">
                         <label>Phone</label>
                         <input type="text" class="form-control" id="inp-phone" placeholder="+91 98765 43210"
-                            oninput="updateCV()">
+                            oninput="updateCV()" onblur="formatPhoneInput(this)">
                     </div>
                     <div class="form-group" data-section="email">
                         <label>Email</label>
@@ -207,7 +207,7 @@
             <details id="highlights-panel" style="display:none">
                 <summary>Highlight Banners</summary>
                 <div class="section-body">
-                    <p style="font-size:12px;color:#888;margin-bottom:10px;">These 3 banners appear at the top of the Monochrome Ledger template.</p>
+                    <p style="font-size:12px;color:#888;margin-bottom:10px;">These 3 banners appear at the top of the Clean Ledger template.</p>
                     <div class="form-group">
                         <label>Banner 1</label>
                         <input type="text" class="form-control" id="inp-highlight1" placeholder="e.g. Top Academic Performer" oninput="updateCV()">
@@ -863,6 +863,8 @@
 
             setupUserId();
             supabase = createClient(SUPABASE_URL, SUPABASE_KEY, { global: { headers: { 'x-msc-user-id': userId } } });
+            window.mscSupabase = supabase;
+            window.dispatchEvent(new Event('msc-supabase-ready'));
         }
 
         function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
@@ -1361,6 +1363,46 @@
             </div>
             <div class="docx-info-actions">
                 <button class="btn-icon btn-primary" type="button" onclick="closeDocxInfoModal()">Got it</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium template: login required (shown to logged-out users) -->
+    <div id="template-login-overlay" class="tpl-gate-overlay" aria-hidden="true" onclick="closeTemplateLoginModal()">
+        <div class="tpl-gate-card" role="dialog" aria-modal="true" aria-labelledby="tpl-login-title" onclick="event.stopPropagation()">
+            <button class="tpl-gate-close" type="button" onclick="closeTemplateLoginModal()" aria-label="Close">×</button>
+            <div class="tpl-gate-emblem">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"></rect>
+                    <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path>
+                </svg>
+            </div>
+            <h3 id="tpl-login-title">Log in to unlock premium templates</h3>
+            <p class="tpl-gate-text" id="tpl-login-text">This template is part of MSC's premium collection. Sign in to your MSC account to continue.</p>
+            <div class="tpl-gate-actions">
+                <a class="tpl-gate-btn-primary" href="/login.html">Log in</a>
+                <button class="tpl-gate-btn-ghost" type="button" onclick="closeTemplateLoginModal()">Maybe later</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Premium template: purchase prompt (logged-in users without any enrollment) -->
+    <div id="template-buy-overlay" class="tpl-gate-overlay" aria-hidden="true" onclick="closeTemplateBuyModal()">
+        <div class="tpl-gate-card" role="dialog" aria-modal="true" aria-labelledby="tpl-buy-title" onclick="event.stopPropagation()">
+            <button class="tpl-gate-close" type="button" onclick="closeTemplateBuyModal()" aria-label="Close">×</button>
+            <div class="tpl-gate-emblem">
+                <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect x="4.5" y="10.5" width="15" height="10.5" rx="2.5"></rect>
+                    <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"></path>
+                </svg>
+            </div>
+            <h3 id="tpl-buy-title">Unlock all premium templates</h3>
+            <p class="tpl-gate-text">Enroll in any MSC program to instantly unlock every resume template.</p>
+            <div id="tpl-buy-course-list" class="tpl-course-list">
+                <!-- Course cards injected by JS from PREMIUM_COURSES -->
+            </div>
+            <div class="tpl-gate-actions">
+                <button class="tpl-gate-btn-ghost" type="button" onclick="closeTemplateBuyModal()">Maybe later</button>
             </div>
         </div>
     </div>

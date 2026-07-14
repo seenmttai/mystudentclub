@@ -590,6 +590,44 @@
             border-color: var(--primary);
         }
 
+        /* Make the Quill "link" button discoverable: show a "Link" label + accent
+           colour so users realise they can hyperlink selected text. */
+        .inline-rich-toolbar.ql-toolbar.ql-snow button.ql-link,
+        .summary-rich-toolbar.ql-toolbar.ql-snow button.ql-link {
+            width: auto !important;
+            padding: 2px 6px !important;
+            display: inline-flex !important;
+            align-items: center;
+            gap: 3px;
+        }
+        .inline-rich-toolbar.ql-toolbar.ql-snow button.ql-link::after,
+        .summary-rich-toolbar.ql-toolbar.ql-snow button.ql-link::after {
+            content: 'Link';
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .inline-rich-toolbar.ql-toolbar.ql-snow button.ql-link .ql-stroke,
+        .summary-rich-toolbar.ql-toolbar.ql-snow button.ql-link .ql-stroke {
+            stroke: var(--primary);
+        }
+
+        /* Contextual hint that appears only while a rich editor is focused. */
+        .rich-editor-hint {
+            display: none;
+            font-size: 11px;
+            line-height: 1.4;
+            color: var(--text-muted);
+            margin: 5px 2px 0;
+        }
+        .rich-editor-hint strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .rich-editor-wrap:focus-within .rich-editor-hint {
+            display: block;
+        }
+
         .summary-link-popover {
             position: fixed;
             z-index: 1100;
@@ -1165,6 +1203,52 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
         }
 
+        /* Premium (locked) templates: keep the preview visible but scrimmed so
+           it reads as aspirational, marked with a gold PREMIUM pill. */
+        .template-card.locked {
+            border-color: #ece0c8;
+        }
+        .template-card.locked .template-card-preview {
+            filter: saturate(0.9);
+        }
+        .template-lock-scrim {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            background: linear-gradient(180deg,
+                rgba(28, 24, 16, 0.04) 0%,
+                rgba(28, 24, 16, 0.10) 55%,
+                rgba(28, 24, 16, 0.24) 100%);
+        }
+        .template-card.locked:hover {
+            border-color: #e8a020;
+            box-shadow: 0 8px 22px rgba(200, 128, 26, 0.28);
+        }
+        .template-card.locked:hover .template-lock-scrim {
+            background: linear-gradient(180deg,
+                rgba(28, 24, 16, 0.02) 0%,
+                rgba(28, 24, 16, 0.06) 55%,
+                rgba(28, 24, 16, 0.16) 100%);
+        }
+        .template-premium-badge {
+            position: absolute;
+            top: 9px;
+            right: 9px;
+            z-index: 2;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 9px 4px 7px;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.6px;
+            color: #4a2f08;
+            background: linear-gradient(135deg, #f7d774 0%, #e8a020 55%, #cf8617 100%);
+            border-radius: 999px;
+            box-shadow: 0 2px 6px rgba(160, 100, 20, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.55);
+        }
+
         .template-card-preview {
             height: calc(100% - 45px);
             overflow: hidden;
@@ -1706,6 +1790,186 @@
     border: 1px solid var(--border-color);
     transform: translateY(10px);
     transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Template paywall modals (login + buy) ───────────────────────── */
+.tpl-gate-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(2px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 1600;
+    padding: 20px;
+}
+.tpl-gate-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+.tpl-gate-card {
+    position: relative;
+    overflow: hidden;
+    width: min(94vw, 460px);
+    background: #ffffff;
+    border-radius: var(--radius-lg);
+    padding: 32px 26px 24px;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border-color);
+}
+/* Soft gold glow behind the emblem for depth. */
+.tpl-gate-card::before {
+    content: '';
+    position: absolute;
+    top: -70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 240px;
+    height: 240px;
+    background: radial-gradient(circle, rgba(232, 160, 32, 0.20) 0%, rgba(232, 160, 32, 0) 70%);
+    pointer-events: none;
+}
+.tpl-gate-card > * {
+    position: relative;
+}
+.tpl-gate-close {
+    position: absolute;
+    top: 12px;
+    right: 14px;
+    background: transparent;
+    border: 0;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--text-muted);
+    cursor: pointer;
+}
+.tpl-gate-emblem {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: linear-gradient(135deg, #f7d774 0%, #e8a020 55%, #cf8617 100%);
+    border-radius: 18px;
+    box-shadow: 0 8px 20px rgba(200, 128, 26, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.tpl-gate-card h3 {
+    margin: 4px 0 8px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+.tpl-gate-text {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0 auto 16px;
+    max-width: 340px;
+}
+.tpl-gate-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+.tpl-gate-btn-primary,
+.tpl-gate-btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+}
+.tpl-gate-btn-primary {
+    background: var(--primary);
+    color: #fff;
+}
+.tpl-gate-btn-primary:hover {
+    filter: brightness(0.95);
+}
+.tpl-gate-btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border-color: var(--border-color);
+}
+.tpl-gate-btn-ghost:hover {
+    background: #f8fafc;
+}
+.tpl-course-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 4px 0 18px;
+    text-align: left;
+}
+.tpl-course-card {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 13px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 14px;
+    text-decoration: none;
+    background: #fff;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+.tpl-course-card:hover {
+    border-color: #e8a020;
+    box-shadow: 0 6px 16px rgba(200, 128, 26, 0.20);
+    transform: translateY(-1px);
+}
+.tpl-course-icon {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b8791a;
+    background: linear-gradient(135deg, #fdf3dc 0%, #f8e3b0 100%);
+    border: 1px solid rgba(200, 128, 26, 0.18);
+}
+.tpl-course-info {
+    flex: 1;
+    min-width: 0;
+}
+.tpl-course-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+.tpl-course-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.4;
+    margin-top: 2px;
+}
+.tpl-course-cta {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #c8801a;
+    white-space: nowrap;
+}
+.tpl-course-card:hover .tpl-course-cta {
+    color: #a86913;
 }
 
 .docx-info-overlay.open .docx-info-card {
