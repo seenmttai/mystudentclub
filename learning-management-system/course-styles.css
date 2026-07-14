@@ -275,8 +275,8 @@
 }
 
 .module-content.expanded {
-    max-height: none;
-    overflow: visible;
+    max-height: 10000px;
+    overflow: hidden;
 }
 
 .sub-video-item {
