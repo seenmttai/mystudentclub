@@ -549,6 +549,9 @@ const initializeCertificate = () => {
         const baseRotateX = 5;
         const baseRotateZ = -2;
 
+        // Dynamic transition override for responsive real-time tracking
+        certificate.style.transition = 'transform 0.05s ease-out';
+
         certificate.style.transform = `
           rotateY(${baseRotateY + (x / factorX)}deg)
           rotateX(${baseRotateX + (-y / factorY)}deg)
@@ -560,6 +563,8 @@ const initializeCertificate = () => {
 
     container.addEventListener('mouseleave', () => {
       if (certificate.classList.contains('rotated')) {
+        // Smooth spring animation when snapping back
+        certificate.style.transition = 'transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         certificate.style.transform = 'rotateY(-30deg) rotateX(5deg) rotateZ(-2deg)';
       }
     });
