@@ -50,17 +50,42 @@ function renderCV(data) {
     setHTML('[data-field="name"]', data.personal?.name);
     setHTML('[data-field="tagline"]', data.personal?.tagline);
     setHTML('[data-field="contact"]', data.personal?.contact);
-    setHTML('[data-field="highlight1"]', data.personal?.highlight1 || 'Top Academic Performer');
-    setHTML('[data-field="highlight2"]', data.personal?.highlight2 || 'Article Trainee Experience');
-    setHTML('[data-field="highlight3"]', data.personal?.highlight3 || 'Leadership & Awards');
-    setHTML('[data-field="phone"]', data.personal?.phone);
+    // Highlight banners logic
+    const h1Val = (data.personal?.highlight1 !== undefined && data.personal?.highlight1 !== null) ? data.personal.highlight1 : 'Top Academic Performer';
+    const h2Val = (data.personal?.highlight2 !== undefined && data.personal?.highlight2 !== null) ? data.personal.highlight2 : 'Article Trainee Experience';
+    const h3Val = (data.personal?.highlight3 !== undefined && data.personal?.highlight3 !== null) ? data.personal.highlight3 : 'Leadership & Awards';
+
+    const h1El = document.querySelector('[data-field="highlight1"]');
+    const h2El = document.querySelector('[data-field="highlight2"]');
+    const h3El = document.querySelector('[data-field="highlight3"]');
+
+    if (h1El) {
+        h1El.innerHTML = h1Val;
+        h1El.style.display = h1Val.trim() ? '' : 'none';
+    }
+    if (h2El) {
+        h2El.innerHTML = h2Val;
+        h2El.style.display = h2Val.trim() ? '' : 'none';
+    }
+    if (h3El) {
+        h3El.innerHTML = h3Val;
+        h3El.style.display = h3Val.trim() ? '' : 'none';
+    }
+
+    const highlightsContainer = document.querySelector('.highlights');
+    if (highlightsContainer) {
+        const hasAnyHighlight = !!(h1Val.trim() || h2Val.trim() || h3Val.trim());
+        highlightsContainer.style.display = hasAnyHighlight ? '' : 'none';
+    }
+    const phoneVal = formatPhoneNumber(data.personal?.phone);
+    setHTML('[data-field="phone"]', isRealPhone(phoneVal) ? phoneVal : '');
     setHTML('[data-field="email"]', data.personal?.email);
     setHTML('[data-field="linkedin"]', data.personal?.linkedin);
     setHTML('[data-field="location"]', data.personal?.location);
     
     // Hide contact-block if all contact details are empty (CV-5 pattern)
     const hasContactDetails = !!(
-        data.personal?.phone ||
+        isRealPhone(phoneVal) ||
         data.personal?.email ||
         data.personal?.linkedin ||
         data.personal?.location ||
@@ -186,7 +211,7 @@ function renderCV(data) {
     const hasExp = renderedExperience.length > 0;
     updateList('experience-list', renderedExperience, hasExp, (block, item) => {
         setHTMLIn(block, '[data-field="role"]', item.role);
-        setHTMLIn(block, '[data-field="company"]', item.company);
+        setHTMLIn(block, '[data-field="company"]', (item.company || '') + entryLinkChipHTML(item.link));
         setHTMLIn(block, '[data-field="dates"]', item.dates);
         setHTMLIn(block, '[data-field="intro"]', item.intro); // Role/firm intro shown once under the header
         setHTMLIn(block, '[data-field="category"]', item.category); // Department/Area like "Business Finance"
@@ -235,7 +260,7 @@ function renderCV(data) {
     // 4b. Projects (CV-9)
     const hasProjects = data.projects && data.projects.length > 0;
     updateList('projects-list', data.projects, hasProjects, (block, item) => {
-        setHTMLIn(block, '[data-field="title"]', item.title);
+        setHTMLIn(block, '[data-field="title"]', (item.title || '') + entryLinkChipHTML(item.titleLink));
 
         const descSpan = block.querySelector('[data-field="description"]');
         if (descSpan) {
@@ -422,6 +447,16 @@ function normalizeRichFieldHTML(value) {
     });
 
     return tpl.innerHTML;
+}
+
+// Renders an optional "[Link]" chip after an entry title/company when a URL is set.
+// Returns '' when no URL, so plain-text titles pass through unchanged.
+// The result is a real <a>, so it flows into the preview, PDF and DOCX export.
+function entryLinkChipHTML(url) {
+    const raw = String(url || '').trim();
+    if (!raw) return '';
+    const href = /^(https?:\/\/|mailto:|tel:)/i.test(raw) ? raw : `https://${raw}`;
+    return ` <a class="cv-entry-link" href="${escapeAttr(href)}" target="_blank" rel="noopener noreferrer" style="color:#2563eb;text-decoration:none;font-weight:500;white-space:nowrap;">[Link]</a>`;
 }
 
 function enforceExperienceOnlyLeftLabels() {
@@ -1667,8 +1702,26 @@ function ensureRichTextGuards() {
     document.head.appendChild(style);
 }
 
+function formatPhoneNumber(phone) {
+    if (!phone) return '';
+    const trimmed = phone.trim();
+    const digits = trimmed.replace(/[^\d]/g, '');
+    if (digits.length === 10 && !trimmed.startsWith('+') && !trimmed.startsWith('0')) {
+        return '+91 ' + trimmed;
+    }
+    return trimmed;
+}
+
+function isRealPhone(phone) {
+    if (!phone) return false;
+    const trimmed = phone.trim();
+    if (trimmed === '' || trimmed === '+91' || trimmed === '+91 ') return false;
+    const digits = trimmed.replace(/[^\d]/g, '');
+    return digits.length > 2;
+}
+
 function renderContactWithIcons(personal) {
-    const phone = (personal.phone || '').trim();
+    const phone = formatPhoneNumber(personal.phone || '');
     const email = (personal.email || '').trim();
     const linkedin = (personal.linkedin || '').trim();
     const location = (personal.location || '').trim();
@@ -1680,7 +1733,7 @@ function renderContactWithIcons(personal) {
 
     const contactLinkStyle = 'color:#2563eb;text-decoration:none;border-bottom:1px solid rgba(37,99,235,0.45);padding-bottom:1px;font-weight:500;';
 
-    if (phone) {
+    if (isRealPhone(phone)) {
         const tel = phone.replace(/[^\d+]/g, '');
         items.push(`
             <span class="contact-icon-item" style="display:inline-flex;align-items:center;">
@@ -1774,7 +1827,7 @@ function renderContactWithIcons(personal) {
         el.innerHTML = items.length ? items.join(sep) : '';
     });
 
-    renderStandaloneContactField('phone', phone ? `
+    renderStandaloneContactField('phone', isRealPhone(phone) ? `
         <span class="contact-icon-item">
             <span class="contact-icon-glyph">
                 <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">

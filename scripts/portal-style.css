@@ -3530,6 +3530,70 @@ body:has(.portal-nav-bar) {
     background-color: rgba(59, 130, 246, 0.08);
   }
 
+  .dv2-nav-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+
+  .dv2-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--surface-bg);
+    min-width: 260px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-light);
+    padding: 0.5rem 0;
+    z-index: 1000;
+    margin-top: 0.5rem;
+  }
+
+  /* Triangle indicator */
+  .dv2-dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    width: 10px;
+    height: 10px;
+    background-color: var(--surface-bg);
+    border-left: 1px solid var(--border-light);
+    border-top: 1px solid var(--border-light);
+  }
+
+  .dv2-nav-dropdown:hover .dv2-dropdown-menu {
+    display: block;
+  }
+
+  .dv2-dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 0.65rem 1.25rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+  }
+
+  .dv2-dropdown-item:hover {
+    background-color: rgba(59, 130, 246, 0.08);
+    color: var(--primary-brand);
+  }
+
+  .dv2-nav-dropdown:hover .dv2-dropdown-trigger i {
+    transform: rotate(180deg);
+  }
+
+  .dv2-dropdown-trigger i {
+    transition: transform 0.2s ease;
+  }
+
+
   .dv2-complete-profile-btn.dv2-visible {
     display: inline-flex;
   }
@@ -3559,11 +3623,6 @@ body:has(.portal-nav-bar) {
     font-size: 0.75rem;
   }
 
-  /* Screenshot design has no hamburger on desktop; nav covers all links.
-     Scoped with :has so ONLY pages containing the new nav are affected. */
-  .header-container:has(.dv2-header-nav) .menu-toggle-btn {
-    display: none;
-  }
 }
 
 /* ---- dv2 center column: top search, promo banner, stats ---- */
