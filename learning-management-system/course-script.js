@@ -499,59 +499,124 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const getDeviceUuid = () => {
+        const UUID_KEY = 'msc_lms_device_uuid';
+        try {
+            let uuid = localStorage.getItem(UUID_KEY);
+
+            if (!uuid) {
+                const cookieMatch = document.cookie.match(new RegExp('(?:^|; )' + UUID_KEY + '=([^;]*)'));
+                if (cookieMatch && cookieMatch[1]) {
+                    uuid = decodeURIComponent(cookieMatch[1]);
+                }
+            }
+
+            if (!uuid) {
+                uuid = sessionStorage.getItem(UUID_KEY);
+            }
+
+            if (!uuid) {
+                if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+                    uuid = crypto.randomUUID();
+                } else {
+                    uuid = 'dev_' + Date.now().toString(36) + '_' + Math.random().toString(36).substring(2, 11);
+                }
+            }
+
+            try { localStorage.setItem(UUID_KEY, uuid); } catch (e) {}
+            try { sessionStorage.setItem(UUID_KEY, uuid); } catch (e) {}
+            try {
+                const maxAge = 60 * 60 * 24 * 730; // 2 years
+                document.cookie = `${UUID_KEY}=${encodeURIComponent(uuid)}; path=/; max-age=${maxAge}; SameSite=Lax`;
+            } catch (e) {}
+
+            return uuid;
+        } catch (e) {
+            return 'dev_fallback_' + Math.random().toString(36).substring(2, 11);
+        }
+    };
+
+    const getCoarseHardwareProfile = () => {
+        const ua = navigator.userAgent || '';
+
+        let os = 'UnknownOS';
+        if (/windows/i.test(ua)) os = 'Win';
+        else if (/macintosh|mac os x/i.test(ua)) os = 'Mac';
+        else if (/iphone|ipad|ipod/i.test(ua)) os = 'iOS';
+        else if (/android/i.test(ua)) os = 'Android';
+        else if (/linux/i.test(ua)) os = 'Linux';
+
+        let browser = 'UnknownBrowser';
+        if (/edg/i.test(ua)) browser = 'Edge';
+        else if (/chrome|crios/i.test(ua)) browser = 'Chrome';
+        else if (/firefox|fxios/i.test(ua)) browser = 'Firefox';
+        else if (/safari/i.test(ua) && !/chrome/i.test(ua)) browser = 'Safari';
+        else if (/opera|opr/i.test(ua)) browser = 'Opera';
+
+        let deviceType = 'Desktop';
+        if (/mobile/i.test(ua)) deviceType = 'Mobile';
+        if (/ipad|tablet/i.test(ua)) deviceType = 'Tablet';
+
+        const screenW = screen.width || 0;
+        const screenH = screen.height || 0;
+        const maxDim = Math.round(Math.max(screenW, screenH) / 100) * 100;
+        const minDim = Math.round(Math.min(screenW, screenH) / 100) * 100;
+        const normRes = `${maxDim}x${minDim}`;
+
+        const cores = navigator.hardwareConcurrency || 0;
+        const touch = navigator.maxTouchPoints || 0;
+        const lang = (navigator.language || '').slice(0, 2);
+
+        let tz = '';
+        try {
+            tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+        } catch (e) {}
+
+        const profileStr = `${os}_${browser}_${deviceType}_${normRes}_c${cores}_t${touch}_${lang}_${tz}`;
+
+        let hash = 0;
+        for (let i = 0; i < profileStr.length; i++) {
+            const char = profileStr.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash;
+        }
+
+        return {
+            os,
+            browser,
+            deviceType,
+            normRes,
+            profileStr,
+            hashStr: 'CFP_' + Math.abs(hash)
+        };
+    };
+
     const getDeviceFingerprint = () => {
         const STORAGE_KEY = 'msc_lms_device_fp';
         try {
             const stored = localStorage.getItem(STORAGE_KEY);
-            if (stored) return stored;
-
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            let fp;
-            if (!ctx) {
-                fp = btoa(navigator.userAgent + navigator.language + screen.width + "x" + screen.height);
-            } else {
-                canvas.width = 200;
-                canvas.height = 50;
-                ctx.textBaseline = "top";
-                ctx.font = "14px 'Arial'";
-                ctx.textBaseline = "alphabetic";
-                ctx.fillStyle = "#f60";
-                ctx.fillRect(125, 1, 62, 20);
-                ctx.fillStyle = "#069";
-                ctx.fillText("MSC LMS, device check! 😃", 2, 15);
-                ctx.fillStyle = "rgba(102, 204, 0, 0.7)";
-                ctx.fillText("MSC LMS, device check! 😃", 4, 17);
-                const txt = canvas.toDataURL();
-
-                let hash = 0;
-                for (let i = 0; i < txt.length; i++) {
-                    const char = txt.charCodeAt(i);
-                    hash = ((hash << 5) - hash) + char;
-                    hash = hash & hash;
-                }
-
-                const screenStr = `${screen.width}x${screen.height}x${screen.colorDepth}_${navigator.userAgent}_${navigator.language}`;
-                let screenHash = 0;
-                for (let i = 0; i < screenStr.length; i++) {
-                    const char = screenStr.charCodeAt(i);
-                    screenHash = ((screenHash << 5) - screenHash) + char;
-                    screenHash = screenHash & screenHash;
-                }
-
-                fp = `FP_${Math.abs(hash)}_${Math.abs(screenHash)}`;
+            if (stored && stored.startsWith('FP_')) {
+                return stored;
             }
 
-            localStorage.setItem(STORAGE_KEY, fp);
+            const uuid = getDeviceUuid();
+            const coarse = getCoarseHardwareProfile();
+            const fp = `FP_${uuid}_${coarse.hashStr}`;
+
+            try { localStorage.setItem(STORAGE_KEY, fp); } catch (e) {}
             return fp;
         } catch (e) {
-            return 'FP_FALLBACK_' + btoa(navigator.userAgent + navigator.language + screen.width + "x" + screen.height).slice(0, 32);
+            const uuid = getDeviceUuid();
+            return `FP_${uuid}_CFP_FALLBACK`;
         }
     };
 
     const checkDeviceLimit = async () => {
+        const MAX_ALLOWED_DEVICES = 2;
         try {
             const currentFp = getDeviceFingerprint();
+            const currentUuid = getDeviceUuid();
+            const currentCoarse = getCoarseHardwareProfile();
 
             // Fetch registered devices for this user
             const { data: devices, error } = await supabase
@@ -563,19 +628,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const registeredFingerprints = devices ? devices.map(d => d.fingerprint) : [];
 
+            // 1. Exact fingerprint match
             if (registeredFingerprints.includes(currentFp)) {
-                // Already registered device
                 return true;
             }
 
-            if (registeredFingerprints.length < 2) {
-                // Register new device
+            // 2. Check if current device persistent UUID matches any existing registered fingerprint
+            const isUuidMatched = registeredFingerprints.some(fp => fp.includes(currentUuid));
+            if (isUuidMatched) {
+                return true;
+            }
+
+            // 3. Coarse hardware profile match (same OS + Browser + DeviceType + coarse resolution)
+            const isCoarseMatched = registeredFingerprints.some(fp => {
+                if (fp.includes(currentCoarse.hashStr)) return true;
+                if (fp.includes(currentCoarse.os) && fp.includes(currentCoarse.browser)) return true;
+                return false;
+            });
+
+            if (isCoarseMatched) {
+                return true;
+            }
+
+            // 4. Register new device if under MAX_ALLOWED_DEVICES
+            if (registeredFingerprints.length < MAX_ALLOWED_DEVICES) {
                 const { error: insertError } = await supabase
                     .from('user_devices')
                     .insert({ user_id: state.user.id, fingerprint: currentFp });
 
                 if (insertError) {
-                    // Check if unique constraint error code matches (race condition fallback)
                     if (insertError.code === '23505') {
                         return true;
                     }
@@ -584,12 +665,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 return true;
             }
 
-            // More than 2 devices registered
+            // More than MAX_ALLOWED_DEVICES registered
             return false;
         } catch (err) {
             console.error("Device verification failed:", err);
             logFrontendError("Device limit check failed: " + err.message, err.stack, 'checkDeviceLimit');
-            // Graceful degradation: let the user access if check fails to prevent accidental block
+            // Graceful degradation: allow user access on check failure
             return true;
         }
     };
