@@ -677,10 +677,6 @@ h1 {
   transform: rotateY(0deg) rotateX(0deg) rotateZ(0deg) translateZ(0px);
 }
 
-.certificate-frame:hover {
-  transform: rotateY(-25deg) rotateX(3deg) rotateZ(-1deg) translateZ(20px);
-}
-
 .certificate-shadow {
   position: absolute;
   width: 80%;
@@ -728,7 +724,6 @@ h1 {
   height: 100%;
   border-radius: 15px;
   background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow:
     0 15px 35px rgba(0, 0, 0, 0.2),
@@ -849,7 +844,6 @@ h1 {
   justify-content: center;
   align-items: center;
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
-  backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.18);
   color: rgba(255, 255, 255, 0.8);
   font-size: 2.5rem;
@@ -888,7 +882,6 @@ h1 {
   border-radius: 50px;
   font-weight: 600;
   transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   transform: translateY(0);

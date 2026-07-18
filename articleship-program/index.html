@@ -95,7 +95,7 @@
       position: relative;
       overflow: hidden;
       background: linear-gradient(150deg, #fff 0%, #FEF2F2 40%, #EEF2FF 75%, #f0fdf0 100%) !important;
-      text-align: left !important;
+      text-align: center !important;
       box-sizing: border-box !important;
       padding: 70px 60px !important;
       border-radius: 0 !important;
@@ -106,6 +106,7 @@
         transform: scale(0.6);
         opacity: 0;
       }
+
       to {
         transform: scale(1);
         opacity: 1;
@@ -161,22 +162,18 @@
       padding: 0 40px !important;
       box-sizing: border-box !important;
       margin: 0 auto;
-      /* display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 52px;
-      align-items: center; */
       position: relative;
       z-index: 1;
-      display:grid;
-    grid-template-columns:48% 52%;
-    gap:0;
-    align-items:center;
-      
+      display: flex;
+      justify-content: center;
     }
 
     .hero-content {
-      text-align: left;
-      padding-right: 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 100%;
     }
 
     .badge-urgent {
@@ -236,7 +233,6 @@
       color: var(--text-gray);
       line-height: 1.7;
       margin-bottom: 22px;
-      max-width: 520px;
     }
 
     .hero-live {
@@ -289,9 +285,9 @@
       gap: 12px; */
       flex-wrap: wrap;
       margin-bottom: 28px;
-      display:flex;
-    gap:16px;
-    align-items:center;
+      display: flex;
+      gap: 16px;
+      align-items: center;
     }
 
     .btn-closed {
@@ -350,59 +346,11 @@
       font-weight: 500;
     }
 
-    /* Right side — LinkedIn Testimonials Carousel */
-    .hero-right {
-       transform: translateX(-40px);
-      /* position: relative;
-      display: flex;
-      justify-content: center; */
-      position:relative;
-     width: 100%;
-    max-width: 620px;
-    justify-self: center;
-    margin-left: -90px;      /* move cards towards the text */
-    transform: none;
-    }
-
-    .hero-right .linkedin-carousel-container {
-          margin: 0;
-    width: 100%;
-    max-width: 620px;      /* was 420px */
-    border-radius: 18px;
-    overflow: hidden;
-    background: white;
-    border: 1px solid var(--border);
-    box-shadow: 0 10px 30px rgba(0,0,0,.08);
-      /* margin: 0;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-      overflow: hidden;
-      border-radius: 20px;
-      width: 100%;
-      max-width: 420px;
-      background: white;
-      border: 1px solid var(--border); */
-    }
-
     .linkedin-carousel {
       display: flex;
       gap: 20px;
       padding: 20px;
       width: max-content;
-      animation: slideHeroX 28s linear infinite;
-    }
-
-    .linkedin-carousel:hover {
-      animation-play-state: paused;
-    }
-
-    @keyframes slideHeroX {
-      0% {
-        transform: translateX(0);
-      }
-
-      100% {
-        transform: translateX(calc(-360px * 3));
-      }
     }
 
     .linkedin-card {
@@ -415,10 +363,10 @@
       display: flex;
       flex-direction: column;
       flex-shrink: 0;
-       width:300px;
-    height:380px;
-    padding:20px;
-    border-radius:18px;
+      width: 300px;
+      height: 380px;
+      padding: 20px;
+      border-radius: 18px;
     }
 
     .linkedin-card-header {
@@ -475,74 +423,6 @@
 
     .linkedin-reaction-icon {
       font-size: 11px;
-    }
-
-    .float-badge {
-      position: absolute;
-      background: white;
-      border-radius: 14px;
-      padding: 10px 14px;
-      box-shadow: 0 6px 22px rgba(30, 37, 94, 0.14);
-      border: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      z-index: 4;
-    }
-
-    .fb1 {
-      bottom: -20px;
-      left: -20px;
-      animation: floatY 3s ease-in-out infinite alternate;
-    }
-
-    .fb2 {
-      top: -20px;
-      right: -10px;
-      animation: floatY 3s ease-in-out infinite alternate;
-      animation-delay: -1.5s;
-    }
-
-    @keyframes floatY {
-      from {
-        transform: translateY(0)
-      }
-
-      to {
-        transform: translateY(-9px)
-      }
-    }
-
-    .fb-ico {
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 17px;
-    }
-
-    .fb-ico.r {
-      background: var(--red-lt);
-    }
-
-    .fb-ico.g {
-      background: var(--green-lt);
-    }
-
-    .fb-num {
-      font-family: 'Outfit', sans-serif;
-      font-size: 18px;
-      font-weight: 800;
-      color: var(--navy);
-      line-height: 1;
-    }
-
-    .fb-lbl {
-      font-size: 10.5px;
-      color: var(--text-gray);
-      font-weight: 500;
     }
 
     /* ─── STATS STRIP ─── */
@@ -825,8 +705,8 @@
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse 700px 500px at 0% 50%, rgba(239,68,68,0.05) 0%, transparent 70%),
-        radial-gradient(ellipse 700px 500px at 100% 50%, rgba(69,182,73,0.05) 0%, transparent 70%);
+        radial-gradient(ellipse 700px 500px at 0% 50%, rgba(239, 68, 68, 0.05) 0%, transparent 70%),
+        radial-gradient(ellipse 700px 500px at 100% 50%, rgba(69, 182, 73, 0.05) 0%, transparent 70%);
       pointer-events: none;
     }
 
@@ -839,8 +719,8 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(239,68,68,0.08);
-      border: 1px solid rgba(239,68,68,0.18);
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.18);
       color: var(--red);
       padding: 6px 16px;
       border-radius: 999px;
@@ -884,7 +764,7 @@
       flex-direction: column;
       box-sizing: border-box;
       border: 1px solid var(--border);
-      box-shadow: 0 8px 40px rgba(30,37,94,0.07);
+      box-shadow: 0 8px 40px rgba(30, 37, 94, 0.07);
     }
 
     .pane-dark::before {
@@ -895,7 +775,7 @@
       width: 360px;
       height: 360px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(239,68,68,0.07), transparent 65%);
+      background: radial-gradient(circle, rgba(239, 68, 68, 0.07), transparent 65%);
       pointer-events: none;
     }
 
@@ -907,18 +787,20 @@
       width: 280px;
       height: 280px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(37,99,235,0.06), transparent 65%);
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.06), transparent 65%);
       pointer-events: none;
     }
 
-    .pane-dark-illustration { display: none; }
+    .pane-dark-illustration {
+      display: none;
+    }
 
     .pane-dark-label {
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      background: rgba(239,68,68,0.08);
-      border: 1px solid rgba(239,68,68,0.2);
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
       color: var(--red);
       padding: 6px 14px;
       border-radius: 999px;
@@ -941,8 +823,13 @@
       z-index: 1;
     }
 
-    .pane-dark .pane-h { color: var(--navy); }
-    .hl-rose { color: var(--red); }
+    .pane-dark .pane-h {
+      color: var(--navy);
+    }
+
+    .hl-rose {
+      color: var(--red);
+    }
 
     .struggle-list {
       display: flex;
@@ -965,8 +852,8 @@
     }
 
     .struggle-row:hover {
-      background: rgba(239,68,68,0.05);
-      border-color: rgba(239,68,68,0.3);
+      background: rgba(239, 68, 68, 0.05);
+      border-color: rgba(239, 68, 68, 0.3);
       transform: translateX(4px);
     }
 
@@ -975,8 +862,8 @@
       height: 34px;
       border-radius: 10px;
       flex-shrink: 0;
-      background: rgba(239,68,68,0.08);
-      border: 1px solid rgba(239,68,68,0.2);
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -995,8 +882,8 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      background: linear-gradient(135deg, rgba(239,68,68,0.07), rgba(239,68,68,0.02));
-      border: 1px solid rgba(239,68,68,0.2);
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.07), rgba(239, 68, 68, 0.02));
+      border: 1px solid rgba(239, 68, 68, 0.2);
       border-radius: 14px;
       padding: 14px 18px;
       color: var(--navy);
@@ -1017,8 +904,8 @@
       background: linear-gradient(145deg, #0f1c45 0%, #162258 55%, #0a1535 100%);
       border-radius: 28px;
       padding: 44px 40px;
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: 0 20px 60px rgba(10,21,53,0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 60px rgba(10, 21, 53, 0.4);
       position: relative;
       overflow: hidden;
       text-align: left;
@@ -1035,7 +922,7 @@
       width: 360px;
       height: 360px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(69,182,73,0.15), transparent 65%);
+      background: radial-gradient(circle, rgba(69, 182, 73, 0.15), transparent 65%);
       pointer-events: none;
     }
 
@@ -1047,7 +934,7 @@
       width: 280px;
       height: 280px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(37,99,235,0.12), transparent 65%);
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.12), transparent 65%);
       pointer-events: none;
     }
 
@@ -1055,8 +942,8 @@
       display: inline-flex;
       align-items: center;
       gap: 7px;
-      background: rgba(69,182,73,0.18);
-      border: 1px solid rgba(69,182,73,0.35);
+      background: rgba(69, 182, 73, 0.18);
+      border: 1px solid rgba(69, 182, 73, 0.35);
       color: #86efac;
       padding: 6px 14px;
       border-radius: 999px;
@@ -1075,11 +962,13 @@
       z-index: 1;
     }
 
-    .hl-gr { color: #86efac; }
+    .hl-gr {
+      color: #86efac;
+    }
 
     .pane-sub {
       font-size: 14px;
-      color: rgba(255,255,255,0.55);
+      color: rgba(255, 255, 255, 0.55);
       margin-bottom: 24px;
       line-height: 1.7;
       position: relative;
@@ -1101,20 +990,20 @@
       gap: 11px;
       padding: 13px 15px;
       border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.07);
-      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      background: rgba(255, 255, 255, 0.05);
       font-size: 13px;
       font-weight: 600;
-      color: rgba(255,255,255,0.85);
+      color: rgba(255, 255, 255, 0.85);
       transition: background 0.25s, transform 0.2s, border-color 0.25s, box-shadow 0.25s;
       backdrop-filter: blur(4px);
     }
 
     .benefit-row:hover {
       transform: translateY(-2px);
-      background: rgba(69,182,73,0.12);
-      border-color: rgba(69,182,73,0.35);
-      box-shadow: 0 6px 20px rgba(69,182,73,0.15);
+      background: rgba(69, 182, 73, 0.12);
+      border-color: rgba(69, 182, 73, 0.35);
+      box-shadow: 0 6px 20px rgba(69, 182, 73, 0.15);
       color: white;
     }
 
@@ -1123,8 +1012,8 @@
       height: 22px;
       border-radius: 50%;
       flex-shrink: 0;
-      background: rgba(69,182,73,0.2);
-      border: 1.5px solid rgba(69,182,73,0.5);
+      background: rgba(69, 182, 73, 0.2);
+      border: 1.5px solid rgba(69, 182, 73, 0.5);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1138,8 +1027,8 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      background: linear-gradient(135deg, rgba(69,182,73,0.2), rgba(69,182,73,0.08));
-      border: 1px solid rgba(69,182,73,0.35);
+      background: linear-gradient(135deg, rgba(69, 182, 73, 0.2), rgba(69, 182, 73, 0.08));
+      border: 1px solid rgba(69, 182, 73, 0.35);
       border-radius: 14px;
       padding: 15px 20px;
       position: relative;
@@ -1150,7 +1039,7 @@
       flex: 1;
       font-size: 13.5px;
       font-weight: 600;
-      color: rgba(255,255,255,0.85);
+      color: rgba(255, 255, 255, 0.85);
       line-height: 1.5;
     }
 
@@ -1224,7 +1113,7 @@
       position: relative;
       max-width: 1200px;
       margin: 0 auto;
-      background-image: 
+      background-image:
         linear-gradient(rgba(30, 37, 94, 0.03) 1px, transparent 1px),
         linear-gradient(90deg, rgba(30, 37, 94, 0.03) 1px, transparent 1px);
       background-size: 24px 24px;
@@ -1298,11 +1187,25 @@
       pointer-events: none;
     }
 
-    .timeline-row[data-day="1"]::after { border-color: #14B8A6; }
-    .timeline-row[data-day="2"]::after { border-color: #22C55E; }
-    .timeline-row[data-day="3"]::after { border-color: #F97316; }
-    .timeline-row[data-day="4"]::after { border-color: #84CC16; }
-    .timeline-row[data-day="5"]::after { display: none !important; }
+    .timeline-row[data-day="1"]::after {
+      border-color: #14B8A6;
+    }
+
+    .timeline-row[data-day="2"]::after {
+      border-color: #22C55E;
+    }
+
+    .timeline-row[data-day="3"]::after {
+      border-color: #F97316;
+    }
+
+    .timeline-row[data-day="4"]::after {
+      border-color: #84CC16;
+    }
+
+    .timeline-row[data-day="5"]::after {
+      display: none !important;
+    }
 
     .day-badge-wrap {
       display: none;
@@ -1326,11 +1229,30 @@
       min-width: 80px;
     }
 
-    .badge-blue { border-color: #3B82F6; color: #1D4ED8; }
-    .badge-teal { border-color: #14B8A6; color: #0F766E; }
-    .badge-green { border-color: #22C55E; color: #15803D; }
-    .badge-orange { border-color: #F97316; color: #C2410C; }
-    .badge-lime { border-color: #84CC16; color: #4F8A10; }
+    .badge-blue {
+      border-color: #3B82F6;
+      color: #1D4ED8;
+    }
+
+    .badge-teal {
+      border-color: #14B8A6;
+      color: #0F766E;
+    }
+
+    .badge-green {
+      border-color: #22C55E;
+      color: #15803D;
+    }
+
+    .badge-orange {
+      border-color: #F97316;
+      color: #C2410C;
+    }
+
+    .badge-lime {
+      border-color: #84CC16;
+      color: #4F8A10;
+    }
 
     .curriculum-card {
       background: white;
@@ -1349,11 +1271,30 @@
       box-shadow: 0 10px 25px rgba(30, 37, 94, 0.08);
     }
 
-    .curriculum-card.card-blue { border-color: #3B82F6; box-shadow: 0 8px 24px rgba(59, 130, 246, 0.08); }
-    .curriculum-card.card-teal { border-color: #14B8A6; box-shadow: 0 8px 24px rgba(20, 184, 166, 0.08); }
-    .curriculum-card.card-green { border-color: #22C55E; box-shadow: 0 8px 24px rgba(34, 197, 94, 0.08); }
-    .curriculum-card.card-orange { border-color: #F97316; box-shadow: 0 8px 24px rgba(249, 115, 22, 0.08); }
-    .curriculum-card.card-lime { border-color: #84CC16; box-shadow: 0 8px 24px rgba(132, 204, 22, 0.08); }
+    .curriculum-card.card-blue {
+      border-color: #3B82F6;
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.08);
+    }
+
+    .curriculum-card.card-teal {
+      border-color: #14B8A6;
+      box-shadow: 0 8px 24px rgba(20, 184, 166, 0.08);
+    }
+
+    .curriculum-card.card-green {
+      border-color: #22C55E;
+      box-shadow: 0 8px 24px rgba(34, 197, 94, 0.08);
+    }
+
+    .curriculum-card.card-orange {
+      border-color: #F97316;
+      box-shadow: 0 8px 24px rgba(249, 115, 22, 0.08);
+    }
+
+    .curriculum-card.card-lime {
+      border-color: #84CC16;
+      box-shadow: 0 8px 24px rgba(132, 204, 22, 0.08);
+    }
 
     .card-header {
       display: flex;
@@ -1378,11 +1319,30 @@
       color: #4B5563;
     }
 
-    .card-blue .card-num { background: #DBEAFE; color: #1D4ED8; }
-    .card-teal .card-num { background: #CCFBF1; color: #0F766E; }
-    .card-green .card-num { background: #DCFCE7; color: #15803D; }
-    .card-orange .card-num { background: #FFEDD5; color: #C2410C; }
-    .card-lime .card-num { background: #ECFDF5; color: #4F8A10; }
+    .card-blue .card-num {
+      background: #DBEAFE;
+      color: #1D4ED8;
+    }
+
+    .card-teal .card-num {
+      background: #CCFBF1;
+      color: #0F766E;
+    }
+
+    .card-green .card-num {
+      background: #DCFCE7;
+      color: #15803D;
+    }
+
+    .card-orange .card-num {
+      background: #FFEDD5;
+      color: #C2410C;
+    }
+
+    .card-lime .card-num {
+      background: #ECFDF5;
+      color: #4F8A10;
+    }
 
     .card-header h4 {
       font-family: 'Outfit', sans-serif;
@@ -1432,11 +1392,25 @@
       margin-top: 2px;
     }
 
-    .card-blue li .chk-arrow { color: #3B82F6; }
-    .card-teal li .chk-arrow { color: #14B8A6; }
-    .card-green li .chk-arrow { color: #22C55E; }
-    .card-orange li .chk-arrow { color: #F97316; }
-    .card-lime li .chk-arrow { color: #84CC16; }
+    .card-blue li .chk-arrow {
+      color: #3B82F6;
+    }
+
+    .card-teal li .chk-arrow {
+      color: #14B8A6;
+    }
+
+    .card-green li .chk-arrow {
+      color: #22C55E;
+    }
+
+    .card-orange li .chk-arrow {
+      color: #F97316;
+    }
+
+    .card-lime li .chk-arrow {
+      color: #84CC16;
+    }
 
     /* Illustration layout: text left, SVG right */
     .card-body-illus {
@@ -1455,7 +1429,7 @@
       flex-shrink: 0;
       border-radius: 12px;
       overflow: visible;
-      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.06));
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.06));
     }
 
     @media (max-width: 520px) {
@@ -1463,6 +1437,7 @@
         flex-direction: column;
         gap: 16px;
       }
+
       .card-illus {
         width: 90px;
         height: 90px;
@@ -1537,19 +1512,24 @@
       .curriculum-notebook {
         border-radius: 16px;
       }
+
       .notebook-header-panel {
         padding: 30px 20px;
       }
+
       .notebook-header-panel .sec-h2 {
         font-size: 28px;
       }
+
       .notebook-sheet {
         padding: 40px 16px;
       }
+
       .notebook-title {
         font-size: 20px;
         margin-bottom: 32px;
       }
+
       .timeline-container {
         gap: 24px;
         padding-left: 0;
@@ -1559,37 +1539,46 @@
         max-width: 100%;
         box-sizing: border-box;
       }
+
       .timeline-row::before,
       .timeline-row::after {
         display: none !important;
       }
+
       .timeline-row {
         display: block;
         padding: 0;
         width: 100%;
       }
+
       .timeline-row.row-r2l {
         display: block;
       }
+
       .day-badge-wrap {
         justify-content: flex-start;
         width: auto;
       }
+
       .day-badge-wrap.empty {
         display: none !important;
       }
+
       .day-badge {
         padding: 6px 14px;
         font-size: 11px;
         min-width: auto;
       }
+
       .curriculum-card {
         padding: 14px 16px;
       }
+
       .progress-tracker-wrap {
         justify-content: center;
         margin-top: 32px;
       }
+
       .tracker-card {
         width: 100%;
         max-width: 100%;
@@ -1806,6 +1795,7 @@
     .certificate-container {
       max-width: 700px !important;
     }
+
     .certificate-frame {
       height: 500px !important;
       will-change: transform;
@@ -1928,7 +1918,7 @@
       width: 700px;
       height: 700px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(239,68,68,0.1) 0%, transparent 65%);
+      background: radial-gradient(circle, rgba(239, 68, 68, 0.1) 0%, transparent 65%);
       pointer-events: none;
     }
 
@@ -1940,7 +1930,7 @@
       width: 400px;
       height: 400px;
       border-radius: 50%;
-      background: radial-gradient(circle, rgba(69,182,73,0.07) 0%, transparent 65%);
+      background: radial-gradient(circle, rgba(69, 182, 73, 0.07) 0%, transparent 65%);
       pointer-events: none;
     }
 
@@ -1975,8 +1965,8 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: rgba(239,68,68,0.12);
-      border: 1px solid rgba(239,68,68,0.3);
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
       color: #fca5a5;
       padding: 7px 18px;
       border-radius: 999px;
@@ -1995,16 +1985,25 @@
     }
 
     @keyframes pulse-dot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.7); }
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(0.7);
+      }
     }
 
     .notify-icon-wrap {
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      background: rgba(239,68,68,0.12) !important;
-      border: 2px solid rgba(239,68,68,0.25) !important;
+      background: rgba(239, 68, 68, 0.12) !important;
+      border: 2px solid rgba(239, 68, 68, 0.25) !important;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2018,7 +2017,7 @@
       content: '';
       position: absolute;
       border-radius: 50%;
-      border: 1.5px solid rgba(239,68,68,0.15);
+      border: 1.5px solid rgba(239, 68, 68, 0.15);
       animation: ping-ring 2.5s ease-out infinite;
     }
 
@@ -2033,16 +2032,39 @@
     }
 
     @keyframes ping-ring {
-      0% { opacity: 1; transform: scale(1); }
-      100% { opacity: 0; transform: scale(1.4); }
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(1.4);
+      }
     }
 
     @keyframes bell-swing {
-      0%, 100% { transform: rotate(0deg); }
-      20% { transform: rotate(-12deg); }
-      40% { transform: rotate(10deg); }
-      60% { transform: rotate(-8deg); }
-      80% { transform: rotate(6deg); }
+
+      0%,
+      100% {
+        transform: rotate(0deg);
+      }
+
+      20% {
+        transform: rotate(-12deg);
+      }
+
+      40% {
+        transform: rotate(10deg);
+      }
+
+      60% {
+        transform: rotate(-8deg);
+      }
+
+      80% {
+        transform: rotate(6deg);
+      }
     }
 
     .notify-icon-wrap svg {
@@ -2059,12 +2081,17 @@
       line-height: 1.15;
     }
 
-    .notify-heading .hl-red { color: #fca5a5; }
-    .notify-heading .hl-gr { color: #86efac; }
+    .notify-heading .hl-red {
+      color: #fca5a5;
+    }
+
+    .notify-heading .hl-gr {
+      color: #86efac;
+    }
 
     .notify-sub {
       font-size: 15px;
-      color: rgba(255,255,255,0.55);
+      color: rgba(255, 255, 255, 0.55);
       line-height: 1.7;
       max-width: 500px;
       margin: 0;
@@ -2074,8 +2101,8 @@
       display: flex;
       align-items: center;
       gap: 28px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 16px;
       padding: 18px 28px;
       width: 100%;
@@ -2095,7 +2122,7 @@
 
     .notify-stat-lbl {
       font-size: 11px;
-      color: rgba(255,255,255,0.45);
+      color: rgba(255, 255, 255, 0.45);
       font-weight: 500;
       margin-top: 4px;
       text-transform: uppercase;
@@ -2105,12 +2132,12 @@
     .notify-stat-divider {
       width: 1px;
       height: 40px;
-      background: rgba(255,255,255,0.1);
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .notify-me-btn {
       background: linear-gradient(135deg, var(--red) 0%, #c0392b 100%) !important;
-      box-shadow: 0 8px 32px rgba(239,68,68,0.4) !important;
+      box-shadow: 0 8px 32px rgba(239, 68, 68, 0.4) !important;
       color: white !important;
       border: none !important;
       cursor: pointer;
@@ -2129,18 +2156,18 @@
     }
 
     .notify-me-btn:hover {
-      box-shadow: 0 12px 40px rgba(239,68,68,0.55) !important;
+      box-shadow: 0 12px 40px rgba(239, 68, 68, 0.55) !important;
       transform: translateY(-3px) scale(1.02) !important;
     }
 
     .notify-me-btn.subscribed {
       background: linear-gradient(135deg, var(--green) 0%, var(--green-dk) 100%) !important;
-      box-shadow: 0 8px 32px rgba(69,182,73,0.4) !important;
+      box-shadow: 0 8px 32px rgba(69, 182, 73, 0.4) !important;
     }
 
     .notify-trust-line {
       font-size: 12px;
-      color: rgba(255,255,255,0.3);
+      color: rgba(255, 255, 255, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -2153,7 +2180,7 @@
       content: '';
       flex: 1;
       height: 1px;
-      background: rgba(255,255,255,0.1);
+      background: rgba(255, 255, 255, 0.1);
       max-width: 80px;
     }
 
@@ -2166,7 +2193,6 @@
       box-sizing: border-box;
       max-width: 100vw;
       background: rgba(30, 37, 94, 0.97) !important;
-      backdrop-filter: blur(14px);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       padding: 11px 28px !important;
       padding-bottom: calc(11px + env(safe-area-inset-bottom, 0px)) !important;
@@ -2229,12 +2255,19 @@
 
     @media (min-width: 1025px) {
       .hero {
-        height: calc(100vh - 226px) !important;
-        padding: 20px 60px !important;
+        /* min-height instead of fixed height: fills tall screens but lets
+           content breathe on short laptop viewports instead of clipping */
+        min-height: calc(100vh - 226px);
+        height: auto !important;
+        /* extra bottom padding = breathing room below the content,
+           filled by the hero gradient instead of white page background */
+        padding: 48px 60px 118px !important;
+        display: flex;
+        align-items: center;
       }
 
       .hero-container {
-        height: 100% !important;
+        height: auto !important;
       }
 
       /* Desktop-specific adjustments to fit within constrained viewport height */
@@ -2282,11 +2315,6 @@
 
     /* ─── RESPONSIVE ─── */
     @media (max-width: 1024px) {
-      .hero-container {
-        grid-template-columns: 1fr !important;
-        text-align: center;
-      }
-
       .hero-content {
         align-items: center;
         display: flex;
@@ -2301,21 +2329,6 @@
       .hero-content .badge-urgent,
       .hero-content h1 {
         max-width: 100% !important;
-      }
-
-      .hero-right {
-        margin-top: 20px;
-        margin-left: 0 !important;
-        transform: none !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        min-width: 0 !important;
-        justify-self: stretch !important;
-      }
-
-      .hero-right .linkedin-carousel-container {
-        max-width: 100% !important;
-        margin: 0 auto !important;
       }
 
       .bento-grid {
@@ -2364,26 +2377,84 @@
     }
 
     @media (max-width: 768px) {
+
+      /* Hero — compact vertical rhythm (multiples of 8) */
       .hero {
         width: 100% !important;
-        padding: 44px 20px 36px !important;
+        /* larger gradient-filled bottom padding = visual separation
+           from the stats strip without a white gap */
+        padding: 40px 20px 64px !important;
         max-width: 100% !important;
         margin: 0 !important;
         border-radius: 0 !important;
         height: auto !important;
       }
 
+
       .hero-container {
         padding: 0 !important;
         height: auto !important;
       }
 
+      .badge-urgent {
+        padding: 7px 15px;
+        font-size: 11px;
+        margin-bottom: 16px;
+      }
+
       .hero h1 {
         font-size: 28px !important;
+        margin-bottom: 12px;
       }
 
       .hero-sub {
         font-size: 14px !important;
+        margin-bottom: 16px;
+      }
+
+      .trust-chips {
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .chip {
+        padding: 6px 12px;
+        font-size: 11.5px;
+      }
+
+      .hero-live {
+        font-size: 13px;
+        margin-bottom: 16px;
+      }
+
+      .hero-cta-row {
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      /* ~50px tall CTAs — still comfortable touch targets */
+      .btn-closed {
+        padding: 14px 24px;
+        font-size: 14px;
+      }
+
+      .btn-outline-red {
+        padding: 12px 22px;
+        font-size: 14px;
+      }
+
+      /* keep the rating on one line */
+      .hero-rating {
+        flex-wrap: nowrap;
+        white-space: nowrap;
+      }
+
+      .stars {
+        font-size: 15px;
+      }
+
+      .rating-text {
+        font-size: 12px;
       }
 
       .stats-strip {
@@ -2484,7 +2555,7 @@
       }
 
       header.site-header .header-container {
-        padding: 0 16px 0 0 !important;
+        padding: 0 16px !important;
       }
 
       .certificate-container {
@@ -2513,22 +2584,48 @@
         padding: 0 16px !important;
       }
 
-      /* Notify section */
+      /* Notify section — centered flow: badge → bell → heading → copy → stats → CTA */
       .notify-section {
         padding: 56px 20px 0 !important;
       }
 
       .notify-section-inner {
+        gap: 24px !important;
         padding-bottom: 48px !important;
+      }
+
+      .notify-left {
+        gap: 20px;
+        align-items: center;
+      }
+
+      /* stack the bell above the heading instead of beside it */
+      .notify-title-row {
+        flex-direction: column !important;
+        gap: 20px !important;
+      }
+
+      /* the bell is the focal point: larger, with a soft glow */
+      .notify-icon-wrap {
+        width: 72px !important;
+        height: 72px !important;
+        font-size: 32px !important;
+        box-shadow: 0 0 44px rgba(239, 68, 68, 0.35);
       }
 
       .notify-heading {
         font-size: 26px !important;
-        line-height: 1.2 !important;
+        line-height: 1.25 !important;
+        text-wrap: balance;
       }
 
       .notify-sub {
         font-size: 14px;
+        margin: 0 auto;
+      }
+
+      .notify-right {
+        gap: 20px;
       }
 
       .notify-stats-row {
@@ -2542,15 +2639,14 @@
         font-size: 18px;
       }
 
+      /* extra breathing room between the stats card and the CTA */
+      .notify-action {
+        margin-top: 8px;
+      }
+
       .notify-me-btn {
         padding: 15px 28px !important;
         font-size: 14px !important;
-      }
-
-      .notify-icon-wrap {
-        width: 56px !important;
-        height: 56px !important;
-        font-size: 26px !important;
       }
 
       /* Fixed CTA */
@@ -2561,12 +2657,12 @@
 
     @media (max-width: 480px) {
       .hero {
-        padding: 36px 14px 28px !important;
+        padding: 32px 16px 56px !important;
       }
 
       .hero h1 {
         font-size: 24px !important;
-        text-align:center;
+        text-align: center;
       }
 
       .hero-sub {
@@ -2577,14 +2673,27 @@
         gap: 6px !important;
       }
 
-      .trust-chip {
+      .chip {
         font-size: 11px !important;
         padding: 5px 10px !important;
       }
 
+      /* stacked full-width CTAs, centered, easy to tap */
       .hero-cta-row {
         flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        max-width: 320px;
         gap: 10px !important;
+      }
+
+      .btn-closed,
+      .btn-outline-red {
+        justify-content: center;
+      }
+
+      .rating-text {
+        font-size: 11.5px;
       }
 
       .stats-inner {
@@ -2686,12 +2795,21 @@
 
       /* Notify */
       .notify-section {
-        padding: 44px 14px 0 !important;
+        padding: 44px 16px 0 !important;
       }
 
       .notify-section-inner {
-        gap: 24px !important;
+        gap: 20px !important;
         padding-bottom: 40px !important;
+      }
+
+      .notify-title-row {
+        gap: 16px !important;
+      }
+
+      .notify-left,
+      .notify-right {
+        gap: 16px;
       }
 
       .notify-heading {
@@ -2726,9 +2844,9 @@
       }
 
       .notify-icon-wrap {
-        width: 48px !important;
-        height: 48px !important;
-        font-size: 22px !important;
+        width: 64px !important;
+        height: 64px !important;
+        font-size: 28px !important;
       }
 
       .notify-icon-wrap::before {
@@ -2894,7 +3012,7 @@
             <div class="dot-g"></div>Trusted By 1000's
           </div>
         </div>
-        <div class="hero-live">✅ Live Batch + Recordings Included!!!</div>
+        <div class="hero-live">✅ Live Batch + Recordings Included</div>
         <div class="hero-cta-row">
           <span class="btn-closed"><i class="fas fa-lock"></i> Registrations Closed</span>
           <a href="#curriculum-section" class="btn-outline-red"><i class="far fa-file-alt"></i> View Curriculum</a>
@@ -2902,124 +3020,6 @@
         <div class="hero-rating">
           <span class="stars">★★★★★</span>
           <span class="rating-text">4.9 / 5 rated by 1000's of CA students</span>
-        </div>
-      </div>
-
-      <!-- Hero right: LinkedIn Testimonials Carousel -->
-      <div class="hero-right" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200" data-aos-once="true">
-        <div class="linkedin-carousel-container">
-          <div class="linkedin-carousel">
-            <!-- Card 1 -->
-            <div class="linkedin-card">
-              <div class="linkedin-card-header">
-                <img src="https://www.mystudentclub.com/assets/priyanka-sharma.png" alt="Priyanka Sharma"
-                  class="linkedin-avatar" onerror="this.src='https://via.placeholder.com/40'">
-                <div class="linkedin-user-info">
-                  <p class="linkedin-user-name">Priyanka Sharma</p>
-                  <p class="linkedin-user-title">CA Finalist · EY India</p>
-                </div>
-              </div>
-              <div class="linkedin-card-content">
-                Excited to share that I’ve began my CA articleship at EY India! 💫 An important milestone where learning
-                shifts from theory to real business impact. Grateful to my mentor CA Padam Bhansali for guidance and
-                trust 🤝
-              </div>
-              <div class="linkedin-reactions">
-                <div class="linkedin-reaction-icons">
-                  <span class="linkedin-reaction-icon like">👍</span>
-                  <span class="linkedin-reaction-icon celebrate">🎉</span>
-                  <span class="linkedin-reaction-icon love">❤️</span>
-                </div>
-                <span>216</span>
-              </div>
-            </div>
-            <!-- Card 2 -->
-            <div class="linkedin-card">
-              <div class="linkedin-card-header">
-                <img src="https://www.mystudentclub.com/assets/khushi.jpg" alt="Khushi Gandhi" class="linkedin-avatar"
-                  onerror="this.src='https://via.placeholder.com/40'">
-                <div class="linkedin-user-info">
-                  <p class="linkedin-user-name">Khushi Gandhi</p>
-                  <p class="linkedin-user-title">CA Finalist · Grant Thornton</p>
-                </div>
-              </div>
-              <div class="linkedin-card-content">
-                I'm happy to share that I've joined Grant Thornton as an Articleship Trainee! 🌟 Sincere thanks to CA
-                Padam Bhansali and My Student Club for their guidance and reassurance, especially during the interview
-                phase 😇
-              </div>
-              <div class="linkedin-reactions">
-                <div class="linkedin-reaction-icons">
-                  <span class="linkedin-reaction-icon like">👍</span>
-                  <span class="linkedin-reaction-icon celebrate">🎉</span>
-                  <span class="linkedin-reaction-icon love">❤️</span>
-                </div>
-                <span>691</span>
-              </div>
-            </div>
-            <!-- Card 3 -->
-            <div class="linkedin-card">
-              <div class="linkedin-card-header">
-                <img src="https://www.mystudentclub.com/assets/tamanna-gaur.jpg" alt="Tamanna Gaur"
-                  class="linkedin-avatar" onerror="this.src='https://via.placeholder.com/40'">
-                <div class="linkedin-user-info">
-                  <p class="linkedin-user-name">Tamanna Gaur</p>
-                  <p class="linkedin-user-title">CA Finalist · PwC India</p>
-                </div>
-              </div>
-              <div class="linkedin-card-content">
-                Excited to share that I've started my articleship at PwC! Thankful to CA Padam Bhansali and My Student
-                Club for the guidance and help that made this step possible.
-              </div>
-              <div class="linkedin-reactions">
-                <div class="linkedin-reaction-icons">
-                  <span class="linkedin-reaction-icon like">👍</span>
-                  <span class="linkedin-reaction-icon celebrate">🎉</span>
-                  <span class="linkedin-reaction-icon love">❤️</span>
-                </div>
-                <span>161</span>
-              </div>
-            </div>
-            <!-- Loop Clone -->
-            <div class="linkedin-card">
-              <div class="linkedin-card-header">
-                <img src="https://www.mystudentclub.com/assets/priyanka-sharma.png" alt="Priyanka Sharma"
-                  class="linkedin-avatar" onerror="this.src='https://via.placeholder.com/40'">
-                <div class="linkedin-user-info">
-                  <p class="linkedin-user-name">Priyanka Sharma</p>
-                  <p class="linkedin-user-title">CA Finalist · EY India</p>
-                </div>
-              </div>
-              <div class="linkedin-card-content">
-                Excited to share that I’ve began my CA articleship at EY India! 💫 An important milestone where learning
-                shifts from theory to real business impact. Grateful to my mentor CA Padam Bhansali for guidance and
-                trust 🤝
-              </div>
-              <div class="linkedin-reactions">
-                <div class="linkedin-reaction-icons">
-                  <span class="linkedin-reaction-icon like">👍</span>
-                  <span class="linkedin-reaction-icon celebrate">🎉</span>
-                  <span class="linkedin-reaction-icon love">❤️</span>
-                </div>
-                <span>216</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="float-badge fb1">
-            <div class="fb-ico r">🎓</div>
-            <div>
-              <div class="fb-num">1000<span style="color:var(--red);font-size:13px">+</span></div>
-              <div class="fb-lbl">Placed Students</div>
-            </div>
-          </div>
-          <div class="float-badge fb2">
-            <div class="fb-ico g">✅</div>
-            <div>
-              <div class="fb-num">100<span style="color:var(--green);font-size:13px">+</span></div>
-              <div class="fb-lbl">Top Vacancies</div>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -3072,7 +3072,8 @@
       <div class="pane-dark" data-aos="fade-right" data-aos-once="true">
         <div class="pane-dark-label">⚡ Sound Familiar?</div>
         <h2 class="pane-h">Are you too <span class="hl-rose">Struggling?</span></h2>
-        <p class="pane-sub" style="color:var(--text-gray)">If you're a CA student who's applied everywhere but still hasn't landed the right articleship — you're not alone.</p>
+        <p class="pane-sub" style="color:var(--text-gray)">If you're a CA student who's applied everywhere but still
+          hasn't landed the right articleship — you're not alone.</p>
         <div class="struggle-list">
           <div class="struggle-row">
             <div class="x-ico">📵</div>
@@ -3097,7 +3098,8 @@
         </div>
         <div class="sol-bar">
           <span class="sol-icon">✨</span>
-          <span>We built the <strong style="color:var(--red)">MSC Articleship Program</strong> to solve every single one of these problems.</span>
+          <span>We built the <strong style="color:var(--red)">MSC Articleship Program</strong> to solve every single one
+            of these problems.</span>
         </div>
       </div>
 
@@ -3105,7 +3107,8 @@
       <div class="pane-light" data-aos="fade-left" data-aos-once="true">
         <div class="pane-badge">🚀 The Solution You've Been Looking For</div>
         <h2 class="pane-h">Why <span class="hl-gr">Enroll?</span></h2>
-        <p class="pane-sub">Everything you need to land your dream articleship at a top firm — in one powerful program.</p>
+        <p class="pane-sub">Everything you need to land your dream articleship at a top firm — in one powerful program.
+        </p>
         <div class="benefit-list">
           <div class="benefit-row">
             <div class="chk-dot">✓</div>100+ Exclusive Vacancies
@@ -3180,23 +3183,28 @@
                   <li><span class="chk-arrow">➔</span>Finding Firms* hiring for that role</li>
                 </ul>
                 <!-- Flat illustration: Compass / Direction -->
-                <svg class="card-illus" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <circle cx="60" cy="60" r="50" fill="#DBEAFE"/>
-                  <circle cx="60" cy="60" r="38" fill="white" stroke="#3B82F6" stroke-width="3"/>
-                  <circle cx="60" cy="60" r="5" fill="#3B82F6"/>
+                <svg class="card-illus" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true">
+                  <circle cx="60" cy="60" r="50" fill="#DBEAFE" />
+                  <circle cx="60" cy="60" r="38" fill="white" stroke="#3B82F6" stroke-width="3" />
+                  <circle cx="60" cy="60" r="5" fill="#3B82F6" />
                   <!-- N pointer -->
-                  <polygon points="60,22 55,58 65,58" fill="#3B82F6"/>
+                  <polygon points="60,22 55,58 65,58" fill="#3B82F6" />
                   <!-- S pointer -->
-                  <polygon points="60,98 65,62 55,62" fill="#93C5FD"/>
+                  <polygon points="60,98 65,62 55,62" fill="#93C5FD" />
                   <!-- E pointer -->
-                  <polygon points="98,60 62,55 62,65" fill="#93C5FD"/>
+                  <polygon points="98,60 62,55 62,65" fill="#93C5FD" />
                   <!-- W pointer -->
-                  <polygon points="22,60 58,65 58,55" fill="#3B82F6"/>
+                  <polygon points="22,60 58,65 58,55" fill="#3B82F6" />
                   <!-- Labels -->
-                  <text x="57" y="18" font-size="9" font-weight="800" fill="#1D4ED8" font-family="Outfit,sans-serif">N</text>
-                  <text x="57" y="112" font-size="9" font-weight="800" fill="#93C5FD" font-family="Outfit,sans-serif">S</text>
-                  <text x="104" y="63" font-size="9" font-weight="800" fill="#93C5FD" font-family="Outfit,sans-serif">E</text>
-                  <text x="8" y="63" font-size="9" font-weight="800" fill="#1D4ED8" font-family="Outfit,sans-serif">W</text>
+                  <text x="57" y="18" font-size="9" font-weight="800" fill="#1D4ED8"
+                    font-family="Outfit,sans-serif">N</text>
+                  <text x="57" y="112" font-size="9" font-weight="800" fill="#93C5FD"
+                    font-family="Outfit,sans-serif">S</text>
+                  <text x="104" y="63" font-size="9" font-weight="800" fill="#93C5FD"
+                    font-family="Outfit,sans-serif">E</text>
+                  <text x="8" y="63" font-size="9" font-weight="800" fill="#1D4ED8"
+                    font-family="Outfit,sans-serif">W</text>
                 </svg>
               </div>
             </div>
@@ -3221,21 +3229,22 @@
                   <li><span class="chk-arrow">➔</span>MSC AI CV Reviewer</li>
                 </ul>
                 <!-- Flat illustration: Resume document -->
-                <svg class="card-illus" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <rect x="20" y="10" width="80" height="100" rx="8" fill="#CCFBF1"/>
-                  <rect x="20" y="10" width="80" height="100" rx="8" stroke="#14B8A6" stroke-width="2.5"/>
+                <svg class="card-illus" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true">
+                  <rect x="20" y="10" width="80" height="100" rx="8" fill="#CCFBF1" />
+                  <rect x="20" y="10" width="80" height="100" rx="8" stroke="#14B8A6" stroke-width="2.5" />
                   <!-- Photo placeholder -->
-                  <circle cx="42" cy="38" r="13" fill="#99F6E4"/>
-                  <circle cx="42" cy="34" r="6" fill="#14B8A6"/>
-                  <path d="M29,50 Q42,42 55,50" fill="#14B8A6"/>
+                  <circle cx="42" cy="38" r="13" fill="#99F6E4" />
+                  <circle cx="42" cy="34" r="6" fill="#14B8A6" />
+                  <path d="M29,50 Q42,42 55,50" fill="#14B8A6" />
                   <!-- Name line -->
-                  <rect x="60" y="30" width="28" height="5" rx="2.5" fill="#14B8A6"/>
-                  <rect x="60" y="40" width="20" height="4" rx="2" fill="#99F6E4"/>
+                  <rect x="60" y="30" width="28" height="5" rx="2.5" fill="#14B8A6" />
+                  <rect x="60" y="40" width="20" height="4" rx="2" fill="#99F6E4" />
                   <!-- Section lines -->
-                  <rect x="28" y="62" width="64" height="3.5" rx="1.75" fill="#14B8A6" opacity="0.5"/>
-                  <rect x="28" y="70" width="55" height="3" rx="1.5" fill="#14B8A6" opacity="0.35"/>
-                  <rect x="28" y="78" width="60" height="3" rx="1.5" fill="#14B8A6" opacity="0.35"/>
-                  <rect x="28" y="86" width="48" height="3" rx="1.5" fill="#14B8A6" opacity="0.35"/>
+                  <rect x="28" y="62" width="64" height="3.5" rx="1.75" fill="#14B8A6" opacity="0.5" />
+                  <rect x="28" y="70" width="55" height="3" rx="1.5" fill="#14B8A6" opacity="0.35" />
+                  <rect x="28" y="78" width="60" height="3" rx="1.5" fill="#14B8A6" opacity="0.35" />
+                  <rect x="28" y="86" width="48" height="3" rx="1.5" fill="#14B8A6" opacity="0.35" />
                   <!-- Star rating -->
                   <text x="28" y="102" font-size="11" fill="#14B8A6" font-family="Outfit,sans-serif">★★★★★</text>
                 </svg>
@@ -3262,29 +3271,30 @@
                   <li><span class="chk-arrow">➔</span>Other LinkedIn Hacks</li>
                 </ul>
                 <!-- Flat illustration: Network / profile connections -->
-                <svg class="card-illus" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <circle cx="60" cy="60" r="50" fill="#DCFCE7"/>
+                <svg class="card-illus" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true">
+                  <circle cx="60" cy="60" r="50" fill="#DCFCE7" />
                   <!-- Connection lines -->
-                  <line x1="60" y1="60" x2="28" y2="32" stroke="#22C55E" stroke-width="2.5" stroke-dasharray="4 3"/>
-                  <line x1="60" y1="60" x2="92" y2="32" stroke="#22C55E" stroke-width="2.5" stroke-dasharray="4 3"/>
-                  <line x1="60" y1="60" x2="22" y2="75" stroke="#22C55E" stroke-width="2.5" stroke-dasharray="4 3"/>
-                  <line x1="60" y1="60" x2="98" y2="75" stroke="#22C55E" stroke-width="2.5" stroke-dasharray="4 3"/>
-                  <line x1="60" y1="60" x2="60" y2="102" stroke="#22C55E" stroke-width="2.5" stroke-dasharray="4 3"/>
+                  <line x1="60" y1="60" x2="28" y2="32" stroke="#22C55E" stroke-width="2.5" stroke-dasharray="4 3" />
+                  <line x1="60" y1="60" x2="92" y2="32" stroke="#22C55E" stroke-width="2.5" stroke-dasharray="4 3" />
+                  <line x1="60" y1="60" x2="22" y2="75" stroke="#22C55E" stroke-width="2.5" stroke-dasharray="4 3" />
+                  <line x1="60" y1="60" x2="98" y2="75" stroke="#22C55E" stroke-width="2.5" stroke-dasharray="4 3" />
+                  <line x1="60" y1="60" x2="60" y2="102" stroke="#22C55E" stroke-width="2.5" stroke-dasharray="4 3" />
                   <!-- Satellite nodes -->
-                  <circle cx="28" cy="32" r="10" fill="#22C55E"/>
-                  <circle cx="92" cy="32" r="10" fill="#22C55E"/>
-                  <circle cx="22" cy="75" r="9" fill="#86EFAC"/>
-                  <circle cx="98" cy="75" r="9" fill="#86EFAC"/>
-                  <circle cx="60" cy="102" r="9" fill="#86EFAC"/>
+                  <circle cx="28" cy="32" r="10" fill="#22C55E" />
+                  <circle cx="92" cy="32" r="10" fill="#22C55E" />
+                  <circle cx="22" cy="75" r="9" fill="#86EFAC" />
+                  <circle cx="98" cy="75" r="9" fill="#86EFAC" />
+                  <circle cx="60" cy="102" r="9" fill="#86EFAC" />
                   <!-- Person icons in nodes -->
-                  <circle cx="28" cy="29" r="3.5" fill="white"/>
-                  <path d="M22,37 Q28,32 34,37" fill="white"/>
-                  <circle cx="92" cy="29" r="3.5" fill="white"/>
-                  <path d="M86,37 Q92,32 98,37" fill="white"/>
+                  <circle cx="28" cy="29" r="3.5" fill="white" />
+                  <path d="M22,37 Q28,32 34,37" fill="white" />
+                  <circle cx="92" cy="29" r="3.5" fill="white" />
+                  <path d="M86,37 Q92,32 98,37" fill="white" />
                   <!-- Center hub -->
-                  <circle cx="60" cy="60" r="16" fill="#22C55E"/>
-                  <circle cx="60" cy="56" r="6" fill="white"/>
-                  <path d="M48,70 Q60,62 72,70" fill="white"/>
+                  <circle cx="60" cy="60" r="16" fill="#22C55E" />
+                  <circle cx="60" cy="56" r="6" fill="white" />
+                  <path d="M48,70 Q60,62 72,70" fill="white" />
                 </svg>
               </div>
             </div>
@@ -3310,29 +3320,31 @@
                   <li><span class="chk-arrow">➔</span>Following Up</li>
                 </ul>
                 <!-- Flat illustration: Job portal / laptop screen -->
-                <svg class="card-illus" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <svg class="card-illus" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true">
                   <!-- Laptop body -->
-                  <rect x="14" y="22" width="92" height="62" rx="6" fill="#FFEDD5"/>
-                  <rect x="14" y="22" width="92" height="62" rx="6" stroke="#F97316" stroke-width="2.5"/>
+                  <rect x="14" y="22" width="92" height="62" rx="6" fill="#FFEDD5" />
+                  <rect x="14" y="22" width="92" height="62" rx="6" stroke="#F97316" stroke-width="2.5" />
                   <!-- Screen content -->
-                  <rect x="20" y="28" width="80" height="50" rx="3" fill="white"/>
+                  <rect x="20" y="28" width="80" height="50" rx="3" fill="white" />
                   <!-- Search bar -->
-                  <rect x="24" y="32" width="50" height="8" rx="4" fill="#FED7AA"/>
-                  <circle cx="78" cy="36" r="5" fill="#F97316"/>
-                  <line x1="81" y1="39" x2="85" y2="43" stroke="#F97316" stroke-width="2" stroke-linecap="round"/>
+                  <rect x="24" y="32" width="50" height="8" rx="4" fill="#FED7AA" />
+                  <circle cx="78" cy="36" r="5" fill="#F97316" />
+                  <line x1="81" y1="39" x2="85" y2="43" stroke="#F97316" stroke-width="2" stroke-linecap="round" />
                   <!-- Job listings -->
-                  <rect x="24" y="46" width="72" height="9" rx="3" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1"/>
-                  <rect x="28" y="49" width="6" height="3" rx="1.5" fill="#F97316"/>
-                  <rect x="38" y="49" width="30" height="3" rx="1.5" fill="#FDBA74"/>
-                  <rect x="24" y="59" width="72" height="9" rx="3" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1"/>
-                  <rect x="28" y="62" width="6" height="3" rx="1.5" fill="#FB923C"/>
-                  <rect x="38" y="62" width="24" height="3" rx="1.5" fill="#FDBA74"/>
+                  <rect x="24" y="46" width="72" height="9" rx="3" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1" />
+                  <rect x="28" y="49" width="6" height="3" rx="1.5" fill="#F97316" />
+                  <rect x="38" y="49" width="30" height="3" rx="1.5" fill="#FDBA74" />
+                  <rect x="24" y="59" width="72" height="9" rx="3" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1" />
+                  <rect x="28" y="62" width="6" height="3" rx="1.5" fill="#FB923C" />
+                  <rect x="38" y="62" width="24" height="3" rx="1.5" fill="#FDBA74" />
                   <!-- Apply button -->
-                  <rect x="58" y="62" width="28" height="6" rx="3" fill="#F97316"/>
-                  <text x="63" y="67" font-size="5" font-weight="700" fill="white" font-family="Outfit,sans-serif">APPLY NOW</text>
+                  <rect x="58" y="62" width="28" height="6" rx="3" fill="#F97316" />
+                  <text x="63" y="67" font-size="5" font-weight="700" fill="white" font-family="Outfit,sans-serif">APPLY
+                    NOW</text>
                   <!-- Laptop base -->
-                  <rect x="8" y="84" width="104" height="8" rx="4" fill="#FFEDD5" stroke="#F97316" stroke-width="2"/>
-                  <rect x="46" y="84" width="28" height="4" rx="2" fill="#FDBA74"/>
+                  <rect x="8" y="84" width="104" height="8" rx="4" fill="#FFEDD5" stroke="#F97316" stroke-width="2" />
+                  <rect x="46" y="84" width="28" height="4" rx="2" fill="#FDBA74" />
                 </svg>
               </div>
             </div>
@@ -3357,30 +3369,32 @@
                   <li><span class="chk-arrow">➔</span>MSC LMS</li>
                 </ul>
                 <!-- Flat illustration: Two people in interview -->
-                <svg class="card-illus" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <svg class="card-illus" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true">
                   <!-- Background -->
-                  <rect x="10" y="10" width="100" height="100" rx="16" fill="#ECFDF5"/>
+                  <rect x="10" y="10" width="100" height="100" rx="16" fill="#ECFDF5" />
                   <!-- Table -->
-                  <rect x="30" y="72" width="60" height="8" rx="4" fill="#84CC16"/>
-                  <rect x="42" y="80" width="6" height="20" rx="3" fill="#84CC16"/>
-                  <rect x="72" y="80" width="6" height="20" rx="3" fill="#84CC16"/>
+                  <rect x="30" y="72" width="60" height="8" rx="4" fill="#84CC16" />
+                  <rect x="42" y="80" width="6" height="20" rx="3" fill="#84CC16" />
+                  <rect x="72" y="80" width="6" height="20" rx="3" fill="#84CC16" />
                   <!-- Interviewer (left) -->
-                  <circle cx="32" cy="48" r="11" fill="#A3E635"/>
-                  <circle cx="32" cy="44" r="5" fill="#4F8A10"/>
-                  <path d="M20,58 Q32,52 44,58" fill="#4F8A10"/>
+                  <circle cx="32" cy="48" r="11" fill="#A3E635" />
+                  <circle cx="32" cy="44" r="5" fill="#4F8A10" />
+                  <path d="M20,58 Q32,52 44,58" fill="#4F8A10" />
                   <!-- Interviewee (right) -->
-                  <circle cx="88" cy="48" r="11" fill="#A3E635"/>
-                  <circle cx="88" cy="44" r="5" fill="#4F8A10"/>
-                  <path d="M76,58 Q88,52 100,58" fill="#4F8A10"/>
+                  <circle cx="88" cy="48" r="11" fill="#A3E635" />
+                  <circle cx="88" cy="44" r="5" fill="#4F8A10" />
+                  <path d="M76,58 Q88,52 100,58" fill="#4F8A10" />
                   <!-- Speech bubble from interviewer -->
-                  <rect x="14" y="18" width="36" height="18" rx="6" fill="white" stroke="#84CC16" stroke-width="1.5"/>
-                  <polygon points="24,36 20,42 30,36" fill="white" stroke="#84CC16" stroke-width="1.5"/>
-                  <rect x="18" y="23" width="22" height="2.5" rx="1.25" fill="#84CC16" opacity="0.6"/>
-                  <rect x="18" y="28" width="16" height="2.5" rx="1.25" fill="#84CC16" opacity="0.4"/>
+                  <rect x="14" y="18" width="36" height="18" rx="6" fill="white" stroke="#84CC16" stroke-width="1.5" />
+                  <polygon points="24,36 20,42 30,36" fill="white" stroke="#84CC16" stroke-width="1.5" />
+                  <rect x="18" y="23" width="22" height="2.5" rx="1.25" fill="#84CC16" opacity="0.6" />
+                  <rect x="18" y="28" width="16" height="2.5" rx="1.25" fill="#84CC16" opacity="0.4" />
                   <!-- Checkmark from interviewee -->
-                  <rect x="70" y="18" width="36" height="18" rx="6" fill="#84CC16"/>
-                  <polygon points="96,36 106,36 92,42" fill="#84CC16"/>
-                  <polyline points="76,27 82,33 90,23" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                  <rect x="70" y="18" width="36" height="18" rx="6" fill="#84CC16" />
+                  <polygon points="96,36 106,36 92,42" fill="#84CC16" />
+                  <polyline points="76,27 82,33 90,23" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round" fill="none" />
                 </svg>
               </div>
             </div>
@@ -3488,7 +3502,7 @@
           <span class="badge-dot"></span>
           Registration Closed
         </div>
-        <div style="display:flex; align-items:center; gap:16px;">
+        <div class="notify-title-row" style="display:flex; align-items:center; gap:16px;">
           <div class="notify-icon-wrap">🔔</div>
           <h2 class="notify-heading">
             Program <span class="hl-red">Currently Closed.</span><br>
