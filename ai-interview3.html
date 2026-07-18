@@ -3786,10 +3786,12 @@
         }
 
         function getTranscriptText() {
-            return messages.map(msg => {
-                const speaker = msg.role === 'user' ? 'You' : (msg.role === 'assistant' ? AI_INTERVIEWER_NAME : 'System');
-                return `${speaker}: ${sanitizeTranscriptText(msg.content)}`;
-            }).join('\n\n');
+            return messages
+                .filter(msg => msg.role === 'user' || msg.role === 'assistant')
+                .map(msg => {
+                    const speaker = msg.role === 'user' ? 'You' : AI_INTERVIEWER_NAME;
+                    return `${speaker}: ${sanitizeTranscriptText(msg.content)}`;
+                }).join('\n\n');
         }
 
         function formatAssessmentHtml(text = '') {
@@ -4600,6 +4602,9 @@
             Company: ${interviewConfig.companyName} (${interviewConfig.companyType}).
             Domain: ${interviewConfig.interviewDomain}.
             Difficulty: ${interviewConfig.toughness}.
+
+            QUESTION GUIDELINES:
+            - Ask approximately 50% of your questions based directly on the candidate's CV/resume (their projects, experience, skills, and education).
 
             DIFFICULTY GUIDELINES:
             - Easy: Be supportive, encouraging, and ask basic conceptual questions. Help the candidate if they struggle.
