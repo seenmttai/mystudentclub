@@ -10,6 +10,7 @@
     <script>
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.7.107/pdf.worker.min.js';
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <title>AI Video Interview - Professional Practice Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -160,6 +161,7 @@
             50% { border-color: rgba(99, 102, 241, 0.8); }
         }
 
+
         .setup-container::before {
             display: none;
         }
@@ -250,12 +252,12 @@
         }
 
         /* Custom Dropdown Styles */
-        .custom-select-wrapper {
+        .custom-dropdown {
             position: relative;
             width: 100%;
         }
 
-        .custom-select-trigger {
+        .custom-dropdown-trigger {
             padding: 0.75rem 1rem;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid var(--border);
@@ -270,12 +272,12 @@
             width: 100%;
         }
 
-        .custom-select-trigger:hover {
+        .custom-dropdown-trigger:hover {
             background-color: #0b1220;
             border-color: var(--primary-light);
         }
 
-        .custom-select-wrapper.open .custom-select-trigger {
+        .custom-dropdown.open .custom-dropdown-trigger {
             border-color: var(--primary-light);
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
@@ -284,11 +286,11 @@
             transition: transform 0.2s ease;
         }
 
-        .custom-select-wrapper.open .custom-dropdown-arrow {
+        .custom-dropdown.open .custom-dropdown-arrow {
             transform: rotate(180deg);
         }
 
-        .custom-options {
+        .custom-dropdown-menu {
             position: absolute;
             top: calc(100% + 4px);
             left: 0;
@@ -300,14 +302,16 @@
             overflow-y: auto;
             z-index: 100;
             opacity: 0;
-            display: none;
+            visibility: hidden;
+            transform: translateY(-10px);
             transition: all 0.2s ease;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
         }
 
-        .custom-select-wrapper.open .custom-options {
+        .custom-dropdown.open .custom-dropdown-menu {
             opacity: 1;
-            display: block;
+            visibility: visible;
+            transform: translateY(0);
         }
 
         .custom-dropdown-group-label {
@@ -320,7 +324,7 @@
             background: rgba(255, 255, 255, 0.03);
         }
 
-        .custom-option {
+        .custom-dropdown-option {
             padding: 0.75rem 1rem;
             color: var(--text-primary);
             cursor: pointer;
@@ -328,24 +332,24 @@
             font-size: 0.95rem;
         }
 
-        .custom-option:hover {
+        .custom-dropdown-option:hover {
             background: rgba(99, 102, 241, 0.15);
         }
 
-        .custom-option.selected {
+        .custom-dropdown-option.selected {
             background: var(--primary);
             color: white;
         }
 
-        .custom-options::-webkit-scrollbar {
+        .custom-dropdown-menu::-webkit-scrollbar {
             width: 8px;
         }
 
-        .custom-options::-webkit-scrollbar-track {
+        .custom-dropdown-menu::-webkit-scrollbar-track {
             background: #0b1220;
         }
 
-        .custom-options::-webkit-scrollbar-thumb {
+        .custom-dropdown-menu::-webkit-scrollbar-thumb {
             background-color: #334155;
             border-radius: 4px;
         }
@@ -358,6 +362,7 @@
             width: 100%;
             line-height: 1.2;
             cursor: pointer;
+
             background-color: var(--bg-secondary);
             color: var(--text-primary);
             border-color: var(--border);
@@ -374,6 +379,7 @@
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
         }
 
+
         .form-select option,
         .form-select optgroup {
             background-color: #0b1220 !important;
@@ -383,9 +389,52 @@
             border-radius: 0;
         }
 
-        .form-select option:checked {
+        .form-select option:checked,
+        .form-select option:focus,
+        .form-select option:hover {
             background-color: var(--primary) !important;
             color: #ffffff !important;
+        }
+
+
+        @media (-ms-high-contrast: active) {
+            .form-select {
+                border: 2px solid windowText;
+            }
+        }
+
+
+        .form-select::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .form-select::-webkit-scrollbar-track {
+            background: #0b1220;
+        }
+
+        .form-select::-webkit-scrollbar-thumb {
+            background-color: #334155;
+            border-radius: 8px;
+            border: 3px solid #0b1220;
+        }
+
+
+        @-moz-document url-prefix() {
+
+            .form-select,
+            .form-select option,
+            .form-select optgroup {
+                background-color: #0b1220 !important;
+                color: #f9fafb !important;
+            }
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            background: var(--bg-secondary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
         }
 
         .btn {
@@ -424,6 +473,7 @@
             box-shadow: none;
         }
 
+
         .loading-screen {
             position: fixed;
             top: 0;
@@ -449,8 +499,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         .loading-text {
@@ -491,7 +546,8 @@
             min-height: calc(100vh - 48px);
             display: flex;
             flex-direction: column;
-            background: linear-gradient(180deg, rgba(17, 24, 39, 0.96) 0%, rgba(11, 17, 32, 0.98) 100%);
+            background:
+                linear-gradient(180deg, rgba(17, 24, 39, 0.96) 0%, rgba(11, 17, 32, 0.98) 100%);
             backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 32px;
@@ -505,7 +561,8 @@
             content: "";
             position: absolute;
             inset: 0;
-            background: linear-gradient(120deg, rgba(99, 102, 241, 0.08), transparent 28%, transparent 72%, rgba(16, 185, 129, 0.06));
+            background:
+                linear-gradient(120deg, rgba(99, 102, 241, 0.08), transparent 28%, transparent 72%, rgba(16, 185, 129, 0.06));
             pointer-events: none;
         }
 
@@ -562,6 +619,7 @@
             gap: 0.75rem;
             flex-wrap: wrap;
             justify-content: flex-end;
+            margin: 0;
         }
 
         .report-actions .btn {
@@ -972,11 +1030,23 @@
         }
 
         @media (max-width: 1200px) {
-            .analysis-overview { grid-template-columns: 1fr; }
-            .analysis-score-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .report-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .report-content { grid-template-columns: 1fr; }
+            .analysis-overview {
+                grid-template-columns: 1fr;
+            }
+
+            .analysis-score-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .report-meta {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .report-content {
+                grid-template-columns: 1fr;
+            }
         }
+
 
         .interview-container {
             position: fixed;
@@ -1025,9 +1095,17 @@
             transition: var(--transition);
         }
 
-        .control-btn:hover { background: rgba(255, 255, 255, 0.2); }
-        .control-btn.active { background: var(--primary-light); }
-        .control-btn.danger { background: var(--error); }
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .control-btn.active {
+            background: var(--primary-light);
+        }
+
+        .control-btn.danger {
+            background: var(--error);
+        }
 
         .interview-main {
             flex: 1;
@@ -1132,8 +1210,14 @@
             animation: fade-in 0.2s ease;
         }
 
-        .listening-label.visible { display: flex; }
-        .listening-label .mic-icon { width: 12px; height: 12px; }
+        .listening-label.visible {
+            display: flex;
+        }
+
+        .listening-label .mic-icon {
+            width: 12px;
+            height: 12px;
+        }
 
         @keyframes fade-in {
             from { opacity: 0; transform: translateY(-4px); }
@@ -1186,8 +1270,13 @@
             max-width: 90%;
         }
 
-        .message.ai { align-self: flex-start; }
-        .message.user { align-self: flex-end; }
+        .message.ai {
+            align-self: flex-start;
+        }
+
+        .message.user {
+            align-self: flex-end;
+        }
 
         .message-author {
             font-weight: 600;
@@ -1214,6 +1303,45 @@
             border-top-right-radius: 2px;
         }
 
+        .chat-input-container {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            color: var(--text-primary);
+            resize: none;
+            min-height: 40px;
+            max-height: 100px;
+        }
+
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .send-btn:hover {
+            background: var(--primary);
+        }
+
+
+
+
+
         .speech-status {
             position: fixed;
             bottom: 100px;
@@ -1231,7 +1359,10 @@
             transition: opacity 0.3s ease;
         }
 
-        .speech-status.visible { opacity: 1; }
+        .speech-status.visible {
+            opacity: 1;
+        }
+
 
         .interview-footer {
             background: rgba(0, 0, 0, 0.9);
@@ -1244,7 +1375,10 @@
             border-top: 1px solid var(--border);
         }
 
-        .footer-controls { display: flex; gap: 1rem; }
+        .footer-controls {
+            display: flex;
+            gap: 1rem;
+        }
 
         .footer-btn {
             width: 48px;
@@ -1259,59 +1393,178 @@
             font-size: 1.2rem;
         }
 
-        .footer-btn.end-call { background: var(--error); color: white; }
-        .footer-btn.subtitles { background: var(--bg-tertiary); color: var(--text-primary); }
-        .footer-btn.subtitles.active { background: var(--primary-light); color: white; }
+        .footer-btn.mic {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .footer-btn.mic.muted {
+            background: var(--error);
+            color: white;
+        }
+
+        .footer-btn.camera {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .footer-btn.camera.off {
+            background: var(--error);
+            color: white;
+        }
+
+        .footer-btn.end-call {
+            background: var(--error);
+            color: white;
+        }
+
+        .footer-btn.subtitles {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .footer-btn.subtitles.active {
+            background: var(--primary-light);
+            color: white;
+        }
+
 
         /* Large Screens (1400px+) */
         @media (min-width: 1400px) {
-            .setup-card { max-width: 1000px; padding: 2.5rem 4rem; }
-            .setup-title { font-size: 2.5rem; }
-            .form-grid { grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
-            .form-group:first-child { grid-column: span 2; }
-            .btn-primary { grid-column: span 2; }
+            .setup-card {
+                max-width: 1000px;
+                padding: 2.5rem 4rem;
+            }
+
+            .setup-title {
+                font-size: 2.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.25rem;
+            }
+
+            .form-group:first-child {
+                grid-column: span 2;
+            }
+
+            .btn-primary {
+                grid-column: span 2;
+            }
         }
 
         /* Desktop (1024px - 1400px) */
         @media (min-width: 1024px) and (max-width: 1399px) {
-            .setup-card { max-width: 900px; }
-            .form-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-            .form-group:first-child { grid-column: span 2; }
-            .btn-primary { grid-column: span 2; }
+            .setup-card {
+                max-width: 900px;
+            }
+
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .form-group:first-child {
+                grid-column: span 2;
+            }
+
+            .btn-primary {
+                grid-column: span 2;
+            }
         }
 
         /* Tablets (768px - 1023px) */
         @media (min-width: 768px) and (max-width: 1023px) {
-            .setup-container { padding: 1rem; }
-            .setup-card { max-width: 700px; padding: 2rem; }
-            .setup-title { font-size: 2rem; }
-            .form-grid { grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-            .form-group:first-child { grid-column: span 2; }
-            .btn-primary { grid-column: span 2; }
+            .setup-container {
+                padding: 1rem;
+            }
+
+            .setup-card {
+                max-width: 700px;
+                padding: 2rem;
+            }
+
+            .setup-title {
+                font-size: 2rem;
+            }
+
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .form-group:first-child {
+                grid-column: span 2;
+            }
+
+            .btn-primary {
+                grid-column: span 2;
+            }
         }
 
         /* Mobile (max-width: 767px) */
         @media (max-width: 767px) {
-            .setup-container { padding: 0.5rem; min-height: 100vh; height: auto; }
-            .setup-card { padding: 1.5rem; border-radius: 16px; max-width: 100%; }
-            .setup-title { font-size: 1.75rem; }
-            .setup-subtitle { font-size: 0.95rem; }
-            .setup-logo { width: 48px; height: 48px; margin-bottom: 1rem; }
-            .form-grid { grid-template-columns: 1fr; gap: 0.75rem; margin-top: 1rem; }
-            .custom-select-trigger { padding: 0.75rem 1rem; font-size: 0.95rem; }
-            .btn { padding: 0.875rem 1.5rem; font-size: 0.95rem; }
+            .setup-container {
+                padding: 0.5rem;
+                min-height: 100vh;
+                height: auto;
+            }
+
+            .setup-card {
+                padding: 1.5rem;
+                border-radius: 16px;
+                max-height: none;
+                max-width: 100%;
+            }
+
+            .setup-title {
+                font-size: 1.75rem;
+            }
+
+            .setup-subtitle {
+                font-size: 0.95rem;
+            }
+
+            .setup-logo {
+                width: 48px;
+                height: 48px;
+                margin-bottom: 1rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+                margin-top: 1rem;
+            }
+
+            .custom-dropdown-trigger {
+                padding: 0.75rem 1rem;
+                font-size: 0.95rem;
+            }
+
+            .btn {
+                padding: 0.875rem 1.5rem;
+                font-size: 0.95rem;
+            }
 
             /* Main Layout - Video First */
             .interview-main {
                 padding: 0;
                 grid-template-columns: 1fr;
-                display: block;
-                height: calc(100vh - 140px);
+                display: block; /* Stack */
+                height: calc(100vh - 140px); /* Adjust for header/footer */
                 position: relative;
                 overflow: hidden;
             }
 
-            .main-video { width: 100%; height: 100%; border: none; border-radius: 0; }
+            .main-video {
+                width: 100%;
+                height: 100%;
+                border: none;
+                border-radius: 0;
+                min-height: auto;
+            }
 
             /* Sidebar - PiP Container for User Video */
             .sidebar {
@@ -1340,32 +1593,86 @@
                 position: relative;
             }
 
-            .user-video video { border-radius: 10px; }
+            .user-video video {
+                border-radius: 10px;
+            }
 
-            .sidebar .chat-section { display: none; }
+            /* Hide Static Chat in Sidebar (Use FAB instead) */
+            .sidebar .chat-section {
+                display: none;
+            }
 
-            /* Subtitles Position - Bottom center */
-            .subtitles-overlay { bottom: 110px; top: auto; width: 90%; font-size: 0.9rem; max-width: 95%; }
 
-            .report-screen { padding: 12px; }
-            .report-card { width: 100%; min-height: calc(100vh - 24px); padding: 18px; border-radius: 22px; }
-            .report-header { flex-direction: column; align-items: stretch; }
-            .report-header-main { width: 100%; }
-            .report-title { font-size: 1.8rem; }
-            .report-actions { width: 100%; justify-content: stretch; }
-            .report-actions .btn { width: 100%; min-width: 0; }
-            .report-meta { grid-template-columns: 1fr 1fr; }
-            .analysis-score-grid { grid-template-columns: 1fr; }
-            .report-content { grid-template-columns: 1fr; }
+            
+            /* Subtitles Position - Bottom center, above controls */
+            .subtitles-overlay {
+                bottom: 110px;
+                top: auto;
+                width: 90%;
+                font-size: 0.9rem;
+                max-width: 95%;
+            }
+
+            .report-screen {
+                padding: 12px;
+            }
+
+            .report-card {
+                width: 100%;
+                min-height: calc(100vh - 24px);
+                padding: 18px;
+                border-radius: 22px;
+            }
+
+            .report-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .report-header-main {
+                width: 100%;
+            }
+
+            .report-title {
+                font-size: 1.8rem;
+            }
+
+            .report-actions {
+                width: 100%;
+                justify-content: stretch;
+            }
+
+            .report-actions .btn {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .report-meta {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .analysis-score-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .report-content {
+                grid-template-columns: 1fr;
+            }
         }
 
-        /* Hide mobile chat UI by default (desktop) */
+        /* Hide mobile chat UI by default (desktop), show only on mobile */
         @media (min-width: 769px) {
-            #mobile-chat-fab, #mobile-chat-sheet { display: none; }
+
+            #mobile-chat-fab,
+            #mobile-chat-sheet {
+                display: none;
+            }
         }
 
         @media (max-width: 768px) {
-            .analysis-overview-value { font-size: 2.35rem; }
+            .analysis-overview-value {
+                font-size: 2.35rem;
+            }
 
             .mobile-chat-fab {
                 position: fixed;
@@ -1385,7 +1692,10 @@
                 transition: all 0.2s ease;
             }
 
-            .mobile-chat-fab:hover { background: #1f2937; transform: scale(1.05); }
+            .mobile-chat-fab:hover {
+                background: #1f2937;
+                transform: scale(1.05);
+            }
 
             .mobile-chat-sheet {
                 position: fixed;
@@ -1403,10 +1713,20 @@
                 z-index: 1300;
             }
 
-            .mobile-chat-sheet.open { transform: translateY(0); }
+            .mobile-chat-sheet.open {
+                transform: translateY(0);
+            }
 
-            #mobile-chat-fab { display: inline-flex !important; z-index: 2000; }
-            #mobile-chat-sheet { display: flex !important; z-index: 2100; }
+            /* Ensure visibility on mobile */
+            #mobile-chat-fab {
+                display: inline-flex !important;
+                z-index: 2000;
+            }
+
+            #mobile-chat-sheet {
+                display: flex !important;
+                z-index: 2100;
+            }
 
             .sheet-header {
                 padding: 1rem 1.5rem;
@@ -1417,7 +1737,11 @@
                 background: rgba(0, 0, 0, 0.3);
             }
 
-            .sheet-header span { font-weight: 600; font-size: 1.1rem; color: var(--text-primary); }
+            .sheet-header span {
+                font-weight: 600;
+                font-size: 1.1rem;
+                color: var(--text-primary);
+            }
 
             .sheet-close {
                 background: none;
@@ -1429,10 +1753,25 @@
                 padding: 0 0.5rem;
             }
 
-            .sheet-messages { flex: 1; overflow-y: auto; padding: 1rem; }
-            .sheet-messages .message { margin-bottom: 1rem; max-width: 90%; }
-            .sheet-messages .message.ai { align-self: flex-start; }
-            .sheet-messages .message.user { align-self: flex-end; margin-left: auto; }
+            .sheet-messages {
+                flex: 1;
+                overflow-y: auto;
+                padding: 1rem;
+            }
+
+            .sheet-messages .message {
+                margin-bottom: 1rem;
+                max-width: 90%;
+            }
+
+            .sheet-messages .message.ai {
+                align-self: flex-start;
+            }
+
+            .sheet-messages .message.user {
+                align-self: flex-end;
+                margin-left: auto;
+            }
 
             .sheet-messages .message-author {
                 font-weight: 600;
@@ -1448,8 +1787,16 @@
                 color: var(--text-primary);
             }
 
-            .sheet-messages .message.ai .message-content { background: var(--bg-tertiary); border-top-left-radius: 2px; }
-            .sheet-messages .message.user .message-content { background: var(--primary); color: white; border-top-right-radius: 2px; }
+            .sheet-messages .message.ai .message-content {
+                background: var(--bg-tertiary);
+                border-top-left-radius: 2px;
+            }
+
+            .sheet-messages .message.user .message-content {
+                background: var(--primary);
+                color: white;
+                border-top-right-radius: 2px;
+            }
 
             .sheet-input {
                 padding: 1rem 1.5rem;
@@ -1469,10 +1816,18 @@
                 font-size: 1rem;
             }
 
-            .sheet-input input::placeholder { color: var(--text-muted); }
-            .sheet-input button { padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.95rem; font-weight: 600; }
-        }
+            .sheet-input input::placeholder {
+                color: var(--text-muted);
+            }
 
+            .sheet-input button {
+                padding: 0.75rem 1.5rem;
+                border-radius: 8px;
+                font-size: 0.95rem;
+                font-weight: 600;
+            }
+        }
+        /* --- Character SVG Base Styling --- */
         #character {
             width: 100%;
             height: 100%;
@@ -1480,6 +1835,7 @@
             filter: drop-shadow(0px 15px 25px rgba(0, 0, 0, 0.25));
         }
 
+        /* Default Static Opacities */
         #eye-closed { opacity: 0; }
         #blush { opacity: 0; }
         #eye-open { opacity: 1; }
@@ -1488,18 +1844,23 @@
         #left-eyebrow { transform-origin: 75px 88px; }
         #left-eyebrow, #right-eyebrow { transition: transform 0.1s ease-out; }
 
+        /* Smooth path transitions for lip syncing */
         #mouth path, #mouth g, #chin-line {
             transition: d 0.05s cubic-bezier(0.25, 0.46, 0.45, 0.94),
                 opacity 0.05s ease-in-out,
                 transform 0.05s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
+        /* Base colors for mouth parts */
         .mouth-cavity { fill: #0A1026; }
         .mouth-top-lip, .mouth-bottom-lip { fill: #B7685F; }
         .mouth-teeth { fill: #FEFFFE; }
         .mouth-tongue { fill: #E86173; }
-        .mouth-sep-line { stroke: #0A1026; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.5; fill: none; }
+        .mouth-sep-line {
+            stroke: #0A1026; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2.5; fill: none;
+        }
 
+        /* --- Lip Sync Talking States --- */
         #character.mouth-ah .mouth-cavity { d: path("M 80 152 C 95 145, 111 145, 126 152 C 120 185, 86 185, 80 152 Z"); }
         #character.mouth-ah .mouth-top-lip { d: path("M 80 152 C 95 142, 111 142, 126 152 C 111 146, 95 146, 80 152 Z"); }
         #character.mouth-ah .mouth-bottom-lip { d: path("M 80 152 C 86 185, 120 185, 126 152 C 118 190, 88 190, 80 152 Z"); }
@@ -1565,16 +1926,19 @@
 
         .iris { transition: transform 0.1s ease-out; }
 
+        /* --- Keyframes --- */
         @keyframes idle-glare {
             0%, 100% { opacity: 0.5; }
             50% { opacity: 0.15; }
         }
         .idle-glare { animation: idle-glare 4s infinite ease-in-out; }
 
+        /* JS blinking classes */
         .idle-blinking #left-eye-open, .idle-blinking #eye-open { opacity: 0 !important; }
         .idle-blinking #left-eye-closed, .idle-blinking #eye-closed { opacity: 1 !important; }
 
         /* --- Animations (Expressions) --- */
+        /* Winking */
         .winking #eye-open { animation: hide-open-eye-once 2s forwards; }
         .winking #eye-closed { animation: show-wink-once 2s forwards; }
         .winking #blush { animation: show-wink-once 2s forwards; }
@@ -1635,6 +1999,7 @@
         @keyframes concerned-sep-once { 0%, 15%, 85%, 100% { d: path("M 84.73 155.70 C 95 156.5, 110 156.5, 122.19 153.20"); } 25%, 75% { d: path("M 84 158 C 95 155, 110 155, 122 158"); } }
         @keyframes hide-inner-concerned-once { 0%, 15% { opacity: 1; } 20%, 80% { opacity: 0; } 85%, 100% { opacity: 1; } }
 
+        /* Attentive */
         .pupil { transform-origin: 77.11px 105.31px; transition: transform 0.3s ease-in-out; }
         .attentive .pupil { transform: scale(0.6); }
 
@@ -1652,16 +2017,43 @@
 
 <body>
 
-    <div id="setup-screen" class="setup-container">
+    <div id="auth-checking-screen" class="loading-screen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Verifying student status...</div>
+    </div>
+
+    <div id="enrollment-locked-screen" class="setup-container hidden">
+        <div class="setup-card fade-in" style="max-width: 500px; text-align: center;">
+            <div class="setup-logo" style="background: linear-gradient(135deg, var(--error), #f59e0b);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+                </svg>
+            </div>
+            <h1 class="setup-title" style="font-size: 1.75rem; margin-bottom: 1rem;">Enrollment Required</h1>
+            <p class="setup-subtitle" style="margin-bottom: 2rem; color: var(--text-secondary);">
+                The AI Video Interview practice platform is exclusively available to enrolled students of My Student Club.
+            </p>
+            <a href="https://mystudentclub.com/" class="btn btn-primary" style="width: 100%; justify-content: center; text-decoration: none;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5.47 18.6l6.53 3.56 6.53-3.56v-3.02l-6.53 3.56-6.53-3.56v3.02z"/>
+                </svg>
+                Explore Courses & Enroll
+            </a>
+        </div>
+    </div>
+
+    <div id="setup-screen" class="setup-container hidden">
         <div class="setup-card fade-in">
             <div class="setup-header">
                 <div class="setup-logo">
                     <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+                        <path
+                            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                     </svg>
                 </div>
                 <h1 class="setup-title">AI Video Interview</h1>
-                <p class="setup-subtitle">Practice with our AI interviewer and get instant feedback on your performance</p>
+                <p class="setup-subtitle">Practice with our AI interviewer and get instant feedback on your performance
+                </p>
             </div>
 
             <form id="setup-form">
@@ -1890,11 +2282,13 @@
                 </button>
                 <button id="end-call-btn" class="footer-btn end-call" title="End Interview">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 9c-1.66 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.79-.73-1.68-1.36-2.66-1.85-.33-.16-.56-.51-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z" />
+                        <path
+                            d="M12 9c-1.66 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85-.18.18-.43.28-.7.28-.28 0-.53-.11-.71-.29L.29 13.08c-.18-.17-.29-.42-.29-.7 0-.28.11-.53.29-.71C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67c.18.18.29.43.29.71 0 .28-.11.53-.29.71l-2.48 2.48c-.18.18-.43.29-.71.29-.79-.73-1.68-1.36-2.66-1.85-.33-.16-.56-.51-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z" />
                     </svg>
                 </button>
             </div>
         </footer>
+
 
         <div id="speech-status" class="speech-status" role="status" aria-live="polite"></div>
 
@@ -1955,50 +2349,50 @@
                 <details class="analysis-accordion" open>
                     <summary>Executive Summary</summary>
                     <div class="analysis-accordion-content">
-                        <div id="analysis-summary" class="analysis-copy"></div>
-                        <div id="analysis-recommendation" class="analysis-recommendation hidden"></div>
+                    <div id="analysis-summary" class="analysis-copy"></div>
+                    <div id="analysis-recommendation" class="analysis-recommendation hidden"></div>
                     </div>
                 </details>
                 <details class="analysis-accordion" open>
                     <summary>Role-Specific Tips</summary>
                     <div class="analysis-accordion-content">
-                        <ul id="analysis-role-tips" class="analysis-list"></ul>
+                    <ul id="analysis-role-tips" class="analysis-list"></ul>
                     </div>
                 </details>
                 <details class="analysis-accordion" open>
                     <summary>What Went Well</summary>
                     <div class="analysis-accordion-content">
-                        <ul id="analysis-strengths" class="analysis-list"></ul>
+                    <ul id="analysis-strengths" class="analysis-list"></ul>
                     </div>
                 </details>
                 <details class="analysis-accordion" open>
                     <summary>Needs Improvement</summary>
                     <div class="analysis-accordion-content">
-                        <ul id="analysis-issues" class="analysis-list"></ul>
+                    <ul id="analysis-issues" class="analysis-list"></ul>
                     </div>
                 </details>
                 <details class="analysis-accordion" open>
                     <summary>Verbal Mistakes</summary>
                     <div class="analysis-accordion-content">
-                        <div id="analysis-verbal-mistakes" class="analysis-stack"></div>
+                    <div id="analysis-verbal-mistakes" class="analysis-stack"></div>
                     </div>
                 </details>
                 <details class="analysis-accordion" open>
                     <summary>Missed Questions</summary>
                     <div class="analysis-accordion-content">
-                        <div id="analysis-missed-questions" class="analysis-stack"></div>
+                    <div id="analysis-missed-questions" class="analysis-stack"></div>
                     </div>
                 </details>
                 <details class="analysis-accordion" open>
                     <summary>Better Responses</summary>
                     <div class="analysis-accordion-content">
-                        <div id="analysis-better-responses" class="analysis-stack"></div>
+                    <div id="analysis-better-responses" class="analysis-stack"></div>
                     </div>
                 </details>
                 <details class="analysis-accordion" open>
                     <summary>Coaching Tips</summary>
                     <div class="analysis-accordion-content">
-                        <ul id="analysis-tips" class="analysis-list"></ul>
+                    <ul id="analysis-tips" class="analysis-list"></ul>
                     </div>
                 </details>
             </div>
@@ -2021,8 +2415,7 @@
                 <h3 style="margin:0; font-weight:700; color:#0f172a;">Preview: Interview Analysis Report</h3>
                 <button id="pdf-preview-close-btn" style="border:none; background:#f3f4f6; color:#475569; padding:9px 14px; border-radius:10px; cursor:pointer; font-weight:600;">Close</button>
             </div>
-            <div id="pdf-preview-container" style="max-height:68vh; overflow:auto; padding:20px; background:#f8fafc;">
-            </div>
+            <div id="pdf-preview-container" style="max-height:68vh; overflow:auto; padding:20px; background:#f8fafc;"></div>
             <div style="display:flex; justify-content:flex-end; gap:10px; padding:16px 22px; border-top:1px solid #e5e7eb; background:#fff;">
                 <button id="pdf-preview-download-btn" style="background:#2563eb; color:#fff; border:1px solid #2563eb; padding:11px 18px; border-radius:10px; font-weight:600; cursor:pointer;">Download PDF</button>
             </div>
@@ -2036,13 +2429,22 @@
         // --- CONFIGURATION ---
         const AVATAR_URL = 'https://models.readyplayer.me/69440c84ca696e5f2fb7bfd5.glb?morphTargets=ARKit,Oculus+Visemes,mouthOpen,mouthSmile,eyesClosed,eyesLookUp,eyesLookDown';
         const AI_INTERVIEWER_NAME = 'Aditya Chourasia';
-        const WORKER_URL = 'https://interviewme.bhansalimanan55.workers.dev/ai-interview4';
+        const WORKER_URL = 'https://interviewme.bhansalimanan55.workers.dev/';
         const ANALYSIS_URL = 'https://analysis.mystudentclub.com/analysis';
         const TTS_ENDPOINT = 'https://us-central1-msc-notif.cloudfunctions.net/gcp-tts-rate-limited';
 
-        // --- STATE ---
+        // --- SUPABASE & AUTH CONFIG ---
+        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        // --- NEW STATE ---
         let interviewPlan = null;
         let cvImages = [];
+
+
+        // --- GLOBAL CONTROLS ---
+        window.speechRecognitionActive = false; // Flag to track state
 
         // --- SVG AVATAR CONTROLLER ---
         class SVGAvatarController {
@@ -2220,23 +2622,11 @@
         }
 
         // --- GLOBAL LOGIC ---
-        let avatar, userStream, isModelLoaded = false, areSubtitlesOn = true, interviewConfig = {}, messages = [], myvad, isWaitingForAIResponse = false;
+        let avatar, userStream, isModelLoaded = false, areSubtitlesOn = true, interviewConfig = {}, messages = [], speechRecognition, myvad, isWaitingForAIResponse = false;
         let interviewAutoEndTimer = null, interviewTerminalState = false, pendingInterviewAutoEnd = null;
         let finalInterviewReport = null, interviewStartedAt = null, detailedInterviewAnalysis = null, analysisRequestToken = 0;
         let consecutiveInterviewServiceFailures = 0;
-        let liveUserMessageEl = null; 
-
-        // --- xAI STT Streaming Controllers ---
-        let sttWebSocket = null;
-        let isStreaming = false;
-        let accumulatedTranscript = "";
-        let finalizedText = "";
-        let audioContext = null;
-        let scriptProcessor = null;
-        let mediaStreamSource = null;
-        let audioBuffer = [];
-        let isWsReady = false;
-
+        let liveUserMessageEl = null; // For live updating the user's message in chat
         const INTERVIEW_REQUEST_TIMEOUT_MS = 45000;
         const INTERVIEW_REQUEST_MAX_RETRIES = 1;
         const INTERVIEW_SERVICE_FAILURES_BEFORE_END = 3;
@@ -2267,10 +2657,50 @@
         const pdfPreviewModal = document.getElementById('pdf-preview-modal'), pdfPreviewContainer = document.getElementById('pdf-preview-container'), pdfPreviewCloseBtn = document.getElementById('pdf-preview-close-btn'), pdfPreviewDownloadBtn = document.getElementById('pdf-preview-download-btn');
 
         async function init() {
-            setupEventListeners();
-            initializeVAD(); // Pre-load VAD model in background
-            loadModelInBackground();
-            subtitlesBtn.classList.toggle('active', areSubtitlesOn);
+            const authCheckingScreen = document.getElementById('auth-checking-screen');
+            const setupScreen = document.getElementById('setup-screen');
+            const enrollmentLockedScreen = document.getElementById('enrollment-locked-screen');
+
+            try {
+                const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+                if (sessionError) throw sessionError;
+
+                if (!session || !session.user) {
+                    // Redirect to login page
+                    window.location.href = 'https://mystudentclub.com/login?redirect=' + encodeURIComponent(window.location.pathname);
+                    return;
+                }
+
+                // Check enrollment
+                const { data: enrollments, error: enrollError } = await supabase
+                    .from('enrollment')
+                    .select('course')
+                    .eq('uuid', session.user.id);
+
+                if (enrollError) throw enrollError;
+
+                if (!enrollments || enrollments.length === 0) {
+                    // Not enrolled
+                    authCheckingScreen.classList.add('hidden');
+                    enrollmentLockedScreen.classList.remove('hidden');
+                    return;
+                }
+
+                // User is authenticated and enrolled! Proceed to load page contents
+                authCheckingScreen.classList.add('hidden');
+                setupScreen.classList.remove('hidden');
+
+                setupEventListeners();
+                setupContinuousSpeechRecognition();
+                initializeVAD(); // Pre-load VAD model in background
+                loadModelInBackground();
+                subtitlesBtn.classList.toggle('active', areSubtitlesOn);
+
+            } catch (error) {
+                console.error("Auth check failed:", error);
+                // Fallback to login redirect
+                window.location.href = 'https://mystudentclub.com/login?redirect=' + encodeURIComponent(window.location.pathname);
+            }
         }
 
         function setupEventListeners() {
@@ -2313,29 +2743,54 @@
                     myvad.start();
                 } catch (e) { }
             }
+            if (speechRecognition && !isWaitingForAIResponse && !interviewTerminalState) {
+                try { 
+                    speechRecognition.start(); 
+                    setListeningUI(true);
+                } catch (e) { /* ignore already started errors */ }
+            }
         };
 
         window.stopListening = function () {
             if (myvad) {
                 try { myvad.pause(); } catch (e) { }
             }
-            stopSTTStreaming(false);
+            if (speechRecognition) {
+                try { speechRecognition.stop(); } catch (e) { }
+                setListeningUI(false);
+            }
         };
 
         async function initializeVAD() {
             if (myvad) return;
             
+            window.arrayBufferToBase64 = function(buffer) {
+                let binary = '';
+                const bytes = new Uint8Array(buffer);
+                const len = bytes.byteLength;
+                for (let i = 0; i < len; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return window.btoa(binary);
+            };
+
+
             try {
                 myvad = await vad.MicVAD.new({
                     onSpeechStart: () => {
-                        if (isWaitingForAIResponse || interviewTerminalState) return;
                         console.log("VAD: Speech started");
-                        startSTTStreaming();
                     },
                     onSpeechEnd: async (audio) => {
                         if (isWaitingForAIResponse || interviewTerminalState) return;
-                        console.log("VAD: Speech ended");
-                        stopSTTStreaming(true);
+                        
+                        console.log("VAD: Speech ended, processing...");
+                        updateSpeechStatus("Processing audio...", true);
+                        
+                        const wavBuffer = vad.utils.encodeWAV(audio);
+                        const base64Audio = arrayBufferToBase64(wavBuffer);
+                        
+                        window.stopListening();
+                        sendToAI(null, base64Audio);
                     },
                     onnxWASMBasePath: "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0/dist/",
                     baseAssetPath: "https://cdn.jsdelivr.net/npm/@ricky0123/vad-web@0.0.27/dist/",
@@ -2349,199 +2804,81 @@
             }
         }
 
-        async function startSTTStreaming() {
-            if (isStreaming) return;
-            isStreaming = true;
-            accumulatedTranscript = "";
-            finalizedText = "";
-            audioBuffer = [];
-            isWsReady = false;
-
-            // Connect to WebSocket proxy
-            const wsUrl = `wss://interviewme.bhansalimanan55.workers.dev/stt?sample_rate=16000&encoding=pcm&interim_results=true&language=en`;
+        function handleTranscription(text) {
+            if (!text.trim() || isWaitingForAIResponse || interviewTerminalState) return;
+            // Ignore short noise/echo remnants
+            if (text.length < 3 && !['no', 'yes', 'ok'].includes(text.toLowerCase())) {
+                updateSpeechStatus("", false);
+                return;
+            }
             
-            console.log("Connecting to STT WebSocket proxy...");
-            sttWebSocket = new WebSocket(wsUrl);
-
-            sttWebSocket.onopen = () => {
-                console.log("STT WebSocket connection proxy established.");
-            };
-
-            sttWebSocket.onmessage = (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-                    if (data.type === "transcript.created") {
-                        console.log("STT ready. Streaming audio...");
-                        isWsReady = true;
-                        
-                        // Send buffered chunks
-                        while (audioBuffer.length > 0) {
-                            const chunk = audioBuffer.shift();
-                            if (sttWebSocket?.readyState === WebSocket.OPEN) {
-                                sttWebSocket.send(chunk);
-                            }
-                        }
-                    } else if (data.type === "transcript.partial" || data.type === "transcript.final") {
-                        const text = data.text;
-                        if (text && text.trim()) {
-                            console.log(`[STT ${data.type}] ${text}`);
-                            
-                            if (data.type === "transcript.final" || data.is_final) {
-                                // Commit the final sentence to finalizedText
-                                finalizedText = finalizedText ? `${finalizedText} ${text.trim()}` : text.trim();
-                                updateLiveUserMessage(finalizedText);
-                                accumulatedTranscript = finalizedText;
-                            } else {
-                                // Display finalizedText + current partial
-                                const fullLiveText = finalizedText ? `${finalizedText} ${text.trim()}` : text.trim();
-                                updateLiveUserMessage(fullLiveText);
-                                accumulatedTranscript = fullLiveText;
-                            }
-                        }
-
-                        // Handle utterance final natively from xAI STT if provided
-                        if (data.speech_final) {
-                            console.log("STT: Utterance final received. Finalizing...");
-                            stopSTTStreaming(true);
-                        }
-                    } else if (data.type === "transcript.done") {
-                        console.log("STT Session complete:", data.text);
-                        if (data.text && data.text.trim()) {
-                            const trimmedText = data.text.trim();
-                            updateLiveUserMessage(trimmedText);
-                            accumulatedTranscript = trimmedText;
-                        }
-                    } else if (data.type === "error") {
-                        console.error("STT error:", data.message);
-                        stopSTTStreaming(false);
-                    }
-                } catch (e) {
-                    console.error("Error parsing STT packet:", e);
-                }
-            };
-
-            sttWebSocket.onerror = (err) => {
-                console.error("STT WebSocket error:", err);
-                stopSTTStreaming(false);
-            };
-
-            sttWebSocket.onclose = () => {
-                console.log("STT WebSocket closed.");
-                isStreaming = false;
-            };
-
-            initAudioCapture();
-        }
-
-        async function initAudioCapture() {
-            try {
-                if (!userStream) {
-                    console.error("No user stream available for audio capture.");
-                    stopSTTStreaming(false);
-                    return;
-                }
-
-                audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
-                mediaStreamSource = audioContext.createMediaStreamSource(userStream);
-
-                scriptProcessor = audioContext.createScriptProcessor(4096, 1, 1);
-
-                scriptProcessor.onaudioprocess = (e) => {
-                    if (!isStreaming) return;
-
-                    const inputData = e.inputBuffer.getChannelData(0);
-
-                    // Convert to Float32 to Int16
-                    const pcmData = new Int16Array(inputData.length);
-                    for (let i = 0; i < inputData.length; i++) {
-                        const s = Math.max(-1, Math.min(1, inputData[i]));
-                        pcmData[i] = s < 0 ? s * 0x8000 : s * 0x7FFF;
-                    }
-
-                    if (isWsReady && sttWebSocket?.readyState === WebSocket.OPEN) {
-                        sttWebSocket.send(pcmData.buffer);
-                    } else {
-                        audioBuffer.push(pcmData.buffer);
-                    }
-                };
-
-                mediaStreamSource.connect(scriptProcessor);
-                scriptProcessor.connect(audioContext.destination);
-
-                setListeningUI(true);
-            } catch (err) {
-                console.error("Audio capture initialization error:", err);
-                stopSTTStreaming(false);
-            }
-        }
-
-        function stopSTTStreaming(sendToBackend = false) {
-            if (!isStreaming) return;
-            isStreaming = false;
-
-            setListeningUI(false);
-
-            if (scriptProcessor) {
-                scriptProcessor.disconnect();
-                scriptProcessor = null;
-            }
-            if (mediaStreamSource) {
-                mediaStreamSource.disconnect();
-                mediaStreamSource = null;
-            }
-            if (audioContext) {
-                audioContext.close();
-                audioContext = null;
-            }
-
-            if (sttWebSocket) {
-                if (sttWebSocket.readyState === WebSocket.OPEN) {
-                    try { sttWebSocket.send(JSON.stringify({ type: "audio.done" })); } catch (e) {}
-                    sttWebSocket.close();
-                }
-                sttWebSocket = null;
-            }
-
-            const text = accumulatedTranscript.trim();
-            accumulatedTranscript = "";
-
-            if (sendToBackend && text) {
-                if (liveUserMessageEl) {
-                    const contentEl = liveUserMessageEl.querySelector('.message-content');
-                    if (contentEl) contentEl.textContent = text;
-                    liveUserMessageEl.classList.remove('live');
-                    liveUserMessageEl = null;
-
-                    const mobileChatMessages = document.getElementById('mobile-chat-messages');
-                    if (mobileChatMessages) {
-                        const mobileLiveUserEl = mobileChatMessages.querySelector('.message.user.live');
-                        if (mobileLiveUserEl) {
-                            const mobileContentEl = mobileLiveUserEl.querySelector('.message-content');
-                            if (mobileContentEl) mobileContentEl.textContent = text;
-                            mobileLiveUserEl.classList.remove('live');
-                        }
-                    }
-                } else {
-                    addChatMessage('user', 'You', text);
-                }
-
-                window.stopListening();
-                sendToAI(text);
-            } else {
-                if (liveUserMessageEl) {
-                    liveUserMessageEl.remove();
-                    liveUserMessageEl = null;
-                }
+            updateSpeechStatus("", false);
+            
+            // Finalize the live message if it exists
+            if (liveUserMessageEl) {
+                const contentEl = liveUserMessageEl.querySelector('.message-content');
+                if (contentEl) contentEl.textContent = text;
+                liveUserMessageEl.classList.remove('live');
+                liveUserMessageEl = null;
+                
+                // Also finalize in mobile chat
                 const mobileChatMessages = document.getElementById('mobile-chat-messages');
                 if (mobileChatMessages) {
                     const mobileLiveUserEl = mobileChatMessages.querySelector('.message.user.live');
                     if (mobileLiveUserEl) {
-                        mobileLiveUserEl.remove();
+                        const mobileContentEl = mobileLiveUserEl.querySelector('.message-content');
+                        if (mobileContentEl) mobileContentEl.textContent = text;
+                        mobileLiveUserEl.classList.remove('live');
                     }
                 }
+            } else {
+                addChatMessage('user', 'You', text);
+            }
+            
+            window.stopListening();
+            sendToAI(text);
+        }
+
+        function setupContinuousSpeechRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                speechRecognition = new SpeechRecognition();
+                speechRecognition.continuous = true;
+                speechRecognition.interimResults = true;
+                speechRecognition.lang = 'en-US';
+
+                speechRecognition.onresult = (event) => {
+                    if (avatar && avatar.isSpeaking) return;
+
+                    let interimTranscript = '';
+                    let finalTranscript = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) finalTranscript += transcript;
+                        else interimTranscript += transcript;
+                    }
+
+                    const liveText = (finalTranscript + interimTranscript).trim();
+                    if (liveText) updateLiveUserMessage(liveText);
+                };
+
+                speechRecognition.onstart = () => {
+                    setListeningUI(true);
+                };
+
+                speechRecognition.onend = () => {
+                    setListeningUI(false);
+                    if (!interviewScreen.classList.contains('hidden') && avatar && !avatar.isSpeaking && !isWaitingForAIResponse && !interviewTerminalState) {
+                        try { speechRecognition.start(); } catch (e) { }
+                    }
+                };
             }
         }
 
+        // handleSpeechInput is now handled by handleTranscription from VAD
+
+        // Live transcription helper functions
         let scrollTimeout = null;
         function scrollToBottom() {
             if (scrollTimeout) return;
@@ -2553,16 +2890,19 @@
 
         function updateLiveUserMessage(text) {
             if (!liveUserMessageEl) {
+                // Create a new live message element
                 liveUserMessageEl = document.createElement('div');
                 liveUserMessageEl.className = 'message user live';
                 liveUserMessageEl.innerHTML = `<div class="message-author">You</div><div class="message-content">${text}</div>`;
                 chatMessages.appendChild(liveUserMessageEl);
             } else {
+                // Update existing live message
                 const contentEl = liveUserMessageEl.querySelector('.message-content');
                 if (contentEl) contentEl.textContent = text;
             }
             scrollToBottom();
             
+            // Sync to mobile chat
             const mobileChatMessages = document.getElementById('mobile-chat-messages');
             if (mobileChatMessages) {
                 let mobileLiveUserEl = mobileChatMessages.querySelector('.message.user.live');
@@ -2616,7 +2956,7 @@
             };
         }
 
-        function buildFallbackInterviewReport(reason = 'Interview ended.') {
+        function buildFallbackInterviewReport(reason = 'Interview ended before a final AI report was returned.') {
             const userTurns = messages.filter(msg => msg.role === 'user').length;
             const aiTurns = messages.filter(msg => msg.role === 'assistant').length;
             return [
@@ -2628,7 +2968,10 @@
                 `Company Type: ${interviewConfig.companyType || 'N/A'}`,
                 `Interview Duration Selected: ${interviewConfig.duration ? `${interviewConfig.duration} minutes` : 'N/A'}`,
                 `Candidate Responses Logged: ${userTurns}`,
-                `AI Responses Logged: ${aiTurns}`
+                `AI Responses Logged: ${aiTurns}`,
+                '',
+                'A formal AI-generated evaluation was not returned for this session.',
+                'Use the transcript below to review the conversation and identify improvement areas.'
             ].join('\n');
         }
 
@@ -2639,14 +2982,19 @@
             const reportText = (finalInterviewReport?.text || '').trim();
             if (!reportText) return 'Your interview summary is ready.';
 
-            const lines = reportText.split('\n').map(line => line.trim()).filter(Boolean);
+            const lines = reportText
+                .split('\n')
+                .map(line => line.trim())
+                .filter(Boolean);
             const informativeLines = lines.filter(line => !/^interview summary$/i.test(line));
             const summaryLine = informativeLines.find(line => /[a-z]/i.test(line));
 
             return summaryLine || 'Your interview summary is ready.';
         }
 
-        function getUiReportSubtitleText() { return 'Review your interview analysis and transcript below.'; }
+        function getUiReportSubtitleText() {
+            return 'Review your interview analysis and transcript below.';
+        }
 
         function escapeHtml(value = '') {
             return String(value)
@@ -2669,7 +3017,9 @@
             return [];
         }
 
-        function normalizeObjectArray(value) { return Array.isArray(value) ? value.filter(item => item && typeof item === 'object') : []; }
+        function normalizeObjectArray(value) {
+            return Array.isArray(value) ? value.filter(item => item && typeof item === 'object') : [];
+        }
 
         function normalizeDetailedAnalysis(payload) {
             const raw = payload?.analysis || payload?.result || payload || {};
@@ -2758,7 +3108,7 @@
             renderAnalysisCards(analysisVerbalMistakes, [], 'Detailed verbal feedback will appear here.', () => '');
             renderAnalysisCards(analysisMissedQuestions, [], 'Missed-question analysis will appear here.', () => '');
             renderAnalysisCards(analysisBetterResponses, [], 'Improved sample answers will appear here.', () => '');
-            setAnalysisStatus('Generating detailed AI analysis...', 'loading');
+            setAnalysisStatus('Generating detailed AI analysis from the full transcript...', 'loading');
         }
 
         function renderDetailedAnalysis(analysis) {
@@ -2776,7 +3126,7 @@
             }
             if (analysisOverviewPills) {
                 analysisOverviewPills.innerHTML = [
-                    `Role: ${interviewConfig.positionApplied || 'N/A'}`,
+                    `Role: ${interviewConfig.specialization || 'N/A'}`,
                     `Experience: ${interviewConfig.experienceLevel || 'N/A'}`,
                     `Company: ${interviewConfig.companyType || 'N/A'}`,
                     `Duration: ${interviewConfig.duration ? `${interviewConfig.duration} min` : 'N/A'}`
@@ -2788,6 +3138,7 @@
                     analysisOverviewReco.classList.remove('hidden');
                 } else {
                     analysisOverviewReco.classList.add('hidden');
+                    analysisOverviewReco.textContent = '';
                 }
             }
 
@@ -2811,7 +3162,7 @@
             }
 
             if (analysisSummary) {
-                analysisSummary.textContent = analysis.summary || 'Detailed analysis generated.';
+                analysisSummary.textContent = analysis.summary || 'Detailed analysis was generated, but no executive summary was returned.';
             }
             if (analysisRecommendation) {
                 if (analysis.recommendation) {
@@ -2819,15 +3170,16 @@
                     analysisRecommendation.classList.remove('hidden');
                 } else {
                     analysisRecommendation.classList.add('hidden');
+                    analysisRecommendation.textContent = '';
                 }
             }
 
-            renderAnalysisList(analysisRoleTips, analysis.roleTips, 'No tips returned.');
-            renderAnalysisList(analysisStrengths, analysis.strengths, 'No strengths returned.');
-            renderAnalysisList(analysisIssues, analysis.issues, 'No improvement areas returned.');
-            renderAnalysisList(analysisTips, analysis.tips, 'No coaching tips returned.');
+            renderAnalysisList(analysisRoleTips, analysis.roleTips, 'No role-specific tips were returned.');
+            renderAnalysisList(analysisStrengths, analysis.strengths, 'No strengths were returned.');
+            renderAnalysisList(analysisIssues, analysis.issues, 'No improvement areas were returned.');
+            renderAnalysisList(analysisTips, analysis.tips, 'No coaching tips were returned.');
 
-            renderAnalysisCards(analysisVerbalMistakes, analysis.verbalMistakes, 'No major verbal mistakes identified.', item => `
+            renderAnalysisCards(analysisVerbalMistakes, analysis.verbalMistakes, 'No major verbal mistakes were identified.', item => `
                 <div class="analysis-item">
                     <div class="analysis-item-title">${escapeHtml(item.issue || 'Communication note')}</div>
                     ${item.example ? `<div class="analysis-item-subtle">Example: ${escapeHtml(item.example)}</div>` : ''}
@@ -2835,7 +3187,7 @@
                 </div>
             `);
 
-            renderAnalysisCards(analysisMissedQuestions, analysis.missedQuestions, 'No major missed-question patterns identified.', item => `
+            renderAnalysisCards(analysisMissedQuestions, analysis.missedQuestions, 'No major missed-question patterns were identified.', item => `
                 <div class="analysis-item">
                     <div class="analysis-item-title">${escapeHtml(item.question || 'Question')}</div>
                     ${item.gap ? `<div class="analysis-item-subtle">${escapeHtml(item.gap)}</div>` : ''}
@@ -2843,7 +3195,7 @@
                 </div>
             `);
 
-            renderAnalysisCards(analysisBetterResponses, analysis.betterResponses, 'No improved answers returned.', item => `
+            renderAnalysisCards(analysisBetterResponses, analysis.betterResponses, 'No improved answers were returned.', item => `
                 <div class="analysis-item">
                     <div class="analysis-item-title">${escapeHtml(item.question || 'Suggested better response')}</div>
                     ${item.original ? `<div class="analysis-item-subtle">Original: ${escapeHtml(item.original)}</div>` : ''}
@@ -2885,7 +3237,7 @@
 
         async function requestDetailedInterviewAnalysis() {
             if (!messages.length) {
-                setAnalysisFallbackState('Detailed analysis is unavailable.');
+                setAnalysisFallbackState('Detailed analysis is unavailable because no transcript was captured.');
                 return;
             }
 
@@ -2897,9 +3249,9 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Specialization': interviewConfig.positionApplied || '',
-                        'X-Experience-Level': interviewConfig.experienceLevel || '',
-                        'X-Company-Type': interviewConfig.companyType || '',
+                        'X-Specialization': interviewConfig.positionApplied || 'Software Engineer',
+                        'X-Experience-Level': interviewConfig.experienceLevel || 'Mid Level',
+                        'X-Company-Type': interviewConfig.companyType || 'Startup',
                         'X-Duration': '30'
                     },
                     body: JSON.stringify(buildDetailedAnalysisRequestPayload())
@@ -2907,17 +3259,16 @@
 
                 if (!response.ok) throw new Error(`Analysis endpoint returned ${response.status}`);
                 const data = await response.json();
-                if (data && data.ok === false) throw new Error(data.error || 'Analysis failed.');
+                if (data && data.ok === false) throw new Error(data.error || 'Analysis endpoint reported failure.');
                 const analysis = normalizeDetailedAnalysis(data);
-                
-                if (requestToken === analysisRequestToken) {
-                    renderDetailedAnalysis(analysis);
-                }
-            } catch (e) {
-                console.error("Detailed analysis failed:", e);
-                if (requestToken === analysisRequestToken) {
-                    setAnalysisFallbackState('Failed to generate structured detailed analysis.');
-                }
+                const hasUsableAnalysis = analysis.summary || analysis.recommendation || Object.values(analysis.scores).some(score => score !== null) || analysis.strengths.length || analysis.issues.length || analysis.tips.length || analysis.roleTips.length || analysis.verbalMistakes.length || analysis.missedQuestions.length || analysis.betterResponses.length;
+                if (!hasUsableAnalysis) throw new Error('Analysis endpoint returned no structured analysis.');
+                if (requestToken !== analysisRequestToken) return;
+                renderDetailedAnalysis(analysis);
+            } catch (error) {
+                console.error(error);
+                if (requestToken !== analysisRequestToken) return;
+                setAnalysisFallbackState('Detailed AI analysis is temporarily unavailable. Showing the core report and full transcript instead.');
             }
         }
 
@@ -2941,7 +3292,9 @@
         }
 
         function escapeMarkdown(value = '') {
-            return String(value || '').replace(/\\/g, '\\\\').replace(/([*_`#[\]()!|>~-])/g, '\\$1');
+            return String(value || '')
+                .replace(/\\/g, '\\\\')
+                .replace(/([*_`#[\]()!|>~-])/g, '\\$1');
         }
 
         function toMarkdownBulletList(items, emptyText) {
@@ -2956,10 +3309,12 @@
         }
 
         function buildInterviewReportMarkdown() {
-            const reportText = finalInterviewReport?.text || buildFallbackInterviewReport('Interview ended.');
-            const transcriptText = (getTranscriptText() || 'No transcript.').replace(/```/g, "'''");
+            const reportText = finalInterviewReport?.text || buildFallbackInterviewReport('Interview ended without a final AI report.');
+            const transcriptText = (getTranscriptText() || 'No transcript available.').replace(/```/g, "'''");
             const reportSummaryText = buildReportSummaryText();
-            const metaSection = getReportExportMeta().map(([label, value]) => `- **${escapeMarkdown(label)}:** ${escapeMarkdown(value)}`).join('\n');
+            const metaSection = getReportExportMeta()
+                .map(([label, value]) => `- **${escapeMarkdown(label)}:** ${escapeMarkdown(value)}`)
+                .join('\n');
             const scoreEntries = detailedInterviewAnalysis
                 ? [
                     ['Overall', detailedInterviewAnalysis.scores.overall],
@@ -2996,31 +3351,31 @@
                 '',
                 '## Executive Summary',
                 '',
-                escapeMarkdown(detailedInterviewAnalysis?.summary || 'Detailed analysis was unavailable.'),
+                escapeMarkdown(detailedInterviewAnalysis?.summary || 'Detailed analysis was unavailable for this session.'),
                 '',
                 '## Recommendation',
                 '',
-                escapeMarkdown(detailedInterviewAnalysis?.recommendation || 'No final recommendation.'),
+                escapeMarkdown(detailedInterviewAnalysis?.recommendation || 'No final recommendation was returned.'),
                 '',
                 '## What Went Well',
                 '',
-                toMarkdownBulletList(detailedInterviewAnalysis?.strengths, 'No strengths returned.'),
+                toMarkdownBulletList(detailedInterviewAnalysis?.strengths, 'No strengths were returned.'),
                 '',
                 '## Needs Improvement',
                 '',
-                toMarkdownBulletList(detailedInterviewAnalysis?.issues, 'No areas returned.'),
+                toMarkdownBulletList(detailedInterviewAnalysis?.issues, 'No improvement areas were returned.'),
                 '',
                 '## Role-Specific Tips',
                 '',
-                toMarkdownBulletList(detailedInterviewAnalysis?.roleTips, 'No tips returned.'),
+                toMarkdownBulletList(detailedInterviewAnalysis?.roleTips, 'No role-specific tips were returned.'),
                 '',
                 '## Coaching Tips',
                 '',
-                toMarkdownBulletList(detailedInterviewAnalysis?.tips, 'No tips returned.'),
+                toMarkdownBulletList(detailedInterviewAnalysis?.tips, 'No coaching tips were returned.'),
                 '',
                 '## Verbal Mistakes',
                 '',
-                toMarkdownDetailList(detailedInterviewAnalysis?.verbalMistakes, 'No major verbal mistakes.', item => [
+                toMarkdownDetailList(detailedInterviewAnalysis?.verbalMistakes, 'No major verbal mistakes were identified.', item => [
                     `### ${escapeMarkdown(item.issue || 'Observation')}`,
                     '',
                     `- **Example:** ${escapeMarkdown(item.example || 'N/A')}`,
@@ -3029,7 +3384,7 @@
                 '',
                 '## Missed Questions',
                 '',
-                toMarkdownDetailList(detailedInterviewAnalysis?.missedQuestions, 'No major missed-question patterns.', item => [
+                toMarkdownDetailList(detailedInterviewAnalysis?.missedQuestions, 'No major missed-question patterns were identified.', item => [
                     `### ${escapeMarkdown(item.question || 'Question')}`,
                     '',
                     `- **Gap:** ${escapeMarkdown(item.gap || 'N/A')}`,
@@ -3038,7 +3393,7 @@
                 '',
                 '## Better Responses',
                 '',
-                toMarkdownDetailList(detailedInterviewAnalysis?.betterResponses, 'No improved answers.', item => [
+                toMarkdownDetailList(detailedInterviewAnalysis?.betterResponses, 'No improved answers were returned.', item => [
                     `### ${escapeMarkdown(item.question || 'Prompt')}`,
                     '',
                     `- **Original:** ${escapeMarkdown(item.original || 'N/A')}`,
@@ -3092,7 +3447,7 @@
                     font-size: 11px;
                     line-height: 1.6;
                 }
-                .mdpdf-content p, .mdpdf-content li, .mdpdf-content ul, .mdpdf-content ol, .mdpdf-content blockquote, .mdpdf-content pre, .mdpdf-content code, .mdpdf-content h1, .mdpdf-content h2, .mdpdf-content h3 {
+                .mdpdf-content p, .mdpdf-content li, .mdpdf-content ul, .mdpdf-content ol, .mdpdf-content table, .mdpdf-content thead, .mdpdf-content tbody, .mdpdf-content tr, .mdpdf-content td, .mdpdf-content blockquote, .mdpdf-content pre, .mdpdf-content code, .mdpdf-content h1, .mdpdf-content h2, .mdpdf-content h3, .mdpdf-content h4 {
                     break-inside: avoid-page;
                     page-break-inside: avoid;
                 }
@@ -3106,8 +3461,18 @@
                 header: headerHtml,
                 footer: footerHtml,
                 image: { type: 'jpeg', quality: 1.0 },
-                html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0, letterRendering: true, windowWidth: 1200 },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'], avoid: ['p', 'li', 'ul', 'ol', 'h1', 'h2', 'h3', 'blockquote', 'pre', 'code'] }
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    scrollY: 0,
+                    scrollX: 0,
+                    letterRendering: true,
+                    windowWidth: 1200
+                },
+                pagebreak: {
+                    mode: ['avoid-all', 'css', 'legacy'],
+                    avoid: ['p', 'li', 'ul', 'ol', 'table', 'tr', 'td', 'h1', 'h2', 'h3', 'h4', 'blockquote', 'pre', 'code']
+                }
             };
         }
 
@@ -3127,7 +3492,7 @@
 
             reportSubtitle.textContent = getUiReportSubtitleText();
             reportBody.innerHTML = formatAssessmentHtml(reportText);
-            reportTranscript.textContent = getTranscriptText() || 'No transcript.';
+            reportTranscript.textContent = getTranscriptText() || 'No transcript available.';
             reportMeta.innerHTML = `
                 <div class="report-meta-item">
                     <span class="report-meta-label">Role</span>
@@ -3157,7 +3522,7 @@
 
         function downloadInterviewReport() {
             if (!window.MarkdownPDF) {
-                alert('PDF generator loading failed.');
+                alert('PDF generator not available. Please reload the page.');
                 return;
             }
 
@@ -3169,7 +3534,9 @@
                 window.MarkdownPDF.render(markdown, pdfPreviewContainer, pdfOptions);
             }
 
-            if (pdfPreviewModal) pdfPreviewModal.style.display = 'block';
+            if (pdfPreviewModal) {
+                pdfPreviewModal.style.display = 'block';
+            }
 
             const onDownload = () => {
                 window.MarkdownPDF.download(markdown, {
@@ -3210,7 +3577,10 @@
                 'the interview is complete',
                 'we have reached the end of the interview',
                 'we will end the interview here',
+                'we ll end the interview here',
                 'thank you for taking this interview',
+                'thank you for attending this interview',
+                'thank you for interviewing with us',
                 'we can wrap up here',
                 'let us wrap up here',
                 'that\'s all then',
@@ -3237,7 +3607,6 @@
             pendingInterviewAutoEnd = null;
             interviewAutoEndTimer = setTimeout(() => endInterview({ skipConfirm: true, reason }), delayMs);
         }
-        
         window.flushPendingInterviewAutoEnd = function () {
             if (!pendingInterviewAutoEnd) return;
             const { reason, delayMs } = pendingInterviewAutoEnd;
@@ -3263,7 +3632,6 @@
                 loadingScreen.classList.add('hidden');
             } catch (error) { console.error(error); updateLoadingProgress(0, 'Failed.'); }
         }
-        
         function updateLoadingProgress(p, t) { loadingProgressBar.style.width = `${p}%`; const lt = document.querySelector('.loading-text'); if (lt) lt.textContent = t; }
 
         async function handleSetupSubmit(e) {
@@ -3283,9 +3651,10 @@
                 toughness: document.getElementById('toughness').value,
                 jobDescription: document.getElementById('jobDescription').value,
                 specialization: document.getElementById('positionApplied').value,
-                duration: 30 
+                duration: 30 // Default duration
             };
             
+            // Process PDF if exists
             const fileInput = document.getElementById('cvFile');
             if (fileInput.files.length > 0) {
                 try {
@@ -3320,7 +3689,7 @@
             const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
             const images = [];
             
-            const maxPages = Math.min(pdf.numPages, 3);
+            const maxPages = Math.min(pdf.numPages, 3); // Max 3 pages to save tokens
             for (let i = 1; i <= maxPages; i++) {
                 const page = await pdf.getPage(i);
                 const viewport = page.getViewport({ scale: 1.5 });
@@ -3335,6 +3704,7 @@
             return images;
         }
 
+        // Initialize toughness buttons
         document.querySelectorAll('.toughness-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 document.querySelectorAll('.toughness-btn').forEach(b => b.classList.remove('selected'));
@@ -3343,6 +3713,7 @@
             });
         });
 
+        // Initialize experience level visibility
         const posSelect = document.getElementById('positionApplied');
         const expGroup = document.getElementById('exp-group');
         if (posSelect && expGroup) {
@@ -3355,12 +3726,13 @@
             });
         }
 
+        // CV Upload Preview
         const cvFileInput = document.getElementById('cvFile');
         const cvPreview = document.getElementById('cv-preview');
         if (cvFileInput && cvPreview) {
             cvFileInput.addEventListener('change', (e) => {
                 if (e.target.files.length > 0) {
-                    cvPreview.textContent = `File: ${e.target.files[0].name}`;
+                    cvPreview.textContent = `File selected: ${e.target.files[0].name}`;
                     cvPreview.classList.remove('hidden');
                 }
             });
@@ -3372,6 +3744,7 @@
             reportScreen.classList.add('hidden');
             interviewScreen.classList.remove('hidden');
             
+            // System instruction to set the tone/difficulty
             messages = [
                 {
                     role: 'system',
@@ -3427,6 +3800,7 @@
             el.innerHTML = `<div class="message-author">${author}</div><div class="message-content">${content}</div>`;
             chatMessages.appendChild(el); scrollToBottom();
             
+            // Also add to mobile chat
             const mobileChatMessages = document.getElementById('mobile-chat-messages');
             if (mobileChatMessages) {
                 const mobileEl = el.cloneNode(true);
@@ -3437,7 +3811,7 @@
             return el;
         }
 
-        // Mobile Chat FAB
+        // Mobile Chat Functionality
         const mobileChatFab = document.getElementById('mobile-chat-fab');
         const mobileChatSheet = document.getElementById('mobile-chat-sheet');
         const mobileChatClose = document.getElementById('mobile-chat-close');
@@ -3488,6 +3862,7 @@
             chatMessages.appendChild(liveAIMessageEl);
             scrollToBottom();
             
+            // Sync to mobile chat
             const mobileChatMessages = document.getElementById('mobile-chat-messages');
             if (mobileChatMessages) {
                 mobileLiveAIMessageEl = document.createElement('div');
@@ -3507,6 +3882,7 @@
                 scrollToBottom();
             }
             
+            // Sync to mobile chat
             if (mobileLiveAIMessageEl) {
                 const mobileContentEl = mobileLiveAIMessageEl.querySelector('.message-content');
                 if (mobileContentEl) mobileContentEl.textContent = text;
@@ -3525,6 +3901,7 @@
                 liveAIMessageEl = null;
             }
             
+            // Sync to mobile chat
             if (mobileLiveAIMessageEl) {
                 const mobileContentEl = mobileLiveAIMessageEl.querySelector('.message-content');
                 if (mobileContentEl) mobileContentEl.textContent = fullText;
@@ -3533,7 +3910,9 @@
             }
         }
 
-        function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
 
         function isTransientInterviewServiceError(error) {
             const text = String(error?.message || error || '').toLowerCase();
@@ -3546,7 +3925,7 @@
                 || text.includes('unexpected end of json input');
         }
 
-        async function fetchInterviewWorkerResponse(messageText) {
+        async function fetchInterviewWorkerResponse(base64Audio = null) {
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), INTERVIEW_REQUEST_TIMEOUT_MS);
 
@@ -3572,6 +3951,10 @@
                     jobDescription: interviewConfig.jobDescription,
                     cvImages: cvImages
                 };
+
+                if (base64Audio) {
+                    requestBody.latestAudio = base64Audio;
+                }
 
                 const response = await fetch(WORKER_URL, {
                     method: 'POST',
@@ -3607,7 +3990,7 @@
             }
         }
 
-        async function sendToAI(message) {
+        async function sendToAI(message, base64Audio = null) {
             if (isWaitingForAIResponse || interviewTerminalState) return;
             isWaitingForAIResponse = true;
             let responseWillSpeak = false;
@@ -3616,12 +3999,20 @@
                     messages.push({ role: 'user', content: message });
                 }
 
+                if (base64Audio && !liveUserMessageEl) {
+                    liveUserMessageEl = document.createElement('div');
+                    liveUserMessageEl.className = 'message user live';
+                    liveUserMessageEl.innerHTML = `<div class="message-author">You</div><div class="message-content">...</div>`;
+                    chatMessages.appendChild(liveUserMessageEl);
+                    scrollToBottom();
+                }
+
                 let data = null;
                 let lastError = null;
 
                 for (let attempt = 0; attempt <= INTERVIEW_REQUEST_MAX_RETRIES; attempt += 1) {
                     try {
-                        data = await fetchInterviewWorkerResponse(message);
+                        data = await fetchInterviewWorkerResponse(base64Audio);
                         lastError = null;
                         break;
                     } catch (error) {
@@ -3635,6 +4026,33 @@
 
                 if (!data) throw lastError || new Error('No response received from interview service.');
                 consecutiveInterviewServiceFailures = 0;
+
+                // Handle transcription from worker if audio was sent
+                if (base64Audio && data.transcription) {
+                    const text = data.transcription;
+                    if (text.length >= 3 || ['no', 'yes', 'ok'].includes(text.toLowerCase())) {
+                        messages.push({ role: 'user', content: text });
+                        if (liveUserMessageEl) {
+                            const contentEl = liveUserMessageEl.querySelector('.message-content');
+                            if (contentEl) contentEl.textContent = text;
+                            liveUserMessageEl.classList.remove('live');
+                            liveUserMessageEl = null;
+                        } else {
+                            addChatMessage('user', 'You', text);
+                        }
+                    } else {
+                        if (liveUserMessageEl) {
+                            liveUserMessageEl.remove();
+                            liveUserMessageEl = null;
+                        }
+                    }
+                    updateSpeechStatus("", false);
+                } else if (base64Audio && liveUserMessageEl) {
+                    // Fallback if no transcription returned
+                    liveUserMessageEl.remove();
+                    liveUserMessageEl = null;
+                    updateSpeechStatus("", false);
+                }
 
                 // Update persistent interview plan if returned
                 if (data.interviewPlan) {
@@ -3681,7 +4099,7 @@
                 const shouldEndInterview = consecutiveInterviewServiceFailures >= INTERVIEW_SERVICE_FAILURES_BEFORE_END;
                 addChatMessage('ai', 'System', shouldEndInterview
                     ? 'Interview service failed repeatedly. Ending call...'
-                    : 'Temporary interview service issue. The call is still active, so please try again.');
+                    : 'Temporary interview service issue. The call is still active, so please try again in a moment.');
                 if (shouldEndInterview) {
                     scheduleInterviewAutoEnd('Interview stopped due to repeated service errors. Ending call...', 1200);
                 }
@@ -3694,13 +4112,11 @@
         }
 
         function showSubtitles(text) { subtitlesOverlay.textContent = text; subtitlesOverlay.classList.remove('hidden'); }
-        
         window.clearAISubtitles = function () {
             if (subtitlesOverlay._sched) subtitlesOverlay._sched.forEach(id => clearTimeout(id));
             subtitlesOverlay._sched = [];
             subtitlesOverlay.classList.add('hidden');
         };
-        
         window.scheduleAISubtitles = function (timepoints, duration, startTime) {
             window.clearAISubtitles();
             const safeTimepoints = Array.isArray(timepoints) ? timepoints : [];
@@ -3711,6 +4127,7 @@
             safeTimepoints.forEach((tp) => {
                 const delay = startDelay + (tp.time_seconds * 1000);
                 subtitlesOverlay._sched.push(setTimeout(() => {
+                    // Update subtitle overlay (if enabled)
                     if (areSubtitlesOn) {
                         if (currentLine.length > 60 || /[.!?]/.test(tp.word)) {
                             if (/[.!?]/.test(tp.word)) currentLine = "";
@@ -3719,11 +4136,13 @@
                         showSubtitles(currentLine.trim());
                     }
                     
+                    // Update live AI chat message
                     fullChatText += (fullChatText ? " " : "") + tp.word;
                     updateLiveAIChatMessage(fullChatText);
                 }, delay));
             });
             
+            // Finalize and hide subtitle overlay when done
             const fullText = safeTimepoints.map(tp => tp.word).join(' ');
             subtitlesOverlay._sched.push(setTimeout(() => {
                 subtitlesOverlay.classList.add('hidden');
@@ -3732,7 +4151,6 @@
         };
 
         function toggleSubtitles() { areSubtitlesOn = !areSubtitlesOn; subtitlesBtn.classList.toggle('active', areSubtitlesOn); if (!areSubtitlesOn) subtitlesOverlay.classList.add('hidden'); }
-        
         function endInterview(options = {}) {
             const shouldEnd = options.skipConfirm || confirm('End interview?');
             if (!shouldEnd) return;
@@ -3755,10 +4173,16 @@
         function initCustomSelects() {
             const selectorIds = ['positionApplied', 'experienceLevel', 'companyType', 'interviewDomain'];
 
+            // Close dropdowns on outside click
             document.addEventListener('click', (e) => {
                 if (!e.target.closest('.custom-select-wrapper')) {
                     document.querySelectorAll('.custom-select-wrapper.open').forEach(wrapper => {
                         wrapper.classList.remove('open');
+                        const opts = wrapper.querySelector('.custom-options');
+                        if (opts) {
+                            opts.style.opacity = '0';
+                            setTimeout(() => opts.style.display = 'none', 200);
+                        }
                     });
                 }
             });
@@ -3767,18 +4191,21 @@
                 const select = document.getElementById(id);
                 if (!select) return;
 
+                // Ensure we don't double-wrap if re-run
                 if (select.parentNode.classList.contains('custom-select-wrapper')) return;
 
+                // Create Custom UI
                 const wrapper = document.createElement('div');
-                wrapper.className = 'custom-select-wrapper';
+                wrapper.className = 'custom-select-wrapper custom-dropdown';
 
                 const trigger = document.createElement('div');
-                trigger.className = 'custom-select-trigger';
+                trigger.className = 'custom-select-trigger custom-dropdown-trigger';
                 trigger.innerHTML = `<span>${select.options[select.selectedIndex]?.text || 'Select'}</span><div class="custom-dropdown-arrow">▾</div>`;
 
                 const optionsList = document.createElement('div');
-                optionsList.className = 'custom-options';
+                optionsList.className = 'custom-options custom-dropdown-menu';
 
+                // Function to rebuild options (handles optgroups)
                 const buildOptions = () => {
                     optionsList.innerHTML = '';
                     Array.from(select.children).forEach(child => {
@@ -3790,7 +4217,7 @@
                             
                             Array.from(child.children).forEach(opt => {
                                 const div = document.createElement('div');
-                                div.className = `custom-option ${opt.selected ? 'selected' : ''}`;
+                                div.className = `custom-option custom-dropdown-option ${opt.selected ? 'selected' : ''}`;
                                 div.textContent = opt.text;
                                 div.dataset.value = opt.value;
                                 div.addEventListener('click', (e) => {
@@ -3798,6 +4225,7 @@
                                     select.value = opt.value;
                                     trigger.querySelector('span').textContent = opt.text;
                                     wrapper.classList.remove('open');
+                                    optionsList.style.display = 'none';
                                     optionsList.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
                                     div.classList.add('selected');
                                     select.dispatchEvent(new Event('change'));
@@ -3806,7 +4234,7 @@
                             });
                         } else if (child.tagName === 'OPTION') {
                             const div = document.createElement('div');
-                            div.className = `custom-option ${child.selected ? 'selected' : ''}`;
+                            div.className = `custom-option custom-dropdown-option ${child.selected ? 'selected' : ''}`;
                             div.textContent = child.text;
                             div.dataset.value = child.value;
                             div.addEventListener('click', (e) => {
@@ -3814,6 +4242,7 @@
                                 select.value = child.value;
                                 trigger.querySelector('span').textContent = child.text;
                                 wrapper.classList.remove('open');
+                                optionsList.style.display = 'none';
                                 optionsList.querySelectorAll('.custom-option').forEach(o => o.classList.remove('selected'));
                                 div.classList.add('selected');
                                 select.dispatchEvent(new Event('change'));
@@ -3823,27 +4252,39 @@
                     });
                 };
 
+                // Initial build
                 buildOptions();
 
+                // Assemble
                 select.style.display = 'none';
                 select.parentNode.insertBefore(wrapper, select);
                 wrapper.appendChild(select);
                 wrapper.appendChild(trigger);
                 wrapper.appendChild(optionsList);
 
+                // Toggle Event
                 trigger.addEventListener('click', () => {
                     const isOpen = wrapper.classList.contains('open');
                     document.querySelectorAll('.custom-select-wrapper.open').forEach(w => {
-                        if (w !== wrapper) w.classList.remove('open');
+                        if (w !== wrapper) {
+                            w.classList.remove('open');
+                            w.querySelector('.custom-options').style.display = 'none';
+                        }
                     });
 
                     if (!isOpen) {
                         wrapper.classList.add('open');
+                        optionsList.style.display = 'block';
+                        optionsList.offsetHeight;
+                        optionsList.style.opacity = '1';
                     } else {
                         wrapper.classList.remove('open');
+                        optionsList.style.opacity = '0';
+                        setTimeout(() => optionsList.style.display = 'none', 200);
                     }
                 });
 
+                // MutationObserver for option changes
                 const observer = new MutationObserver(() => {
                     buildOptions();
                     const sel = select.options[select.selectedIndex];
@@ -3851,6 +4292,7 @@
                 });
                 observer.observe(select, { childList: true, subtree: true });
 
+                // Intercept programmatic .value changes
                 const descriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
                 Object.defineProperty(select, 'value', {
                     get: function() { return descriptor.get.call(this); },
@@ -3866,6 +4308,7 @@
                     }
                 });
 
+                // Listen for internal value changes
                 select.addEventListener('change', () => {
                     const sel = select.options[select.selectedIndex];
                     if (sel) {
@@ -3878,9 +4321,14 @@
             });
         }
 
+        // Initialize custom selects on load
         initCustomSelects();
+
         init();
     </script>
+
+    <script defer src='https://static.cloudflareinsights.com/beacon.min.js'
+        data-cf-beacon='{"token": "9ecf6f49919940acb2efcc833483cd5f"}'></script><!-- Cloudflare Pages Analytics -->
 </body>
 
 </html>
