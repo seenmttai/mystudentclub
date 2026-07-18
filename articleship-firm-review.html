@@ -10,8 +10,9 @@
     />
     <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@300..900&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link
@@ -19,6 +20,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <link rel="stylesheet" href="/scripts/portal-style.css" />
+    <link rel="stylesheet" href="/articleship-review-wizard.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
       *,
@@ -43,16 +45,48 @@
         -webkit-backdrop-filter: blur(16px) !important;
         border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
         box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04) !important;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 999 !important;
       }
       .header-container {
         max-width: 1550px !important;
+      }
+      .brand-logo {
+        height: 35px !important;
+        width: auto !important;
+        max-width: none !important;
+        display: block !important;
+      }
+      .menu-toggle-btn {
+        display: flex !important;
+        background: transparent !important;
+        border: none !important;
+        cursor: pointer !important;
+        color: #0f172a !important;
+        padding: 0.5rem !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0;
+      }
+      .menu-toggle-btn svg {
+        width: 24px;
+        height: 24px;
+        stroke: currentColor;
+      }
+      @media (max-width: 768px) {
+        .brand-logo {
+          height: 28px !important;
+        }
       }
 
       /* ── Page wrapper ────────────────────────────────────────────────────── */
       .afd-outer {
         max-width: 1550px;
         margin: 0 auto;
-        padding: 2rem 2rem 5rem;
+        padding: 0.5rem 2.5rem 5rem;
       }
 
       /* ── Top bar: back button + page title ──────────────────────────────── */
@@ -100,868 +134,1775 @@
         transform: translateX(-2px);
       }
 
-      /* ── 2-col layout ────────────────────────────────────────────────────── */
-      .afd-layout {
-        display: grid;
-        grid-template-columns: 30% 1fr;
-        gap: 1.75rem;
-        align-items: start;
+      /* ── Centered Premium Unified Layout ────────────────────────────────── */
+      .afd-outer {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 0.5rem 2rem 4rem;
       }
 
-      /* ── Sidebar ─────────────────────────────────────────────────────────── */
-      .afd-sidebar {
-        position: sticky;
-        top: 90px;
+      .afd-container {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 1.5rem;
       }
 
-      .afd-card {
+      .afd-navigation-bar {
+        display: flex;
+        align-items: center;
+        margin: 0.25rem 0;
+      }
+
+      .afd-back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        color: #1d4ed8;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
         background: #fff;
         border: 1px solid #e2e8f0;
-        border-radius: 18px;
-        overflow: hidden;
-        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+        border-radius: 10px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s;
+      }
+      .afd-back-link:hover {
+        color: #1e3a8a;
+        border-color: #bfdbfe;
+        background: #eff6ff;
+        transform: translateX(-2px);
       }
 
-      /* Firm identity */
-      .afd-firm-card-top {
-        padding: 1.375rem 1.375rem 1rem;
+      /* Generic premium card class */
+      .afd-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        box-shadow: 0 10px 25px -15px rgba(15, 23, 42, 0.04);
+        padding: 2rem;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      /* ── Redesigned Premium Company Hero Card ────────────────────────── */
+      :root {
+        --h-brand:      #2e6ce6;
+        --h-brand-50:   #eaf1fe;
+        --h-brand-100:  #dbe7fd;
+        --h-brand-200:  #bcd4fb;
+        --h-brand-400:  #5b8ef2;
+        --h-brand-500:  #3b7bf0;
+        --h-brand-600:  #2e6ce6;
+        --h-brand-700:  #2358c7;
+        --h-brand-800:  #1d47a3;
+
+        --h-navy:       #0b1b33;
+        --h-navy-700:   #31445f;
+        --h-navy-500:   #5a6b85;
+
+        --h-page:       #f2f5fb;
+        --h-line:       #e3eaf4;
+
+        --h-amber-300:  #fcd34d;
+        --h-amber-400:  #fbbf24;
+        --h-amber-500:  #f59e0b;
+        --h-amber-600:  #d97706;
+
+        --h-emerald-50: #ecfdf5;
+        --h-emerald-200:#a7f3d0;
+        --h-emerald-300:#6ee7b7;
+        --h-emerald-400:#34d399;
+        --h-emerald-500:#10b981;
+        --h-emerald-600:#059669;
+        --h-emerald-700:#047857;
+
+        --h-rose-50:    #fff1f2;
+        --h-rose-200:   #fecdd3;
+        --h-rose-400:   #fb7185;
+        --h-rose-500:   #f43f5e;
+        --h-rose-600:   #e11d48;
+        --h-rose-700:   #be123c;
+
+        --h-sh-card:    0 1px 2px rgba(15,40,90,.04), 0 12px 32px -16px rgba(15,40,90,.12);
+        --h-sh-card-lg: 0 2px 4px rgba(15,40,90,.05), 0 24px 56px -24px rgba(15,40,90,.2);
+        --h-sh-blue:    0 10px 24px -10px rgba(46,108,230,.55);
+
+        --h-ease: cubic-bezier(.16, 1, .3, 1);
+        --h-mono: 'JetBrains Mono', ui-monospace, monospace;
+      }
+
+      .afd-hero-card {
+        position: relative;
+        overflow: hidden;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 0.5rem 0 1.5rem;
+        transition: all 0.35s var(--h-ease);
+      }
+
+      /* Card Background Grid and Blurry Glow Blobs */
+      .afd-hero-card-grid-bg {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(46, 108, 230, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(46, 108, 230, 0.04) 1px, transparent 1px);
+        background-size: 48px 48px;
+        -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent);
+        mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent);
+        z-index: 1;
+      }
+
+      .afd-hero-glow {
+        position: absolute;
+        border-radius: 999px;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .afd-hero-glow-1 {
+        width: 320px;
+        height: 320px;
+        top: -120px;
+        right: -60px;
+        background: rgba(59, 123, 240, 0.065);
+        filter: blur(80px);
+        animation: afdFloatY 15s ease-in-out infinite;
+      }
+
+      .afd-hero-glow-2 {
+        width: 260px;
+        height: 260px;
+        left: -80px;
+        bottom: -60px;
+        background: rgba(91, 142, 242, 0.05);
+        filter: blur(70px);
+      }
+
+      @keyframes afdFloatY {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(24px); }
+      }
+
+      .afd-hero-cols,
+      .afd-hero-breakdown-wrapper {
+        position: relative;
+        z-index: 2;
+      }
+
+      /* Layout Columns split */
+      .afd-hero-cols {
+        display: grid;
+        gap: 2.5rem;
+        align-items: center;
+      }
+      @media (min-width: 1024px) {
+        .afd-hero-cols {
+          grid-template-columns: repeat(12, 1fr);
+        }
+        .afd-hero-left {
+          grid-column: span 7;
+        }
+        .afd-hero-right {
+          grid-column: span 5;
+        }
+      }
+
+      /* Back Button */
+      .afd-back-link-inline {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.725rem;
+        font-weight: 700;
+        color: var(--h-navy-500);
+        text-decoration: none;
+        transition: all 0.2s ease;
+        align-self: flex-start;
+        margin-bottom: 1.25rem;
+      }
+      .afd-back-link-inline:hover {
+        color: var(--h-brand-600);
+        transform: translateX(-3px);
+      }
+      .afd-back-link-inline i {
+        font-size: 0.675rem;
+      }
+
+      /* Monospaced crumbs */
+      .afd-hero-crumbs {
+        font-family: var(--h-mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--h-navy-500);
+        margin-bottom: 1rem;
         display: flex;
         align-items: center;
+        gap: 0.5rem;
+      }
+      .afd-hero-crumbs a {
+        color: var(--h-navy-500);
+        transition: color 0.2s;
+        text-decoration: none;
+      }
+      .afd-hero-crumbs a:hover {
+        color: var(--h-brand-600);
+      }
+      .afd-hero-crumbs .sep {
+        color: rgba(90, 107, 133, 0.3);
+      }
+      .afd-hero-crumbs .now {
+        color: var(--h-brand-600);
+        font-weight: 600;
+      }
+
+      /* Eyebrow index horizontal line */
+      .afd-hero-eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+      .afd-hero-eyebrow .idx {
+        font-family: var(--h-mono);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        color: var(--h-brand-600);
+      }
+      .afd-hero-eyebrow .rule {
+        width: 2rem;
+        height: 1px;
+        background: rgba(46, 108, 230, 0.3);
+      }
+      .afd-hero-eyebrow .txt {
+        font-family: var(--h-mono);
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: var(--h-navy-500);
+      }
+
+      /* Large bold name with brand color dot */
+      .afd-hero-name {
+        font-size: clamp(2rem, 3.5vw, 2.75rem);
+        font-weight: 850;
+        line-height: 1.1;
+        letter-spacing: -0.025em;
+        color: var(--h-navy);
+        margin-bottom: 1rem;
+        margin-top: 0;
+      }
+      .afd-hero-name .dot-b {
+        color: var(--h-brand-600);
+      }
+
+      /* Meta pills */
+      .afd-hero-meta-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+      }
+      .afd-hero-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        border-radius: 99px;
+        border: 1px solid var(--h-line);
+        background: #ffffff;
+        padding: 0.375rem 0.875rem;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--h-navy-700);
+        transition: all 0.2s var(--h-ease);
+        box-shadow: 0 1px 2px rgba(15, 40, 90, 0.02);
+      }
+      .afd-hero-pill:hover {
+        border-color: var(--h-brand-200);
+        background: var(--h-brand-50);
+        color: var(--h-brand-700);
+      }
+      .afd-hero-pill i {
+        color: var(--h-brand-600);
+        font-size: 0.85rem;
+      }
+      .afd-hero-pill.verified {
+        border-color: var(--h-emerald-200);
+        background: var(--h-emerald-50);
+        color: var(--h-emerald-700);
+        font-weight: 600;
+      }
+      .afd-hero-pill.verified i {
+        color: var(--h-emerald-600);
+      }
+
+      .afd-hero-copy {
+        font-size: 14.5px;
+        line-height: 1.6;
+        color: var(--h-navy-500);
+        max-width: 32rem;
+        margin-bottom: 1.75rem;
+      }
+
+      .afd-hero-actions {
+        display: flex;
+        flex-wrap: wrap;
         gap: 0.875rem;
       }
-      .afd-avatar {
-        width: 52px;
-        height: 52px;
+      .afd-btn-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-radius: 99px;
+        padding: 0.75rem 1.5rem;
+        background: linear-gradient(90deg, var(--h-brand-600), var(--h-brand-500));
+        color: #ffffff !important;
+        font-size: 14px;
+        font-weight: 650;
+        border: none;
+        cursor: pointer;
+        box-shadow: var(--h-sh-blue);
+        transition: transform 0.2s, filter 0.2s;
+        text-decoration: none;
+      }
+      .afd-btn-primary:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.08);
+        color: #ffffff !important;
+      }
+      .afd-btn-primary:active {
+        transform: translateY(0);
+      }
+      .afd-btn-ghost {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-radius: 99px;
+        padding: 0.75rem 1.5rem;
+        border: 1px solid var(--h-line);
         background: #ffffff;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #2563eb;
-        font-size: 1.5rem;
-        font-weight: 800;
-        flex-shrink: 0;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        color: var(--h-navy-700);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: border-color 0.2s, color 0.2s;
+        text-decoration: none;
       }
-      .afd-firm-name {
-        font-size: 1.0625rem;
-        font-weight: 800;
-        color: #0f172a;
-        line-height: 1.2;
-      }
-      .afd-firm-loc {
-        font-size: 0.775rem;
-        color: #94a3b8;
-        display: flex;
-        align-items: center;
-        gap: 0.25rem;
-        margin-top: 0.2rem;
-        font-weight: 500;
+      .afd-btn-ghost:hover {
+        border-color: var(--h-brand-400);
+        color: var(--h-brand-600);
       }
 
-      /* Stats grid */
-      .afd-stats-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        border-top: 1px solid #f1f5f9;
-        border-bottom: 1px solid #f1f5f9;
-        margin: 0 1.375rem 1rem;
-        padding: 0.875rem 0;
+      /* Premium Metrics Panel Card (Right Column) */
+      .afd-hero-panel {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1.25rem;
+        border: 1px solid var(--h-line);
+        background: #ffffff;
+        padding: 1.75rem;
+        box-shadow: var(--h-sh-card);
       }
-      .afd-stat-col {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.1rem;
-        text-align: center;
-        border-right: 1px solid #f1f5f9;
-        padding: 0 0.35rem;
+      .afd-hero-panel::before {
+        content: "";
+        position: absolute;
+        top: -1px;
+        left: 2rem;
+        right: 2rem;
+        height: 3px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, transparent, var(--h-brand-500), transparent);
       }
-      .afd-stat-col:last-child {
-        border-right: none;
-      }
-      .afd-stat-val {
-        font-size: 1rem;
-        font-weight: 800;
-        color: #0f172a;
-        display: flex;
-        align-items: center;
-        gap: 0.15rem;
-      }
-      .afd-stat-lbl {
-        font-size: 0.6rem;
-        font-weight: 700;
-        color: #94a3b8;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-      }
-
-      /* Sub-ratings bars */
-      .afd-sub-section {
-        padding: 0 1.375rem 1.25rem;
-      }
-      .afd-sub-label-row {
+      .afd-hero-panel-head {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        margin-bottom: 0.3rem;
+        gap: 1rem;
       }
-      .afd-sub-label {
-        font-size: 0.775rem;
-        font-weight: 600;
-        color: #475569;
+      .afd-hero-panel-label {
+        font-family: var(--h-mono);
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--h-navy-500);
       }
-      .afd-sub-val {
-        font-size: 0.775rem;
-        font-weight: 700;
-        color: #1e293b;
-      }
-      .afd-bar-track {
-        height: 5px;
-        background: #f1f5f9;
-        border-radius: 999px;
-        overflow: hidden;
-        margin-bottom: 0.625rem;
-      }
-      .afd-bar-track:last-child {
-        margin-bottom: 0;
-      }
-      .afd-bar-fill {
-        height: 100%;
-        border-radius: 999px;
-        background: linear-gradient(90deg, #1d4ed8, #3b82f6);
-        transition: width 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
-      }
-
-      /* CTA card */
-      .afd-cta-card {
-        background: linear-gradient(
-          135deg,
-          #1d4ed8 0%,
-          #1e3a8a 100%
-        ) !important;
-        border: none !important;
-        border-radius: 18px !important;
-        overflow: hidden;
-        box-shadow: 0 8px 28px rgba(29, 78, 216, 0.22) !important;
-        padding: 1.375rem !important;
-      }
-      .afd-cta-card h3 {
-        font-size: 1rem;
-        font-weight: 700;
-        color: #fff;
-        margin-bottom: 0.35rem;
-      }
-      .afd-cta-card p {
-        font-size: 0.8rem;
-        color: rgba(255, 255, 255, 0.82);
-        line-height: 1.5;
-        margin-bottom: 1rem;
-      }
-      .afd-write-btn {
+      .afd-hero-big-rating {
+        margin-top: 0.5rem;
         display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        background: #fff;
-        color: #1d4ed8;
-        font-family: var(--font-main);
-        font-size: 0.875rem;
-        font-weight: 700;
-        padding: 0.75rem 1.25rem;
-        border-radius: 10px;
-        border: none;
-        cursor: pointer;
-        width: 100%;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-        transition: all 0.2s;
+        align-items: baseline;
+        gap: 0.25rem;
       }
-      .afd-write-btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+      .afd-hero-big-rating .num {
+        font-size: 3rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.02em;
+        color: var(--h-navy);
       }
-      .afd-anon-note {
-        text-align: center;
-        font-size: 0.725rem;
-        color: rgba(255, 255, 255, 0.6);
+      .afd-hero-big-rating .of {
+        font-size: 14px;
+        color: rgba(90, 107, 133, 0.6);
         font-weight: 500;
+      }
+      .afd-hero-stars {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        color: var(--h-amber-400);
+      }
+      .afd-hero-stars i {
+        font-size: 18px;
+      }
+      .afd-hero-stars i.far {
+        color: rgba(11, 27, 51, 0.12);
+      }
+
+      .afd-hero-panel-div {
+        margin: 1.25rem 0;
+        height: 1px;
+        background: var(--h-line);
+      }
+
+      .afd-hero-panel-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+      }
+      @media (max-width: 600px) {
+        .afd-hero-panel-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .afd-hero-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: rgba(242, 245, 251, 0.45);
+        border: 1px solid var(--h-line);
+        border-radius: 14px;
+        padding: 0.75rem 0.85rem;
+        transition: all 0.25s var(--h-ease);
+        min-width: 0;
+        align-self: stretch;
+      }
+      .afd-hero-stat:hover {
+        background: #ffffff;
+        border-color: var(--h-brand-200);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+      }
+
+      .afd-hero-stat-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.3rem;
-        margin-top: 0.625rem;
+        font-size: 0.95rem;
+        flex-shrink: 0;
       }
 
-      /* ── Main column ─────────────────────────────────────────────────────── */
-      .afd-main {
+      /* Custom Icon Background Themes */
+      .afd-hero-stat-icon.icon-recommend {
+        background: var(--h-brand-50);
+        color: var(--h-brand-600);
+      }
+      .afd-hero-stat-icon.icon-stipend {
+        background: var(--h-emerald-50);
+        color: var(--h-emerald-600);
+      }
+      .afd-hero-stat-icon.icon-hours {
+        background: rgba(99, 102, 241, 0.1);
+        color: rgb(99, 102, 241);
+      }
+
+      /* Dynamic work stat status theme mappings for payout status card */
+      .afd-hero-stat-icon.status-green {
+        color: var(--h-emerald-700);
+        background: var(--h-emerald-50);
+      }
+      .afd-hero-stat-icon.status-amber {
+        color: var(--h-amber-700);
+        background: #fffbeb;
+      }
+      .afd-hero-stat-icon.status-red {
+        color: var(--h-rose-700);
+        background: var(--h-rose-50);
+      }
+      .afd-hero-stat-icon.status-slate {
+        color: var(--h-navy-700);
+        background: #f1f5f9;
+      }
+
+      .afd-hero-stat .v {
+        font-size: 1.05rem;
+        font-weight: 800;
+        line-height: 1.25;
+        color: var(--h-navy);
+        word-break: break-word;
+      }
+      .afd-hero-stat .s {
+        font-size: 9px;
+        color: var(--h-navy-500);
+        margin-top: 0.15rem;
+        line-height: 1;
+        text-transform: uppercase;
+        font-family: var(--h-mono);
+        letter-spacing: 0.02em;
+      }
+
+      /* Bottom Scorecard/Performance Breakdown Section */
+      .afd-hero-breakdown-wrapper {
+        margin-top: 2.25rem;
+        padding-top: 2.25rem;
+        border-top: 1px solid var(--h-line);
+      }
+      .afd-hero-breakdown-row {
+        display: grid;
+        gap: 2rem;
+      }
+      @media (min-width: 1024px) {
+        .afd-hero-breakdown-row {
+          grid-template-columns: 2.8fr 1.2fr;
+        }
+      }
+
+      .afd-perf-title-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+      }
+      .afd-perf-title {
+        font-family: var(--h-mono);
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: var(--h-navy-500);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .afd-perf-title i {
+        color: var(--h-brand-600);
+        font-size: 0.95rem;
+      }
+      .afd-perf-reviews-count {
+        font-family: var(--h-mono);
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--h-brand-600);
+        background: var(--h-brand-50);
+        border: 1px solid var(--h-brand-100);
+        padding: 0.25rem 0.625rem;
+        border-radius: 99px;
+        font-weight: 600;
+      }
+
+      .afd-perf-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      @media (min-width: 768px) {
+        .afd-perf-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1.25rem 2rem;
+        }
+      }
+      @media (min-width: 1200px) {
+        .afd-perf-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      /* Dimension scorecard cards */
+      .afd-perf-card {
+        border-radius: 12px;
+        border: 1px solid var(--h-line);
+        background: rgba(242, 245, 251, 0.4);
+        padding: 1rem 1.25rem;
+        transition: all 0.3s var(--h-ease);
+      }
+      .afd-perf-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--h-brand-200);
+        background: #ffffff;
+        box-shadow: var(--h-sh-card);
+      }
+      .afd-perf-label-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+      }
+      .afd-perf-label {
+        font-family: var(--h-mono);
+        font-size: 10.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--h-navy-500);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-weight: 600;
+      }
+      .afd-perf-label i {
+        color: var(--h-brand-600);
+        font-size: 0.85rem;
+      }
+      .afd-perf-val {
+        font-family: var(--h-mono);
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .afd-perf-val.t-emerald { color: var(--h-emerald-600); }
+      .afd-perf-val.t-amber   { color: var(--h-amber-600); }
+      .afd-perf-val.t-rose    { color: var(--h-rose-600); }
+
+      .afd-perf-bar-track {
+        height: 5px;
+        background: rgba(11, 27, 51, 0.06);
+        border-radius: 99px;
+        overflow: hidden;
+      }
+      .afd-perf-bar-fill {
+        height: 100%;
+        border-radius: 99px;
+        transition: width 1s var(--h-ease);
+      }
+      .afd-perf-bar-fill.f-emerald { background: linear-gradient(90deg, var(--h-emerald-500), var(--h-emerald-400)); }
+      .afd-perf-bar-fill.f-amber   { background: linear-gradient(90deg, var(--h-amber-500), var(--h-amber-400)); }
+      .afd-perf-bar-fill.f-rose    { background: linear-gradient(90deg, var(--h-rose-500), var(--h-rose-400)); }
+
+      /* Sidebar badges panel (Weekend work, leave support, travel, stipend timeliness) */
+      .afd-perf-sidebar-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        background: #ffffff;
+        border: 1px solid var(--h-line);
+        padding: 1.25rem;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.02);
+      }
+      .afd-perf-badge-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding: 0.25rem 0;
+      }
+      .afd-perf-badge-label {
+        font-family: var(--h-mono);
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        color: var(--h-navy-500);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-weight: 600;
+      }
+      .afd-perf-badge-label i {
+        color: var(--h-brand-600);
+        font-size: 0.8rem;
+      }
+      .afd-perf-badge-val {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 0.25rem 0.625rem;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        text-transform: uppercase;
+        font-family: var(--h-mono);
+        letter-spacing: 0.05em;
+      }
+      .afd-perf-badge-val.status-green {
+        color: var(--h-emerald-700);
+        background: var(--h-emerald-50);
+        border-color: var(--h-emerald-200);
+      }
+      .afd-perf-badge-val.status-amber {
+        color: var(--h-amber-700);
+        background: #fffbeb;
+        border-color: #fde68a;
+      }
+      .afd-perf-badge-val.status-red {
+        color: var(--h-rose-700);
+        background: var(--h-rose-50);
+        border-color: var(--h-rose-200);
+      }
+      .afd-perf-badge-val.status-slate {
+        color: var(--h-navy-700);
+        background: #f1f5f9;
+        border-color: #e2e8f0;
+      }
+
+      /* ── Redesigned Verified Reviews Section ───────────────────────────────── */
+      .afd-reviews-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        width: 100%;
+        margin-top: 0;
+      }
+
+      .afd-section-title {
+        font-size: 1.65rem;
+        font-weight: 850;
+        color: var(--h-navy);
+        letter-spacing: -0.02em;
+        margin-top: 0;
+        margin-bottom: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .afd-reviews-section .afd-section-title::before {
+        content: "02 \2014  Verified Feedback";
+        font-family: var(--h-mono);
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.25em;
+        color: var(--h-brand-600);
+      }
+
+      .afd-similar-section .afd-section-title::before {
+        content: "03 \2014  Similar Firms";
+        font-family: var(--h-mono);
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.25em;
+        color: var(--h-brand-600);
+      }
+
+      .afd-similar-section .afd-section-title {
+        margin-top: 0;
+      }
+
+      #afd-reviews-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.5rem;
+      }
+
+      /* Review card container */
+      .afd-review-card {
+        background: #ffffff;
+        border: 1px solid var(--h-line);
+        border-radius: 20px;
+        padding: 1.75rem;
+        box-shadow: var(--h-sh-card);
+        display: flex;
+        flex-direction: column;
+        gap: 1.15rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.35s var(--h-ease);
+      }
+      .afd-review-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--h-sh-card-lg);
+        border-color: var(--h-brand-200);
+      }
+
+      /* Giant quotation mark in card background (inspired by ghost class in index 21) */
+      .afd-review-card::before {
+        content: "\201C";
+        position: absolute;
+        right: 0.5rem;
+        top: -1.5rem;
+        font-size: 8rem;
+        font-weight: 800;
+        line-height: 1;
+        color: rgba(46, 108, 230, 0.04);
+        pointer-events: none;
+        user-select: none;
+        font-family: Georgia, serif;
+      }
+
+      /* Header */
+      .afd-review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        z-index: 2;
+      }
+
+      .afd-review-user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .afd-review-avatar-wrap {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: var(--h-brand-50);
+        border: 1.5px solid var(--h-brand-100);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--h-brand-600);
+        font-size: 0.85rem;
+        flex-shrink: 0;
+        box-shadow: 0 2px 6px rgba(46, 108, 230, 0.06);
+      }
+
+      .afd-review-user-text {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .afd-review-user-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--h-navy);
+      }
+
+      .afd-review-user-meta {
+        font-family: var(--h-mono);
+        font-size: 10px;
+        color: var(--h-navy-500);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 0.15rem;
+      }
+
+      .afd-review-rating-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.2rem;
+        font-size: 11.5px;
+        font-weight: 800;
+        padding: 0.25rem 0.625rem;
+        border-radius: 8px;
+        font-family: var(--h-mono);
+      }
+      .afd-review-rating-badge.good {
+        color: var(--h-emerald-700);
+        background: var(--h-emerald-50);
+        border: 1px solid var(--h-emerald-200);
+      }
+      .afd-review-rating-badge.mid {
+        color: var(--h-amber-700);
+        background: #fffbeb;
+        border: 1px solid #fde68a;
+      }
+      .afd-review-rating-badge.bad {
+        color: var(--h-rose-700);
+        background: var(--h-rose-50);
+        border: 1px solid var(--h-rose-200);
+      }
+
+      /* Testimonial Box */
+      .afd-review-testimonial-box {
+        background: rgba(242, 245, 251, 0.45);
+        border: 1px solid var(--h-line);
+        border-left: 3px solid var(--h-brand-600);
+        border-radius: 6px 14px 14px 6px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 0.15rem;
+        position: relative;
+        z-index: 2;
+      }
+      .afd-review-testimonial-box.good { border-left-color: var(--h-emerald-500); }
+      .afd-review-testimonial-box.mid { border-left-color: var(--h-amber-500); }
+      .afd-review-testimonial-box.bad { border-left-color: var(--h-rose-500); }
+
+      /* Gradient mask overlay for long testimonial text */
+      .afd-review-testimonial-box.has-read-more::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background: linear-gradient(to bottom, rgba(242, 245, 251, 0) 0%, rgba(242, 245, 251, 0.95) 100%);
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+        opacity: 1;
+        border-radius: 0 0 14px 14px;
+      }
+      .afd-review-testimonial-box.has-read-more.expanded::after {
+        opacity: 0;
+      }
+
+      .afd-review-testimonial-label {
+        display: block;
+        font-family: var(--h-mono);
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--h-navy-500);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        margin-bottom: 0.4rem;
+      }
+
+      .afd-review-testimonial-text {
+        font-size: 13.5px;
+        line-height: 1.6;
+        color: var(--h-navy-700);
+        font-style: italic;
+        white-space: pre-line;
+        margin: 0;
+        max-height: none;
+        transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        word-break: break-word;
+        overflow-wrap: break-word;
+      }
+
+      .afd-review-testimonial-text.collapsible {
+        max-height: 65px;
+        overflow: hidden;
+      }
+
+      .afd-review-testimonial-text.collapsible.expanded {
+        max-height: 2000px;
+      }
+
+      .afd-read-more-btn {
+        background: transparent;
+        border: none;
+        color: var(--h-brand-600);
+        font-family: var(--h-mono);
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem 0 0;
+        margin-top: 0.5rem;
+        outline: none;
+        transition: color 0.2s;
+        z-index: 2;
+        position: relative;
+      }
+      .afd-read-more-btn:hover {
+        color: var(--h-brand-800);
+        text-decoration: underline;
+      }
+
+      /* Info Pills Row */
+      .afd-review-info-pills {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        z-index: 2;
+      }
+
+      .afd-review-info-pill {
+        background: #ffffff;
+        border: 1px solid var(--h-line);
+        border-radius: 12px;
+        padding: 0.625rem 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: all 0.25s var(--h-ease);
+      }
+      .afd-review-info-pill:hover {
+        border-color: var(--h-brand-200);
+        background: var(--h-brand-50);
+      }
+
+      .afd-review-info-pill.stipend-pill i {
+        color: var(--h-emerald-600);
+      }
+      .afd-review-info-pill.hours-pill i {
+        color: var(--h-brand-600);
+      }
+
+      .afd-review-info-pill i {
+        font-size: 0.9rem;
+        background: var(--h-brand-50);
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: background 0.2s;
+      }
+      .afd-review-info-pill:hover i {
+        background: #ffffff;
+      }
+
+      .afd-review-info-pill-content {
+        display: flex;
+        flex-direction: column;
         min-width: 0;
       }
 
-      /* Reviews grid */
-      #afd-reviews-list {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 0.75rem;
-      }
-
-      /* Review card */
-      .afd-review-card {
-        background: #fff;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 0.875rem;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-        transition:
-          box-shadow 0.2s,
-          border-color 0.2s;
-      }
-      .afd-review-card:hover {
-        box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
-        border-color: rgba(37, 99, 235, 0.2);
-      }
-
-      /* Review card top */
-      .afd-review-top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.75rem;
-        margin-bottom: 0.5rem;
-      }
-      .afd-anon-block {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-      .afd-anon-icon {
-        width: 36px;
-        height: 36px;
-        background: #f8fafc;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #94a3b8;
-        font-size: 0.875rem;
-      }
-      .afd-anon-name {
+      .afd-review-info-pill-lbl {
+        font-family: var(--h-mono);
+        font-size: 9.5px;
         font-weight: 700;
-        font-size: 0.875rem;
-        color: #1e293b;
-      }
-      .afd-anon-meta {
-        font-size: 0.7rem;
-        color: #94a3b8;
-        font-weight: 500;
-        margin-top: 0.1rem;
-      }
-
-      .afd-review-top-right {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-      }
-
-      .afd-score-badge-compact {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        background: #fffbeb;
-        color: #d97706;
-        border: 1px solid #fef3c7;
-        font-size: 0.775rem;
-        font-weight: 700;
-        padding: 0.25rem 0.55rem;
-        border-radius: 8px;
-        flex-shrink: 0;
-      }
-      .afd-score-badge-compact i {
-        color: #f59e0b;
-        font-size: 0.7rem;
-      }
-
-      .afd-delete-btn {
-        background: none;
-        border: 1px solid #e2e8f0;
-        color: #94a3b8;
-        font-size: 0.7rem;
-        padding: 0.3rem 0.6rem;
-        border-radius: 8px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-        font-family: var(--font-main);
-        font-weight: 600;
-        flex-shrink: 0;
-        transition: all 0.15s;
-      }
-      .afd-delete-btn:hover {
-        border-color: #fca5a5;
-        color: #dc2626;
-        background: #fff5f5;
-      }
-
-      /* Pills */
-      .afd-review-pills {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.4rem;
-        margin-bottom: 0.15rem;
-      }
-
-      .afd-pill-role,
-      .afd-pill-stipend,
-      .afd-rec {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        font-size: 0.7rem;
-        font-weight: 600;
-        padding: 0.225rem 0.625rem;
-        border-radius: 999px;
-      }
-      .afd-pill-role {
-        color: #1e3a8a;
-        background: #eff6ff;
-        border: 1px solid #dbeafe;
-      }
-      .afd-pill-stipend {
-        color: #065f46;
-        background: #f0fdf4;
-        border: 1px solid #dcfce7;
-      }
-      .afd-rec.yes {
-        color: #16a34a;
-        background: #f0fdf4;
-        border: 1px solid #bbf7d0;
-      }
-      .afd-rec.no {
-        color: #dc2626;
-        background: #fff5f5;
-        border: 1px solid #fecaca;
-      }
-
-      /* Sub ratings inline list */
-      .afd-sub-ratings-list {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.625rem;
-        margin-bottom: 0.25rem;
-        padding: 0.1rem 0;
-      }
-      .afd-sub-rating-item {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.25rem;
-        font-size: 0.725rem;
-        color: #475569;
-        font-weight: 600;
-      }
-      .afd-sub-rating-item span {
-        color: #0f172a;
-        font-weight: 700;
-      }
-      .afd-sub-rating-item i {
-        color: #f59e0b;
-        font-size: 0.65rem;
-      }
-
-      /* Review text */
-      .afd-review-text {
-        font-size: 0.875rem;
-        line-height: 1.6;
-        color: #475569;
-        margin-bottom: 0.5rem;
-        white-space: pre-line;
-      }
-
-      /* Pros/cons */
-      .afd-pros-cons {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.5rem;
-        margin-bottom: 0.4rem;
-        margin-top: 0.25rem;
-      }
-      .afd-pros,
-      .afd-cons {
-        padding: 0.5rem 0.75rem;
-        border-radius: 8px;
-        font-size: 0.775rem;
-        line-height: 1.5;
-        color: #475569;
-        white-space: pre-line;
-      }
-      .afd-pros {
-        background: #f0fdf4;
-        border: 1px solid #bbf7d0;
-      }
-      .afd-cons {
-        background: #fff5f5;
-        border: 1px solid #fecaca;
-      }
-      .afd-pros strong,
-      .afd-cons strong {
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-        margin-bottom: 0.25rem;
-        font-size: 0.65rem;
+        color: var(--h-navy-500);
         text-transform: uppercase;
-        letter-spacing: 0.07em;
+        letter-spacing: 0.15em;
+        line-height: 1;
+      }
+
+      .afd-review-info-pill-val {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--h-navy);
+        margin-top: 0.2rem;
+        line-height: 1.2;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .afd-review-info-pill-sub {
+        font-family: var(--h-mono);
+        font-size: 10px;
         font-weight: 700;
-      }
-      .afd-pros strong {
-        color: #16a34a;
-      }
-      .afd-cons strong {
-        color: #dc2626;
-      }
-
-      /* Tags */
-      .afd-review-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.35rem;
-        margin-bottom: 0.25rem;
-        margin-top: 0.25rem;
-      }
-      .afd-review-tag {
-        font-size: 0.675rem;
-        font-weight: 600;
-        color: #334155;
-        background: #f1f5f9;
-        border: 1px solid #e2e8f0;
-        padding: 0.2rem 0.5rem;
-        border-radius: 999px;
+        margin-top: 0.15rem;
+        line-height: 1.2;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
-      /* ── States ──────────────────────────────────────────────────────────── */
-      .afd-loading {
+      /* Footer */
+      .afd-review-footer {
         display: flex;
-        flex-direction: column;
+        justify-content: space-between;
         align-items: center;
         gap: 1rem;
-        padding: 6rem 1rem;
-        color: #94a3b8;
-      }
-      .afd-spinner {
-        width: 34px;
-        height: 34px;
-        border: 3px solid #e2e8f0;
-        border-top-color: #1d4ed8;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-      }
-      @keyframes spin {
-        to {
-          transform: rotate(360deg);
-        }
-      }
-      .afd-empty {
-        text-align: center;
-        padding: 4rem 1rem;
-        color: #94a3b8;
-        grid-column: 1/-1;
-      }
-      .afd-empty i {
-        font-size: 2rem;
-        margin-bottom: 0.75rem;
-        display: block;
-        opacity: 0.35;
-      }
-      .afd-error {
-        text-align: center;
-        padding: 3rem 1rem;
-        color: #dc2626;
+        padding-top: 0.85rem;
+        border-top: 1px solid var(--h-line);
+        margin-top: auto;
+        z-index: 2;
       }
 
-      /* ── Toast ───────────────────────────────────────────────────────────── */
-      .afd-toast {
-        position: fixed;
-        bottom: 1.5rem;
-        left: 50%;
-        transform: translateX(-50%);
-        background: #1e293b;
-        color: #fff;
-        padding: 0.7rem 1.5rem;
-        border-radius: 999px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
-        z-index: 2000;
-        opacity: 1;
-        transition: opacity 0.3s;
-        white-space: nowrap;
-      }
-      .afd-toast.hide {
-        opacity: 0;
-        pointer-events: none;
+      .afd-review-tags-section {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        border-top: 1px dashed var(--h-line);
+        padding-top: 0.85rem;
+        margin-top: 0.25rem;
+        z-index: 2;
       }
 
-      /* ── Modal ───────────────────────────────────────────────────────────── */
-      .afr-modal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        z-index: 1000;
-        background: rgba(10, 16, 32, 0.65);
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
-        overflow-y: auto;
-        padding: 2rem 1rem;
-        align-items: flex-start;
-        justify-content: center;
-      }
-      .afr-modal.active {
-        display: flex;
-      }
-      .afr-modal-card {
-        background: #fff;
-        border-radius: 20px;
-        width: 100%;
-        max-width: 960px;
-        margin: 1.5rem auto;
-        box-shadow: 0 32px 80px rgba(0, 0, 0, 0.22);
-        overflow: visible;
-        display: block;
-        animation: modal-in 0.22s ease-out;
-      }
-      @keyframes modal-in {
-        from {
-          opacity: 0;
-          transform: translateY(20px) scale(0.96);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0) scale(1);
-        }
-      }
-      .afr-modal-header {
-        display: flex;
-        align-items: flex-start;
-        justify-content: space-between;
-        padding: 1.75rem 1.75rem 1.25rem;
-        border-bottom: 1px solid #f1f5f9;
-      }
-      .afr-modal-header h2 {
-        font-size: 1.25rem;
-        font-weight: 700;
-      }
-      .afr-modal-header p {
-        font-size: 0.8rem;
-        color: #059669;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 0.3rem;
-        margin-top: 0.2rem;
-      }
-      .afr-modal-close {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        width: 34px;
-        height: 34px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        color: #94a3b8;
-        font-size: 0.875rem;
-        flex-shrink: 0;
-        transition: all 0.15s;
-      }
-      .afr-modal-close:hover {
-        background: #fee2e2;
-        color: #dc2626;
-        border-color: #fecaca;
-      }
-      #afr-login-prompt {
-        padding: 2.5rem 1.75rem;
-        text-align: center;
-      }
-      .afr-login-gate i {
-        font-size: 2.5rem;
-        color: #cbd5e1;
-        margin-bottom: 1rem;
-        display: block;
-      }
-      .afr-login-gate p {
-        color: #64748b;
-        margin-bottom: 1.25rem;
-      }
-      #afr-form {
-        padding: 1.5rem 1.75rem 1.75rem;
-        margin: 0;
-      }
-      #afr-fieldset {
-        border: none;
-        padding: 0;
-        margin: 0;
-        overflow: visible;
-      }
-      .afr-form-section {
-        margin-bottom: 1.15rem;
-      }
-      .afr-section-title {
-        font-size: 0.6875rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.09em;
-        color: #94a3b8;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid #f1f5f9;
-      }
-      .afr-form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.875rem;
-      }
-      .afr-form-row-4 {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 0.875rem;
-      }
-      .afr-field {
+      .afd-tags-grp {
         display: flex;
         flex-direction: column;
         gap: 0.35rem;
       }
-      .afr-field label {
-        font-size: 0.8125rem;
-        font-weight: 600;
-        color: #475569;
-      }
-      .afr-field input,
-      .afr-field textarea {
-        font-family: var(--font-main);
-        font-size: 0.9rem;
-        color: #1e293b;
-        background: #f8fafc;
-        border: 1.5px solid #e2e8f0;
-        border-radius: 10px;
-        padding: 0.65rem 0.875rem;
-        outline: none;
-        resize: vertical;
-        transition:
-          border-color 0.15s,
-          box-shadow 0.15s;
-      }
-      .afr-field input:focus,
-      .afr-field textarea:focus {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        background: #fff;
-      }
-      .afr-field textarea {
-        min-height: 84px;
-      }
-      .afr-ratings-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0.75rem;
-      }
-      .afr-rating-row {
+
+      .afd-tags-grp-lbl {
+        font-family: var(--h-mono);
+        font-size: 9.5px;
+        font-weight: 750;
+        color: var(--h-navy-500);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 0.75rem;
-        padding: 0.5rem 0.875rem;
-        background: #f8fafc;
-        border-radius: 10px;
-        border: 1px solid #e2e8f0;
+        gap: 0.25rem;
       }
-      .afr-rating-label {
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: #475569;
-        flex-shrink: 0;
+      .afd-tags-grp-lbl i {
+        color: var(--h-navy-500);
+        font-size: 0.65rem;
       }
-      .afr-rating-label .req {
-        color: #dc2626;
-      }
-      .afr-star-input {
-        display: flex;
-        align-items: center;
-        gap: 0.1rem;
-      }
-      .afr-star-input button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        padding: 0.2rem;
-        font-size: 1.375rem;
-        line-height: 1;
-        color: #cbd5e1;
-        transition:
-          color 0.12s,
-          transform 0.12s;
-      }
-      .afr-star-input button:hover,
-      .afr-star-input button.filled {
-        color: #f59e0b;
-      }
-      .afr-star-input button:hover {
-        transform: scale(1.18);
-      }
-      .afr-tag-group {
+
+      .afd-tags-grp-pills {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 0.625rem;
+        gap: 0.3rem;
       }
-      .afr-tag-pill {
-        position: relative;
-      }
-      .afr-tag-pill input {
-        position: absolute;
-        opacity: 0;
-        pointer-events: none;
-      }
-      .afr-tag-pill span {
-        display: inline-block;
-        font-size: 0.75rem;
+
+      .afd-review-tag-pill {
+        font-size: 11px;
         font-weight: 600;
-        padding: 0.35rem 0.75rem;
-        border-radius: 20px;
-        border: 1px solid #e2e8f0;
-        color: #64748b;
-        background: #f8fafc;
-        cursor: pointer;
-        transition: all 0.12s;
+        color: var(--h-navy-700);
+        background: #ffffff;
+        border: 1px solid var(--h-line);
+        padding: 0.18rem 0.5rem;
+        border-radius: 99px;
+        transition: all 0.2s ease;
       }
-      .afr-tag-pill:hover span {
-        border-color: #93c5fd;
-        color: #2563eb;
-        background: #eff6ff;
+      .afd-review-tag-pill:hover {
+        border-color: var(--h-brand-200);
+        background: var(--h-brand-50);
+        color: var(--h-brand-700);
       }
-      .afr-tag-pill input:checked + span {
-        background: #eff6ff;
-        border-color: #3b82f6;
-        color: #2563eb;
+
+      .afd-review-tag-pill.more-badge {
+        background: var(--h-brand-50);
+        border-color: var(--h-brand-100);
+        color: var(--h-brand-600);
+        font-weight: 700;
       }
-      .afr-recommend-row {
-        display: flex;
+
+      .afd-review-recommend-badge {
+        display: inline-flex;
         align-items: center;
-        gap: 0.625rem;
-        margin-bottom: 1rem;
+        gap: 0.3rem;
+        font-size: 11px;
+        font-weight: 700;
+        padding: 0.25rem 0.625rem;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        font-family: var(--h-mono);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
       }
-      .afr-recommend-row label {
-        display: flex;
+      .afd-review-recommend-badge.yes {
+        color: var(--h-emerald-700);
+        background: var(--h-emerald-50);
+        border-color: var(--h-emerald-200);
+      }
+      .afd-review-recommend-badge.no {
+        color: var(--h-rose-700);
+        background: var(--h-rose-50);
+        border-color: var(--h-rose-200);
+      }
+
+      .afd-review-verified-badge {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--h-emerald-700);
+        background: var(--h-emerald-50);
+        border: 1px solid var(--h-emerald-200);
+        padding: 0.25rem 0.625rem;
+        border-radius: 8px;
+        display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.3rem;
+        line-height: 1;
+        font-family: var(--h-mono);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      /* ── Responsive Styling ────────────────────────────────────────────── */
+      @media (max-width: 1100px) {
+        .afd-hero-breakdown-row {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+      }
+
+      @media (max-width: 900px) {
+        #afd-reviews-list {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 1rem;
+        }
+        .afd-hero-stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 768px) {
+        .afd-perf-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .afd-review-info-pills {
+          grid-template-columns: 1fr;
+        }
+        .afd-review-tags-section {
+          grid-template-columns: 1fr;
+          gap: 0.85rem;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .afd-hero-top-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .afd-hero-write-btn {
+          width: 100%;
+          justify-content: center;
+        }
+        .afd-hero-stats-grid {
+          grid-template-columns: 1fr;
+        }
+        .afd-perf-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .afd-review-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.75rem;
+        }
+        .afd-review-rating-badge {
+          align-self: flex-start;
+        }
+        .afd-review-footer {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 0.75rem;
+        }
+        .afd-review-recommend-badge {
+          align-self: flex-start;
+        }
+      }
+
+      /* Floating FAB button */
+      .floating-write-btn {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 999px;
+        padding: 0.8rem 1.4rem;
+        font-family: var(--font-main);
         font-size: 0.875rem;
-        color: #475569;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 10px 25px rgba(29, 78, 216, 0.35);
         cursor: pointer;
-        font-weight: 600;
+        z-index: 999;
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+        pointer-events: none;
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       }
-      .afr-recommend-row input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-        accent-color: #3b82f6;
+      .floating-write-btn.visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
       }
-      .afr-form-footer {
-        background: #f8fafc;
-        border-top: 1px solid #e2e8f0;
-        padding: 1.25rem 1.75rem;
+      .floating-write-btn:hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 14px 35px rgba(29, 78, 216, 0.45);
+        color: #ffffff;
+      }
+      .floating-write-btn:active {
+        transform: translateY(-1px) scale(0.98);
+      }
+      .floating-write-btn i {
+        font-size: 0.85rem;
+      }
+      @media (max-width: 620px) {
+        .floating-write-btn {
+          bottom: 1.5rem;
+          right: 1.5rem;
+          padding: 0.7rem 1.1rem;
+          font-size: 0.8rem;
+        }
+      }
+
+      /* ── Paginator ────────────────────────────────────────────────────── */
+      .afd-pagination {
         display: flex;
-        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+        margin-top: 1.75rem;
+        flex-wrap: wrap;
       }
-      .afr-form-status {
-        font-size: 0.8125rem;
-        min-height: 1.2em;
-        margin-bottom: 0.875rem;
-        font-weight: 600;
-      }
-      .afr-form-status.ok {
-        color: #059669;
-      }
-      .afr-form-status.err {
-        color: #dc2626;
-      }
-      .afr-btn-primary {
+      .pg-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
-        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        color: #fff;
+        min-width: 36px;
+        height: 36px;
+        padding: 0 0.5rem;
+        border-radius: 10px;
+        border: 1.5px solid var(--h-line);
+        background: #ffffff;
+        color: var(--h-navy-700);
         font-family: var(--font-main);
-        font-size: 0.9375rem;
-        font-weight: 700;
-        padding: 0.8rem 1.5rem;
-        border-radius: 12px;
-        border: none;
+        font-size: 0.825rem;
+        font-weight: 600;
         cursor: pointer;
-        width: 100%;
-        text-decoration: none;
-        transition:
-          opacity 0.15s,
-          transform 0.15s,
-          box-shadow 0.15s;
-        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+        transition: all 0.18s ease;
+        line-height: 1;
       }
-      .afr-btn-primary:hover {
-        opacity: 0.92;
-        transform: translateY(-1px);
-        box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+      .pg-btn:hover:not(.pg-disabled):not(.pg-active) {
+        border-color: var(--h-brand-200);
+        background: var(--h-brand-50);
+        color: var(--h-brand-700);
       }
-      .afr-btn-primary:disabled {
-        opacity: 0.55;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
+      .pg-btn.pg-active {
+        background: var(--h-brand-600);
+        border-color: var(--h-brand-600);
+        color: #ffffff;
+        font-weight: 700;
+        box-shadow: 0 4px 12px rgba(29, 78, 216, 0.28);
+      }
+      .pg-btn.pg-arrow { color: #64748b; font-size: 0.7rem; }
+      .pg-btn.pg-disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+      .pg-ellipsis {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 36px;
+        color: #94a3b8;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.05em;
       }
 
-      /* ── Responsive ──────────────────────────────────────────────────────── */
-      @media (max-width: 1100px) {
-        #afd-reviews-list {
-          grid-template-columns: 1fr;
-        }
+      /* Similar Firms Section */
+      .afd-similar-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        width: 100%;
+        margin-top: 1rem;
+        border-top: 1px solid var(--h-line);
+        padding-top: 1.25rem;
       }
-      @media (max-width: 900px) {
-        .afd-outer {
-          padding: 1.5rem 1rem 4rem;
-        }
-        .afd-layout {
-          grid-template-columns: 1fr;
-          gap: 1.25rem;
-        }
-        .afd-sidebar {
-          position: static;
-        }
-        .afd-pros-cons {
-          grid-template-columns: 1fr 1fr;
-        }
-        .afr-form-row-4 {
-          grid-template-columns: 1fr 1fr;
+
+      .afd-similar-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        align-items: stretch;
+      }
+
+      .afd-similar-card {
+        background: #ffffff;
+        border: 1px solid var(--h-line);
+        border-radius: 20px;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--h-sh-card);
+        transition: all 0.35s var(--h-ease);
+      }
+      .afd-similar-card:hover {
+        box-shadow: var(--h-sh-card-lg);
+        transform: translateY(-4px);
+        border-color: var(--h-brand-200);
+      }
+
+      .afd-similar-avatar {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        font-weight: 800;
+        flex-shrink: 0;
+        letter-spacing: -0.02em;
+        color: var(--card-color, #2563eb);
+        background: color-mix(in srgb, var(--card-color, #2563eb) 8%, #ffffff);
+        border: 1.5px solid color-mix(in srgb, var(--card-color, #2563eb) 20%, var(--h-line));
+      }
+
+      .afd-similar-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .afd-similar-name {
+        font-size: 1.1rem;
+        font-weight: 750;
+        color: var(--h-navy);
+        line-height: 1.25;
+        margin-bottom: 0.35rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .afd-similar-location {
+        font-size: 0.8rem;
+        color: var(--h-navy-500);
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.32rem;
+      }
+      .afd-similar-location i {
+        color: rgba(90, 107, 133, 0.4);
+        font-size: 0.78rem;
+      }
+
+      /* rating: big score + micro stars, top-right */
+      .afd-similar-rating-block {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.28rem;
+        padding: 0.2rem 0.25rem;
+        flex-shrink: 0;
+        min-width: 62px;
+      }
+      .afd-similar-rating-big {
+        font-size: 1.35rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.02em;
+      }
+      .afd-similar-rating-big.good { color: var(--h-emerald-600); }
+      .afd-similar-rating-big.mid  { color: var(--h-amber-600); }
+      .afd-similar-rating-big.bad  { color: var(--h-rose-600); }
+      .afd-similar-rating-stars {
+        color: var(--h-amber-400);
+        font-size: 0.58rem;
+        letter-spacing: 1.5px;
+        line-height: 1;
+      }
+      .afd-similar-rating-stars .far { color: rgba(11, 27, 51, 0.12); }
+      .afd-similar-rating-label {
+        color: var(--h-navy-500);
+        font-family: var(--h-mono);
+        font-size: 9.5px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        line-height: 1;
+        text-transform: uppercase;
+      }
+
+      /* scorecard: three comparison axes */
+      .afd-similar-scorecard {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        background: rgba(242, 245, 251, 0.4);
+        border: 1px solid var(--h-line);
+        border-radius: 12px;
+        padding: 0.65rem 0.25rem;
+      }
+      .afd-similar-score-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        text-align: center;
+        padding: 0 0.35rem;
+        border-right: 1px solid var(--h-line);
+        min-width: 0;
+      }
+      .afd-similar-score-col:last-child { border-right: none; }
+      .afd-similar-score-val {
+        font-size: 0.95rem;
+        font-weight: 800;
+        color: var(--h-navy);
+        line-height: 1.1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+      .afd-similar-score-val.good { color: var(--h-emerald-600); }
+      .afd-similar-score-val.mid  { color: var(--h-amber-600); }
+      .afd-similar-score-val.bad  { color: var(--h-rose-600); }
+      .afd-similar-score-val.na { color: #cbd5e1; font-weight: 700; }
+      .afd-similar-score-lbl {
+        font-family: var(--h-mono);
+        font-size: 9.5px;
+        font-weight: 700;
+        color: var(--h-navy-500);
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        white-space: nowrap;
+      }
+
+      /* footer */
+      .afd-similar-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 0.85rem;
+        border-top: 1px solid var(--h-line);
+        margin-top: auto;
+      }
+      .afd-similar-reviews-count {
+        font-family: var(--h-mono);
+        font-size: 10px;
+        color: var(--h-navy-500);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        line-height: 1;
+      }
+      .afd-similar-reviews-count i { color: var(--h-navy-500); margin-right: 0.25rem; }
+      
+      .afd-similar-card-cta {
+        font-family: var(--h-mono);
+        font-size: 10px;
+        font-weight: 750;
+        color: var(--h-brand-600);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        line-height: 1;
+      }
+
+      @media (max-width: 1024px) {
+        .afd-similar-grid {
+          grid-template-columns: repeat(2, 1fr);
         }
       }
       @media (max-width: 600px) {
-        #afd-reviews-list {
+        .afd-similar-grid {
           grid-template-columns: 1fr;
         }
-        .afd-pros-cons {
-          grid-template-columns: 1fr;
+      }
+
+      .afd-back-link-inline {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.725rem;
+        font-weight: 700;
+        color: #64748b;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        align-self: flex-start;
+        margin-bottom: -0.25rem;
+      }
+      .afd-back-link-inline:hover {
+        color: #1d4ed8;
+        transform: translateX(-2px);
+      }
+      .afd-back-link-inline i {
+        font-size: 0.675rem;
+      }
+      /* ── Redesigned Premium CTA Card (Bottom) ────────────────────────── */
+      .afd-section-cta {
+        margin-top: 3.5rem;
+        padding-bottom: 2rem;
+        width: 100%;
+      }
+
+      .afd-cta-card {
+        position: relative;
+        overflow: hidden;
+        border-radius: 2rem;
+        background: linear-gradient(135deg, var(--h-brand-800), var(--h-brand-600) 50%, var(--h-brand-500));
+        padding: 5rem 1.5rem;
+        text-align: center;
+        box-shadow: var(--h-sh-blue);
+      }
+      @media (min-width: 768px) {
+        .afd-cta-card {
+          padding: 6rem 2rem;
         }
-        .afr-form-row {
-          grid-template-columns: 1fr;
+      }
+
+      .afd-cta-grid-bg {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px);
+        background-size: 56px 56px;
+        -webkit-mask-image: radial-gradient(ellipse 65% 70% at 50% 50%, black, transparent);
+        mask-image: radial-gradient(ellipse 65% 70% at 50% 50%, black, transparent);
+        z-index: 1;
+      }
+
+      .afd-cta-glow-1 {
+        position: absolute;
+        width: 320px;
+        height: 320px;
+        left: -96px;
+        top: -96px;
+        border-radius: 999px;
+        background: rgba(255,255,255,.08);
+        filter: blur(90px);
+        animation: afdPulseScale 11s ease-in-out infinite;
+        z-index: 1;
+      }
+      .afd-cta-glow-2 {
+        position: absolute;
+        width: 384px;
+        height: 384px;
+        right: -64px;
+        bottom: -128px;
+        border-radius: 999px;
+        background: rgba(11,27,51,.2);
+        filter: blur(100px);
+        z-index: 1;
+      }
+
+      @keyframes afdPulseScale {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.12); }
+      }
+
+      .afd-cta-inner {
+        position: relative;
+        z-index: 2;
+      }
+
+      .afd-cta-eyebrow {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+      }
+      .afd-cta-eyebrow .idx {
+        font-family: var(--h-mono);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.25em;
+        color: var(--h-amber-300);
+      }
+      .afd-cta-eyebrow .rule {
+        width: 2.5rem;
+        height: 1px;
+        background: rgba(255,255,255,.4);
+      }
+      .afd-cta-eyebrow .txt {
+        font-family: var(--h-mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.25em;
+        color: rgba(255,255,255,.75);
+      }
+
+      .afd-cta-title {
+        margin: 1rem auto 0;
+        max-width: 48rem;
+        font-size: clamp(1.75rem, 4vw, 2.75rem);
+        font-weight: 850;
+        line-height: 1.1;
+        letter-spacing: -.025em;
+        color: #ffffff;
+      }
+      .afd-cta-title em {
+        font-style: italic;
+        color: var(--h-amber-300);
+      }
+
+      .afd-cta-copy {
+        margin: 1.25rem auto 0;
+        max-width: 36rem;
+        font-size: 15px;
+        line-height: 1.625;
+        color: rgba(255,255,255,.8);
+      }
+
+      .afd-btn-white {
+        margin-top: 2.25rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.625rem;
+        border-radius: 999px;
+        background: #ffffff;
+        padding: 0.875rem 2rem;
+        font-size: 14.5px;
+        font-weight: 700;
+        color: var(--h-brand-700);
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1);
+        transition: transform 0.2s, background 0.2s;
+        text-decoration: none;
+      }
+      .afd-btn-white:hover {
+        transform: translateY(-2px);
+        background: #f8fafc;
+      }
+      .afd-btn-white .arr {
+        transition: transform 0.3s;
+      }
+      .afd-btn-white:hover .arr {
+        transform: translateX(4px);
+      }
+
+      .afd-cta-note {
+        margin-top: 1.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        font-family: var(--h-mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: rgba(255,255,255,.65);
+      }
+      .afd-cta-note i {
+        color: var(--h-emerald-300);
+      }
+      /* ── Redesigned Header Link Pills ───────────────────────────────────── */
+      .afd-header-pill-link {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 0.4rem 1rem;
+        font-family: var(--font-main);
+        font-size: 12.5px;
+        font-weight: 700;
+        border-radius: 99px;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        box-shadow: 0 2px 6px rgba(46, 108, 230, 0.04);
+      }
+      @media (min-width: 640px) {
+        .afd-header-pill-link {
+          display: inline-flex;
         }
-        .afr-form-row-4 {
-          grid-template-columns: 1fr;
-        }
-        .afr-ratings-grid {
-          grid-template-columns: 1fr;
-        }
+      }
+
+      /* Articleship Program (Primary theme) */
+      .afd-header-pill-link:not(.secondary) {
+        background: var(--h-brand-50);
+        color: var(--h-brand-700);
+        border: 1px solid var(--h-brand-100);
+      }
+      .afd-header-pill-link:not(.secondary):hover {
+        background: var(--h-brand-100);
+        color: var(--h-brand-800);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(46, 108, 230, 0.08);
+      }
+
+      /* Portal Link (Secondary theme) */
+      .afd-header-pill-link.secondary {
+        background: #ffffff;
+        color: var(--h-navy-700);
+        border: 1px solid var(--h-line);
+      }
+      .afd-header-pill-link.secondary:hover {
+        background: var(--h-brand-50);
+        color: var(--h-brand-700);
+        border-color: var(--h-brand-200);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
       }
     </style>
   </head>
@@ -977,6 +1918,8 @@
         </a>
         <div class="nav-actions">
           <div class="auth-buttons-container"></div>
+          <a href="/articleship-program/index.html" class="afd-header-pill-link">Articleship Program</a>
+          <a href="/ca-articleship-opportunities.html" class="afd-header-pill-link secondary">Job Portal</a>
           <button
             class="icon-button menu-toggle-btn"
             id="menuButton"
@@ -1114,21 +2057,6 @@
     </div>
 
     <div class="afd-outer">
-      <!-- Top bar: back button + page title (shown after data loads) -->
-      <div id="afd-page-header" style="display: none">
-        <div class="afd-topbar">
-          <a href="/articleship-firm-reviews.html" class="afd-back">
-            <i class="fas fa-arrow-left"></i> Back to all firms
-          </a>
-          <div>
-            <h2 class="afd-reviews-title" id="afd-reviews-title">
-              Anonymous Reviews
-            </h2>
-            <span class="afd-reviews-subtitle" id="afd-reviews-subtitle"></span>
-          </div>
-        </div>
-      </div>
-
       <!-- Loading state -->
       <div id="afd-loading-state">
         <div class="afd-loading">
@@ -1137,228 +2065,66 @@
         </div>
       </div>
 
-      <!-- 2-column layout (shown after data loads) -->
-      <div class="afd-layout" id="afd-layout" style="display: none">
-        <!-- LEFT — Sidebar -->
-        <aside class="afd-sidebar" id="afd-sidebar"></aside>
-
-        <!-- RIGHT — Reviews -->
-        <main class="afd-main" id="afd-main">
+      <!-- Layout Container (shown after data loads) -->
+      <div id="afd-layout" class="afd-container" style="display: none">
+        <!-- Top Hero Card (spans full width, contains firm identity, stats, and breakdown) -->
+        <div id="afd-hero-card" class="afd-hero-card"></div>
+        <!-- Reviews list area -->
+        <section class="afd-reviews-section">
+          <h3 class="afd-section-title">Verified Reviews</h3>
           <div id="afd-reviews-list" aria-live="polite"></div>
-        </main>
+          <!-- Paginator -->
+          <div id="afd-pagination" class="afd-pagination" aria-label="Reviews pagination" style="display:none;"></div>
+        </section>
+
+        <!-- Similar Firms Section -->
+        <section class="afd-similar-section" id="afd-similar-section">
+          <h3 class="afd-section-title">Similar Firms</h3>
+          <div class="afd-similar-grid" id="afd-similar-grid"></div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="afd-section-cta" id="contribute">
+          <div class="afd-cta-card">
+            <div class="afd-cta-grid-bg"></div>
+            <div class="afd-cta-glow-1"></div>
+            <div class="afd-cta-glow-2"></div>
+
+            <div class="afd-cta-inner">
+              <div class="afd-cta-eyebrow">
+                <span class="idx">MSC</span>
+                <span class="rule"></span>
+                <span class="txt">Pay it forward</span>
+              </div>
+
+              <h2 class="afd-cta-title">Survived those<br /><em>articleship</em> days?</h2>
+
+              <p class="afd-cta-copy">
+                Tell the next batch what it's really like — the learning, the stipend timeliness, and the hours. Two minutes of honesty can redirect someone's career.
+              </p>
+
+              <button class="afd-btn-white" id="cta-write-btn">
+                <i class="fas fa-pen" style="font-size: 14px; margin-right: 4px;"></i>
+                Write an anonymous review
+                <i class="fas fa-arrow-right arr" style="font-size: 14px; margin-left: 6px;"></i>
+              </button>
+
+              <p class="afd-cta-note">
+                <i class="fas fa-shield-halved" style="font-size: 12px; margin-right: 4px;"></i>
+                100% anonymous — your identity is never stored
+              </p>
+            </div>
+          </div>
+        </section>
       </div>
     </div>
 
-    <!-- Write a Review modal -->
-    <div id="review-form-modal" class="afr-modal" aria-hidden="true">
-      <div
-        class="afr-modal-card"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="afr-modal-title"
-      >
-        <div class="afr-modal-header">
-          <div>
-            <h2 id="afr-modal-title">Write a Review</h2>
-            <p>
-              <i class="fas fa-user-secret"></i> Anonymous · your name is never
-              shown
-            </p>
-          </div>
-          <button
-            class="afr-modal-close"
-            id="afr-modal-close"
-            aria-label="Close"
-          >
-            <i class="fas fa-times"></i>
-          </button>
-        </div>
-        <div id="afr-login-prompt" hidden>
-          <div class="afr-login-gate">
-            <i class="fas fa-lock"></i>
-            <p>Log in to post an anonymous review</p>
-            <a
-              class="afr-btn-primary"
-              href="/login.html"
-              style="max-width: 200px; margin: 0 auto"
-              >Log in</a
-            >
-          </div>
-        </div>
-        <form id="afr-form">
-          <fieldset id="afr-fieldset">
-            <div class="afr-form-section">
-              <h3 class="afr-section-title">Firm Details</h3>
-              <div class="afr-form-row-4">
-                <div class="afr-field">
-                  <label for="f-firm"
-                    >Firm name <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    id="f-firm"
-                    name="firm_name"
-                    required
-                    placeholder="e.g., Deloitte India"
-                  />
-                </div>
-                <div class="afr-field">
-                  <label for="f-location"
-                    >Location <span style="color: #dc2626">*</span></label
-                  >
-                  <input
-                    id="f-location"
-                    name="location"
-                    required
-                    placeholder="e.g., Mumbai"
-                  />
-                </div>
-                <div class="afr-field">
-                  <label for="f-role">Your role</label>
-                  <input
-                    id="f-role"
-                    name="role_title"
-                    placeholder="e.g., Audit Article"
-                  />
-                </div>
-                <div class="afr-field">
-                  <label for="f-stipend">Stipend (₹)</label>
-                  <input
-                    id="f-stipend"
-                    name="stipend"
-                    type="number"
-                    min="0"
-                    placeholder="e.g., 12000"
-                  />
-                </div>
-              </div>
-            </div>
-            <div class="afr-form-section">
-              <h3 class="afr-section-title">Your Ratings</h3>
-              <div class="afr-ratings-grid">
-                <div class="afr-rating-row">
-                  <span class="afr-rating-label"
-                    >Overall <span class="req">*</span></span
-                  >
-                  <div class="afr-star-input" data-name="overall_rating"></div>
-                </div>
-                <div class="afr-rating-row">
-                  <span class="afr-rating-label">Work-Life Balance</span>
-                  <div
-                    class="afr-star-input"
-                    data-name="work_life_balance_rating"
-                  ></div>
-                </div>
-                <div class="afr-rating-row">
-                  <span class="afr-rating-label">Learning &amp; Exposure</span>
-                  <div
-                    class="afr-star-input"
-                    data-name="learning_exposure_rating"
-                  ></div>
-                </div>
-                <div class="afr-rating-row">
-                  <span class="afr-rating-label">Stipend Satisfaction</span>
-                  <div
-                    class="afr-star-input"
-                    data-name="stipend_satisfaction_rating"
-                  ></div>
-                </div>
-              </div>
-            </div>
-            <div class="afr-form-section">
-              <h3 class="afr-section-title">Your Experience</h3>
-              <div class="afr-field" style="margin-bottom: 0.875rem">
-                <label for="f-review">Your review</label>
-                <textarea
-                  id="f-review"
-                  name="review_text"
-                  rows="4"
-                  placeholder="Share your honest experience…"
-                ></textarea>
-              </div>
-              <div class="afr-form-row">
-                <div class="afr-field">
-                  <label for="f-pros">Pros</label>
-                  <textarea
-                    id="f-pros"
-                    name="pros"
-                    rows="2"
-                    placeholder="What's great here?"
-                  ></textarea>
-                </div>
-                <div class="afr-field">
-                  <label for="f-cons">Cons</label>
-                  <textarea
-                    id="f-cons"
-                    name="cons"
-                    rows="2"
-                    placeholder="What could be better?"
-                  ></textarea>
-                </div>
-              </div>
-            </div>
-            <div class="afr-form-section">
-              <h3 class="afr-section-title">Culture</h3>
-              <div class="afr-recommend-row">
-                <label>
-                  <input type="checkbox" name="would_recommend" />
-                  I would recommend this firm to other CA students
-                </label>
-              </div>
-              <div class="afr-tag-group">
-                <label class="afr-tag-pill"
-                  ><input
-                    type="checkbox"
-                    name="culture_tags"
-                    value="Good Mentorship"
-                  /><span>Good Mentorship</span></label
-                >
-                <label class="afr-tag-pill"
-                  ><input
-                    type="checkbox"
-                    name="culture_tags"
-                    value="Heavy Workload"
-                  /><span>Heavy Workload</span></label
-                >
-                <label class="afr-tag-pill"
-                  ><input
-                    type="checkbox"
-                    name="culture_tags"
-                    value="Good Stipend"
-                  /><span>Good Stipend</span></label
-                >
-                <label class="afr-tag-pill"
-                  ><input
-                    type="checkbox"
-                    name="culture_tags"
-                    value="Friendly Team"
-                  /><span>Friendly Team</span></label
-                >
-                <label class="afr-tag-pill"
-                  ><input
-                    type="checkbox"
-                    name="culture_tags"
-                    value="Great Exposure"
-                  /><span>Great Exposure</span></label
-                >
-                <label class="afr-tag-pill"
-                  ><input
-                    type="checkbox"
-                    name="culture_tags"
-                    value="Study Leave"
-                  /><span>Study Leave</span></label
-                >
-              </div>
-            </div>
-            <div class="afr-form-footer">
-              <p id="afr-form-status" class="afr-form-status" role="status"></p>
-              <button type="submit" class="afr-btn-primary">
-                <i class="fas fa-paper-plane"></i> Submit Anonymous Review
-              </button>
-            </div>
-          </fieldset>
-        </form>
-      </div>
-    </div>
+    <!-- Floating Action Button -->
+    <button id="floating-write-btn" class="floating-write-btn" aria-label="Write a Review">
+      <i class="fas fa-pen"></i> Write a Review
+    </button>
+
+    <script src="/articleship-review-wizard.js"></script>
 
     <script>
       const supabaseUrl = "https://izsggdtdiacxdsjjncdq.supabase.co";
@@ -1366,12 +2132,6 @@
         "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0";
       const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-      async function getCurrentSession() {
-        const {
-          data: { session },
-        } = await supabaseClient.auth.getSession();
-        return session || null;
-      }
 
       // ── Sidemenu ──────────────────────────────────────────────────────────
       document
@@ -1480,7 +2240,7 @@
         loadFirmPage();
       }
 
-      let MY_REVIEW_IDS = new Set();
+      let CURRENT_FIRM_ID = null;
 
       async function loadFirmPage() {
         document.getElementById("afd-loading-state").innerHTML =
@@ -1496,423 +2256,690 @@
             .order("created_at", { ascending: false });
           if (error) throw error;
 
-          const session = await getCurrentSession();
-          if (session) {
-            const { data: myRows } = await supabaseClient
-              .from("articleship_firm_reviews")
-              .select("id")
-              .eq("user_id", session.user.id)
-              .ilike("firm_name", FIRM_NAME);
-            MY_REVIEW_IDS = new Set((myRows || []).map((r) => r.id));
-          }
+          CURRENT_FIRM_ID = reviews[0]?.firm_id || null;
 
           document.getElementById("afd-loading-state").style.display = "none";
-          document.getElementById("afd-page-header").style.display = "block";
-          document.getElementById("afd-layout").style.display = "grid";
+          document.getElementById("afd-layout").style.display = "flex";
 
-          renderSidebar(reviews);
+          renderHeader(reviews);
           renderReviews(reviews);
+          loadSimilarFirms();
         } catch (e) {
           document.getElementById("afd-loading-state").innerHTML =
             `<div class="afd-error"><i class="fas fa-triangle-exclamation"></i><p>${escapeHTML(e.message)}</p></div>`;
         }
       }
 
-      function renderSidebar(reviews) {
-        const color = firmColor(FIRM_NAME);
+      function getWorkStatClass(label, value) {
+        const val = String(value || '').toLowerCase();
+        if (val.includes('always on time') || val.includes('easy') || val.includes('8-10') || val.includes('never') || val.includes('approved')) {
+          return 'status-green';
+        }
+        if (val.includes('sometimes') || val.includes('occasionally') || val.includes('10-12') || val.includes('difficult')) {
+          if (val.includes('always delayed') || val.includes('very difficult') || val.includes('more than 12')) {
+            return 'status-red';
+          }
+          return 'status-amber';
+        }
+        if (val.includes('more than 12') || val.includes('delayed') || val.includes('very') || val.includes('difficult')) {
+          return 'status-red';
+        }
+        return 'status-slate';
+      }
+
+      function getCategoryIcon(label) {
+        const lbl = String(label).toLowerCase();
+        if (lbl.includes("learning")) return '<i class="fas fa-graduation-cap"></i>';
+        if (lbl.includes("partner") || lbl.includes("accessibility")) return '<i class="fas fa-handshake"></i>';
+        if (lbl.includes("culture")) return '<i class="fas fa-users"></i>';
+        if (lbl.includes("balance") || lbl.includes("life")) return '<i class="fas fa-scale-balanced"></i>';
+        if (lbl.includes("stipend") || lbl.includes("timeliness")) return '<i class="fas fa-clock-rotate-left"></i>';
+        if (lbl.includes("respect") || lbl.includes("behaviour") || lbl.includes("behavior")) return '<i class="fas fa-shield-halved"></i>';
+        return '<i class="fas fa-star"></i>';
+      }
+
+      function renderHeader(reviews) {
         const initial = FIRM_NAME.trim()[0].toUpperCase();
         const location = reviews[0]?.location || "—";
         const overallAvg = avg(reviews.map((r) => r.overall_rating));
-        const wlbAvg = avg(reviews.map((r) => r.work_life_balance_rating));
-        const learnAvg = avg(reviews.map((r) => r.learning_exposure_rating));
-        const stipendSatAvg = avg(
-          reviews.map((r) => r.stipend_satisfaction_rating),
-        );
         const stipends = reviews
           .map((r) => r.stipend)
           .filter((s) => typeof s === "number");
         const avgStipend = stipends.length
           ? Math.round(stipends.reduce((a, b) => a + b, 0) / stipends.length)
           : null;
+        const recs = reviews
+          .map((r) => r.would_recommend)
+          .filter((v) => typeof v === "boolean");
+        const recommendPct = recs.length
+          ? Math.round((recs.filter(Boolean).length / recs.length) * 100)
+          : null;
 
-        const subRatings = [
-          { label: "Work-Life Balance", val: wlbAvg },
-          { label: "Learning & Exposure", val: learnAvg },
-          { label: "Stipend Satisfaction", val: stipendSatAvg },
-        ].filter((s) => s.val !== null);
-
-        const subHTML = subRatings.length
-          ? `
-        <div class="afd-sub-section">
-          ${subRatings
-            .map(
-              (s) => `
-            <div class="afd-sub-label-row">
-              <span class="afd-sub-label">${escapeHTML(s.label)}</span>
-              <span class="afd-sub-val">${s.val.toFixed(1)}</span>
-            </div>
-            <div class="afd-bar-track"><div class="afd-bar-fill" style="width:${((s.val / 5) * 100).toFixed(1)}%"></div></div>
-          `,
-            )
-            .join("")}
-        </div>`
-          : "";
+        const L = ArticleshipReviewWizard.LABELS;
+        const modeOf = (col) => {
+          const counts = {};
+          reviews.forEach((r) => {
+            if (r[col]) counts[r[col]] = (counts[r[col]] || 0) + 1;
+          });
+          const top = Object.entries(counts).sort((a, b) => b[1] - a[1])[0];
+          return top ? L[col][top[0]] : null;
+        };
 
         const ratingText = overallAvg ? overallAvg.toFixed(1) : "—";
+        const recText = recommendPct !== null ? recommendPct + "%" : "—";
         const stipendText = avgStipend
           ? avgStipend >= 1000
             ? "₹" + (avgStipend / 1000).toFixed(1).replace(".0", "") + "k"
             : "₹" + avgStipend
           : "—";
+        const hoursText = modeOf("working_hours") || "—";
 
-        document.getElementById("afd-sidebar").innerHTML = `
-        <div class="afd-card afd-firm-card">
-          <div class="afd-firm-card-top">
-            <div class="afd-avatar">${initial}</div>
-            <div>
-              <div class="afd-firm-name">${escapeHTML(FIRM_NAME)}</div>
-              <div class="afd-firm-loc"><i class="fas fa-location-dot"></i> ${escapeHTML(location)}</div>
+        // Recommend rate dial logic (circumference = 2 * PI * r)
+        const dialRadius = 28;
+        const circumference = Math.round(2 * Math.PI * dialRadius * 10) / 10; // 213.6
+        const strokeDashoffset = recommendPct !== null
+          ? (circumference - (recommendPct / 100) * circumference).toFixed(1)
+          : circumference;
+
+        // Dynamic star rating HTML
+        let starRatingHTML = "";
+        const roundedStars = overallAvg ? Math.round(overallAvg) : 0;
+        for (let i = 1; i <= 5; i++) {
+          starRatingHTML += `<i class="${i <= roundedStars ? "fas" : "far"} fa-star"></i>`;
+        }
+
+        // Performance Subratings bars
+        const subRatings = ArticleshipReviewWizard.RATING_FIELDS.map(
+          ([col, label]) => ({ label, val: avg(reviews.map((r) => r[col])) }),
+        ).filter((s) => s.val !== null);
+
+        const subHTML = subRatings.length
+          ? `
+          <div class="afd-perf-grid">
+            ${subRatings
+              .map(
+                (s) => {
+                  const fillClass = s.val >= 4 ? 'f-emerald'
+                                  : s.val >= 3 ? 'f-amber'
+                                  : 'f-rose';
+                  const textClass = s.val >= 4 ? 't-emerald'
+                                  : s.val >= 3 ? 't-amber'
+                                  : 't-rose';
+                  const iconHTML = getCategoryIcon(s.label);
+                  return `
+                  <div class="afd-perf-card">
+                    <div class="afd-perf-label-row">
+                      <span class="afd-perf-label">${iconHTML} ${escapeHTML(s.label)}</span>
+                      <span class="afd-perf-val ${textClass}">${s.val.toFixed(1)}</span>
+                    </div>
+                    <div class="afd-perf-bar-track">
+                      <div class="afd-perf-bar-fill ${fillClass}" style="width:${((s.val / 5) * 100).toFixed(1)}%;"></div>
+                    </div>
+                  </div>
+                  `;
+                }
+              )
+              .join("")}
+          </div>`
+          : "";
+
+        const weekendVal = modeOf("weekend_working");
+        const leaveVal = modeOf("personal_leave");
+        const travelVal = modeOf("outstation_travel");
+        const stipendOnTimeVal = modeOf("stipend_on_time");
+
+        let sidebarPanelHTML = "";
+        if (weekendVal || leaveVal || travelVal || stipendOnTimeVal) {
+          const items = [];
+          if (weekendVal) {
+            items.push(`
+              <div class="afd-perf-badge-item">
+                <span class="afd-perf-badge-label"><i class="fas fa-calendar-days"></i> Weekend work</span>
+                <span class="afd-perf-badge-val ${getWorkStatClass('Weekend work', weekendVal)}">${escapeHTML(weekendVal)}</span>
+              </div>
+            `);
+          }
+          if (leaveVal) {
+            items.push(`
+              <div class="afd-perf-badge-item">
+                <span class="afd-perf-badge-label"><i class="fas fa-umbrella-beach"></i> Personal leave</span>
+                <span class="afd-perf-badge-val ${getWorkStatClass('Personal leave', leaveVal)}">${escapeHTML(leaveVal)}</span>
+              </div>
+            `);
+          }
+          if (travelVal) {
+            items.push(`
+              <div class="afd-perf-badge-item">
+                <span class="afd-perf-badge-label"><i class="fas fa-plane"></i> Outstation travel</span>
+                <span class="afd-perf-badge-val ${getWorkStatClass('Outstation travel', travelVal)}">${escapeHTML(travelVal)}</span>
+              </div>
+            `);
+          }
+          if (stipendOnTimeVal) {
+            items.push(`
+              <div class="afd-perf-badge-item">
+                <span class="afd-perf-badge-label"><i class="fas fa-wallet"></i> Stipend on time</span>
+                <span class="afd-perf-badge-val ${getWorkStatClass('Stipend on time', stipendOnTimeVal)}">${escapeHTML(stipendOnTimeVal)}</span>
+              </div>
+            `);
+          }
+          sidebarPanelHTML = `
+            <div class="afd-perf-sidebar-panel">
+              ${items.join('<div style="height:1px; background:var(--h-line); margin: 0.15rem 0;"></div>')}
+            </div>
+          `;
+        }
+
+        const countText = `Based on ${reviews.length} review${reviews.length !== 1 ? "s" : ""}`;
+
+        document.getElementById("afd-hero-card").innerHTML = `
+          <!-- Card Decorative Background Grid and Glow Blobs -->
+          <div class="afd-hero-card-grid-bg"></div>
+          <div class="afd-hero-glow afd-hero-glow-1"></div>
+          <div class="afd-hero-glow afd-hero-glow-2"></div>
+
+          <div class="afd-hero-cols">
+            <!-- Left Side: crumbs, eyebrow, name, metadata, intro, ctas -->
+            <div class="afd-hero-left">
+              <div class="afd-hero-crumbs">
+                <a href="/"><i class="fas fa-house" style="font-size:10px; margin-right:2px;"></i> Home</a>
+                <span class="sep">/</span>
+                <a href="/articleship-firm-reviews.html">Firms</a>
+                <span class="sep">/</span>
+                <span class="now">${escapeHTML(FIRM_NAME)}</span>
+              </div>
+
+              <div class="afd-hero-eyebrow">
+                <span class="idx">MSC</span>
+                <span class="rule"></span>
+                <span class="txt">Anonymous report · Verified</span>
+              </div>
+
+              <h1 class="afd-hero-name">${escapeHTML(FIRM_NAME)}<span class="dot-b">.</span></h1>
+
+              <div class="afd-hero-meta-pills">
+                <span class="afd-hero-pill"><i class="fas fa-location-dot"></i> ${escapeHTML(location)}</span>
+                <span class="afd-hero-pill verified"><i class="fas fa-shield-halved"></i> ${reviews.length} Verified Reviews</span>
+                <span class="afd-hero-pill"><i class="fas fa-graduation-cap"></i> Articleship Seat</span>
+              </div>
+
+              <p class="afd-hero-copy">
+                Crowd-sourced articleship insights. Read and contribute honest details about work hours, stipend payouts, training learning exposure, and partner access.
+              </p>
+
+              <div class="afd-hero-actions">
+                <button class="afd-btn-primary" id="hero-write-btn">
+                  <i class="fas fa-pen-to-square"></i> Write a review
+                </button>
+                <a class="afd-btn-ghost" href="#afd-reviews-list">
+                  Read reviews <i class="fas fa-arrow-down" style="font-size: 11px; margin-left: 2px;"></i>
+                </a>
+              </div>
+            </div>
+
+            <!-- Right Side: Panel Card (Overall rating, Dial rating, stats) -->
+            <div class="afd-hero-right">
+              <div class="afd-hero-panel">
+                <div class="afd-hero-panel-head">
+                  <div>
+                    <p class="afd-hero-panel-label">Overall rating</p>
+                    <div class="afd-hero-big-rating">
+                      <span class="num">${ratingText}</span>
+                      <span class="of">/ 5</span>
+                    </div>
+                  </div>
+                  <div class="afd-hero-stars">
+                    ${starRatingHTML}
+                  </div>
+                </div>
+
+                <div class="afd-hero-panel-div"></div>
+
+                <div class="afd-hero-panel-grid">
+                  <!-- Recommend rate card -->
+                  <div class="afd-hero-stat">
+                    <div class="afd-hero-stat-icon icon-recommend"><i class="fas fa-thumbs-up"></i></div>
+                    <div>
+                      <p class="afd-hero-panel-label">Recommend</p>
+                      <p class="v">${recText}</p>
+                      <p class="s">would recommend seat</p>
+                    </div>
+                  </div>
+
+                  <!-- Avg Stipend Card -->
+                  <div class="afd-hero-stat">
+                    <div class="afd-hero-stat-icon icon-stipend"><i class="fas fa-wallet"></i></div>
+                    <div>
+                      <p class="afd-hero-panel-label">Avg stipend</p>
+                      <p class="v">${stipendText}</p>
+                      <p class="s">payout per month</p>
+                    </div>
+                  </div>
+
+                  <!-- Typical Hours Card -->
+                  <div class="afd-hero-stat">
+                    <div class="afd-hero-stat-icon icon-hours"><i class="fas fa-clock"></i></div>
+                    <div>
+                      <p class="afd-hero-panel-label">Typical hours</p>
+                      <p class="v">${hoursText}</p>
+                      <p class="s">average per workday</p>
+                    </div>
+                  </div>
+
+                  <!-- Stipend Payout Punctuality Card -->
+                  <div class="afd-hero-stat">
+                    <div class="afd-hero-stat-icon ${getWorkStatClass('Stipend on time', stipendOnTimeVal)}"><i class="fas fa-calendar-check"></i></div>
+                    <div>
+                      <p class="afd-hero-panel-label">Payout Status</p>
+                      <p class="v">${stipendOnTimeVal || '—'}</p>
+                      <p class="s">stipend punctuality</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="afd-stats-grid">
-            <div class="afd-stat-col">
-              <div class="afd-stat-val">${ratingText} <i class="fas fa-star" style="color:#f59e0b;font-size:0.7rem"></i></div>
-              <div class="afd-stat-lbl">Avg Rating</div>
-            </div>
-            <div class="afd-stat-col">
-              <div class="afd-stat-val">${reviews.length}</div>
-              <div class="afd-stat-lbl">${reviews.length === 1 ? "Review" : "Reviews"}</div>
-            </div>
-            <div class="afd-stat-col">
-              <div class="afd-stat-val">${stipendText}</div>
-              <div class="afd-stat-lbl">Avg Stipend</div>
+
+          <!-- Bottom: Performance scorecard breakdown -->
+          <div class="afd-hero-breakdown-wrapper">
+            <div class="afd-hero-breakdown-row">
+              <div style="display:flex; flex-direction:column; gap:0.5rem; min-width:0; flex:1;">
+                <div class="afd-perf-title-row">
+                  <h3 class="afd-perf-title"><i class="fas fa-chart-simple"></i> Performance Scorecard</h3>
+                  <span class="afd-perf-reviews-count">${countText}</span>
+                </div>
+                ${subHTML}
+              </div>
+              ${sidebarPanelHTML}
             </div>
           </div>
-          ${subHTML}
-        </div>
-        <div class="afd-card afd-cta-card">
-          <h3>Share Your Experience</h3>
-          <p>Help other CA students make informed career decisions. Your submission is 100% anonymous.</p>
-          <button id="open-review-btn" class="afd-write-btn">
-            <i class="fas fa-pen"></i> Write a Review
-          </button>
-          <div class="afd-anon-note"><i class="fas fa-user-secret"></i> Posted anonymously</div>
-        </div>`;
+        `;
 
-        document
-          .getElementById("open-review-btn")
-          .addEventListener("click", openReviewModal);
+        // Bind write review action
+        const hBtn = document.getElementById("hero-write-btn");
+        if (hBtn) {
+          hBtn.addEventListener("click", () => {
+            ArticleshipReviewWizard.open({
+              firmId: CURRENT_FIRM_ID,
+              firmName: FIRM_NAME,
+              lock: true
+            });
+          });
+        }
       }
 
+      let ALL_REVIEWS = [];
+      const REVIEWS_PAGE_SIZE = 15;
+      let reviewsCurrentPage = 1;
+
       function renderReviews(reviews) {
-        const subTitleText = `${reviews.length} verified review${reviews.length !== 1 ? "s" : ""} submitted anonymously by articleship students`;
-        document.getElementById("afd-reviews-title").textContent =
-          "Anonymous Reviews";
-        document.getElementById("afd-reviews-subtitle").textContent =
-          subTitleText;
+        ALL_REVIEWS = reviews;
+        reviewsCurrentPage = 1;
+        renderReviewsPage(1);
+      }
 
-        const list = document.getElementById("afd-reviews-list");
+      function renderReviewsPage(page) {
+        const list = document.getElementById('afd-reviews-list');
+        const pagEl = document.getElementById('afd-pagination');
 
-        if (!reviews.length) {
+        if (!ALL_REVIEWS.length) {
           list.innerHTML =
             '<div class="afd-empty"><i class="fas fa-comment-slash"></i><p>No reviews yet — be the first!</p></div>';
+          if (pagEl) { pagEl.style.display = 'none'; pagEl.innerHTML = ''; }
           return;
         }
 
-        list.innerHTML = reviews
-          .map((r) => {
-            const isOwn = MY_REVIEW_IDS.has(r.id);
-            const deleteBtn = isOwn
-              ? `<button class="afd-delete-btn" data-id="${r.id}"><i class="fas fa-trash"></i> Delete</button>`
-              : "";
+        const L = ArticleshipReviewWizard.LABELS;
+        const pageReviews = ALL_REVIEWS.slice((page - 1) * REVIEWS_PAGE_SIZE, page * REVIEWS_PAGE_SIZE);
+
+        function renderTagsGroup(title, iconClass, tags) {
+          if (!tags || !tags.length) return '';
+          const maxCount = 5;
+          const visible = tags.slice(0, maxCount);
+          const hiddenCount = tags.length - maxCount;
+          let pillsHTML = visible
+            .map((t) => `<span class="afd-review-tag-pill">${escapeHTML(t)}</span>`)
+            .join('');
+          if (hiddenCount > 0) {
+            pillsHTML += `<span class="afd-review-tag-pill more-badge">+${hiddenCount} more</span>`;
+          }
+          return `
+          <div class="afd-tags-grp">
+            <span class="afd-tags-grp-lbl"><i class="${iconClass}"></i> ${title}</span>
+            <div class="afd-tags-grp-pills">${pillsHTML}</div>
+          </div>`;
+        }
+
+        list.innerHTML = pageReviews.map((r) => {
+            const overallTier = r.overall_rating >= 4 ? 'good' : r.overall_rating >= 3 ? 'mid' : 'bad';
+            const ratingColorClass = overallTier;
 
             const recHTML =
               r.would_recommend === true
-                ? '<span class="afd-rec yes"><i class="fas fa-circle-check"></i> Recommends this firm</span>'
+                ? '<span class="afd-review-recommend-badge yes"><i class="fas fa-thumbs-up"></i> Recommends this firm</span>'
                 : r.would_recommend === false
-                  ? '<span class="afd-rec no"><i class="fas fa-circle-xmark"></i> Does not recommend</span>'
-                  : "";
+                  ? '<span class="afd-review-recommend-badge no"><i class="fas fa-thumbs-down"></i> Does not recommend</span>'
+                  : '';
 
-            const metaPills = [
-              r.role_title
-                ? `<span class="afd-pill-role"><i class="fas fa-briefcase"></i> ${escapeHTML(r.role_title)}</span>`
-                : "",
-              r.stipend != null
-                ? `<span class="afd-pill-stipend"><i class="fas fa-indian-rupee-sign"></i> ${Number(r.stipend).toLocaleString("en-IN")}/mo</span>`
-                : "",
-              recHTML,
-            ]
-              .filter(Boolean)
-              .join("");
+            const stipendText = r.stipend != null
+              ? `₹${Number(r.stipend).toLocaleString('en-IN')}/mo`
+              : '—';
 
-            const subRatingsHTML = [
-              r.work_life_balance_rating
-                ? `<span class="afd-sub-rating-item">WLB: <span>${r.work_life_balance_rating}.0</span> <i class="fas fa-star"></i></span>`
-                : "",
-              r.learning_exposure_rating
-                ? `<span class="afd-sub-rating-item">Learning: <span>${r.learning_exposure_rating}.0</span> <i class="fas fa-star"></i></span>`
-                : "",
-              r.stipend_satisfaction_rating
-                ? `<span class="afd-sub-rating-item">Stipend: <span>${r.stipend_satisfaction_rating}.0</span> <i class="fas fa-star"></i></span>`
-                : "",
-            ]
-              .filter(Boolean)
-              .join('<span style="color:#e2e8f0;font-size:0.8rem">•</span>');
+            let stipendDelayText = 'Timeliness not reported';
+            let stipendDelayColor = '#94a3b8';
+            if (r.stipend_on_time) {
+              const text = L.stipend_on_time[r.stipend_on_time];
+              stipendDelayText = text;
+              const isDelayed = text.toLowerCase().includes('delayed');
+              stipendDelayColor = isDelayed ? '#dc2626' : '#16a34a';
+            }
 
-            const prosConsHTML =
-              r.pros || r.cons
-                ? `
-          <div class="afd-pros-cons">
-            ${r.pros ? `<div class="afd-pros"><strong><i class="fas fa-circle-check"></i> Pros</strong>${escapeHTML(r.pros)}</div>` : ""}
-            ${r.cons ? `<div class="afd-cons"><strong><i class="fas fa-circle-xmark"></i> Cons</strong>${escapeHTML(r.cons)}</div>` : ""}
-          </div>`
-                : "";
+            const hoursValText = r.working_hours ? `${L.working_hours[r.working_hours]}` : '—';
 
-            const tagsHTML = (r.culture_tags || []).length
-              ? `<div class="afd-review-tags">${r.culture_tags.map((t) => `<span class="afd-review-tag">${escapeHTML(t)}</span>`).join("")}</div>`
-              : "";
+            let hoursStatusText = 'Schedule not reported';
+            let hoursStatusColor = '#94a3b8';
+            if (r.working_hours) {
+              const raw = String(r.working_hours).toLowerCase();
+              if (raw.includes('more_than_12') || raw.includes('12')) {
+                hoursStatusText = 'Extreme overtime'; hoursStatusColor = '#dc2626';
+              } else if (raw.includes('10_12') || raw.includes('10')) {
+                hoursStatusText = 'Overtime required'; hoursStatusColor = '#d97706';
+              } else {
+                hoursStatusText = 'Standard schedule'; hoursStatusColor = '#16a34a';
+              }
+            }
+
+            const domainTagsHTML = renderTagsGroup('Work Domains', 'fas fa-briefcase', r.domain_tags);
+            const clientTagsHTML = renderTagsGroup('Client Sectors', 'fas fa-building', r.client_tags);
+            const skillTagsHTML = renderTagsGroup('Tools & Skills', 'fas fa-gears', r.skill_tags);
+
+            const hasAnyTags = domainTagsHTML || clientTagsHTML || skillTagsHTML;
+            const tagsSectionHTML = hasAnyTags
+              ? `<div class="afd-review-tags-section">
+                  <div class="afd-tags-col-left" style="display:flex;flex-direction:column;gap:0.85rem;">
+                    ${domainTagsHTML}${clientTagsHTML}
+                  </div>
+                  <div class="afd-tags-col-right" style="display:flex;flex-direction:column;gap:0.85rem;">
+                    ${skillTagsHTML}
+                  </div>
+                 </div>`
+              : '';
+
+            let testimonialHTML = '';
+            if (r.review_text) {
+              const isLong = r.review_text.length > 250;
+              const boxClass = isLong ? `afd-review-testimonial-box ${overallTier} has-read-more` : `afd-review-testimonial-box ${overallTier}`;
+              const textClass = isLong ? `afd-review-testimonial-text collapsible` : `afd-review-testimonial-text`;
+              const btnHTML = isLong ? `<button class="afd-read-more-btn" onclick="toggleReadMore(this)">Read More <i class="fas fa-chevron-down"></i></button>` : '';
+              testimonialHTML = `
+              <div class="${boxClass}">
+                <span class="afd-review-testimonial-label">Overall Experience</span>
+                <p class="${textClass}">"${escapeHTML(r.review_text)}"</p>
+                ${btnHTML}
+              </div>`;
+            }
 
             return `
           <div class="afd-review-card" data-id="${r.id}">
-            <div class="afd-review-top">
-              <div class="afd-anon-block">
-                <div class="afd-anon-icon"><i class="fas fa-user-secret"></i></div>
-                <div>
-                  <div class="afd-anon-name">Anonymous</div>
-                  <div class="afd-anon-meta">${relTime(r.created_at)}</div>
+            <div class="afd-review-header">
+              <div class="afd-review-user-info">
+                <div class="afd-review-avatar-wrap"><i class="fas fa-user-secret"></i></div>
+                <div class="afd-review-user-text">
+                  <span class="afd-review-user-name">Anonymous Student</span>
+                  <span class="afd-review-user-meta">${relTime(r.created_at)}</span>
                 </div>
               </div>
-              <div class="afd-review-top-right">
-                <span class="afd-score-badge-compact"><i class="fas fa-star"></i> ${r.overall_rating}.0</span>
-                ${deleteBtn}
+              <span class="afd-review-rating-badge ${ratingColorClass}">
+                ${r.overall_rating.toFixed(1)} <i class="fas fa-star" style="font-size:0.75rem;margin-left:2px;"></i>
+              </span>
+            </div>
+
+            ${testimonialHTML}
+
+            <div class="afd-review-info-pills">
+              <div class="afd-review-info-pill stipend-pill">
+                <i class="fas fa-credit-card"></i>
+                <div class="afd-review-info-pill-content">
+                  <span class="afd-review-info-pill-lbl">Stipend</span>
+                  <span class="afd-review-info-pill-val">${escapeHTML(stipendText)}</span>
+                  <span class="afd-review-info-pill-sub" style="color:${stipendDelayColor};">${escapeHTML(stipendDelayText)}</span>
+                </div>
+              </div>
+              <div class="afd-review-info-pill hours-pill">
+                <i class="fas fa-clock"></i>
+                <div class="afd-review-info-pill-content">
+                  <span class="afd-review-info-pill-lbl">Hours</span>
+                  <span class="afd-review-info-pill-val">${escapeHTML(hoursValText)}</span>
+                  <span class="afd-review-info-pill-sub" style="color:${hoursStatusColor};">${escapeHTML(hoursStatusText)}</span>
+                </div>
               </div>
             </div>
-            ${metaPills ? `<div class="afd-review-pills">${metaPills}</div>` : ""}
-            ${subRatingsHTML ? `<div class="afd-sub-ratings-list">${subRatingsHTML}</div>` : ""}
-            ${r.review_text ? `<p class="afd-review-text">${escapeHTML(r.review_text)}</p>` : ""}
-            ${prosConsHTML}
-            ${tagsHTML}
+
+            ${tagsSectionHTML}
+
+            <div class="afd-review-footer">
+              ${recHTML}
+              <span class="afd-review-verified-badge"><i class="fas fa-shield-halved"></i> Verified Review</span>
+            </div>
           </div>`;
+          }).join('');
+
+        // Build paginator
+        renderAfdPaginator(ALL_REVIEWS.length, page);
+      }
+
+      function renderAfdPaginator(totalItems, currentPage) {
+        const el = document.getElementById('afd-pagination');
+        if (!el) return;
+        const totalPages = Math.ceil(totalItems / REVIEWS_PAGE_SIZE);
+        if (totalPages <= 1) { el.style.display = 'none'; el.innerHTML = ''; return; }
+        el.style.display = 'flex';
+
+        const MAX_VISIBLE = 7;
+        function pageRange(cur, total) {
+          if (total <= MAX_VISIBLE) return Array.from({ length: total }, (_, i) => i + 1);
+          const pages = [];
+          pages.push(1);
+          if (cur > 3) pages.push('...');
+          const start = Math.max(2, cur - 1);
+          const end = Math.min(total - 1, cur + 1);
+          for (let i = start; i <= end; i++) pages.push(i);
+          if (cur < total - 2) pages.push('...');
+          pages.push(total);
+          return pages;
+        }
+
+        const pages = pageRange(currentPage, totalPages);
+        el.innerHTML = [
+          `<button class="pg-btn pg-arrow${currentPage === 1 ? ' pg-disabled' : ''}" data-page="${currentPage - 1}" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>`,
+          ...pages.map(p =>
+            p === '...'
+              ? `<span class="pg-ellipsis">…</span>`
+              : `<button class="pg-btn${p === currentPage ? ' pg-active' : ''}" data-page="${p}">${p}</button>`
+          ),
+          `<button class="pg-btn pg-arrow${currentPage === totalPages ? ' pg-disabled' : ''}" data-page="${currentPage + 1}" aria-label="Next"><i class="fas fa-chevron-right"></i></button>`
+        ].join('');
+
+        el.querySelectorAll('.pg-btn:not(.pg-disabled)').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const p = parseInt(btn.dataset.page);
+            if (isNaN(p) || p < 1 || p > totalPages || p === currentPage) return;
+            reviewsCurrentPage = p;
+            renderReviewsPage(p);
+            document.getElementById('afd-reviews-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        });
+      }
+
+      // ── Review wizard (shared component) ───────────────────────────────
+      ArticleshipReviewWizard.init(supabaseClient, { onComplete: loadFirmPage });
+
+      // Floating FAB Write Review logic
+      const floatingWriteBtn = document.getElementById('floating-write-btn');
+      if (floatingWriteBtn) {
+        floatingWriteBtn.addEventListener('click', () => {
+          ArticleshipReviewWizard.open({
+            firmId: CURRENT_FIRM_ID,
+            firmName: FIRM_NAME,
+            lock: true
+          });
+        });
+        const handleScroll = () => {
+          const scrolled = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
+          if (scrolled > 10) {
+            floatingWriteBtn.classList.add('visible');
+          } else {
+            floatingWriteBtn.classList.remove('visible');
+          }
+        };
+        window.addEventListener('scroll', handleScroll);
+        handleScroll(); // initialize state on page load
+      }
+
+      // CTA Write Review logic
+      const ctaWriteBtn = document.getElementById('cta-write-btn');
+      if (ctaWriteBtn) {
+        ctaWriteBtn.addEventListener('click', () => {
+          ArticleshipReviewWizard.open({
+            firmId: CURRENT_FIRM_ID,
+            firmName: FIRM_NAME,
+            lock: true
+          });
+        });
+      }
+
+      async function loadSimilarFirms() {
+        try {
+          const { data: allRecs, error } = await supabaseClient
+            .from("articleship_firm_reviews_public")
+            .select("firm_name, overall_rating, location, stipend, would_recommend")
+            .not("firm_name", "ilike", FIRM_NAME);
+          if (error) throw error;
+
+          // Group by firm_name
+          const groups = {};
+          allRecs.forEach((r) => {
+            const fn = r.firm_name;
+            if (!groups[fn]) {
+              groups[fn] = {
+                name: fn,
+                location: r.location || "Multiple locations",
+                ratings: [],
+                recs: [],
+                stipends: []
+              };
+            }
+            if (r.overall_rating) groups[fn].ratings.push(r.overall_rating);
+            if (r.would_recommend !== null) groups[fn].recs.push(r.would_recommend);
+            if (r.stipend) groups[fn].stipends.push(r.stipend);
+          });
+
+          // Compute averages and map to array
+          const firms = Object.values(groups).map((g) => {
+            const avgRating = g.ratings.length ? g.ratings.reduce((a, b) => a + b, 0) / g.ratings.length : 0;
+            const recPct = g.recs.length ? Math.round((g.recs.filter(Boolean).length / g.recs.length) * 100) : null;
+            const avgStipend = g.stipends.length ? Math.round(g.stipends.reduce((a, b) => a + b, 0) / g.stipends.length) : null;
+            return {
+              name: g.name,
+              location: g.location,
+              rating: avgRating,
+              recommend: recPct,
+              stipend: avgStipend,
+              reviewsCount: g.ratings.length
+            };
+          });
+
+          // Sort by review count and rating
+          firms.sort((a, b) => b.reviewsCount - a.reviewsCount || b.rating - a.rating);
+
+          // Take top 4
+          const top4 = firms.slice(0, 4);
+
+          renderSimilarFirms(top4);
+        } catch (e) {
+          console.error("Error loading similar firms:", e);
+          const sect = document.getElementById("afd-similar-section");
+          if (sect) sect.style.display = "none";
+        }
+      }
+
+      function renderSimilarFirms(firms) {
+        const grid = document.getElementById("afd-similar-grid");
+        const sect = document.getElementById("afd-similar-section");
+        if (!grid || !sect) return;
+        if (!firms.length) {
+          sect.style.display = "none";
+          return;
+        }
+
+        grid.innerHTML = firms
+          .map((f) => {
+            const color = firmColor(f.name);
+            const initial = f.name.trim()[0].toUpperCase();
+            const tierClass = f.rating >= 4 ? 'good' : f.rating >= 3 ? 'mid' : 'bad';
+            const starsHTMLStr = f.rating ? starsHTML(f.rating) : "";
+            
+            const recommendVal = f.recommend !== null ? f.recommend + "%" : "—";
+            const recommendTier = f.recommend >= 70 ? 'good' : f.recommend >= 50 ? 'mid' : 'bad';
+            
+            const stipendVal = f.stipend
+              ? "₹" + (f.stipend >= 1000 ? (f.stipend / 1000).toFixed(1).replace(".0", "") + "k" : f.stipend)
+              : "—";
+            const stipendTier = f.stipend >= 8000 ? 'good' : f.stipend >= 5000 ? 'mid' : 'bad';
+
+            return `
+            <a href="/articleship-firm-review.html?firm=${encodeURIComponent(f.name)}" class="afd-similar-card" style="--card-color: ${color}">
+              <div class="afd-similar-card-header" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; width: 100%;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; min-width: 0; flex: 1;">
+                  <div class="afd-similar-avatar">${initial}</div>
+                  <div class="afd-similar-info">
+                    <h4 class="afd-similar-name">${escapeHTML(f.name)}</h4>
+                    <div class="afd-similar-location"><i class="fas fa-map-marker-alt"></i> ${escapeHTML(f.location)}</div>
+                  </div>
+                </div>
+                <div class="afd-similar-rating-block">
+                  <span class="afd-similar-rating-big ${tierClass}">${f.rating ? f.rating.toFixed(1) : "—"}</span>
+                  <div class="afd-similar-rating-stars">${starsHTMLStr}</div>
+                  <span class="afd-similar-rating-label">Rating</span>
+                </div>
+              </div>
+              <div class="afd-similar-scorecard">
+                <div class="afd-similar-score-col">
+                  <span class="afd-similar-score-val ${f.stipend ? stipendTier : 'na'}">${stipendVal}</span>
+                  <span class="afd-similar-score-lbl">Stipend</span>
+                </div>
+                <div class="afd-similar-score-col">
+                  <span class="afd-similar-score-val ${f.recommend !== null ? recommendTier : 'na'}">${recommendVal}</span>
+                  <span class="afd-similar-score-lbl">Recommend</span>
+                </div>
+                <div class="afd-similar-score-col">
+                  <span class="afd-similar-score-val" style="color: #6366f1;">${f.reviewsCount}</span>
+                  <span class="afd-similar-score-lbl">Reviews</span>
+                </div>
+              </div>
+              <div class="afd-similar-footer">
+                <span class="afd-similar-reviews-count">
+                  <i class="far fa-comment-alt"></i> ${f.reviewsCount} review${f.reviewsCount !== 1 ? "s" : ""}
+                </span>
+                <span class="afd-similar-card-cta">
+                  Read Reviews <i class="fas fa-arrow-right" style="font-size: 0.7rem;"></i>
+                </span>
+              </div>
+            </a>
+            `;
           })
           .join("");
-
-        list.querySelectorAll(".afd-delete-btn").forEach((btn) => {
-          btn.addEventListener("click", () =>
-            handleDelete(btn.dataset.id, btn),
-          );
-        });
       }
 
-      async function handleDelete(reviewId, btn) {
-        if (!confirm("Delete your review? This cannot be undone.")) return;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-        try {
-          const { error } = await supabaseClient
-            .from("articleship_firm_reviews")
-            .delete()
-            .eq("id", reviewId);
-          if (error) throw error;
-          btn.closest(".afd-review-card").remove();
-          showToast("Review deleted.");
-          setTimeout(loadFirmPage, 600);
-        } catch (e) {
-          btn.disabled = false;
-          btn.innerHTML = '<i class="fas fa-trash"></i> Delete';
-          showToast("Could not delete: " + e.message);
-        }
-      }
-
-      // ── Modal ─────────────────────────────────────────────────────────────
-      function initStarInputs() {
-        document.querySelectorAll(".afr-star-input").forEach((group) => {
-          group.dataset.value = "";
-          for (let i = 1; i <= 5; i++) {
-            const btn = document.createElement("button");
-            btn.type = "button";
-            btn.innerHTML = '<i class="far fa-star"></i>';
-            btn.dataset.v = i;
-            btn.setAttribute("aria-label", `${i} star`);
-            btn.addEventListener("mouseenter", () => hoverStars(group, i));
-            btn.addEventListener("mouseleave", () => refreshStars(group));
-            btn.addEventListener("click", () => setStars(group, i));
-            group.appendChild(btn);
-          }
-        });
-      }
-
-      function hoverStars(group, v) {
-        group.querySelectorAll("button").forEach((b, idx) => {
-          b.querySelector("i").className =
-            idx < v ? "fas fa-star" : "far fa-star";
-          b.classList.toggle("filled", idx < v);
-        });
-      }
-      function refreshStars(group) {
-        const v = Number(group.dataset.value) || 0;
-        group.querySelectorAll("button").forEach((b, idx) => {
-          b.querySelector("i").className =
-            idx < v ? "fas fa-star" : "far fa-star";
-          b.classList.toggle("filled", idx < v);
-        });
-      }
-      function setStars(group, v) {
-        const current = Number(group.dataset.value) || 0;
-        if (current === v) {
-          group.dataset.value = "";
-        } else {
-          group.dataset.value = String(v);
-        }
-        refreshStars(group);
-      }
-
-      const modal = document.getElementById("review-form-modal");
-      let lastFocused = null;
-
-      async function openReviewModal() {
-        lastFocused = document.activeElement;
-        const session = await getCurrentSession();
-        document.getElementById("afr-login-prompt").hidden = !!session;
-        document.getElementById("afr-fieldset").disabled = !session;
-        if (session) {
-          const fi = document.getElementById("f-firm");
-          if (fi) {
-            fi.value = FIRM_NAME;
-            fi.readOnly = true;
-          }
-        }
-        modal.classList.add("active");
-        modal.setAttribute("aria-hidden", "false");
-        const first = session
-          ? document.getElementById("f-location")
-          : modal.querySelector("#afr-login-prompt a");
-        if (first) first.focus();
-      }
-
-      function closeReviewModal() {
-        modal.classList.remove("active");
-        modal.setAttribute("aria-hidden", "true");
-        if (lastFocused) lastFocused.focus();
-      }
-
-      document
-        .getElementById("afr-modal-close")
-        .addEventListener("click", closeReviewModal);
-      modal.addEventListener("click", (e) => {
-        if (e.target === modal) closeReviewModal();
-      });
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && modal.classList.contains("active"))
-          closeReviewModal();
-      });
-
-      modal.addEventListener("keydown", (e) => {
-        if (e.key !== "Tab" || !modal.classList.contains("active")) return;
-        const focusable = [
-          ...modal.querySelectorAll("button,[href],input,select,textarea"),
-        ].filter((el) => !el.disabled && el.offsetParent !== null);
-        if (!focusable.length) return;
-        const first = focusable[0],
-          last = focusable[focusable.length - 1];
-        if (e.shiftKey && document.activeElement === first) {
-          e.preventDefault();
-          last.focus();
-        } else if (!e.shiftKey && document.activeElement === last) {
-          e.preventDefault();
-          first.focus();
-        }
-      });
-
-      async function handleReviewSubmit(e) {
-        e.preventDefault();
-        const status = document.getElementById("afr-form-status");
-        const session = await getCurrentSession();
-        if (!session) {
-          status.textContent = "Please log in first.";
-          return;
-        }
-
-        const form = e.target;
-        const overall = Number(
-          document.querySelector('.afr-star-input[data-name="overall_rating"]')
-            .dataset.value,
-        );
-        if (!overall) {
-          status.textContent = "Please give an overall rating.";
-          status.className = "afr-form-status err";
-          return;
-        }
-
-        const starVal = (name) => {
-          const v = Number(
-            document.querySelector(`.afr-star-input[data-name="${name}"]`)
-              .dataset.value,
-          );
-          return v || null;
-        };
-        const tags = [
-          ...form.querySelectorAll('input[name="culture_tags"]:checked'),
-        ].map((c) => c.value);
-
-        const row = {
-          user_id: session.user.id,
-          firm_name: document.getElementById("f-firm").value.trim(),
-          location: document.getElementById("f-location").value.trim(),
-          role_title: document.getElementById("f-role").value.trim() || null,
-          stipend: document.getElementById("f-stipend").value
-            ? parseInt(document.getElementById("f-stipend").value, 10)
-            : null,
-          overall_rating: overall,
-          work_life_balance_rating: starVal("work_life_balance_rating"),
-          learning_exposure_rating: starVal("learning_exposure_rating"),
-          stipend_satisfaction_rating: starVal("stipend_satisfaction_rating"),
-          review_text: document.getElementById("f-review").value.trim() || null,
-          pros: document.getElementById("f-pros").value.trim() || null,
-          cons: document.getElementById("f-cons").value.trim() || null,
-          culture_tags: tags,
-          would_recommend: form.elements["would_recommend"].checked,
-        };
-
-        const btn = form.querySelector('button[type="submit"]');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
-
-        try {
-          const { error } = await supabaseClient
-            .from("articleship_firm_reviews")
-            .insert([row]);
-          if (error) {
-            if (error.code === "23505")
-              throw new Error("You've already reviewed this firm.");
-            throw error;
-          }
-          status.textContent = "✓ Your review is posted!";
-          status.className = "afr-form-status ok";
-          form.reset();
-          document.getElementById("f-firm").value = FIRM_NAME;
-          document.querySelectorAll(".afr-star-input").forEach((g) => {
-            g.dataset.value = "";
-            refreshStars(g);
-          });
-          setTimeout(() => {
-            closeReviewModal();
-            status.textContent = "";
-            loadFirmPage();
-          }, 1400);
-        } catch (err) {
-          status.textContent = err.message;
-          status.className = "afr-form-status err";
-        } finally {
-          btn.disabled = false;
-          btn.innerHTML =
-            '<i class="fas fa-paper-plane"></i> Submit Anonymous Review';
-        }
-      }
-
-      document
-        .getElementById("afr-form")
-        .addEventListener("submit", handleReviewSubmit);
-      initStarInputs();
+      window.toggleReadMore = function(btn) {
+        const box = btn.closest(".afd-review-testimonial-box");
+        const txt = box.querySelector(".afd-review-testimonial-text");
+        const isExpanded = txt.classList.toggle("expanded");
+        box.classList.toggle("expanded", isExpanded);
+        btn.innerHTML = isExpanded 
+          ? `Read Less <i class="fas fa-chevron-up"></i>` 
+          : `Read More <i class="fas fa-chevron-down"></i>`;
+      };
     </script>
   </body>
 </html>
