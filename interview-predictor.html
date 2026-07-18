@@ -348,7 +348,7 @@
 
     <div class="header">
         <h1>CA Interview Predictor</h1>
-        <p>AI Document Understanding (Gemini-3.1-Flash-Lite) analyzes your CV and generates a target-specific prep dossier.</p>
+        <p>AI Document Understanding analyzes your CV and generates a target-specific prep dossier.</p>
     </div>
 
     <div class="container">
@@ -407,7 +407,7 @@
                     <div class="file-upload-wrapper">
                         <input type="file" id="cvFile" accept="application/pdf">
                         <div class="file-upload-label" id="fileNameDisplay">Click or drag PDF to upload</div>
-                        <div class="file-upload-hint">We will analyze your CV directly using Gemini's native Document Understanding.</div>
+                        <div class="file-upload-hint">We will analyze your CV directly using native AI Document Understanding.</div>
                     </div>
                 </div>
 
@@ -504,7 +504,7 @@
 
             // UI Loading State
             submitBtn.disabled = true;
-            btnText.innerText = "Analyzing CV & Querying Gemini...";
+            btnText.innerText = "Analyzing CV & Generating Dossier...";
             btnSpinner.style.display = "block";
             dossierOutput.style.display = 'none';
 
