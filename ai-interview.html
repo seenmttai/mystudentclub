@@ -2813,28 +2813,6 @@
             }
             
             updateSpeechStatus("", false);
-            
-            // Finalize the live message if it exists
-            if (liveUserMessageEl) {
-                const contentEl = liveUserMessageEl.querySelector('.message-content');
-                if (contentEl) contentEl.textContent = text;
-                liveUserMessageEl.classList.remove('live');
-                liveUserMessageEl = null;
-                
-                // Also finalize in mobile chat
-                const mobileChatMessages = document.getElementById('mobile-chat-messages');
-                if (mobileChatMessages) {
-                    const mobileLiveUserEl = mobileChatMessages.querySelector('.message.user.live');
-                    if (mobileLiveUserEl) {
-                        const mobileContentEl = mobileLiveUserEl.querySelector('.message-content');
-                        if (mobileContentEl) mobileContentEl.textContent = text;
-                        mobileLiveUserEl.classList.remove('live');
-                    }
-                }
-            } else {
-                addChatMessage('user', 'You', text);
-            }
-            
             window.stopListening();
             sendToAI(text);
         }
@@ -2858,9 +2836,6 @@
                         if (event.results[i].isFinal) finalTranscript += transcript;
                         else interimTranscript += transcript;
                     }
-
-                    const liveText = (finalTranscript + interimTranscript).trim();
-                    if (liveText) updateLiveUserMessage(liveText);
                 };
 
                 speechRecognition.onstart = () => {
@@ -2889,34 +2864,7 @@
         }
 
         function updateLiveUserMessage(text) {
-            if (!liveUserMessageEl) {
-                // Create a new live message element
-                liveUserMessageEl = document.createElement('div');
-                liveUserMessageEl.className = 'message user live';
-                liveUserMessageEl.innerHTML = `<div class="message-author">You</div><div class="message-content">${text}</div>`;
-                chatMessages.appendChild(liveUserMessageEl);
-            } else {
-                // Update existing live message
-                const contentEl = liveUserMessageEl.querySelector('.message-content');
-                if (contentEl) contentEl.textContent = text;
-            }
-            scrollToBottom();
-            
-            // Sync to mobile chat
-            const mobileChatMessages = document.getElementById('mobile-chat-messages');
-            if (mobileChatMessages) {
-                let mobileLiveUserEl = mobileChatMessages.querySelector('.message.user.live');
-                if (!mobileLiveUserEl) {
-                    mobileLiveUserEl = document.createElement('div');
-                    mobileLiveUserEl.className = 'message user live';
-                    mobileLiveUserEl.innerHTML = `<div class="message-author">You</div><div class="message-content">${text}</div>`;
-                    mobileChatMessages.appendChild(mobileLiveUserEl);
-                } else {
-                    const mobileContentEl = mobileLiveUserEl.querySelector('.message-content');
-                    if (mobileContentEl) mobileContentEl.textContent = text;
-                }
-                mobileChatMessages.scrollTop = mobileChatMessages.scrollHeight;
-            }
+            // User STT display disabled
         }
 
         function updateSpeechStatus(t, v) { speechStatus.textContent = t; speechStatus.classList.toggle('visible', v); }
@@ -3999,14 +3947,6 @@
                     messages.push({ role: 'user', content: message });
                 }
 
-                if (base64Audio && !liveUserMessageEl) {
-                    liveUserMessageEl = document.createElement('div');
-                    liveUserMessageEl.className = 'message user live';
-                    liveUserMessageEl.innerHTML = `<div class="message-author">You</div><div class="message-content">...</div>`;
-                    chatMessages.appendChild(liveUserMessageEl);
-                    scrollToBottom();
-                }
-
                 let data = null;
                 let lastError = null;
 
@@ -4032,25 +3972,9 @@
                     const text = data.transcription;
                     if (text.length >= 3 || ['no', 'yes', 'ok'].includes(text.toLowerCase())) {
                         messages.push({ role: 'user', content: text });
-                        if (liveUserMessageEl) {
-                            const contentEl = liveUserMessageEl.querySelector('.message-content');
-                            if (contentEl) contentEl.textContent = text;
-                            liveUserMessageEl.classList.remove('live');
-                            liveUserMessageEl = null;
-                        } else {
-                            addChatMessage('user', 'You', text);
-                        }
-                    } else {
-                        if (liveUserMessageEl) {
-                            liveUserMessageEl.remove();
-                            liveUserMessageEl = null;
-                        }
                     }
                     updateSpeechStatus("", false);
-                } else if (base64Audio && liveUserMessageEl) {
-                    // Fallback if no transcription returned
-                    liveUserMessageEl.remove();
-                    liveUserMessageEl = null;
+                } else if (base64Audio) {
                     updateSpeechStatus("", false);
                 }
 

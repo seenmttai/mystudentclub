@@ -2506,39 +2506,8 @@
             accumulatedTranscript = "";
 
             if (sendToBackend && text) {
-                if (liveUserMessageEl) {
-                    const contentEl = liveUserMessageEl.querySelector('.message-content');
-                    if (contentEl) contentEl.textContent = text;
-                    liveUserMessageEl.classList.remove('live');
-                    liveUserMessageEl = null;
-
-                    const mobileChatMessages = document.getElementById('mobile-chat-messages');
-                    if (mobileChatMessages) {
-                        const mobileLiveUserEl = mobileChatMessages.querySelector('.message.user.live');
-                        if (mobileLiveUserEl) {
-                            const mobileContentEl = mobileLiveUserEl.querySelector('.message-content');
-                            if (mobileContentEl) mobileContentEl.textContent = text;
-                            mobileLiveUserEl.classList.remove('live');
-                        }
-                    }
-                } else {
-                    addChatMessage('user', 'You', text);
-                }
-
                 window.stopListening();
                 sendToAI(text);
-            } else {
-                if (liveUserMessageEl) {
-                    liveUserMessageEl.remove();
-                    liveUserMessageEl = null;
-                }
-                const mobileChatMessages = document.getElementById('mobile-chat-messages');
-                if (mobileChatMessages) {
-                    const mobileLiveUserEl = mobileChatMessages.querySelector('.message.user.live');
-                    if (mobileLiveUserEl) {
-                        mobileLiveUserEl.remove();
-                    }
-                }
             }
         }
 
@@ -2552,31 +2521,7 @@
         }
 
         function updateLiveUserMessage(text) {
-            if (!liveUserMessageEl) {
-                liveUserMessageEl = document.createElement('div');
-                liveUserMessageEl.className = 'message user live';
-                liveUserMessageEl.innerHTML = `<div class="message-author">You</div><div class="message-content">${text}</div>`;
-                chatMessages.appendChild(liveUserMessageEl);
-            } else {
-                const contentEl = liveUserMessageEl.querySelector('.message-content');
-                if (contentEl) contentEl.textContent = text;
-            }
-            scrollToBottom();
-            
-            const mobileChatMessages = document.getElementById('mobile-chat-messages');
-            if (mobileChatMessages) {
-                let mobileLiveUserEl = mobileChatMessages.querySelector('.message.user.live');
-                if (!mobileLiveUserEl) {
-                    mobileLiveUserEl = document.createElement('div');
-                    mobileLiveUserEl.className = 'message user live';
-                    mobileLiveUserEl.innerHTML = `<div class="message-author">You</div><div class="message-content">${text}</div>`;
-                    mobileChatMessages.appendChild(mobileLiveUserEl);
-                } else {
-                    const mobileContentEl = mobileLiveUserEl.querySelector('.message-content');
-                    if (mobileContentEl) mobileContentEl.textContent = text;
-                }
-                mobileChatMessages.scrollTop = mobileChatMessages.scrollHeight;
-            }
+            // User STT display disabled
         }
 
         function updateSpeechStatus(t, v) { speechStatus.textContent = t; speechStatus.classList.toggle('visible', v); }
