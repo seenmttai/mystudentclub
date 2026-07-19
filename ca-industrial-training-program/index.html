@@ -85,9 +85,10 @@
       <p class="live-batch-highlight" style="color: #4CAF50; font-weight: 800; font-size: 1.05rem; margin: 4px 0 16px; display: flex; align-items: center; gap: 6px;">✅ Live Batch + Recordings Included!!!</p>
 
       <div class="hero-cta-group">
-        <span class="register-btn hero-cta" id="registerButtonHero" style="cursor: default; opacity: 0.85;">
-          <span class="btn-content">Registrations Closed</span>
-        </span>
+        <button id="notifyMeBtn" class="notify-me-btn hero-cta">
+          <span class="notify-btn-icon">🔔</span>
+          <span class="notify-btn-text">Notify Me When Open</span>
+        </button>
         <a href="#curriculum-section" class="btn-secondary">
           <i class="far fa-file-alt"></i> View Curriculum
         </a>
@@ -485,9 +486,10 @@
       </div>
       
       <div class="pricing-cta">
-        <span class="register-btn" id="registerButtonWorkshop" style="text-align: center; width: 100%; justify-content: center; box-sizing: border-box; cursor: default; opacity: 0.85;">
-          <span class="btn-content">Registrations Closed</span>
-        </span>
+        <button id="registerButtonWorkshop" class="notify-me-btn">
+          <span class="notify-btn-icon">🔔</span>
+          <span class="notify-btn-text">Notify Me When Open</span>
+        </button>
       </div>
     </div>
   </div>
@@ -504,9 +506,10 @@
       <span class="original">₹4999</span>
     </div>
   </div>
-  <span class="register-btn" id="registerButtonFooter" style="margin-left: auto; font-size: 16px; padding: 10px 25px; border-radius: 25px; cursor: default; opacity: 0.85;">
-    <span class="btn-content">Registrations Closed</span>
-  </span>
+  <button id="notifyMeFooterBtn" class="notify-me-footer-btn" style="margin-left: auto;">
+    <span class="notify-footer-icon">🔔</span>
+    <span class="notify-footer-text">Notify Me</span>
+  </button>
 </div>
 
 <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
@@ -724,7 +727,7 @@
       });
     }
 
-    // initNotifyMe();
+    initNotifyMe();
 
     // Show postponed modal on page load (occurs every visit/reload)
     /*
