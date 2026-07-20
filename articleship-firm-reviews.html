@@ -6,12 +6,22 @@
   <title>Articleship Firm Reviews - My Student Club</title>
   <meta name="description" content="Read and write anonymous reviews of CA articleship firms — stipend, work-life balance, learning exposure, and culture.">
   <link rel="icon" type="image/x-icon" href="/assets/icon-70x70.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="/scripts/portal-style.css">
+  <link rel="stylesheet" href="/articleship-review-wizard.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
+    :root {
+      --font-main: 'Inter', system-ui, -apple-system, sans-serif !important;
+      --font-mono: 'JetBrains Mono', monospace !important;
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -19,6 +29,7 @@
       background: #f8fafc;
       color: var(--text-primary);
       -webkit-font-smoothing: antialiased;
+      overflow-x: clip; /* guard against any stray horizontal scroll */
     }
 
     /* ── Header Glassmorphism & Unified Search/Filter Overrides ── */
@@ -28,55 +39,30 @@
       -webkit-backdrop-filter: blur(16px) !important;
       border-bottom: 1px solid rgba(226, 232, 240, 0.8) !important;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02) !important;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      z-index: 999 !important;
     }
     .header-container {
-      max-width: 1440px !important;
+      max-width: 1500px !important;
     }
-    .header-search-container {
-      display: flex;
-      align-items: center;
-      background: rgba(241, 245, 249, 0.7);
-      border: 1.5px solid #e2e8f0;
-      border-radius: 999px;
-      padding: 0.25rem;
-      flex: 1;
-      max-width: 760px;
-      margin: 0 2rem;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    .menu-toggle-btn {
+      display: flex !important;
+      background: transparent !important;
+      border: none !important;
+      cursor: pointer !important;
+      color: #0f172a !important;
+      padding: 0.5rem !important;
+      align-items: center !important;
+      justify-content: center !important;
+      flex-shrink: 0;
     }
-    .header-search-container:focus-within {
-      background: #fff;
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
-    }
-    .header-search-container .afr-search-field {
-      flex: 1.5;
-      position: relative;
-    }
-    .header-search-container .afr-search-field i {
-      position: absolute;
-      left: 1.15rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #94a3b8;
-      font-size: 0.85rem;
-      transition: color 0.2s ease;
-    }
-    .header-search-container .afr-search-field input {
-      width: 100%;
-      border: none;
-      background: transparent;
-      padding: 0.4rem 0.5rem 0.4rem 2.5rem;
-      font-family: var(--font-main);
-      font-size: 0.8125rem;
-      color: #0f172a;
-      outline: none;
-    }
-    .header-filters {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-      flex: 2.2;
+    .menu-toggle-btn svg {
+      width: 24px;
+      height: 24px;
+      stroke: currentColor;
     }
     /* Custom Dropdown Container */
     .custom-dropdown {
@@ -84,7 +70,19 @@
       flex: 1;
       display: inline-block;
       min-width: 0;
-      border-left: 1.5px solid #e2e8f0;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      border-radius: 10px;
+      transition: all 0.2s ease;
+    }
+    .custom-dropdown:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+    }
+    .custom-dropdown.active {
+      background: #ffffff;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
     }
     .dropdown-trigger {
       width: 100%;
@@ -101,12 +99,15 @@
       gap: 0.35rem;
       cursor: pointer;
       outline: none;
-      transition: color 0.2s ease, background 0.2s ease;
+      transition: color 0.2s ease;
       text-align: left;
-      border-radius: 0;
+      border-radius: 10px;
     }
-    .dropdown-trigger:hover {
-      color: #1e293b;
+    .custom-dropdown:hover .dropdown-trigger {
+      color: #0f172a;
+    }
+    .custom-dropdown.active .dropdown-trigger {
+      color: #1d4ed8;
     }
     .dropdown-trigger .trigger-label {
       overflow: hidden;
@@ -190,144 +191,724 @@
       border-radius: 99px;
     }
 
-    /* Mobile sticky filter bar (shown below header on mobile) */
-    .mobile-filter-bar {
-      display: none;
+    .brand-logo {
+      height: 35px !important;
+      width: auto !important;
+      max-width: none !important;
+      display: block !important;
     }
-
-    @media (max-width: 900px) {
-      .header-search-container {
-        margin: 0 1rem;
-      }
-      .header-filters {
-        display: none; /* hide from header, show on mobile bar */
-      }
-      .mobile-filter-bar {
-        display: flex;
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border-bottom: 1px solid #e2e8f0;
-        position: sticky;
-        top: 70px;
-        z-index: 99;
-        padding: 0.6rem 1rem;
-        gap: 0.5rem;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-      }
-      .mobile-filter-bar .custom-dropdown {
-        flex: 1;
-        border-left: none;
-      }
-      .mobile-filter-bar .dropdown-trigger {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 999px;
-        padding: 0.45rem 1rem;
-      }
-      .mobile-filter-bar .dropdown-trigger:hover {
-        background: #f1f5f9;
-      }
-    }
-    @media (max-width: 480px) {
+    @media (max-width: 768px) {
       .brand-logo {
-        content: url('/assets/icon-70x70.png');
-        height: 32px !important;
-        width: 32px !important;
-      }
-      .header-search-container {
-        margin: 0 0.5rem;
+        height: 28px !important;
       }
     }
 
-    /* ── Overhauled Body Layout (2-Column Dashboard) ── */
-    .afr-body-wrapper {
-      background: #f8fafc;
-      width: 100%;
+    /* ════════════════════════════════════════════════════════════════
+       ARTICLESHIP FIRM REVIEWS — page-specific layout
+       Palette: navy #0d2452 · brand #1d4ed8 · surfaces #fff / #f4f6fb
+       Semantic score colors: good #16a34a · mid #d97706 · bad #dc2626
+       Signature: the search/filter bar docks into the base of the hero.
+       ════════════════════════════════════════════════════════════════ */
+
+    /* ── Hero band ─────────────────────────────────────────────────── */
+    .afr-hero {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(46% 90% at 82% -10%, rgba(96, 165, 250, 0.40), transparent 60%),
+        radial-gradient(52% 120% at -5% 115%, rgba(37, 99, 235, 0.50), transparent 62%),
+        linear-gradient(180deg, #123063 0%, #0d2452 100%);
+      color: #fff;
+      /* full-bleed band; the inner carries the 1.5rem header-aligned gutter */
+      padding: clamp(2.5rem, 5vw, 3.5rem) 0 5rem;
     }
-    .afr-body-container {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      gap: 2rem;
-      max-width: 1440px;
+    /* quiet hairline-grid texture — the only decorative flourish */
+    .afr-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+      background-size: 46px 46px;
+      -webkit-mask-image: radial-gradient(70% 100% at 80% 0%, #000, transparent 70%);
+              mask-image: radial-gradient(70% 100% at 80% 0%, #000, transparent 70%);
+      pointer-events: none;
+    }
+    .afr-hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 3rem 2rem 5rem;
-    }
-    .afr-sidebar {
-      position: sticky;
-      top: 90px;
-      display: flex;
-      flex-direction: column;
-      gap: 0.875rem;
-      align-self: start;
-      max-height: calc(100vh - 110px);
-      overflow-y: auto;
-      scrollbar-width: none; /* Firefox */
-      -ms-overflow-style: none; /* IE and Edge */
-    }
-    .afr-sidebar::-webkit-scrollbar {
-      display: none; /* Chrome, Safari and Opera */
-    }
-    .afr-sidebar-card {
-      background: #fff;
-      border: 1px solid #e2e8f0;
-      border-radius: 16px;
-      padding: 1.15rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-    }
-    .afr-sidebar-card h3 {
-      font-size: 0.875rem;
-      font-weight: 700;
-      color: #0f172a;
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .afr-sidebar-card h3 i {
-      color: #1d4ed8;
-    }
-    .afr-sidebar-card .card-desc {
-      font-size: 0.725rem;
-      color: #94a3b8;
-      font-weight: 600;
-      margin-top: -0.35rem;
-      margin-bottom: 0.75rem;
-    }
-    .stat-item {
+      padding: 0 1.5rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid #f1f5f9;
-      padding: 0.55rem 0;
+      gap: clamp(1.75rem, 4vw, 3.5rem);
     }
-    .stat-item:last-child {
-      border-bottom: none;
-    }
-    .stat-lbl {
-      font-size: 0.775rem;
-      color: #64748b;
-      font-weight: 600;
-    }
-    .stat-val {
-      font-size: 0.875rem;
-      color: #0f172a;
+    .afr-hero-copy { min-width: 0; max-width: 620px; }
+    .afr-hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono) !important;
+      font-size: 0.52rem;
       font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.13em;
+      color: #bfdbfe;
+      background: rgba(147, 197, 253, 0.12);
+      border: 1px solid rgba(147, 197, 253, 0.28);
+      padding: 0.4rem 0.8rem;
+      border-radius: 999px;
+      margin-bottom: 1.1rem;
     }
-    .tag-cloud {
+    .afr-hero-eyebrow i { font-size: 0.72rem; color: #93c5fd; }
+    .afr-hero h1 {
+      font-size: clamp(1.9rem, 3.4vw, 2.65rem);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.08;
+      margin-bottom: 0.8rem;
+      color: #fff;
+    }
+    .afr-hero-sub {
+      font-size: clamp(0.9rem, 1.4vw, 1rem);
+      line-height: 1.6;
+      color: rgba(219, 231, 255, 0.82);
+      max-width: 500px;
+      margin-bottom: 1.75rem;
+    }
+    .afr-hero-features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.85rem;
+      margin-top: 1.5rem;
+      width: 100%;
+    }
+    @media (max-width: 768px) {
+      .afr-hero-features {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+    }
+    .afr-hfeature {
       display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.65rem 0.8rem;
+      border-radius: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: default;
     }
-    .tag-pill-btn {
+    .afr-hfeature:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.18);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    .afr-hfeature-icon-wrap {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(147, 197, 253, 0.1);
+      border: 1px solid rgba(147, 197, 253, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: #93c5fd;
+      font-size: 0.85rem;
+      transition: all 0.3s ease;
+    }
+    .afr-hfeature:hover .afr-hfeature-icon-wrap {
+      background: #1d4ed8;
+      border-color: #3b82f6;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(29, 78, 216, 0.55);
+    }
+    .afr-hfeature-text {
+      display: flex;
+      flex-direction: column;
+      gap: 0.15rem;
+      min-width: 0;
+    }
+    .afr-hfeature-title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+    .afr-hfeature-desc {
+      font-size: 0.62rem;
+      color: rgba(219, 231, 255, 0.55);
+      line-height: 1.3;
+    }
+    
+    .text-gradient {
+      background: linear-gradient(135deg, #a5f3fc 0%, #60a5fa 50%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: #3b82f6;
+    }
+    
+    /* fadeInUp, fadeInRight, fadeInLeft animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    @keyframes fadeInRight {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    @keyframes fadeInLeft {
+      from {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    
+    .animate-fade-up {
+      animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .animate-fade-right {
+      animation: fadeInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .animate-fade-left {
+      animation: fadeInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    
+    .delay-100 { animation-delay: 100ms; }
+    .delay-200 { animation-delay: 200ms; }
+    .delay-300 { animation-delay: 300ms; }
+    /* CTA panel & Floating Infographics */
+    .afr-hero-side-container {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-shrink: 0;
+      width: 550px;
+      max-width: 100%;
+      position: relative;
+    }
+    .afr-hero-side {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.85rem;
+      flex-shrink: 0;
+      width: 270px;
+      max-width: 100%;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(147, 197, 253, 0.2);
+      border-radius: 18px;
+      padding: 1.6rem 1.4rem;
+      box-shadow: 0 24px 50px -24px rgba(2, 8, 40, 0.7);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: transform 0.3s ease;
+    }
+    .afr-hero-side:hover {
+      transform: translateY(-2px);
+    }
+    .afr-hero-side-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: #fff;
+    }
+    .afr-hero-btn {
+      width: 100%;
+      justify-content: center;
+      background: #fff;
+      color: #1d4ed8;
+      border: none;
+      font-family: var(--font-main);
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 0.85rem 1.6rem;
+      border-radius: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 10px 24px rgba(2, 8, 40, 0.35);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .afr-hero-btn:hover { transform: translateY(-2px); box-shadow: 0 16px 34px rgba(2, 8, 40, 0.45); }
+    .afr-hero-btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+    .afr-hero-note { font-size: 0.7rem; font-weight: 600; color: rgba(191, 219, 254, 0.78); }
+
+    /* Floating reviews infographic */
+    .afr-floating-reviews-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      flex: 1;
+      min-width: 250px;
+      position: relative;
+    }
+    .afr-floating-review {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 14px;
+      padding: 0.8rem 0.95rem;
+      box-shadow: 0 12px 30px rgba(2, 8, 40, 0.2);
+      transition: all 0.3s ease;
+      cursor: default;
+    }
+    @keyframes float1 {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-6px) rotate(0.5deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
+    }
+    @keyframes float2 {
+      0% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(6px) rotate(-0.5deg); }
+      100% { transform: translateY(0px) rotate(0deg); }
+    }
+    .afr-floating-review.card-1 {
+      animation: float1 6s ease-in-out infinite;
+    }
+    .afr-floating-review.card-2 {
+      animation: float2 6s ease-in-out infinite;
+      margin-left: 1.5rem;
+    }
+    .afr-floating-review:hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 40px rgba(2, 8, 40, 0.35);
+      transform: scale(1.02);
+      animation-play-state: paused;
+    }
+    .afr-fr-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin-bottom: 0.45rem;
+    }
+    .afr-fr-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: #ffffff;
+    }
+    .afr-fr-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      flex: 1;
+    }
+    .afr-fr-name {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #ffffff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .afr-fr-loc {
+      font-size: 0.6rem;
+      color: rgba(219, 231, 255, 0.6);
+      font-weight: 500;
+    }
+    .afr-fr-rating {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #f59e0b;
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+      background: rgba(245, 158, 11, 0.12);
+      padding: 0.2rem 0.45rem;
+      border-radius: 6px;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+    .afr-fr-text {
+      font-size: 0.65rem;
+      color: rgba(219, 231, 255, 0.85);
+      line-height: 1.35;
+      margin-bottom: 0.5rem;
+      font-style: italic;
+    }
+    .afr-fr-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 0.4rem;
+    }
+    .afr-fr-tag {
+      font-size: 0.58rem;
+      font-weight: 600;
+      color: #93c5fd;
+      background: rgba(147, 197, 253, 0.12);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+    }
+    .afr-fr-stipend {
+      font-size: 0.625rem;
+      font-weight: 700;
+      color: #10b981;
+    }
+    .afr-fr-stipend-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .afr-sparkline {
+      opacity: 0.85;
+      animation: pulseSparkline 3s ease-in-out infinite;
+    }
+    @keyframes pulseSparkline {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; filter: drop-shadow(0 0 2px rgba(16, 185, 129, 0.4)); }
+    }
+
+    @media (max-width: 1100px) {
+      .afr-floating-reviews-wrap {
+        display: none;
+      }
+      .afr-hero-side-container {
+        width: 300px;
+        justify-content: center;
+      }
+    }
+    @media (max-width: 900px) {
+      .afr-hero-side-container {
+        width: 100%;
+      }
+      .afr-hero-side {
+        width: 100%;
+        flex-shrink: 1;
+      }
+    }
+
+    /* Floating FAB button */
+    .floating-write-btn {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
+      padding: 0.8rem 1.4rem;
+      font-family: var(--font-main);
+      font-size: 0.875rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      box-shadow: 0 10px 25px rgba(29, 78, 216, 0.35);
+      cursor: pointer;
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(20px) scale(0.9);
+      pointer-events: none;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .floating-write-btn.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+    .floating-write-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 14px 35px rgba(29, 78, 216, 0.45);
+      color: #ffffff;
+    }
+    .floating-write-btn:active {
+      transform: translateY(-1px) scale(0.98);
+    }
+    .floating-write-btn i {
+      font-size: 0.85rem;
+    }
+    @media (max-width: 620px) {
+      .floating-write-btn {
+        bottom: 1.5rem;
+        right: 1.5rem;
+        padding: 0.7rem 1.1rem;
+        font-size: 0.8rem;
+      }
+    }
+
+    /* ── Body wrapper + docked command bar ─────────────────────────── */
+    .afr-body-wrapper { background: #f4f6fb; width: 100%; }
+    .afr-body-container {
+      max-width: 1500px;
+      margin: 0 auto;
+      padding: 0 1.5rem 5rem;
+    }
+    .afr-command-bar {
+      background: #fff;
+      border: 1px solid #e3eaf4;
+      border-radius: 20px;
+      box-shadow: 0 20px 44px -24px rgba(13, 36, 82, 0.34);
+      padding: 0.9rem 1rem 0.75rem;
+      margin-top: -3rem;         /* docks the bar into the hero base */
+      margin-bottom: 1.75rem;    /* push the results cards down to avoid overlap */
+      position: sticky;
+      top: 78px;
+      z-index: 90;
+    }
+    .afr-command-bar::before {
+      content: '';
+      position: absolute;
+      inset: -12px -16px;
+      border-radius: 28px;
+      background: rgba(244, 246, 251, 0.75); /* semi-translucent body bg to blend naturally */
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      z-index: -1;
+      pointer-events: none;
+      box-shadow: 0 10px 30px rgba(13, 36, 82, 0.03);
+    }
+    /* Unified Search & Filter capsule */
+    .afr-search-bar-unified {
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid #e3eaf4;
+      border-radius: 18px;
+      box-shadow: 0 16px 36px -16px rgba(13, 36, 82, 0.15), 0 4px 12px rgba(13, 36, 82, 0.03);
+      padding: 0.4rem;
+      width: 100%;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .afr-search-bar-unified:focus-within {
+      border-color: #3b82f6;
+      box-shadow: 0 20px 40px -16px rgba(59, 130, 246, 0.2), 0 0 0 3px rgba(59, 130, 246, 0.08);
+    }
+    .search-segment {
+      display: flex;
+      align-items: center;
+      padding: 0.6rem 1.1rem;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      flex: 1;
+      min-width: 0;
+      gap: 0.8rem;
+    }
+    .search-segment:hover {
+      background-color: #f8fafc;
+    }
+    .segment-search {
+      flex: 1.5;
+    }
+    .segment-icon {
+      font-size: 1.05rem;
+      color: #94a3b8;
+      transition: color 0.2s ease;
+      flex-shrink: 0;
+    }
+    .search-segment:focus-within .segment-icon,
+    .search-segment:hover .segment-icon {
+      color: #3b82f6;
+    }
+    .segment-details {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+    .segment-label {
+      font-family: var(--font-mono) !important;
+      font-size: 0.63rem;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.18rem;
+      pointer-events: none;
+      user-select: none;
+    }
+    .segment-search input {
+      border: none;
+      background: transparent;
+      padding: 0;
+      font-family: var(--font-main);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #0f172a;
+      width: 100%;
+      outline: none;
+    }
+    .segment-search input::placeholder {
+      color: #cbd5e1;
+      font-weight: 500;
+    }
+    .segment-divider {
+      width: 1px;
+      height: 34px;
+      background-color: #eef2f6;
+      margin: 0 0.15rem;
+      flex-shrink: 0;
+    }
+    
+    /* Dropdown segment overrides */
+    .search-segment .custom-dropdown {
+      border: none !important;
+      background: transparent !important;
+      border-radius: 0 !important;
+      width: 100% !important;
+      padding: 0 !important;
+      box-shadow: none !important;
+      flex: none;
+    }
+    .search-segment .custom-dropdown:hover {
+      background: transparent !important;
+    }
+    .search-segment .dropdown-trigger {
+      padding: 0 !important;
+      border: none !important;
+      background: transparent !important;
+      font-size: 0.875rem !important;
+      font-weight: 600 !important;
+      color: #475569 !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      width: 100% !important;
+      min-height: auto !important;
+    }
+    .search-segment .custom-dropdown.active .dropdown-trigger {
+      color: #1d4ed8 !important;
+    }
+    .search-segment .dropdown-trigger i {
+      font-size: 0.7rem !important;
+      color: #cbd5e1 !important;
+      margin-left: 0.5rem !important;
+    }
+    
+    /* Dropdown Menu positioning under Segment */
+    .search-segment .custom-dropdown-menu {
+      top: calc(100% + 14px) !important;
+      border-radius: 14px !important;
+      box-shadow: 0 12px 30px rgba(13, 36, 82, 0.08) !important;
+      border: 1px solid #e2e8f0 !important;
+    }
+    
+    /* Chip Rail split design */
+    .afr-chip-rail {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      border-top: 1px solid #eef2f7;
+      margin-top: 0.95rem;
+      padding: 0.85rem 1.5rem 0.1rem;
+    }
+    
+    /* Dynamic tab switch styling */
+    .afr-filter-tabs {
+      display: inline-flex;
       background: #f1f5f9;
+      border-radius: 10px;
+      padding: 0.2rem;
+      gap: 0.15rem;
+      flex-shrink: 0;
+    }
+    .afr-tab-btn {
+      border: none;
+      background: transparent;
+      font-family: var(--font-main);
+      font-size: 0.725rem;
+      font-weight: 700;
+      color: #64748b;
+      padding: 0.35rem 0.65rem;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .afr-tab-btn:hover {
+      color: #0f172a;
+    }
+    .afr-tab-btn.active {
+      background: #ffffff;
+      color: #1d4ed8;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+    
+    .afr-tab-separator {
+      width: 1px;
+      height: 20px;
+      background: #cbd5e1;
+      margin: 0 0.4rem;
+      flex-shrink: 0;
+      align-self: center;
+    }
+    
+    .afr-filter-contents {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+    }
+    .afr-tab-panel {
+      display: none;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+    .afr-tab-panel.active {
+      display: flex;
+      animation: tabFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes tabFadeIn {
+      from { opacity: 0; transform: translateY(2px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .tag-pill-btn {
+      background: #f8fafc;
       border: 1px solid #e2e8f0;
       color: #475569;
       font-family: var(--font-main);
       font-size: 0.725rem;
       font-weight: 600;
-      border-radius: 999px;
-      padding: 0.3rem 0.7rem;
+      border-radius: 9px;
+      padding: 0.35rem 0.8rem;
+      padding: 0.38rem 0.8rem;
       cursor: pointer;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
       outline: none;
@@ -337,453 +918,422 @@
       border-color: #bfdbfe;
       color: #1d4ed8;
       transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(29, 78, 216, 0.06);
     }
+    .tag-pill-btn:focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; }
     .tag-pill-btn.active {
-      background: #1d4ed8;
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
       border-color: #1d4ed8;
       color: #fff;
-      box-shadow: 0 4px 12px rgba(29,78,216,0.25);
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.2);
     }
-    .clear-filters-btn {
-      background: none;
-      border: none;
-      color: #ef4444;
-      font-family: var(--font-main);
-      font-size: 0.75rem;
-      font-weight: 700;
-      cursor: pointer;
-      margin-top: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-      transition: color 0.15s ease;
-    }
-    .clear-filters-btn:hover {
-      color: #dc2626;
-    }
-
-    /* CTA Card styles */
-    .cta-card {
-      background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%) !important;
-      border: none !important;
-    }
-    .cta-card-content h4 {
-      font-size: 1rem;
-      font-weight: 800;
-      color: #fff;
-      margin-bottom: 0.25rem;
-    }
-    .cta-card-content p {
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.85);
-      line-height: 1.4;
-      margin-bottom: 1rem;
-    }
-    .afr-btn-sidebar {
-      background: #fff;
-      border: none;
-      color: #1d4ed8;
-      font-family: var(--font-main);
-      font-size: 0.775rem;
-      font-weight: 700;
-      padding: 0.55rem 1rem;
-      border-radius: 10px;
-      cursor: pointer;
-      width: 100%;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-      transition: all 0.2s ease;
-    }
-    .afr-btn-sidebar:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-    }
-
-    /* ── Main Content Grid Overrides ── */
-    .afr-main-content {
-      min-width: 0;
-    }
-    .afr-count-bar {
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .afr-count-label {
-      font-size: 0.875rem;
-      color: #64748b;
-      font-weight: 600;
-      background: #f1f5f9;
-      padding: 0.35rem 0.875rem;
-      border-radius: 999px;
-      border: 1px solid #e2e8f0;
-      display: inline-block;
-    }
-    .active-filter-badge {
-      font-size: 0.75rem;
-      color: #1d4ed8;
-      font-weight: 700;
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      padding: 0.35rem 0.875rem;
-      border-radius: 999px;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    /* ── Modern Firm Cards Styling ── */
-    .afr-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
-    }
-    .afr-card {
-      background: #fff !important;
-      border: 1px solid #e2e8f0 !important;
-      border-radius: 12px !important;
-      padding: 0.875rem !important;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.02) !important;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem !important;
-    }
-    .afr-card::before {
-      display: none !important;
-    }
-    .afr-card:hover {
-      transform: translateY(-6px) scale(1.01) !important;
-      box-shadow: 0 20px 35px -10px rgba(59, 130, 246, 0.1) !important;
-      border-color: rgba(59, 130, 246, 0.3) !important;
-    }
-    .afr-firm-avatar {
-      width: 48px !important;
-      height: 48px !important;
-      background: #ffffff !important;
-      border: 1.5px solid #e2e8f0 !important;
-      border-radius: 14px !important;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #2563eb !important;
-      font-size: 1.375rem !important;
-      font-weight: 800 !important;
-      flex-shrink: 0 !important;
-      letter-spacing: -0.02em !important;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.02) !important;
-    }
-    .afr-card-name {
-      font-size: 1.125rem !important;
-      font-weight: 700 !important;
-      color: #0f172a !important;
-      margin-bottom: 0.15rem !important;
-    }
-    .afr-card-loc {
-      font-size: 0.775rem !important;
-      color: #64748b !important;
-      font-weight: 500;
-    }
-    .afr-card-loc i {
-      color: #94a3b8;
-    }
-    .afr-card-metrics {
+    
+    .afr-chip-rail-right {
       display: flex;
       align-items: center;
       gap: 0.5rem;
       flex-wrap: wrap;
-    }
-    .afr-card-rating {
-      background: #f8fafc;
-      padding: 0.25rem 0.5rem;
-      border-radius: 8px;
-      border: 1px solid #f1f5f9;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem !important;
-    }
-    .afr-rating-num {
-      font-size: 1.1rem !important;
-      font-weight: 800 !important;
-      color: #0f172a !important;
-    }
-    .afr-rating-right {
-      display: flex;
-      flex-direction: column;
-      gap: 0.05rem;
-    }
-    .afr-stars-text {
-      color: #f59e0b !important;
-      font-size: 0.7rem !important;
-      letter-spacing: 0.2px !important;
-      line-height: 1 !important;
-    }
-    .afr-review-count {
-      font-size: 0.65rem !important;
-      color: #64748b !important;
-      font-weight: 600 !important;
-      line-height: 1 !important;
-    }
-    .afr-card-stipend {
-      font-size: 0.775rem !important;
-      font-weight: 700 !important;
-      color: #065f46 !important;
-      background: #f0fdf4 !important;
-      border: 1px solid #dcfce7 !important;
-      padding: 0.35rem 0.875rem !important;
-      border-radius: 999px !important;
-      align-self: flex-start;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-    .afr-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem !important;
-      margin-top: 0.25rem;
-    }
-    .afr-tag {
-      font-size: 0.725rem !important;
-      font-weight: 600 !important;
-      color: #334155 !important;
-      background: #f1f5f9 !important;
-      border: 1px solid #e2e8f0 !important;
-      padding: 0.25rem 0.65rem !important;
-      border-radius: 999px !important;
-      transition: all 0.2s ease;
-    }
-    .afr-tag:hover {
-      background: #e2e8f0 !important;
-    }
-    .afr-card-footer {
-      border-top: 1px solid #f1f5f9 !important;
-      padding-top: 1rem !important;
-      margin-top: auto !important;
-    }
-    .afr-card-cta {
-      font-size: 0.8125rem !important;
-      color: #2563eb !important;
-      font-weight: 700 !important;
-    }
-    .afr-card-arrow {
-      background: #eff6ff !important;
-      color: #2563eb !important;
-      transition: all 0.25s ease !important;
-      border-radius: 50%;
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .afr-card:hover .afr-card-arrow {
-      background: #2563eb !important;
-      color: #fff !important;
-      transform: translateX(3px);
-    }
-
-    @media (max-width: 1024px) {
-      .afr-body-container {
-        grid-template-columns: 1fr;
-        padding: 2rem 1rem 5rem;
-      }
-      .afr-sidebar {
-        position: static;
-      }
-      .afr-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-
-
-    /* ── Compact Page Title Row ── */
-    .afr-page-title-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1rem;
-      border-bottom: 1px solid #e2e8f0;
-      padding-bottom: 1rem;
-      gap: 1.5rem;
-    }
-    .afr-page-title-row h1 {
-      font-size: 1.75rem;
-      font-weight: 800;
-      color: #0f172a;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-      margin-bottom: 0.35rem;
-    }
-    .afr-page-title-row p {
-      font-size: 0.875rem;
-      color: #64748b;
-      font-weight: 500;
+      margin-left: auto;
+      flex-shrink: 0;
     }
     .afr-count-badge {
       background: #eff6ff;
       color: #1d4ed8;
       border: 1px solid #bfdbfe;
-      font-size: 0.8125rem;
+      font-size: 0.725rem;
       font-weight: 700;
-      padding: 0.5rem 1rem;
+      padding: 0.38rem 0.8rem;
       border-radius: 999px;
       white-space: nowrap;
-      display: inline-block;
-      box-shadow: 0 2px 8px rgba(29, 78, 216, 0.08);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
     }
-    @media (max-width: 576px) {
-      .afr-page-title-row {
+    .active-filter-badge {
+      font-size: 0.725rem;
+      color: #1d4ed8;
+      font-weight: 700;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 0.38rem 0.8rem;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .clear-filters-btn {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #dc2626;
+      font-family: var(--font-main);
+      font-size: 0.725rem;
+      font-weight: 700;
+      border-radius: 999px;
+      padding: 0.38rem 0.8rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    @media (max-width: 900px) {
+      .afr-tab-separator {
+        display: none;
+      }
+      .afr-chip-rail {
         flex-direction: column;
         align-items: flex-start;
-        gap: 1rem;
+        gap: 0.75rem;
       }
-      .afr-count-badge {
-        width: auto;
+      .afr-filter-contents {
+        width: 100%;
+      }
+      .afr-chip-rail-right {
+        margin-left: 0;
+        width: 100%;
+        border-top: 1px solid #eef2f7;
+        padding-top: 0.75rem;
+        justify-content: flex-start;
       }
     }
-    .afr-count-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.5rem;
+    @media (max-width: 480px) {
+      .afr-tab-btn {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.65rem;
+      }
     }
-    .afr-count-label {
-      font-size: 0.875rem;
-      color: var(--text-muted);
-      font-weight: 600;
-      letter-spacing: 0.01em;
-    }
+    
 
-    /* ── Firm grid ────────────────────────────────────────────────────── */
+    .afr-main-content { min-width: 0; }
     .afr-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.5rem;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
+      gap: 1.2rem;
+      align-items: stretch;   /* equal-height cards per row */
     }
 
-    /* ── Firm card ────────────────────────────────────────────────────── */
+    /* ── CTA Section (reviews listing page) ─────────────────────────── */
+    .afr-cta-section {
+      margin-top: 3rem;
+      padding-bottom: 2rem;
+      max-width: 1600px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 100%;
+    }
+    .afr-cta-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 2rem;
+      background: linear-gradient(135deg, #1e3a8a, #2563eb 50%, #3b82f6);
+      padding: 5rem 1.5rem;
+      text-align: center;
+      box-shadow: 0 20px 60px -10px rgba(29, 78, 216, 0.45);
+    }
+    @media (min-width: 768px) { .afr-cta-card { padding: 6rem 2rem; } }
+    .afr-cta-grid-bg {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px);
+      background-size: 56px 56px;
+      -webkit-mask-image: radial-gradient(ellipse 65% 70% at 50% 50%, black, transparent);
+      mask-image: radial-gradient(ellipse 65% 70% at 50% 50%, black, transparent);
+      z-index: 1;
+    }
+    .afr-cta-glow-1 {
+      position: absolute; width: 320px; height: 320px;
+      left: -96px; top: -96px; border-radius: 999px;
+      background: rgba(255,255,255,.08); filter: blur(90px);
+      animation: afrCtaPulse 11s ease-in-out infinite; z-index: 1;
+    }
+    .afr-cta-glow-2 {
+      position: absolute; width: 384px; height: 384px;
+      right: -64px; bottom: -128px; border-radius: 999px;
+      background: rgba(11,27,51,.2); filter: blur(100px); z-index: 1;
+    }
+    @keyframes afrCtaPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+    .afr-cta-inner { position: relative; z-index: 2; }
+    .afr-cta-eyebrow {
+      display: flex; align-items: center; justify-content: center;
+      gap: 0.75rem; margin-bottom: 1.5rem;
+    }
+    .afr-cta-eyebrow .idx {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      font-weight: 700; letter-spacing: 0.25em; color: #fcd34d;
+    }
+    .afr-cta-eyebrow .rule { width: 2.5rem; height: 1px; background: rgba(255,255,255,.4); }
+    .afr-cta-eyebrow .txt {
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      text-transform: uppercase; letter-spacing: 0.25em; color: rgba(255,255,255,.75);
+    }
+    .afr-cta-title {
+      margin: 1rem auto 0; max-width: 48rem;
+      font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 850;
+      line-height: 1.1; letter-spacing: -.025em; color: #ffffff;
+    }
+    .afr-cta-title em { font-style: italic; color: #fcd34d; }
+    .afr-cta-copy {
+      margin: 1.25rem auto 0; max-width: 36rem;
+      font-size: 15px; line-height: 1.625; color: rgba(255,255,255,.8);
+    }
+    .afr-btn-white {
+      margin-top: 2.25rem; display: inline-flex; align-items: center;
+      gap: 0.625rem; border-radius: 999px; background: #ffffff;
+      padding: 0.875rem 2rem; font-size: 14.5px; font-weight: 700;
+      color: #1d4ed8; border: none; cursor: pointer;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,.1), 0 4px 6px -4px rgba(0,0,0,.1);
+      transition: transform 0.2s, background 0.2s; font-family: inherit;
+    }
+    .afr-btn-white:hover { transform: translateY(-2px); background: #f8fafc; }
+    .afr-btn-white .afr-cta-arr { transition: transform 0.3s; }
+    .afr-btn-white:hover .afr-cta-arr { transform: translateX(4px); }
+    .afr-cta-note {
+      margin-top: 1.75rem; display: flex; align-items: center;
+      justify-content: center; gap: 0.4rem;
+      font-family: 'JetBrains Mono', monospace; font-size: 11px;
+      text-transform: uppercase; letter-spacing: 0.18em; color: rgba(255,255,255,.65);
+    }
+    .afr-cta-note i { color: #6ee7b7; }
+
+    /* ── Paginator ──────────────────────────────────────────────────────── */
+    .afr-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      margin-top: 2.25rem;
+      padding-bottom: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .pg-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 36px;
+      height: 36px;
+      padding: 0 0.5rem;
+      border-radius: 10px;
+      border: 1.5px solid #e3eaf4;
+      background: #ffffff;
+      color: #334155;
+      font-family: inherit;
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      line-height: 1;
+    }
+    .pg-btn:hover:not(.pg-disabled):not(.pg-active) {
+      border-color: #bfdbfe;
+      background: #eff6ff;
+      color: #1d4ed8;
+    }
+    .pg-btn.pg-active {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.28);
+    }
+    .pg-btn.pg-arrow { color: #64748b; font-size: 0.7rem; }
+    .pg-btn.pg-disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    .pg-ellipsis {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 28px;
+      height: 36px;
+      color: #94a3b8;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Firm card ─────────────────────────────────────────────────── */
     .afr-card {
-      background: #fff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 0.875rem;
+      background: linear-gradient(145deg, #fff 0%, #fff 72%, color-mix(in srgb, var(--card-color, #2563eb) 3%, #fff) 100%);
+      border: 1px solid #e3eaf4;
+      border-radius: 18px;
+      padding: 1.2rem 1.2rem 1rem;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      gap: 0.8rem;
       text-decoration: none;
       color: inherit;
       cursor: pointer;
       position: relative;
       overflow: hidden;
-      transition: box-shadow 0.22s ease, transform 0.22s ease, border-color 0.15s ease;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      box-shadow: 0 4px 14px rgba(13, 36, 82, 0.045);
+      transition: box-shadow 0.24s ease, transform 0.24s ease, border-color 0.2s ease;
     }
-    /* Colored top accent stripe */
-    .afr-card::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 4px;
-      background: var(--card-color, var(--primary-brand));
-      border-radius: 18px 18px 0 0;
-    }
+    /* colored top accent keyed to the firm */
     .afr-card:hover {
-      box-shadow: 0 20px 60px -10px rgba(0,0,0,0.13);
+      box-shadow: 0 24px 48px -18px rgba(13, 36, 82, 0.22);
       transform: translateY(-5px);
-      border-color: transparent;
+      border-color: color-mix(in srgb, var(--card-color, #2563eb) 35%, #e6ebf3);
     }
-    .afr-card:focus-visible {
-      outline: 2px solid var(--primary-brand);
-      outline-offset: 2px;
-    }
+    .afr-card:focus-visible { outline: 2px solid var(--primary-brand); outline-offset: 2px; }
 
     .afr-card-top {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      gap: 1rem;
+      gap: 0.75rem;
+    }
+    .afr-card-heading {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      min-width: 0;
+      flex: 1;
     }
     .afr-firm-avatar {
       width: 48px;
       height: 48px;
-      background: #ffffff;
-      border: 1.5px solid #e2e8f0;
       border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #2563eb;
-      font-size: 1.375rem;
+      font-size: 1.3rem;
       font-weight: 800;
       flex-shrink: 0;
       letter-spacing: -0.02em;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      color: var(--card-color, #2563eb);
+      background: color-mix(in srgb, var(--card-color, #2563eb) 9%, #fff);
+      border: 1.5px solid color-mix(in srgb, var(--card-color, #2563eb) 22%, #fff);
     }
     .afr-card-info { flex: 1; min-width: 0; }
     .afr-card-name {
-      font-size: 1.0625rem;
-      font-weight: 700;
+      font-size: 1.1rem;
+      font-weight: 750;
       color: var(--text-primary);
-      line-height: 1.3;
-      margin-bottom: 0.25rem;
+      line-height: 1.25;
+      margin-bottom: 0.3rem;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
     .afr-card-loc {
-      font-size: 0.8125rem;
+      font-size: 0.8rem;
       color: var(--text-muted);
+      font-weight: 500;
       display: flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 0.32rem;
+    }
+    .afr-card-loc i { color: #cbd5e1; font-size: 0.78rem; }
+
+    /* rating: big score + micro stars, top-right */
+    .afr-card-rating-block {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 0.28rem;
+      padding: 0.38rem 0.42rem;
+      flex-shrink: 0;
+      min-width: 62px;
+    }
+    .afr-rating-big {
+      font-size: 1.35rem;
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+    .afr-rating-big.good { color: #16a34a; }
+    .afr-rating-big.mid  { color: #d97706; }
+    .afr-rating-big.bad  { color: #dc2626; }
+    .afr-rating-stars {
+      color: #f59e0b;
+      font-size: 0.58rem;
+      letter-spacing: 1.5px;
+      line-height: 1;
+    }
+    .afr-rating-stars .far { color: #d6dee8; }
+    .afr-rating-label {
+      color: #94a3b8;
+      font-size: 0.53rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      text-transform: uppercase;
     }
 
-    /* Rating Badge on top right */
-    .afr-card-badge-rating {
-      display: inline-flex;
+    .afr-card-section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: #64748b;
+      font-size: 0.64rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+    .afr-card-section-title i { color: var(--card-color, #2563eb); font-size: 0.68rem; }
+
+    /* scorecard: three comparison axes, aligned across every card */
+    .afr-scorecard {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: #f7f9fc;
+      border: 1px solid #edf1f7;
+      border-radius: 13px;
+      padding: 0.78rem 0.3rem;
+    }
+    .afr-score-col {
+      display: flex;
+      flex-direction: column;
       align-items: center;
       gap: 0.25rem;
-      background: #fffbeb;
-      color: #d97706;
-      border: 1px solid #fef3c7;
-      font-size: 0.775rem;
+      text-align: center;
+      padding: 0 0.35rem;
+      border-right: 1px solid #e6ecf4;
+      min-width: 0;
+    }
+    .afr-score-col:last-child { border-right: none; }
+    .afr-score-val {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: #0f172a;
+      line-height: 1.1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .afr-score-val.good { color: #16a34a; }
+    .afr-score-val.mid  { color: #d97706; }
+    .afr-score-val.bad  { color: #dc2626; }
+    .afr-score-val.na,
+    .afr-score-val .na  { color: #cbd5e1; font-weight: 700; }
+    .afr-score-lbl {
+      font-size: 0.58rem;
       font-weight: 700;
-      padding: 0.25rem 0.55rem;
-      border-radius: 8px;
-      flex-shrink: 0;
-    }
-    .afr-card-badge-rating i {
-      font-size: 0.7rem;
-      color: #f59e0b;
-    }
-
-    /* Card body for tag rows */
-    .afr-card-body {
-      padding: 0.15rem 0;
-    }
-
-    /* Stipend pill inline with tags */
-    .afr-card-stipend {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.3rem;
-      font-size: 0.7rem;
-      font-weight: 600;
-      color: #065f46;
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      padding: 0.2rem 0.625rem;
-      border-radius: var(--radius-full);
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
       white-space: nowrap;
     }
 
-    /* Culture tags */
+    /* work exposure / domain tags */
+    .afr-exposure {
+      min-height: 67px;
+      padding: 0.72rem 0.8rem;
+      border: 1px solid #edf2f7;
+      border-radius: 13px;
+      background: #fbfcfe;
+    }
+    .afr-exposure .afr-card-section-title { margin-bottom: 0.55rem; }
     .afr-tags {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.375rem;
+      gap: 0.45rem;
     }
     .afr-tag {
       font-size: 0.7rem;
@@ -791,18 +1341,23 @@
       color: #334155;
       background: #f1f5f9;
       border: 1px solid #e2e8f0;
-      padding: 0.2rem 0.625rem;
+      padding: 0.27rem 0.7rem;
       border-radius: var(--radius-full);
       white-space: nowrap;
     }
+    .afr-tags-empty {
+      color: #94a3b8;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
 
-    /* Card Footer styling */
+    /* footer pinned to the bottom so equal-height cards line up */
     .afr-card-footer {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding-top: 0.75rem;
-      border-top: 1px solid #f1f5f9;
+      padding-top: 0.9rem;
+      border-top: 1px solid #eaf0f6;
       margin-top: auto;
     }
     .afr-review-count {
@@ -811,25 +1366,24 @@
       font-weight: 600;
       line-height: 1;
     }
+    .afr-review-count i { color: #94a3b8; margin-right: 0.25rem; }
     .afr-card-cta {
-      font-size: 0.8125rem;
+      font-size: 0.78rem;
       font-weight: 700;
-      color: #1d4ed8;
+      color: #fff;
       display: flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.45rem;
       letter-spacing: 0.01em;
-      transition: color 0.15s ease;
+      background: #1d4ed8;
+      border-radius: 9px;
+      padding: 0.48rem 0.65rem;
+      box-shadow: 0 4px 10px rgba(29, 78, 216, 0.16);
     }
-    .afr-card-cta i {
-      transition: transform 0.2s ease;
-      font-size: 0.75rem;
-    }
-    .afr-card:hover .afr-card-cta i {
-      transform: translateX(3px);
-    }
+    .afr-card-cta i { transition: transform 0.2s ease; font-size: 0.75rem; }
+    .afr-card:hover .afr-card-cta i { transform: translateX(4px); }
 
-    /* ── States ───────────────────────────────────────────────────────── */
+    /* ── States ────────────────────────────────────────────────────── */
     .afr-loading {
       grid-column: 1/-1;
       display: flex;
@@ -847,6 +1401,10 @@
       animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      .afr-spinner { animation-duration: 1.6s; }
+      .afr-card, .afr-hero-btn, .afr-card-cta i { transition: none; }
+    }
     .afr-empty {
       grid-column: 1/-1;
       text-align: center;
@@ -877,20 +1435,20 @@
       font-family: var(--font-main);
       font-size: 0.8125rem;
       font-weight: 700;
-      padding: 0.55rem 1.15rem;
-      border-radius: 10px;
+      padding: 0.6rem 1.2rem;
+      border-radius: 11px;
       border: none;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
       margin-top: 0.875rem;
-      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.15);
+      box-shadow: 0 6px 16px rgba(29, 78, 216, 0.2);
       transition: all 0.2s ease;
     }
     .afr-btn-empty-state:hover {
       transform: translateY(-1px);
-      box-shadow: 0 6px 16px rgba(29, 78, 216, 0.25);
+      box-shadow: 0 10px 22px rgba(29, 78, 216, 0.3);
     }
     .afr-btn-empty-state i {
       font-size: 0.8125rem !important;
@@ -907,232 +1465,347 @@
     }
     .afr-error i { font-size: 2rem; margin-bottom: 0.75rem; display: block; }
 
-    /* ── Modal ────────────────────────────────────────────────────────── */
-    .afr-modal {
+    /* ── Responsive ────────────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .afr-body-container { padding: 0 1.25rem 4rem; }
+      .afr-grid { gap: 1.1rem; }
+    }
+    @media (max-width: 900px) {
+      .afr-hero { padding: 2.5rem 0 4.25rem; }
+      .afr-hero-inner { flex-direction: column; align-items: stretch; gap: 1.75rem; }
+      .afr-hero-side,
+      .afr-hero-side-container { display: none !important; }
+      .afr-command-bar {
+        position: sticky !important;
+        top: 60px !important;
+        z-index: 99 !important;
+        margin-top: -2.5rem !important;
+        padding: 0.75rem !important;
+        box-shadow: 0 10px 30px rgba(13, 36, 82, 0.12) !important;
+        background: #ffffff !important;
+        border-radius: 20px !important;
+        border: 1px solid #e3eaf4 !important;
+      }
+      
+      .afr-search-bar-unified {
+        flex-direction: row !important;
+        align-items: center !important;
+        padding: 0.35rem 0.5rem !important;
+        background: #ffffff !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: none !important;
+        border-radius: 14px !important;
+      }
+      .afr-search-bar-unified .segment-divider,
+      .afr-search-bar-unified .segment-dropdown-container {
+        display: none !important;
+      }
+      .afr-mobile-filter-btn {
+        display: inline-flex !important;
+      }
+      .afr-search-bar-unified .segment-search {
+        padding: 0.5rem 0.75rem !important;
+        flex: 1 !important;
+      }
+      .afr-chip-rail {
+        display: none !important;
+      }
+    }
+    
+    /* Mobile results count bar */
+    .mobile-results-header {
+      display: none;
+    }
+    @media (max-width: 900px) {
+      .mobile-results-header {
+        display: block;
+        margin-bottom: 0.85rem;
+      }
+    }
+    
+    /* Mobile Filters Button (Mobile only) */
+    .afr-mobile-filter-btn {
+      display: none;
+      align-items: center;
+      gap: 0.4rem;
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      padding: 0.65rem 1rem;
+      font-family: var(--font-main);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(29, 78, 216, 0.16);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      height: 40px;
+      margin-left: 0.5rem;
+    }
+    .afr-mobile-filter-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(29, 78, 216, 0.25);
+    }
+    .afr-mobile-filter-btn i {
+      font-size: 0.875rem;
+    }
+    @media (max-width: 620px) {
+      .afr-body-container { padding: 0 1rem 3.5rem; }
+      .afr-hstat { padding: 0 1rem; }
+      .afr-grid { grid-template-columns: 1fr; }
+      .afr-chip-rail {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.8rem;
+      }
+      .afr-chip-rail-right {
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-start;
+      }
+    }
+
+    /* ── Mobile Filter Drawer ──────────────────────────────────────────────── */
+    .filter-modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      z-index: 1000;
-      background: rgba(10,16,32,0.65);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      overflow-y: auto;
-      padding: 2rem 1rem;
-      align-items: flex-start;
+      background: rgba(13, 30, 60, 0.55);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      z-index: 9999;
+      align-items: flex-end;
       justify-content: center;
     }
-    .afr-modal.active { display: flex; }
-
-    .afr-modal-card {
-      background: #fff;
-      border-radius: 20px;
+    .filter-modal-overlay.show .filter-modal-content {
+      transform: translateY(0);
+    }
+    .filter-modal-content {
+      background: #ffffff;
+      border-radius: 24px 24px 0 0;
       width: 100%;
-      max-width: 960px; /* Widened to 960px */
-      margin: 1.5rem auto;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.22);
-      overflow: visible;
-      display: block;
-      animation: modal-in 0.22s ease-out;
-    }
-    @keyframes modal-in {
-      from { opacity: 0; transform: translateY(20px) scale(0.96); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .afr-modal-header {
+      max-width: 600px;
+      max-height: 90vh;
       display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      padding: 1.75rem 1.75rem 0;
-      border-bottom: 1px solid #f1f5f9;
-      padding-bottom: 1.25rem;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+      overflow: hidden;
     }
-    .afr-modal-header h2 { font-size: 1.25rem; font-weight: 700; }
-    .afr-modal-header p {
-      font-size: 0.8rem;
-      color: #059669;
-      font-weight: 600;
+    .filter-modal-content .modal-header {
       display: flex;
       align-items: center;
-      gap: 0.3rem;
-      margin-top: 0.2rem;
+      justify-content: space-between;
+      padding: 1.1rem 1.25rem 0.85rem;
+      border-bottom: 1px solid #edf2f7;
+      flex-shrink: 0;
     }
-    .afr-modal-close {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      width: 34px; height: 34px;
+    .filter-modal-content .modal-header h4 {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #1e293b;
+    }
+    .filter-modal-content .modal-close-action {
+      background: #f1f5f9;
+      border: none;
       border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 1.2rem;
+      color: #64748b;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      color: var(--text-muted);
-      font-size: 0.875rem;
-      flex-shrink: 0;
-      transition: background var(--transition-fast), color var(--transition-fast);
-    }
-    .afr-modal-close:hover { background: #fee2e2; color: #dc2626; border-color: #fecaca; }
-
-    #afr-login-prompt { padding: 2.5rem 1.75rem; text-align: center; }
-    .afr-login-gate i { font-size: 2.5rem; color: #cbd5e1; margin-bottom: 1rem; display: block; }
-    .afr-login-gate p { color: var(--text-secondary); margin-bottom: 1.25rem; }
-
-    #afr-form {
-      padding: 1.5rem 1.75rem 1.75rem;
-      margin: 0;
-    }
-    #afr-fieldset {
-      border: none;
-      padding: 0;
-      margin: 0;
-      overflow: visible;
-    }
-    .afr-form-section { margin-bottom: 1.15rem; }
-    .afr-section-title {
-      font-size: 0.6875rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-      color: #94a3b8;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid #f1f5f9;
-    }
-    .afr-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; }
-    .afr-form-row-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.875rem; }
-    .afr-field { display: flex; flex-direction: column; gap: 0.35rem; }
-    .afr-field label { font-size: 0.8125rem; font-weight: 600; color: #475569; }
-    .afr-field input,
-    .afr-field textarea {
-      font-family: var(--font-main);
-      font-size: 0.9rem;
-      color: var(--text-primary);
-      background: #f8fafc;
-      border: 1.5px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 0.65rem 0.875rem;
-      outline: none;
-      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-    }
-    .afr-field input:focus,
-    .afr-field textarea:focus {
-      border-color: var(--primary-brand);
-      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
-      background: #fff;
-    }
-    .afr-field textarea {
-      min-height: 54px;
-      height: 54px;
-      resize: none;
-    }
-
-    .afr-ratings-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
-    }
-    @media (max-width: 600px) {
-      .afr-ratings-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-    .afr-rating-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 0.75rem;
-      padding: 0.4rem 0.75rem;
-      background: #f8fafc;
-      border-radius: 10px;
-      border: 1px solid #e2e8f0;
-    }
-    .afr-rating-label { font-size: 0.875rem; font-weight: 600; color: #475569; flex-shrink: 0; }
-    .afr-rating-label .req { color: #dc2626; }
-    .afr-star-input { display: flex; align-items: center; gap: 0.1rem; }
-    .afr-star-input button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 0.2rem;
-      font-size: 1.375rem;
       line-height: 1;
-      color: #cbd5e1;
-      transition: color var(--transition-fast), transform var(--transition-fast);
+      transition: background 0.15s;
     }
-    .afr-star-input button:hover,
-    .afr-star-input button.filled { color: #f59e0b; }
-    .afr-star-input button:hover { transform: scale(1.18); }
-
-    .afr-tag-group { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.625rem; }
-    .afr-tag-pill { position: relative; }
-    .afr-tag-pill input { position: absolute; opacity: 0; pointer-events: none; }
-    .afr-tag-pill span {
-      display: inline-block;
-      font-size: 0.8125rem;
-      font-weight: 600;
-      padding: 0.35rem 0.875rem;
-      border-radius: var(--radius-full);
+    .filter-modal-content .modal-close-action:hover {
+      background: #e2e8f0;
+    }
+    .filter-modal-content .modal-body {
+      padding: 1rem 1.25rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .filter-modal-content .filter-group {
+      margin-bottom: 1.1rem;
+    }
+    .filter-modal-content .filter-group label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #64748b;
+      margin-bottom: 0.45rem;
+    }
+    .filter-modal-content .filter-control {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
       border: 1.5px solid #e2e8f0;
-      color: #64748b;
-      font-size: 0.75rem;
-      font-weight: 600;
-      padding: 0.35rem 0.75rem;
-      border-radius: 20px;
-      border: 1px solid #e2e8f0;
-      color: #64748b;
+      border-radius: 10px;
+      background: #f8fafc;
+      font-size: 0.875rem;
+      color: #1e293b;
+      font-family: var(--font-main, 'Outfit', sans-serif);
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
       cursor: pointer;
+      transition: border-color 0.15s;
     }
-    .afr-tag-pill input:checked + span { background: #eff6ff; border-color: #3b82f6; color: #2563eb; }
-
-    .afr-form-footer {
+    .filter-modal-content .filter-control:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background-color: #fff;
+    }
+    .filter-modal-content .modal-footer {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-top: 1px solid #f1f5f9;
-      padding-top: 1rem;
-      margin-top: 1.15rem;
-      gap: 1rem;
+      gap: 0.75rem;
+      padding: 0.85rem 1.25rem 1.1rem;
+      border-top: 1px solid #edf2f7;
+      flex-shrink: 0;
     }
-    .afr-form-status { font-size: 0.8125rem; min-height: 1.2em; margin-bottom: 0; font-weight: 600; flex: 1; }
-    .afr-form-status.ok { color: #059669; }
-    .afr-form-status.err { color: #dc2626; }
- 
-    .afr-btn-primary {
+    .filter-modal-content .modal-footer .btn {
+      flex: 1;
+      padding: 0.7rem 1rem;
+      border-radius: 12px;
+      font-size: 0.875rem;
+      font-weight: 700;
+      font-family: var(--font-main, 'Outfit', sans-serif);
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+    }
+    .filter-modal-content .modal-footer .btn:first-child {
+      background: #f1f5f9;
+      color: #64748b;
+      border: 1.5px solid #e2e8f0;
+    }
+    .filter-modal-content .modal-footer .btn:first-child:hover {
+      background: #e2e8f0;
+    }
+    .filter-modal-content .modal-footer .btn:last-child {
+      background: linear-gradient(135deg, #1d4ed8 0%, #1e3a8a 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(29, 78, 216, 0.3);
+    }
+    .filter-modal-content .modal-footer .btn:last-child:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(29, 78, 216, 0.35);
+    }
+    /* Mobile drawer tag pills styling */
+    .filter-modal-content .tag-pill-btn {
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-      color: #fff;
-      font-family: var(--font-main);
-      font-size: 0.9375rem;
-      font-weight: 700;
-      padding: 0.65rem 1.5rem;
-      border-radius: 12px;
-      border: none;
+      padding: 0.35rem 0.75rem;
+      margin: 0.2rem;
+      border-radius: 20px;
+      border: 1.5px solid #e2e8f0;
+      background: #ffffff;
+      color: #475569;
+      font-size: 0.78rem;
+      font-weight: 600;
+      font-family: var(--font-main, 'Outfit', sans-serif);
       cursor: pointer;
-      text-decoration: none;
-      transition: opacity var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
-      box-shadow: 0 4px 16px rgba(37,99,235,0.35);
+      transition: all 0.15s;
     }
-    .afr-btn-primary:hover { opacity: 0.92; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(37,99,235,0.4); }
-    .afr-btn-primary:active { transform: translateY(0); }
-    .afr-btn-primary:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+    .filter-modal-content .tag-pill-btn:hover {
+      border-color: #3b82f6;
+      color: #1d4ed8;
+      background: #eff6ff;
+    }
+    .filter-modal-content .tag-pill-btn.active {
+      background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
+      color: #ffffff;
+      border-color: transparent;
+    }
+    /* Mobile drawer tab switcher overrides */
+    .filter-modal-content .afr-filter-tabs {
+      background: #f1f5f9;
+      padding: 3px;
+      border-radius: 10px;
+      gap: 2px;
+    }
+    .filter-modal-content .afr-tab-btn {
+      flex: 1;
+      padding: 0.4rem 0.5rem;
+      font-size: 0.73rem;
+    }
+    .filter-modal-content .afr-tab-panel {
+      display: none;
+      flex-wrap: wrap;
+      gap: 0;
+    }
+    .filter-modal-content .afr-tab-panel.active {
+      display: flex;
+    }
+    .mobile-drawer-tabs {
+      display: flex;
+      margin-bottom: 0.75rem;
+      width: 100%;
+    }
+    .mobile-drawer-tab-contents {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      border: 1px solid #e8eff9;
+      border-radius: 12px;
+      padding: 0.85rem;
+      background: #f8fafc;
+    }
+      /* ── Redesigned Header Link Pills ───────────────────────────────────── */
+      .afd-header-pill-link {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 0.4rem 1rem;
+        font-family: var(--font-main);
+        font-size: 12.5px;
+        font-weight: 700;
+        border-radius: 99px;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        box-shadow: 0 2px 6px rgba(46, 108, 230, 0.04);
+      }
+      @media (min-width: 640px) {
+        .afd-header-pill-link {
+          display: inline-flex;
+        }
+      }
 
-    /* ── Responsive ───────────────────────────────────────────────────── */
-    @media (max-width: 768px) {
-      .afr-hero { padding: 4rem 1.5rem 3.5rem; }
-      .afr-body { padding: 1.5rem 1rem 5rem; }
-      .afr-search-bar { padding: 0.75rem 1rem; }
-      .afr-grid { grid-template-columns: 1fr; }
-      .afr-form-row { grid-template-columns: 1fr; }
-      .afr-search-inner { gap: 0.5rem; }
-      .afr-filter-select { flex: 1; }
-    }
-    @media (min-width: 1280px) {
-      .afr-grid { grid-template-columns: repeat(3, 1fr); }
-    }
-  </style>
+      /* Articleship Program (Primary theme) */
+      .afd-header-pill-link:not(.secondary) {
+        background: #eaf1fe;
+        color: #1d4ed8;
+        border: 1px solid #dbe7fd;
+      }
+      .afd-header-pill-link:not(.secondary):hover {
+        background: #dbe7fd;
+        color: #1e3a8a;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(46, 108, 230, 0.08);
+      }
+
+      /* Portal Link (Secondary theme) */
+      .afd-header-pill-link.secondary {
+        background: #ffffff;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+      }
+      .afd-header-pill-link.secondary:hover {
+        background: #eaf1fe;
+        color: #1d4ed8;
+        border-color: #bcd4fb;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+      }
+    </style>
 </head>
 <body>
 
@@ -1141,31 +1814,10 @@
       <a href="/" class="brand-link">
         <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
       </a>
-      <div class="header-search-container">
-        <div class="afr-search-field">
-          <i class="fas fa-search"></i>
-          <input id="search-input" type="search" placeholder="Search firms…" aria-label="Search firm name">
-        </div>
-        <div class="header-filters">
-          <select id="filter-location" class="header-filter-select" aria-label="Filter by location">
-            <option value="">All locations</option>
-          </select>
-          <select id="filter-stipend" class="header-filter-select" aria-label="Filter by stipend">
-            <option value="">Any stipend</option>
-            <option value="5000">₹5,000+</option>
-            <option value="10000">₹10,000+</option>
-            <option value="15000">₹15,000+</option>
-            <option value="20000">₹20,000+</option>
-          </select>
-          <select id="sort-by" class="header-filter-select" aria-label="Sort">
-            <option value="rating">Highest rated</option>
-            <option value="count">Most reviewed</option>
-            <option value="newest">Newest</option>
-          </select>
-        </div>
-      </div>
       <div class="nav-actions">
         <div class="auth-buttons-container"></div>
+        <a href="/articleship-program/index.html" class="afd-header-pill-link">Articleship Program</a>
+        <a href="/ca-articleship-opportunities.html" class="afd-header-pill-link secondary">Job Portal</a>
         <button class="icon-button menu-toggle-btn" id="menuButton" aria-label="Open menu">
           <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -1220,221 +1872,337 @@
 
 
 
-  <!-- Mobile-only sticky filter bar -->
-  <div class="mobile-filter-bar">
-    <select id="mobile-filter-location" class="mobile-filter-select" aria-label="Filter by location">
-      <option value="">All locations</option>
-    </select>
-    <select id="mobile-filter-stipend" class="mobile-filter-select" aria-label="Filter by stipend">
-      <option value="">Any stipend</option>
-      <option value="5000">₹5,000+</option>
-      <option value="10000">₹10,000+</option>
-      <option value="15000">₹15,000+</option>
-      <option value="20000">₹20,000+</option>
-    </select>
-    <select id="mobile-sort-by" class="mobile-filter-select" aria-label="Sort">
-      <option value="rating">Highest rated</option>
-      <option value="count">Most reviewed</option>
-      <option value="newest">Newest</option>
-    </select>
-  </div>
+  <!-- Hero -->
+  <section class="afr-hero">
+    <div class="afr-hero-inner">
+      <div class="afr-hero-copy animate-fade-right">
+        <span class="afr-hero-eyebrow"><i class="fas fa-user-secret"></i> 100% anonymous · by CA articles, for CA articles</span>
+        <h1>Know the firm <span class="text-gradient">before you sign.</span></h1>
+        <p class="afr-hero-sub">Honest reviews of articleship firms — stipend, hours, culture — written anonymously by students who trained there.</p>
+        
+        <div class="afr-hero-features">
+          <div class="afr-hfeature">
+            <div class="afr-hfeature-icon-wrap"><i class="fas fa-user-shield"></i></div>
+            <div class="afr-hfeature-text">
+              <span class="afr-hfeature-title">100% Anonymous</span>
+              <span class="afr-hfeature-desc">No login or signup required. Your identity is secure.</span>
+            </div>
+          </div>
+          <div class="afr-hfeature">
+            <div class="afr-hfeature-icon-wrap"><i class="fas fa-coins"></i></div>
+            <div class="afr-hfeature-text">
+              <span class="afr-hfeature-title">Real Stipend Data</span>
+              <span class="afr-hfeature-desc">Compare actual stipends and work hours before signing.</span>
+            </div>
+          </div>
+          <div class="afr-hfeature">
+            <div class="afr-hfeature-icon-wrap"><i class="fas fa-circle-check"></i></div>
+            <div class="afr-hfeature-text">
+              <span class="afr-hfeature-title">Written by Articles</span>
+              <span class="afr-hfeature-desc">Genuine experiences from students who trained there.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="afr-hero-side-container animate-fade-left">
+        <!-- Floating Review Cards Infographic -->
+        <div class="afr-floating-reviews-wrap">
+          <!-- Card 1 -->
+          <div class="afr-floating-review card-1">
+            <div class="afr-fr-header">
+              <div class="afr-fr-avatar" style="background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa">P</div>
+              <div class="afr-fr-info">
+                <span class="afr-fr-name">PwC India</span>
+                <span class="afr-fr-loc">Mumbai</span>
+              </div>
+              <div class="afr-fr-rating">
+                <i class="fas fa-star" style="color: #f59e0b"></i> 4.8
+              </div>
+            </div>
+            <p class="afr-fr-text">"Excellent learning exposure in Statutory Audit. Work hours are long but stipend is always on time."</p>
+            <div class="afr-fr-meta">
+              <span class="afr-fr-tag">Stat Audit</span>
+              <div class="afr-fr-stipend-wrap">
+                <svg class="afr-sparkline" width="36" height="14" viewBox="0 0 36 14">
+                  <path d="M0 10 Q 9 2, 18 8 T 36 2" fill="none" stroke="#10b981" stroke-width="1.8" stroke-linecap="round"></path>
+                </svg>
+                <span class="afr-fr-stipend">₹15,000</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Card 2 -->
+          <div class="afr-floating-review card-2">
+            <div class="afr-fr-header">
+              <div class="afr-fr-avatar" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); color: #34d399">D</div>
+              <div class="afr-fr-info">
+                <span class="afr-fr-name">Deloitte</span>
+                <span class="afr-fr-loc">Bangalore</span>
+              </div>
+              <div class="afr-fr-rating">
+                <i class="fas fa-star" style="color: #f59e0b"></i> 4.5
+              </div>
+            </div>
+            <p class="afr-fr-text">"Amazing work-life balance compared to peer firms. Transfer support is easily approved."</p>
+            <div class="afr-fr-meta">
+              <span class="afr-fr-tag">Taxation</span>
+              <div class="afr-fr-stipend-wrap">
+                <svg class="afr-sparkline" width="36" height="14" viewBox="0 0 36 14">
+                  <path d="M0 8 Q 9 12, 18 4 T 36 2" fill="none" stroke="#10b981" stroke-width="1.8" stroke-linecap="round"></path>
+                </svg>
+                <span class="afr-fr-stipend">₹12,500</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-  <!-- Overhauled 2-Column Dashboard Body -->
+        <!-- Main CTA Card -->
+        <div class="afr-hero-side">
+          <span class="afr-hero-side-title">Trained at a firm? Help the next batch.</span>
+          <button id="sidebar-write-btn" class="afr-hero-btn"><i class="fas fa-pen"></i> Write a Review</button>
+          <span class="afr-hero-note">Takes under a minute · no login needed</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Command bar + results -->
   <div class="afr-body-wrapper">
     <div class="afr-body-container">
-      
-      <!-- LEFT Sidebar -->
-      <aside class="afr-sidebar">
-        <!-- Dynamic Stats Card -->
-        <div class="afr-sidebar-card stats-card">
-          <h3><i class="fas fa-chart-simple"></i> Platform Stats</h3>
-          <div class="stat-item">
-            <span class="stat-lbl">Anonymous Reviews</span>
-            <span class="stat-val" id="stat-total-reviews">—</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-lbl">Average Stipend</span>
-            <span class="stat-val" id="stat-avg-stipend">—</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-lbl">Reviewed Locations</span>
-            <span class="stat-val" id="stat-locations-count">—</span>
-          </div>
-        </div>
 
-        <!-- Interactive Tag Cloud Card -->
-        <div class="afr-sidebar-card tags-card">
-          <h3><i class="fas fa-tags"></i> Popular Tags</h3>
-          <p class="card-desc">Click tag to filter reviews</p>
-          <div class="tag-cloud" id="tag-cloud">
-            <button class="tag-pill-btn" data-tag="Good Mentorship">Good Mentorship</button>
-            <button class="tag-pill-btn" data-tag="Heavy Workload">Heavy Workload</button>
-            <button class="tag-pill-btn" data-tag="Good Stipend">Good Stipend</button>
-            <button class="tag-pill-btn" data-tag="Friendly Team">Friendly Team</button>
-            <button class="tag-pill-btn" data-tag="Great Exposure">Great Exposure</button>
-            <button class="tag-pill-btn" data-tag="Study Leave">Study Leave</button>
+      <div class="afr-command-bar">
+        <div class="afr-search-bar-unified">
+          <!-- Segment 1: Search Firm -->
+          <div class="search-segment segment-search">
+            <i class="fas fa-search segment-icon"></i>
+            <div class="segment-details">
+              <label for="search-input" class="segment-label">Firm Name</label>
+              <input id="search-input" type="search" placeholder="Search firms…" aria-label="Search firm name">
+            </div>
           </div>
-          <button id="clear-tag-btn" class="clear-filters-btn" style="display: none;">
-            <i class="fas fa-xmark"></i> Clear tag filter
+          
+          <div class="segment-divider"></div>
+
+          <!-- Segment 2: Location -->
+          <div class="search-segment segment-dropdown-container">
+            <i class="fas fa-location-dot segment-icon"></i>
+            <div class="segment-details">
+              <span class="segment-label">Location</span>
+              <select id="filter-location" class="afr-filter-select" aria-label="Filter by location">
+                <option value="">All locations</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="segment-divider"></div>
+
+          <!-- Segment 3: Stipend -->
+          <div class="search-segment segment-dropdown-container">
+            <i class="fas fa-indian-rupee-sign segment-icon"></i>
+            <div class="segment-details">
+              <span class="segment-label">Min Stipend</span>
+              <select id="filter-stipend" class="afr-filter-select" aria-label="Filter by stipend">
+                <option value="">Any stipend</option>
+                <option value="5000">₹5,000+</option>
+                <option value="10000">₹10,000+</option>
+                <option value="15000">₹15,000+</option>
+                <option value="20000">₹20,000+</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="segment-divider"></div>
+
+          <!-- Segment 4: Sort -->
+          <div class="search-segment segment-dropdown-container">
+            <i class="fas fa-arrow-down-wide-narrow segment-icon"></i>
+            <div class="segment-details">
+              <span class="segment-label">Sort By</span>
+              <select id="sort-by" class="afr-filter-select" aria-label="Sort">
+                <option value="rating">Highest rated</option>
+                <option value="count">Most reviewed</option>
+                <option value="newest">Newest</option>
+              </select>
+            </div>
+          </div>
+          
+          <!-- Filters Button (Mobile Only) -->
+          <button id="open-filter-modal-btn" class="afr-mobile-filter-btn" aria-label="Open Filters">
+            <i class="fas fa-sliders"></i>
+            <span>Filters</span>
           </button>
         </div>
+        
+        <div class="afr-chip-rail">
+          <!-- Switcher -->
+          <div class="afr-filter-tabs">
+            <button class="afr-tab-btn active" data-target="domain-group"><i class="fas fa-tags"></i> Domain</button>
+            <button class="afr-tab-btn" data-target="client-group"><i class="fas fa-building"></i> Clients</button>
+            <button class="afr-tab-btn" data-target="skill-group"><i class="fas fa-screwdriver-wrench"></i> Skills</button>
+          </div>
+          
+          <!-- Separator -->
+          <div class="afr-tab-separator"></div>
 
-        <!-- Call-to-action Card -->
-        <div class="afr-sidebar-card cta-card">
-          <div class="cta-card-content">
-            <h4>Reviewed a firm?</h4>
-            <p>Help other CA students by posting an anonymous review.</p>
-            <button id="sidebar-write-btn" class="afr-btn-sidebar"><i class="fas fa-pen"></i> Write a Review</button>
+          <!-- Tab Contents (Pills) -->
+          <div class="afr-filter-contents">
+            <!-- Domain Group -->
+            <div class="afr-tab-panel active" id="domain-group">
+              <button class="tag-pill-btn" data-type="Domain" data-tag="Statutory Audit">Statutory Audit</button>
+              <button class="tag-pill-btn" data-type="Domain" data-tag="Internal Audit">Internal Audit</button>
+              <button class="tag-pill-btn" data-type="Domain" data-tag="Income Tax">Income Tax</button>
+              <button class="tag-pill-btn" data-type="Domain" data-tag="GST">GST</button>
+              <button class="tag-pill-btn" data-type="Domain" data-tag="Bank Audit">Bank Audit</button>
+              <button class="tag-pill-btn" data-type="Domain" data-tag="Accounting">Accounting</button>
+            </div>
+
+            <!-- Client Exposure Group -->
+            <div class="afr-tab-panel" id="client-group">
+              <button class="tag-pill-btn" data-type="Clients" data-tag="Listed Companies">Listed Companies</button>
+              <button class="tag-pill-btn" data-type="Clients" data-tag="Manufacturing">Manufacturing</button>
+              <button class="tag-pill-btn" data-type="Clients" data-tag="Financial Services">Financial Services</button>
+              <button class="tag-pill-btn" data-type="Clients" data-tag="Real Estate">Real Estate</button>
+              <button class="tag-pill-btn" data-type="Clients" data-tag="Outsourcing">Outsourcing</button>
+            </div>
+
+            <!-- Skills Group -->
+            <div class="afr-tab-panel" id="skill-group">
+              <button class="tag-pill-btn" data-type="Skills" data-tag="SAP">SAP</button>
+              <button class="tag-pill-btn" data-type="Skills" data-tag="Excel">Excel</button>
+              <button class="tag-pill-btn" data-type="Skills" data-tag="Tally">Tally</button>
+              <button class="tag-pill-btn" data-type="Skills" data-tag="Financial Modelling">Financial Modelling</button>
+              <button class="tag-pill-btn" data-type="Skills" data-tag="Data Analytics">Data Analytics</button>
+            </div>
+          </div>
+
+          <!-- Right Zone: Count and Clear -->
+          <div class="afr-chip-rail-right">
+            <span id="title-firms-count" class="afr-count-badge" style="display: none;"></span>
+            <span id="active-tag-badge" class="active-filter-badge" style="display: none;"></span>
+            <button id="clear-filters-btn" class="clear-filters-btn" style="display: none;"><i class="fas fa-xmark"></i> Clear Filters</button>
           </div>
         </div>
-      </aside>
+      </div>
 
-      <!-- RIGHT Content -->
       <main class="afr-main-content">
-        <!-- Compact Page Header -->
-        <div class="afr-page-title-row">
-          <div>
-            <h1>Articleship Firm Reviews</h1>
-            <p>Anonymous reviews by CA articles from across India</p>
-          </div>
-          <span id="title-firms-count" class="afr-count-badge" style="display: none;"></span>
-        </div>
-
-        <div class="afr-count-bar">
-          <span id="active-tag-badge" class="active-filter-badge" style="display: none;"></span>
-        </div>
         <div class="afr-grid" id="firm-list" aria-live="polite"></div>
+        <!-- Pagination Bar -->
+        <div id="afr-pagination" class="afr-pagination" aria-label="Pagination" style="display:none;"></div>
       </main>
 
-    </div>
-  </div>
-
-  <!-- Write a review modal -->
-  <div id="review-form-modal" class="afr-modal" aria-hidden="true">
-    <div class="afr-modal-card" role="dialog" aria-modal="true" aria-labelledby="afr-modal-title">
-
-      <div class="afr-modal-header">
-        <div>
-          <h2 id="afr-modal-title">Write a Review</h2>
-          <p><i class="fas fa-user-secret"></i> Anonymous · your name is never shown</p>
-        </div>
-        <button class="afr-modal-close" id="afr-modal-close" aria-label="Close">
-          <i class="fas fa-times"></i>
-        </button>
-      </div>
-
-      <div id="afr-login-prompt" hidden>
-        <div class="afr-login-gate">
-          <i class="fas fa-lock"></i>
-          <p>Log in to post an anonymous review</p>
-          <a class="afr-btn-primary" href="/login.html" style="max-width:200px;margin:0 auto">Log in</a>
-        </div>
-      </div>
-
-      <form id="afr-form">
-        <fieldset id="afr-fieldset">
-
-          <div class="afr-form-section">
-            <h3 class="afr-section-title">Firm Details</h3>
-            <div class="afr-form-row-4">
-              <div class="afr-field">
-                <label for="f-firm">Firm name <span style="color:#dc2626">*</span></label>
-                <input id="f-firm" name="firm_name" required placeholder="e.g., Deloitte India">
-              </div>
-              <div class="afr-field">
-                <label for="f-location">Location <span style="color:#dc2626">*</span></label>
-                <input id="f-location" name="location" required placeholder="e.g., Mumbai">
-              </div>
-              <div class="afr-field">
-                <label for="f-role">Your role</label>
-                <input id="f-role" name="role_title" placeholder="e.g., Audit Article">
-              </div>
-              <div class="afr-field">
-                <label for="f-stipend">Stipend (₹)</label>
-                <input id="f-stipend" name="stipend" type="number" min="0" placeholder="e.g., 12000">
-              </div>
+      <!-- CTA Section -->
+      <section class="afr-cta-section">
+        <div class="afr-cta-card">
+          <div class="afr-cta-grid-bg"></div>
+          <div class="afr-cta-glow-1"></div>
+          <div class="afr-cta-glow-2"></div>
+          <div class="afr-cta-inner">
+            <div class="afr-cta-eyebrow">
+              <span class="idx">MSC</span>
+              <span class="rule"></span>
+              <span class="txt">Pay it forward</span>
             </div>
-          </div>
-
-          <div class="afr-form-section">
-            <h3 class="afr-section-title">Your Ratings</h3>
-            <div class="afr-ratings-grid">
-              <div class="afr-rating-row">
-                <span class="afr-rating-label">Overall <span class="req">*</span></span>
-                <div class="afr-star-input" data-name="overall_rating" data-required="true"></div>
-              </div>
-              <div class="afr-rating-row">
-                <span class="afr-rating-label">Work-Life Balance</span>
-                <div class="afr-star-input" data-name="work_life_balance_rating"></div>
-              </div>
-              <div class="afr-rating-row">
-                <span class="afr-rating-label">Learning &amp; Exposure</span>
-                <div class="afr-star-input" data-name="learning_exposure_rating"></div>
-              </div>
-              <div class="afr-rating-row">
-                <span class="afr-rating-label">Stipend Satisfaction</span>
-                <div class="afr-star-input" data-name="stipend_satisfaction_rating"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="afr-form-section">
-            <h3 class="afr-section-title">Your Experience</h3>
-            <div class="afr-field" style="margin-bottom:0.875rem">
-              <label for="f-review">Your review</label>
-              <textarea id="f-review" name="review_text" rows="4" placeholder="Share your honest experience — hours, work type, management style…"></textarea>
-            </div>
-            <div class="afr-form-row">
-              <div class="afr-field">
-                <label for="f-pros">Pros</label>
-                <textarea id="f-pros" name="pros" rows="2" placeholder="What's great here?"></textarea>
-              </div>
-              <div class="afr-field">
-                <label for="f-cons">Cons</label>
-                <textarea id="f-cons" name="cons" rows="2" placeholder="What could be better?"></textarea>
-              </div>
-            </div>
-          </div>
-
-          <div class="afr-form-section">
-            <h3 class="afr-section-title">Culture</h3>
-            <div class="afr-recommend-row">
-              <label>
-                <input type="checkbox" name="would_recommend">
-                I would recommend this firm to other CA students
-              </label>
-            </div>
-            <div class="afr-tag-group">
-              <label class="afr-tag-pill"><input type="checkbox" name="culture_tags" value="Good Mentorship"><span>Good Mentorship</span></label>
-              <label class="afr-tag-pill"><input type="checkbox" name="culture_tags" value="Heavy Workload"><span>Heavy Workload</span></label>
-              <label class="afr-tag-pill"><input type="checkbox" name="culture_tags" value="Good Stipend"><span>Good Stipend</span></label>
-              <label class="afr-tag-pill"><input type="checkbox" name="culture_tags" value="Friendly Team"><span>Friendly Team</span></label>
-              <label class="afr-tag-pill"><input type="checkbox" name="culture_tags" value="Great Exposure"><span>Great Exposure</span></label>
-              <label class="afr-tag-pill"><input type="checkbox" name="culture_tags" value="Study Leave"><span>Study Leave</span></label>
-            </div>
-          </div>
-
-          <div class="afr-form-footer">
-            <p id="afr-form-status" class="afr-form-status" role="status"></p>
-            <button type="submit" class="afr-btn-primary">
-              <i class="fas fa-paper-plane"></i> Submit Anonymous Review
+            <h2 class="afr-cta-title">Survived those<br /><em>articleship</em> days?</h2>
+            <p class="afr-cta-copy">Tell the next batch what it's really like — the learning, the stipend timeliness, and the hours. Two minutes of honesty can redirect someone's career.</p>
+            <button class="afr-btn-white" id="cta-reviews-write-btn">
+              <i class="fas fa-pen" style="font-size:14px;margin-right:4px;"></i>
+              Write an anonymous review
+              <i class="fas fa-arrow-right afr-cta-arr" style="font-size:14px;margin-left:6px;"></i>
             </button>
+            <p class="afr-cta-note">
+              <i class="fas fa-shield-halved" style="font-size:12px;margin-right:4px;"></i>
+              100% anonymous — your identity is never stored
+            </p>
           </div>
+        </div>
+      </section>
 
-        </fieldset>
-      </form>
     </div>
   </div>
+
+  <!-- Mobile Filters Drawer Modal Overlay -->
+  <div class="filter-modal-overlay" id="filterModalOverlay" style="display: none;">
+    <div class="filter-modal-content">
+      <div class="modal-header">
+        <h4>Filters</h4>
+        <button class="modal-close-action" id="closeFilterModalBtn">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="filter-group">
+          <label for="filter-location-mobile">Location</label>
+          <select id="filter-location-mobile" class="filter-control">
+            <option value="">All locations</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-stipend-mobile">Min Stipend</label>
+          <select id="filter-stipend-mobile" class="filter-control">
+            <option value="">Any stipend</option>
+            <option value="5000">₹5,000+</option>
+            <option value="10000">₹10,000+</option>
+            <option value="15000">₹15,000+</option>
+            <option value="20000">₹20,000+</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="sort-by-mobile">Sort By</label>
+          <select id="sort-by-mobile" class="filter-control">
+            <option value="rating">Highest rated</option>
+            <option value="count">Most reviewed</option>
+            <option value="newest">Newest</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Expertise &amp; Exposure Tags</label>
+          <div class="afr-filter-tabs mobile-drawer-tabs">
+            <button type="button" class="afr-tab-btn active" data-target="domain-group-mobile"><i class="fas fa-tags"></i> Domain</button>
+            <button type="button" class="afr-tab-btn" data-target="client-group-mobile"><i class="fas fa-building"></i> Clients</button>
+            <button type="button" class="afr-tab-btn" data-target="skill-group-mobile"><i class="fas fa-screwdriver-wrench"></i> Skills</button>
+          </div>
+          <div class="mobile-drawer-tab-contents">
+            <div class="afr-tab-panel active" id="domain-group-mobile">
+              <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Statutory Audit">Statutory Audit</button>
+              <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Internal Audit">Internal Audit</button>
+              <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Income Tax">Income Tax</button>
+              <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="GST">GST</button>
+              <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Bank Audit">Bank Audit</button>
+              <button type="button" class="tag-pill-btn" data-type="Domain" data-tag="Accounting">Accounting</button>
+            </div>
+            <div class="afr-tab-panel" id="client-group-mobile">
+              <button type="button" class="tag-pill-btn" data-type="Clients" data-tag="Listed Companies">Listed Companies</button>
+              <button type="button" class="tag-pill-btn" data-type="Clients" data-tag="Manufacturing">Manufacturing</button>
+              <button type="button" class="tag-pill-btn" data-type="Clients" data-tag="Financial Services">Financial Services</button>
+              <button type="button" class="tag-pill-btn" data-type="Clients" data-tag="Real Estate">Real Estate</button>
+              <button type="button" class="tag-pill-btn" data-type="Clients" data-tag="Outsourcing">Outsourcing</button>
+            </div>
+            <div class="afr-tab-panel" id="skill-group-mobile">
+              <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="SAP">SAP</button>
+              <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="Excel">Excel</button>
+              <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="Tally">Tally</button>
+              <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="Financial Modelling">Financial Modelling</button>
+              <button type="button" class="tag-pill-btn" data-type="Skills" data-tag="Data Analytics">Data Analytics</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="mobileResetBtn" class="btn">Reset</button>
+        <button id="applyFiltersBtn" class="btn">Apply Filters</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Action Button -->
+  <button id="floating-write-btn" class="floating-write-btn" aria-label="Write a Review">
+    <i class="fas fa-pen"></i> Write a Review
+  </button>
+
+  <script src="/articleship-review-wizard.js"></script>
 
   <script>
     const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
     const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
-
-    async function getCurrentSession() {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      return session || null;
-    }
 
     // ── Sidemenu ──────────────────────────────────────────────────────────
     const menuButton = document.getElementById('menuButton');
@@ -1495,21 +2263,34 @@
     function groupByFirm(reviews) {
       const map = new Map();
       for (const r of reviews) {
-        const key = r.firm_name.trim().toLowerCase();
+        const key = r.firm_id || r.firm_name.trim().toLowerCase();
         if (!map.has(key)) map.set(key, []);
         map.get(key).push(r);
       }
+      const HOURS_LBL = ArticleshipReviewWizard.LABELS.working_hours;
       return [...map.values()].map(rs => {
         const tagCounts = {};
-        rs.forEach(r => (r.culture_tags || []).forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; }));
-        const topTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 3).map(e => e[0]);
+        rs.forEach(r => {
+          (r.domain_tags || []).forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; });
+          (r.client_tags || []).forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; });
+          (r.skill_tags || []).forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; });
+        });
+        const topTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 5).map(e => e[0]);
         const stipends = rs.map(r => r.stipend).filter(s => typeof s === 'number');
+        const recs = rs.map(r => r.would_recommend).filter(v => typeof v === 'boolean');
+        const hoursCounts = {};
+        rs.forEach(r => { if (r.working_hours) hoursCounts[r.working_hours] = (hoursCounts[r.working_hours] || 0) + 1; });
+        const topHoursKey = Object.entries(hoursCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || null;
         return {
+          firmId: rs[0].firm_id,
           firmName: rs[0].firm_name,
           location: rs[0].location,
           count: rs.length,
           avgOverall: avg(rs.map(r => r.overall_rating)),
           avgStipend: stipends.length ? Math.round(stipends.reduce((a, b) => a + b, 0) / stipends.length) : null,
+          recommendPct: recs.length ? Math.round((recs.filter(Boolean).length / recs.length) * 100) : null,
+          topHoursKey,
+          topHours: topHoursKey ? HOURS_LBL[topHoursKey] : null,
           topTags,
           reviews: rs,
         };
@@ -1517,13 +2298,71 @@
     }
 
     let FIRMS = [];
+    const PAGE_SIZE = 15;
+    let currentPage = 1;
+    let currentFilteredFirms = [];
+
+    function firmCardHTML(f) {
+      const HOURS_SHORT = { lt8: '<8h/day', '8_9': '8–9h/day', '9_10': '9–10h/day', '10_12': '10–12h/day', gt12: '12h+/day' };
+      const scoreClass = v => (v >= 4 ? 'good' : v >= 3 ? 'mid' : 'bad');
+      const recClass = p => (p >= 70 ? 'good' : p >= 40 ? 'mid' : 'bad');
+      const color = firmColor(f.firmName);
+      const initial = f.firmName.trim()[0].toUpperCase();
+      const tagsHTML = f.topTags.map(t => `<span class="afr-tag">${escapeHTML(t)}</span>`).join('');
+      const exposureHTML = tagsHTML || '<span class="afr-tags-empty">No work exposure details shared yet</span>';
+      return `
+        <a class="afr-card" style="--card-color:${color}" href="/articleship-firm-review.html?firm=${encodeURIComponent(f.firmName)}" aria-label="View reviews for ${escapeHTML(f.firmName)}">
+          <div class="afr-card-top">
+            <div class="afr-card-heading">
+              <div class="afr-firm-avatar">${initial}</div>
+              <div class="afr-card-info">
+                <div class="afr-card-name">${escapeHTML(f.firmName)}</div>
+                <div class="afr-card-loc"><i class="fas fa-location-dot"></i> ${escapeHTML(f.location)}</div>
+              </div>
+            </div>
+            <div class="afr-card-rating-block">
+              <span class="afr-rating-big ${scoreClass(f.avgOverall)}">${f.avgOverall.toFixed(1)}</span>
+              <span class="afr-rating-stars">${starsHTML(f.avgOverall)}</span>
+              <span class="afr-rating-label">Rating</span>
+            </div>
+          </div>
+          <div class="afr-card-section-title"><i class="fas fa-chart-simple"></i> Review snapshot</div>
+          <div class="afr-scorecard">
+            <div class="afr-score-col">
+              <span class="afr-score-val ${f.recommendPct !== null ? recClass(f.recommendPct) : 'na'}">${f.recommendPct !== null ? f.recommendPct + '%' : '—'}</span>
+              <span class="afr-score-lbl">Recommend</span>
+            </div>
+            <div class="afr-score-col">
+              <span class="afr-score-val">${f.avgStipend ? '₹' + Number(f.avgStipend).toLocaleString('en-IN') : '<span class="na">—</span>'}</span>
+              <span class="afr-score-lbl">Avg stipend</span>
+            </div>
+            <div class="afr-score-col">
+              <span class="afr-score-val">${f.topHoursKey ? HOURS_SHORT[f.topHoursKey] : '<span class="na">—</span>'}</span>
+              <span class="afr-score-lbl">Typical hours</span>
+            </div>
+          </div>
+          <div class="afr-exposure">
+            <div class="afr-card-section-title"><i class="fas fa-briefcase"></i> Reported work exposure</div>
+            <div class="afr-tags">${exposureHTML}</div>
+          </div>
+          <div class="afr-card-footer">
+            <span class="afr-review-count"><i class="fas fa-comment-dots"></i>${f.count} review${f.count > 1 ? 's' : ''}</span>
+            <span class="afr-card-cta">View Reviews <i class="fas fa-arrow-right"></i></span>
+          </div>
+        </a>`;
+    }
 
     function renderFirmList(firms) {
       const host = document.getElementById('firm-list');
       const titleCount = document.getElementById('title-firms-count');
+      const countText = `${firms.length} ${firms.length === 1 ? 'firm' : 'firms'} found`;
+
+      currentFilteredFirms = firms;
+      currentPage = 1;
+
       if (titleCount) {
         if (firms.length > 0) {
-          titleCount.textContent = `${firms.length} ${firms.length === 1 ? 'firm' : 'firms'} found`;
+          titleCount.textContent = countText;
           titleCount.style.display = 'inline-block';
         } else {
           titleCount.style.display = 'none';
@@ -1538,7 +2377,6 @@
           titleText = `"${escapeHTML(q)}" is not available`;
           descText = `Be the first one to write a review for ${escapeHTML(q)}!`;
         }
-        
         host.innerHTML = `
           <div class="afr-empty">
             <i class="fas fa-building-circle-exclamation afr-empty-icon"></i>
@@ -1546,46 +2384,63 @@
             <p>${descText}</p>
             <button id="empty-write-btn" class="afr-btn-empty-state"><i class="fas fa-pen"></i> Write a Review</button>
           </div>`;
-          
         const emptyBtn = document.getElementById('empty-write-btn');
-        if (emptyBtn) {
-          emptyBtn.addEventListener('click', () => openReviewModal(q));
-        }
+        if (emptyBtn) emptyBtn.addEventListener('click', () => ArticleshipReviewWizard.open({ firmName: q }));
+        renderPaginator(0, 'afr-pagination');
         return;
       }
 
-      host.innerHTML = firms.map(f => {
-        const color = firmColor(f.firmName);
-        const initial = f.firmName.trim()[0].toUpperCase();
-        const tagsHTML = f.topTags.map(t => `<span class="afr-tag">${escapeHTML(t)}</span>`).join('');
-        const stipendHTML = f.avgStipend
-          ? `<span class="afr-card-stipend"><i class="fas fa-indian-rupee-sign"></i> ${Number(f.avgStipend).toLocaleString('en-IN')}/mo avg</span>`
-          : '';
-        return `
-          <a class="afr-card" style="--card-color:${color}" href="/articleship-firm-review.html?firm=${encodeURIComponent(f.firmName)}" aria-label="View reviews for ${escapeHTML(f.firmName)}">
-            <div class="afr-card-top">
-              <div class="afr-firm-avatar">${initial}</div>
-              <div class="afr-card-info">
-                <div class="afr-card-name">${escapeHTML(f.firmName)}</div>
-                <div class="afr-card-loc"><i class="fas fa-location-dot"></i> ${escapeHTML(f.location)}</div>
-              </div>
-              <div class="afr-card-badge-rating">
-                <i class="fas fa-star"></i> ${f.avgOverall.toFixed(1)}
-              </div>
-            </div>
-            ${(stipendHTML || tagsHTML) ? `
-            <div class="afr-card-body">
-              <div class="afr-tags">
-                ${stipendHTML}
-                ${tagsHTML}
-              </div>
-            </div>` : ''}
-            <div class="afr-card-footer">
-              <span class="afr-review-count">${f.count} review${f.count > 1 ? 's' : ''}</span>
-              <span class="afr-card-cta">View Reviews <i class="fas fa-arrow-right"></i></span>
-            </div>
-          </a>`;
-      }).join('');
+      // Render page 1
+      host.innerHTML = firms.slice(0, PAGE_SIZE).map(firmCardHTML).join('');
+      renderPaginator(firms.length, 'afr-pagination');
+    }
+
+    function renderPaginator(totalItems, containerId) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+      if (totalPages <= 1) { el.style.display = 'none'; el.innerHTML = ''; return; }
+      el.style.display = 'flex';
+
+      const MAX_VISIBLE = 7;
+      function pageRange(cur, total) {
+        if (total <= MAX_VISIBLE) return Array.from({ length: total }, (_, i) => i + 1);
+        const pages = [];
+        pages.push(1);
+        if (cur > 3) pages.push('...');
+        const start = Math.max(2, cur - 1);
+        const end = Math.min(total - 1, cur + 1);
+        for (let i = start; i <= end; i++) pages.push(i);
+        if (cur < total - 2) pages.push('...');
+        pages.push(total);
+        return pages;
+      }
+
+      function build(page) {
+        const pages = pageRange(page, totalPages);
+        el.innerHTML = [
+          `<button class="pg-btn pg-arrow${page === 1 ? ' pg-disabled' : ''}" data-page="${page - 1}" aria-label="Previous page"><i class="fas fa-chevron-left"></i></button>`,
+          ...pages.map(p =>
+            p === '...'
+              ? `<span class="pg-ellipsis">…</span>`
+              : `<button class="pg-btn${p === page ? ' pg-active' : ''}" data-page="${p}">${p}</button>`
+          ),
+          `<button class="pg-btn pg-arrow${page === totalPages ? ' pg-disabled' : ''}" data-page="${page + 1}" aria-label="Next page"><i class="fas fa-chevron-right"></i></button>`
+        ].join('');
+
+        el.querySelectorAll('.pg-btn:not(.pg-disabled)').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const p = parseInt(btn.dataset.page);
+            if (isNaN(p) || p < 1 || p > totalPages || p === currentPage) return;
+            currentPage = p;
+            const host = document.getElementById('firm-list');
+            host.innerHTML = currentFilteredFirms.slice((p - 1) * PAGE_SIZE, p * PAGE_SIZE).map(firmCardHTML).join('');
+            build(p);
+            host.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+        });
+      }
+      build(currentPage);
     }
 
     // ── Custom Dropdowns UI Generator ──
@@ -1674,41 +2529,50 @@
       const locs = [...new Set(FIRMS.map(f => f.location))].sort();
       const optionsHTML = '<option value="">All locations</option>' +
         locs.map(l => `<option value="${escapeHTML(l)}">${escapeHTML(l)}</option>`).join('');
-      
-      const deskSel = document.getElementById('filter-location');
-      const mobSel = document.getElementById('mobile-filter-location');
-      if (deskSel) deskSel.innerHTML = optionsHTML;
-      if (mobSel) mobSel.innerHTML = optionsHTML;
 
-      // Re-initialize dynamic custom dropdowns
+      const locSel = document.getElementById('filter-location');
+      if (locSel) locSel.innerHTML = optionsHTML;
       initCustomDropdown('filter-location');
-      initCustomDropdown('mobile-filter-location');
+      
+      const locSelMobile = document.getElementById('filter-location-mobile');
+      if (locSelMobile) locSelMobile.innerHTML = optionsHTML;
     }
 
-    function updateSidebarStats(reviews) {
-      document.getElementById('stat-total-reviews').textContent = reviews.length;
+    function updateHeroStats(reviews) {
+      const totalEl = document.getElementById('stat-total-reviews');
+      if (totalEl) totalEl.textContent = reviews.length;
       
-      const stipends = reviews.map(r => r.stipend).filter(s => typeof s === 'number');
-      const avgStipend = stipends.length ? Math.round(stipends.reduce((a, b) => a + b, 0) / stipends.length) : null;
-      document.getElementById('stat-avg-stipend').textContent = avgStipend ? `₹${Number(avgStipend).toLocaleString('en-IN')}/mo` : '—';
+      const stipendEl = document.getElementById('stat-avg-stipend');
+      if (stipendEl) {
+        const stipends = reviews.map(r => r.stipend).filter(s => typeof s === 'number');
+        const avgStipend = stipends.length ? Math.round(stipends.reduce((a, b) => a + b, 0) / stipends.length) : null;
+        stipendEl.textContent = avgStipend ? `₹${Number(avgStipend).toLocaleString('en-IN')}/mo` : '—';
+      }
       
-      const locations = new Set(reviews.map(r => r.location).filter(Boolean));
-      document.getElementById('stat-locations-count').textContent = locations.size;
+      const locationsEl = document.getElementById('stat-locations-count');
+      if (locationsEl) {
+        const locations = new Set(reviews.map(r => r.location).filter(Boolean));
+        locationsEl.textContent = locations.size;
+      }
     }
 
     function applyControls() {
       const q = document.getElementById('search-input').value.trim().toLowerCase();
-      
-      const isMobile = window.innerWidth < 900;
-      const loc = document.getElementById(isMobile ? 'mobile-filter-location' : 'filter-location').value;
-      const minStipend = document.getElementById(isMobile ? 'mobile-filter-stipend' : 'filter-stipend').value;
-      const sort = document.getElementById(isMobile ? 'mobile-sort-by' : 'sort-by').value;
+      const loc = document.getElementById('filter-location').value;
+      const minStipend = document.getElementById('filter-stipend').value;
+      const sort = document.getElementById('sort-by').value;
       
       let out = FIRMS.filter(f => {
         const matchesQuery = !q || f.firmName.toLowerCase().includes(q);
         const matchesLocation = !loc || f.location === loc;
         const matchesStipend = !minStipend || (f.avgStipend && f.avgStipend >= parseInt(minStipend, 10));
-        const matchesTag = !SELECTED_TAG || f.topTags.includes(SELECTED_TAG) || f.reviews.some(r => (r.culture_tags || []).includes(SELECTED_TAG));
+        const matchesTag = !SELECTED_TAG || 
+          f.topTags.includes(SELECTED_TAG) || 
+          f.reviews.some(r => 
+            (r.domain_tags || []).includes(SELECTED_TAG) ||
+            (r.client_tags || []).includes(SELECTED_TAG) ||
+            (r.skill_tags || []).includes(SELECTED_TAG)
+          );
         return matchesQuery && matchesLocation && matchesStipend && matchesTag;
       });
       
@@ -1717,77 +2581,138 @@
       else out.sort((a, b) => new Date(b.reviews[0].created_at) - new Date(a.reviews[0].created_at));
       
       renderFirmList(out);
+
+      // Manage Active Filters summary panel status update
+      const statusContent = document.getElementById('filter-status-content');
+      const clearBtnLink = document.getElementById('clear-filters-btn-panel');
+      const firmsCountBadge = document.getElementById('title-firms-count-badge');
+      
+      const activeFilters = [];
+      if (q) activeFilters.push(`<span class="afr-status-pill">Name: ${escapeHTML(q)}</span>`);
+      if (loc) activeFilters.push(`<span class="afr-status-pill">Loc: ${escapeHTML(loc)}</span>`);
+      if (minStipend) activeFilters.push(`<span class="afr-status-pill">Stipend: ₹${Number(minStipend).toLocaleString('en-IN')}+</span>`);
+      if (SELECTED_TAG) {
+        const activeBtn = document.querySelector(`.tag-pill-btn[data-tag="${SELECTED_TAG}"]`);
+        const type = activeBtn ? activeBtn.dataset.type : 'Tag';
+        activeFilters.push(`<span class="afr-status-pill">${type}: ${escapeHTML(SELECTED_TAG)}</span>`);
+      }
+
+      if (statusContent) {
+        if (activeFilters.length > 0) {
+          statusContent.innerHTML = activeFilters.join('');
+          if (clearBtnLink) clearBtnLink.style.display = 'block';
+        } else {
+          statusContent.innerHTML = '<span class="afr-no-filters-msg">Showing all firms</span>';
+          if (clearBtnLink) clearBtnLink.style.display = 'none';
+        }
+      }
+
+      if (firmsCountBadge) {
+        firmsCountBadge.innerHTML = `<i class="fas fa-list-check"></i> ${out.length} ${out.length === 1 ? 'firm' : 'firms'} found`;
+      }
     }
 
-    // Sync input events across both selectors (desktop and mobile)
-    const inputsToBind = [
-      'search-input',
-      'filter-location', 'mobile-filter-location',
-      'filter-stipend', 'mobile-filter-stipend',
-      'sort-by', 'mobile-sort-by'
-    ];
-    inputsToBind.forEach(id => {
+    // Re-filter on any control change
+    ['search-input', 'filter-location', 'filter-stipend', 'sort-by'].forEach(id => {
       const el = document.getElementById(id);
-      if (el) el.addEventListener('input', (e) => {
-        // Sync values between desktop and mobile controls if they target the same filter
-        if (id === 'filter-location') {
-          document.getElementById('mobile-filter-location').value = e.target.value;
-          initCustomDropdown('mobile-filter-location');
-        }
-        if (id === 'mobile-filter-location') {
-          document.getElementById('filter-location').value = e.target.value;
-          initCustomDropdown('filter-location');
-        }
-        if (id === 'filter-stipend') {
-          document.getElementById('mobile-filter-stipend').value = e.target.value;
-          initCustomDropdown('mobile-filter-stipend');
-        }
-        if (id === 'mobile-filter-stipend') {
-          document.getElementById('filter-stipend').value = e.target.value;
-          initCustomDropdown('filter-stipend');
-        }
-        if (id === 'sort-by') {
-          document.getElementById('mobile-sort-by').value = e.target.value;
-          initCustomDropdown('mobile-sort-by');
-        }
-        if (id === 'mobile-sort-by') {
-          document.getElementById('sort-by').value = e.target.value;
-          initCustomDropdown('sort-by');
-        }
-        applyControls();
-      });
+      if (el) el.addEventListener('input', applyControls);
     });
 
     function initTagCloud() {
-      const clearBtn = document.getElementById('clear-tag-btn');
       const badge = document.getElementById('active-tag-badge');
       
+      // Scoped tab switching behavior for desktop and mobile tab groups
+      document.querySelectorAll('.afr-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tabTrack = btn.closest('.afr-filter-tabs');
+          if (tabTrack) {
+            tabTrack.querySelectorAll('.afr-tab-btn').forEach(b => b.classList.remove('active'));
+          }
+          btn.classList.add('active');
+          
+          // Hide sibling panels in the respective parent container
+          const panelParent = btn.closest('.afr-chip-rail') || btn.closest('.filter-group');
+          if (panelParent) {
+            panelParent.querySelectorAll('.afr-tab-panel').forEach(p => p.classList.remove('active'));
+          }
+          
+          const panel = document.getElementById(btn.dataset.target);
+          if (panel) panel.classList.add('active');
+        });
+      });
+      
+      // Tag pill click synchronization across desktop and mobile
       document.querySelectorAll('.tag-pill-btn').forEach(btn => {
         btn.addEventListener('click', () => {
           const tag = btn.dataset.tag;
           if (SELECTED_TAG === tag) {
             SELECTED_TAG = null;
-            btn.classList.remove('active');
-            clearBtn.style.display = 'none';
-            badge.style.display = 'none';
+            document.querySelectorAll(`.tag-pill-btn[data-tag="${tag}"]`).forEach(b => b.classList.remove('active'));
+            if (badge) badge.style.display = 'none';
           } else {
             document.querySelectorAll('.tag-pill-btn').forEach(b => b.classList.remove('active'));
             SELECTED_TAG = tag;
-            btn.classList.add('active');
-            clearBtn.style.display = 'inline-flex';
-            badge.textContent = `Tag: ${tag}`;
-            badge.style.display = 'inline-flex';
+            document.querySelectorAll(`.tag-pill-btn[data-tag="${tag}"]`).forEach(b => b.classList.add('active'));
+            if (badge) {
+              const type = btn.dataset.type || 'Tag';
+              badge.textContent = `${type}: ${tag}`;
+              badge.style.display = 'inline-flex';
+            }
           }
-          applyControls();
+          
+          // Do not trigger filtering immediately inside mobile drawer overlays
+          if (!btn.closest('.filter-modal-overlay')) {
+            applyControls();
+          }
         });
       });
       
-      clearBtn.addEventListener('click', () => {
-        SELECTED_TAG = null;
-        document.querySelectorAll('.tag-pill-btn').forEach(b => b.classList.remove('active'));
-        clearBtn.style.display = 'none';
-        badge.style.display = 'none';
-        applyControls();
+      const clearBtn = document.getElementById('clear-filters-btn');
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          // Clear search
+          const searchInput = document.getElementById('search-input');
+          if (searchInput) searchInput.value = '';
+          
+          // Clear location
+          const locSel = document.getElementById('filter-location');
+          if (locSel) {
+            locSel.value = '';
+            initCustomDropdown('filter-location');
+          }
+          
+          // Clear stipend
+          const stipendSel = document.getElementById('filter-stipend');
+          if (stipendSel) {
+            stipendSel.value = '';
+            initCustomDropdown('filter-stipend');
+          }
+          
+          // Clear tag
+          SELECTED_TAG = null;
+          document.querySelectorAll('.tag-pill-btn').forEach(b => b.classList.remove('active'));
+          if (badge) badge.style.display = 'none';
+          
+          applyControls();
+        });
+      }
+
+      // Add click-forwarding logic for search segments
+      document.querySelectorAll('.search-segment').forEach(seg => {
+        seg.addEventListener('click', (e) => {
+          if (e.target.closest('#search-input') || e.target.closest('.custom-dropdown')) return;
+          
+          const input = seg.querySelector('input');
+          if (input) {
+            input.focus();
+            return;
+          }
+          
+          const trigger = seg.querySelector('.dropdown-trigger');
+          if (trigger) {
+            trigger.click();
+          }
+        });
       });
     }
 
@@ -1798,18 +2723,16 @@
         const reviews = await fetchAllReviews();
         FIRMS = groupByFirm(reviews);
         populateLocationFilter();
-        updateSidebarStats(reviews);
+        updateHeroStats(reviews);
         initTagCloud();
         
         // Initialize custom static dropdowns
         initCustomDropdown('filter-stipend');
-        initCustomDropdown('mobile-filter-stipend');
         initCustomDropdown('sort-by');
-        initCustomDropdown('mobile-sort-by');
         
         const sidebarWriteBtn = document.getElementById('sidebar-write-btn');
         if (sidebarWriteBtn) {
-          sidebarWriteBtn.addEventListener('click', () => openReviewModal());
+          sidebarWriteBtn.addEventListener('click', () => ArticleshipReviewWizard.open());
         }
         
         // Parse search query parameter from URL to pre-fill search input
@@ -1829,159 +2752,142 @@
     }
     loadFirms();
 
-    // ── Review modal ──────────────────────────────────────────────────────
-    function initStarInputs() {
-      document.querySelectorAll('.afr-star-input').forEach(group => {
-        group.dataset.value = '';
-        for (let i = 1; i <= 5; i++) {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.innerHTML = '<i class="far fa-star"></i>';
-          btn.dataset.v = i;
-          btn.setAttribute('aria-label', `${i} star`);
-          btn.addEventListener('mouseenter', () => hoverStars(group, i));
-          btn.addEventListener('mouseleave', () => refreshStars(group));
-          btn.addEventListener('click', () => setStars(group, i));
-          group.appendChild(btn);
+    // ── Review wizard (shared component) ─────────────────────────────────
+    ArticleshipReviewWizard.init(supabaseClient, { onComplete: loadFirms });
+
+    // Floating FAB Write Review logic
+    const floatingWriteBtn = document.getElementById('floating-write-btn');
+    if (floatingWriteBtn) {
+      floatingWriteBtn.addEventListener('click', () => ArticleshipReviewWizard.open());
+      const handleScroll = () => {
+        const scrolled = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
+        if (scrolled > 10) {
+          floatingWriteBtn.classList.add('visible');
+        } else {
+          floatingWriteBtn.classList.remove('visible');
         }
-      });
-    }
-
-    function hoverStars(group, v) {
-      group.querySelectorAll('button').forEach((b, idx) => {
-        b.querySelector('i').className = idx < v ? 'fas fa-star' : 'far fa-star';
-        b.classList.toggle('filled', idx < v);
-      });
-    }
-
-    function refreshStars(group) {
-      const v = Number(group.dataset.value) || 0;
-      group.querySelectorAll('button').forEach((b, idx) => {
-        b.querySelector('i').className = idx < v ? 'fas fa-star' : 'far fa-star';
-        b.classList.toggle('filled', idx < v);
-      });
-    }
-
-    function setStars(group, v) {
-      const current = Number(group.dataset.value) || 0;
-      if (current === v) {
-        group.dataset.value = '';
-      } else {
-        group.dataset.value = String(v);
-      }
-      refreshStars(group);
-    }
-
-    const modal = document.getElementById('review-form-modal');
-    let lastFocused = null;
-
-    async function openReviewModal(prefillFirm) {
-      lastFocused = document.activeElement;
-      const session = await getCurrentSession();
-      document.getElementById('afr-login-prompt').hidden = !!session;
-      document.getElementById('afr-fieldset').disabled = !session;
-      if (session && prefillFirm) {
-        const firmInput = document.getElementById('f-firm');
-        if (firmInput && !firmInput.value) firmInput.value = prefillFirm;
-      }
-      modal.classList.add('active');
-      modal.setAttribute('aria-hidden', 'false');
-      const first = session
-        ? modal.querySelector('input[name="firm_name"], #f-firm')
-        : modal.querySelector('#afr-login-prompt a');
-      if (first) first.focus();
-    }
-
-    function closeReviewModal() {
-      modal.classList.remove('active');
-      modal.setAttribute('aria-hidden', 'true');
-      if (lastFocused) lastFocused.focus();
-    }
-
-    const openReviewBtn = document.getElementById('open-review-btn');
-    if (openReviewBtn) {
-      openReviewBtn.addEventListener('click', () => openReviewModal());
-    }
-    document.getElementById('afr-modal-close').addEventListener('click', closeReviewModal);
-    modal.addEventListener('click', e => { if (e.target === modal) closeReviewModal(); });
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && modal.classList.contains('active')) closeReviewModal();
-    });
-
-    modal.addEventListener('keydown', (e) => {
-      if (e.key !== 'Tab' || !modal.classList.contains('active')) return;
-      const focusable = [...modal.querySelectorAll('button,[href],input,select,textarea')]
-        .filter(el => !el.disabled && el.offsetParent !== null);
-      if (!focusable.length) return;
-      const first = focusable[0], last = focusable[focusable.length - 1];
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    });
-
-    async function handleReviewSubmit(e) {
-      e.preventDefault();
-      const status = document.getElementById('afr-form-status');
-      const session = await getCurrentSession();
-      if (!session) { status.textContent = 'Please log in first.'; return; }
-
-      const form = e.target;
-      const overall = Number(document.querySelector('.afr-star-input[data-name="overall_rating"]').dataset.value);
-      if (!overall) {
-        status.textContent = 'Please give an overall rating.';
-        status.className = 'afr-form-status err';
-        return;
-      }
-
-      const starVal = name => {
-        const v = Number(document.querySelector(`.afr-star-input[data-name="${name}"]`).dataset.value);
-        return v || null;
       };
-      const tags = [...form.querySelectorAll('input[name="culture_tags"]:checked')].map(c => c.value);
-
-      const row = {
-        user_id: session.user.id,
-        firm_name: (form.elements['firm_name'] || document.getElementById('f-firm')).value.trim(),
-        location: (form.elements['location'] || document.getElementById('f-location')).value.trim(),
-        role_title: document.getElementById('f-role').value.trim() || null,
-        stipend: document.getElementById('f-stipend').value ? parseInt(document.getElementById('f-stipend').value, 10) : null,
-        overall_rating: overall,
-        work_life_balance_rating: starVal('work_life_balance_rating'),
-        learning_exposure_rating: starVal('learning_exposure_rating'),
-        stipend_satisfaction_rating: starVal('stipend_satisfaction_rating'),
-        review_text: document.getElementById('f-review').value.trim() || null,
-        pros: document.getElementById('f-pros').value.trim() || null,
-        cons: document.getElementById('f-cons').value.trim() || null,
-        culture_tags: tags,
-        would_recommend: form.elements['would_recommend'].checked,
-      };
-
-      const btn = form.querySelector('button[type="submit"]');
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
-
-      try {
-        const { error } = await supabaseClient.from('articleship_firm_reviews').insert([row]);
-        if (error) {
-          if (error.code === '23505') throw new Error("You've already reviewed this firm.");
-          throw error;
-        }
-        status.textContent = '✓ Your review is posted!';
-        status.className = 'afr-form-status ok';
-        form.reset();
-        document.querySelectorAll('.afr-star-input').forEach(g => { g.dataset.value = ''; refreshStars(g); });
-        setTimeout(() => { closeReviewModal(); status.textContent = ''; loadFirms(); }, 1400);
-      } catch (err) {
-        status.textContent = err.message;
-        status.className = 'afr-form-status err';
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Anonymous Review';
-      }
+      window.addEventListener('scroll', handleScroll);
+      handleScroll(); // initialize state on page load
     }
 
-    document.getElementById('afr-form').addEventListener('submit', handleReviewSubmit);
-    initStarInputs();
+    // CTA card "Write an anonymous review" button
+    const ctaReviewsWriteBtn = document.getElementById('cta-reviews-write-btn');
+    if (ctaReviewsWriteBtn) {
+      ctaReviewsWriteBtn.addEventListener('click', () => ArticleshipReviewWizard.open());
+    }
+
+    // ── Mobile Drawer event wiring (deferred so modal HTML is guaranteed in DOM) ──
+    function initMobileDrawer() {
+    const filterModalOverlay = document.getElementById('filterModalOverlay');
+    const openFilterModalBtn = document.getElementById('open-filter-modal-btn');
+    const closeFilterModalBtn = document.getElementById('closeFilterModalBtn');
+    const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+    const mobileResetBtn = document.getElementById('mobileResetBtn');
+    
+    if (openFilterModalBtn && filterModalOverlay) {
+      // Open drawer
+      openFilterModalBtn.addEventListener('click', () => {
+        // Sync values from desktop inputs to mobile selects
+        const locMobile = document.getElementById('filter-location-mobile');
+        const stipendMobile = document.getElementById('filter-stipend-mobile');
+        const sortMobile = document.getElementById('sort-by-mobile');
+        
+        if (locMobile) locMobile.value = document.getElementById('filter-location').value;
+        if (stipendMobile) stipendMobile.value = document.getElementById('filter-stipend').value;
+        if (sortMobile) sortMobile.value = document.getElementById('sort-by').value;
+        
+        // Sync tag active classes inside the drawer
+        document.querySelectorAll('.filter-modal-content .tag-pill-btn').forEach(b => {
+          if (SELECTED_TAG && b.dataset.tag === SELECTED_TAG) {
+            b.classList.add('active');
+            
+            // Also trigger click on the corresponding tab button to switch to its panel inside the drawer!
+            const parentPanel = b.closest('.afr-tab-panel');
+            if (parentPanel) {
+              const tabBtn = document.querySelector(`.mobile-drawer-tabs .afr-tab-btn[data-target="${parentPanel.id}"]`);
+              if (tabBtn) tabBtn.click();
+            }
+          } else {
+            b.classList.remove('active');
+          }
+        });
+        
+        filterModalOverlay.style.display = 'flex';
+        setTimeout(() => filterModalOverlay.classList.add('show'), 10);
+      });
+      
+      // Close function
+      const closeDrawer = () => {
+        filterModalOverlay.classList.remove('show');
+        setTimeout(() => filterModalOverlay.style.display = 'none', 300);
+      };
+      
+      if (closeFilterModalBtn) {
+        closeFilterModalBtn.addEventListener('click', closeDrawer);
+      }
+      
+      // Close on backdrop click
+      filterModalOverlay.addEventListener('click', (e) => {
+        if (e.target === filterModalOverlay) closeDrawer();
+      });
+      
+      // Apply filters
+      if (applyFiltersBtn) {
+        applyFiltersBtn.addEventListener('click', () => {
+          const locVal = document.getElementById('filter-location-mobile').value;
+          const stipendVal = document.getElementById('filter-stipend-mobile').value;
+          const sortVal = document.getElementById('sort-by-mobile').value;
+          
+          // Copy to desktop inputs
+          document.getElementById('filter-location').value = locVal;
+          document.getElementById('filter-stipend').value = stipendVal;
+          document.getElementById('sort-by').value = sortVal;
+          
+          // Refresh custom dropdown visuals
+          initCustomDropdown('filter-location');
+          initCustomDropdown('filter-stipend');
+          initCustomDropdown('sort-by');
+          
+          applyControls();
+          closeDrawer();
+        });
+      }
+      
+      // Reset filters
+      if (mobileResetBtn) {
+        mobileResetBtn.addEventListener('click', () => {
+          document.getElementById('filter-location-mobile').value = '';
+          document.getElementById('filter-stipend-mobile').value = '';
+          document.getElementById('sort-by-mobile').value = 'rating';
+          
+          document.getElementById('filter-location').value = '';
+          document.getElementById('filter-stipend').value = '';
+          document.getElementById('sort-by').value = 'rating';
+          
+          const searchInput = document.getElementById('search-input');
+          if (searchInput) searchInput.value = '';
+          
+          SELECTED_TAG = null;
+          document.querySelectorAll('.tag-pill-btn').forEach(b => b.classList.remove('active'));
+          const badge = document.getElementById('active-tag-badge');
+          if (badge) badge.style.display = 'none';
+          
+          // Refresh custom dropdown visuals
+          initCustomDropdown('filter-location');
+          initCustomDropdown('filter-stipend');
+          initCustomDropdown('sort-by');
+          
+          applyControls();
+          closeDrawer();
+        }); // end mobileResetBtn listener
+      } // end if(mobileResetBtn)
+    } // end if(openFilterModalBtn && filterModalOverlay)
+    } // end initMobileDrawer
+    initMobileDrawer();
   </script>
+
+
 
 </body>
 </html>
