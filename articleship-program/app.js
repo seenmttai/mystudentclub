@@ -135,7 +135,7 @@ const initializeCarousel = () => {
     card.className = 'student-card';
     card.innerHTML = `
       <div class="student-image">
-        <img src="${student.image}" alt="${student.name}" />
+        <img src="${student.image}" alt="${student.name}" loading="lazy" decoding="async" />
       </div>
       <h3>${student.name}</h3>
       <p class="company-info">Placed at:<br><strong>${student.company}</strong></p>
@@ -159,18 +159,21 @@ const initializeCarousel = () => {
   let speed = 2;
   let animationId;
   let lastTime = 0;
+  let onScreen = true;
 
   function animate(currentTime) {
+    if (!onScreen) {
+      animationId = null;
+      return;
+    }
     if (!lastTime) lastTime = currentTime;
     const delta = currentTime - lastTime;
 
-    if (true) {
-      position -= speed * (delta / 16);
-      if (position <= -(getCardWidth() * cards.length)) {
-        position = 0;
-      }
-      carousel.style.transform = `translateX(${position}px)`;
+    position -= speed * (delta / 16);
+    if (position <= -(getCardWidth() * cards.length)) {
+      position = 0;
     }
+    carousel.style.transform = `translateX(${position}px)`;
 
     lastTime = currentTime;
     animationId = requestAnimationFrame(animate);
@@ -180,6 +183,18 @@ const initializeCarousel = () => {
   let startX = 0;
   let scrollLeft = 0;
   let dragStartPosition = 0;
+
+  // Pause the marquee while it's off-screen so its per-frame transform work
+  // doesn't compete with scrolling (noticeable on mobile devices).
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(entries => {
+      onScreen = entries[0].isIntersecting;
+      if (onScreen && !dragging && animationId === null) {
+        lastTime = 0;
+        animationId = requestAnimationFrame(animate);
+      }
+    }).observe(carousel);
+  }
 
   carousel.addEventListener('mousedown', (e) => {
     dragging = true;
@@ -315,7 +330,7 @@ const initializeLinkedInPosts = () => {
     card.className = 'linkedin-card';
     card.innerHTML = `
       <div class="linkedin-card-header">
-        <img src="${post.avatar}" alt="${post.name}" class="linkedin-avatar" onerror="this.src='https://via.placeholder.com/48'">
+        <img src="${post.avatar}" alt="${post.name}" class="linkedin-avatar" loading="lazy" decoding="async" onerror="this.src='https://via.placeholder.com/48'">
         <div class="linkedin-user-info">
           <p class="linkedin-user-name">${post.name}</p>
           <p class="linkedin-user-title">${post.title}</p>
@@ -360,18 +375,21 @@ const initializeLinkedInPosts = () => {
   let speed = 2;
   let animationId;
   let lastTime = 0;
+  let onScreen = true;
 
   function animate(currentTime) {
+    if (!onScreen) {
+      animationId = null;
+      return;
+    }
     if (!lastTime) lastTime = currentTime;
     const delta = currentTime - lastTime;
 
-    if (true) {
-      position -= speed * (delta / 16);
-      if (position <= -(getCardWidth() * cards.length)) {
-        position = 0;
-      }
-      carousel.style.transform = `translateX(${position}px)`;
+    position -= speed * (delta / 16);
+    if (position <= -(getCardWidth() * cards.length)) {
+      position = 0;
     }
+    carousel.style.transform = `translateX(${position}px)`;
 
     lastTime = currentTime;
     animationId = requestAnimationFrame(animate);
@@ -380,6 +398,18 @@ const initializeLinkedInPosts = () => {
   let dragging = false;
   let startX = 0;
   let dragStartPosition = 0;
+
+  // Pause the marquee while it's off-screen so its per-frame transform work
+  // doesn't compete with scrolling (noticeable on mobile devices).
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(entries => {
+      onScreen = entries[0].isIntersecting;
+      if (onScreen && !dragging && animationId === null) {
+        lastTime = 0;
+        animationId = requestAnimationFrame(animate);
+      }
+    }).observe(carousel);
+  }
 
   carousel.addEventListener('mousedown', (e) => {
     dragging = true;
@@ -536,11 +566,29 @@ const initializeCertificate = () => {
   const container = document.querySelector('.certificate-container');
 
   if (certificate && container) {
-    container.addEventListener('mousemove', e => {
+    // Cache the rect on enter and throttle transforms to one per frame —
+    // getBoundingClientRect + style writes on every mousemove force layout
+    // and made scrolling stutter around this section.
+    let rect = null;
+    let rafId = null;
+    let lastEvent = null;
+
+    container.addEventListener('mouseenter', () => {
+      rect = container.getBoundingClientRect();
       if (certificate.classList.contains('rotated')) {
-        const rect = container.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
+        certificate.style.transition = 'transform 0.05s ease-out';
+      }
+    });
+
+    container.addEventListener('mousemove', e => {
+      if (!certificate.classList.contains('rotated')) return;
+      lastEvent = e;
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        if (!rect || !lastEvent) return;
+        const x = lastEvent.clientX - rect.left - rect.width / 2;
+        const y = lastEvent.clientY - rect.top - rect.height / 2;
 
         const factorX = 20;
         const factorY = 30;
@@ -555,16 +603,36 @@ const initializeCertificate = () => {
           rotateZ(${baseRotateZ}deg)
           translateZ(10px)
         `;
-      }
+      });
     });
 
     container.addEventListener('mouseleave', () => {
+      rect = null;
       if (certificate.classList.contains('rotated')) {
+        // Smooth spring animation when snapping back
+        certificate.style.transition = 'transform 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
         certificate.style.transform = 'rotateY(-30deg) rotateX(5deg) rotateZ(-2deg)';
       }
     });
   }
 
+};
+
+// The success-stories section has a full-size looping Lottie background;
+// keep it paused whenever it's off-screen so it doesn't eat frames while
+// the user scrolls the rest of the page.
+const initializeLottiePause = () => {
+  const player = document.querySelector('.section-bg lottie-player');
+  if (!player || !('IntersectionObserver' in window)) return;
+
+  new IntersectionObserver(entries => {
+    if (typeof player.play !== 'function') return;
+    if (entries[0].isIntersecting) {
+      player.play();
+    } else {
+      player.pause();
+    }
+  }).observe(player);
 };
 
 function safe(fn, label) {
@@ -581,10 +649,14 @@ document.addEventListener('DOMContentLoaded', () => {
   safe(initializeCarousel, 'carousel');
   safe(initializeCountdown, 'count-down');
   safe(initializeCertificate, 'certificate');
+  safe(initializeLottiePause, 'lottie-pause');
 
   AOS.init({
-    duration: 1000,
-    once: true
+    duration: 600,
+    once: true,
+    // Scroll-reveal animations make scrolling feel heavy on phones —
+    // disable them below 769px. Desktop/tablet keeps them unchanged.
+    disable: () => window.innerWidth < 769
   });
 });
 

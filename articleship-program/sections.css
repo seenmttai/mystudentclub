@@ -455,10 +455,6 @@
   }
 }
 
-* {
-  scroll-behavior: smooth;
-}
-
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -675,9 +671,9 @@
   transform: rotateY(0deg) rotateX(0deg) rotateZ(0deg) translateZ(0px);
 }
 
-.certificate-frame:hover {
-  transform: rotateY(-25deg) rotateX(3deg) rotateZ(-1deg) translateZ(20px);
-}
+/* no :hover transform here — hover state flickers while the page scrolls
+   under the cursor and each toggle animates the whole 3D stack for 1.5s,
+   janking the scroll; the JS mousemove tilt handles hover interaction */
 
 .certificate-shadow {
   position: absolute;
@@ -726,7 +722,6 @@
   height: 100%;
   border-radius: 15px;
   background: rgba(255, 255, 255, 0.25);
-  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.5);
   box-shadow:
     0 15px 35px rgba(0,0,0,0.2),
@@ -836,7 +831,6 @@
   justify-content: center;
   align-items: center;
   box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
-  backdrop-filter: blur(5px);
   border: 1px solid rgba(255,255,255,0.18);
   pointer-events: none;
   opacity: 0.5;
@@ -885,7 +879,6 @@
   border-radius: 50px;
   font-weight: 600;
   transition: all 0.3s ease;
-  backdrop-filter: blur(5px);
   border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
   transform: translateY(0);
@@ -1164,7 +1157,7 @@
 /* ─── Notify Me Section ───────────────────────────────────────────────── */
 .notify-section {
   width: 100%;
-  padding: 60px 20px;
+  padding: 60px 20px 0;
   box-sizing: border-box;
   background: linear-gradient(135deg, #0f0c29 0%, #1a1a4b 50%, #302b63 100%);
   position: relative;
@@ -1183,7 +1176,7 @@
 }
 
 .notify-section-inner {
-  max-width: 900px;
+  max-width: 100%;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -1191,14 +1184,14 @@
   gap: 32px;
   position: relative;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 28px;
-  padding: 50px 40px;
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+  box-shadow: none;
 }
 
 @media (min-width: 768px) {

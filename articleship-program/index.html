@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -15,276 +16,3522 @@
   <!-- Firebase for push notifications -->
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-messaging-compat.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Noto+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --navy: #1E255E;
+      --navy2: #161c4a;
+      --blue: #2563EB;
+      --blue-lt: #EEF2FF;
+      --green: #45B649;
+      --green-dk: #34a338;
+      --green-lt: #f0fdf0;
+      --red: #EF4444;
+      --red-dk: #DC2626;
+      --red-lt: #FEE2E2;
+      --white: #FFFFFF;
+      --text-gray: #555B75;
+      --surface: #F8F9FF;
+      --border: #E8ECF8;
+      --gold: #F59E0B;
+    }
+
+    html {
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: "Noto Sans", sans-serif;
+      background: linear-gradient(180deg, #ffffff 0%, #f4f6fc 60%, #111540 85%, #0a0d2e 100%);
+      color: var(--navy);
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+
+    *,
+    *::before,
+    *::after {
+      /* prevent oversized boxes from forcing horizontal scroll on mobile */
+      min-width: 0;
+    }
+
+    /* ─── HEADER ADJUSTMENTS ─── */
+    .site-header {
+      background: rgba(255, 255, 255, 0.97);
+      border-bottom: 1px solid var(--border);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 999;
+      box-shadow: 0 1px 14px rgba(30, 37, 94, 0.07);
+      margin-top: 0 !important;
+    }
+
+    .header-container {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 40px 0 20px !important;
+      box-sizing: border-box !important;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    /* ─── HERO REDESIGN ─── */
+    .hero {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      border: none !important;
+      border-bottom: 1px solid var(--border) !important;
+      box-shadow: none !important;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(150deg, #fff 0%, #FEF2F2 40%, #EEF2FF 75%, #f0fdf0 100%) !important;
+      text-align: center !important;
+      box-sizing: border-box !important;
+      padding: 70px 60px !important;
+      border-radius: 0 !important;
+    }
+
+    @keyframes blobEntrance {
+      from {
+        transform: scale(0.6);
+        opacity: 0;
+      }
+
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: blobEntrance 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .blob-1 {
+      width: 520px;
+      height: 520px;
+      top: -180px;
+      right: -100px;
+      background: radial-gradient(circle, rgba(239, 68, 68, 0.13), transparent 70%);
+    }
+
+    .blob-2 {
+      width: 400px;
+      height: 400px;
+      bottom: -130px;
+      left: -70px;
+      background: radial-gradient(circle, rgba(69, 182, 73, 0.14), transparent 70%);
+    }
+
+    .blob-3 {
+      width: 300px;
+      height: 300px;
+      top: 50%;
+      left: 48%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.07), transparent 70%);
+    }
+
+    .hero-deco {
+      position: absolute;
+      inset: 0;
+      opacity: 0.12;
+      pointer-events: none;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    .hero-container {
+      width: 100% !important;
+      max-width: 100% !important;
+      padding: 0 40px !important;
+      box-sizing: border-box !important;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      width: 100%;
+    }
+
+    .badge-urgent {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--red-lt);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--red-dk);
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--red);
+      animation: blink 1.4s ease-in-out infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: 0.2
+      }
+    }
+
+    .hero h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(34px, 4.8vw, 58px) !important;
+      font-weight: 900;
+      color: var(--navy);
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+      margin-bottom: 18px;
+      background: none !important;
+      -webkit-text-fill-color: initial !important;
+    }
+
+    .hl-red {
+      color: var(--red);
+    }
+
+    .hero-sub {
+      font-size: 15.5px;
+      color: var(--text-gray);
+      line-height: 1.7;
+      margin-bottom: 22px;
+    }
+
+    .hero-live {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 28px;
+    }
+
+    .trust-chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 7px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--navy);
+      box-shadow: 0 2px 8px rgba(30, 37, 94, 0.07);
+    }
+
+    .chip .dot-g {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+    }
+
+    .chip .dot-r {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--red);
+    }
+
+    .hero-cta-row {
+      /* display: flex;
+      gap: 12px; */
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .btn-closed {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--navy);
+      color: rgba(255, 255, 255, 0.75);
+      border: none;
+      padding: 14px 28px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: default;
+      font-family: 'Noto Sans', sans-serif;
+      opacity: 0.85;
+    }
+
+    .btn-outline-red {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--red);
+      border: 2px solid var(--red);
+      padding: 13px 26px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.25s;
+      font-family: 'Noto Sans', sans-serif;
+    }
+
+    .btn-outline-red:hover {
+      background: var(--red);
+      color: white;
+    }
+
+    .hero-rating {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stars {
+      color: var(--gold);
+      letter-spacing: -1px;
+      font-size: 17px;
+    }
+
+    .rating-text {
+      font-size: 13px;
+      color: var(--text-gray);
+      font-weight: 500;
+    }
+
+    .linkedin-carousel {
+      display: flex;
+      gap: 20px;
+      padding: 20px;
+      width: max-content;
+    }
+
+    .linkedin-card {
+      /* width: 340px; */
+      background: white;
+      border-radius: 12px;
+      /* padding: 16px; */
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      width: 300px;
+      height: 380px;
+      padding: 20px;
+      border-radius: 18px;
+    }
+
+    .linkedin-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .linkedin-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .linkedin-user-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .linkedin-user-title {
+      font-size: 11px;
+      color: var(--text-gray);
+    }
+
+    .linkedin-card-content {
+      font-size: 12px;
+      color: #444;
+      line-height: 1.6;
+      height: 110px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+    }
+
+    .linkedin-reactions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      font-size: 11px;
+      color: var(--text-gray);
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+    }
+
+    .linkedin-reaction-icons {
+      display: flex;
+      gap: 2px;
+    }
+
+    .linkedin-reaction-icon {
+      font-size: 11px;
+    }
+
+    /* ─── STATS STRIP ─── */
+    .stats-strip {
+      background: var(--navy);
+      width: 100%;
+    }
+
+    .stats-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    .stat-cell {
+      padding: 26px 20px;
+      text-align: center;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      transition: background 0.2s;
+    }
+
+    .stat-cell:last-child {
+      border-right: none;
+    }
+
+    .stat-cell:hover {
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .stat-cell::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 2px;
+      background: var(--red);
+      transition: width 0.35s;
+    }
+
+    .stat-cell:nth-child(2n)::after {
+      background: var(--green);
+    }
+
+    .stat-cell:hover::after {
+      width: 50%;
+    }
+
+    .stat-n {
+      font-family: 'Outfit', sans-serif;
+      font-size: 30px;
+      font-weight: 900;
+      color: white;
+      line-height: 1;
+      margin-bottom: 5px;
+    }
+
+    .stat-n em {
+      color: #fca5a5;
+      font-style: normal;
+    }
+
+    .stat-n em.g {
+      color: #86efac;
+      font-style: normal;
+    }
+
+    .stat-l {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+
+    /* ─── SECTION HEADERS ─── */
+    .sec-hdr {
+      text-align: center;
+      margin-bottom: 44px;
+      padding: 0 28px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 10px;
+    }
+
+    .eyebrow::before,
+    .eyebrow::after {
+      content: '';
+      width: 24px;
+      height: 1.5px;
+      background: currentColor;
+      opacity: .4;
+    }
+
+    .eyebrow.green {
+      color: var(--green);
+    }
+
+    .sec-h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(26px, 3.5vw, 40px);
+      font-weight: 800;
+      color: var(--navy);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin: 0;
+    }
+
+    .sec-sub {
+      font-size: 15px;
+      color: var(--text-gray);
+      margin-top: 10px;
+      line-height: 1.65;
+    }
+
+    .hl {
+      color: var(--red);
+    }
+
+    .hl-g {
+      color: var(--green);
+    }
+
+    .hl-li {
+      color: #0A66C2;
+    }
+
+    /* ─── SUCCESS STORIES ─── */
+    .success-stories {
+      padding: 64px 0 !important;
+      background: #fff !important;
+    }
+
+    .success-stories::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, var(--red), var(--green), var(--blue));
+    }
+
+    .carousel-track {
+      overflow: hidden;
+      margin-top: 36px;
+      cursor: grab;
+    }
+
+    .carousel-inner {
+      display: flex;
+      gap: 18px;
+      padding: 6px 28px 18px;
+      animation: slideX 30s linear infinite;
+      width: max-content;
+    }
+
+    .carousel-inner:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes slideX {
+      0% {
+        transform: translateX(0)
+      }
+
+      100% {
+        transform: translateX(-50%)
+      }
+    }
+
+    .s-card {
+      flex: 0 0 210px;
+      background: white;
+      border-radius: 20px;
+      padding: 22px 16px 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 14px rgba(30, 37, 94, 0.08);
+      text-align: center;
+      transition: transform .3s, box-shadow .3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .s-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--red), var(--green));
+    }
+
+    .s-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 28px rgba(30, 37, 94, 0.14);
+    }
+
+    .s-avatar {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      background: var(--red-lt);
+      border: 3px solid var(--red);
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+
+    .s-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .s-name {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+
+    .s-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      background: var(--surface);
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 10px;
+      color: var(--text-gray);
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .li-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #0A66C2;
+      color: white;
+      border: none;
+      padding: 6px 13px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      font-family: 'Noto Sans', sans-serif;
+    }
+
+    /* ─── BENTO GRID ─── */
+    .bento-sec {
+      padding: 80px 40px;
+      position: relative;
+      overflow: hidden;
+      background: #F8F9FF;
+    }
+
+    .bento-sec::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 700px 500px at 0% 50%, rgba(239, 68, 68, 0.05) 0%, transparent 70%),
+        radial-gradient(ellipse 700px 500px at 100% 50%, rgba(69, 182, 73, 0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .bento-sec-header {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+
+    .bento-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.18);
+      color: var(--red);
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .bento-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(28px, 3.5vw, 42px);
+      font-weight: 900;
+      color: var(--navy);
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      margin: 0;
+    }
+
+    .bento-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      align-items: stretch;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── LEFT PANEL (Struggles) ── */
+    .pane-dark {
+      background: white;
+      border-radius: 28px;
+      padding: 44px 40px;
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 40px rgba(30, 37, 94, 0.07);
+    }
+
+    .pane-dark::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(239, 68, 68, 0.07), transparent 65%);
+      pointer-events: none;
+    }
+
+    .pane-dark::after {
+      content: '';
+      position: absolute;
+      bottom: -80px;
+      left: -80px;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.06), transparent 65%);
+      pointer-events: none;
+    }
+
+    .pane-dark-illustration {
+      display: none;
+    }
+
+    .pane-dark-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: var(--red);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pane-h {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      margin: 0 0 10px;
+      letter-spacing: -0.02em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pane-dark .pane-h {
+      color: var(--navy);
+    }
+
+    .hl-rose {
+      color: var(--red);
+    }
+
+    .struggle-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-grow: 1;
+      position: relative;
+      z-index: 1;
+    }
+
+    .struggle-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: #F8F9FF;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 18px;
+      transition: background 0.25s, transform 0.25s, border-color 0.25s;
+    }
+
+    .struggle-row:hover {
+      background: rgba(239, 68, 68, 0.05);
+      border-color: rgba(239, 68, 68, 0.3);
+      transform: translateX(4px);
+    }
+
+    .x-ico {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .struggle-txt {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--navy);
+      line-height: 1.45;
+    }
+
+    .sol-bar {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.07), rgba(239, 68, 68, 0.02));
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 14px;
+      padding: 14px 18px;
+      color: var(--navy);
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.5;
+      position: relative;
+      z-index: 1;
+    }
+
+    .sol-bar .sol-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    /* ── RIGHT PANEL (Benefits) ── */
+    .pane-light {
+      background: linear-gradient(145deg, #0f1c45 0%, #162258 55%, #0a1535 100%);
+      border-radius: 28px;
+      padding: 44px 40px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 60px rgba(10, 21, 53, 0.4);
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      box-sizing: border-box;
+    }
+
+    .pane-light::before {
+      content: '';
+      position: absolute;
+      top: -100px;
+      right: -100px;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(69, 182, 73, 0.15), transparent 65%);
+      pointer-events: none;
+    }
+
+    .pane-light::after {
+      content: '';
+      position: absolute;
+      bottom: -80px;
+      left: -80px;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(37, 99, 235, 0.12), transparent 65%);
+      pointer-events: none;
+    }
+
+    .pane-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(69, 182, 73, 0.18);
+      border: 1px solid rgba(69, 182, 73, 0.35);
+      color: #86efac;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pane-light .pane-h {
+      color: white;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hl-gr {
+      color: #86efac;
+    }
+
+    .pane-sub {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.55);
+      margin-bottom: 24px;
+      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+    }
+
+    .benefit-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+      flex-grow: 1;
+    }
+
+    .benefit-row {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 13px 15px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      background: rgba(255, 255, 255, 0.05);
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.85);
+      transition: background 0.25s, transform 0.2s, border-color 0.25s, box-shadow 0.25s;
+      backdrop-filter: blur(4px);
+    }
+
+    .benefit-row:hover {
+      transform: translateY(-2px);
+      background: rgba(69, 182, 73, 0.12);
+      border-color: rgba(69, 182, 73, 0.35);
+      box-shadow: 0 6px 20px rgba(69, 182, 73, 0.15);
+      color: white;
+    }
+
+    .chk-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: rgba(69, 182, 73, 0.2);
+      border: 1.5px solid rgba(69, 182, 73, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #86efac;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .enroll-cta-bar {
+      margin-top: 22px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, rgba(69, 182, 73, 0.2), rgba(69, 182, 73, 0.08));
+      border: 1px solid rgba(69, 182, 73, 0.35);
+      border-radius: 14px;
+      padding: 15px 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .enroll-cta-text {
+      flex: 1;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.5;
+    }
+
+    .enroll-cta-text strong {
+      color: #86efac;
+    }
+
+    .enroll-cta-icon {
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+
+    /* ─── INTERACTIVE SERPENTINE CURRICULUM LAYOUT ─── */
+    .curriculum-sec {
+      padding: 0 !important;
+      background: #F8FAFC !important;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      scroll-margin-top: 80px;
+    }
+
+    .curriculum-notebook {
+      width: 100%;
+      max-width: 100%;
+      background: #FAF9F5;
+      border-radius: 0;
+      box-shadow: none;
+      overflow: hidden;
+      border: none;
+      border-top: 1px solid rgba(17, 22, 56, 0.06);
+      position: relative;
+    }
+
+    /* Dark Top Header Panel */
+    .notebook-header-panel {
+      background: #1E255E;
+      padding: 56px 80px;
+      text-align: center;
+      color: white;
+      position: relative;
+    }
+
+    .notebook-header-panel .sec-h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: white !important;
+      background: none !important;
+      -webkit-text-fill-color: initial !important;
+    }
+
+    .notebook-header-panel .hl-g {
+      color: #4CAF50 !important;
+    }
+
+    .notebook-header-panel .sec-sub {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.8);
+      margin: 0;
+    }
+
+    /* Notebook Sheet Inner Content */
+    .notebook-sheet {
+      padding: 60px 80px;
+      position: relative;
+      max-width: 1200px;
+      margin: 0 auto;
+      background-image:
+        linear-gradient(rgba(30, 37, 94, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(30, 37, 94, 0.03) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    .notebook-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 900;
+      color: #1E255E;
+      text-align: center;
+      margin-bottom: 56px;
+      position: relative;
+    }
+
+    .notebook-title::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 4px;
+      background: #4CAF50;
+      margin: 10px auto 0;
+      border-radius: 2px;
+    }
+
+    .timeline-container {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 40px;
+    }
+
+    .timeline-row {
+      display: block;
+      position: relative;
+      width: 100%;
+      padding: 0 70px;
+      box-sizing: border-box;
+      z-index: 2;
+    }
+
+    /* Curved loop connectors — sit outside the padded card area */
+    .timeline-row.row-l2r::after {
+      content: '';
+      position: absolute;
+      top: 28px;
+      right: 0;
+      width: 70px;
+      height: calc(100% + 40px);
+      border: 5px solid;
+      border-left: none;
+      border-radius: 0 50px 50px 0;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .timeline-row.row-r2l::after {
+      content: '';
+      position: absolute;
+      top: 28px;
+      left: 0;
+      width: 70px;
+      height: calc(100% + 40px);
+      border: 5px solid;
+      border-right: none;
+      border-radius: 50px 0 0 50px;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .timeline-row[data-day="1"]::after {
+      border-color: #14B8A6;
+    }
+
+    .timeline-row[data-day="2"]::after {
+      border-color: #22C55E;
+    }
+
+    .timeline-row[data-day="3"]::after {
+      border-color: #F97316;
+    }
+
+    .timeline-row[data-day="4"]::after {
+      border-color: #84CC16;
+    }
+
+    .timeline-row[data-day="5"]::after {
+      display: none !important;
+    }
+
+    .day-badge-wrap {
+      display: none;
+    }
+
+    .day-badge-wrap.empty {
+      display: none;
+    }
+
+    .day-badge {
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 13px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      background: white;
+      border: 2px solid #E5E7EB;
+      z-index: 3;
+      text-align: center;
+      min-width: 80px;
+    }
+
+    .badge-blue {
+      border-color: #3B82F6;
+      color: #1D4ED8;
+    }
+
+    .badge-teal {
+      border-color: #14B8A6;
+      color: #0F766E;
+    }
+
+    .badge-green {
+      border-color: #22C55E;
+      color: #15803D;
+    }
+
+    .badge-orange {
+      border-color: #F97316;
+      color: #C2410C;
+    }
+
+    .badge-lime {
+      border-color: #84CC16;
+      color: #4F8A10;
+    }
+
+    .curriculum-card {
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      box-shadow: 0 4px 15px rgba(30, 37, 94, 0.03);
+      cursor: default;
+      transition: box-shadow 0.3s;
+      z-index: 3;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .curriculum-card:hover {
+      box-shadow: 0 10px 25px rgba(30, 37, 94, 0.08);
+    }
+
+    .curriculum-card.card-blue {
+      border-color: #3B82F6;
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.08);
+    }
+
+    .curriculum-card.card-teal {
+      border-color: #14B8A6;
+      box-shadow: 0 8px 24px rgba(20, 184, 166, 0.08);
+    }
+
+    .curriculum-card.card-green {
+      border-color: #22C55E;
+      box-shadow: 0 8px 24px rgba(34, 197, 94, 0.08);
+    }
+
+    .curriculum-card.card-orange {
+      border-color: #F97316;
+      box-shadow: 0 8px 24px rgba(249, 115, 22, 0.08);
+    }
+
+    .curriculum-card.card-lime {
+      border-color: #84CC16;
+      box-shadow: 0 8px 24px rgba(132, 204, 22, 0.08);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+
+    .card-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .card-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #F3F4F6;
+      color: #4B5563;
+    }
+
+    .card-blue .card-num {
+      background: #DBEAFE;
+      color: #1D4ED8;
+    }
+
+    .card-teal .card-num {
+      background: #CCFBF1;
+      color: #0F766E;
+    }
+
+    .card-green .card-num {
+      background: #DCFCE7;
+      color: #15803D;
+    }
+
+    .card-orange .card-num {
+      background: #FFEDD5;
+      color: #C2410C;
+    }
+
+    .card-lime .card-num {
+      background: #ECFDF5;
+      color: #4F8A10;
+    }
+
+    .card-header h4 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      color: #1E255E;
+      margin: 0;
+    }
+
+    .card-icon {
+      font-size: 18px;
+    }
+
+    /* Card body always visible — no dropdown */
+    .card-body {
+      opacity: 1;
+      overflow: visible;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed #E5E7EB;
+    }
+
+    .card-body ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card-body li {
+      font-size: 13.5px;
+      color: #4B5563;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .card-body li .chk-arrow {
+      font-size: 11px;
+      font-weight: bold;
+      color: #9CA3AF;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .card-blue li .chk-arrow {
+      color: #3B82F6;
+    }
+
+    .card-teal li .chk-arrow {
+      color: #14B8A6;
+    }
+
+    .card-green li .chk-arrow {
+      color: #22C55E;
+    }
+
+    .card-orange li .chk-arrow {
+      color: #F97316;
+    }
+
+    .card-lime li .chk-arrow {
+      color: #84CC16;
+    }
+
+    /* Illustration layout: text left, SVG right */
+    .card-body-illus {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .card-body-illus ul {
+      flex: 1;
+    }
+
+    .card-illus {
+      width: 110px;
+      height: 110px;
+      flex-shrink: 0;
+      border-radius: 12px;
+      overflow: visible;
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.06));
+    }
+
+    @media (max-width: 520px) {
+      .card-body-illus {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .card-illus {
+        width: 90px;
+        height: 90px;
+        align-self: center;
+      }
+    }
+
+    /* Progress Tracker Card */
+    .progress-tracker-wrap {
+      display: flex;
+      justify-content: flex-end;
+      width: 100%;
+      margin-top: 48px;
+    }
+
+    .tracker-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 24px;
+      width: 320px;
+      box-shadow: 0 4px 15px rgba(30, 37, 94, 0.03);
+      box-sizing: border-box;
+    }
+
+    .tracker-card h5 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      color: #1E255E;
+      margin: 0 0 12px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tracker-progress-container {
+      width: 100%;
+      height: 8px;
+      background: #F3F4F6;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 12px;
+    }
+
+    .tracker-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, #3B82F6, #14B8A6 30%, #22C55E 60%, #F97316 80%, #84CC16 100%);
+      width: 20%;
+      border-radius: 4px;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .tracker-labels {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+
+    .tracker-labels span {
+      font-size: 11px;
+      color: #9CA3AF;
+      font-weight: 700;
+      transition: color 0.3s;
+    }
+
+    .tracker-labels span.active {
+      color: #1E255E;
+    }
+
+    /* Mobile media query */
+    @media (max-width: 768px) {
+      .curriculum-notebook {
+        border-radius: 16px;
+      }
+
+      .notebook-header-panel {
+        padding: 30px 20px;
+      }
+
+      .notebook-header-panel .sec-h2 {
+        font-size: 28px;
+      }
+
+      .notebook-sheet {
+        padding: 40px 16px;
+      }
+
+      .notebook-title {
+        font-size: 20px;
+        margin-bottom: 32px;
+      }
+
+      .timeline-container {
+        gap: 24px;
+        padding-left: 0;
+        border-left: none;
+        margin-left: 0;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      .timeline-row::before,
+      .timeline-row::after {
+        display: none !important;
+      }
+
+      .timeline-row {
+        display: block;
+        padding: 0;
+        width: 100%;
+      }
+
+      .timeline-row.row-r2l {
+        display: block;
+      }
+
+      .day-badge-wrap {
+        justify-content: flex-start;
+        width: auto;
+      }
+
+      .day-badge-wrap.empty {
+        display: none !important;
+      }
+
+      .day-badge {
+        padding: 6px 14px;
+        font-size: 11px;
+        min-width: auto;
+      }
+
+      .curriculum-card {
+        padding: 14px 16px;
+      }
+
+      .progress-tracker-wrap {
+        justify-content: center;
+        margin-top: 32px;
+      }
+
+      .tracker-card {
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+
+    /* ─── LINKEDIN POSTS — lower section ─── */
+    .linkedin-posts {
+      padding: 64px 28px !important;
+      background: var(--surface) !important;
+    }
+
+    .linkedin-carousel-container {
+      max-width: 100% !important;
+      padding: 0 40px !important;
+      box-sizing: border-box !important;
+    }
+
+    .li-row {
+      overflow: hidden;
+      margin-top: 36px;
+      cursor: grab;
+    }
+
+    .li-track {
+      display: flex;
+      gap: 20px;
+      padding: 4px 4px 16px;
+      animation: slideX 32s linear infinite;
+      width: max-content;
+    }
+
+    .li-track:hover {
+      animation-play-state: paused;
+    }
+
+    .li-card {
+      flex: 0 0 310px;
+      background: white;
+      border-radius: 18px;
+      padding: 22px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 14px rgba(30, 37, 94, 0.07);
+      position: relative;
+      overflow: hidden;
+      transition: transform .3s, box-shadow .3s;
+      text-align: left;
+    }
+
+    .li-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: #0A66C2;
+    }
+
+    .li-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 28px rgba(30, 37, 94, 0.12);
+    }
+
+    .li-hd {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin-bottom: 11px;
+    }
+
+    .li-av {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--blue-lt);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      overflow: hidden;
+    }
+
+    .li-av img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .li-nm {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+    }
+
+    .li-role {
+      font-size: 11px;
+      color: var(--text-gray);
+      margin-top: 1px;
+    }
+
+    .li-body {
+      font-size: 13px;
+      color: #444;
+      line-height: 1.65;
+      display: -webkit-box;
+      -webkit-line-clamp: 5;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .li-ft {
+      display: flex;
+      gap: 14px;
+      margin-top: 13px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .li-act {
+      font-size: 11.5px;
+      color: var(--text-gray);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .li-act:hover {
+      color: #0A66C2;
+    }
+
+    /* ─── CERTIFIED ─── */
+    .get-certified {
+      padding: 64px 28px !important;
+      background: white !important;
+    }
+
+    .get-certified::before {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: -80px;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(69, 182, 73, 0.07), transparent 70%);
+      pointer-events: none;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 28px;
+      background: var(--navy);
+      color: white;
+      padding: 13px 28px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 6px 20px rgba(30, 37, 94, 0.26);
+      transition: all 0.3s;
+      font-family: 'Noto Sans', sans-serif;
+      width: auto !important;
+    }
+
+    .action-btn:hover {
+      background: var(--navy2);
+      transform: translateY(-2px);
+    }
+
+    /* ─── MENTOR REDESIGN ─── */
+    .mentor {
+      padding: 64px 28px !important;
+      background: #F3F4F6 !important;
+    }
+
+    .mentor-layout {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 36px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .mentor-visual {
+      display: flex;
+      justify-content: center;
+    }
+
+    .mc-large-img {
+      width: 100%;
+      max-width: 280px;
+      aspect-ratio: 1 / 1;
+      border-radius: 50%;
+      object-fit: contain;
+      object-position: center bottom;
+      filter: drop-shadow(0 15px 30px rgba(30, 37, 94, 0.12));
+      border: 1.5px solid var(--red);
+      padding: 6px;
+      background: white;
+    }
+
+    /* ─── CERTIFICATE RESIZING & PERFORMANCE ─── */
+    .certificate-container {
+      max-width: 700px !important;
+    }
+
+    .certificate-frame {
+      height: 500px !important;
+      will-change: transform;
+    }
+
+    .mentor-card {
+      background: white;
+      border-radius: 24px;
+      padding: 36px 34px;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 32px rgba(30, 37, 94, 0.08);
+      text-align: left;
+    }
+
+    .mc-hd {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-bottom: 18px;
+    }
+
+    .mc-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--navy);
+      margin: 0;
+    }
+
+    .mc-role {
+      font-size: 14.5px;
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .mc-desc {
+      font-size: 14px;
+      color: var(--text-gray);
+      line-height: 1.8;
+      margin-bottom: 22px;
+    }
+
+    .mc-desc strong {
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    .mc-promo {
+      font-size: 14px;
+      color: var(--navy);
+      font-weight: 600;
+      margin-bottom: 22px;
+    }
+
+    .mc-pills {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .mc-pill {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      border-left: 3.5px solid var(--green);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .mc-pill:nth-child(2) {
+      border-left-color: var(--blue);
+    }
+
+    .mc-pill:nth-child(3) {
+      border-left-color: var(--red);
+    }
+
+    .pill-n {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--navy);
+      line-height: 1.2;
+    }
+
+    .pill-l {
+      font-size: 11px;
+      color: var(--text-gray);
+      font-weight: 500;
+      margin-top: 2px;
+      line-height: 1.2;
+    }
+
+    /* ─── NOTIFY SECTION REDESIGN ─── */
+    .notify-section {
+      background: linear-gradient(135deg, #0a0d2e 0%, #111540 40%, #0f1c45 100%) !important;
+      overflow: hidden;
+      position: relative;
+      padding: 72px 60px 0 !important;
+      text-align: center;
+      margin-bottom: 0 !important;
+    }
+
+    /* Extend the dark bg all the way to the bottom of the page */
+    body::after {
+      content: '';
+      display: block;
+      background: #0a0d2e;
+      height: 0;
+    }
+
+    .notify-section::before {
+      content: '';
+      position: absolute;
+      top: -150px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(239, 68, 68, 0.1) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .notify-section::after {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      right: -100px;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(69, 182, 73, 0.07) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .notify-section-inner {
+      position: relative;
+      z-index: 2;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 60px;
+      align-items: center;
+      text-align: left;
+      padding-bottom: 60px;
+    }
+
+    .notify-left {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .notify-right {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .notify-closed-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 7px 18px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .notify-closed-badge .badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #ef4444;
+      animation: pulse-dot 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(0.7);
+      }
+    }
+
+    .notify-icon-wrap {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.12) !important;
+      border: 2px solid rgba(239, 68, 68, 0.25) !important;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      font-size: 36px;
+      animation: bell-swing 3s ease-in-out infinite;
+    }
+
+    .notify-icon-wrap::before,
+    .notify-icon-wrap::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      border: 1.5px solid rgba(239, 68, 68, 0.15);
+      animation: ping-ring 2.5s ease-out infinite;
+    }
+
+    .notify-icon-wrap::before {
+      inset: -14px;
+      animation-delay: 0s;
+    }
+
+    .notify-icon-wrap::after {
+      inset: -26px;
+      animation-delay: 0.5s;
+    }
+
+    @keyframes ping-ring {
+      0% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(1.4);
+      }
+    }
+
+    @keyframes bell-swing {
+
+      0%,
+      100% {
+        transform: rotate(0deg);
+      }
+
+      20% {
+        transform: rotate(-12deg);
+      }
+
+      40% {
+        transform: rotate(10deg);
+      }
+
+      60% {
+        transform: rotate(-8deg);
+      }
+
+      80% {
+        transform: rotate(6deg);
+      }
+    }
+
+    .notify-icon-wrap svg {
+      display: none;
+    }
+
+    .notify-heading {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 900;
+      color: white;
+      margin: 0;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+    }
+
+    .notify-heading .hl-red {
+      color: #fca5a5;
+    }
+
+    .notify-heading .hl-gr {
+      color: #86efac;
+    }
+
+    .notify-sub {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.55);
+      line-height: 1.7;
+      max-width: 500px;
+      margin: 0;
+    }
+
+    .notify-stats-row {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 18px 28px;
+      width: 100%;
+    }
+
+    .notify-stat {
+      text-align: center;
+    }
+
+    .notify-stat-num {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #86efac;
+      line-height: 1;
+    }
+
+    .notify-stat-lbl {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.45);
+      font-weight: 500;
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .notify-stat-divider {
+      width: 1px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .notify-me-btn {
+      background: linear-gradient(135deg, var(--red) 0%, #c0392b 100%) !important;
+      box-shadow: 0 8px 32px rgba(239, 68, 68, 0.4) !important;
+      color: white !important;
+      border: none !important;
+      cursor: pointer;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 18px 40px !important;
+      font-size: 16px !important;
+      font-weight: 700 !important;
+      border-radius: 50px !important;
+      transition: all 0.3s ease;
+      width: 100% !important;
+      font-family: 'Outfit', sans-serif;
+      letter-spacing: 0.01em;
+    }
+
+    .notify-me-btn:hover {
+      box-shadow: 0 12px 40px rgba(239, 68, 68, 0.55) !important;
+      transform: translateY(-3px) scale(1.02) !important;
+    }
+
+    .notify-me-btn.subscribed {
+      background: linear-gradient(135deg, var(--green) 0%, var(--green-dk) 100%) !important;
+      box-shadow: 0 8px 32px rgba(69, 182, 73, 0.4) !important;
+    }
+
+    .notify-trust-line {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-align: center;
+    }
+
+    .notify-trust-line::before,
+    .notify-trust-line::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      max-width: 80px;
+    }
+
+    /* ─── FIXED CTA ─── */
+    .fixed-cta {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      box-sizing: border-box;
+      max-width: 100vw;
+      background: rgba(30, 37, 94, 0.97) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 11px 28px !important;
+      padding-bottom: calc(11px + env(safe-area-inset-bottom, 0px)) !important;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 9999;
+      gap: 16px;
+    }
+
+    .timer-container span {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.38) !important;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+    }
+
+    .price .original {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.35) !important;
+      text-decoration: line-through;
+    }
+
+    .price .discounted {
+      font-family: 'Outfit', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #fca5a5 !important;
+    }
+
+    .notify-me-footer-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--red) !important;
+      color: white !important;
+      border: none;
+      padding: 11px 22px !important;
+      border-radius: 999px !important;
+      font-size: 14px !important;
+      font-weight: 700 !important;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(239, 68, 68, 0.42) !important;
+      transition: all 0.3s;
+      white-space: nowrap;
+      font-family: 'Noto Sans', sans-serif;
+      width: auto !important;
+    }
+
+    .notify-me-footer-btn:hover {
+      background: var(--red-dk) !important;
+      transform: scale(1.04);
+    }
+
+    .notify-me-footer-btn.subscribed {
+      background: var(--green) !important;
+      box-shadow: 0 4px 14px rgba(69, 182, 73, 0.3) !important;
+    }
+
+    @media (min-width: 1025px) {
+      .hero {
+        /* min-height instead of fixed height: fills tall screens but lets
+           content breathe on short laptop viewports instead of clipping */
+        min-height: calc(100vh - 226px);
+        height: auto !important;
+        /* extra bottom padding = breathing room below the content,
+           filled by the hero gradient instead of white page background */
+        padding: 48px 60px 118px !important;
+        display: flex;
+        align-items: center;
+      }
+
+      .hero-container {
+        height: auto !important;
+      }
+
+      /* Desktop-specific adjustments to fit within constrained viewport height */
+      .badge-urgent {
+        margin-bottom: 12px !important;
+      }
+
+      .hero h1 {
+        margin-bottom: 12px !important;
+      }
+
+      .hero-sub {
+        margin-bottom: 12px !important;
+      }
+
+      .trust-chips {
+        margin-bottom: 14px !important;
+      }
+
+      .hero-live {
+        margin-bottom: 14px !important;
+      }
+
+      .hero-cta-row {
+        margin-bottom: 14px !important;
+      }
+
+      .stats-inner {
+        height: 98px !important;
+      }
+
+      .stat-cell {
+        height: 98px !important;
+        padding: 26px 20px !important;
+        box-sizing: border-box !important;
+      }
+
+      .fixed-cta {
+        height: 58px !important;
+        box-sizing: border-box !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+      }
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 1024px) {
+      .hero-content {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        padding-right: 0 !important;
+      }
+
+      .hero-content .hero-sub,
+      .hero-content .badge-urgent,
+      .hero-content h1 {
+        max-width: 100% !important;
+      }
+
+      .bento-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .mentor-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .mc-large-img {
+        max-width: 200px;
+      }
+
+      /* Notify section — stack to 1 column on tablet */
+      .notify-section-inner {
+        grid-template-columns: 1fr !important;
+        gap: 36px !important;
+        text-align: center !important;
+      }
+
+      .notify-left {
+        align-items: center;
+      }
+
+      .notify-right {
+        align-items: stretch;
+      }
+
+      .notify-stats-row {
+        justify-content: center;
+      }
+
+      .notify-heading {
+        font-size: 32px !important;
+      }
+
+      /* Curriculum — tighten notebook sheet */
+      .notebook-sheet {
+        padding: 40px 32px !important;
+      }
+
+      .notebook-header-panel {
+        padding: 44px 32px !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+
+      /* Hero — compact vertical rhythm (multiples of 8) */
+      .hero {
+        width: 100% !important;
+        /* larger gradient-filled bottom padding = visual separation
+           from the stats strip without a white gap */
+        padding: 40px 20px 64px !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        height: auto !important;
+      }
+
+
+      .hero-container {
+        padding: 0 !important;
+        height: auto !important;
+      }
+
+      .badge-urgent {
+        padding: 7px 15px;
+        font-size: 11px;
+        margin-bottom: 16px;
+      }
+
+      .hero h1 {
+        font-size: 28px !important;
+        margin-bottom: 12px;
+      }
+
+      .hero-sub {
+        font-size: 14px !important;
+        margin-bottom: 16px;
+      }
+
+      .trust-chips {
+        gap: 8px;
+        margin-bottom: 16px;
+      }
+
+      .chip {
+        padding: 6px 12px;
+        font-size: 11.5px;
+      }
+
+      .hero-live {
+        font-size: 13px;
+        margin-bottom: 16px;
+      }
+
+      .hero-cta-row {
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      /* ~50px tall CTAs — still comfortable touch targets */
+      .btn-closed {
+        padding: 14px 24px;
+        font-size: 14px;
+      }
+
+      .btn-outline-red {
+        padding: 12px 22px;
+        font-size: 14px;
+      }
+
+      /* keep the rating on one line */
+      .hero-rating {
+        flex-wrap: nowrap;
+        white-space: nowrap;
+      }
+
+      .stars {
+        font-size: 15px;
+      }
+
+      .rating-text {
+        font-size: 12px;
+      }
+
+      .stats-strip {
+        border-radius: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+      }
+
+      .stats-inner {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stat-cell:nth-child(2) {
+        border-right: none;
+      }
+
+      .stat-cell:nth-child(1),
+      .stat-cell:nth-child(2) {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      /* Bento section */
+      .bento-sec {
+        padding: 48px 16px !important;
+      }
+
+      .bento-title {
+        font-size: 28px !important;
+      }
+
+      .pane-dark,
+      .pane-light {
+        padding: 30px 20px;
+        border-radius: 20px;
+      }
+
+      .pane-h {
+        font-size: 22px !important;
+      }
+
+      .benefit-list {
+        grid-template-columns: 1fr;
+      }
+
+      .benefit-row {
+        font-size: 12.5px;
+        padding: 11px 13px;
+      }
+
+      .struggle-row {
+        padding: 12px 14px;
+      }
+
+      .struggle-txt {
+        font-size: 13px;
+      }
+
+      .enroll-cta-bar {
+        padding: 12px 16px;
+      }
+
+      /* Curriculum */
+      .notebook-header-panel {
+        padding: 36px 20px !important;
+      }
+
+      .notebook-header-panel .sec-h2 {
+        font-size: 26px !important;
+      }
+
+      .notebook-sheet {
+        padding: 30px 16px !important;
+      }
+
+      .curriculum-card {
+        padding: 14px 16px;
+      }
+
+      .card-header h4 {
+        font-size: 14px;
+      }
+
+      .card-body li {
+        font-size: 12.5px;
+      }
+
+      /* Mentor */
+      .mentor {
+        padding: 40px 16px !important;
+      }
+
+      .mentor-card {
+        padding: 24px 20px;
+      }
+
+      .mc-pills {
+        grid-template-columns: 1fr;
+      }
+
+      header.site-header .header-container {
+        padding: 0 16px !important;
+      }
+
+      .certificate-container {
+        max-width: 100% !important;
+      }
+
+      .certificate-frame {
+        height: 320px !important;
+      }
+
+      /* Accordion */
+      .accordion-wrap {
+        grid-template-columns: 1fr !important;
+        gap: 16px;
+      }
+
+      .accordion-item:nth-child(1),
+      .accordion-item:nth-child(2),
+      .accordion-item:nth-child(3),
+      .accordion-item:nth-child(4),
+      .accordion-item:nth-child(5) {
+        grid-column: span 1 !important;
+      }
+
+      .linkedin-carousel-container {
+        padding: 0 16px !important;
+      }
+
+      /* Notify section — centered flow: badge → bell → heading → copy → stats → CTA */
+      .notify-section {
+        padding: 56px 20px 0 !important;
+      }
+
+      .notify-section-inner {
+        gap: 24px !important;
+        padding-bottom: 48px !important;
+      }
+
+      .notify-left {
+        gap: 20px;
+        align-items: center;
+      }
+
+      /* stack the bell above the heading instead of beside it */
+      .notify-title-row {
+        flex-direction: column !important;
+        gap: 20px !important;
+      }
+
+      /* the bell is the focal point: larger, with a soft glow */
+      .notify-icon-wrap {
+        width: 72px !important;
+        height: 72px !important;
+        font-size: 32px !important;
+        box-shadow: 0 0 44px rgba(239, 68, 68, 0.35);
+      }
+
+      .notify-heading {
+        font-size: 26px !important;
+        line-height: 1.25 !important;
+        text-wrap: balance;
+      }
+
+      .notify-sub {
+        font-size: 14px;
+        margin: 0 auto;
+      }
+
+      .notify-right {
+        gap: 20px;
+      }
+
+      .notify-stats-row {
+        gap: 16px !important;
+        padding: 14px 16px !important;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .notify-stat-num {
+        font-size: 18px;
+      }
+
+      /* extra breathing room between the stats card and the CTA */
+      .notify-action {
+        margin-top: 8px;
+      }
+
+      .notify-me-btn {
+        padding: 15px 28px !important;
+        font-size: 14px !important;
+      }
+
+      /* Fixed CTA */
+      .fixed-cta {
+        padding: 10px 16px !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero {
+        padding: 32px 16px 56px !important;
+      }
+
+      .hero h1 {
+        font-size: 24px !important;
+        text-align: center;
+      }
+
+      .hero-sub {
+        font-size: 13px !important;
+      }
+
+      .trust-chips {
+        gap: 6px !important;
+      }
+
+      .chip {
+        font-size: 11px !important;
+        padding: 5px 10px !important;
+      }
+
+      /* stacked full-width CTAs, centered, easy to tap */
+      .hero-cta-row {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        max-width: 320px;
+        gap: 10px !important;
+      }
+
+      .btn-closed,
+      .btn-outline-red {
+        justify-content: center;
+      }
+
+      .rating-text {
+        font-size: 11.5px;
+      }
+
+      .stats-inner {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .stat-n {
+        font-size: 20px;
+      }
+
+      .stat-l {
+        font-size: 10px;
+      }
+
+      /* Bento */
+      .bento-sec {
+        padding: 36px 12px !important;
+      }
+
+      .bento-title {
+        font-size: 24px !important;
+      }
+
+      .bento-eyebrow {
+        font-size: 10px;
+      }
+
+      .pane-dark,
+      .pane-light {
+        padding: 24px 16px;
+        border-radius: 16px;
+      }
+
+      .pane-h {
+        font-size: 20px !important;
+      }
+
+      .pane-sub {
+        font-size: 12.5px;
+      }
+
+      .x-ico {
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
+      }
+
+      .struggle-txt {
+        font-size: 12.5px;
+      }
+
+      .sol-bar {
+        font-size: 12px;
+        padding: 11px 14px;
+      }
+
+      .benefit-row {
+        font-size: 12px;
+        padding: 10px 12px;
+      }
+
+      .enroll-cta-bar {
+        padding: 11px 14px;
+      }
+
+      .enroll-cta-text {
+        font-size: 12px;
+      }
+
+      /* Curriculum */
+      .notebook-header-panel {
+        padding: 28px 14px !important;
+      }
+
+      .notebook-header-panel .sec-h2 {
+        font-size: 22px !important;
+      }
+
+      .notebook-header-panel .sec-sub {
+        font-size: 13px;
+      }
+
+      .notebook-sheet {
+        padding: 20px 16px !important;
+      }
+
+      .card-header h4 {
+        font-size: 13px;
+      }
+
+      .card-num {
+        font-size: 11px;
+        padding: 3px 6px;
+      }
+
+      .card-body li {
+        font-size: 12px;
+      }
+
+      /* Notify */
+      .notify-section {
+        padding: 44px 16px 0 !important;
+      }
+
+      .notify-section-inner {
+        gap: 20px !important;
+        padding-bottom: 40px !important;
+      }
+
+      .notify-title-row {
+        gap: 16px !important;
+      }
+
+      .notify-left,
+      .notify-right {
+        gap: 16px;
+      }
+
+      .notify-heading {
+        font-size: 22px !important;
+      }
+
+      .notify-sub {
+        font-size: 13px;
+      }
+
+      .notify-stats-row {
+        gap: 12px !important;
+        padding: 12px 12px !important;
+      }
+
+      .notify-stat-num {
+        font-size: 16px;
+      }
+
+      .notify-stat-lbl {
+        font-size: 9px;
+      }
+
+      .notify-stat-divider {
+        height: 28px;
+      }
+
+      .notify-me-btn {
+        padding: 13px 20px !important;
+        font-size: 13px !important;
+        border-radius: 40px !important;
+      }
+
+      .notify-icon-wrap {
+        width: 64px !important;
+        height: 64px !important;
+        font-size: 28px !important;
+      }
+
+      .notify-icon-wrap::before {
+        inset: -10px;
+      }
+
+      .notify-icon-wrap::after {
+        inset: -18px;
+      }
+
+      .notify-closed-badge {
+        font-size: 10px;
+        padding: 5px 14px;
+      }
+
+      .notify-trust-line {
+        font-size: 10px;
+      }
+
+      /* Mentor */
+      .mc-name {
+        font-size: 20px;
+      }
+
+      .mc-desc {
+        font-size: 13px;
+      }
+
+      .mc-promo {
+        font-size: 12.5px;
+      }
+
+      /* Fixed CTA */
+      .fixed-cta {
+        display: grid !important;
+        grid-template-columns: 1fr auto !important;
+        grid-template-rows: auto auto !important;
+        column-gap: 12px !important;
+        row-gap: 8px !important;
+        align-items: center !important;
+        padding: 10px 16px !important;
+      }
+
+      .fixed-cta .timer-container {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+        text-align: left !important;
+        align-self: center !important;
+      }
+
+      .fixed-cta .notify-me-footer-btn {
+        grid-column: 1 !important;
+        grid-row: 2 !important;
+        justify-self: start !important;
+        align-self: center !important;
+        padding: 9px 20px !important;
+        font-size: 13px !important;
+      }
+
+      .fixed-cta .price {
+        grid-column: 2 !important;
+        grid-row: 1 / 3 !important;
+        align-self: center !important;
+        display: flex !important;
+        align-items: baseline !important;
+        justify-content: flex-end !important;
+        gap: 6px !important;
+      }
+
+      /* LinkedIn */
+      .linkedin-posts h2 {
+        font-size: 22px !important;
+      }
+
+      /* Certificate */
+      .get-certified h2 {
+        font-size: 24px;
+      }
+
+      .certificate-frame {
+        height: 240px !important;
+      }
+    }
+
+    .spacer {
+      height: 0;
+    }
+  </style>
 </head>
 
 <body>
 
-  <body>
-    <header class="site-header">
-      <div class="header-container">
-        <a href="/" class="brand-link">
-          <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
-        </a>
-        <div class="header-actions">
-          <div class="auth-buttons-container"></div>
-          <button class="menu-button-style" aria-label="Open menu" id="menuButton">
-            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </header>
-
-    <div class="expanded-menu" id="expandedMenu">
-      <button class="menu-close-btn" id="menuCloseBtn">
-        <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      <div class="menu-items">
-        <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
-
-        <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
-        <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
-        <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
-
-        <div class="menu-item-dropdown">
-          <button class="menu-item" style="width: 100%; justify-content: space-between;">
-            Free Resources
-            <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </button>
-          <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
-            <a href="/ca-fresher-training-resources.html" class="menu-item">CA Fresher</a>
-            <a href="/ca-industrial-training-resources.html" class="menu-item">Industrial Training</a>
-            <a href="/ca-articleship-opportunities" class="menu-item">Articleship</a>
-          </div>
-        </div>
-
-
-        <a href="/contact.html" class="menu-item">Contact Us</a>
+  <header class="site-header">
+    <div class="header-container">
+      <a href="/" class="brand-link">
+        <img src="/assets/logo.png" alt="My Student Club" class="brand-logo">
+      </a>
+      <div class="header-actions">
+        <div class="auth-buttons-container"></div>
+        <button class="menu-button-style" aria-label="Open menu" id="menuButton">
+          <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
       </div>
     </div>
+  </header>
 
-    <div class="hero" style="margin-top: 80px;">
-      <div class="badge">Limited Seats Left!</div>
-      <h1>MSC Articleship<br>Program</h1>
+  <div class="expanded-menu" id="expandedMenu">
+    <button class="menu-close-btn" id="menuCloseBtn">
+      <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+    <div class="menu-items">
+      <a href="/learning-management-system/" class="menu-item" id="lms-nav-link" style="display: none;">My Courses</a>
 
-      <div class="features">
-        <div class="feature">
-          <svg class="checkmark" viewBox="0 0 24 24">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
+      <a href="/ca-industrial-training-program/" class="menu-item">MSC Industrial Training Program</a>
+      <a href="/articleship-program/" class="menu-item">MSC Articleship Program</a>
+      <a href="/msc-ca-fresher-program/" class="menu-item">MSC CA Freshers Program</a>
+
+      <div class="menu-item-dropdown">
+        <button class="menu-item" style="width: 100%; justify-content: space-between;">
+          Free Resources
+          <svg class="dropdown-icon" width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
           </svg>
-          All-in-one Program
+        </button>
+        <div class="dropdown-content" style="display: none; padding-left: 1.5rem;">
+          <a href="/ca-fresher-training-resources.html" class="menu-item">CA Fresher</a>
+          <a href="/ca-industrial-training-resources.html" class="menu-item">Industrial Training</a>
+          <a href="/ca-articleship-opportunities" class="menu-item">Articleship</a>
         </div>
-        <div class="feature">
-          <svg class="checkmark" viewBox="0 0 24 24">
-            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-          </svg>
-          Trusted By 1000's of Students
+      </div>
+
+      <a href="/contact.html" class="menu-item">Contact Us</a>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+    <div class="hero-deco"></div>
+    <div class="hero-container">
+      <div class="hero-content" data-aos="fade-right" data-aos-duration="1000" data-aos-once="true">
+        <div class="badge-urgent">
+          <div class="badge-dot"></div> Limited Seats Left!
         </div>
-        <div class="feature rating">
+        <!-- <h1>MSC <span class="hl-red">Articleship</span><br>Program</h1> -->
+        <h1>
+          MSC <span class="hl-red">Articleship</span><br>
+          Program
+        </h1>
+        <p class="hero-sub">Land your dream CA articleship at top firms. Personal CV review, mock interviews, 100+
+          exclusive vacancies &amp; direct founder mentorship.</p>
+        <div class="trust-chips">
+          <div class="chip">
+            <div class="dot-r"></div>All-in-one Program
+          </div>
+          <div class="chip">
+            <div class="dot-g"></div>Trusted By 1000's
+          </div>
+        </div>
+        <div class="hero-live">✅ Live Batch + Recordings Included</div>
+        <div class="hero-cta-row">
+          <span class="btn-closed"><i class="fas fa-lock"></i> Registrations Closed</span>
+          <a href="#curriculum-section" class="btn-outline-red"><i class="far fa-file-alt"></i> View Curriculum</a>
+        </div>
+        <div class="hero-rating">
           <span class="stars">★★★★★</span>
-          4.9 / 5 Rated Workshop
+          <span class="rating-text">4.9 / 5 rated by 1000's of CA students</span>
         </div>
-
-      </div>
-
-      <div class="stats">
-
       </div>
     </div>
+  </div>
 
-    <section class="success-stories">
-      <div class="section-bg">
-        <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_pwohahvd.json" background="transparent"
-          speed="1" style="width: 100%; height: 100%;" loop autoplay>
-        </lottie-player>
+  <!-- STATS STRIP -->
+  <div class="stats-strip">
+    <div class="stats-inner">
+      <div class="stat-cell">
+        <div class="stat-n"><em>1000</em>+</div>
+        <div class="stat-l">Students Placed</div>
       </div>
-      <h2>Our <span class="dynamic-batch-month">Oct'25</span> Batch <span class="highlight">Students</span> placed in Top Companies</h2>
-      <div class="carousel-container">
-        <div class="carousel" id="studentCarousel"></div>
+      <div class="stat-cell">
+        <div class="stat-n">₹<em class="g">1.25L</em></div>
+        <div class="stat-l">Highest Stipend</div>
       </div>
-    </section>
+      <div class="stat-cell">
+        <div class="stat-n"><em>100</em>+</div>
+        <div class="stat-l">Exclusive Vacancies</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-n"><em class="g">35K</em>+</div>
+        <div class="stat-l">Community Members</div>
+      </div>
+    </div>
+  </div>
 
-    <section class="pain-points">
-      <div class="section-bg">
-        <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_kkflmtur.json" background="transparent"
-          speed="1" style="width: 100%; height: 100%;" loop autoplay>
-        </lottie-player>
-      </div>
-      <div class="pain-points-content">
-        <h2>Are you too Struggling?</h2>
-        <div class="struggles">
-          <div class="struggle-item">No Interview Calls for Articleship?</div>
-          <div class="struggle-item">Want to Land your dream opportunity?</div>
-          <div class="struggle-item">Want to earn Good Stipend?</div>
-          <div class="struggle-item">Want to add a brand to your CV for post qualification?</div>
-        </div>
-        <p class="solution">That's why we created a program to ensure you land your dream opportunity</p>
-      </div>
-    </section>
+  <!-- SUCCESS STORIES -->
+  <section class="success-stories">
+    <div class="section-bg">
+      <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_pwohahvd.json" background="transparent"
+        speed="1" style="width: 100%; height: 100%;" loop autoplay>
+      </lottie-player>
+    </div>
+    <h2>Our <span class="dynamic-batch-month">Oct'25</span> Batch <span class="highlight">Students</span> placed in Top
+      Companies</h2>
+    <div class="carousel-container">
+      <div class="carousel" id="studentCarousel"></div>
+    </div>
+  </section>
 
-    <section class="benefits">
-      <div class="section-bg">
-        <lottie-player src="https://assets9.lottiefiles.com/packages/lf20_47frevky.json" background="transparent"
-          speed="1" style="width: 100%; height: 100%;" loop autoplay>
-        </lottie-player>
-      </div>
-      <div class="benefits-content">
-        <h2>Why Enroll?</h2>
-        <div class="benefits-grid">
-          <div class="benefit-card">Access to 100+ Exclusive Vacancies</div>
-          <div class="benefit-card">Personal CV Evaluation by Founder</div>
-          <div class="benefit-card">6 Day Masterclass on CV Preparation to Placement</div>
-          <div class="benefit-card">Get Referrals in Top Firm</div>
-          <div class="benefit-card">Mock Interviews</div>
-          <div class="benefit-card">1000+ HR Mail IDs List</div>
-          <div class="benefit-card">MSC LMS - Videos of Trainees from Top Orgs</div>
-          <div class="benefit-card">Personal Mentor</div>
-          <div class="benefit-card">Regular One-One Call with Founder</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="curriculum">
-      <div class="section-bg">
-        <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_pwohahvd.json" background="transparent"
-          speed="1" style="width: 100%; height: 100%;" loop autoplay>
-        </lottie-player>
-      </div>
-      <h2>What will you Learn?</h2>
-      <div class="days-grid">
-        <div class="day-card">
-          <h3>Day 1: Roles in Articleship</h3>
-          <ul>
-            <li>Understanding what different roles are</li>
-            <li>Finding what suits you</li>
-            <li>Finding Firms* hiring for that role</li>
-          </ul>
-        </div>
-        <div class="day-card">
-          <h3>Day 2: Crafting Perfect CV</h3>
-          <ul>
-            <li>Making the Perfect CV</li>
-            <li>Personal CV Review</li>
-            <li>MSC AI CV Reviewer</li>
-          </ul>
-        </div>
-        <div class="day-card">
-          <h3>Day 3: Building LinkedIn</h3>
-          <ul>
-            <li>LinkedIn Profile Optimisation</li>
-            <li>Using Connection Notes</li>
-            <li>Other LinkedIn Hacks</li>
-          </ul>
-        </div>
-        <div class="day-card">
-          <h3>Day 4: Application Hacks</h3>
-          <ul>
-            <li>Right way to Apply</li>
-            <li>Using Job Portals</li>
-            <li>Getting References</li>
-            <li>Following Up</li>
-          </ul>
-        </div>
-        <div class="day-card">
-          <h3>Day 5: Cracking Interviews</h3>
-          <ul>
-            <li>Interview Guidebook</li>
-            <li>Staying Confident</li>
-            <li>MSC LMS</li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="linkedin-posts">
-      <h2>What <span class="highlight">LinkedIn</span> Has To Say...</h2>
-      <div class="linkedin-carousel-container">
-        <div class="linkedin-carousel" id="linkedinCarousel">
-          <!-- Cards will be populated by JavaScript -->
-        </div>
-      </div>
-    </section>
-
-    <section class="get-certified" data-aos="fade-up">
-      <h2 data-aos="zoom-in">Get <span class="highlight">Certified</span></h2>
-      <p data-aos="zoom-in" data-aos-delay="100">Level up your career with MSC's industry recognised certificate.</p>
-      <div class="certificate-container" data-aos="flip-left" data-aos-delay="200">
-        <div class="certificate-frame rotated">
-          <div class="certificate-back"></div>
-          <div class="certificate-frame-border"></div>
-          <div class="certificate-glass">
-            <div class="certificate-content">
-              <img class="certificate-image" src="https://mystudentclub.pages.dev/assets/certificate2.png"
-                alt="MSC Certificate" />
-              <div class="certificate-overlay"></div>
-              <div class="shine-effect"></div>
-            </div>
-            <div class="certificate-corner corner-tl"></div>
-            <div class="certificate-corner corner-tr"></div>
-            <div class="certificate-corner corner-bl"></div>
-            <div class="certificate-corner corner-br"></div>
-            <div class="floating-emblem">
-              <svg class="award-icon" viewBox="0 0 24 24">
-                <path
-                  d="M12 2L8 6H3v5l-2 4 2 4v5h5l4 2 4-2h5v-5l2-4-2-4V6h-5L12 2zm0 3l2.5 2.5H15v3l1.5 3-1.5 3v3h-3l-3 1.5L6 17H3v-3L1.5 11 3 8V5h3l3-2.5L12 5z" />
-              </svg>
-            </div>
+  <!-- BENTO -->
+  <section class="bento-sec">
+    <div class="bento-sec-header" data-aos="fade-up" data-aos-once="true">
+      <div class="bento-eyebrow">🎯 Your Articleship Journey Starts Here</div>
+      <h2 class="bento-title">Stop Struggling. <span style="color:var(--red)">Start Landing.</span></h2>
+    </div>
+    <div class="bento-grid">
+      <!-- LEFT: Struggles -->
+      <div class="pane-dark" data-aos="fade-right" data-aos-once="true">
+        <div class="pane-dark-label">⚡ Sound Familiar?</div>
+        <h2 class="pane-h">Are you too <span class="hl-rose">Struggling?</span></h2>
+        <p class="pane-sub" style="color:var(--text-gray)">If you're a CA student who's applied everywhere but still
+          hasn't landed the right articleship — you're not alone.</p>
+        <div class="struggle-list">
+          <div class="struggle-row">
+            <div class="x-ico">📵</div>
+            <span class="struggle-txt">No interview calls despite applying everywhere?</span>
           </div>
-          <div class="certificate-shadow"></div>
+          <div class="struggle-row">
+            <div class="x-ico">🏢</div>
+            <span class="struggle-txt">Can't land articleship at a top-tier firm?</span>
+          </div>
+          <div class="struggle-row">
+            <div class="x-ico">💸</div>
+            <span class="struggle-txt">Settling for a low stipend or no stipend at all?</span>
+          </div>
+          <div class="struggle-row">
+            <div class="x-ico">📄</div>
+            <span class="struggle-txt">CV not standing out among hundreds of applicants?</span>
+          </div>
+          <div class="struggle-row">
+            <div class="x-ico">😰</div>
+            <span class="struggle-txt">Nervous and unprepared for articleship interviews?</span>
+          </div>
+        </div>
+        <div class="sol-bar">
+          <span class="sol-icon">✨</span>
+          <span>We built the <strong style="color:var(--red)">MSC Articleship Program</strong> to solve every single one
+            of these problems.</span>
         </div>
       </div>
-      <a href="#" class="action-btn" data-aos="fade-up" data-aos-delay="400">Get Your Certificate</a>
-    </section>
 
-    <section class="mentor">
-      <div class="section-bg">
-        <lottie-player src="https://assets5.lottiefiles.com/packages/lf20_kkflmtur.json" background="transparent"
-          speed="1" style="width: 100%; height: 100%;" loop autoplay>
-        </lottie-player>
-      </div>
-      <div class="mentor-profile">
-        <div class="mentor-image">
-          <img src="https://mystudentclub.pages.dev/assets/mentor_transparent.png" alt="CA Padam Bhansali"
-            class="mentor-img">
+      <!-- RIGHT: Benefits -->
+      <div class="pane-light" data-aos="fade-left" data-aos-once="true">
+        <div class="pane-badge">🚀 The Solution You've Been Looking For</div>
+        <h2 class="pane-h">Why <span class="hl-gr">Enroll?</span></h2>
+        <p class="pane-sub">Everything you need to land your dream articleship at a top firm — in one powerful program.
+        </p>
+        <div class="benefit-list">
+          <div class="benefit-row">
+            <div class="chk-dot">✓</div>100+ Exclusive Vacancies
+          </div>
+          <div class="benefit-row">
+            <div class="chk-dot">✓</div>Personal CV Review by Founder
+          </div>
+          <div class="benefit-row">
+            <div class="chk-dot">✓</div>6-Day Placement Masterclass
+          </div>
+          <div class="benefit-row">
+            <div class="chk-dot">✓</div>Top-Firm Referrals
+          </div>
+          <div class="benefit-row">
+            <div class="chk-dot">✓</div>Mock Interviews
+          </div>
+          <div class="benefit-row">
+            <div class="chk-dot">✓</div>1000+ HR Mail IDs
+          </div>
+          <div class="benefit-row">
+            <div class="chk-dot">✓</div>LMS Video Library
+          </div>
+          <div class="benefit-row">
+            <div class="chk-dot">✓</div>Personal Mentor
+          </div>
+          <div class="benefit-row">
+            <div class="chk-dot">✓</div>1:1 Founder Calls
+          </div>
+          <div class="benefit-row">
+            <div class="chk-dot">✓</div>Live + Recorded Sessions
+          </div>
         </div>
-        <div class="mentor-info">
-          <h2>Meet your <span class="highlight">Mentor</span></h2>
-          <h3>CA Padam Bhansali</h3>
-          <p class="mentor-title">Founder, My Student Club</p>
-          <p class="mentor-description">
-            CA Padam Bhansali, Founder of My Student Club, has helped thousands of CA students secure their dream roles
-            in
-            top companies for stipends upto 1.25L! He did his Industrial Training from Flipkart in Business Finance
-            domain
-            and has conducted 100+ guidance sessions positively impacting 35,000+ students.<br><br>
-            Want to secure your dream role? Join the MSC Articleship Program for priority access to top opportunities!
-          </p>
-          <div class="mentor-achievements">
-            <div class="achievement">Helped 100+ Companies</div>
-            <div class="achievement">Placed 1000's of Students</div>
-            <div class="achievement">35k+ LinkedIn Followers</div>
+        <div class="enroll-cta-bar">
+          <span class="enroll-cta-icon">🎓</span>
+          <div class="enroll-cta-text">
+            <strong>1000+ students placed</strong> at top CA firms — Big 4, Grant Thornton, BDO & more.
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ─── Notify Me Section ──────────────────────────────────────── -->
-    <section class="notify-section" data-aos="fade-up">
-      <div class="notify-section-inner">
-        <div class="notify-icon-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
+  <!-- CURRICULUM SECTION -->
+  <section class="curriculum-sec" id="curriculum-section">
+    <div class="curriculum-notebook">
+      <!-- Dark Top Header Panel -->
+      <div class="notebook-header-panel">
+        <h2 class="sec-h2">What will you <span class="hl-g">Learn?</span></h2>
+        <p class="sec-sub">A structured 5-day masterclass to transform your articleship journey</p>
+      </div>
+
+      <!-- Notebook Sheet Inner Content -->
+      <div class="notebook-sheet">
+        <h3 class="notebook-title">Curriculum</h3>
+
+        <div class="timeline-container">
+          <!-- Row 1: Day 1 (Left to Right) -->
+          <div class="timeline-row row-l2r" data-day="1">
+            <div class="day-badge-wrap empty"></div>
+            <div class="curriculum-card card-blue active">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <span class="card-num">Day-1</span>
+                  <h4>Roles in Articleship</h4>
+                </div>
+                <span class="card-icon">🧭</span>
+              </div>
+              <div class="card-body card-body-illus">
+                <ul>
+                  <li><span class="chk-arrow">➔</span>Understanding what different roles are</li>
+                  <li><span class="chk-arrow">➔</span>Finding what suits you</li>
+                  <li><span class="chk-arrow">➔</span>Finding Firms* hiring for that role</li>
+                </ul>
+                <!-- Flat illustration: Compass / Direction -->
+                <svg class="card-illus" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true">
+                  <circle cx="60" cy="60" r="50" fill="#DBEAFE" />
+                  <circle cx="60" cy="60" r="38" fill="white" stroke="#3B82F6" stroke-width="3" />
+                  <circle cx="60" cy="60" r="5" fill="#3B82F6" />
+                  <!-- N pointer -->
+                  <polygon points="60,22 55,58 65,58" fill="#3B82F6" />
+                  <!-- S pointer -->
+                  <polygon points="60,98 65,62 55,62" fill="#93C5FD" />
+                  <!-- E pointer -->
+                  <polygon points="98,60 62,55 62,65" fill="#93C5FD" />
+                  <!-- W pointer -->
+                  <polygon points="22,60 58,65 58,55" fill="#3B82F6" />
+                  <!-- Labels -->
+                  <text x="57" y="18" font-size="9" font-weight="800" fill="#1D4ED8"
+                    font-family="Outfit,sans-serif">N</text>
+                  <text x="57" y="112" font-size="9" font-weight="800" fill="#93C5FD"
+                    font-family="Outfit,sans-serif">S</text>
+                  <text x="104" y="63" font-size="9" font-weight="800" fill="#93C5FD"
+                    font-family="Outfit,sans-serif">E</text>
+                  <text x="8" y="63" font-size="9" font-weight="800" fill="#1D4ED8"
+                    font-family="Outfit,sans-serif">W</text>
+                </svg>
+              </div>
+            </div>
+            <div class="day-badge-wrap empty"></div>
+          </div>
+
+          <!-- Row 2: Day 2 (Right to Left) -->
+          <div class="timeline-row row-r2l" data-day="2">
+            <div class="day-badge-wrap empty"></div>
+            <div class="curriculum-card card-teal active">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <span class="card-num">Day-2</span>
+                  <h4>Crafting Perfect CV</h4>
+                </div>
+                <span class="card-icon">📝</span>
+              </div>
+              <div class="card-body card-body-illus">
+                <ul>
+                  <li><span class="chk-arrow">➔</span>Making the Perfect CV</li>
+                  <li><span class="chk-arrow">➔</span>Personal CV Review</li>
+                  <li><span class="chk-arrow">➔</span>MSC AI CV Reviewer</li>
+                </ul>
+                <!-- Flat illustration: Resume document -->
+                <svg class="card-illus" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true">
+                  <rect x="20" y="10" width="80" height="100" rx="8" fill="#CCFBF1" />
+                  <rect x="20" y="10" width="80" height="100" rx="8" stroke="#14B8A6" stroke-width="2.5" />
+                  <!-- Photo placeholder -->
+                  <circle cx="42" cy="38" r="13" fill="#99F6E4" />
+                  <circle cx="42" cy="34" r="6" fill="#14B8A6" />
+                  <path d="M29,50 Q42,42 55,50" fill="#14B8A6" />
+                  <!-- Name line -->
+                  <rect x="60" y="30" width="28" height="5" rx="2.5" fill="#14B8A6" />
+                  <rect x="60" y="40" width="20" height="4" rx="2" fill="#99F6E4" />
+                  <!-- Section lines -->
+                  <rect x="28" y="62" width="64" height="3.5" rx="1.75" fill="#14B8A6" opacity="0.5" />
+                  <rect x="28" y="70" width="55" height="3" rx="1.5" fill="#14B8A6" opacity="0.35" />
+                  <rect x="28" y="78" width="60" height="3" rx="1.5" fill="#14B8A6" opacity="0.35" />
+                  <rect x="28" y="86" width="48" height="3" rx="1.5" fill="#14B8A6" opacity="0.35" />
+                  <!-- Star rating -->
+                  <text x="28" y="102" font-size="11" fill="#14B8A6" font-family="Outfit,sans-serif">★★★★★</text>
+                </svg>
+              </div>
+            </div>
+            <div class="day-badge-wrap empty"></div>
+          </div>
+
+          <!-- Row 3: Day 3 (Left to Right) -->
+          <div class="timeline-row row-l2r" data-day="3">
+            <div class="day-badge-wrap empty"></div>
+            <div class="curriculum-card card-green active">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <span class="card-num">Day-3</span>
+                  <h4>Building LinkedIn</h4>
+                </div>
+                <span class="card-icon">🌐</span>
+              </div>
+              <div class="card-body card-body-illus">
+                <ul>
+                  <li><span class="chk-arrow">➔</span>LinkedIn Profile Optimisation</li>
+                  <li><span class="chk-arrow">➔</span>Using Connection Notes</li>
+                  <li><span class="chk-arrow">➔</span>Other LinkedIn Hacks</li>
+                </ul>
+                <!-- Flat illustration: Network / profile connections -->
+                <svg class="card-illus" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true">
+                  <circle cx="60" cy="60" r="50" fill="#DCFCE7" />
+                  <!-- Connection lines -->
+                  <line x1="60" y1="60" x2="28" y2="32" stroke="#22C55E" stroke-width="2.5" stroke-dasharray="4 3" />
+                  <line x1="60" y1="60" x2="92" y2="32" stroke="#22C55E" stroke-width="2.5" stroke-dasharray="4 3" />
+                  <line x1="60" y1="60" x2="22" y2="75" stroke="#22C55E" stroke-width="2.5" stroke-dasharray="4 3" />
+                  <line x1="60" y1="60" x2="98" y2="75" stroke="#22C55E" stroke-width="2.5" stroke-dasharray="4 3" />
+                  <line x1="60" y1="60" x2="60" y2="102" stroke="#22C55E" stroke-width="2.5" stroke-dasharray="4 3" />
+                  <!-- Satellite nodes -->
+                  <circle cx="28" cy="32" r="10" fill="#22C55E" />
+                  <circle cx="92" cy="32" r="10" fill="#22C55E" />
+                  <circle cx="22" cy="75" r="9" fill="#86EFAC" />
+                  <circle cx="98" cy="75" r="9" fill="#86EFAC" />
+                  <circle cx="60" cy="102" r="9" fill="#86EFAC" />
+                  <!-- Person icons in nodes -->
+                  <circle cx="28" cy="29" r="3.5" fill="white" />
+                  <path d="M22,37 Q28,32 34,37" fill="white" />
+                  <circle cx="92" cy="29" r="3.5" fill="white" />
+                  <path d="M86,37 Q92,32 98,37" fill="white" />
+                  <!-- Center hub -->
+                  <circle cx="60" cy="60" r="16" fill="#22C55E" />
+                  <circle cx="60" cy="56" r="6" fill="white" />
+                  <path d="M48,70 Q60,62 72,70" fill="white" />
+                </svg>
+              </div>
+            </div>
+            <div class="day-badge-wrap empty"></div>
+          </div>
+
+          <!-- Row 4: Day 4 (Right to Left) -->
+          <div class="timeline-row row-r2l" data-day="4">
+            <div class="day-badge-wrap empty"></div>
+            <div class="curriculum-card card-orange active">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <span class="card-num">Day-4</span>
+                  <h4>Application Hacks</h4>
+                </div>
+                <span class="card-icon">💡</span>
+              </div>
+              <div class="card-body card-body-illus">
+                <ul>
+                  <li><span class="chk-arrow">➔</span>Right way to Apply</li>
+                  <li><span class="chk-arrow">➔</span>Using Job Portals</li>
+                  <li><span class="chk-arrow">➔</span>Getting References</li>
+                  <li><span class="chk-arrow">➔</span>Following Up</li>
+                </ul>
+                <!-- Flat illustration: Job portal / laptop screen -->
+                <svg class="card-illus" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true">
+                  <!-- Laptop body -->
+                  <rect x="14" y="22" width="92" height="62" rx="6" fill="#FFEDD5" />
+                  <rect x="14" y="22" width="92" height="62" rx="6" stroke="#F97316" stroke-width="2.5" />
+                  <!-- Screen content -->
+                  <rect x="20" y="28" width="80" height="50" rx="3" fill="white" />
+                  <!-- Search bar -->
+                  <rect x="24" y="32" width="50" height="8" rx="4" fill="#FED7AA" />
+                  <circle cx="78" cy="36" r="5" fill="#F97316" />
+                  <line x1="81" y1="39" x2="85" y2="43" stroke="#F97316" stroke-width="2" stroke-linecap="round" />
+                  <!-- Job listings -->
+                  <rect x="24" y="46" width="72" height="9" rx="3" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1" />
+                  <rect x="28" y="49" width="6" height="3" rx="1.5" fill="#F97316" />
+                  <rect x="38" y="49" width="30" height="3" rx="1.5" fill="#FDBA74" />
+                  <rect x="24" y="59" width="72" height="9" rx="3" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1" />
+                  <rect x="28" y="62" width="6" height="3" rx="1.5" fill="#FB923C" />
+                  <rect x="38" y="62" width="24" height="3" rx="1.5" fill="#FDBA74" />
+                  <!-- Apply button -->
+                  <rect x="58" y="62" width="28" height="6" rx="3" fill="#F97316" />
+                  <text x="63" y="67" font-size="5" font-weight="700" fill="white" font-family="Outfit,sans-serif">APPLY
+                    NOW</text>
+                  <!-- Laptop base -->
+                  <rect x="8" y="84" width="104" height="8" rx="4" fill="#FFEDD5" stroke="#F97316" stroke-width="2" />
+                  <rect x="46" y="84" width="28" height="4" rx="2" fill="#FDBA74" />
+                </svg>
+              </div>
+            </div>
+            <div class="day-badge-wrap empty"></div>
+          </div>
+
+          <!-- Row 5: Day 5 (Left to Right) -->
+          <div class="timeline-row row-l2r" data-day="5">
+            <div class="day-badge-wrap empty"></div>
+            <div class="curriculum-card card-lime active">
+              <div class="card-header">
+                <div class="card-title-group">
+                  <span class="card-num">Day-5</span>
+                  <h4>Cracking Interviews</h4>
+                </div>
+                <span class="card-icon">🤝</span>
+              </div>
+              <div class="card-body card-body-illus">
+                <ul>
+                  <li><span class="chk-arrow">➔</span>Interview Guidebook</li>
+                  <li><span class="chk-arrow">➔</span>Staying Confident</li>
+                  <li><span class="chk-arrow">➔</span>MSC LMS</li>
+                </ul>
+                <!-- Flat illustration: Two people in interview -->
+                <svg class="card-illus" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true">
+                  <!-- Background -->
+                  <rect x="10" y="10" width="100" height="100" rx="16" fill="#ECFDF5" />
+                  <!-- Table -->
+                  <rect x="30" y="72" width="60" height="8" rx="4" fill="#84CC16" />
+                  <rect x="42" y="80" width="6" height="20" rx="3" fill="#84CC16" />
+                  <rect x="72" y="80" width="6" height="20" rx="3" fill="#84CC16" />
+                  <!-- Interviewer (left) -->
+                  <circle cx="32" cy="48" r="11" fill="#A3E635" />
+                  <circle cx="32" cy="44" r="5" fill="#4F8A10" />
+                  <path d="M20,58 Q32,52 44,58" fill="#4F8A10" />
+                  <!-- Interviewee (right) -->
+                  <circle cx="88" cy="48" r="11" fill="#A3E635" />
+                  <circle cx="88" cy="44" r="5" fill="#4F8A10" />
+                  <path d="M76,58 Q88,52 100,58" fill="#4F8A10" />
+                  <!-- Speech bubble from interviewer -->
+                  <rect x="14" y="18" width="36" height="18" rx="6" fill="white" stroke="#84CC16" stroke-width="1.5" />
+                  <polygon points="24,36 20,42 30,36" fill="white" stroke="#84CC16" stroke-width="1.5" />
+                  <rect x="18" y="23" width="22" height="2.5" rx="1.25" fill="#84CC16" opacity="0.6" />
+                  <rect x="18" y="28" width="16" height="2.5" rx="1.25" fill="#84CC16" opacity="0.4" />
+                  <!-- Checkmark from interviewee -->
+                  <rect x="70" y="18" width="36" height="18" rx="6" fill="#84CC16" />
+                  <polygon points="96,36 106,36 92,42" fill="#84CC16" />
+                  <polyline points="76,27 82,33 90,23" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                    stroke-linejoin="round" fill="none" />
+                </svg>
+              </div>
+            </div>
+            <div class="day-badge-wrap empty"></div>
+          </div>
         </div>
-        <div class="notify-text">
-          <h2>Program Currently <span class="highlight">Closed</span></h2>
-          <p>Get notified the moment the next batch opens. Be the first to secure your seat.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LINKEDIN POSTS — original bottom list -->
+  <section class="linkedin-posts">
+    <h2>What <span class="highlight">LinkedIn</span> Has To Say...</h2>
+    <div class="linkedin-carousel-container">
+      <div class="linkedin-carousel" id="linkedinCarousel">
+        <!-- Cards will be populated by JavaScript -->
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTIFIED SECTION -->
+  <section class="get-certified" data-aos="fade-up">
+    <h2 data-aos="zoom-in">Get <span class="highlight">Certified</span></h2>
+    <p data-aos="zoom-in" data-aos-delay="100">Level up your career with MSC's industry recognised certificate.</p>
+    <div class="certificate-container" data-aos="flip-left" data-aos-delay="200">
+      <div class="certificate-frame rotated">
+        <div class="certificate-back"></div>
+        <div class="certificate-frame-border"></div>
+        <div class="certificate-glass">
+          <div class="certificate-content">
+            <img class="certificate-image" src="https://mystudentclub.pages.dev/assets/certificate2.png"
+              alt="MSC Certificate" />
+            <div class="certificate-overlay"></div>
+            <div class="shine-effect"></div>
+          </div>
+          <div class="certificate-corner corner-tl"></div>
+          <div class="certificate-corner corner-tr"></div>
+          <div class="certificate-corner corner-bl"></div>
+          <div class="certificate-corner corner-br"></div>
+          <div class="floating-emblem">
+            <svg class="award-icon" viewBox="0 0 24 24">
+              <path
+                d="M12 2L8 6H3v5l-2 4 2 4v5h5l4 2 4-2h5v-5l2-4-2-4V6h-5L12 2zm0 3l2.5 2.5H15v3l1.5 3-1.5 3v3h-3l-3 1.5L6 17H3v-3L1.5 11 3 8V5h3l3-2.5L12 5z" />
+            </svg>
+          </div>
+        </div>
+        <div class="certificate-shadow"></div>
+      </div>
+    </div>
+    <a href="#" class="action-btn" data-aos="fade-up" data-aos-delay="400">Get Your Certificate</a>
+  </section>
+
+  <!-- MENTOR SECTION — side-by-side large borderless cutout -->
+  <section class="mentor">
+    <div class="sec-hdr" data-aos="fade-up">
+      <div class="eyebrow">Mentor</div>
+      <h2 class="sec-h2">Meet Your <span class="hl">Mentor</span></h2>
+    </div>
+    <div class="mentor-layout">
+      <!-- Big image with thin red border -->
+      <div class="mentor-visual">
+        <img src="https://mystudentclub.pages.dev/assets/mentor_transparent.png" alt="CA Padam Bhansali"
+          class="mc-large-img">
+      </div>
+      <!-- Mentor card details -->
+      <div class="mentor-card">
+        <div class="mc-hd">
+          <h3 class="mc-name">CA Padam Bhansali</h3>
+          <span class="mc-role">Founder, My Student Club</span>
+        </div>
+        <p class="mc-desc">
+          CA Padam Bhansali has helped <strong>thousands of CA students</strong> secure their <strong>dream articleship
+            roles</strong> in <strong>top companies</strong> for stipends up to <strong>₹1.25L</strong>! He did his
+          <strong>Industrial Training</strong> from <strong>Flipkart</strong> in <strong>Business Finance</strong> and
+          has conducted <strong>100+ guidance sessions</strong> impacting <strong>35,000+ students</strong>.
+        </p>
+        <p class="mc-promo">
+          Want to secure your dream role? Join the MSC Articleship Program for priority access to top opportunities!
+        </p>
+        <div class="mc-pills">
+          <div class="mc-pill">
+            <div class="pill-n">100+</div>
+            <div class="pill-l">Companies Helped</div>
+          </div>
+          <div class="mc-pill">
+            <div class="pill-n">1000's</div>
+            <div class="pill-l">Placed Students</div>
+          </div>
+          <div class="mc-pill">
+            <div class="pill-n">35k+</div>
+            <div class="pill-l">LinkedIn Followers</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOTIFY ME -->
+  <section class="notify-section" data-aos="fade-up">
+    <div class="notify-section-inner">
+
+      <!-- LEFT: Heading + description -->
+      <div class="notify-left">
+        <div class="notify-closed-badge">
+          <span class="badge-dot"></span>
+          Registration Closed
+        </div>
+        <div class="notify-title-row" style="display:flex; align-items:center; gap:16px;">
+          <div class="notify-icon-wrap">🔔</div>
+          <h2 class="notify-heading">
+            Program <span class="hl-red">Currently Closed.</span><br>
+            <span class="hl-gr">Be First</span> When We Reopen.
+          </h2>
+        </div>
+        <p class="notify-sub">
+          Over 1,000 students have already secured top articleships through this program.
+          Don't miss the next batch &mdash; get notified the moment seats open.
+        </p>
+      </div>
+
+      <!-- RIGHT: Stats + CTA -->
+      <div class="notify-right">
+        <div class="notify-stats-row">
+          <div class="notify-stat">
+            <div class="notify-stat-num">1000+</div>
+            <div class="notify-stat-lbl">Students Placed</div>
+          </div>
+          <div class="notify-stat-divider"></div>
+          <div class="notify-stat">
+            <div class="notify-stat-num">&#8377;1.25L</div>
+            <div class="notify-stat-lbl">Highest Stipend</div>
+          </div>
+          <div class="notify-stat-divider"></div>
+          <div class="notify-stat">
+            <div class="notify-stat-num">Big 4</div>
+            <div class="notify-stat-lbl">Firms Covered</div>
+          </div>
         </div>
         <div class="notify-action">
           <button id="notifyMeBtn" class="notify-me-btn">
@@ -293,239 +3540,277 @@
           </button>
           <p id="notifyStatus" class="notify-status"></p>
         </div>
+        <div class="notify-trust-line">No spam &bull; Instant notification &bull; Free to join</div>
       </div>
-    </section>
 
-    <div class="fixed-cta">
-      <div class="timer-container">
-        <span>Registration Closed</span>
-      </div>
-      <div class="price">
-        <span class="original">₹2999</span> <span class="discounted">₹1499</span>
-      </div>
-      <button id="notifyMeFooterBtn" class="notify-me-footer-btn">
-        <span class="notify-footer-icon">🔔</span>
-        <span class="notify-footer-text">Notify Me</span>
-      </button>
     </div>
+  </section>
 
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-    <script src="app.js" type="module"></script>
-    <script>
-      document.addEventListener('DOMContentLoaded', async () => {
-        // Menu Toggle
-        const menuButton = document.getElementById('menuButton');
-        const expandedMenu = document.getElementById('expandedMenu');
-        const menuCloseBtn = document.getElementById('menuCloseBtn');
+  <!-- FIXED CTA -->
+  <div class="fixed-cta">
+    <div class="timer-container">
+      <span>Registration Closed</span>
+    </div>
+    <div class="price">
+      <span class="original">₹2999</span> <span class="discounted">₹1499</span>
+    </div>
+    <button id="notifyMeFooterBtn" class="notify-me-footer-btn">
+      <span class="notify-footer-icon">🔔</span>
+      <span class="notify-footer-text">Notify Me</span>
+    </button>
+  </div>
 
-        if (menuButton && expandedMenu) {
-          menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
-        }
-        if (menuCloseBtn && expandedMenu) {
-          menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
-        }
+  <div class="spacer"></div>
 
-        // Dropdowns
-        const dropdowns = document.querySelectorAll('.menu-item-dropdown button');
-        dropdowns.forEach(btn => {
-          btn.addEventListener('click', (e) => {
-            const content = btn.nextElementSibling;
-            if (content) {
-              content.style.display = content.style.display === 'block' ? 'none' : 'block';
-              btn.classList.toggle('active');
-            }
-          });
-        });
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script src="app.js" type="module"></script>
 
-        // Auth Check
-        if (typeof supabase !== 'undefined') {
-          const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-          const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-          const sb = window.supabase.createClient(supabaseUrl, supabaseKey);
-
-          const { data: { session } } = await sb.auth.getSession();
-          const authContainer = document.querySelector('.auth-buttons-container');
-          const lmsLink = document.getElementById('lms-nav-link');
-
-          if (authContainer) {
-            if (session) {
-              authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn"><i class="fas fa-user"></i></a>';
-              if (lmsLink) lmsLink.style.display = 'flex';
-            } else {
-              authContainer.innerHTML = '<a href="/login.html" class="auth-icon-btn"><i class="fas fa-sign-in-alt"></i></a>';
-            }
+  <script>
+    window.selectDay = function (dayNum) {
+      const rows = document.querySelectorAll('.timeline-row');
+      rows.forEach((row, idx) => {
+        const card = row.querySelector('.curriculum-card');
+        if (card) {
+          if (idx === (dayNum - 1)) {
+            card.classList.add('active');
+          } else {
+            card.classList.remove('active');
           }
         }
-
-        // ─── Notify Me Push Notification Logic ──────────────────────────
-        const NOTIFY_FIREBASE_CONFIG = {
-          apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
-          authDomain: "msc-notif.firebaseapp.com",
-          projectId: "msc-notif",
-          storageBucket: "msc-notif.appspot.com",
-          messagingSenderId: "228639798414",
-          appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
-          measurementId: "G-X4M23TB936"
-        };
-        const NOTIFY_VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
-        const NOTIFY_TOPIC = "articleship-program-notify";
-        const MANAGE_TOPIC_URL = "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription";
-        const SUPABASE_URL = 'https://izsggdtdiacxdsjjncdq.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
-
-        function getOrCreateDeviceKey() {
-          let key = localStorage.getItem('msc_device_key');
-          if (!key) {
-            key = 'dk_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 9);
-            localStorage.setItem('msc_device_key', key);
-          }
-          return key;
-        }
-
-        function setNotifyStatus(msg, type) {
-          const el = document.getElementById('notifyStatus');
-          if (!el) return;
-          el.textContent = msg;
-          el.className = 'notify-status show notify-status--' + type;
-          if (type !== 'error') setTimeout(() => el.className = 'notify-status', 4000);
-        }
-
-        async function saveToNotifiable(sb, session, fcmToken) {
-          const deviceKey = getOrCreateDeviceKey();
-          const email = session?.user?.email || null;
-          const { error } = await sb
-            .from('notifiable')
-            .insert({ key: deviceKey, email })
-            .throwOnError();
-          // Unique key constraint handles duplicates silently
-        }
-
-        async function initNotifyMe() {
-          const btn = document.getElementById('notifyMeBtn');
-          const footerBtn = document.getElementById('notifyMeFooterBtn');
-          if (!btn && !footerBtn) return;
-
-          function syncButtonStates(subscribed) {
-            if (btn) {
-              btn.querySelector('.notify-btn-text').textContent = subscribed ? 'You Will Be Notified!' : 'Notify Me When Open';
-              btn.querySelector('.notify-btn-icon').textContent = subscribed ? '✅' : '🔔';
-              btn.classList.toggle('subscribed', subscribed);
-            }
-            if (footerBtn) {
-              footerBtn.querySelector('.notify-footer-text').textContent = subscribed ? 'Notified' : 'Notify Me';
-              footerBtn.querySelector('.notify-footer-icon').textContent = subscribed ? '✅' : '🔔';
-              footerBtn.classList.toggle('subscribed', subscribed);
-            }
-          }
-
-          const isSubscribed = localStorage.getItem('notif_articleship_program') === '1';
-          syncButtonStates(isSubscribed);
-
-          async function handleNotifyClick() {
-            const activeBtn = this;
-            if (activeBtn.disabled) return;
-            [btn, footerBtn].forEach(b => b && (b.disabled = true));
-
-            // Already subscribed — unsubscribe
-            if (localStorage.getItem('notif_articleship_program') === '1') {
-              const token = localStorage.getItem('notif_fcm_token_ap');
-              if (token) {
-                try {
-                  await fetch(MANAGE_TOPIC_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, topic: NOTIFY_TOPIC, action: 'unsubscribe' })
-                  });
-                } catch (_) {}
-              }
-              localStorage.removeItem('notif_articleship_program');
-              localStorage.removeItem('notif_fcm_token_ap');
-              syncButtonStates(false);
-              setNotifyStatus('Unsubscribed.', 'info');
-              [btn, footerBtn].forEach(b => b && (b.disabled = false));
-              return;
-            }
-
-            // Request notification permission
-            setNotifyStatus('Requesting permission…', 'info');
-            let permission;
-            try { permission = await Notification.requestPermission(); } catch (e) { permission = 'denied'; }
-
-            if (permission !== 'granted') {
-              setNotifyStatus('Please allow notifications in your browser settings.', 'error');
-              [btn, footerBtn].forEach(b => b && (b.disabled = false));
-              return;
-            }
-
-            // Initialize Firebase & get FCM token
-            setNotifyStatus('Setting up…', 'info');
-            try {
-              if (!firebase.apps.length) firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
-              const messaging = firebase.messaging();
-              if ('serviceWorker' in navigator) {
-                await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-              }
-              const fcmToken = await messaging.getToken({ vapidKey: NOTIFY_VAPID_KEY });
-              if (!fcmToken) throw new Error('No FCM token');
-
-              // Subscribe to FCM topic
-              setNotifyStatus('Subscribing…', 'info');
-              const res = await fetch(MANAGE_TOPIC_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ token: fcmToken, topic: NOTIFY_TOPIC, action: 'subscribe' })
-              });
-              const data = await res.json();
-              if (!data.success) throw new Error(data.error || 'Subscription failed');
-
-              // Save to Supabase notifiable table
-              const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-              const { data: { session } } = await sb.auth.getSession();
-              try { await saveToNotifiable(sb, session, fcmToken); } catch (_) {/* ignore duplicate key */}
-
-              localStorage.setItem('notif_articleship_program', '1');
-              localStorage.setItem('notif_fcm_token_ap', fcmToken);
-              syncButtonStates(true);
-              setNotifyStatus("You're on the list! We'll notify you when the program opens.", 'success');
-            } catch (err) {
-              console.error('NotifyMe error:', err);
-              setNotifyStatus('Something went wrong. Please try again.', 'error');
-            }
-
-            [btn, footerBtn].forEach(b => b && (b.disabled = false));
-          }
-
-          if (btn) btn.addEventListener('click', handleNotifyClick);
-          if (footerBtn) footerBtn.addEventListener('click', handleNotifyClick);
-        }
-
-        initNotifyMe();
-
-        // Dynamic Batch Month Calculation (-2 months)
-        const d = new Date();
-        d.setMonth(d.getMonth() - 2);
-        const monthShort = d.toLocaleString('en-US', { month: 'short' });
-        const monthLong = d.toLocaleString('en-US', { month: 'long' });
-        const yearShort = d.getFullYear().toString().slice(-2);
-        
-        const batchFormat1 = `${monthShort}'${yearShort}`; // Dec'25
-        const batchFormat2 = `${monthLong}`; // December
-        const batchFormat3 = `${monthShort} '${yearShort}`; // Dec '25
-
-        document.querySelectorAll('.dynamic-batch-month').forEach(el => el.textContent = batchFormat1);
-        document.querySelectorAll('.dynamic-batch-month-long').forEach(el => el.textContent = batchFormat2);
-        document.querySelectorAll('.dynamic-batch-month-space').forEach(el => el.textContent = batchFormat3);
       });
-    </script>
-    <!-- Google Analytics -->
-    <script src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65" async></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
-        gtag('js', new Date());
-        gtag('config', 'G-1450NCVE65');
-    </script>
-  </body>
+
+      // Update progress tracker
+      const percent = dayNum * 20;
+      const bar = document.getElementById('trackerProgressBar');
+      if (bar) {
+        bar.style.width = percent + '%';
+      }
+
+      // Update labels classes
+      for (let i = 1; i <= 5; i++) {
+        const label = document.getElementById('step-' + i);
+        if (label) {
+          if (i <= dayNum) {
+            label.classList.add('active');
+          } else {
+            label.classList.remove('active');
+          }
+        }
+      }
+    };
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Menu Toggle
+      const menuButton = document.getElementById('menuButton');
+      const expandedMenu = document.getElementById('expandedMenu');
+      const menuCloseBtn = document.getElementById('menuCloseBtn');
+
+      if (menuButton && expandedMenu) {
+        menuButton.addEventListener('click', () => expandedMenu.classList.add('active'));
+      }
+      if (menuCloseBtn && expandedMenu) {
+        menuCloseBtn.addEventListener('click', () => expandedMenu.classList.remove('active'));
+      }
+
+      // Dropdowns
+      const dropdowns = document.querySelectorAll('.menu-item-dropdown button');
+      dropdowns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const content = btn.nextElementSibling;
+          if (content) {
+            content.style.display = content.style.display === 'block' ? 'none' : 'block';
+            btn.classList.toggle('active');
+          }
+        });
+      });
+
+      // Auth Check
+      if (typeof supabase !== 'undefined') {
+        const supabaseUrl = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+        const sb = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+        const { data: { session } } = await sb.auth.getSession();
+        const authContainer = document.querySelector('.auth-buttons-container');
+        const lmsLink = document.getElementById('lms-nav-link');
+
+        if (authContainer) {
+          if (session) {
+            authContainer.innerHTML = '<a href="/profile.html" class="auth-icon-btn"><i class="fas fa-user"></i></a>';
+            if (lmsLink) lmsLink.style.display = 'flex';
+          } else {
+            authContainer.innerHTML = '<a href="/login.html" class="auth-icon-btn"><i class="fas fa-sign-in-alt"></i></a>';
+          }
+        }
+      }
+
+      // ─── Notify Me Push Notification Logic ──────────────────────────
+      const NOTIFY_FIREBASE_CONFIG = {
+        apiKey: "AIzaSyBTIXRJbaZy_3ulG0C8zSI_irZI7Ht2Y-8",
+        authDomain: "msc-notif.firebaseapp.com",
+        projectId: "msc-notif",
+        storageBucket: "msc-notif.appspot.com",
+        messagingSenderId: "228639798414",
+        appId: "1:228639798414:web:b8b3c96b15da5b770a45df",
+        measurementId: "G-X4M23TB936"
+      };
+      const NOTIFY_VAPID_KEY = "BGlNz4fQGzftJPr2U860MsoIo0dgNcqb2y2jAEbwJzjmj8CbDwJy_kD4eRAcruV6kNRs6Kz-mh9rdC37tVgeI5I";
+      const NOTIFY_TOPIC = "articleship-program-notify";
+      const MANAGE_TOPIC_URL = "https://us-central1-msc-notif.cloudfunctions.net/manageTopicSubscription";
+      const SUPABASE_URL = 'https://izsggdtdiacxdsjjncdq.supabase.co';
+      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml6c2dnZHRkaWFjeGRzampuY2RxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzg1OTEzNjUsImV4cCI6MjA1NDE2NzM2NX0.FVKBJG-TmXiiYzBDjGIRBM2zg-DYxzNP--WM6q2UMt0';
+
+      function getOrCreateDeviceKey() {
+        let key = localStorage.getItem('msc_device_key');
+        if (!key) {
+          key = 'dk_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 9);
+          localStorage.setItem('msc_device_key', key);
+        }
+        return key;
+      }
+
+      function setNotifyStatus(msg, type) {
+        const el = document.getElementById('notifyStatus');
+        if (!el) return;
+        el.textContent = msg;
+        el.className = 'notify-status show notify-status--' + type;
+        if (type !== 'error') setTimeout(() => el.className = 'notify-status', 4000);
+      }
+
+      async function saveToNotifiable(sb, session, fcmToken) {
+        const deviceKey = getOrCreateDeviceKey();
+        const email = session?.user?.email || null;
+        const { error } = await sb
+          .from('notifiable')
+          .insert({ key: deviceKey, email })
+          .throwOnError();
+      }
+
+      async function initNotifyMe() {
+        const btn = document.getElementById('notifyMeBtn');
+        const footerBtn = document.getElementById('notifyMeFooterBtn');
+        if (!btn && !footerBtn) return;
+
+        function syncButtonStates(subscribed) {
+          if (btn) {
+            btn.querySelector('.notify-btn-text').textContent = subscribed ? 'You Will Be Notified!' : 'Notify Me When Open';
+            btn.querySelector('.notify-btn-icon').textContent = subscribed ? '✅' : '🔔';
+            btn.classList.toggle('subscribed', subscribed);
+          }
+          if (footerBtn) {
+            footerBtn.querySelector('.notify-footer-text').textContent = subscribed ? 'Notified' : 'Notify Me';
+            footerBtn.querySelector('.notify-footer-icon').textContent = subscribed ? '✅' : '🔔';
+            footerBtn.classList.toggle('subscribed', subscribed);
+          }
+        }
+
+        const isSubscribed = localStorage.getItem('notif_articleship_program') === '1';
+        syncButtonStates(isSubscribed);
+
+        async function handleNotifyClick() {
+          const activeBtn = this;
+          if (activeBtn.disabled) return;
+          [btn, footerBtn].forEach(b => b && (b.disabled = true));
+
+          // Already subscribed — unsubscribe
+          if (localStorage.getItem('notif_articleship_program') === '1') {
+            const token = localStorage.getItem('notif_fcm_token_ap');
+            if (token) {
+              try {
+                await fetch(MANAGE_TOPIC_URL, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ token, topic: NOTIFY_TOPIC, action: 'unsubscribe' })
+                });
+              } catch (_) { }
+            }
+            localStorage.removeItem('notif_articleship_program');
+            localStorage.removeItem('notif_fcm_token_ap');
+            syncButtonStates(false);
+            setNotifyStatus('Unsubscribed.', 'info');
+            [btn, footerBtn].forEach(b => b && (b.disabled = false));
+            return;
+          }
+
+          // Request notification permission
+          setNotifyStatus('Requesting permission…', 'info');
+          let permission;
+          try { permission = await Notification.requestPermission(); } catch (e) { permission = 'denied'; }
+
+          if (permission !== 'granted') {
+            setNotifyStatus('Please allow notifications in your browser settings.', 'error');
+            [btn, footerBtn].forEach(b => b && (b.disabled = false));
+            return;
+          }
+
+          // Initialize Firebase & get FCM token
+          setNotifyStatus('Setting up…', 'info');
+          try {
+            if (!firebase.apps.length) firebase.initializeApp(NOTIFY_FIREBASE_CONFIG);
+            const messaging = firebase.messaging();
+            if ('serviceWorker' in navigator) {
+              await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+            }
+            const fcmToken = await messaging.getToken({ vapidKey: NOTIFY_VAPID_KEY });
+            if (!fcmToken) throw new Error('No FCM token');
+
+            // Subscribe to FCM topic
+            setNotifyStatus('Subscribing…', 'info');
+            const res = await fetch(MANAGE_TOPIC_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ token: fcmToken, topic: NOTIFY_TOPIC, action: 'subscribe' })
+            });
+            const data = await res.json();
+            if (!data.success) throw new Error(data.error || 'Subscription failed');
+
+            // Save to Supabase notifiable table
+            const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            const { data: { session } } = await sb.auth.getSession();
+            try { await saveToNotifiable(sb, session, fcmToken); } catch (_) {/* ignore duplicate key */ }
+
+            localStorage.setItem('notif_articleship_program', '1');
+            localStorage.setItem('notif_fcm_token_ap', fcmToken);
+            syncButtonStates(true);
+            setNotifyStatus("You're on the list! We'll notify you when the program opens.", 'success');
+          } catch (err) {
+            console.error('NotifyMe error:', err);
+            setNotifyStatus('Something went wrong. Please try again.', 'error');
+          }
+
+          [btn, footerBtn].forEach(b => b && (b.disabled = false));
+        }
+
+        if (btn) btn.addEventListener('click', handleNotifyClick);
+        if (footerBtn) footerBtn.addEventListener('click', handleNotifyClick);
+      }
+
+      initNotifyMe();
+
+      // Dynamic Batch Month Calculation (-2 months)
+      const d = new Date();
+      d.setMonth(d.getMonth() - 2);
+      const monthShort = d.toLocaleString('en-US', { month: 'short' });
+      const monthLong = d.toLocaleString('en-US', { month: 'long' });
+      const yearShort = d.getFullYear().toString().slice(-2);
+
+      const batchFormat1 = `${monthShort}'${yearShort}`; // Dec'25
+      const batchFormat2 = `${monthLong}`; // December
+      const batchFormat3 = `${monthShort} '${yearShort}`; // Dec '25
+
+      document.querySelectorAll('.dynamic-batch-month').forEach(el => el.textContent = batchFormat1);
+      document.querySelectorAll('.dynamic-batch-month-long').forEach(el => el.textContent = batchFormat2);
+      document.querySelectorAll('.dynamic-batch-month-space').forEach(el => el.textContent = batchFormat3);
+    });
+  </script>
+  <!-- Google Analytics -->
+  <script src="https://www.googletagmanager.com/gtag/js?id=G-1450NCVE65" async></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-1450NCVE65');
+  </script>
+</body>
 
 </html>
