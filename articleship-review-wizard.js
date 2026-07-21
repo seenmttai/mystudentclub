@@ -16,15 +16,14 @@
     ['work_culture_rating', 'Work Culture'],
     ['work_life_balance_rating', 'Work-Life Balance'],
     ['stipend_timeliness_rating', 'Stipend Timeliness'],
-    ['respectful_behaviour_rating', 'Respectful Behaviour'],
     ['leave_support_rating', 'Leave Support'],
     ['transfer_support_rating', 'Transfer Support'],
-    ['team_environment_rating', 'Team Environment'],
   ];
 
   const LABELS = {
     transfer_requested: { yes: 'Yes', no: 'No', not_sure: 'Not Sure' },
     transfer_approved: { yes: 'Yes', no: 'No', mixed: 'Mixed' },
+    allow_industrial_training: { yes: 'Yes', no: 'No', depends: 'Depends on Partner' },
     stipend_on_time: { always: 'Always', sometimes_delayed: 'Sometimes Delayed', frequently_delayed: 'Frequently Delayed' },
     working_hours: { lt8: 'Less than 8 Hours', '8_9': '8–9 Hours', '9_10': '9–10 Hours', '10_12': '10–12 Hours', gt12: 'More than 12 Hours' },
     weekend_working: { never: 'Never', occasionally: 'Occasionally', frequently: 'Frequently' },
@@ -65,16 +64,21 @@
   function loadDraft() {
     try {
       const d = JSON.parse(localStorage.getItem(DRAFT_KEY));
-      if (d && d.reviewId && d.editToken && Date.now() - d.savedAt < DRAFT_TTL_MS) return d;
+      if (d && Date.now() - d.savedAt < DRAFT_TTL_MS) return d;
     } catch (e) { /* corrupt draft — ignore */ }
     return null;
   }
   function saveDraft() {
-    if (!state || !state.reviewId) return;
+    if (!state) return;
     localStorage.setItem(DRAFT_KEY, JSON.stringify({
-      reviewId: state.reviewId, editToken: state.editToken,
-      firmId: state.firmId, firmName: state.firmName,
-      step: state.step, pendingPatch: state.pendingPatch, savedAt: Date.now(),
+      reviewId: state.reviewId || null,
+      editToken: state.editToken || null,
+      firmId: state.firmId || null,
+      firmName: state.firmName || '',
+      step: state.step || 1,
+      pendingPatch: state.pendingPatch || {},
+      savedData: state.savedData || {},
+      savedAt: Date.now(),
     }));
   }
   function clearDraft() { localStorage.removeItem(DRAFT_KEY); }
@@ -137,23 +141,27 @@
     lastFocused = document.activeElement;
     const draft = loadDraft();
     const wantsFirm = opts.firmId || null;
-    // Resume rules: with a firm id, the draft must match it. Locked to a
-    // specific firm without an id (a firm that has no reviews yet), match by
-    // name. Generic entry (listing "Write a Review") may resume any draft.
+    // Resume rules: with a firm id or firm name match, resume draft.
     const firmMatches = draft && (
-      wantsFirm ? draft.firmId === wantsFirm
+      wantsFirm ? (draft.firmId === wantsFirm || normName(draft.firmName) === normName(opts.firmName))
       : opts.lock ? normName(draft.firmName) === normName(opts.firmName)
       : true);
     if (firmMatches) {
       state = {
-        step: draft.step, firmId: draft.firmId, firmName: draft.firmName,
-        lock: !!opts.lock, reviewId: draft.reviewId, editToken: draft.editToken,
+        step: draft.step || 1,
+        firmId: draft.firmId || opts.firmId || null,
+        firmName: draft.firmName || opts.firmName || '',
+        lock: !!opts.lock,
+        reviewId: draft.reviewId || null,
+        editToken: draft.editToken || null,
         pendingPatch: draft.pendingPatch || {},
+        savedData: draft.savedData || {},
       };
     } else {
       state = {
         step: 1, firmId: opts.firmId || null, firmName: opts.firmName || '',
         lock: !!opts.lock, reviewId: null, editToken: null, pendingPatch: {},
+        savedData: {},
       };
     }
     renderStep();
@@ -256,13 +264,14 @@
           <input id="arw-firm" autocomplete="off" placeholder="Start typing your firm's name…" value="${esc(state.firmName)}">
           <div class="arw-firm-results" id="arw-firm-results" hidden></div>
         </div>
-        <div class="arw-field">
+        <div class="arw-field arw-location-wrap">
           <label for="arw-location">Office Location <span style="color:#dc2626">*</span></label>
-          <input id="arw-location" placeholder="e.g., Mumbai">
+          <input id="arw-location" autocomplete="off" placeholder="e.g., Mumbai">
+          <div class="arw-location-results" id="arw-location-results" hidden></div>
         </div>
         <div class="arw-field" style="position: relative;">
           <label for="arw-review">Anonymous Review <span style="color:#dc2626">*</span></label>
-          <textarea id="arw-review" rows="4" placeholder="Tell future articles about your experience at this firm. What should they know before joining?"></textarea>
+          <textarea id="arw-review" rows="3" placeholder="Example: &quot;Great learning exposure in statutory audit. Working hours are standard (9-7 PM) but can stretch during tax season. Partners are approachable. Stipend is paid on time, and leaves for exams are supported.&quot;"></textarea>
           <div id="arw-char-counter" style="font-size: 11px; color: #64748b; text-align: right; margin-top: 0.25rem; font-family: monospace;">0 / 500 words · 0 characters</div>
         </div>
         <div class="arw-field">
@@ -275,10 +284,36 @@
         </div>
       </form>`;
 
-    buildStars(document.getElementById('arw-overall'));
+    const overallStars = document.getElementById('arw-overall');
+    buildStars(overallStars);
 
     const firmInput = document.getElementById('arw-firm');
     const results = document.getElementById('arw-firm-results');
+    const reviewTextarea = document.getElementById('arw-review');
+    const counterDiv = document.getElementById('arw-char-counter');
+    const locInput = document.getElementById('arw-location');
+    const locResults = document.getElementById('arw-location-results');
+
+    // Pre-populate Step 1 if returning/resuming
+    const saved = state.savedData || {};
+    if (saved.firmName && !firmInput.value) firmInput.value = saved.firmName;
+    if (saved.location) locInput.value = saved.location;
+    if (saved.reviewText) reviewTextarea.value = saved.reviewText;
+    if (saved.overallRating) {
+      overallStars.dataset.value = String(saved.overallRating);
+      paintStars(overallStars);
+    }
+
+    function autoSaveStep1() {
+      state.savedData = Object.assign({}, state.savedData, {
+        firmName: firmInput.value,
+        location: locInput.value,
+        reviewText: reviewTextarea.value,
+        overallRating: Number(overallStars.dataset.value) || 0,
+      });
+      state.firmName = firmInput.value;
+      saveDraft();
+    }
 
     if (state.lock) {
       firmInput.readOnly = true;
@@ -287,6 +322,7 @@
       firmInput.addEventListener('input', () => {
         state.firmId = null; // typed text invalidates any earlier selection
         state.firmName = firmInput.value;
+        autoSaveStep1();
         clearTimeout(debounce);
         const q = firmInput.value.trim();
         if (q.length < 2) { results.hidden = true; return; }
@@ -298,22 +334,16 @@
             const exact = items.some(f => normName(f.name) === normName(q));
             results.innerHTML =
               items.map(f => `<button type="button" class="arw-firm-item" data-id="${f.id}" data-name="${esc(f.name)}">${esc(f.name)}</button>`).join('') +
-              (exact ? '' : `<button type="button" class="arw-firm-add" data-name="${esc(q)}"><i class="fas fa-plus"></i> Add New Firm "${esc(q)}"</button>`);
+              (exact ? '' : `<button type="button" class="arw-firm-item" data-name="${esc(q)}">${esc(q)}</button>`);
             results.hidden = false;
             results.querySelectorAll('.arw-firm-item').forEach(btn => {
               btn.addEventListener('click', () => {
-                state.firmId = btn.dataset.id;
+                state.firmId = btn.dataset.id || null;
                 state.firmName = btn.dataset.name;
                 firmInput.value = btn.dataset.name;
                 results.hidden = true;
+                autoSaveStep1();
               });
-            });
-            const addBtn = results.querySelector('.arw-firm-add');
-            if (addBtn) addBtn.addEventListener('click', () => {
-              state.firmId = null;
-              state.firmName = addBtn.dataset.name;
-              firmInput.value = addBtn.dataset.name;
-              results.hidden = true;
             });
           } catch (e) { results.hidden = true; }
         }, 250);
@@ -323,8 +353,6 @@
       });
     }
 
-    const reviewTextarea = document.getElementById('arw-review');
-    const counterDiv = document.getElementById('arw-char-counter');
     function updateCounter() {
       const val = reviewTextarea.value;
       const characters = val.length;
@@ -338,10 +366,55 @@
         counterDiv.style.fontWeight = 'normal';
       }
     }
-    reviewTextarea.addEventListener('input', updateCounter);
+    reviewTextarea.addEventListener('input', () => {
+      updateCounter();
+      autoSaveStep1();
+    });
+    updateCounter();
+
+    const fixedCities = ["Mumbai", "Delhi", "Gurgaon", "Noida", "Bangalore", "Pune", "Kolkata", "Chennai", "Hyderabad", "Ahmedabad", "Jaipur"];
+
+    function renderLocResults() {
+      const q = locInput.value.trim();
+      const normQ = normName(q);
+      const matches = fixedCities.filter(c => normName(c).includes(normQ));
+      const exact = matches.some(c => normName(c) === normQ);
+      
+      let html = matches.map(c => `<button type="button" class="arw-location-item" data-name="${esc(c)}">${esc(c)}</button>`).join('');
+      if (q && !exact) {
+        html += `<button type="button" class="arw-location-item" data-name="${esc(q)}">${esc(q)}</button>`;
+      }
+      
+      if (!html) {
+        locResults.hidden = true;
+        return;
+      }
+      locResults.innerHTML = html;
+      locResults.hidden = false;
+      locResults.querySelectorAll('.arw-location-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+          locInput.value = btn.dataset.name;
+          locResults.hidden = true;
+          autoSaveStep1();
+        });
+      });
+    }
+
+    locInput.addEventListener('focus', renderLocResults);
+    locInput.addEventListener('input', () => {
+      renderLocResults();
+      autoSaveStep1();
+    });
+    document.addEventListener('click', e => {
+      if (!locResults.hidden && !locResults.contains(e.target) && e.target !== locInput) {
+        locResults.hidden = true;
+      }
+    });
+
+    overallStars.querySelectorAll('button').forEach(b => b.addEventListener('click', autoSaveStep1));
 
     document.getElementById('arw-step1').addEventListener('submit', submitStep1);
-    (state.lock ? document.getElementById('arw-location') : firmInput).focus();
+    (state.lock ? locInput : firmInput).focus();
   }
 
   async function submitStep1(e) {
@@ -377,6 +450,12 @@
       state.editToken = data.edit_token;
       state.firmId = data.firm_id;
       state.firmName = firmName;
+      state.savedData = Object.assign({}, state.savedData, {
+        firmName,
+        location,
+        reviewText,
+        overallRating: overall
+      });
       state.step = 2;
       saveDraft();
       if (onComplete) onComplete(); // review is live — let the page refresh in background
@@ -390,25 +469,42 @@
 
   // ── Steps 2–4 shared chrome ───────────────────────────────────────────
   function stepShell(title, inner, nextLabel) {
+    const showBack = state && state.step > 1 && state.step < 5;
     return `
       <div class="arw-step">
         ${inner}
         <p class="arw-status" id="arw-status" role="status"></p>
         <div class="arw-step-footer">
+          ${showBack ? `<button type="button" class="arw-btn-ghost" id="arw-back"><i class="fas fa-arrow-left"></i> Back</button>` : ''}
           <button type="button" class="arw-btn-ghost" id="arw-skip">Skip</button>
           <button type="button" class="arw-btn-primary" id="arw-next">${esc(nextLabel)} <i class="fas fa-arrow-right"></i></button>
         </div>
       </div>`;
   }
+
   function wireFooter(collect) {
-    const go = async () => advance(collect());
+    const go = async () => advance(collect ? collect() : {});
     document.getElementById('arw-next').addEventListener('click', go);
     document.getElementById('arw-skip').addEventListener('click', go);
+    const backBtn = document.getElementById('arw-back');
+    if (backBtn) {
+      backBtn.addEventListener('click', () => {
+        if (collect) {
+          const currentPatch = collect();
+          state.savedData = Object.assign({}, state.savedData, currentPatch);
+          state.pendingPatch = Object.assign({}, state.pendingPatch, currentPatch);
+        }
+        state.step -= 1;
+        saveDraft();
+        renderStep();
+      });
+    }
   }
 
   async function advance(patch) {
+    state.savedData = Object.assign({}, state.savedData, patch);
     const merged = Object.assign({}, state.pendingPatch, patch);
-    if (Object.keys(merged).length) {
+    if (Object.keys(merged).length && state.reviewId && state.editToken) {
       const nextBtn = document.getElementById('arw-next');
       if (nextBtn) nextBtn.disabled = true;
       try {
@@ -460,8 +556,26 @@
           </div>`).join('')}
       </div>`, 'Next');
     body.querySelectorAll('.arw-stars').forEach(buildStars);
-    wireSegs(body);
-    wireFooter(() => {
+    wireSegs(body, () => autoSaveStep2());
+
+    // Pre-populate saved answers
+    const saved = state.savedData || {};
+    if (saved.would_recommend !== undefined && saved.would_recommend !== null) {
+      const recVal = String(saved.would_recommend);
+      const btn = body.querySelector(`.arw-seg[data-col="would_recommend"] button[data-v="${recVal}"]`);
+      if (btn) btn.classList.add('active');
+    }
+    RATING_FIELDS.forEach(([col]) => {
+      if (saved[col]) {
+        const starContainer = body.querySelector(`.arw-stars[data-col="${col}"]`);
+        if (starContainer) {
+          starContainer.dataset.value = String(saved[col]);
+          paintStars(starContainer);
+        }
+      }
+    });
+
+    function autoSaveStep2() {
       const patch = {};
       const rec = segValue(body, 'would_recommend');
       if (rec !== null) patch.would_recommend = rec === 'true';
@@ -469,8 +583,15 @@
         const v = Number(g.dataset.value) || 0;
         if (v) patch[g.dataset.col] = v;
       });
+      state.savedData = Object.assign({}, state.savedData, patch);
+      state.pendingPatch = Object.assign({}, state.pendingPatch, patch);
+      saveDraft();
       return patch;
-    });
+    }
+
+    body.querySelectorAll('.arw-stars button').forEach(b => b.addEventListener('click', autoSaveStep2));
+
+    wireFooter(autoSaveStep2);
   }
 
   // ── Step 3: Work Experience ───────────────────────────────────────────
@@ -485,6 +606,10 @@
       <div class="arw-field" id="arw-transfer-approved-wrap" hidden>
         <span class="arw-group-label">Was the transfer ultimately approved?</span>
         ${segHTML('transfer_approved', opt('transfer_approved'))}
+      </div>
+      <div class="arw-field">
+        <span class="arw-group-label">Do they allow to go for Industrial Training?</span>
+        ${segHTML('allow_industrial_training', opt('allow_industrial_training'))}
       </div>
       <div class="arw-field">
         <label for="arw-stipend">Monthly Stipend (₹)</label>
@@ -510,15 +635,35 @@
         <span class="arw-group-label">Personal Leave</span>
         ${segHTML('personal_leave', opt('personal_leave'))}
       </div>`, 'Next');
+
     wireSegs(body, col => {
       if (col === 'transfer_requested') {
         document.getElementById('arw-transfer-approved-wrap').hidden =
           segValue(body, 'transfer_requested') !== 'yes';
       }
+      autoSaveStep3();
     });
-    wireFooter(() => {
+
+    // Pre-populate saved answers
+    const saved = state.savedData || {};
+    ['transfer_requested', 'transfer_approved', 'allow_industrial_training', 'stipend_on_time', 'working_hours', 'weekend_working', 'outstation_travel', 'personal_leave'].forEach(col => {
+      if (saved[col]) {
+        const btn = body.querySelector(`.arw-seg[data-col="${col}"] button[data-v="${saved[col]}"]`);
+        if (btn) btn.classList.add('active');
+      }
+    });
+    if (saved.transfer_requested === 'yes') {
+      const wrap = document.getElementById('arw-transfer-approved-wrap');
+      if (wrap) wrap.hidden = false;
+    }
+    const stipendInput = document.getElementById('arw-stipend');
+    if (saved.stipend !== undefined && saved.stipend !== null && stipendInput) {
+      stipendInput.value = saved.stipend;
+    }
+
+    function autoSaveStep3() {
       const patch = {};
-      ['transfer_requested', 'stipend_on_time', 'working_hours',
+      ['transfer_requested', 'allow_industrial_training', 'stipend_on_time', 'working_hours',
        'weekend_working', 'outstation_travel', 'personal_leave'].forEach(col => {
         const v = segValue(body, col);
         if (v) patch[col] = v;
@@ -527,10 +672,18 @@
         const ta = segValue(body, 'transfer_approved');
         if (ta) patch.transfer_approved = ta;
       }
-      const stipend = document.getElementById('arw-stipend').value;
+      const stipend = stipendInput ? stipendInput.value : '';
       if (stipend !== '' && Number(stipend) >= 0) patch.stipend = parseInt(stipend, 10);
+
+      state.savedData = Object.assign({}, state.savedData, patch);
+      state.pendingPatch = Object.assign({}, state.pendingPatch, patch);
+      saveDraft();
       return patch;
-    });
+    }
+
+    if (stipendInput) stipendInput.addEventListener('input', autoSaveStep3);
+
+    wireFooter(autoSaveStep3);
   }
 
   // ── Step 4: Learning & Exposure ───────────────────────────────────────
@@ -545,17 +698,42 @@
       ${chips('domain_tags', 'Domain Worked In', DOMAIN_OPTIONS)}
       ${chips('client_tags', 'Client Exposure', CLIENT_OPTIONS)}
       ${chips('skill_tags', 'Skills Learned', SKILL_OPTIONS)}`, 'Finish');
-    body.querySelectorAll('.arw-chip').forEach(chip => {
-      chip.addEventListener('click', () => chip.classList.toggle('active'));
-    });
-    wireFooter(() => {
+
+    function autoSaveStep4() {
       const patch = {};
       body.querySelectorAll('.arw-chip-group').forEach(group => {
         const vals = [...group.querySelectorAll('.arw-chip.active')].map(c => c.dataset.v);
         if (vals.length) patch[group.dataset.col] = vals;
       });
+      state.savedData = Object.assign({}, state.savedData, patch);
+      state.pendingPatch = Object.assign({}, state.pendingPatch, patch);
+      saveDraft();
       return patch;
+    }
+
+    body.querySelectorAll('.arw-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        chip.classList.toggle('active');
+        autoSaveStep4();
+      });
     });
+
+    // Pre-populate saved answers
+    const saved = state.savedData || {};
+    ['domain_tags', 'client_tags', 'skill_tags'].forEach(col => {
+      if (Array.isArray(saved[col])) {
+        const group = body.querySelector(`.arw-chip-group[data-col="${col}"]`);
+        if (group) {
+          group.querySelectorAll('.arw-chip').forEach(chip => {
+            if (saved[col].includes(chip.dataset.v)) {
+              chip.classList.add('active');
+            }
+          });
+        }
+      }
+    });
+
+    wireFooter(autoSaveStep4);
   }
 
   // ── Done ──────────────────────────────────────────────────────────────

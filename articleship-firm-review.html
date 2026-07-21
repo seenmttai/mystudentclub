@@ -1191,9 +1191,10 @@
       /* Footer */
       .afd-review-footer {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        gap: 1rem;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.6rem 0.85rem;
         padding-top: 0.85rem;
         border-top: 1px solid var(--h-line);
         margin-top: auto;
@@ -1333,6 +1334,12 @@
         }
       }
 
+      @media (max-width: 640px) {
+        .afd-outer {
+          padding: 0.5rem 1rem 4rem;
+        }
+      }
+
       @media (max-width: 480px) {
         .afd-hero-top-row {
           flex-direction: column;
@@ -1358,12 +1365,24 @@
           align-self: flex-start;
         }
         .afd-review-footer {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 0.75rem;
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          align-items: center;
+          justify-content: space-between;
+          gap: 0.5rem;
+        }
+        .afd-review-actions-right {
+          margin-left: 0;
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 0.5rem;
+          margin-top: 0.2rem;
         }
         .afd-review-recommend-badge {
-          align-self: flex-start;
+          align-self: auto;
         }
       }
 
@@ -1903,6 +1922,212 @@
         border-color: var(--h-brand-200);
         transform: translateY(-1px);
         box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+      }
+
+      /* Report Modal & Button Styles */
+      .afd-review-actions-right {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        margin-left: auto;
+      }
+      .afd-report-btn {
+        background: none;
+        border: none;
+        color: #64748b;
+        font-family: var(--h-mono);
+        font-size: 11px;
+        font-weight: 700;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.25rem 0.625rem;
+        border-radius: 8px;
+        border: 1px solid var(--h-line);
+        transition: all 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        line-height: 1;
+      }
+      .afd-report-btn:hover {
+        background: var(--h-rose-50);
+        color: var(--h-rose-700);
+        border-color: var(--h-rose-200);
+      }
+      
+      /* Premium Glassmorphic Modal */
+      .afd-modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        animation: afdFadeIn 0.25s ease;
+      }
+      
+      .afd-modal-card {
+        background: #ffffff;
+        width: 100%;
+        max-width: 480px;
+        border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        margin: 1.5rem;
+        animation: afdSlideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      
+      .afd-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--h-line);
+      }
+      
+      .afd-modal-header h3 {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--h-navy);
+        margin: 0;
+      }
+      
+      .afd-modal-close {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        color: var(--h-navy-500);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        transition: all 0.2s;
+      }
+      
+      .afd-modal-close:hover {
+        background: var(--h-brand-50);
+        color: var(--h-brand-600);
+      }
+      
+      .afd-modal-body {
+        padding: 1.5rem;
+      }
+      
+      .afd-report-option {
+        margin-bottom: 0.85rem;
+      }
+      
+      .afd-report-option label {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        cursor: pointer;
+        font-size: 0.875rem;
+        color: var(--h-navy-700);
+        font-weight: 600;
+      }
+      
+      .afd-report-option input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        accent-color: var(--h-brand-600);
+        cursor: pointer;
+      }
+      
+      #afd-report-custom-reason {
+        width: 100%;
+        padding: 0.65rem 0.8rem;
+        font-family: inherit;
+        font-size: 0.875rem;
+        border: 1.5px solid #cbd5e1;
+        border-radius: 8px;
+        color: #0f172a;
+        background: #fff;
+        resize: none;
+        transition: all 0.2s ease;
+      }
+      
+      #afd-report-custom-reason:focus {
+        outline: none;
+        border-color: var(--h-brand-600);
+        box-shadow: 0 0 0 3px rgba(46, 108, 230, 0.1);
+      }
+      
+      .afd-modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        padding: 1rem 1.5rem;
+        border-top: 1px solid var(--h-line);
+        background: #f8fafc;
+      }
+      
+      .afd-btn-modal-cancel {
+        background: #ffffff;
+        border: 1.5px solid var(--h-line);
+        color: var(--h-navy-700);
+        padding: 0.55rem 1.25rem;
+        font-weight: 700;
+        font-size: 0.8125rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      
+      .afd-btn-modal-cancel:hover {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+      }
+      
+      .afd-btn-modal-submit {
+        background: var(--h-brand-600);
+        border: none;
+        color: #ffffff;
+        padding: 0.55rem 1.25rem;
+        font-weight: 700;
+        font-size: 0.8125rem;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(46, 108, 230, 0.2);
+      }
+      
+      .afd-btn-modal-submit:hover {
+        background: var(--h-brand-700);
+        box-shadow: 0 6px 16px rgba(46, 108, 230, 0.3);
+      }
+      
+      .afd-btn-modal-submit:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
+      
+      .afd-report-status.err {
+        color: var(--h-rose-600);
+      }
+      
+      .afd-report-status.ok {
+        color: var(--h-emerald-600);
+      }
+      
+      @keyframes afdFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      
+      @keyframes afdSlideUpModal {
+        from { transform: translateY(16px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
       }
     </style>
   </head>
@@ -2719,7 +2944,10 @@
 
             <div class="afd-review-footer">
               ${recHTML}
-              <span class="afd-review-verified-badge"><i class="fas fa-shield-halved"></i> Verified Review</span>
+              <div class="afd-review-actions-right">
+                <button type="button" class="afd-report-btn" onclick="openAfdReportModal('${r.id}')"><i class="far fa-flag"></i> Report</button>
+                <span class="afd-review-verified-badge"><i class="fas fa-shield-halved"></i> Verified Review</span>
+              </div>
             </div>
           </div>`;
           }).join('');
@@ -2940,6 +3168,158 @@
           ? `Read Less <i class="fas fa-chevron-up"></i>` 
           : `Read More <i class="fas fa-chevron-down"></i>`;
       };
+
+      // Report Review Modal logic
+      window.openAfdReportModal = function(reviewId) {
+        document.getElementById('afd-report-review-id').value = reviewId;
+        document.getElementById('afd-report-custom-reason').value = '';
+        document.getElementById('afd-report-custom-wrap').style.display = 'none';
+        
+        const firstRadio = document.querySelector('input[name="report_reason"]');
+        if (firstRadio) firstRadio.checked = true;
+        
+        const statusEl = document.getElementById('afd-report-status');
+        statusEl.style.display = 'none';
+        statusEl.className = 'afd-report-status';
+        statusEl.textContent = '';
+        
+        const modal = document.getElementById('afd-report-modal');
+        modal.style.display = 'flex';
+        
+        // Disable scroll on body
+        document.body.style.overflow = 'hidden';
+      };
+
+      window.closeAfdReportModal = function() {
+        document.getElementById('afd-report-modal').style.display = 'none';
+        document.body.style.overflow = '';
+      };
+
+      // Handle custom reason text area toggle & Form submission (wrapped in DOMContentLoaded)
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('input[name="report_reason"]').forEach(radio => {
+          radio.addEventListener('change', (e) => {
+            const customWrap = document.getElementById('afd-report-custom-wrap');
+            if (e.target.value === 'Other') {
+              customWrap.style.display = 'block';
+              document.getElementById('afd-report-custom-reason').focus();
+            } else {
+              customWrap.style.display = 'none';
+            }
+          });
+        });
+
+        document.getElementById('afd-report-form').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const reviewId = document.getElementById('afd-report-review-id').value;
+          const selectedReason = document.querySelector('input[name="report_reason"]:checked').value;
+          let finalReason = selectedReason;
+          
+          if (selectedReason === 'Other') {
+            const customText = document.getElementById('afd-report-custom-reason').value.trim();
+            if (!customText) {
+              setReportStatus('Please specify your reason for reporting.', 'err');
+              return;
+            }
+            finalReason = customText;
+          }
+
+          const submitBtn = e.target.querySelector('.afd-btn-modal-submit');
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+          
+          try {
+            // Retrieve device token (reusing token generation standard in wizard)
+            let deviceToken = localStorage.getItem('afr_device_token');
+            if (!deviceToken) {
+              // Generate standard UUID fallback
+              deviceToken = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                const r = (Math.random() * 16) | 0;
+                return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+              });
+              localStorage.setItem('afr_device_token', deviceToken);
+            }
+
+            const { error } = await supabaseClient.rpc('report_review', {
+              p_review_id: reviewId,
+              p_reason: finalReason,
+              p_device_token: deviceToken
+            });
+            
+            if (error) throw error;
+            
+            setReportStatus('Thank you. The review has been reported successfully.', 'ok');
+            setTimeout(() => {
+              closeAfdReportModal();
+            }, 2000);
+          } catch (err) {
+            setReportStatus(err.message || 'Something went wrong. Please try again.', 'err');
+          } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Submit Report';
+          }
+        });
+      });
+
+      function setReportStatus(msg, cls) {
+        const el = document.getElementById('afd-report-status');
+        el.textContent = msg || '';
+        el.className = 'afd-report-status ' + (cls || '');
+        el.style.display = 'block';
+      }
     </script>
+
+    <!-- Report Review Modal -->
+    <div id="afd-report-modal" class="afd-modal-backdrop" style="display: none;">
+      <div class="afd-modal-card">
+        <div class="afd-modal-header">
+          <h3>Report Fake/Spam Review</h3>
+          <button type="button" class="afd-modal-close" onclick="closeAfdReportModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="afd-report-form">
+          <div class="afd-modal-body">
+            <input type="hidden" id="afd-report-review-id">
+            <p style="font-size: 0.875rem; color: #475569; margin-bottom: 1rem; line-height: 1.5;">
+              Help us maintain authentic reviews. Why are you reporting this review?
+            </p>
+            
+            <div class="afd-report-option">
+              <label>
+                <input type="radio" name="report_reason" value="Fake Review / Spam" checked>
+                <span>It is a fake review or spam</span>
+              </label>
+            </div>
+            <div class="afd-report-option">
+              <label>
+                <input type="radio" name="report_reason" value="Abusive or Inappropriate">
+                <span>Abusive, offensive, or inappropriate language</span>
+              </label>
+            </div>
+            <div class="afd-report-option">
+              <label>
+                <input type="radio" name="report_reason" value="Duplicate Review">
+                <span>Duplicate review of another post</span>
+              </label>
+            </div>
+            <div class="afd-report-option">
+              <label>
+                <input type="radio" name="report_reason" value="Other">
+                <span>Other reason</span>
+              </label>
+            </div>
+            
+            <div id="afd-report-custom-wrap" style="display: none; margin-top: 1rem;">
+              <label for="afd-report-custom-reason" style="display: block; font-size: 0.75rem; font-weight: 700; color: #475569; margin-bottom: 0.35rem;">Specify Reason *</label>
+              <textarea id="afd-report-custom-reason" rows="3" placeholder="Explain why this review should be flagged..."></textarea>
+            </div>
+            <p class="afd-report-status" id="afd-report-status" style="display: none; font-size: 0.8125rem; margin-top: 1rem; font-weight: 500;"></p>
+          </div>
+          <div class="afd-modal-footer">
+            <button type="button" class="afd-btn-modal-cancel" onclick="closeAfdReportModal()">Cancel</button>
+            <button type="submit" class="afd-btn-modal-submit">Submit Report</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </body>
 </html>
