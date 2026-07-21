@@ -1105,7 +1105,7 @@
       /* Info Pills Row */
       .afd-review-info-pills {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 0.75rem;
         z-index: 2;
       }
@@ -1130,6 +1130,10 @@
       }
       .afd-review-info-pill.hours-pill i {
         color: var(--h-brand-600);
+      }
+      .afd-review-info-pill.industrial-pill i {
+        color: #7c3aed;
+        background: #f5f3ff;
       }
 
       .afd-review-info-pill i {
@@ -2497,16 +2501,17 @@
 
       function getWorkStatClass(label, value) {
         const val = String(value || '').toLowerCase();
-        if (val.includes('always on time') || val.includes('easy') || val.includes('8-10') || val.includes('never') || val.includes('approved')) {
+        if (val.includes('always on time') || val.includes('easy') || val.includes('8-10') || val.includes('never') || val.includes('approved') || val.includes('yes')) {
+          if (val.includes('not allowed') || val.includes('no')) return 'status-red';
           return 'status-green';
         }
-        if (val.includes('sometimes') || val.includes('occasionally') || val.includes('10-12') || val.includes('difficult')) {
-          if (val.includes('always delayed') || val.includes('very difficult') || val.includes('more than 12')) {
+        if (val.includes('sometimes') || val.includes('occasionally') || val.includes('10-12') || val.includes('difficult') || val.includes('depends')) {
+          if (val.includes('always delayed') || val.includes('very difficult') || val.includes('more than 12') || val.includes('no')) {
             return 'status-red';
           }
           return 'status-amber';
         }
-        if (val.includes('more than 12') || val.includes('delayed') || val.includes('very') || val.includes('difficult')) {
+        if (val.includes('more than 12') || val.includes('delayed') || val.includes('very') || val.includes('difficult') || val.includes('no')) {
           return 'status-red';
         }
         return 'status-slate';
@@ -2612,9 +2617,10 @@
         const leaveVal = modeOf("personal_leave");
         const travelVal = modeOf("outstation_travel");
         const stipendOnTimeVal = modeOf("stipend_on_time");
+        const industrialVal = modeOf("allow_industrial_training");
 
         let sidebarPanelHTML = "";
-        if (weekendVal || leaveVal || travelVal || stipendOnTimeVal) {
+        if (weekendVal || leaveVal || travelVal || stipendOnTimeVal || industrialVal) {
           const items = [];
           if (weekendVal) {
             items.push(`
@@ -2645,6 +2651,14 @@
               <div class="afd-perf-badge-item">
                 <span class="afd-perf-badge-label"><i class="fas fa-wallet"></i> Stipend on time</span>
                 <span class="afd-perf-badge-val ${getWorkStatClass('Stipend on time', stipendOnTimeVal)}">${escapeHTML(stipendOnTimeVal)}</span>
+              </div>
+            `);
+          }
+          if (industrialVal) {
+            items.push(`
+              <div class="afd-perf-badge-item">
+                <span class="afd-perf-badge-label"><i class="fas fa-graduation-cap"></i> Industrial training</span>
+                <span class="afd-perf-badge-val ${getWorkStatClass('Industrial training', industrialVal)}">${escapeHTML(industrialVal)}</span>
               </div>
             `);
           }
@@ -2874,6 +2888,17 @@
               }
             }
 
+            let indTrainingText = 'Not reported';
+            let indTrainingColor = '#94a3b8';
+            if (r.allow_industrial_training) {
+              const text = L.allow_industrial_training[r.allow_industrial_training];
+              if (text) {
+                indTrainingText = text;
+                const lower = text.toLowerCase();
+                indTrainingColor = lower.includes('yes') ? '#16a34a' : lower.includes('no') ? '#dc2626' : '#d97706';
+              }
+            }
+
             const domainTagsHTML = renderTagsGroup('Work Domains', 'fas fa-briefcase', r.domain_tags);
             const clientTagsHTML = renderTagsGroup('Client Sectors', 'fas fa-building', r.client_tags);
             const skillTagsHTML = renderTagsGroup('Tools & Skills', 'fas fa-gears', r.skill_tags);
@@ -2936,6 +2961,13 @@
                   <span class="afd-review-info-pill-lbl">Hours</span>
                   <span class="afd-review-info-pill-val">${escapeHTML(hoursValText)}</span>
                   <span class="afd-review-info-pill-sub" style="color:${hoursStatusColor};">${escapeHTML(hoursStatusText)}</span>
+                </div>
+              </div>
+              <div class="afd-review-info-pill industrial-pill">
+                <i class="fas fa-graduation-cap"></i>
+                <div class="afd-review-info-pill-content">
+                  <span class="afd-review-info-pill-lbl">Industrial Training</span>
+                  <span class="afd-review-info-pill-val" style="color:${indTrainingColor};">${escapeHTML(indTrainingText)}</span>
                 </div>
               </div>
             </div>
