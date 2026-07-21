@@ -648,7 +648,7 @@ function showExclusiveLockedModal(job) {
                 MSC Program Members Only
             </h3>
             <p style="color: #78350f; font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem; max-width: 320px; margin-left: auto; margin-right: auto;">
-                This vacancy is exclusively available to students enrolled in the <strong>MSC ICAI Industrial Training Program</strong>. Enroll to unlock full details and apply directly.
+                This vacancy is exclusively available to students enrolled in the <strong>MSC CA Industrial Training Program</strong>. Enroll to unlock full details and apply directly.
             </p>
             <a href="/ca-industrial-training-program" target="_blank" style="
                 display: inline-flex; align-items: center; gap: 0.5rem;
