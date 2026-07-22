@@ -21,7 +21,7 @@
   max-height: 90vh;
   overflow-y: auto;
   border-radius: 20px 20px 0 0;
-  padding: 1.25rem 1.25rem 1.75rem;
+  padding: 1rem 1.25rem 1.25rem;
   animation: arw-up 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   box-shadow: 0 -10px 25px -5px rgba(15, 23, 42, 0.08);
@@ -35,7 +35,7 @@
   height: 4px;
   background: #e2e8f0;
   border-radius: 99px;
-  margin: -0.5rem auto 0.75rem;
+  margin: -0.25rem auto 0.5rem;
 }
 
 @keyframes arw-up { 
@@ -48,7 +48,7 @@
   .arw-card { 
     max-width: 520px; 
     border-radius: 16px; 
-    padding: 1.5rem 1.75rem; 
+    padding: 1.25rem 1.5rem; 
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
   }
   .arw-card::before { display: none; }
@@ -59,9 +59,9 @@
   align-items: center; 
   justify-content: space-between; 
   gap: 0.75rem; 
-  margin-bottom: 0.75rem; 
+  margin-bottom: 0.5rem; 
   border-bottom: 1px solid #f1f5f9;
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
 }
 .arw-header h2 { 
   font-size: 1.1rem; 
@@ -102,7 +102,7 @@
 }
 
 /* Progress bar (steps 2–4) */
-.arw-progress { margin: 0.75rem 0 1rem; }
+.arw-progress { margin: 0.5rem 0 0.75rem; }
 .arw-progress-label { 
   font-size: 0.65rem; 
   font-weight: 800; 
@@ -115,33 +115,33 @@
 .arw-progress-fill { height: 100%; border-radius: 999px; background: #2563eb; transition: width 0.3s ease; }
 
 /* Fields */
-.arw-field { margin-bottom: 0.85rem; }
+.arw-field { margin-bottom: 0.6rem; }
+.arw-field:last-of-type { margin-bottom: 0.25rem; }
 .arw-field > label, .arw-group-label {
-  display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 0.35rem;
+  display: block; font-size: 0.8rem; font-weight: 700; color: #334155; margin-bottom: 0.25rem;
 }
-.arw-field input, .arw-field textarea {
+.arw-field input, .arw-field select, .arw-field textarea {
   width: 100%; padding: 0.65rem 0.8rem; font: inherit; font-size: 0.875rem;
   border: 1.5px solid #cbd5e1; border-radius: 8px; color: #0f172a; background: #fff;
   transition: all 0.2s ease;
 }
-.arw-field input:focus, .arw-field textarea:focus {
+.arw-field input:focus, .arw-field select:focus, .arw-field textarea:focus {
   outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 .arw-field input[readonly] { background: #f8fafc; color: #475569; }
 
-/* Firm autocomplete */
-.arw-firm-wrap { position: relative; }
-.arw-firm-results {
+/* Autocomplete dropdowns */
+.arw-firm-wrap, .arw-location-wrap { position: relative; }
+.arw-firm-results, .arw-location-results {
   position: absolute; left: 0; right: 0; top: 100%; z-index: 100;
   background: #fff; border: 1px solid #e2e8f0; border-radius: 8px;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12); overflow-y: auto; max-height: 180px; margin-top: 4px;
 }
-.arw-firm-item, .arw-firm-add {
+.arw-firm-item, .arw-location-item {
   display: block; width: 100%; text-align: left; border: none; background: none;
   padding: 0.65rem 0.8rem; font: inherit; font-size: 0.875rem; color: #0f172a; cursor: pointer;
 }
-.arw-firm-item:hover, .arw-firm-add:hover { background: #f1f5f9; }
-.arw-firm-add { color: #2563eb; font-weight: 600; border-top: 1px solid #e2e8f0; }
+.arw-firm-item:hover, .arw-location-item:hover { background: #f1f5f9; }
 
 /* Star ratings */
 .arw-stars { display: flex; gap: 0.05rem; }
@@ -216,7 +216,7 @@
 .arw-chip.active { background: #eff6ff; border-color: #2563eb; color: #1d4ed8; font-weight: 600; }
 
 /* Step chrome */
-.arw-step-footer { display: flex; gap: 0.65rem; margin-top: 1rem; }
+.arw-step-footer { display: flex; gap: 0.65rem; margin-top: 0.35rem; }
 .arw-btn-primary {
   flex: 1; min-height: 44px; border: none; border-radius: 8px; cursor: pointer;
   background: #2563eb; color: #fff; font: inherit; font-size: 0.9rem; font-weight: 600;
@@ -232,7 +232,8 @@
 }
 .arw-btn-ghost:hover { background: #f8fafc; }
 
-.arw-status { min-height: 1rem; font-size: 0.8rem; margin: 0.4rem 0 0; }
+.arw-status { font-size: 0.8rem; margin: 0.25rem 0; }
+.arw-status:empty { display: none; margin: 0; }
 .arw-status.err { color: #dc2626; }
 .arw-status.ok { color: #16a34a; }
 
