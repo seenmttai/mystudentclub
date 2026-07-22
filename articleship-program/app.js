@@ -162,7 +162,9 @@ const initializeCarousel = () => {
   let onScreen = true;
 
   function animate(currentTime) {
-    if (!onScreen) {
+    // Below 768px the marquee stays fully stopped, regardless of which
+    // path (drag release, intersection, init) tried to resume it.
+    if (!onScreen || window.innerWidth <= 768) {
       animationId = null;
       return;
     }
@@ -378,7 +380,9 @@ const initializeLinkedInPosts = () => {
   let onScreen = true;
 
   function animate(currentTime) {
-    if (!onScreen) {
+    // Below 768px the marquee stays fully stopped, regardless of which
+    // path (drag release, intersection, init) tried to resume it.
+    if (!onScreen || window.innerWidth <= 768) {
       animationId = null;
       return;
     }
