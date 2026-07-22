@@ -1606,12 +1606,55 @@
           </div>
         </section>
       </div>
+
+      <div id="adminReviewsPage" class="admin-page">
+        <section class="admin-controls lms-resource-section">
+          <div class="lms-section-header" style="background: #ffffff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 10px rgba(0,0,0,0.02); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            <div class="lms-section-header-left" style="display: flex; align-items: center; gap: 0.85rem;">
+              <div class="lms-section-icon" style="background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; width: 46px; height: 46px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 2px 6px rgba(220,38,38,0.1);">
+                <svg style="width: 24px; height: 24px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+              <div>
+                <h2 style="font-size: 1.25rem; font-weight: 700; color: #111827; margin: 0; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                  Articleship Reviews Moderation
+                  <span id="reports-count-badge" style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; font-size: 0.725rem; font-weight: 700; padding: 0.15rem 0.65rem; border-radius: 9999px;">Loading...</span>
+                </h2>
+                <p style="font-size: 0.85rem; color: #6b7280; margin: 0.2rem 0 0;">Review flagged items, perform 1-click takedowns, or publish official firm responses.</p>
+              </div>
+            </div>
+            <button type="button" id="refresh-reports-btn" onclick="loadArticleshipModerationReports()" class="admin-btn" style="background: #2563eb; color: #ffffff; font-weight: 600; font-size: 0.825rem; padding: 0.55rem 1.1rem; border-radius: 10px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(37,99,235,0.25);">
+              <svg style="width: 0.95rem; height: 0.95rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+              Refresh Queue
+            </button>
+          </div>
+
+          <div id="articleship-reports-container">
+            <div style="color: #6b7280; font-size: 0.85rem; padding: 1.5rem; text-align: center;">Loading flagged reports...</div>
+          </div>
+        </section>
+      </div>
     </main>
 
     <div id="modal" class="modal-overlay" onclick="closeModal(event)">
       <div class="modal">
         <button class="modal-close" onclick="closeModal(event)">✕</button>
         <div id="modal-content"></div>
+      </div>
+    </div>
+
+    <!-- Custom Moderation Modal Overlay -->
+    <div id="mod-custom-modal" class="modal-overlay" style="display: none; align-items: center; justify-content: center; z-index: 9999; backdrop-filter: blur(4px); background: rgba(15, 23, 42, 0.6);">
+      <div style="background: #ffffff; border-radius: 16px; width: 90%; max-width: 500px; padding: 1.5rem 1.75rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); border: 1px solid #e2e8f0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px solid #f1f5f9;">
+          <h3 id="mod-modal-title" style="font-size: 1.15rem; font-weight: 700; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 0.5rem;"></h3>
+          <button type="button" onclick="closeModCustomModal()" style="background: #f1f5f9; border: none; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #64748b; font-size: 1rem; cursor: pointer; transition: all 0.2s;">✕</button>
+        </div>
+        
+        <div id="mod-modal-body" style="margin-bottom: 1.25rem;"></div>
+
+        <div id="mod-modal-actions" style="display: flex; justify-content: flex-end; gap: 0.75rem;"></div>
       </div>
     </div>
 
@@ -1838,6 +1881,13 @@
             d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
         <span>LMS</span>
+      </button>
+      <button class="footer-tab" data-page="reviews">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <span>Firm Reviews</span>
       </button>
     </nav>
   </div>
@@ -3446,15 +3496,26 @@
         lmsViewerModal: document.getElementById('lmsViewerModal'),
         lmsViewerCloseBtn: document.getElementById('lmsViewerCloseBtn'),
         lmsViewerOpenBtn: document.getElementById('lmsViewerOpenBtn'),
-        lmsSortToggleBtn: document.getElementById('lmsSortToggleBtn')
+        lmsSortToggleBtn: document.getElementById('lmsSortToggleBtn'),
+        adminReviewsPage: document.getElementById('adminReviewsPage')
       };
       lmsResourceState.sortOrder = 'asc';
       const setAdminPage = (page) => {
-        const showLms = page === 'lms';
-        dom.adminJobsPage?.classList.toggle('active', !showLms);
-        dom.adminLmsPage?.classList.toggle('active', showLms);
-        if (!showLms) closeLmsResourceEditor();
-        if (!showLms) closeLmsViewer();
+        const isLms = page === 'lms';
+        const isReviews = page === 'reviews';
+        const isJobs = !isLms && !isReviews;
+
+        const jobsPg = dom.adminJobsPage || document.getElementById('adminJobsPage');
+        const lmsPg = dom.adminLmsPage || document.getElementById('adminLmsPage');
+        const reviewsPg = dom.adminReviewsPage || document.getElementById('adminReviewsPage');
+
+        if (jobsPg) jobsPg.classList.toggle('active', isJobs);
+        if (lmsPg) lmsPg.classList.toggle('active', isLms);
+        if (reviewsPg) reviewsPg.classList.toggle('active', isReviews);
+
+        if (!isLms) closeLmsResourceEditor();
+        if (!isLms) closeLmsViewer();
+        if (isReviews) loadArticleshipModerationReports();
       };
 
       let debounceTimeout = null;
@@ -3655,9 +3716,9 @@
         tab.addEventListener('click', () => {
           document.querySelectorAll('.footer-tab').forEach(t => t.classList.remove('active'));
           tab.classList.add('active');
-          const targetPage = tab.dataset.page === 'lms' ? 'lms' : 'jobs';
+          const targetPage = tab.dataset.page || 'jobs';
           setAdminPage(targetPage);
-          if (targetPage === 'lms') return;
+          if (targetPage === 'lms' || targetPage === 'reviews') return;
           currentTable = tab.dataset.table;
 
           if (currentTable === 'Fresher Jobs' || currentTable === 'Semi Qualified Jobs') {
@@ -3671,82 +3732,293 @@
         });
       });
 
-      dom.jobForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const submitButton = e.target.querySelector('button[type="submit"]');
-        submitButton.disabled = true;
-        submitButton.classList.add('loading');
+      function escapeHTML(str) {
+        if (str === null || str === undefined) return '';
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      // ── Articleship Review Moderation ──
+      async function loadArticleshipModerationReports() {
+        const container = document.getElementById('articleship-reports-container');
+        const countBadge = document.getElementById('reports-count-badge');
+        if (!container) return;
         try {
-          const formData = new FormData(e.target);
-          const jobData = Object.fromEntries(formData.entries());
-          const { table, id, ...dataToSave } = jobData;
+          const { data, error } = await supabaseClient
+            .from('articleship_review_reports_admin')
+            .select('*')
+            .order('reported_at', { ascending: false });
 
-          // Handle checkbox: FormData only includes it if checked, so explicitly set boolean
-          dataToSave.is_exclusive = document.getElementById('is_exclusive_checkbox').checked;
+          if (error) throw error;
 
-          if (dataToSave.Salary === '') dataToSave.Salary = null;
-          if (dataToSave.connect_link === '') dataToSave.connect_link = null;
-
-          if (table !== 'Fresher Jobs' && table !== 'Semi Qualified Jobs') {
-            delete dataToSave.Experience;
-          } else if (dataToSave.Experience === '') {
-            dataToSave.Experience = null;
+          if (countBadge) {
+            countBadge.textContent = data && data.length > 0 ? `${data.length} Pending ${data.length === 1 ? 'Report' : 'Reports'}` : '0 Pending Reports';
           }
 
-          const isEdit = id && id.trim() !== '';
-          let savedJob;
+          if (!data || data.length === 0) {
+            container.innerHTML = '<div style="padding: 1.5rem; text-align: center; color: #059669; font-weight: 600; font-size: 0.875rem; background: #ecfdf5; border-radius: 10px; border: 1px solid #a7f3d0;">🎉 Zero pending flagged reports! Platform is clean.</div>';
+            return;
+          }
 
-          if (isEdit) {
-            const { data, error } = await supabaseClient.from(table).update(dataToSave).eq('id', id).select().single();
-            if (error) throw error;
-            savedJob = data;
-          } else {
-            const { data, error } = await supabaseClient.from(table).insert([dataToSave]).select().single();
-            if (error) throw error;
-            savedJob = data;
-            if (currentSession?.access_token) {
-              await triggerNotifications({ ...savedJob, table }, currentSession.access_token);
+          container.innerHTML = data.map(r => {
+            const isLong = r.review_text && r.review_text.length > 130;
+
+            let flagBadgeLabel = r.reason || 'Flagged';
+            let customReasonDetail = null;
+
+            if (r.reason) {
+              const rawReason = r.reason.trim();
+              // Known preset reasons stored verbatim by the report form
+              const PRESET_REASONS = [
+                'fake review / spam',
+                'abusive or inappropriate',
+                'duplicate review',
+                'contains personal information',
+                'misleading or false claims',
+                'other'
+              ];
+              const lowerReason = rawReason.toLowerCase();
+
+              if (lowerReason.startsWith('other:')) {
+                // New format: "Other: <custom text>"
+                flagBadgeLabel = 'Other';
+                customReasonDetail = rawReason.substring(6).trim();
+              } else if (PRESET_REASONS.includes(lowerReason)) {
+                // Exact preset match — show as-is in badge
+                flagBadgeLabel = rawReason;
+              } else {
+                // Legacy or freeform text — treat entirely as custom explanation
+                flagBadgeLabel = 'Other';
+                customReasonDetail = rawReason;
+              }
             }
-          }
 
-          closeJobEditModal();
-          debouncedFetch();
-        } catch (error) {
-          alert('Failed to save job: ' + error.message);
-        } finally {
-          submitButton.disabled = false;
-          submitButton.classList.remove('loading');
+            return `
+            <div style="border: 1px solid #fee2e2; background: #ffffff; border-radius: 12px; padding: 1.1rem 1.25rem; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.03); transition: border-color 0.2s;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.65rem; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                  <strong style="color: #991b1b; font-size: 1.05rem; font-weight: 700;">${escapeHTML(r.firm_name)}</strong>
+                  <span style="background: #fef2f2; color: #dc2626; border: 1px solid #fca5a5; font-size: 0.725rem; font-weight: 700; padding: 0.15rem 0.55rem; border-radius: 6px;">Flag: ${escapeHTML(flagBadgeLabel)}</span>
+                  <span style="background: #f3f4f6; color: #374151; font-size: 0.725rem; font-weight: 600; padding: 0.15rem 0.55rem; border-radius: 6px;">Rating: ${r.overall_rating ? r.overall_rating + '★' : 'N/A'}</span>
+                </div>
+                <span style="font-size: 0.775rem; color: #6b7280; font-weight: 500;">Reported ${new Date(r.reported_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              </div>
+
+              ${customReasonDetail ? `
+                <div style="background: #fff7ed; border: 1px solid #fed7aa; border-left: 4px solid #f97316; padding: 0.7rem 0.95rem; border-radius: 8px; margin-bottom: 0.85rem;">
+                  <strong style="color: #c2410c; font-size: 0.725rem; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 0.25rem;">🚩 Reporter's Custom Explanation:</strong>
+                  <span style="font-size: 0.875rem; color: #9a3412; font-weight: 500; line-height: 1.5; display: block;">"${escapeHTML(customReasonDetail)}"</span>
+                </div>` : ''}
+              
+              <div style="font-size: 0.725rem; font-weight: 700; color: #991b1b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">Review Text:</div>
+              <div style="position: relative; margin-bottom: 0.75rem;">
+                <div id="review-text-${r.report_id}" class="review-text-box" style="font-size: 0.875rem; color: #1f2937; font-style: italic; background: #fafafa; padding: 0.75rem 0.95rem; border-radius: 8px; border: 1px solid #e5e7eb; line-height: 1.55; ${isLong ? 'max-height: 3.5em; overflow: hidden;' : ''} transition: max-height 0.3s ease;">
+                  "${escapeHTML(r.review_text)}"
+                </div>
+                ${isLong ? `
+                  <button type="button" id="read-more-btn-${r.report_id}" onclick="toggleReviewText('${r.report_id}')" style="background: none; border: none; color: #2563eb; font-weight: 600; font-size: 0.775rem; cursor: pointer; padding: 0.35rem 0 0 0.15rem; display: inline-flex; align-items: center; gap: 0.25rem;">
+                    <span>Read More</span>
+                    <svg id="read-more-icon-${r.report_id}" style="width: 0.8rem; height: 0.8rem; transition: transform 0.2s ease;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                  </button>
+                ` : ''}
+              </div>
+
+              ${r.firm_response ? `
+                <div style="font-size: 0.825rem; color: #1e40af; background: #eff6ff; border: 1px solid #bfdbfe; padding: 0.65rem 0.9rem; border-radius: 8px; margin-bottom: 0.85rem; line-height: 1.45;">
+                  <strong style="color: #1d4ed8;">Official Firm Response:</strong> "${escapeHTML(r.firm_response)}"
+                </div>` : ''}
+
+              <div style="display: flex; gap: 0.65rem; flex-wrap: wrap; align-items: center; border-top: 1px solid #f3f4f6; padding-top: 0.75rem;">
+                <button type="button" onclick="takeDownReviewAdmin('${r.review_id}')" style="background: #dc2626; color: #ffffff; border: none; padding: 0.45rem 0.9rem; border-radius: 8px; font-weight: 600; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; transition: background 0.2s ease;">
+                  <svg style="width: 0.9rem; height: 0.9rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  Take Down Review
+                </button>
+
+                <button type="button" onclick="promptFirmResponseAdmin('${r.review_id}')" style="background: #2563eb; color: #ffffff; border: none; padding: 0.45rem 0.9rem; border-radius: 8px; font-weight: 600; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; transition: background 0.2s ease;">
+                  <svg style="width: 0.9rem; height: 0.9rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg>
+                  Add Official Response
+                </button>
+
+                <button type="button" onclick="dismissReportAdmin('${r.report_id}')" style="background: #4b5563; color: #ffffff; border: none; padding: 0.45rem 0.9rem; border-radius: 8px; font-weight: 600; font-size: 0.8rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.35rem; transition: background 0.2s ease;">
+                  <svg style="width: 0.9rem; height: 0.9rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+                  Dismiss Flag
+                </button>
+              </div>
+            </div>`;
+          }).join('');
+        } catch (err) {
+          container.innerHTML = `<div style="color: #dc2626; font-size: 0.85rem; padding: 0.75rem; background: #fef2f2; border-radius: 8px; border: 1px solid #fca5a5;">Failed to load reports: ${escapeHTML(err.message)}</div>`;
         }
-      });
+      }
 
-      dom.jobs.addEventListener('click', async (e) => {
-        const card = e.target.closest('.job-card');
-        if (!card) return;
-        const button = e.target.closest('button[data-action]');
-        const jobId = card.dataset.jobId;
-        if (button) {
-          e.stopPropagation();
-          const action = button.dataset.action;
-          if (action === 'delete') { await deleteJob(jobId, currentTable); }
-          else if (action === 'edit') { const jobDetails = await getJobById(jobId, currentTable); if (jobDetails) showEditJobModal(jobDetails); }
-        } else { const job = await getJobById(jobId, currentTable); if (job) showModal(job); }
-      });
-
-      dom.tableSelect.addEventListener('change', (e) => {
-        const selectedTable = e.target.value;
-        updateCategoryOptions(selectedTable);
-        const experienceFormGroup = document.getElementById('experience-form-group');
-        if (selectedTable === 'Fresher Jobs' || selectedTable === 'Semi Qualified Jobs') {
-          experienceFormGroup.style.display = 'block';
+      window.toggleReviewText = function(reportId) {
+        const textEl = document.getElementById(`review-text-${reportId}`);
+        const btnEl = document.getElementById(`read-more-btn-${reportId}`);
+        const iconEl = document.getElementById(`read-more-icon-${reportId}`);
+        if (!textEl || !btnEl) return;
+        const isCollapsed = textEl.style.maxHeight !== 'none';
+        if (isCollapsed) {
+          textEl.style.maxHeight = 'none';
+          btnEl.querySelector('span').textContent = 'Read Less';
+          if (iconEl) iconEl.style.transform = 'rotate(180deg)';
         } else {
-          experienceFormGroup.style.display = 'none';
+          textEl.style.maxHeight = '3.5em';
+          btnEl.querySelector('span').textContent = 'Read More';
+          if (iconEl) iconEl.style.transform = 'rotate(0deg)';
         }
-      });
+      };
+
+      window.closeModCustomModal = function() {
+        const modal = document.getElementById('mod-custom-modal');
+        if (modal) modal.style.display = 'none';
+      };
+
+      function showCustomToast(message, type = 'success') {
+        const existing = document.getElementById('custom-toast-notification');
+        if (existing) existing.remove();
+
+        const toast = document.createElement('div');
+        toast.id = 'custom-toast-notification';
+        const isSuccess = type === 'success';
+        toast.style.cssText = `
+          position: fixed;
+          top: 24px;
+          right: 24px;
+          z-index: 99999;
+          background: ${isSuccess ? '#10b981' : '#ef4444'};
+          color: #ffffff;
+          font-weight: 600;
+          font-size: 0.9rem;
+          padding: 0.85rem 1.25rem;
+          border-radius: 12px;
+          box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
+          display: flex;
+          align-items: center;
+          gap: 0.6rem;
+        `;
+        toast.innerHTML = `
+          <svg style="width: 1.25rem; height: 1.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${isSuccess ? 'M5 13l4 4L19 7' : 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'}" />
+          </svg>
+          <span>${escapeHTML(message)}</span>
+        `;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transition = 'opacity 0.3s ease';
+          setTimeout(() => toast.remove(), 300);
+        }, 3500);
+      }
+
+      function takeDownReviewAdmin(reviewId) {
+        const modal = document.getElementById('mod-custom-modal');
+        const title = document.getElementById('mod-modal-title');
+        const body = document.getElementById('mod-modal-body');
+        const actions = document.getElementById('mod-modal-actions');
+        if (!modal || !title || !body || !actions) return;
+
+        title.innerHTML = `<span style="color: #dc2626; display: inline-flex; align-items: center; gap: 0.4rem;"><svg style="width: 1.2rem; height: 1.2rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg> Confirm Review Takedown</span>`;
+        body.innerHTML = `
+          <div style="background: #fef2f2; border: 1px solid #fca5a5; border-radius: 12px; padding: 1rem 1.15rem; margin-bottom: 0.5rem;">
+            <strong style="color: #991b1b; font-size: 0.95rem; display: block; margin-bottom: 0.35rem;">⚠️ Permanent Action Warning</strong>
+            <span style="font-size: 0.875rem; color: #7f1d1d; line-height: 1.5;">Are you sure you want to permanently delete/take down this review? The review card will be removed from the platform immediately and this action cannot be undone.</span>
+          </div>
+        `;
+        actions.innerHTML = `
+          <button type="button" onclick="closeModCustomModal()" style="background: #f1f5f9; color: #475569; border: none; padding: 0.6rem 1.1rem; border-radius: 10px; font-weight: 600; font-size: 0.85rem; cursor: pointer;">Cancel</button>
+          <button type="button" id="confirm-takedown-btn" onclick="executeTakedownCustom('${reviewId}')" style="background: #dc2626; color: #ffffff; border: none; padding: 0.6rem 1.25rem; border-radius: 10px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; box-shadow: 0 4px 12px rgba(220,38,38,0.25);">
+            Yes, Delete Review
+          </button>
+        `;
+        modal.style.display = 'flex';
+      }
+
+      window.executeTakedownCustom = async function(reviewId) {
+        const btn = document.getElementById('confirm-takedown-btn');
+        if (btn) { btn.disabled = true; btn.textContent = 'Deleting...'; }
+        try {
+          const { error } = await supabaseClient.rpc('delete_review_admin', { p_review_id: reviewId });
+          if (error) throw error;
+          closeModCustomModal();
+          showCustomToast('Review taken down successfully.', 'success');
+          loadArticleshipModerationReports();
+        } catch (err) {
+          showCustomToast('Error taking down review: ' + err.message, 'error');
+          if (btn) { btn.disabled = false; btn.textContent = 'Yes, Delete Review'; }
+        }
+      };
+
+      async function dismissReportAdmin(reportId) {
+        try {
+          const { error } = await supabaseClient.rpc('dismiss_review_report', { p_report_id: reportId });
+          if (error) throw error;
+          showCustomToast('Flag dismissed successfully.', 'success');
+          loadArticleshipModerationReports();
+        } catch (err) {
+          showCustomToast('Error dismissing report: ' + err.message, 'error');
+        }
+      }
+
+      function promptFirmResponseAdmin(reviewId) {
+        const modal = document.getElementById('mod-custom-modal');
+        const title = document.getElementById('mod-modal-title');
+        const body = document.getElementById('mod-modal-body');
+        const actions = document.getElementById('mod-modal-actions');
+        if (!modal || !title || !body || !actions) return;
+
+        title.innerHTML = `<span style="color: #2563eb; display: inline-flex; align-items: center; gap: 0.4rem;"><svg style="width: 1.2rem; height: 1.2rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 01-2-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" /></svg> Publish Official Firm Response</span>`;
+        body.innerHTML = `
+          <p style="font-size: 0.875rem; color: #475569; margin: 0 0 0.85rem; line-height: 1.45;">
+            Write an official response on behalf of the firm. This response will be publicly displayed on the review card.
+          </p>
+          <label style="display: block; font-size: 0.75rem; font-weight: 700; color: #334155; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem;">Official Firm Statement</label>
+          <textarea id="custom-firm-response-input" rows="4" style="width: 100%; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 0.75rem 0.9rem; font-family: inherit; font-size: 0.875rem; color: #0f172a; outline: none; box-sizing: border-box; transition: border-color 0.2s;" placeholder="e.g., Thank you for sharing your feedback. At our firm, we strive to maintain high standards..."></textarea>
+        `;
+        actions.innerHTML = `
+          <button type="button" onclick="closeModCustomModal()" style="background: #f1f5f9; color: #475569; border: none; padding: 0.6rem 1.1rem; border-radius: 10px; font-weight: 600; font-size: 0.85rem; cursor: pointer;">Cancel</button>
+          <button type="button" id="submit-firm-resp-btn" onclick="submitFirmResponseCustom('${reviewId}')" style="background: #2563eb; color: #ffffff; border: none; padding: 0.6rem 1.25rem; border-radius: 10px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem; box-shadow: 0 4px 12px rgba(37,99,235,0.25);">
+            Publish Official Response
+          </button>
+        `;
+        modal.style.display = 'flex';
+        setTimeout(() => document.getElementById('custom-firm-response-input')?.focus(), 100);
+      }
+
+      window.submitFirmResponseCustom = async function(reviewId) {
+        const input = document.getElementById('custom-firm-response-input');
+        const btn = document.getElementById('submit-firm-resp-btn');
+        if (!input || !input.value.trim()) {
+          showCustomToast('Please enter a response statement.', 'error');
+          return;
+        }
+        if (btn) { btn.disabled = true; btn.textContent = 'Publishing...'; }
+        try {
+          const { error } = await supabaseClient.rpc('submit_firm_response', {
+            p_review_id: reviewId,
+            p_response_text: input.value.trim()
+          });
+          if (error) throw error;
+          closeModCustomModal();
+          showCustomToast('Official Firm Response published successfully!', 'success');
+          loadArticleshipModerationReports();
+        } catch (err) {
+          showCustomToast('Error publishing response: ' + err.message, 'error');
+          if (btn) { btn.disabled = false; btn.textContent = 'Publish Official Response'; }
+        }
+      };
 
       window.addNewBanner = addNewBanner;
       window.showAddJobModal = showAddJobModal;
       window.closeJobEditModal = closeJobEditModal;
       window.closeModal = closeModal;
+      window.loadArticleshipModerationReports = loadArticleshipModerationReports;
+      window.takeDownReviewAdmin = takeDownReviewAdmin;
+      window.dismissReportAdmin = dismissReportAdmin;
+      window.promptFirmResponseAdmin = promptFirmResponseAdmin;
 
       try { await loadLmsVideos(); } catch (error) { console.error("Failed to load LMS resources:", error); }
       try { await loadBanners(); } catch (error) { console.error("Failed to load banners:", error); }

@@ -1321,6 +1321,41 @@
       white-space: nowrap;
     }
 
+    /* Small-sample muted states */
+    .afr-rating-big.muted { color: #94a3b8; }
+    .afr-scorecard.afr-scorecard-muted {
+      grid-template-columns: 1fr;
+      align-items: center;
+      justify-items: center;
+      min-height: 58px;
+    }
+    .afr-nodata {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      color: #94a3b8;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.35;
+      padding: 0 0.5rem;
+    }
+    .afr-nodata i { color: #cbd5e1; }
+
+    /* Safe-harbour disclaimer */
+    .afr-legal-disclaimer {
+      margin: 1.5rem auto 0;
+      padding: 0.85rem 1rem;
+      background: #f7f9fc;
+      border: 1px solid #edf1f7;
+      border-radius: 12px;
+      font-size: 11.5px;
+      line-height: 1.55;
+      color: #64748b;
+    }
+    .afr-legal-disclaimer i { color: #2563eb; margin-right: 0.35rem; }
+    .afr-legal-disclaimer a { color: #2563eb; font-weight: 600; text-decoration: underline; }
+
     /* work exposure / domain tags */
     .afr-exposure {
       min-height: 67px;
@@ -2088,6 +2123,11 @@
         <div class="afr-grid" id="firm-list" aria-live="polite"></div>
         <!-- Pagination Bar -->
         <div id="afr-pagination" class="afr-pagination" aria-label="Pagination" style="display:none;"></div>
+        <!-- Safe-harbour disclaimer -->
+        <p class="afr-legal-disclaimer">
+          <i class="fas fa-circle-info"></i>
+          Reviews are anonymous, user-submitted personal opinions and do not represent the views of My Student Club. As an intermediary we only host user-generated content and are not responsible for its accuracy; reported reviews are examined and removed if they breach our <a href="#" id="afr-guidelines-link">Review Guidelines</a>.
+        </p>
       </main>
 
       <!-- CTA Section -->
@@ -2299,6 +2339,7 @@
 
     let FIRMS = [];
     const PAGE_SIZE = 15;
+    const MIN_REVIEWS_FOR_STATS = 5; // below this, show a muted "Not enough data" state
     let currentPage = 1;
     let currentFilteredFirms = [];
 
@@ -2310,23 +2351,9 @@
       const initial = f.firmName.trim()[0].toUpperCase();
       const tagsHTML = f.topTags.map(t => `<span class="afr-tag">${escapeHTML(t)}</span>`).join('');
       const exposureHTML = tagsHTML || '<span class="afr-tags-empty">No work exposure details shared yet</span>';
-      return `
-        <a class="afr-card" style="--card-color:${color}" href="/articleship-firm-review.html?firm=${encodeURIComponent(f.firmName)}" aria-label="View reviews for ${escapeHTML(f.firmName)}">
-          <div class="afr-card-top">
-            <div class="afr-card-heading">
-              <div class="afr-firm-avatar">${initial}</div>
-              <div class="afr-card-info">
-                <div class="afr-card-name">${escapeHTML(f.firmName)}</div>
-                <div class="afr-card-loc"><i class="fas fa-location-dot"></i> ${escapeHTML(f.location)}</div>
-              </div>
-            </div>
-            <div class="afr-card-rating-block">
-              <span class="afr-rating-big ${scoreClass(f.avgOverall)}">${f.avgOverall.toFixed(1)}</span>
-              <span class="afr-rating-stars">${starsHTML(f.avgOverall)}</span>
-              <span class="afr-rating-label">Rating</span>
-            </div>
-          </div>
-          <div class="afr-card-section-title"><i class="fas fa-chart-simple"></i> Review snapshot</div>
+      const enough = f.count >= MIN_REVIEWS_FOR_STATS;
+      const countLbl = `${f.count} review${f.count !== 1 ? 's' : ''}`;
+      const scorecardHTML = enough ? `
           <div class="afr-scorecard">
             <div class="afr-score-col">
               <span class="afr-score-val ${f.recommendPct !== null ? recClass(f.recommendPct) : 'na'}">${f.recommendPct !== null ? f.recommendPct + '%' : '—'}</span>
@@ -2340,7 +2367,28 @@
               <span class="afr-score-val">${f.topHoursKey ? HOURS_SHORT[f.topHoursKey] : '<span class="na">—</span>'}</span>
               <span class="afr-score-lbl">Typical hours</span>
             </div>
+          </div>` : `
+          <div class="afr-scorecard afr-scorecard-muted">
+            <span class="afr-nodata"><i class="fas fa-circle-info"></i> Not enough data yet — needs more reviews for reliable stats</span>
+          </div>`;
+      return `
+        <a class="afr-card" style="--card-color:${color}" href="/articleship-firm-review.html?firm=${encodeURIComponent(f.firmName)}" aria-label="View reviews for ${escapeHTML(f.firmName)}">
+          <div class="afr-card-top">
+            <div class="afr-card-heading">
+              <div class="afr-firm-avatar">${initial}</div>
+              <div class="afr-card-info">
+                <div class="afr-card-name">${escapeHTML(f.firmName)}</div>
+                <div class="afr-card-loc"><i class="fas fa-location-dot"></i> ${escapeHTML(f.location)}</div>
+              </div>
+            </div>
+            <div class="afr-card-rating-block">
+              <span class="afr-rating-big ${enough ? scoreClass(f.avgOverall) : 'muted'}">${f.avgOverall ? f.avgOverall.toFixed(1) : '—'}</span>
+              <span class="afr-rating-stars">${starsHTML(f.avgOverall)}</span>
+              <span class="afr-rating-label">${countLbl}</span>
+            </div>
           </div>
+          <div class="afr-card-section-title"><i class="fas fa-chart-simple"></i> Review snapshot</div>
+          ${scorecardHTML}
           <div class="afr-exposure">
             <div class="afr-card-section-title"><i class="fas fa-briefcase"></i> Reported work exposure</div>
             <div class="afr-tags">${exposureHTML}</div>
@@ -2444,6 +2492,15 @@
     }
 
     // ── Custom Dropdowns UI Generator ──
+    function toggleCustomDropdown(wrapper, trigger) {
+      if (!wrapper) return;
+      document.querySelectorAll('.custom-dropdown').forEach(d => {
+        if (d !== wrapper) d.classList.remove('active');
+      });
+      const isActive = wrapper.classList.toggle('active');
+      if (trigger) trigger.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+    }
+
     function initCustomDropdown(selectId) {
       const select = document.getElementById(selectId);
       if (!select) return;
@@ -2485,17 +2542,13 @@
       const trigger = wrapper.querySelector('.dropdown-trigger');
 
       // Click to toggle dropdown
-      trigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        
-        // Close other dropdowns
-        document.querySelectorAll('.custom-dropdown').forEach(d => {
-          if (d !== wrapper) d.classList.remove('active');
+      if (trigger) {
+        trigger.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleCustomDropdown(wrapper, trigger);
         });
-        
-        const isActive = wrapper.classList.toggle('active');
-        trigger.setAttribute('aria-expanded', isActive ? 'true' : 'false');
-      });
+      }
 
       // Click option item
       wrapper.querySelectorAll('.custom-dropdown-item').forEach(item => {
@@ -2562,8 +2615,19 @@
       const minStipend = document.getElementById('filter-stipend').value;
       const sort = document.getElementById('sort-by').value;
       
+      const qTokens = q.split(/\s+/).filter(Boolean);
       let out = FIRMS.filter(f => {
-        const matchesQuery = !q || f.firmName.toLowerCase().includes(q);
+        const matchesQuery = !qTokens.length || qTokens.every(tok => {
+          return f.firmName.toLowerCase().includes(tok) ||
+                 (f.location && f.location.toLowerCase().includes(tok)) ||
+                 f.topTags.some(t => t.toLowerCase().includes(tok)) ||
+                 f.reviews.some(r =>
+                   (r.domain_tags || []).some(t => t.toLowerCase().includes(tok)) ||
+                   (r.client_tags || []).some(t => t.toLowerCase().includes(tok)) ||
+                   (r.skill_tags || []).some(t => t.toLowerCase().includes(tok)) ||
+                   (r.review_text && r.review_text.toLowerCase().includes(tok))
+                 );
+        });
         const matchesLocation = !loc || f.location === loc;
         const matchesStipend = !minStipend || (f.avgStipend && f.avgStipend >= parseInt(minStipend, 10));
         const matchesTag = !SELECTED_TAG || 
@@ -2700,17 +2764,20 @@
       // Add click-forwarding logic for search segments
       document.querySelectorAll('.search-segment').forEach(seg => {
         seg.addEventListener('click', (e) => {
-          if (e.target.closest('#search-input') || e.target.closest('.custom-dropdown')) return;
-          
           const input = seg.querySelector('input');
           if (input) {
-            input.focus();
+            if (e.target !== input) input.focus();
             return;
           }
           
+          if (e.target.closest('.custom-dropdown-menu')) return;
+          
+          const wrapper = seg.querySelector('.custom-dropdown');
           const trigger = seg.querySelector('.dropdown-trigger');
-          if (trigger) {
-            trigger.click();
+          if (wrapper && trigger) {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleCustomDropdown(wrapper, trigger);
           }
         });
       });
@@ -2754,6 +2821,15 @@
 
     // ── Review wizard (shared component) ─────────────────────────────────
     ArticleshipReviewWizard.init(supabaseClient, { onComplete: loadFirms });
+
+    // Safe-harbour disclaimer → open Review Guidelines overlay
+    const afrGuidelinesLink = document.getElementById('afr-guidelines-link');
+    if (afrGuidelinesLink) {
+      afrGuidelinesLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (ArticleshipReviewWizard.openGuidelines) ArticleshipReviewWizard.openGuidelines();
+      });
+    }
 
     // Floating FAB Write Review logic
     const floatingWriteBtn = document.getElementById('floating-write-btn');
