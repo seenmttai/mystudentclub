@@ -48,7 +48,10 @@
       font-family: "Noto Sans", sans-serif;
       background: linear-gradient(180deg, #ffffff 0%, #f4f6fc 60%, #111540 85%, #0a0d2e 100%);
       color: var(--navy);
-      overflow-x: hidden;
+      /* overflow-x is clipped on <html> only — setting it here too would
+         leave overflow-y unset-but-non-visible, which the CSS overflow
+         spec auto-computes to `auto`, making body independently
+         scrollable and producing a second scrollbar thumb. */
       max-width: 100%;
     }
 
