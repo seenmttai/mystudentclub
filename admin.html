@@ -4478,9 +4478,47 @@
         if (!container) return;
         container.innerHTML = `<div style="color:#6b7280;font-size:0.85rem;padding:1.5rem;text-align:center;">Loading cities…</div>`;
         try {
-          const { data, error } = await supabaseClient.rpc('admin_list_cities');
-          if (error) throw error;
-          const cities = data || [];
+          const { data: masterCities, error: masterErr } = await supabaseClient.rpc('admin_list_cities');
+          if (masterErr) console.warn("admin_list_cities warning:", masterErr);
+
+          const citiesMap = new Map();
+          (masterCities || []).forEach(c => {
+            if (c && c.name) {
+              const k = c.name.trim().toLowerCase();
+              citiesMap.set(k, {
+                id: c.id,
+                name: c.name.trim(),
+                isMaster: true,
+                reviewCount: 0
+              });
+            }
+          });
+
+          // Fetch user-submitted locations from reviews table
+          const { data: reviewLocs } = await supabaseClient
+            .from('articleship_firm_reviews_public')
+            .select('location');
+
+          if (Array.isArray(reviewLocs)) {
+            reviewLocs.forEach(r => {
+              if (r.location && r.location.trim()) {
+                const loc = r.location.trim();
+                const k = loc.toLowerCase();
+                if (citiesMap.has(k)) {
+                  citiesMap.get(k).reviewCount++;
+                } else {
+                  citiesMap.set(k, {
+                    id: null,
+                    name: loc,
+                    isMaster: false,
+                    reviewCount: 1
+                  });
+                }
+              }
+            });
+          }
+
+          const cities = [...citiesMap.values()].sort((a, b) => a.name.localeCompare(b.name));
           if (badge) badge.textContent = `${cities.length} cities`;
           mlRenderCities(cities);
         } catch (err) {
@@ -4496,12 +4534,18 @@
           return;
         }
         container.innerHTML = `
-          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.6rem;padding:0.5rem 0;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:0.6rem;padding:0.5rem 0;">
             ${cities.map(c => `
-              <div style="display:flex;justify-content:space-between;align-items:center;background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:0.5rem 0.75rem;gap:0.5rem;">
-                <span style="font-size:0.875rem;font-weight:600;color:#0f172a;">${mlEsc(c.name)}</span>
-                <button type="button" onclick="mlDeleteCity('${mlEsc(c.id)}', '${mlEsc(c.name)}')" title="Delete city" style="background:none;border:none;color:#dc2626;cursor:pointer;padding:0.2rem;display:flex;align-items:center;opacity:0.7;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">
-                  <svg style="width:0.9rem;height:0.9rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              <div style="display:flex;justify-content:space-between;align-items:center;background:#f8fafc;border:1px solid #e2e8f0;border-radius:9px;padding:0.55rem 0.75rem;gap:0.5rem;">
+                <div style="display:flex;flex-direction:column;gap:0.15rem;min-width:0;">
+                  <span style="font-size:0.875rem;font-weight:600;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${mlEsc(c.name)}</span>
+                  <div style="display:flex;align-items:center;gap:0.3rem;flex-wrap:wrap;">
+                    ${c.isMaster ? `<span style="font-size:0.65rem;font-weight:700;background:#dbeafe;color:#1d4ed8;padding:0.1rem 0.35rem;border-radius:4px;">Master</span>` : `<span style="font-size:0.65rem;font-weight:700;background:#fef3c7;color:#d97706;padding:0.1rem 0.35rem;border-radius:4px;">User-Submitted</span>`}
+                    ${c.reviewCount > 0 ? `<span style="font-size:0.65rem;font-weight:600;color:#64748b;">${c.reviewCount} review${c.reviewCount > 1 ? 's' : ''}</span>` : ''}
+                  </div>
+                </div>
+                <button type="button" onclick="mlDeleteCity('${mlEsc(c.id || '')}', '${mlEsc(c.name)}')" title="Delete city" style="background:none;border:none;color:#dc2626;cursor:pointer;padding:0.3rem;display:flex;align-items:center;opacity:0.75;flex-shrink:0;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.75">
+                  <svg style="width:0.95rem;height:0.95rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
               </div>`).join('')}
           </div>`;
@@ -4528,11 +4572,18 @@
       }
 
       async function mlDeleteCity(id, name) {
-        if (!confirm(`Delete city "${name}"? This cannot be undone.`)) return;
+        if (!confirm(`Delete city "${name}"? This will remove it from master cities and clean up user-submitted instances.`)) return;
         try {
-          const { error } = await supabaseClient.rpc('admin_delete_city', { p_id: id });
-          if (error) throw error;
-          mlShowToast(`City "${name}" deleted.`, 'success');
+          if (id) {
+            await supabaseClient.rpc('admin_delete_city', { p_id: id });
+          }
+          // Clean up garbage user-submitted location entries from reviews table
+          await supabaseClient
+            .from('articleship_firm_reviews_public')
+            .update({ location: 'Other' })
+            .ilike('location', name);
+
+          mlShowToast(`City "${name}" deleted successfully.`, 'success');
           mlLoadCities();
         } catch (err) {
           mlShowToast('Error: ' + err.message, 'error');
